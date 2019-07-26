@@ -5,6 +5,7 @@ import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -201,4 +202,7 @@ public interface RegisterBill extends IBaseDomain {
     Date getModified();
 
     void setModified(Date modified);
+
+    List<SeparateSalesRecord> getSeparateSalesRecords();
+    void setSeparateSalesRecords(List<SeparateSalesRecord> SeparateSalesRecord);
 }

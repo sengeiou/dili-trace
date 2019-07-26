@@ -1,10 +1,13 @@
 package com.dili.trace.service.impl;
 
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.SeparateSalesRecordMapper;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.service.SeparateSalesRecordService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -15,5 +18,12 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 
     public SeparateSalesRecordMapper getActualDao() {
         return (SeparateSalesRecordMapper)getDao();
+    }
+
+    @Override
+    public List<SeparateSalesRecord> findByRegisterBillCode(Long registerBillCode) {
+        SeparateSalesRecord separateSalesRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
+        separateSalesRecord.setRegisterBillCode(registerBillCode);
+        return  list(separateSalesRecord);
     }
 }

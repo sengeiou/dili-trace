@@ -8,4 +8,6 @@ import com.dili.trace.domain.DetectRecord;
  * This file was generated on 2019-07-26 09:20:35.
  */
 public interface DetectRecordService extends BaseService<DetectRecord, Long> {
+    public int saveDetectRecord(DetectRecord detectRecord);
+
 }
