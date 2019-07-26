@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.RegisterBillMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.RegisterBill">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="code" jdbcType="BIGINT" property="code" />
+    <result column="register_source" jdbcType="TINYINT" property="registerSource" />
+    <result column="tally_area_no" jdbcType="VARCHAR" property="tallyAreaNo" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="id_card_no" jdbcType="VARCHAR" property="idCardNo" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="trade_no" jdbcType="BIGINT" property="tradeNo" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="plate" jdbcType="VARCHAR" property="plate" />
+    <result column="state" jdbcType="BIT" property="state" />
+    <result column="sales_type" jdbcType="BIT" property="salesType" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="origin_id" jdbcType="BIGINT" property="originId" />
+    <result column="orinin_name" jdbcType="VARCHAR" property="orininName" />
+    <result column="weight" jdbcType="INTEGER" property="weight" />
+    <result column="detect_state" jdbcType="BIT" property="detectState" />
+    <result column="latest_detect_record_id" jdbcType="BIGINT" property="latestDetectRecordId" />
+    <result column="latest_detect_time" jdbcType="TIMESTAMP" property="latestDetectTime" />
+    <result column="exe_machine_no" jdbcType="TINYINT" property="exeMachineNo" />
+    <result column="version" jdbcType="TINYINT" property="version" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, code, register_source, tally_area_no, name, id_card_no, addr, trade_no, user_id, 
+    plate, state, sales_type, product_name, product_id, origin_id, orinin_name, weight, 
+    detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version, 
+    created, modified
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from register_bill
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.trace.domain.RegisterBill">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update register_bill
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=BIGINT},
+      </if>
+      <if test="registerSource != null">
+        register_source = #{registerSource,jdbcType=TINYINT},
+      </if>
+      <if test="tallyAreaNo != null">
+        tally_area_no = #{tallyAreaNo,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardNo != null">
+        id_card_no = #{idCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null">
+        addr = #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo != null">
+        trade_no = #{tradeNo,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="plate != null">
+        plate = #{plate,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=BIT},
+      </if>
+      <if test="salesType != null">
+        sales_type = #{salesType,jdbcType=BIT},
+      </if>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null">
+        product_id = #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="originId != null">
+        origin_id = #{originId,jdbcType=BIGINT},
+      </if>
+      <if test="orininName != null">
+        orinin_name = #{orininName,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        weight = #{weight,jdbcType=INTEGER},
+      </if>
+      <if test="detectState != null">
+        detect_state = #{detectState,jdbcType=BIT},
+      </if>
+      <if test="latestDetectRecordId != null">
+        latest_detect_record_id = #{latestDetectRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="latestDetectTime != null">
+        latest_detect_time = #{latestDetectTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="exeMachineNo != null">
+        exe_machine_no = #{exeMachineNo,jdbcType=TINYINT},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=TINYINT},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

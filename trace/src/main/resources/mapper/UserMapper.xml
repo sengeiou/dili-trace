@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.User">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="card_no" jdbcType="VARCHAR" property="cardNo" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="card_no_url" jdbcType="VARCHAR" property="cardNoUrl" />
+    <result column="tailly_area_no" jdbcType="VARCHAR" property="taillyAreaNo" />
+    <result column="business_license_url" jdbcType="VARCHAR" property="businessLicenseUrl" />
+    <result column="sales_city_id" jdbcType="BIGINT" property="salesCityId" />
+    <result column="sales_city_name" jdbcType="VARCHAR" property="salesCityName" />
+    <result column="state" jdbcType="BIT" property="state" />
+    <result column="pwd" jdbcType="VARCHAR" property="pwd" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, user_name, phone, card_no, addr, card_no_url, tailly_area_no, business_license_url, 
+    sales_city_id, sales_city_name, state, pwd, created, modified
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from user
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.trace.domain.User">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update user
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNo != null">
+        card_no = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null">
+        addr = #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNoUrl != null">
+        card_no_url = #{cardNoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="taillyAreaNo != null">
+        tailly_area_no = #{taillyAreaNo,jdbcType=VARCHAR},
+      </if>
+      <if test="businessLicenseUrl != null">
+        business_license_url = #{businessLicenseUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="salesCityId != null">
+        sales_city_id = #{salesCityId,jdbcType=BIGINT},
+      </if>
+      <if test="salesCityName != null">
+        sales_city_name = #{salesCityName,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=BIT},
+      </if>
+      <if test="pwd != null">
+        pwd = #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

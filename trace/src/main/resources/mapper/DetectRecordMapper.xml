@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.DetectRecordMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.DetectRecord">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="detect_time" jdbcType="TIMESTAMP" property="detectTime" />
+    <result column="detect_operator" jdbcType="VARCHAR" property="detectOperator" />
+    <result column="detect_type" jdbcType="BIT" property="detectType" />
+    <result column="detect_state" jdbcType="BIT" property="detectState" />
+    <result column="pd_result" jdbcType="VARCHAR" property="pdResult" />
+    <result column="register_bill_code" jdbcType="BIGINT" property="registerBillCode" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, detect_time, detect_operator, detect_type, detect_state, pd_result, register_bill_code, 
+    created, modified
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from detect_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.trace.domain.DetectRecord">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update detect_record
+    <set>
+      <if test="detectTime != null">
+        detect_time = #{detectTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="detectOperator != null">
+        detect_operator = #{detectOperator,jdbcType=VARCHAR},
+      </if>
+      <if test="detectType != null">
+        detect_type = #{detectType,jdbcType=BIT},
+      </if>
+      <if test="detectState != null">
+        detect_state = #{detectState,jdbcType=BIT},
+      </if>
+      <if test="pdResult != null">
+        pd_result = #{pdResult,jdbcType=VARCHAR},
+      </if>
+      <if test="registerBillCode != null">
+        register_bill_code = #{registerBillCode,jdbcType=BIGINT},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
