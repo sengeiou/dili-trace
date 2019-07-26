@@ -55,6 +55,8 @@
             </activation>
             <properties>
                 <build.profile.id>dev</build.profile.id>
+                <redis.host1>10.28.10.104</redis.host1>
+                <redis.port1>6379</redis.port1>
             </properties>
         </profile>
         <profile>
@@ -147,6 +149,19 @@
             <artifactId>ss-multi-datasource</artifactId>
             <version>${sharp-sword.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.dili.manage</groupId>
+            <artifactId>diligrp-manage-sdk</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>fastjson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
 
