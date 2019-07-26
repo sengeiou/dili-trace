@@ -104,6 +104,13 @@ public interface RegisterBill extends IBaseDomain {
 
     void setSalesType(Boolean salesType);
 
+    @Column(name = "`detect_report_url`")
+    @FieldDef(label="检测报告url", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text)
+    String getDetectReportUrl();
+
+    void setDetectReportUrl(String detectReportUrl);
+
     @Column(name = "`product_name`")
     @FieldDef(label="productName", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = true)
@@ -117,6 +124,13 @@ public interface RegisterBill extends IBaseDomain {
     Long getProductId();
 
     void setProductId(Long productId);
+
+    @Column(name = "`origin_certifiy_url`")
+    @FieldDef(label="产地证明图片", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text)
+    String getOriginCertifiyUrl();
+
+    void setOriginCertifiyUrl(String originCertifiyUrl);
 
     @Column(name = "`origin_id`")
     @FieldDef(label="originId")
