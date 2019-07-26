@@ -1,0 +1,48 @@
+/*码单详情*/
+
+.topwrap {
+    padding: 20px;
+}
+.topwrap-item {
+    padding-right: 40px;
+    font-weight: bold;
+    font-size: 14px;
+}
+.record-wrap {
+    padding: 0 20px;
+}
+.record-item {
+    margin: 20px 0 40px;
+}
+.record-item .panel-title {
+    height: auto;
+}
+.record-cus {
+    margin: 10px 0;
+    font-size: 14px;
+}
+.record-wrap table {
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+.record-wrap th {
+    background: #f4f6f8;
+    height: 36px;
+    text-align: center;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+.record-wrap td {
+    height: 36px;
+    text-align: center;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+.record-wrap tr th:last-child,
+.record-wrap tr td:last-child {
+    border-right: none;
+
+}
+.record-wrap tr:last-child td {
+    border-bottom: none;
+}

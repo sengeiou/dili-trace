@@ -4,11 +4,14 @@
         <!-- 上方布局 -->
         <!-- ====================================================================================================================== -->
         <div region="north" height="auto" align="center">
-            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
-            </div>
+            <!--<div id="nav" class="top-pos-box">
+                <span><img class="nav-pos-icon" src="${contextPath}/resources/images/pos-icon.png">当前位置:</span>
+                <span>登记单管理&nbsp&gt;</span>
+                <span><a class="link-text" href="">登记单列表</a></span>
+            </div>-->
             <!-- =========================================================表单========================================================= -->
             <div class="easyui-panel" style="width:100%;" align="left">
-                <form id="form" class="easyui-form" method="post" fit="true">
+                <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
                         <div class="search-item">
                             <input class="easyui-numberbox" name="code" id="code" style="width:100%" labelAlign="right" data-options="label:'编号:', validType:'length[0,19]'" />
@@ -39,7 +42,7 @@
                         </div>
                         <div class="search-item">
                             <input class="easyui-numberbox" name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'1.待审核 2.待采样 3.已采样 4.待检测 5.检测中 6.已检测 7.复检中:', validType:'length[0,1]'" 
-                                required="true" />                        </div>
+                                 />                        </div>
                         <div class="search-item">
                             <input class="easyui-numberbox" name="salesType" id="salesType" style="width:100%" labelAlign="right" data-options="label:'1.分销 2.全销:', validType:'length[0,1]'" />                        </div>
                         <div class="search-item">
@@ -79,8 +82,8 @@
                         </div>
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                               onclick="queryGrid()">查询</a>&nbsp;&nbsp;
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearForm()">清除</a>
+                               onclick="queryRegisterBillGrid()">查询</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
                         </div>
                     </div>
                 </form>
@@ -92,10 +95,10 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="RegisterBill列表" id="grid" fitColumns="true" noheader="true"
-                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" rownumbers="false" remoteSort="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="code"
-                   align="center" fit="true" striped="true" idField="id" data-options="onDblClickRow:openUpdate, onHeaderContextMenu:headerContextMenu">
+            <table class="easyui-datagrid" title="客户列表" id="registerBillGrid" fitColumns="true" noheader="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
+                   align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
                 <thead>
                     <tr>
                         <th width="4.391304347826087%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -167,13 +170,13 @@
                         <th width="4.391304347826087%" data-options="field:'modified',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             modified
                         </th>
- // if end                    </tr>
+                   </tr>
                 </thead>
             </table>
         </div>
     </div>
     <!-- 隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="RegisterBill信息" style="padding:20px" modal="true" border="thin" closed="true"
+ <!--   <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="RegisterBill信息" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-save',
 				height: 480,
@@ -319,194 +322,10 @@
         </table>
     </form>
 
-    </div>
+    </div>-->
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
-    <script type="text/javascript">
-        //打开新增窗口
-        function openInsert(){
-            $('#dlg').dialog('open');
-            $('#dlg').dialog('center');
-            $('#_form').form('clear');
-            formFocus("_form", "_code");
-        }
-
-        //打开修改窗口
-        function openUpdate(){
-            var selected = $("#grid").datagrid("getSelected");
-            if (null == selected) {
-                swal('警告','请选中一条数据', 'warning');
-                return;
-            }
-            $('#dlg').dialog('open');
-            $('#dlg').dialog('center');
-            formFocus("_form", "_code");
-            var formData = $.extend({},selected);
-            formData = addKeyStartWith(getOriginalData(formData),"_");
-            $('#_form').form('load', formData);
-        }
-
-        function saveOrUpdate(){
-            if(!$('#_form').form("validate")){
-                return;
-            }
-            var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-            var _url = null;
-            //没有id就新增
-            if(_formData.id == null || _formData.id==""){
-                _url = "${contextPath}/registerBill/insert.action";
-            }else{//有id就修改
-                _url = "${contextPath}/registerBill/update.action";
-            }
-            $.ajax({
-                type: "POST",
-                url: _url,
-                data: _formData,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (data) {
-                    if(data.code=="200"){
-                        $("#grid").datagrid("reload");
-                        $('#dlg').dialog('close');
-                    }else{
-                        swal('错误',data.result, 'error');
-                    }
-                },
-                error: function(){
-                    swal('错误', '远程访问失败', 'error');
-                }
-            });
-        }
-
-        //根据主键删除
-        function del() {
-            var selected = $("#grid").datagrid("getSelected");
-            if (null == selected) {
-                swal('警告','请选中一条数据', 'warning');
-                return;
-            }
-            <#swalConfirm swalTitle="您确认想要删除记录吗？">
-                    $.ajax({
-                        type: "POST",
-                        url: "${contextPath}/registerBill/delete.action",
-                        data: {id:selected.id},
-                        processData:true,
-                        dataType: "json",
-                        async : true,
-                        success: function (data) {
-                            if(data.code=="200"){
-                                $("#grid").datagrid("reload");
-                                $('#dlg').dialog('close');
-                            }else{
-                                swal('错误',data.result, 'error');
-                            }
-                        },
-                        error: function(){
-                            swal('错误', '远程访问失败', 'error');
-                        }
-                    });
-            </#swalConfirm>
-        }
-        //表格查询
-        function queryGrid() {
-            var opts = $("#grid").datagrid("options");
-            if (null == opts.url || "" == opts.url) {
-                opts.url = "${contextPath}/registerBill/listPage.action";
-            }
-            if(!$('#form').form("validate")){
-                return;
-            }
-            $("#grid").datagrid("load", bindGridMeta2Form("grid", "form"));
-        }
-
-
-        //清空表单
-        function clearForm() {
-            $('#form').form('clear');
-        }
-
-        //表格表头右键菜单
-        function headerContextMenu(e, field){
-            e.preventDefault();
-            if (!cmenu){
-                createColumnMenu("grid");
-            }
-            cmenu.menu('show', {
-                left:e.pageX,
-                top:e.pageY
-            });
-        }
-
-        //全局按键事件
-        function getKey(e){
-            e = e || window.event;
-            var keycode = e.which ? e.which : e.keyCode;
-            if(keycode == 46){ //如果按下删除键
-                var selected = $("#grid").datagrid("getSelected");
-                if(selected && selected!= null){
-                    del();
-                }
-            }
-        }
-
-        /**
-         * 绑定页面回车事件，以及初始化页面时的光标定位
-         * @formId
-         *          表单ID
-         * @elementName
-         *          光标定位在指点表单元素的name属性的值
-         * @submitFun
-         *          表单提交需执行的任务
-         */
-        $(function () {
-            bindFormEvent("form", "code", queryGrid);
-            bindFormEvent("_form", "_code", saveOrUpdate, function (){$('#dlg').dialog('close');});
-            if (document.addEventListener) {
-                document.addEventListener("keyup",getKey,false);
-            } else if (document.attachEvent) {
-                document.attachEvent("onkeyup",getKey);
-            } else {
-                document.onkeyup = getKey;
-            }
-            var pager = $('#grid').datagrid('getPager');    // get the pager of treegrid
-                pager.pagination({
-                    <#controls_paginationOpts/>,
-                    buttons:[
-                    {
-                        iconCls:'icon-add',
-                        text:'新增',
-                        handler:function(){
-                            openInsert();
-                        }
-                    },
-                    {
-                        iconCls:'icon-edit',
-                        text:'修改',
-                        handler:function(){
-                            openUpdate();
-                        }
-                    },
-                    {
-                        iconCls:'icon-remove',
-                        text:'删除',
-                        handler:function(){
-                            del();
-                        }
-                    },
-                    {
-                        iconCls:'icon-export',
-                        text:'导出',
-                        handler:function(){
-                            doExport('grid');
-                        }
-                    }
-                ]
-            });
-            //表格仅显示下边框
-            $('#grid').datagrid('getPanel').removeClass('lines-both lines-no lines-right lines-bottom').addClass("lines-bottom");
-            queryGrid();
-        })
-    </script>
-</#body>
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <#registerBill_indexJs />
+ </#body>
