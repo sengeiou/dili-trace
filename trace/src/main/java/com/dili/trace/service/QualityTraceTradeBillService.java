@@ -8,4 +8,6 @@ import com.dili.trace.domain.QualityTraceTradeBill;
  * This file was generated on 2019-07-26 09:20:35.
  */
 public interface QualityTraceTradeBillService extends BaseService<QualityTraceTradeBill, Long> {
+    //通过交易号查询交易区SQLServer数据
+    public QualityTraceTradeBill findByTradeNo(String tradeNo);
 }

@@ -105,11 +105,7 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>com.dili</groupId>
-            <artifactId>ss-mbg</artifactId>
-            <version>${sharp-sword.version}</version>
-        </dependency>
+
 
         <!-- spring boot 基类  -->
 		<dependency>
