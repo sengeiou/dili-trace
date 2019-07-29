@@ -1,9 +1,11 @@
 package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import io.swagger.annotations.Api;
@@ -29,6 +31,20 @@ public class RegisterBillApi {
     private RegisterBillService registerBillService;
     @Autowired
     private SeparateSalesRecordService separateSalesRecordService;
+
+    @Autowired
+    BizNumberFunction bizNumberFunction;
+
+    /**
+     * 测试登记单编号生成器
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/testGenId")
+    public BaseOutput<String> testGenId(){
+        String code = bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL);
+        return BaseOutput.success().setData(code);
+    }
 
     /**
      * 保存登记单
