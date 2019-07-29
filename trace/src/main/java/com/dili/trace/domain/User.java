@@ -27,12 +27,12 @@ public interface User extends IBaseDomain {
 
     void setId(Long id);
 
-    @Column(name = "`user_name`")
-    @FieldDef(label="userName", maxLength = 30)
+    @Column(name = "`name`")
+    @FieldDef(label="name", maxLength = 30)
     @EditMode(editor = FieldEditor.Text, required = false)
-    String getUserName();
+    String getName();
 
-    void setUserName(String userName);
+    void setName(String name);
 
     @Column(name = "`phone`")
     @FieldDef(label="phone", maxLength = 15)
@@ -93,16 +93,30 @@ public interface User extends IBaseDomain {
     @Column(name = "`state`")
     @FieldDef(label="1:启用 2：禁用")
     @EditMode(editor = FieldEditor.Number, required = false)
-    Boolean getState();
+    Integer getState();
 
-    void setState(Boolean state);
+    void setState(Integer state);
 
-    @Column(name = "`pwd`")
-    @FieldDef(label="pwd", maxLength = 50)
+    @Column(name = "`password`")
+    @FieldDef(label="password", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
-    String getPwd();
+    String getPassword();
 
-    void setPwd(String pwd);
+    void setPassword(String password);
+
+    @Column(name = "`yn`")
+    @FieldDef(label="1:正常 -1：删除")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getYn();
+
+    void setYn(Integer yn);
+
+    @Column(name = "`version`")
+    @FieldDef(label="version")
+    @EditMode(editor = FieldEditor.Number)
+    Integer getVersion();
+
+    void setVersion(Integer version);
 
     @Column(name = "`created`")
     @FieldDef(label="created")
@@ -117,4 +131,17 @@ public interface User extends IBaseDomain {
     Date getModified();
 
     void setModified(Date modified);
+
+    @Transient
+    String getCheckCode();
+    void setCheckCode(String checkCode);
+
+    @Transient
+    String getAckPassword();
+    void setAckPassword(String ackPassword);
+
+    @Transient
+    String getOldPassword();
+    void setOldPassword(String oldPassword);
+
 }

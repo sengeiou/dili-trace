@@ -184,10 +184,10 @@ public interface RegisterBill extends IBaseDomain {
 
     @Column(name = "`version`")
     @FieldDef(label="version")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    Byte getVersion();
+    @EditMode(editor = FieldEditor.Number)
+    Integer getVersion();
 
-    void setVersion(Byte version);
+    void setVersion(Integer version);
 
     @Column(name = "`created`")
     @FieldDef(label="created")
