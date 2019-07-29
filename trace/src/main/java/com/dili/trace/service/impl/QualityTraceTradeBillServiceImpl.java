@@ -16,4 +16,9 @@ public class QualityTraceTradeBillServiceImpl extends BaseServiceImpl<QualityTra
     public QualityTraceTradeBillMapper getActualDao() {
         return (QualityTraceTradeBillMapper)getDao();
     }
+
+    @Override
+    public QualityTraceTradeBill findByTradeNo(String tradeNo) {
+        return null;
+    }
 }

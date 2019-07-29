@@ -2,8 +2,9 @@ package com.dili.common.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.BaseResult;
+import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.SessionContext;
+import com.dili.ss.domain.BaseOutput;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -34,9 +35,9 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	        if(sessionContext.getAccountId()==null){//用户id为空表示未登陆
 				response.setContentType("application/json");
 				response.setCharacterEncoding("UTF-8");
-				BaseResult baseResult=BaseResult.noLogin();
+				BaseOutput baseOutput = new BaseOutput(ExecutionConstants.NO_LOGIN,"未登陆");
                 Writer writer=response.getWriter();
-                writer.write(JSONObject.toJSONString(baseResult));
+                writer.write(JSONObject.toJSONString(baseOutput));
                 writer.flush();
                 if(writer!=null){
                     writer.close();
