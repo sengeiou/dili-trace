@@ -1,6 +1,7 @@
 package com.dili;
 
 import com.dili.ss.datasource.aop.DynamicRoutingDataSourceRegister;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import tk.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -13,7 +14,9 @@ import com.dili.ss.retrofitful.annotation.RestfulScan;
  * 由MyBatis Generator工具自动生成
  */
 @SpringBootApplication
-@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.ss.dao"})
+//处理事务支持
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
 @ComponentScan(basePackages={"com.dili.ss","com.dili.trace","com.dili"})
 @RestfulScan({"com.dili.trace.rpc"})
 /**
