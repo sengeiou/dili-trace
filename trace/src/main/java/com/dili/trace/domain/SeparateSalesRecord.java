@@ -57,10 +57,10 @@ public interface SeparateSalesRecord extends IBaseDomain {
 
     @Column(name = "`register_bill_code`")
     @FieldDef(label="registerBillCode")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getRegisterBillCode();
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getRegisterBillCode();
 
-    void setRegisterBillCode(Long registerBillCode);
+    void setRegisterBillCode(String registerBillCode);
 
     @Column(name = "`created`")
     @FieldDef(label="created")

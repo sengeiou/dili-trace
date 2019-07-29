@@ -30,10 +30,10 @@ public interface RegisterBill extends IBaseDomain {
 
     @Column(name = "`code`")
     @FieldDef(label="编号")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getCode();
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getCode();
 
-    void setCode(Long code);
+    void setCode(String code);
 
     @Column(name = "`register_source`")
     @FieldDef(label="1.理货区 2.交易区")
@@ -72,10 +72,10 @@ public interface RegisterBill extends IBaseDomain {
 
     @Column(name = "`trade_no`")
     @FieldDef(label="tradeNo")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getTradeNo();
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getTradeNo();
 
-    void setTradeNo(Long tradeNo);
+    void setTradeNo(String tradeNo);
 
     @Column(name = "`user_id`")
     @FieldDef(label="用户ID")
@@ -101,9 +101,9 @@ public interface RegisterBill extends IBaseDomain {
     @Column(name = "`sales_type`")
     @FieldDef(label="1.分销 2.全销")
     @EditMode(editor = FieldEditor.Number, required = false)
-    Boolean getSalesType();
+    Integer getSalesType();
 
-    void setSalesType(Boolean salesType);
+    void setSalesType(Integer salesType);
 
     @Column(name = "`detect_report_url`")
     @FieldDef(label="检测报告url", maxLength = 50)
@@ -157,9 +157,9 @@ public interface RegisterBill extends IBaseDomain {
     @Column(name = "`detect_state`")
     @FieldDef(label="1.合格 2.不合格 3.复检合格 4.复检不合格")
     @EditMode(editor = FieldEditor.Number, required = false)
-    Boolean getDetectState();
+    Integer getDetectState();
 
-    void setDetectState(Boolean detectState);
+    void setDetectState(Integer detectState);
 
     @Column(name = "`latest_detect_record_id`")
     @FieldDef(label="latestDetectRecordId")
@@ -178,9 +178,9 @@ public interface RegisterBill extends IBaseDomain {
     @Column(name = "`exe_machine_no`")
     @FieldDef(label="exeMachineNo")
     @EditMode(editor = FieldEditor.Text, required = false)
-    Byte getExeMachineNo();
+    String getExeMachineNo();
 
-    void setExeMachineNo(Byte exeMachineNo);
+    void setExeMachineNo(String exeMachineNo);
 
     @Column(name = "`version`")
     @FieldDef(label="version")

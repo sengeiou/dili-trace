@@ -1,11 +1,16 @@
 package com.dili.trace.service.impl;
 
+import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
+import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.service.RegisterBillService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -17,14 +22,40 @@ import java.util.List;
  */
 @Service
 public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
+    @Autowired
+    BizNumberFunction bizNumberFunction;
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper)getDao();
     }
 
     @Override
-    public List<RegisterBill> findByExeMachineNo(String exeMachineNo, int pageSize) {
-        return getActualDao().findByExeMachineNo(exeMachineNo,pageSize);
+    public int createRegisterBill(RegisterBill registerBill) {
+        registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
+        return saveOrUpdate(registerBill);
+    }
+
+    @Override
+    public List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount) {
+        List<RegisterBill> exist = getActualDao().findByExeMachineNo(exeMachineNo);
+        int existCount = exist.size();
+        if(existCount==taskCount){
+            LOGGER.info("获取的任务已经有相应的数量了" + taskCount);
+            return exist;
+        }else if(existCount<taskCount){
+            //还需要再拿多少个。
+            taskCount=taskCount-existCount;
+            LOGGER.info("还需要再拿多少个："+taskCount);
+
+        }
+        List<Long> ids = getActualDao().findIdsByExeMachineNo(taskCount);
+        StringBuilder sb = new StringBuilder();
+        sb.append(0);
+        for(Long id :ids){
+            sb.append(",").append(id);
+        }
+        getActualDao().taskByExeMachineNo(exeMachineNo,sb.toString());
+        return getActualDao().findByExeMachineNo(exeMachineNo);
     }
 
     @Override
@@ -35,7 +66,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public RegisterBill findByCode(Long code) {
+    public RegisterBill findByCode(String code) {
         RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
         registerBill.setCode(code);
         List<RegisterBill> list = list(registerBill);
@@ -46,7 +77,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public RegisterBill findByTradeNo(Long tradeNo) {
+    public RegisterBill findByTradeNo(String tradeNo) {
         RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
         registerBill.setTradeNo(tradeNo);
         List<RegisterBill> list = list(registerBill);
@@ -64,6 +95,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         matchDetectParam.setEnd(settlement);
         Date start = new Date(settlement.getTime()-(48*3600000));
         matchDetectParam.setStart(start);
-        return getActualDao().matchDetectBind(matchDetectParam);
+        Long id = getActualDao().findMatchDetectBind(matchDetectParam);
+        return getActualDao().matchDetectBind(tradeNo,id);
     }
 }

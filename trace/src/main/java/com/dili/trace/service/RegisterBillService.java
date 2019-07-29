@@ -11,8 +11,9 @@ import java.util.List;
  * This file was generated on 2019-07-26 09:20:34.
  */
 public interface RegisterBillService extends BaseService<RegisterBill, Long> {
-    List<RegisterBill> findByExeMachineNo(String exeMachineNo,int pageSize);
+    List<RegisterBill> findByExeMachineNo(String exeMachineNo,int taskCount);
     List<RegisterBill> findByProductName( String productName);
-    RegisterBill findByCode(Long code);
-    RegisterBill findByTradeNo(Long tradeNo);
+    RegisterBill findByCode(String code);
+    RegisterBill findByTradeNo(String tradeNo);
+    int createRegisterBill(RegisterBill registerBill);
 }

@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ import java.util.List;
  * Created by laikui on 2019/7/26.
  */
 @RestController
-@RequestMapping(value = "/api/bill")
-@Api(value ="/api/bill", description = "登记单相关接口")
+@RequestMapping(value = "/api1/bill")
+@Api(value ="/api1/bill", description = "登记单相关接口")
 public class RegisterBillApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillApi.class);
     @Autowired
@@ -40,7 +41,7 @@ public class RegisterBillApi {
      * @param
      * @return
      */
-    @RequestMapping(value = "/testGenId")
+    //@RequestMapping(value = "/testGenId")
     public BaseOutput<String> testGenId(){
         String code = bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL);
         return BaseOutput.success().setData(code);
@@ -52,55 +53,66 @@ public class RegisterBillApi {
      * @return
      */
     @ApiOperation("保存登记单")
-    @ApiImplicitParam(paramType = "body", name = "registerBill", dataType = "RegisterBill", value = "登记单保存入参")
-    @RequestMapping(value = "",method = RequestMethod.POST)
-    public BaseOutput<Boolean> saveRegisterBill(@RequestBody RegisterBill registerBill){
+    @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "登记单保存入参")
+    @RequestMapping(value = "/create",method = RequestMethod.POST)
+    public BaseOutput<Boolean> saveRegisterBill(RegisterBill registerBill){
         LOGGER.info("保存登记单:"+ JSON.toJSONString(registerBill));
-        registerBillService.saveOrUpdate(registerBill);
+        registerBillService.createRegisterBill(registerBill);
         return BaseOutput.success().setData(true);
     }
     @ApiOperation("保存分销单")
-    @ApiImplicitParam(paramType = "body", name = "salesRecord", dataType = "SeparateSalesRecord", value = "分销单保存入参")
-    @RequestMapping(value = "/saveSalesRecord",method = RequestMethod.POST)
-    public BaseOutput<Boolean> saveSeparateSalesRecord(@RequestBody SeparateSalesRecord salesRecord){
+    @ApiImplicitParam(paramType = "body", name = "SeparateSalesRecord", dataType = "SeparateSalesRecord", value = "分销单保存入参")
+    @RequestMapping(value = "/createSalesRecord",method = RequestMethod.POST)
+    public BaseOutput<Boolean> saveSeparateSalesRecord(SeparateSalesRecord salesRecord){
         LOGGER.info("保存分销单:"+JSON.toJSONString(salesRecord));
+        if(StringUtils.isBlank(salesRecord.getRegisterBillCode())){
+            return BaseOutput.failure("没有分销的登记单");
+        }
+        RegisterBill registerBill =  registerBillService.findByCode(salesRecord.getRegisterBillCode());
+        if(registerBill.getWeight().intValue() == salesRecord.getSalesWeight().intValue()){
+            registerBill.setSalesType(2);
+        }else {
+            registerBill.setSalesType(1);
+        }
+        registerBillService.update(registerBill);
         separateSalesRecordService.saveOrUpdate(salesRecord);
         return BaseOutput.success().setData(true);
     }
-    @ApiOperation(value = "通过ID获取登记单")
-    @ApiImplicitParam(paramType = "query", name = "id", dataType = "Long", required = true, value = "登记单ID")
-    @RequestMapping(value = "{id}",method = RequestMethod.GET)
+    @ApiOperation(value = "通过ID获取登记单和分销单")
+    @RequestMapping(value = "id/{id}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getRegisterBill( @PathVariable Long id){
         LOGGER.info("获取登记单:"+id);
         RegisterBill bill = registerBillService.get(id);
+        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
+        bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);
     }
-    @ApiOperation(value = "通过登记单编号获取登记单")
-    @ApiImplicitParam(paramType = "query", name = "code", dataType = "Long", required = true, value = "登记单编号")
+    @ApiOperation(value = "通过登记单编号获取登记单和分销单")
     @RequestMapping(value = "/code/{code}",method = RequestMethod.GET)
-    public BaseOutput<RegisterBill> getRegisterBillByCode( @PathVariable Long code){
+    public BaseOutput<RegisterBill> getRegisterBillByCode( @PathVariable String code){
         LOGGER.info("获取登记单:"+code);
         RegisterBill bill = registerBillService.findByCode(code);
+        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
+        bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);
     }
-    @ApiOperation(value = "通过交易区交易号获取登记单")
-    @ApiImplicitParam(paramType = "query", name = "tradeNo", dataType = "Long", required = true, value = "交易区交易号")
-    @RequestMapping(value = "{tradeNo}",method = RequestMethod.GET)
-    public BaseOutput<RegisterBill> getBillByTradeNo( @PathVariable Long tradeNo){
+    @ApiOperation(value = "通过交易区的交易号获取登记单和分销单")
+    @RequestMapping(value = "/tradeNo/{tradeNo}",method = RequestMethod.GET)
+    public BaseOutput<RegisterBill> getBillByTradeNo( @PathVariable String tradeNo){
         LOGGER.info("getBillByTradeNo获取登记单:"+tradeNo);
         RegisterBill bill = registerBillService.findByTradeNo(tradeNo);
+        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
+        bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);
     }
     @ApiOperation(value = "通过分销记录ID获取分销单")
-    @ApiImplicitParam(paramType = "query", name = "salesRecordId", dataType = "Long", required = true, value = "分销记录ID")
-    @RequestMapping(value = "{salesRecordId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/salesRecordId/{salesRecordId}",method = RequestMethod.GET)
     public BaseOutput<SeparateSalesRecord> getSeparateSalesRecord( @PathVariable Long salesRecordId){
         LOGGER.info("获取分销记录:"+salesRecordId);
         SeparateSalesRecord record = separateSalesRecordService.get(salesRecordId);
         return BaseOutput.success().setData(record);
     }
     @ApiOperation(value = "通过登记单ID获取登记单和分销单")
-    @ApiImplicitParam(paramType = "query", name = "id", dataType = "Long", required = true, value = "登记单ID")
     @RequestMapping(value = "/billSalesRecord/{id}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getBillSalesRecord( @PathVariable Long id){
         LOGGER.info("获取登记单&分销记录:"+id);
@@ -109,9 +121,8 @@ public class RegisterBillApi {
         bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);
     }
-    @ApiOperation(value = "通过登记单商品名获取登记单和分销单")
-    @ApiImplicitParam(paramType = "query", name = "productName", dataType = "String", required = true, value = "登记单商品名")
-    @RequestMapping(value = "{productName}",method = RequestMethod.GET)
+    @ApiOperation(value = "通过登记单商品名获取登记单",httpMethod = "GET", notes="productName=?")
+    @RequestMapping(value = "/productName/{productName}",method = RequestMethod.GET)
     public BaseOutput<List<RegisterBill>> getBillByProductName( @PathVariable String productName){
         LOGGER.info("获取登记单&分销记录:"+productName);
         List<RegisterBill> bills = registerBillService.findByProductName(productName);

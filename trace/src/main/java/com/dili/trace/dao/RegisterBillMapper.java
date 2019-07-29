@@ -9,6 +9,9 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface RegisterBillMapper extends MyMapper<RegisterBill> {
-    List<RegisterBill> findByExeMachineNo(@Param("exeMachineNo") String exeMachineNo,@Param("pageSize") int pageSize);
-    int matchDetectBind(MatchDetectParam matchDetectParam);
+    List<RegisterBill> findByExeMachineNo(String exeMachineNo);
+    Long findMatchDetectBind(MatchDetectParam matchDetectParam);
+    int matchDetectBind(@Param("tradeNo")String tradeNo,@Param("id")Long id);
+    int taskByExeMachineNo(@Param("exeMachineNo") String exeMachineNo,@Param("ids") String ids);
+    List<Long> findIdsByExeMachineNo(int taskCount);
 }

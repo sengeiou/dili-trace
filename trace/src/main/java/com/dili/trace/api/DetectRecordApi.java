@@ -7,13 +7,15 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,21 +36,45 @@ public class DetectRecordApi {
      * @param detectRecord
      * @return
      */
+    @ApiOperation("上传检测记录")
     @RequestMapping(value = "/saveRecord",method = RequestMethod.POST)
-    public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecord detectRecord){
+    public BaseOutput<Boolean> saveDetectRecord(DetectRecord detectRecord){
         LOGGER.info("保存检查单:"+ JSON.toJSONString(detectRecord));
-        detectRecordService.saveDetectRecord(detectRecord);
+        if(StringUtils.isBlank(detectRecord.getRegisterBillCode())){
+            return BaseOutput.failure("没有对应的登记单");
+        }
+        saveRecordAndUpdateBill(detectRecord);
         return BaseOutput.success().setData(true);
+    }
+
+    @Transactional(rollbackFor=Exception.class)
+    private void saveRecordAndUpdateBill(DetectRecord detectRecord) {
+        RegisterBill registerBill = registerBillService.findByCode(detectRecord.getRegisterBillCode());
+        if(registerBill.getLatestDetectRecordId()!=null){
+            detectRecord.setDetectType(2);
+            registerBill.setDetectState(detectRecord.getDetectState()+2);
+        }else {
+            detectRecord.setDetectType(1);
+            registerBill.setDetectState(detectRecord.getDetectState());
+        }
+        detectRecordService.saveDetectRecord(detectRecord);
+        registerBill.setLatestDetectRecordId(detectRecord.getId());
+        registerBill.setLatestDetectTime(detectRecord.getDetectTime());
+        registerBillService.update(registerBill);
     }
 
 
     /**
      * 获取检查任务
-     * @param taskGetParam
+     * @param exeMachineNo
      * @return
      */
-    @RequestMapping(value = "/getDetectTask",method = RequestMethod.GET)
-    public BaseOutput<List<RegisterBill>> getDetectTask(@RequestBody TaskGetParam taskGetParam){
+    @ApiOperation("获取检测任务")
+    @RequestMapping(value = "/getDetectTask/{exeMachineNo}/{taskCount}",method = {RequestMethod.GET, RequestMethod.POST})
+    public BaseOutput<List<RegisterBill>> getDetectTask( @PathVariable String exeMachineNo,  @PathVariable Integer taskCount){
+        TaskGetParam taskGetParam = new TaskGetParam();
+        taskGetParam.setExeMachineNo(exeMachineNo);
+        taskGetParam.setPageSize(taskCount);
         LOGGER.info("获取检查任务:" + JSON.toJSONString(taskGetParam));
         List<RegisterBill> registerBills=registerBillService.findByExeMachineNo(taskGetParam.getExeMachineNo(), taskGetParam.getPageSize());
         return BaseOutput.success().setData(registerBills);

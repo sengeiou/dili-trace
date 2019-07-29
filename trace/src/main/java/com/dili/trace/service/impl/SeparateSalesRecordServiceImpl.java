@@ -21,7 +21,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
     }
 
     @Override
-    public List<SeparateSalesRecord> findByRegisterBillCode(Long registerBillCode) {
+    public List<SeparateSalesRecord> findByRegisterBillCode(String registerBillCode) {
         SeparateSalesRecord separateSalesRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
         separateSalesRecord.setRegisterBillCode(registerBillCode);
         return  list(separateSalesRecord);

@@ -44,16 +44,16 @@ public interface DetectRecord extends IBaseDomain {
     @Column(name = "`detect_type`")
     @FieldDef(label="1.第一次送检 2：复检")
     @EditMode(editor = FieldEditor.Number, required = true)
-    Boolean getDetectType();
+    Integer getDetectType();
 
-    void setDetectType(Boolean detectType);
+    void setDetectType(Integer detectType);
 
     @Column(name = "`detect_state`")
     @FieldDef(label="1.合格 2.不合格")
     @EditMode(editor = FieldEditor.Number, required = true)
-    Boolean getDetectState();
+    Integer getDetectState();
 
-    void setDetectState(Boolean detectState);
+    void setDetectState(Integer detectState);
 
     @Column(name = "`pd_result`")
     @FieldDef(label="pdResult", maxLength = 10)
@@ -64,10 +64,10 @@ public interface DetectRecord extends IBaseDomain {
 
     @Column(name = "`register_bill_code`")
     @FieldDef(label="registerBillCode")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getRegisterBillCode();
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getRegisterBillCode();
 
-    void setRegisterBillCode(Long registerBillCode);
+    void setRegisterBillCode(String registerBillCode);
 
     @Column(name = "`created`")
     @FieldDef(label="created")
