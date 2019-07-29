@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface RegisterBillMapper extends MyMapper<RegisterBill> {
     List<RegisterBill> findByExeMachineNo(@Param("exeMachineNo") String exeMachineNo,@Param("pageSize") int pageSize);
-    List<RegisterBill> matchDetectBind(MatchDetectParam matchDetectParam);
+    int matchDetectBind(MatchDetectParam matchDetectParam);
 }

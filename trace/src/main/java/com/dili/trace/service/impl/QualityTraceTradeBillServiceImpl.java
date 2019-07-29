@@ -21,4 +21,14 @@ public class QualityTraceTradeBillServiceImpl extends BaseServiceImpl<QualityTra
     public QualityTraceTradeBill findByTradeNo(String tradeNo) {
         return null;
     }
+
+    @Override
+    public QualityTraceTradeBill findByTradeCardNo(String tradeCardNo) {
+        return null;
+    }
+
+    @Override
+    public QualityTraceTradeBill findByPrintCardNo(String printCardNo) {
+        return null;
+    }
 }

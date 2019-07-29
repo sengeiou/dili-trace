@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
  * Created by laikui on 2019/7/26.
  */
 @RestController
-@RequestMapping(value = "/api/no/detect")
+@RequestMapping(value = "/api/detect")
 public class DetectRecordApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectRecordApi.class);
     @Autowired
@@ -33,7 +34,7 @@ public class DetectRecordApi {
      * @param detectRecord
      * @return
      */
-    @RequestMapping(value = "/saveRecord")
+    @RequestMapping(value = "/saveRecord",method = RequestMethod.POST)
     public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecord detectRecord){
         LOGGER.info("保存检查单:"+ JSON.toJSONString(detectRecord));
         detectRecordService.saveDetectRecord(detectRecord);
@@ -46,7 +47,7 @@ public class DetectRecordApi {
      * @param taskGetParam
      * @return
      */
-    @RequestMapping(value = "/getDetectTask")
+    @RequestMapping(value = "/getDetectTask",method = RequestMethod.GET)
     public BaseOutput<List<RegisterBill>> getDetectTask(@RequestBody TaskGetParam taskGetParam){
         LOGGER.info("获取检查任务:" + JSON.toJSONString(taskGetParam));
         List<RegisterBill> registerBills=registerBillService.findByExeMachineNo(taskGetParam.getExeMachineNo(), taskGetParam.getPageSize());

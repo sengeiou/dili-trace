@@ -14,4 +14,5 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
     List<RegisterBill> findByExeMachineNo(String exeMachineNo,int pageSize);
     List<RegisterBill> findByProductName( String productName);
     RegisterBill findByCode(Long code);
+    RegisterBill findByTradeNo(Long tradeNo);
 }

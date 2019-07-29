@@ -129,9 +129,11 @@
 
   <!--自定义sql-->
   <update id="matchDetectBind" parameterType="com.dili.trace.dto.MatchDetectParam" >
-    update register_bill  set `trade_no` = #{tradeNo}
+    update register_bill  set `trade_no` = #{tradeNo} WHERE  id =
+    (SELECT id  from register_bill
     where `tally_area_no` = #{tallyAreaNo} and `product_name` = #{productName} and `id_card_no` = #{idCardNo}
     and `latest_detect_time` BETWEEN #{start} AND #{end} AND register_source = 2 AND trade_no IS NULL
+    ORDER BY id DESC limit 1)
   </update>
   <select id="findByExeMachineNo" resultMap="BaseResultMap">
     select
