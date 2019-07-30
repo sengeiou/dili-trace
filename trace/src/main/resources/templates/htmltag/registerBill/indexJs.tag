@@ -114,5 +114,8 @@
     function openWin(url){
         $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
     }
+    function openInsert(){
+        location.href = '/registerBill/create.html';
+    }
 
 </script>

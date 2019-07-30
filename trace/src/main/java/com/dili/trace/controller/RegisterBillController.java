@@ -80,4 +80,14 @@ public class RegisterBillController {
         registerBillService.delete(id);
         return BaseOutput.success("删除成功");
     }
+
+    /**
+     * 登记单录入页面
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value="/create.html")
+    public String create(ModelMap modelMap) {
+        return "registerBill/create";
+    }
 }
