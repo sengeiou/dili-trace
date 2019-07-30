@@ -6,11 +6,15 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.BaseBillParam;
 import com.dili.trace.dto.ProductParam;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.RegisterBillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,6 +38,7 @@ public class RegisterBillController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillController.class);
     @Autowired
     RegisterBillService registerBillService;
+    private static HashMap NAME_RESUBMIT=new HashMap();
 
     @ApiOperation("跳转到RegisterBill页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
@@ -59,14 +65,23 @@ public class RegisterBillController {
     }
 
     @ApiOperation("新增RegisterBill")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="RegisterBill", paramType="form", value = "RegisterBill的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(BaseBillParam baseBillParam,ProductParam productParam) {
-        LOGGER.info("base:"+baseBillParam.toString()+",product:"+productParam.toString());
-        RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
-        registerBillService.insertSelective(registerBill);
+    @RequestMapping(value="/insert.action", method = RequestMethod.POST)
+    public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
+        LOGGER.info("保存登记单数据:"+registerBills.size());
+        String customerName = registerBills.get(0).getName();
+        if(NAME_RESUBMIT.get(customerName)!=null){
+            Long time = (Long) NAME_RESUBMIT.get(customerName);
+            if(System.currentTimeMillis()-time<3000){
+                LOGGER.error("有重复提交的数据"+customerName);
+                return BaseOutput.failure("请勿重复提交");
+            }
+        }
+        NAME_RESUBMIT.put(customerName,System.currentTimeMillis());
+        //RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+        for(RegisterBill registerBill :registerBills){
+            registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+            registerBillService.createRegisterBill(registerBill);
+        }
         return BaseOutput.success("新增成功");
     }
 

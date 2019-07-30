@@ -2,8 +2,6 @@
 
 
 <#bodyOrigin>
-
-
 <div class="main-container">
     <div class="topicTop">
         <div class="toppic-title">
@@ -11,15 +9,14 @@
             <button class="btn-greyweak btn-sm topic-back-btn">返回</button>
         </div>
     </div>
-    <form id="createRecord" action="/registerBill/insert.action" method="post">
     <div class="form-box border">
 
-        <form class="form-inline" role="form">
+        <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
-                    <select class="form-control input-sm" name="registerSource" required>
+                    <select class="form-control input-sm" name="registerSource" id="registerSource" required>
                         <option value="1">理货区</option>
                         <option value="2">交易区</option>
                     </select>
@@ -27,16 +24,16 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>理货区号</label>
-                    <input type="text" class="form-control input-sm" name="tallyAreaNo" required />
+                    <input type="text" class="form-control input-sm" name="tallyAreaNo" id="tallyAreaNo" required />
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
-                    <input type="text" class="form-control input-sm" name="plate" required />
+                    <input type="text" class="form-control input-sm" name="plate" id="plate" required />
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">交易卡号</label>
-                    <input type="text" class="form-control input-sm" name="userId" />
+                    <input type="text" class="form-control input-sm" name="userId" id="userId"/>
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">印刷卡号</label>
@@ -46,16 +43,16 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
-                    <input type="text" class="form-control input-sm" name="name" required />
+                    <input type="text" class="form-control input-sm" name="name" id="name" required />
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>身份证号</label>
-                    <input name="idCardNo" type="text" class="form-control input-sm isIdCard0" required />
+                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm isIdCard0" required />
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" class="form-control" cols="70" rows="1" maxlength="50" required></textarea>
+                    <textarea name="addr" id="addr" class="form-control" cols="70" rows="1" maxlength="50" required></textarea>
                 </div>
             </div>
 
@@ -64,6 +61,7 @@
                 <button type="button" class="btn-main2 btn-sm" id="addGoodsItem">添加货品</button>
                 <div class="table-showlist" style="width: 1200px">
                     <table class="table table-bordered" id="goodsTable">
+                        <thead>
                         <tr>
                             <th><span class="red">&lowast;</span>商品名称</th>
                             <th><span class="red">&lowast;</span>产地</th>
@@ -71,22 +69,23 @@
                             <th>产地证明</th>
                             <th>操作</th>
                         </tr>
+                        </thead>
                         <tr>
                             <td>
                                 <div class="form-group">
                                     <input type="text" id="productName" name="productName" class="form-control input-sm" required />
-                                    <input type="text" name="productId" hidden />
+                                    <input type="text" name="productId" hidden value="123"/>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
                                     <input type="text" id="originName" name="originName" class="form-control input-sm" required />
-                                    <input type="text" name="originId" hidden />
+                                    <input type="text" name="originId" hidden value="333"/>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <input type="text" class="form-control input-sm" required />
+                                    <input type="text" name="weight" class="form-control input-sm" required />
                                 </div>
                             </td>
                             <td>
@@ -96,6 +95,7 @@
                                             <a href="javascript:;" class="edit-zoom">放大</a>
                                             <input type="file" name="image" class="form-control input-sm choose-image" accept="image/*">
                                             <img src="" alt="" class="show-image">
+                                            <input type="hidden" name="originCertifiyUrl" value="http://123">
                                         </div>
                                     </div>
                                 </div>
@@ -127,10 +127,8 @@
         <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
         <button class="btn-greyweak btn-sm">取消</button>
     </div>
-    </form>
 </div>
-
-
+<#registerBill_createJs />
 </#bodyOrigin>
 
 
@@ -138,19 +136,19 @@
     <tr>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm" name="productName{{index}}" required />
-                <input type="text" name="productId" hidden />
+                <input type="text" class="form-control input-sm" name="productName" required />
+                <input type="text" name="productId" hidden value="1234"/>
             </div>
         </td>
         <td>
             <div class="form-group">
                 <input type="text" id="originName" name="originName" class="form-control input-sm" required />
-                <input type="text" name="originId{{index}}" hidden value="32" />
+                <input type="text" name="originId" hidden value="32" />
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm" name="weight{{index}}" required />
+                <input type="text" class="form-control input-sm" name="weight" required />
             </div>
         </td>
         <td>
@@ -158,7 +156,7 @@
                 <div class="form-group">
                     <div class="imageUpload rectangle">
                         <a href="javascript:;" class="edit-zoom">放大</a>
-                        <input type="file" name="image{{index}}" class="form-control input-sm choose-image" accept="image/*">
+                        <input type="file" name="image" class="form-control input-sm choose-image" accept="image/*">
                         <img src="" alt="" class="show-image">
                         <input type="hidden" name="originCertifiyUrl" value="http://123">
                     </div>
