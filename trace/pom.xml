@@ -20,6 +20,7 @@
         <!--  XML生成路径  -->
         <targetResourcesProject>${basedir}/src/main/resources</targetResourcesProject>
         <targetXMLPackage>mapper</targetXMLPackage>
+        <start-class>com.dili.TraceWebApplication</start-class>
     </properties>
 
     <!-- 父工程定义 -->
@@ -92,6 +93,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.1.4.RELEASE</version>
+                <configuration>
+					<mainClass>${start-class}</mainClass>
+				</configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -184,6 +188,10 @@
             <version>1.5.16</version>
         </dependency>
 
+		<dependency>
+		    <groupId>com.microsoft.sqlserver</groupId>
+		    <artifactId>mssql-jdbc</artifactId>
+		</dependency>
     </dependencies>
 
 
