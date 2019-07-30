@@ -94,9 +94,9 @@ public interface RegisterBill extends IBaseDomain {
     @Column(name = "`state`")
     @FieldDef(label="1.待审核 2.待采样 3.已采样 4.待检测 5.检测中 6.已检测 7.复检中")
     @EditMode(editor = FieldEditor.Number, required = true)
-    Boolean getState();
+    Integer getState();
 
-    void setState(Boolean state);
+    void setState(Integer state);
 
     @Column(name = "`sales_type`")
     @FieldDef(label="1.分销 2.全销")

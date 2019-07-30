@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.service.RegisterBillService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -37,7 +38,7 @@ public class RegisterBillController {
 		@ApiImplicitParam(name="RegisterBill", paramType="form", value = "RegisterBill的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<RegisterBill> list(RegisterBill registerBill) {
+    public @ResponseBody List<RegisterBill> list(RegisterBillDto registerBill) {
         return registerBillService.list(registerBill);
     }
 
@@ -46,7 +47,7 @@ public class RegisterBillController {
 		@ApiImplicitParam(name="RegisterBill", paramType="form", value = "RegisterBill的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(RegisterBill registerBill) throws Exception {
+    public @ResponseBody String listPage(RegisterBillDto registerBill) throws Exception {
         return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
     }
 

@@ -7,6 +7,7 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/api/detect")
+@Api(value ="/api/detect", description = "检测任务相关接口")
 public class DetectRecordApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectRecordApi.class);
     @Autowired
@@ -74,6 +76,9 @@ public class DetectRecordApi {
     public BaseOutput<List<RegisterBill>> getDetectTask( @PathVariable String exeMachineNo,  @PathVariable Integer taskCount){
         TaskGetParam taskGetParam = new TaskGetParam();
         taskGetParam.setExeMachineNo(exeMachineNo);
+        if(taskCount>30){
+            taskCount=30;
+        }
         taskGetParam.setPageSize(taskCount);
         LOGGER.info("获取检查任务:" + JSON.toJSONString(taskGetParam));
         List<RegisterBill> registerBills=registerBillService.findByExeMachineNo(taskGetParam.getExeMachineNo(), taskGetParam.getPageSize());

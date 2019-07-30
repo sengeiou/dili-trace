@@ -23,8 +23,8 @@ import java.util.List;
  * Created by laikui on 2019/7/26.
  */
 @RestController
-@RequestMapping(value = "/api1/bill")
-@Api(value ="/api1/bill", description = "登记单相关接口")
+@RequestMapping(value = "/api/bill")
+@Api(value ="/api/bill", description = "登记单相关接口")
 public class RegisterBillApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillApi.class);
     @Autowired
