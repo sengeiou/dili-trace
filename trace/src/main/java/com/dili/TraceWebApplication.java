@@ -18,8 +18,8 @@ import com.dili.ss.retrofitful.annotation.RestfulScan;
 @SpringBootApplication
 //处理事务支持
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
-@ComponentScan(basePackages={"com.dili.ss","com.dili.trace","com.dili.common"})
+@MapperScan(basePackages = {"com.dili.trace.dao","com.dili.trace.etrade.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
+@ComponentScan(basePackages={"com.dili.ss","com.dili.trace","com.dili.trace.etrade","com.dili.common"})
 @RestfulScan({"com.dili.trace.rpc"})
 @Import(DynamicRoutingDataSourceRegister.class)
 @EnableScheduling
