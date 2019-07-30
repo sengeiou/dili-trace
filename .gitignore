@@ -2,3 +2,15 @@
 */target/
 *.iml
 *.log
+/.project
+/.settings
+/.classpath
+
+**/.project
+**/.settings
+**/.classpath
+
+*/.idea/
+*/target/
+*/*.iml
+*/*.log
