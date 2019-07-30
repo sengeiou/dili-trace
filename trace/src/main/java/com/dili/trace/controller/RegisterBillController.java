@@ -1,7 +1,10 @@
 package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.BaseBillParam;
+import com.dili.trace.dto.ProductParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.service.RegisterBillService;
 import io.swagger.annotations.Api;
@@ -9,6 +12,9 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/registerBill")
 public class RegisterBillController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillController.class);
     @Autowired
     RegisterBillService registerBillService;
 
@@ -56,7 +63,9 @@ public class RegisterBillController {
 		@ApiImplicitParam(name="RegisterBill", paramType="form", value = "RegisterBill的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(RegisterBill registerBill) {
+    public @ResponseBody BaseOutput insert(BaseBillParam baseBillParam,ProductParam productParam) {
+        LOGGER.info("base:"+baseBillParam.toString()+",product:"+productParam.toString());
+        RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
         registerBillService.insertSelective(registerBill);
         return BaseOutput.success("新增成功");
     }
