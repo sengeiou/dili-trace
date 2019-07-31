@@ -27,12 +27,19 @@ public interface SeparateSalesRecord extends IBaseDomain {
 
     void setId(Long id);
 
-    @Column(name = "`sales_customer_name`")
-    @FieldDef(label="salesCustomerName", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getSalesCustomerName();
+    @Column(name = "`sales_user_id`")
+    @FieldDef(label="salesUserId")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getSalesUserId();
 
-    void setSalesCustomerName(String salesCustomerName);
+    void setSalesUserId(Long salesUserId);
+
+    @Column(name = "`sales_user_name`")
+    @FieldDef(label="salesUserName", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getSalesUserName();
+
+    void setSalesUserName(String salesUserName);
 
     @Column(name = "`sales_city_id`")
     @FieldDef(label="salesCityId")
