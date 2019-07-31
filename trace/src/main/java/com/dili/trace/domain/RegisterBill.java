@@ -4,6 +4,9 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import com.dili.trace.glossary.BillDetectStateEnum;
+import com.dili.trace.glossary.RegisterBillStateEnum;
+
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -97,6 +100,13 @@ public interface RegisterBill extends IBaseDomain {
     Integer getState();
 
     void setState(Integer state);
+    @Transient
+    default String getStateName(){
+        if(getState()==null){
+            return "";
+        }
+        return RegisterBillStateEnum.getEnabledState(getState()).getName();
+    }
 
     @Column(name = "`sales_type`")
     @FieldDef(label="1.分销 2.全销")
@@ -140,12 +150,12 @@ public interface RegisterBill extends IBaseDomain {
 
     void setOriginId(Long originId);
 
-    @Column(name = "`orinin_name`")
-    @FieldDef(label="orininName", maxLength = 20)
+    @Column(name = "`origin_name`")
+    @FieldDef(label="originName", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
-    String getOrininName();
+    String getOriginName();
 
-    void setOrininName(String orininName);
+    void setOriginName(String originName);
 
     @Column(name = "`weight`")
     @FieldDef(label="weight")
@@ -160,6 +170,13 @@ public interface RegisterBill extends IBaseDomain {
     Integer getDetectState();
 
     void setDetectState(Integer detectState);
+    @Transient
+    default String getDetectStateName(){
+        if(getDetectState()==null){
+            return "";
+        }
+        return BillDetectStateEnum.getEnabledState(getDetectState()).getName();
+    }
 
     @Column(name = "`latest_detect_record_id`")
     @FieldDef(label="latestDetectRecordId")
@@ -204,5 +221,7 @@ public interface RegisterBill extends IBaseDomain {
     void setModified(Date modified);
 
     List<SeparateSalesRecord> getSeparateSalesRecords();
-    void setSeparateSalesRecords(List<SeparateSalesRecord> SeparateSalesRecord);
+    void setSeparateSalesRecords(List<SeparateSalesRecord> separateSalesRecords);
+    List<SeparateSalesRecord> getDetectRecord();
+    void setDetectRecord(DetectRecord detectRecord);
 }

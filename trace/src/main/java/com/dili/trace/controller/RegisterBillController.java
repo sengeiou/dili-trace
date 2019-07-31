@@ -2,12 +2,16 @@ package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.BaseBillParam;
 import com.dili.trace.dto.ProductParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,10 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -38,6 +39,11 @@ public class RegisterBillController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillController.class);
     @Autowired
     RegisterBillService registerBillService;
+    @Autowired
+    SeparateSalesRecordService separateSalesRecordService;
+    @Autowired
+    DetectRecordService detectRecordService;
+
     private static HashMap NAME_RESUBMIT=new HashMap();
 
     @ApiOperation("跳转到RegisterBill页面")
@@ -72,7 +78,7 @@ public class RegisterBillController {
         if(NAME_RESUBMIT.get(customerName)!=null){
             Long time = (Long) NAME_RESUBMIT.get(customerName);
             if(System.currentTimeMillis()-time<3000){
-                LOGGER.error("有重复提交的数据"+customerName);
+                LOGGER.error("有重复提交的数据" + customerName);
                 return BaseOutput.failure("请勿重复提交");
             }
         }
@@ -113,5 +119,22 @@ public class RegisterBillController {
     @RequestMapping(value="/create.html")
     public String create(ModelMap modelMap) {
         return "registerBill/create";
+    }
+    /**
+     * 登记单录入页面
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value="/view.html", method = RequestMethod.GET)
+    public String create(ModelMap modelMap,@RequestParam Long id) {
+        RegisterBill registerBill= registerBillService.get(id);
+        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
+        registerBill.setSeparateSalesRecords(records);
+        DetectRecord detectRecord =detectRecordService.findByRegisterBillCode(registerBill.getCode());
+        if(detectRecord!=null){
+            registerBill.setDetectRecord(detectRecord);
+        }
+        modelMap.put("registerBill",registerBill);
+        return "registerBill/view";
     }
 }
