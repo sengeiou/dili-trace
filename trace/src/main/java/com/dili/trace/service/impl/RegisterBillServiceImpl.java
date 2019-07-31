@@ -6,7 +6,10 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
+import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.RegisterBillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,5 +100,64 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         matchDetectParam.setStart(start);
         Long id = getActualDao().findMatchDetectBind(matchDetectParam);
         return getActualDao().matchDetectBind(tradeNo,id);
+    }
+
+    @Override
+    public int auditRegisterBill(Long id,Boolean pass) {
+        RegisterBill registerBill =get(id);
+        if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()){
+            if(pass){
+                registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
+            }else {
+                registerBill.setState(RegisterBillStateEnum.NO_PASS.getCode().intValue());
+            }
+            return update(registerBill);
+        }
+        return 0;
+    }
+
+    @Override
+    public int undoRegisterBill(Long id) {
+        RegisterBill registerBill =get(id);
+        if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()){
+            registerBill.setState(RegisterBillStateEnum.UNDO.getCode().intValue());
+            return update(registerBill);
+        }
+        return 0;
+    }
+
+    @Override
+    public int autoCheckRegisterBill(Long id) {
+        RegisterBill registerBill =get(id);
+        if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()){
+            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
+            registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
+            return update(registerBill);
+        }
+        return 0;
+    }
+
+    @Override
+    public int samplingCheckRegisterBill(Long id) {
+        RegisterBill registerBill =get(id);
+        if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()){
+            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
+            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
+            return update(registerBill);
+        }
+        return 0;
+    }
+
+    @Override
+    public int reviewCheckRegisterBill(Long id) {
+        RegisterBill registerBill =get(id);
+        if(registerBill.getState().intValue()== RegisterBillStateEnum.ALREADY_CHECK.getCode().intValue()
+                && registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()){
+            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
+            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
+            registerBill.setExeMachineNo(null);
+            return update(registerBill);
+        }
+        return 0;
     }
 }

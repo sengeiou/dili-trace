@@ -65,17 +65,44 @@
                 }
             },
             {
-                iconCls:'icon-edit',
-                text:'修改',
+                iconCls:'icon-detail',
+                text:'审核',
+                id:'audit',
                 handler:function(){
-                    openUpdate();
+                    audit();
+                }
+            },
+            {
+                iconCls:'icon-detail',
+                text:'复检',
+                id:'review',
+                handler:function(){
+                    reviewCheck();
+                }
+            },
+            {
+                iconCls:'icon-detail',
+                text:'主动送检',
+                id:'auto',
+                handler:function(){
+                    autoCheck();
+                }
+            },
+            {
+                iconCls:'icon-detail',
+                text:'采样检测',
+                id:'sampling',
+                handler:function(){
+                    samplingCheck();
                 }
             },
             {
                 iconCls:'icon-remove',
-                text:'删除',
+                text:'撤销',
+                id:'undo',
+                handler:undo,
                 handler:function(){
-                    del();
+                    undo();
                 }
             },
             {
@@ -94,7 +121,14 @@
      * 目前用于来判断 启禁用是否可点
      */
     function onClickRow(index,row) {
-
+        var state = row.$_state;
+        if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
+            //接车状态是“已打回”,启用“撤销打回”操作
+            $('#undo').linkbutton('enable');
+        }else{
+            //按钮不可用
+            $('#undo').linkbutton('disable');
+        }
     }
 
     function blankFormatter(val,row){
@@ -124,11 +158,230 @@
                 title: '警告',
                 text: '请选中一条数据',
                 type: 'warning',
-                width: 300,
+                width: 300
             });
             return;
         }
         location.href ='/registerBill/view/' + selected.id;
+    }
+    function audit(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        openWin('/registerBill/audit/' + selected.id)
+    }
+    function autoCheck() {
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+        swal({
+            title: "请确认是否主动送检？",
+            type: 'question',
+            showCancelButton: true,
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if(result.value){
+            $.ajax({
+                type: "GET",
+                url: "${contextPath}/registerBill/autoCheck/"+ selected.id,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (ret) {
+                    if(ret.success){
+                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
+                        _registerBillGrid.datagrid("reload");
+                        $('#undo').linkbutton('disable');
+                    }else{
+                        swal(
+                                '错误',
+                                ret.result,
+                                'error'
+                        );
+                    }
+                },
+                error: function(){
+                    swal(
+                            '错误',
+                            '远程访问失败',
+                            'error'
+                    );
+                }
+            });
+        }
+    });
+    }
+
+    function samplingCheck() {
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+        swal({
+            title: "请确认是否采样检测？",
+            type: 'question',
+            showCancelButton: true,
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if(result.value){
+            $.ajax({
+                type: "GET",
+                url: "${contextPath}/registerBill/samplingCheck/"+ selected.id,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (ret) {
+                    if(ret.success){
+                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
+                        _registerBillGrid.datagrid("reload");
+                        $('#undo').linkbutton('disable');
+                    }else{
+                        swal(
+                                '错误',
+                                ret.result,
+                                'error'
+                        );
+                    }
+                },
+                error: function(){
+                    swal(
+                            '错误',
+                            '远程访问失败',
+                            'error'
+                    );
+                }
+            });
+        }
+    });
+    }
+
+    function reviewCheck() {
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+        swal({
+            title: "请确认是否复检？",
+            type: 'question',
+            showCancelButton: true,
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if(result.value){
+            $.ajax({
+                type: "GET",
+                url: "${contextPath}/registerBill/reviewCheck/"+ selected.id,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (ret) {
+                    if(ret.success){
+                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
+                        _registerBillGrid.datagrid("reload");
+                        $('#undo').linkbutton('disable');
+                    }else{
+                        swal(
+                                '错误',
+                                ret.result,
+                                'error'
+                        );
+                    }
+                },
+                error: function(){
+                    swal(
+                            '错误',
+                            '远程访问失败',
+                            'error'
+                    );
+                }
+            });
+        }
+    });
+    }
+    function undo() {
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+        swal({
+            title: "请确认是否撤销？",
+            type: 'question',
+            showCancelButton: true,
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if(result.value){
+            $.ajax({
+                type: "GET",
+                url: "${contextPath}/registerBill/undo/"+ selected.id,
+                processData:true,
+                dataType: "json",
+                async : true,
+                success: function (ret) {
+                    if(ret.success){
+                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
+                        _registerBillGrid.datagrid("reload");
+                        $('#undo').linkbutton('disable');
+                    }else{
+                        swal(
+                                '错误',
+                                ret.result,
+                                'error'
+                        );
+                    }
+                },
+                error: function(){
+                    swal(
+                            '错误',
+                            '远程访问失败',
+                            'error'
+                    );
+                }
+            });
+        }
+    });
     }
 
 </script>
