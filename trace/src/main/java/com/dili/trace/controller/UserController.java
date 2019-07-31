@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -46,7 +47,7 @@ public class UserController {
 		@ApiImplicitParam(name="User", paramType="form", value = "User的form信息", required = false, dataType = "string")
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(User user) throws Exception {
+    public @ResponseBody String listPage(UserListDto user) throws Exception {
         return userService.listEasyuiPageByExample(user, true).toString();
     }
 
