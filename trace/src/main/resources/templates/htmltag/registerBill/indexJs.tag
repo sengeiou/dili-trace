@@ -79,10 +79,10 @@
                 }
             },
             {
-                iconCls:'icon-export',
-                text:'导出',
+                iconCls:'icon-detail',
+                text:'查看',
                 handler:function(){
-                    doExport('grid');
+                    doDetail();
                 }
             }
         ]
@@ -116,6 +116,19 @@
     }
     function openInsert(){
         location.href = '/registerBill/create.html';
+    }
+    function doDetail(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+        location.href ='/registerBill/view/' + selected.id;
     }
 
 </script>

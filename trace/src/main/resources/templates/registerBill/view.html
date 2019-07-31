@@ -1,0 +1,193 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="topicTop">
+        <div class="toppic-title">
+            <span class="topic-title-text maincolor">货品信息详情</span>
+            <button class="btn-greyweak btn-sm topic-back-btn">返回</button>
+        </div>
+    </div>
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+                <h4 class="form-item-title">基础信息</h4>
+               <!-- <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
+                    <%if(registerBill.registerSource==1){%>
+                    理货区
+                    <%}else{%>交易区<%}%>
+                </div>-->
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记时间</label>
+                    <!--<%if(null!= registerBill.created){%>
+                    ${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}
+                    <%}else{%>
+                    -
+                    <%}%>-->
+                    <input class="form-control input-sm" value="<%if(null!= registerBill.created){%>${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.code}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>操作人</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.operatorName}"  readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>理货区号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>业户姓名</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.name}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.plate}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>商品名称</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.productName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>产地</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.originName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>重量/KG</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.weight}" required readonly/>
+                </div>
+               <!-- <div class="form-group" style="display: none;">
+                    <label class="label-title text-right">交易账号</label>
+                    <input type="text" class="form-control input-sm" name="userId" id="userId"  value="${registerBill.userId}" readonly/>
+                </div>-->
+                <!--<br>
+
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>身份证号</label>
+                    <input name="idCardNo"  type="text" class="form-control input-sm isIdCard0" value="${registerBill.idCardNo}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
+                    <textarea name="addr" class="form-control" cols="70" rows="1" maxlength="50" required readonly value="${registerBill.addr}"></textarea>
+                </div>-->
+            </div>
+            <div class="form-item-group">
+                <h4 class="form-item-title">检测信息</h4>
+                <!-- <div class="form-group">
+                     <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
+                     <%if(registerBill.registerSource==1){%>
+                     理货区
+                     <%}else{%>交易区<%}%>
+                 </div>-->
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
+                    <input class="form-control input-sm" value="<%if(null!= registerBill.latestDetectTime){%>${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测编号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.code}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.stateName}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.detectStateName}" required readonly/>
+                </div>
+                <%
+                var detectRecord = registerBill.detectRecord;
+                %>
+
+                <div class="form-group" >
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测数值</label>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.detectRecord.pdResult}" readonly/>
+                </div>
+                <div class="form-group" >
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测人员</label>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.detectRecord.detectOperator}" readonly/>
+                </div>
+
+            </div>
+
+            <%
+            var separateSalesRecords = registerBill.separateSalesRecords;
+            if(separateSalesRecords.~size>0){%>
+            <div class="form-item-group">
+                <h4 class="form-item-title">分销信息</h4>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered" id="goodsTable">
+                        <thead>
+                        <tr>
+                            <th><span class="red">&lowast;</span>分销客户</th>
+                            <th><span class="red">&lowast;</span>分销地</th>
+                            <th><span class="red">&lowast;</span>分销重量/KG</th>
+                            <th>溯源二维码</th>
+                        </tr>
+                        </thead>
+                        <%for(record in separateSalesRecords){
+                        %>
+                        <tr>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-sm" value="${record.salesUserName!}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text"  class="form-control input-sm" value="${record.salesCityName!}" required readonly />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control input-sm" value="${record.salesWeight}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="imageUploadWrap">
+                                    <div class="form-group">
+                                        <div class="imageUpload rectangle">
+                                            <a href="javascript:;" class="edit-zoom">放大</a>
+                                            <input type="file" name="image" class="form-control input-sm choose-image" accept="image/*">
+                                            <img src="" alt="" class="show-image">
+                                            <input type="hidden" name="originCertifiyUrl" value="http://123">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <%}
+                        %>
+                    </table>
+                    <!-- 表格后的统计 end -->
+                </div>
+            </div>
+            <%}%>
+        </form>
+    </div>
+
+</div>
+</#bodyOrigin>
+
+
+
+
+
+<script>
+
+
+
+
+
+</script>

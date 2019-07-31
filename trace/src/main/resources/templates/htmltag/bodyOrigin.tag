@@ -10,7 +10,7 @@
     <meta name="description" content="智能流通管理系统" />
     <meta name="author" content="农丰时代科技有限公司">
     <link rel="stylesheet" href="/resources/assets/dep/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/resources/assets/dep/bootstrap/css/bootstrap-datetimepicker.min.css" />
+
     <link rel="stylesheet" href="/resources/assets/css/widget/tmsBaseCommon.css" />
     <link rel="stylesheet" href="https://cdn.bootcss.com/limonte-sweetalert2/7.28.5/sweetalert2.min.css">
 </head>
