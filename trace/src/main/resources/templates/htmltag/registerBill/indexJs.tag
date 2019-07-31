@@ -128,7 +128,7 @@
             });
             return;
         }
-        location.href ='/registerBill/view.html?id=' + selected.id;
+        location.href ='/registerBill/view/' + selected.id;
     }
 
 </script>

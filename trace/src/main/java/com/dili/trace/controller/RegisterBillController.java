@@ -125,15 +125,18 @@ public class RegisterBillController {
      * @param modelMap
      * @return
      */
-    @RequestMapping(value="/view.html", method = RequestMethod.GET)
-    public String create(ModelMap modelMap,@RequestParam Long id) {
+    @RequestMapping(value="/view/{id}", method = RequestMethod.GET)
+    public String create(ModelMap modelMap,@PathVariable Long id) {
         RegisterBill registerBill= registerBillService.get(id);
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
         registerBill.setSeparateSalesRecords(records);
         DetectRecord detectRecord =detectRecordService.findByRegisterBillCode(registerBill.getCode());
-        if(detectRecord!=null){
-            registerBill.setDetectRecord(detectRecord);
+        if(detectRecord==null){
+            detectRecord = DTOUtils.newDTO(DetectRecord.class);
+            detectRecord.setPdResult("");
+            detectRecord.setDetectOperator("");
         }
+        registerBill.setDetectRecord(detectRecord);
         modelMap.put("registerBill",registerBill);
         return "registerBill/view";
     }

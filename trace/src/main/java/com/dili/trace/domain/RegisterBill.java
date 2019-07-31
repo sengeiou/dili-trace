@@ -220,8 +220,22 @@ public interface RegisterBill extends IBaseDomain {
 
     void setModified(Date modified);
 
+    @Column(name = "`operator_name`")
+    @FieldDef(label="operatorName")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getOperatorName();
+
+    void setOperatorName(String operatorName);
+
+    @Column(name = "`operator_id`")
+    @FieldDef(label="operatorId")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getOperatorId();
+
+    void setOperatorId(Long operatorId);
+
     List<SeparateSalesRecord> getSeparateSalesRecords();
     void setSeparateSalesRecords(List<SeparateSalesRecord> separateSalesRecords);
-    List<SeparateSalesRecord> getDetectRecord();
+    DetectRecord getDetectRecord();
     void setDetectRecord(DetectRecord detectRecord);
 }
