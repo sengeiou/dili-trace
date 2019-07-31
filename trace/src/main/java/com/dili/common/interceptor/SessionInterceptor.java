@@ -4,7 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.SessionContext;
-import com.dili.common.service.RedisService;
+import com.dili.ss.redis.service.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,11 +18,11 @@ import java.util.Map;
 public class SessionInterceptor extends HandlerInterceptorAdapter {
     private static final String ATTRIBUTE_CONTEXT_INITIALIZED=SessionInterceptor.class.getName()+".CONTEXT_INITIALIZED";
 
-    private static final String prefix="GUAR_SESSION_";
+    private static final String prefix="TRACE_SESSION_";
     @Resource
     private SessionContext sessionContext;
     @Resource
-    private RedisService redisService;
+    private RedisUtil redisUtil;
     @Resource
     private DefaultConfiguration defaultConfiguration;
     @Override
@@ -57,24 +57,24 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     private void saveSession(HttpServletResponse response) {
         String sessionId=sessionContext.getSessionId();
         if(!StrUtil.isBlank(sessionId)){
-            redisService.set(prefix+sessionId,sessionContext.getMap(),defaultConfiguration.getSessionExpire());
+            redisUtil.set(prefix+sessionId,sessionContext.getMap(),defaultConfiguration.getSessionExpire());
         }
     }
 
     private void deleteSession(HttpServletResponse response, HttpServletRequest request) {
         String sessionId=sessionContext.getSessionId();
         if(!StrUtil.isBlank(sessionId)){
-            redisService.del(prefix+sessionId);
+            redisUtil.remove(prefix+sessionId);
         }
     }
 
     private void loadData(String sessionId){
         sessionContext.setSessionId(sessionId);
-        Map<String,Object> map=(Map<String, Object>) redisService.get(prefix+sessionId);
+        Map<String,Object> map=(Map<String, Object>) redisUtil.get(prefix+sessionId);
         if(MapUtil.isEmpty(map)){
             return;
         }
-        long expire=redisService.getExpire(prefix+sessionId)*1000;
+        long expire=redisUtil.getRedisTemplate().getExpire(prefix+sessionId)*1000;
         sessionContext.setMillis(expire);
         sessionContext.setMap(map);
     }
