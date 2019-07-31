@@ -12,6 +12,7 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.TradeTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -43,6 +44,9 @@ public class RegisterBillController {
     SeparateSalesRecordService separateSalesRecordService;
     @Autowired
     DetectRecordService detectRecordService;
+    @Autowired
+    TradeTypeService tradeTypeService;
+
 
     private static HashMap NAME_RESUBMIT=new HashMap();
 
@@ -118,6 +122,7 @@ public class RegisterBillController {
      */
     @RequestMapping(value="/create.html")
     public String create(ModelMap modelMap) {
+        modelMap.put("tradeTypes",tradeTypeService.findAll());
         return "registerBill/create";
     }
     /**
@@ -140,4 +145,36 @@ public class RegisterBillController {
         modelMap.put("registerBill",registerBill);
         return "registerBill/view";
     }
+    @RequestMapping(value="/audit/{id}", method = RequestMethod.GET)
+    public String audit(ModelMap modelMap,@PathVariable Long id) {
+        modelMap.put("registerBill",registerBillService.get(id));
+        return "registerBill/audit";
+    }
+
+    @RequestMapping(value="/audit/{id}/{pass}", method = RequestMethod.GET)
+    public @ResponseBody BaseOutput audit(@PathVariable Long id,@PathVariable Boolean pass) {
+        registerBillService.auditRegisterBill(id,pass);
+        return BaseOutput.success("操作成功");
+    }
+    @RequestMapping(value="/undo/{id}", method = RequestMethod.GET)
+    public @ResponseBody BaseOutput undo(@PathVariable Long id) {
+        registerBillService.undoRegisterBill(id);
+        return BaseOutput.success("操作成功");
+    }
+    @RequestMapping(value="/autoCheck/{id}", method = RequestMethod.GET)
+    public @ResponseBody BaseOutput autoCheck(@PathVariable Long id) {
+        registerBillService.autoCheckRegisterBill(id);
+        return BaseOutput.success("操作成功");
+    }
+    @RequestMapping(value="/samplingCheck/{id}", method = RequestMethod.GET)
+    public @ResponseBody BaseOutput samplingCheck(@PathVariable Long id) {
+        registerBillService.samplingCheckRegisterBill(id);
+        return BaseOutput.success("操作成功");
+    }
+    @RequestMapping(value="/reviewCheck/{id}", method = RequestMethod.GET)
+    public @ResponseBody BaseOutput reviewCheck(@PathVariable Long id) {
+        registerBillService.reviewCheckRegisterBill(id);
+        return BaseOutput.success("操作成功");
+    }
+
 }

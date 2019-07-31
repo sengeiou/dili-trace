@@ -82,10 +82,10 @@ public interface RegisterBill extends IBaseDomain {
 
     @Column(name = "`user_id`")
     @FieldDef(label="用户ID")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getUserId();
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getUserId();
 
-    void setUserId(Long userId);
+    void setUserId(String userId);
 
     @Column(name = "`plate`")
     @FieldDef(label="plate", maxLength = 15)
@@ -114,6 +114,13 @@ public interface RegisterBill extends IBaseDomain {
     Integer getSalesType();
 
     void setSalesType(Integer salesType);
+
+    @Column(name = "`sample_source`")
+    @FieldDef(label="1:采样检测 2:主动送检")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getSampleSource();
+
+    void setSampleSource(Integer sampleSource);
 
     @Column(name = "`detect_report_url`")
     @FieldDef(label="检测报告url", maxLength = 50)
@@ -191,6 +198,14 @@ public interface RegisterBill extends IBaseDomain {
     Date getLatestDetectTime();
 
     void setLatestDetectTime(Date latestDetectTime);
+
+    @Column(name = "`latest_detect_operator`")
+    @FieldDef(label="latestDetectOperator")
+    @EditMode(editor = FieldEditor.Text
+            , required = true)
+    Date getLatestDetectOperator();
+
+    void setLatestDetectOperator(String latestDetectOperator);
 
     @Column(name = "`exe_machine_no`")
     @FieldDef(label="exeMachineNo")

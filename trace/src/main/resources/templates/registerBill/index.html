@@ -116,58 +116,66 @@
                    align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
                 <thead>
                     <tr>
+                        <th width="10%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            登记时间
+                        </th>
                         <th width="10%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             编号
                         </th>
                         <!--<th width="5%"  data-options="field:'registerSource',  _provider:'registerSourceProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                           登记来源
                         </th>-->
-                        <th width="5%" data-options="field:'tallyAreaNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="6%" data-options="field:'tallyAreaNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             交易区号
                         </th>
-                        <th width="5%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="6%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             业户姓名
-                        </th>
-                        <th width="5%" data-options="field:'idCardNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            身份证号
-                        </th>
-                        <th width="5%" data-options="field:'addr',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            地址
-                        </th>
-                        <th width="5%" data-options="field:'tradeNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            交易单号
                         </th>
                         <th width="5%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             车牌
                         </th>
-                        <th width="5%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            单据状态
-                        </th>
-
+                        <!--<th width="8%" data-options="field:'idCardNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            身份证号
+                        </th>-->
                         <th width="5%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             商品名称
-                        </th>
-
-
-                        <th width="5%" data-options="field:'orininName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            产地
                         </th>
                         <th width="5%" data-options="field:'weight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             重量
                         </th>
-                        <th width="5%" data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           检测结果
+                        <!--<th width="10%" data-options="field:'addr',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            地址
+                        </th>-->
+                        <!--<th width="6%" data-options="field:'tradeNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            交易单号
+                        </th>-->
+                        <th width="8%" data-options="field:'orininName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            产地
                         </th>
+
+                        <th width="4%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            状态
+                        </th>
+
 
                         <th width="10%" data-options="field:'latestDetectTime',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             检测时间
                         </th>
+
+
+
+                        <th width="5%" data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           检测结果
+                        </th>
+                        <th width="5%" data-options="field:'latestDetectOperator',   , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            检测员
+                        </th>
+
+
                         <!--<th width="5%" data-options="field:'exeMachineNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             exeMachineNo
                         </th>-->
-                        <th width="10%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            登记时间
-                        </th>
+
 
                    </tr>
                 </thead>

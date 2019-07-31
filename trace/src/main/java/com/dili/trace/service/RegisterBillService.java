@@ -16,4 +16,9 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
     RegisterBill findByCode(String code);
     RegisterBill findByTradeNo(String tradeNo);
     int createRegisterBill(RegisterBill registerBill);
+    int auditRegisterBill(Long id,Boolean pass);
+    int undoRegisterBill(Long id);
+    int autoCheckRegisterBill(Long id);
+    int samplingCheckRegisterBill(Long id);
+    int reviewCheckRegisterBill(Long id);
 }

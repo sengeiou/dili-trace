@@ -7,7 +7,7 @@ package com.dili.trace.glossary;
  *
  * @author yuehongbo
  * @createTime 2018/11/8 18:43
- * 1.待审核 2.待采样 3.已采样 4.待检测 5.检测中 6.已检测 7.复检中
+ * 1.待审核 2.待采样 3.已采样 4.待检测 5.检测中 6.已检测 7.复检中，8.审核未通过,9.撤销
  */
 public enum RegisterBillStateEnum {
 
@@ -18,6 +18,8 @@ public enum RegisterBillStateEnum {
     CHECKING(5, "检测中"),
     ALREADY_CHECK(6, "已检测"),
     REVIEW_CHECK(7, "复检中"),
+    NO_PASS(8, "审核未通过"),
+    UNDO(9, "撤销"),
     ;
 
     private String name;
