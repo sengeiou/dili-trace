@@ -38,6 +38,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         //验证理货区号是否已注册
+        if(existsTaillyAreaNo(user.getTaillyAreaNo())){
+            throw new BusinessException("理货区已存在");
+        }
 
         insertSelective(user);
     }
@@ -112,6 +115,18 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public boolean existsAccount(String phone){
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(phone);
+        query.setYn(YnEnum.YES.getCode());
+        return !CollUtil.isEmpty(listByExample(query));
+    }
+
+    /**
+     * 检测手机号是否存在
+     * @param taillyAreaNo
+     * @return true 存在 false 不存在
+     */
+    public boolean existsTaillyAreaNo(String taillyAreaNo){
+        User query = DTOUtils.newDTO(User.class);
+        query.setTaillyAreaNo(taillyAreaNo);
         query.setYn(YnEnum.YES.getCode());
         return !CollUtil.isEmpty(listByExample(query));
     }
