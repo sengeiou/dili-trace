@@ -42,7 +42,7 @@ public class UserApi {
 
     @ApiOperation(value ="注册【接口已通】", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
-    public BaseOutput<Long> register(@RequestBody User user){
+    public BaseOutput<Long> register(User user){
         try{
             checkRegisterParams(user);
             user.setPassword(MD5Util.md5(user.getPassword()));
