@@ -10,11 +10,17 @@ import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
 public interface QualityTraceTradeBillSyncPointService extends BaseService<QualityTraceTradeBillSyncPoint, Long> {
 	/**
 	 * 同步数据
-	 * @param localMaxBillId
-	 * @param bill
+	 * @param billId
+	 * @param orderId
 	 * @return
 	 */
-	public QualityTraceTradeBill syncData(Long localMaxBillId, QualityTraceTradeBill bill);
+	public QualityTraceTradeBill syncData(Long localMaxBillId, QualityTraceTradeBill bill) ;
+	/**
+	 * 保存同步点
+	 * @param point
+	 * @return
+	 */
+	public QualityTraceTradeBillSyncPoint syncPoint(QualityTraceTradeBillSyncPoint point);
 
 	/**
 	 * 对同步的数据进行修正

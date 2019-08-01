@@ -5,7 +5,7 @@
 		type="com.dili.trace.etrade.domain.VTradeBill">
 		<!-- WARNING - @mbg.generated -->
 		<id column="BillID" jdbcType="BIGINT" property="billID" />
-		<result column="OrderId" jdbcType="VARCHAR" property="orderId" />
+		<result column="orderId" jdbcType="VARCHAR" property="orderId" />
 		<result column="sellerAccount" jdbcType="VARCHAR" property="sellerAccount" />
 		<result column="sellerName" jdbcType="VARCHAR" property="sellerName" />
 		<result column="sellerIDNo" jdbcType="VARCHAR" property="sellerIDNo" />
@@ -43,4 +43,14 @@
 		order by BillID desc
 	</select>
 
+
+<select id="selectRemoteRepeatData" parameterType="com.dili.trace.etrade.domain.dto.VTradeBillQueryDTO" resultType="java.lang.Long">
+		<!-- WARNING - @mbg.generated -->
+		select count(*) as t
+		from VTradeBill
+		where orderId in(
+			select orderId from VTradeBill where billID=#{billID}
+		)
+		group by billID
+	</select>
 </mapper>

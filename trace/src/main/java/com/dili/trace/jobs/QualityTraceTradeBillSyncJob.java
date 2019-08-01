@@ -60,7 +60,7 @@ public class QualityTraceTradeBillSyncJob {
 				} else {
 					// 根据同步点查询并同步数据
 					List<VTradeBill> list = this.selectTopRemoteData(localMaxBillId);
-					if (list.size() == 0) {
+					if (list.isEmpty()) {
 						break;
 					} else {
 						this.syncVTradeBillList(localMaxBillId, list);
@@ -68,8 +68,13 @@ public class QualityTraceTradeBillSyncJob {
 
 				}
 			} else {
+				Long count=this.vTradeBillService.selectRemoteRepeatData(remoteMaxBillId);
+				if(count!=null&&count>1) {
+					this.qualityTraceTradeBillSyncPointService.syncPoint(vTradeBill.buildQualityTraceTradeBillSyncPoint());
+				}else {
+					this.syncVTradeBillList(localMaxBillId, Arrays.asList(vTradeBill));					
+				}
 
-				this.syncVTradeBillList(localMaxBillId, Arrays.asList(vTradeBill));
 			}
 
 		}

@@ -18,6 +18,7 @@ import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
 import com.dili.trace.dto.QualityTraceTradeBillSyncPointDto;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.QualityTraceTradeBillSyncPointService;
+
 @EnableAsync
 @Service
 public class QualityTraceTradeBillSyncPointServiceImpl extends BaseServiceImpl<QualityTraceTradeBillSyncPoint, Long>
@@ -46,6 +47,18 @@ public class QualityTraceTradeBillSyncPointServiceImpl extends BaseServiceImpl<Q
 		}
 
 		return bill;
+	}
+
+	@Transactional
+	@Override
+	public QualityTraceTradeBillSyncPoint syncPoint(QualityTraceTradeBillSyncPoint point) {
+		this.insertSelective(point);
+		// 删除多余同步点
+		QualityTraceTradeBillSyncPointDto example = DTOUtils.newDTO(QualityTraceTradeBillSyncPointDto.class);
+		example.setMinBillId(point.getBillId());
+		this.deleteByExample(example);
+
+		return point;
 	}
 
 	// 对重复数据进行处理

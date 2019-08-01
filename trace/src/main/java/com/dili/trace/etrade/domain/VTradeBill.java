@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
 @Table(name = "VTradeBill")
 public class VTradeBill extends BaseDomain{
 	/**
@@ -210,6 +211,16 @@ public class VTradeBill extends BaseDomain{
 		bill.setSellerIDNo(this.sellerIDNo);
 		bill.setTotalMoney(this.totalMoney.longValue());
 //		bill.setTradeFlowId("");
+		
+		
+		return bill;
+		
+		
+	}
+	public QualityTraceTradeBillSyncPoint buildQualityTraceTradeBillSyncPoint() {
+		QualityTraceTradeBillSyncPoint bill=DTOUtils.newDTO(QualityTraceTradeBillSyncPoint.class);
+		bill.setBillId(this.billID);
+		bill.setOrderId(this.orderId);
 		
 		
 		return bill;
