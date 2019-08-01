@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.etrade.dao.VTradeBillMapper">
+	<resultMap id="BaseResultMap"
+		type="com.dili.trace.etrade.domain.VTradeBill">
+		<!-- WARNING - @mbg.generated -->
+		<id column="BillID" jdbcType="BIGINT" property="billID" />
+		<result column="OrderId" jdbcType="VARCHAR" property="orderId" />
+		<result column="sellerAccount" jdbcType="VARCHAR" property="sellerAccount" />
+		<result column="sellerName" jdbcType="VARCHAR" property="sellerName" />
+		<result column="sellerIDNo" jdbcType="VARCHAR" property="sellerIDNo" />
+		<result column="buyerAccount" jdbcType="VARCHAR" property="buyerAccount" />
+		<result column="buyerName" jdbcType="VARCHAR" property="buyerName" />
+		<result column="buyerIDNo" jdbcType="VARCHAR" property="buyerIDNo" />
+		<result column="orderCreateDate" jdbcType="TIMESTAMP" property="orderCreateDate" />
+		<result column="orderPayDate" jdbcType="TIMESTAMP" property="orderPayDate" />
+		<result column="totalMoney" property="totalMoney" />
+		<result column="productId" jdbcType="VARCHAR" property="productId" />
+		<result column="cateId" jdbcType="VARCHAR" property="cateId" />
+
+		<result column="cateName" jdbcType="VARCHAR" property="cateName" />
+		<result column="price" property="price" />
+		<result column="saleUnit" property="saleUnit" />
+		<result column="ProvinceName" jdbcType="VARCHAR" property="provinceName" />
+
+	</resultMap>
+
+	<select id="selectTopRemoteData"
+		parameterType="com.dili.trace.etrade.domain.dto.VTradeBillQueryDTO"
+		resultMap="BaseResultMap">
+		<!-- WARNING - @mbg.generated -->
+		select top ${rows}
+		*
+		from VTradeBill
+		where BillID>#{minBillID}
+		order by BillID asc
+	</select>
+	<select id="selectRemoteLatestData" resultMap="BaseResultMap">
+		<!-- WARNING - @mbg.generated -->
+		select top 1
+		*
+		from VTradeBill
+		order by BillID desc
+	</select>
+
+</mapper>
