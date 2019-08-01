@@ -38,9 +38,9 @@
                         <div class="search-item">
                             <input class="easyui-numberbox" name="userId" id="userId" style="width:100%" labelAlign="right" data-options="label:'用户ID:', validType:'length[0,19]'" />
                         </div>-->
-                        <div class="search-item">
+                        <!--<div class="search-item">
                             <input class="easyui-textbox" name="plate" id="plate" style="width:100%" labelAlign="right" data-options="label:'车牌:', validType:'length[0,15]'" />
-                        </div>
+                        </div>-->
                         <div class="search-item">
                             <input class="easyui-textbox" name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'单据状态', " />
                             <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部"}' />
@@ -48,9 +48,9 @@
                         <!--<div class="search-item">
                             <input class="easyui-numberbox" name="salesType" id="salesType" style="width:100%" labelAlign="right" data-options="label:'1.分销 2.全销:', validType:'length[0,1]'" />
                         </div>-->
-                        <div class="search-item">
+                        <!--<div class="search-item">
                             <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right" data-options="label:'商品名称:', validType:'length[0,20]'" />
-                        </div>
+                        </div>-->
                        <!-- <div class="search-item">
                             <input class="easyui-numberbox" name="productId" id="productId" style="width:100%" labelAlign="right" data-options="label:'productId:', validType:'length[0,19]'" />
                         </div>-->
@@ -95,9 +95,10 @@
                         <div class="search-item long-item">
                             <select class="easyui-combobox" name="attr" id="attr" style="width:50%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'关键字:'"  labelAlign="right">
                                 <option value="code">登记编号</option>
-                                <option value="plate">车号</option>
+                                <option value="plate">车牌号</option>
                                 <option value="tallyAreaNo">理货区号</option>
                                 <option value="name">业户姓名</option>
+                                <option value="productName">检测员</option>
                                 <option value="latestDetectOperator">检测员</option>
                             </select>
                             <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">

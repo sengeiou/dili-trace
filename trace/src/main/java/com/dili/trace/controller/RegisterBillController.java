@@ -89,6 +89,9 @@ public class RegisterBillController {
                 case "name":
                     registerBill.setName(registerBill.getAttrValue());
                     break;
+                case "productName":
+                    registerBill.setProductName(registerBill.getAttrValue());
+                    break;
             }
         }
         return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
