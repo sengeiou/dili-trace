@@ -3,7 +3,7 @@
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">货品信息详情</span>
-            <button class="btn-greyweak btn-sm topic-back-btn">返回</button>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="returnBack()">返回</button>
         </div>
     </div>
     <div class="form-box border">
@@ -181,13 +181,8 @@
 </#bodyOrigin>
 
 
-
-
-
 <script>
-
-
-
-
-
+    function returnBack(){
+        history.go(-1);
+    }
 </script>

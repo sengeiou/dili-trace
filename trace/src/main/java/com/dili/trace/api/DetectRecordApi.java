@@ -72,7 +72,7 @@ public class DetectRecordApi {
      * @return
      */
     @ApiOperation("获取检测任务")
-    @RequestMapping(value = "/getDetectTask/{exeMachineNo}/{taskCount}",method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getDetectTask/{exeMachineNo}/{taskCount}",method = RequestMethod.POST)
     public BaseOutput<List<RegisterBill>> getDetectTask( @PathVariable String exeMachineNo,  @PathVariable Integer taskCount){
         TaskGetParam taskGetParam = new TaskGetParam();
         taskGetParam.setExeMachineNo(exeMachineNo);

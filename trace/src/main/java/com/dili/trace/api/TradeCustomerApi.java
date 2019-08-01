@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = "/api/trade/customer")
-@Api(value ="/api/detect", description = "检测任务相关接口")
+@Api(value ="/api/trade/customer", description = "交易客户相关接口")
 public class TradeCustomerApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(TradeCustomerApi.class);
     @Autowired
