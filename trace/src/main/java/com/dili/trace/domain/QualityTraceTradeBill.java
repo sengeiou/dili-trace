@@ -167,7 +167,7 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 	void setPrice(Long price);
 
 	@Column(name = "`amount`")
-	@FieldDef(label = "金额(分)")
+	@FieldDef(label = "件数")
 	@EditMode(editor = FieldEditor.Number, required = true)
 	Long getAmount();
 
