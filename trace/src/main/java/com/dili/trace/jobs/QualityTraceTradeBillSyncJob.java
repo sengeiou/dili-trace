@@ -3,32 +3,40 @@ package com.dili.trace.jobs;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.dili.ss.datasource.SwitchDataSource;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.QualityTraceTradeBill;
+import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
+import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
 import com.dili.trace.etrade.domain.VTradeBill;
 import com.dili.trace.etrade.domain.dto.VTradeBillQueryDTO;
 import com.dili.trace.etrade.service.VTradeBillService;
 import com.dili.trace.service.QualityTraceTradeBillService;
-
+import com.dili.trace.service.QualityTraceTradeBillSyncPointService;
+@EnableAsync
 @Component
-public class SyncDataAutoJob {
-	private static final Logger logger = LoggerFactory.getLogger(SyncDataAutoJob.class);
+public class QualityTraceTradeBillSyncJob {
+	private static final Logger logger = LoggerFactory.getLogger(QualityTraceTradeBillSyncJob.class);
 	@Autowired
 	VTradeBillService vTradeBillService;
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
+	@Autowired
+	QualityTraceTradeBillSyncPointService qualityTraceTradeBillSyncPointService;
 
 	// 间隔两分钟同步数据
-	@Scheduled(fixedDelay = 1000L*60L*2L)
+	@Scheduled(fixedDelay = 1000L * 60L * 2L)
 	public void execute() {
 
 		logger.info("===sync data===");
@@ -47,7 +55,7 @@ public class SyncDataAutoJob {
 
 			if (localMaxBillId != null) {
 				if (localMaxBillId >= remoteMaxBillId) {
-					logger.info("数据无需同步 localMaxBillId: {},remoteMaxBillId: {}",localMaxBillId,remoteMaxBillId);
+					logger.info("数据无需同步 localMaxBillId: {},remoteMaxBillId: {}", localMaxBillId, remoteMaxBillId);
 					break;
 				} else {
 					// 根据同步点查询并同步数据
@@ -55,18 +63,20 @@ public class SyncDataAutoJob {
 					if (list.size() == 0) {
 						break;
 					} else {
-						this.syncVTradeBillList(list);
+						this.syncVTradeBillList(localMaxBillId, list);
 					}
 
 				}
 			} else {
 
-				this.syncVTradeBillList(Arrays.asList(vTradeBill));
+				this.syncVTradeBillList(localMaxBillId, Arrays.asList(vTradeBill));
 			}
 
 		}
 
 	}
+
+	
 
 	/**
 	 * 同步数据到mysql数据库
@@ -74,11 +84,11 @@ public class SyncDataAutoJob {
 	 * @param page
 	 * @return
 	 */
-	private boolean syncVTradeBillList(List<VTradeBill> list) {
+	private boolean syncVTradeBillList(Long localMaxBillId, List<VTradeBill> list) {
 		CollectionUtils.emptyIfNull(list).stream().sorted(Comparator.comparing(VTradeBill::getBillID))
 				.forEach(vTradeBill -> {
 
-					this.syncVTradeBill(vTradeBill);
+					this.syncVTradeBill(localMaxBillId, vTradeBill);
 
 				});
 		return true;
@@ -86,17 +96,16 @@ public class SyncDataAutoJob {
 
 	/**
 	 * 同步第一条数据到mysql数据库
-	 *  
-	 *  
+	 * 
+	 * 
 	 * @param page
 	 * @return
 	 */
-	private boolean syncVTradeBill(VTradeBill vTradeBill) {
+	private boolean syncVTradeBill(Long localMaxBillId, VTradeBill vTradeBill) {
 
 		QualityTraceTradeBill bill = vTradeBill.buildQualityTraceTradeBill();
-//		qualityTraceTradeBillService.insertSelective(bill);
-
-		this.qualityTraceTradeBillService.insertSelective(bill);
+		this.qualityTraceTradeBillSyncPointService.syncData(localMaxBillId, bill);
+		this.qualityTraceTradeBillSyncPointService.fixData();
 		return true;
 	}
 
@@ -115,16 +124,18 @@ public class SyncDataAutoJob {
 		return this.vTradeBillService.selectTopRemoteData(example);
 
 	}
+
 	@SwitchDataSource()
 	private Long getLocalMaxBillID() {
-		QualityTraceTradeBill domain=DTOUtils.newDTO(QualityTraceTradeBill.class);
+
+		QualityTraceTradeBillSyncPoint domain = DTOUtils.newDTO(QualityTraceTradeBillSyncPoint.class);
 		domain.setSort("bill_id");
 		domain.setOrder("desc");
 		domain.setPage(1);
 		domain.setRows(1);
-		List<QualityTraceTradeBill>list=this.qualityTraceTradeBillService.listPage(domain).getDatas();
-		return CollectionUtils.isEmpty(list)?null:list.get(0).getBillId();
+		List<QualityTraceTradeBillSyncPoint> list = this.qualityTraceTradeBillSyncPointService.listPageByExample(domain)
+				.getDatas();
+		return CollectionUtils.isEmpty(list) ? null : list.get(0).getBillId();
 	}
-
 
 }

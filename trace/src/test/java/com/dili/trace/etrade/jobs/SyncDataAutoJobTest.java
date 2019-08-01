@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.etrade.domain.VTradeBill;
-import com.dili.trace.jobs.SyncDataAutoJob;
+import com.dili.trace.jobs.QualityTraceTradeBillSyncJob;
 
 public class SyncDataAutoJobTest extends AutoWiredBaseTest{
 	@Autowired
-	SyncDataAutoJob syncDataAutoJob;
+	QualityTraceTradeBillSyncJob syncDataAutoJob;
 	@Test
 	@Transactional(propagation = Propagation.NEVER)
 	public void testexecute() {
