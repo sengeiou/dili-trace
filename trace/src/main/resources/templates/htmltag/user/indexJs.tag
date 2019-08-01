@@ -2,8 +2,13 @@
 
     //打开新增窗口
     function openInsert(){
+        $('#dlg').dialog("setTitle","用户新增");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
+        $('#_name').textbox({disabled:false});
+        $('#_phone').textbox({disabled:false});
+        $('#_cardNo').textbox({disabled:false});
+        $('#_addr').textbox({disabled:false});
         $('#_form').form('clear');
         formFocus("_form", "_userName");
     }
@@ -15,8 +20,13 @@
             swal('警告','请选中一条数据', 'warning');
             return;
         }
+        $('#dlg').dialog("setTitle","用户修改");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
+        $('#_name').textbox({disabled:true});
+        $('#_phone').textbox({disabled:true});
+        $('#_cardNo').textbox({disabled:true});
+        $('#_addr').textbox({disabled:true});
         formFocus("_form", "_userName");
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
