@@ -1,0 +1,49 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>理货区号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>业户姓名</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.name}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.plate}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>商品名称</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.productName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>产地</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.originName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>重量/KG</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.weight}" required readonly/>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="text-center mt30">
+        <button class="btn-main2 btn-sm" onclick="audit()">通过</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm "onclick="audit()">不通过</button>
+    </div>
+</div>
+</#bodyOrigin>
+<script>
+</script>

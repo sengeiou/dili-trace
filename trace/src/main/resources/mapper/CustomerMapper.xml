@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.CustomerMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.Customer">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="customerID" jdbcType="BIGINT" property="customerId" />
+    <result column="Name" jdbcType="VARCHAR" property="name" />
+    <result column="IDNo" jdbcType="VARCHAR" property="idNo" />
+    <result column="Address" jdbcType="VARCHAR" property="address" />
+    <result column="printingCard" jdbcType="VARCHAR" property="printingCard" />
+    <result column="Active" jdbcType="INTEGER" property="active" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, customerID as customerId, Name as name, IDNo AS idNo, Address as address, printingCard, Active as active
+  </sql>
+
+  <select id="findByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer
+    where customerID = #{customerId}
+  </select>
+  <select id="findByPrintingCard" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from customer
+    where printingCard = #{printingCard}
+  </select>
+
+
+
+
+</mapper>
