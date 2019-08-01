@@ -20,7 +20,7 @@
     <result column="product_name" jdbcType="VARCHAR" property="productName" />
     <result column="product_id" jdbcType="BIGINT" property="productId" />
     <result column="origin_id" jdbcType="BIGINT" property="originId" />
-    <result column="orinin_name" jdbcType="VARCHAR" property="orininName" />
+    <result column="origin_name" jdbcType="VARCHAR" property="originName" />
     <result column="weight" jdbcType="INTEGER" property="weight" />
     <result column="detect_state" jdbcType="BIT" property="detectState" />
     <result column="latest_detect_record_id" jdbcType="BIGINT" property="latestDetectRecordId" />
@@ -29,15 +29,16 @@
     <result column="version" jdbcType="TINYINT" property="version" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="latest_detect_operator" jdbcType="VARCHAR" property="latestDetectOperator" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, code, register_source, tally_area_no, name, id_card_no, addr, trade_no, user_id, 
-    plate, state, sales_type, product_name, product_id, origin_id, orinin_name, weight, 
+    plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version, 
-    created, modified
+    created, modified,latest_detect_operator
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -96,8 +97,8 @@
       <if test="originId != null">
         origin_id = #{originId,jdbcType=BIGINT},
       </if>
-      <if test="orininName != null">
-        orinin_name = #{orininName,jdbcType=VARCHAR},
+      <if test="originName != null">
+        origin_name = #{originName,jdbcType=VARCHAR},
       </if>
       <if test="weight != null">
         weight = #{weight,jdbcType=INTEGER},
@@ -112,7 +113,7 @@
         latest_detect_time = #{latestDetectTime,jdbcType=TIMESTAMP},
       </if>
       <if test="exeMachineNo != null">
-        exe_machine_no = #{exeMachineNo,jdbcType=TINYINT},
+        exe_machine_no = #{exeMachineNo,jdbcType=VARCHAR},
       </if>
       <if test="version != null">
         version = #{version,jdbcType=TINYINT},
@@ -122,6 +123,9 @@
       </if>
       <if test="modified != null">
         modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="latestDetectOperator != null">
+        latest_detect_operator = #{latestDetectOperator,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
