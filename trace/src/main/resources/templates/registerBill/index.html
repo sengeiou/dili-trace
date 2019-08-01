@@ -13,19 +13,19 @@
             <div class="easyui-panel" style="width:100%;" align="left">
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
-                        <div class="search-item">
-                            <input class="easyui-numberbox" name="code" id="code" style="width:100%" labelAlign="right" data-options="label:'编号:', validType:'length[0,19]'" />
-                        </div>
                         <!--<div class="search-item">
-                            <input class="easyui-textbox" name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源', validType:'length[0,3]'" />
-                            <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
+                            <input class="easyui-numberbox" name="code" id="code" style="width:100%" labelAlign="right" data-options="label:'编号:', validType:'length[0,19]'" />
                         </div>-->
                         <div class="search-item">
+                            <input class="easyui-textbox" name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源', validType:'length[0,3]'" />
+                            <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        <!--<div class="search-item">
                             <input class="easyui-textbox" name="tallyAreaNo" id="tallyAreaNo" style="width:100%" labelAlign="right" data-options="label:'理货区号:', validType:'length[0,20]'" />
                         </div>
                         <div class="search-item">
                             <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right" data-options="label:'业户姓名:', validType:'length[0,50]'" />
-                        </div>
+                        </div>-->
                        <!-- <div class="search-item">
                             <input class="easyui-textbox" name="idCardNo" id="idCardNo" style="width:100%" labelAlign="right" data-options="label:'身份证号:', validType:'length[0,20]'" />
                         </div>
@@ -92,6 +92,16 @@
                             <span style="width: 2%;">-</span>
                             <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"/>
                         </div>
+                        <div class="search-item long-item">
+                            <select class="easyui-combobox" name="attr" id="attr" style="width:50%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'关键字:'"  labelAlign="right">
+                                <option value="code">登记编号</option>
+                                <option value="plate">车号</option>
+                                <option value="tallyAreaNo">理货区号</option>
+                                <option value="name">业户姓名</option>
+                                <option value="latestDetectOperator">检测员</option>
+                            </select>
+                            <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">
+                        </div>
                         <!--<div class="search-item">
                             <input class="easyui-datetimebox" name="modified" id="modified" style="width:100%" labelAlign="right" data-options="label:'modified:'" />
                         </div>-->
@@ -116,7 +126,7 @@
                    align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
                 <thead>
                     <tr>
-                        <th width="10%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="11%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             登记时间
                         </th>
                         <th width="10%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -125,23 +135,23 @@
                         <!--<th width="5%"  data-options="field:'registerSource',  _provider:'registerSourceProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                           登记来源
                         </th>-->
-                        <th width="6%" data-options="field:'tallyAreaNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            交易区号
+                        <th width="8%" data-options="field:'tallyAreaNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            理货区号
                         </th>
                         <th width="6%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             业户姓名
                         </th>
-                        <th width="5%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="7%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             车牌
                         </th>
                         <!--<th width="8%" data-options="field:'idCardNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             身份证号
                         </th>-->
-                        <th width="5%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="8%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             商品名称
                         </th>
-                        <th width="5%" data-options="field:'weight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            重量
+                        <th width="7%" data-options="field:'weight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            重量/KG
                         </th>
                         <!--<th width="10%" data-options="field:'addr',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             地址
@@ -149,25 +159,25 @@
                         <!--<th width="6%" data-options="field:'tradeNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             交易单号
                         </th>-->
-                        <th width="8%" data-options="field:'orininName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'originName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             产地
                         </th>
 
-                        <th width="4%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="7%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             状态
                         </th>
 
 
-                        <th width="10%" data-options="field:'latestDetectTime',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="11%" data-options="field:'latestDetectTime',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             检测时间
                         </th>
 
 
 
-                        <th width="5%" data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="7%" data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            检测结果
                         </th>
-                        <th width="5%" data-options="field:'latestDetectOperator',   , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="7%" data-options="field:'latestDetectOperator',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             检测员
                         </th>
 

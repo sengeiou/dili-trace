@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,25 @@ public class RegisterBillController {
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(RegisterBillDto registerBill) throws Exception {
+        if (StringUtils.isNotBlank(registerBill.getAttrValue())) {
+            switch (registerBill.getAttr()) {
+                case "code":
+                    registerBill.setCode(registerBill.getAttrValue());
+                    break;
+                case "plate":
+                    registerBill.setPlate(registerBill.getAttrValue());
+                    break;
+                case "tallyAreaNo":
+                    registerBill.setTallyAreaNo(registerBill.getAttrValue());
+                    break;
+                case "latestDetectOperator":
+                    registerBill.setLatestDetectOperator(registerBill.getAttrValue());
+                    break;
+                case "name":
+                    registerBill.setName(registerBill.getAttrValue());
+                    break;
+            }
+        }
         return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
     }
 
