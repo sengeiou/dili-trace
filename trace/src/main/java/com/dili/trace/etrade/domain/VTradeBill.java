@@ -1,12 +1,14 @@
 package com.dili.trace.etrade.domain;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.QualityTraceTradeBill;
 @Table(name = "VTradeBill")
 public class VTradeBill extends BaseDomain{
 	/**
@@ -14,10 +16,10 @@ public class VTradeBill extends BaseDomain{
 	 */
 	private static final long serialVersionUID = 1L;
 	//增量（唯一）
-	@Column(name = "BillID")
+	@Column(name = "billID")
 	private Long billID;//	Bigint				
 	//交易单号
-	@Column(name = "OrderId")
+	@Column(name = "orderId")
 	private String orderId;//	Varchar(20)				
 	//卖家账号
 	@Column(name = "sellerAccount")
@@ -39,10 +41,10 @@ public class VTradeBill extends BaseDomain{
 	private String buyerIDNo;//	varchar(20)				
 	//开单时间
 	@Column(name = "orderCreateDate")
-	private LocalDateTime orderCreateDate;//	datetime				
+	private Date orderCreateDate;//	datetime				
 	//结算时间
 	@Column(name = "orderPayDate")
-	private LocalDateTime orderPayDate;//	datetime				
+	private Date orderPayDate;//	datetime				
 	//总金额（分）
 	@Column(name = "totalMoney")
 	private BigDecimal totalMoney;//	Money				
@@ -66,9 +68,9 @@ public class VTradeBill extends BaseDomain{
 	private BigDecimal amount;//	Money				
 	@Column(name = "saleUnit")
 	//交易类型
-	private String saleUnit;//	Tinyint	(1：件 2：重量)
+	private Integer saleUnit;//	Tinyint	(1：件 2：重量)
 	//省份
-	@Column(name = "ProvinceName")
+	@Column(name = "provinceName")
 	private String provinceName;//	varchar(50)				
 	public String getOrderId() {
 		return orderId;
@@ -112,16 +114,16 @@ public class VTradeBill extends BaseDomain{
 	public void setBuyerIDNo(String buyerIDNo) {
 		this.buyerIDNo = buyerIDNo;
 	}
-	public LocalDateTime getOrderCreateDate() {
+	public Date getOrderCreateDate() {
 		return orderCreateDate;
 	}
-	public void setOrderCreateDate(LocalDateTime orderCreateDate) {
+	public void setOrderCreateDate(Date orderCreateDate) {
 		this.orderCreateDate = orderCreateDate;
 	}
-	public LocalDateTime getOrderPayDate() {
+	public Date getOrderPayDate() {
 		return orderPayDate;
 	}
-	public void setOrderPayDate(LocalDateTime orderPayDate) {
+	public void setOrderPayDate(Date orderPayDate) {
 		this.orderPayDate = orderPayDate;
 	}
 	public BigDecimal getTotalMoney() {
@@ -166,10 +168,10 @@ public class VTradeBill extends BaseDomain{
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-	public String getSaleUnit() {
+	public Integer getSaleUnit() {
 		return saleUnit;
 	}
-	public void setSaleUnit(String saleUnit) {
+	public void setSaleUnit(Integer saleUnit) {
 		this.saleUnit = saleUnit;
 	}
 	public String getProvinceName() {
@@ -183,6 +185,36 @@ public class VTradeBill extends BaseDomain{
 	}
 	public void setBillID(Long billID) {
 		this.billID = billID;
+	}
+	public QualityTraceTradeBill buildQualityTraceTradeBill() {
+		QualityTraceTradeBill bill=DTOUtils.newDTO(QualityTraceTradeBill.class);
+		bill.setBillId(this.billID);
+		bill.setOrderId(this.orderId);
+		bill.setAmount(this.getAmount().longValue());
+		bill.setBuyerAccount(this.buyerAccount);
+		bill.setBuyerName(this.buyerName);
+		bill.setBuyerIDNo(this.buyerIDNo);
+		bill.setCateName(this.cateName);
+//		bill.setCheckResultEid(checkResultEid);
+//		bill.setConclusion(conclusion);
+		bill.setOrderCreateDate(this.orderCreateDate);
+//		bill.setOrderItemId("");
+		bill.setOrderPayDate(this.orderPayDate);
+//		bill.setOrderStatus("");
+//		bill.setPdresult("");
+		bill.setPrice(this.price.longValue());
+		bill.setProductName(this.productName);
+		bill.setSaleUnit(this.saleUnit);
+		bill.setSellerAccount(this.sellerAccount);
+		bill.setSellerName(this.sellerName);
+		bill.setSellerIDNo(this.sellerIDNo);
+		bill.setTotalMoney(this.totalMoney.longValue());
+//		bill.setTradeFlowId("");
+		
+		
+		return bill;
+		
+		
 	}
 
 }
