@@ -1,7 +1,10 @@
 package com.dili.trace.service;
 
+import java.util.List;
+
 import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.QualityTraceTradeBill;
+import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -12,4 +15,6 @@ public interface QualityTraceTradeBillService extends BaseService<QualityTraceTr
     public QualityTraceTradeBill findByTradeNo(String tradeNo);
     public QualityTraceTradeBill findByTradeCardNo(String tradeCardNo);
     public QualityTraceTradeBill findByPrintCardNo(String printCardNo);
+	
+	public List<QualityTraceTradeBillRepeatDto>selectRepeatedOrderId();
 }

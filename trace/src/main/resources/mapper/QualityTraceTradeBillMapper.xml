@@ -46,6 +46,11 @@
     from quality_trace_trade_bill
     where id = #{id,jdbcType=BIGINT}
   </select>
+  
+  <select id="selectRepeatedOrderId" resultType="com.dili.trace.dto.QualityTraceTradeBillRepeatDto">
+select count(1) as ct,order_id from quality_trace_trade_bill group by order_id having count(1)>1
+  </select>
+  
   <update id="updateBy" parameterType="com.dili.trace.domain.QualityTraceTradeBill">
     <!--
       WARNING - @mbg.generated

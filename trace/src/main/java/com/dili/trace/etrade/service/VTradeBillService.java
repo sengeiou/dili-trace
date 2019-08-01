@@ -2,6 +2,7 @@ package com.dili.trace.etrade.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
@@ -43,5 +44,14 @@ public class VTradeBillService extends BaseServiceImpl<VTradeBill, Long> {
 
 		return this.getDao().selectRemoteLatestData();
 	}
-
+	@SwitchDataSource("etradeDS")
+	public Long selectRemoteRepeatData(Long billId) {
+		if(billId==null) {
+			return null;
+		}
+		VTradeBillQueryDTO dto=new VTradeBillQueryDTO();
+		dto.setBillID(billId);
+		
+		return this.getDao().selectRemoteRepeatData(dto);
+	};
 }
