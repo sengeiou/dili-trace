@@ -54,10 +54,13 @@ public class RegisterBillApi {
     @ApiOperation("保存登记单")
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "登记单保存入参")
     @RequestMapping(value = "/create",method = RequestMethod.POST)
-    public BaseOutput<Boolean> saveRegisterBill(RegisterBill registerBill){
+    public BaseOutput saveRegisterBill(RegisterBill registerBill){
         LOGGER.info("保存登记单:"+ JSON.toJSONString(registerBill));
-        registerBillService.createRegisterBill(registerBill);
-        return BaseOutput.success().setData(true);
+        int result =registerBillService.createRegisterBill(registerBill);
+        if(result==0){
+            return BaseOutput.failure().setMessage("请检测相关参数完整性");
+        }
+        return BaseOutput.success();
     }
     @ApiOperation("保存分销单")
     @ApiImplicitParam(paramType = "body", name = "SeparateSalesRecord", dataType = "SeparateSalesRecord", value = "分销单保存入参")

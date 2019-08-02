@@ -103,7 +103,9 @@ public class RegisterBillController {
         LOGGER.info("保存登记单数据:"+registerBills.size());
         for(RegisterBill registerBill :registerBills){
             registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-            registerBillService.createRegisterBill(registerBill);
+            if(registerBillService.createRegisterBill(registerBill)==0){
+                return BaseOutput.success("新增失败");
+            };
         }
         return BaseOutput.success("新增成功");
     }
