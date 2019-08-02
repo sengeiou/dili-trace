@@ -19,145 +19,164 @@ import javax.persistence.Id;
  */
 @Table(name = "`quality_trace_trade_bill`")
 public interface QualityTraceTradeBill extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "`id`")
+	@FieldDef(label = "id")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getId();
 
-    void setId(Long id);
+	void setId(Long id);
 
-    @Column(name = "`order_id`")
-    @FieldDef(label="订单号")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getOrderId();
+	@Column(name = "`bill_id`")
+	@FieldDef(label = "流水号")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getBillId();
 
-    void setOrderId(Long orderId);
+	void setBillId(Long billId);
 
-    @Column(name = "`order_status`")
-    @FieldDef(label="orderStatus")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Boolean getOrderStatus();
+	@Column(name = "`order_id`")
+	@FieldDef(label = "订单号")
+	@EditMode(editor = FieldEditor.Text, required = true)
+	String getOrderId();
 
-    void setOrderStatus(Boolean orderStatus);
+	void setOrderId(String orderId);
 
-    @Column(name = "`seller_account`")
-    @FieldDef(label="卖家账号")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getSellerAccount();
+	@Column(name = "`order_status`")
+	@FieldDef(label = "orderStatus")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Boolean getOrderStatus();
 
-    void setSellerAccount(Long sellerAccount);
+	void setOrderStatus(Boolean orderStatus);
 
-    @Column(name = "`seller_name`")
-    @FieldDef(label="卖家名称", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getSellerName();
+	@Column(name = "`seller_account`")
+	@FieldDef(label = "卖家账号")
+	@EditMode(editor = FieldEditor.Text, required = true)
+	String getSellerAccount();
 
-    void setSellerName(String sellerName);
+	void setSellerAccount(String sellerAccount);
 
-    @Column(name = "`buyer_account`")
-    @FieldDef(label="买家账号")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getBuyerAccount();
+	@Column(name = "`seller_name`")
+	@FieldDef(label = "卖家名称", maxLength = 50)
+	@EditMode(editor = FieldEditor.Text, required = true)
+	String getSellerName();
 
-    void setBuyerAccount(Long buyerAccount);
+	void setSellerName(String sellerName);
+	@Column(name = "`sellerIDNo`")
+	@FieldDef(label = "卖家身份证", maxLength = 50)
+	@EditMode(editor = FieldEditor.Text, required = true)
+	public String getSellerIDNo();
 
-    @Column(name = "`buyer_name`")
-    @FieldDef(label="买家名称", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getBuyerName();
+	public void setSellerIDNo(String sellerIDNo);
 
-    void setBuyerName(String buyerName);
+	@Column(name = "`buyer_account`")
+	@FieldDef(label = "买家账号")
+	@EditMode(editor = FieldEditor.Text, required = true)
+	String getBuyerAccount();
 
-    @Column(name = "`order_create_date`")
-    @FieldDef(label="订单创建时间")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getOrderCreateDate();
+	void setBuyerAccount(String buyerAccount);
 
-    void setOrderCreateDate(Date orderCreateDate);
+	@Column(name = "`buyer_name`")
+	@FieldDef(label = "买家名称", maxLength = 50)
+	@EditMode(editor = FieldEditor.Text, required = true)
+	String getBuyerName();
 
-    @Column(name = "`order_pay_date`")
-    @FieldDef(label="订单支付时间")
-    @EditMode(editor = FieldEditor.Datetime, required = true)
-    Date getOrderPayDate();
+	void setBuyerName(String buyerName);
+	@Column(name = "`buyerIDNo`")
+	@FieldDef(label = "买家身份证", maxLength = 50)
+	@EditMode(editor = FieldEditor.Text, required = true)
+	public String getBuyerIDNo();
 
-    void setOrderPayDate(Date orderPayDate);
+	public void setBuyerIDNo(String buyerIDNo);
 
-    @Column(name = "`pdResult`")
-    @FieldDef(label="残留值")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    BigDecimal getPdresult();
+	@Column(name = "`order_create_date`")
+	@FieldDef(label = "订单创建时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
+	Date getOrderCreateDate();
 
-    void setPdresult(BigDecimal pdresult);
+	void setOrderCreateDate(Date orderCreateDate);
 
-    @Column(name = "`conclusion`")
-    @FieldDef(label="合格值  0-未知 1合格  2不合格 3作废")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Boolean getConclusion();
+	@Column(name = "`order_pay_date`")
+	@FieldDef(label = "订单支付时间")
+	@EditMode(editor = FieldEditor.Datetime, required = true)
+	Date getOrderPayDate();
 
-    void setConclusion(Boolean conclusion);
+	void setOrderPayDate(Date orderPayDate);
 
-    @Column(name = "`check_result_EID`")
-    @FieldDef(label="检测结算单唯一标志,NULL表示无检测信息")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Long getCheckResultEid();
+	@Column(name = "`pdResult`")
+	@FieldDef(label = "残留值")
+	@EditMode(editor = FieldEditor.Text, required = false)
+	BigDecimal getPdresult();
 
-    void setCheckResultEid(Long checkResultEid);
+	void setPdresult(BigDecimal pdresult);
 
-    @Column(name = "`trade_flow_id`")
-    @FieldDef(label="交易号")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getTradeFlowId();
+	@Column(name = "`conclusion`")
+	@FieldDef(label = "合格值  0-未知 1合格  2不合格 3作废")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Boolean getConclusion();
 
-    void setTradeFlowId(Long tradeFlowId);
+	void setConclusion(Boolean conclusion);
 
-    @Column(name = "`total_money`")
-    @FieldDef(label="总金额", maxLength = 30)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getTotalMoney();
+	@Column(name = "`check_result_EID`")
+	@FieldDef(label = "检测结算单唯一标志,NULL表示无检测信息")
+	@EditMode(editor = FieldEditor.Number, required = false)
+	Long getCheckResultEid();
 
-    void setTotalMoney(String totalMoney);
+	void setCheckResultEid(Long checkResultEid);
 
-    @Column(name = "`order_item_id`")
-    @FieldDef(label="订单项号")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getOrderItemId();
+	@Column(name = "`trade_flow_id`")
+	@FieldDef(label = "交易号")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getTradeFlowId();
 
-    void setOrderItemId(Long orderItemId);
+	void setTradeFlowId(Long tradeFlowId);
 
-    @Column(name = "`product_name`")
-    @FieldDef(label="商品名称", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getProductName();
+	@Column(name = "`total_money`")
+	@FieldDef(label = "总金额", maxLength = 30)
+	@EditMode(editor = FieldEditor.Text, required = true)
+	Long getTotalMoney();
 
-    void setProductName(String productName);
+	void setTotalMoney(Long totalMoney);
 
-    @Column(name = "`cate_name`")
-    @FieldDef(label="品类名称", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getCateName();
+	@Column(name = "`order_item_id`")
+	@FieldDef(label = "订单项号")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getOrderItemId();
 
-    void setCateName(String cateName);
+	void setOrderItemId(Long orderItemId);
 
-    @Column(name = "`price`")
-    @FieldDef(label="价格", maxLength = 30)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getPrice();
+	@Column(name = "`product_name`")
+	@FieldDef(label = "商品名称", maxLength = 50)
+	@EditMode(editor = FieldEditor.Text, required = true)
+	String getProductName();
 
-    void setPrice(String price);
+	void setProductName(String productName);
 
-    @Column(name = "`amount`")
-    @FieldDef(label="数量", maxLength = 30)
-    @EditMode(editor = FieldEditor.Text, required = true)
-    String getAmount();
+	@Column(name = "`cate_name`")
+	@FieldDef(label = "品类名称", maxLength = 50)
+	@EditMode(editor = FieldEditor.Text, required = true)
+	String getCateName();
 
-    void setAmount(String amount);
+	void setCateName(String cateName);
 
-    @Column(name = "`sale_unit`")
-    @FieldDef(label="销售单位 1:斤 2：件")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Boolean getSaleUnit();
+	@Column(name = "`price`")
+	@FieldDef(label = "单价(分)")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getPrice();
 
-    void setSaleUnit(Boolean saleUnit);
+	void setPrice(Long price);
+
+	@Column(name = "`amount`")
+	@FieldDef(label = "件数")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Long getAmount();
+
+	void setAmount(Long amount);
+
+	@Column(name = "`sale_unit`")
+	@FieldDef(label = "销售单位 1:斤 2：件")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Integer getSaleUnit();
+
+	void setSaleUnit(Integer saleUnit);
 }

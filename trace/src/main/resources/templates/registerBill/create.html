@@ -1,12 +1,10 @@
 
-
-
 <#bodyOrigin>
 <div class="main-container">
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">进场货品登记</span>
-            <button class="btn-greyweak btn-sm topic-back-btn">返回</button>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="returnBack()">返回</button>
         </div>
     </div>
     <div class="form-box border">
@@ -24,7 +22,12 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>理货区号</label>
-                    <input type="text" class="form-control input-sm" name="tallyAreaNo" id="tallyAreaNo" required />
+                    <select class="form-control input-sm" name="tallyAreaNo" id="tallyAreaNo" required>
+                        <option>请选择</option>
+                        <%if(tradeTypes.~size>0) for(tradeType in tradeTypes){%>
+                        <option value="${tradeType.typeId}">${tradeType.typeName}</option>
+                        <%}%>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -32,12 +35,12 @@
                     <input type="text" class="form-control input-sm" name="plate" id="plate" required />
                 </div>
                 <div class="form-group" style="display: none;">
-                    <label class="label-title text-right">交易卡号</label>
-                    <input type="text" class="form-control input-sm" name="userId" id="userId"/>
+                    <label class="label-title text-right">交易账号</label>
+                    <input type="text" class="form-control input-sm" name="userId" id="userId" onkeyup="onKeyUpEnter(event)"/>
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">印刷卡号</label>
-                    <input type="text" class="form-control input-sm" name="b2" />
+                    <input type="text" class="form-control input-sm" name="b2" id="printingCard" onkeyup="onKeyUpEnter2(event)"/>
                 </div>
                 <br>
                 <div class="form-group">
@@ -65,7 +68,7 @@
                         <tr>
                             <th><span class="red">&lowast;</span>商品名称</th>
                             <th><span class="red">&lowast;</span>产地</th>
-                            <th><span class="red">&lowast;</span>商品重量</th>
+                            <th><span class="red">&lowast;</span>商品重量/KG</th>
                             <th>产地证明</th>
                             <th>操作</th>
                         </tr>
@@ -79,7 +82,7 @@
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <input type="text" id="originName" name="originName" class="form-control input-sm" required />
+                                    <input type="text" name="originName" class="form-control input-sm" required />
                                     <input type="text" name="originId" hidden value="333"/>
                                 </div>
                             </td>
@@ -142,7 +145,7 @@
         </td>
         <td>
             <div class="form-group">
-                <input type="text" id="originName" name="originName" class="form-control input-sm" required />
+                <input type="text"   name="originName" class="form-control input-sm" required />
                 <input type="text" name="originId" hidden value="32" />
             </div>
         </td>
@@ -170,41 +173,9 @@
 
 <script>
 
-    // 验证--
-    $('form').validate()
-
-    /*
-     ajax自动完成
-     API: https://github.com/devbridge/jQuery-Autocomplete/
-     */
-    $('#originName').autocomplete({
-        serviceUrl: '',
-        dataType: 'json',
-        maxHeight: 300,
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: '不存在',
-        onSearchComplete: function (query, suggestions) {
-            // 查询出多条数据时 || 查询出单条数据且查询内容和查询结果不等时 => 清空清空货物ID
-            if (suggestions.length !== 1 || (suggestions.length === 1 && $(this).val() !== suggestions[0].name)) {
-                $('[name="originId"]').val('')
-            }
-            // 其他逻辑
-            // 。。。。
-        },
-        onSelect: function (suggestion) {
-            $('[name="originId"]').val(suggestion.id)
-            // 其他逻辑
-            // 。。。。
-        },
-        onHide: function (container) {
-            // 输入数据后未全匹配，且未选择就清空当前数据。
-            if ($('[name="originId"]').val() === '') {
-                $(this).val('')
-            }
-        }
-    });
-
-
+    function returnBack(){
+        history.go(-1);
+    }
     /*   登记来源     */
     $('[name="registerSource"]').on('change', function () {
         if ($(this).val() === '1') {
@@ -219,7 +190,57 @@
     /* 货品表格  */
     let goodsItemCount = 0;
     $('.main-container').on('click', '#addGoodsItem', function () {
-        $('#goodsTable tbody').append(template('goodsItem', {index: goodsItemCount++}))
+        $('#goodsTable tbody').append(template('goodsItem', {index: goodsItemCount++}));
+
+        $('input[name="originName"]').autocomplete({
+            noCache: 1,
+            serviceUrl: '/api/toll/city',  //数据地址
+            //lookup: countries,    本地测试模拟数据使用结合上面的var countries
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+                var originIdNote = $(this).next();
+                //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
+                if ($(this).data('selectVal') != $(this).val()) {
+                    $(originIdNote).val("");
+                }
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            onSelect: function (suggestion) {
+                var originIdNote = $(this).next();
+                $(this).data('selectVal', suggestion.value);
+                setTimeout(function () {
+                    $(this).val(suggestion.value);
+                    $(originIdNote).val(suggestion.id);
+                    //console.log("name:"+$(this).val()+",id:"+$(originIdNote).val())
+                }, 50);
+            }
+        });
+
+        $('input[name="productName"]').autocomplete({
+            noCache: 1,
+            serviceUrl: '/api/toll/category',  //数据地址
+            //lookup: countries,    本地测试模拟数据使用结合上面的var countries
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+                var categoryIdNote = $(this).next();
+                //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
+                if ($(this).data('selectVal') != $(this).val()) {
+                    $(categoryIdNote).val("");
+                }
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            onSelect: function (suggestion) {
+                var categoryIdNote = $(this).next();
+                $(this).data('selectVal', suggestion.value);
+                setTimeout(function () {
+                    $(this).val(suggestion.value);
+                    $(categoryIdNote).val(suggestion.id);
+                    //console.log("name:"+$(this).val()+",id:"+$(categoryIdNote).val())
+                }, 50);
+            }
+        });
 
     })
     $('.main-container').on('click', '.split-minus-btn', function () {
@@ -253,6 +274,115 @@
     })
 
 
+    function onKeyUpEnter(e) {
+        if (e.keyCode == 13) {
+            customerId();
+        }
+    }
+    function onKeyUpEnter2(e) {
+        if (e.keyCode == 13) {
+            cardNo();
+        }
+    }
+    function customerId() {
+        var customerId = $("#userId").val();
+        if(customerId == ""){
+            return;
+        }
+        if (customerId.length > 0) {
+            $.ajax({
+                type: 'post',
+                url: '/api/trade/customer/id/'+customerId,
+                dataType: 'json',
+                async: false,
+                success: function (ret) {
+                    if (ret.code == "200") {
+                        var customer = ret.data;
+                        $("#idCardNo").val(customer.idNo);
+                        $("#name").val(customer.name);
+                        $("#addr").val(customer.address);
+                        $("#printingCard").val(customer.printingCard);
+                    } else {
+
+                    }
+                }
+            });
+        }
+    }
+    function cardNo() {
+        var cardNo = $("#printingCard").val();
+        if(cardNo == ""){
+            return;
+        }
+        if (cardNo.length > 0) {
+            $.ajax({
+                type: 'post',
+                url: '/api/trade/customer/card/'+cardNo,
+                dataType: 'json',
+                async: false,
+                success: function (ret) {
+                    if (ret.code == "200") {
+                        var customer = ret.data;
+                        $("#idCardNo").val(customer.idNo);
+                        $("#name").val(customer.name);
+                        $("#addr").val(customer.address);
+                        $("#userId").val(customer.customerId);
+                    } else {
+
+                    }
+                }
+            });
+        }
+    }
+    //产地联系输入
+    $('input[name="originName"]').autocomplete({
+        noCache: 1,
+        serviceUrl: '/api/toll/city',  //数据地址
+        //lookup: countries,    本地测试模拟数据使用结合上面的var countries
+        dataType: 'json',
+        onSearchComplete: function (query, suggestions) {
+            var originIdNote = $(this).next();
+            //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
+            if ($(this).data('selectVal') != $(this).val()) {
+                $(originIdNote).val("");
+            }
+        },
+        showNoSuggestionNotice: true,
+        noSuggestionNotice: "不存在，请重输！",
+        onSelect: function (suggestion) {
+            var originIdNote = $(this).next();
+            $(this).data('selectVal', suggestion.value);
+            setTimeout(function () {
+                $(this).val(suggestion.value);
+                $(originIdNote).val(suggestion.id);
+                //console.log("name:"+$(this).val()+",id:"+$(originIdNote).val())
+            }, 50);
+        }
+    });
+    $('input[name="productName"]').autocomplete({
+        noCache: 1,
+        serviceUrl: '/api/toll/category',  //数据地址
+        //lookup: countries,    本地测试模拟数据使用结合上面的var countries
+        dataType: 'json',
+        onSearchComplete: function (query, suggestions) {
+            var categoryIdNote = $(this).next();
+            //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
+            if ($(this).data('selectVal') != $(this).val()) {
+             $(categoryIdNote).val("");
+            }
+        },
+        showNoSuggestionNotice: true,
+        noSuggestionNotice: "不存在，请重输！",
+        onSelect: function (suggestion) {
+            var categoryIdNote = $(this).next();
+            $(this).data('selectVal', suggestion.value);
+            setTimeout(function () {
+                $(this).val(suggestion.value);
+                $(categoryIdNote).val(suggestion.id);
+                //console.log("name:"+$(this).val()+",id:"+$(categoryIdNote).val())
+            }, 50);
+        }
+    });
 
 
 </script>

@@ -1,4 +1,4 @@
-package com.dili.trade;
+package com.dili.trace;
 
 import java.io.IOException;
 import java.net.JarURLConnection;

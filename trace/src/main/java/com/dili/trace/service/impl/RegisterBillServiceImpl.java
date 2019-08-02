@@ -6,11 +6,9 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.BizNumberType;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.glossary.*;
 import com.dili.trace.service.RegisterBillService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +32,46 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public int createRegisterBill(RegisterBill registerBill) {
+        if (checkBill(registerBill)) return 0;
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
+        registerBill.setVersion(1);
+        if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()){
+            //交易区没有理货区号
+            registerBill.setTallyAreaNo(null);
+        }
         return saveOrUpdate(registerBill);
+    }
+
+    private boolean checkBill(RegisterBill registerBill) {
+        if(registerBill.getRegisterSource()==null || registerBill.getRegisterSource().intValue()==0){
+            LOGGER.error("登记来源不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getName())){
+            LOGGER.error("业户姓名不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getIdCardNo())){
+            LOGGER.error("业户身份证号不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getAddr())){
+            LOGGER.error("业户身份证地址不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getProductName())){
+            LOGGER.error("商品名称不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getOriginName())){
+            LOGGER.error("商品产地不能为空");
+            return true;
+        }
+        if(registerBill.getWeight()==null || registerBill.getWeight().longValue()==0L){
+            LOGGER.error("商品重量不能为空");
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -108,6 +144,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()){
             if(pass){
                 registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
+                if(StringUtils.isNotBlank(registerBill.getDetectReportUrl())){
+                    //有检测报告，直接通过检测
+                    registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+                }
             }else {
                 registerBill.setState(RegisterBillStateEnum.NO_PASS.getCode().intValue());
             }

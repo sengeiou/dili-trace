@@ -6,7 +6,7 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="customerID" jdbcType="BIGINT" property="customerId" />
+    <result column="customerID" jdbcType="VARCHAR" property="customerId" />
     <result column="Name" jdbcType="VARCHAR" property="name" />
     <result column="IDNo" jdbcType="VARCHAR" property="idNo" />
     <result column="Address" jdbcType="VARCHAR" property="address" />
@@ -20,7 +20,7 @@
     id, customerID as customerId, Name as name, IDNo AS idNo, Address as address, printingCard, Active as active
   </sql>
 
-  <select id="findByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="findByCustomerId" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from customer

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +48,6 @@ public class RegisterBillController {
     @Autowired
     TradeTypeService tradeTypeService;
 
-
-    private static HashMap NAME_RESUBMIT=new HashMap();
-
     @ApiOperation("跳转到RegisterBill页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -71,6 +69,31 @@ public class RegisterBillController {
 	})
     @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(RegisterBillDto registerBill) throws Exception {
+        if (StringUtils.isNotBlank(registerBill.getAttrValue())) {
+            switch (registerBill.getAttr()) {
+                case "code":
+                    registerBill.setCode(registerBill.getAttrValue());
+                    break;
+                case "plate":
+                    registerBill.setPlate(registerBill.getAttrValue());
+                    break;
+                case "tallyAreaNo":
+                    registerBill.setTallyAreaNo(registerBill.getAttrValue());
+                    break;
+                case "latestDetectOperator":
+                    registerBill.setLatestDetectOperator(registerBill.getAttrValue());
+                    break;
+                case "name":
+                    registerBill.setName(registerBill.getAttrValue());
+                    break;
+                case "productName":
+                    registerBill.setProductName(registerBill.getAttrValue());
+                    break;
+            }
+        }
+        if("全部".equals(registerBill.getRegisterSource())){
+            registerBill.setRegisterSource(null);
+        }
         return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
     }
 
@@ -78,19 +101,11 @@ public class RegisterBillController {
     @RequestMapping(value="/insert.action", method = RequestMethod.POST)
     public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
         LOGGER.info("保存登记单数据:"+registerBills.size());
-        String customerName = registerBills.get(0).getName();
-        if(NAME_RESUBMIT.get(customerName)!=null){
-            Long time = (Long) NAME_RESUBMIT.get(customerName);
-            if(System.currentTimeMillis()-time<3000){
-                LOGGER.error("有重复提交的数据" + customerName);
-                return BaseOutput.failure("请勿重复提交");
-            }
-        }
-        NAME_RESUBMIT.put(customerName,System.currentTimeMillis());
-        //RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
         for(RegisterBill registerBill :registerBills){
             registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-            registerBillService.createRegisterBill(registerBill);
+            if(registerBillService.createRegisterBill(registerBill)==0){
+                return BaseOutput.success("新增失败");
+            };
         }
         return BaseOutput.success("新增成功");
     }
