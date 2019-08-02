@@ -15,17 +15,17 @@
                     <div class="search-wrap">
 
                         <div class="search-item">
-                            <input class="easyui-textbox" name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源', validType:'length[0,3]'" />
+                            <input class="easyui-textbox" name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'" />
                             <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
 
                         <div class="search-item">
-                            <input class="easyui-textbox" name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'单据状态', " />
+                            <input class="easyui-textbox" name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'单据状态' " />
                             <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
 
                         <div class="search-item">
-                            <input class="easyui-textbox" name="orininName" id="orininName" style="width:100%" labelAlign="right" data-options="label:'产地:', validType:'length[0,20]'" />
+                            <input class="easyui-textbox" name="orininName" id="orininName" style="width:100%" labelAlign="right" data-options="label:'产地', validType:'length[0,20]'" />
                         </div>
 
                         <div class="search-item">
@@ -34,18 +34,18 @@
                         </div>
 
                         <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" style="width:58%" labelAlign="right" data-options="label:'检测时间:'"/>
+                            <input class="easyui-datetimebox" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" style="width:58%" labelAlign="right" data-options="label:'检测时间'"/>
                             <span style="width: 2%;">-</span>
                             <input class="easyui-datetimebox" name="latestDetectTimeTimeEnd" id="latestDetectTimeTimeEnd" style="width:39%;"/>
                         </div>
 
                         <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间:'"/>
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'"/>
                             <span style="width: 2%;">-</span>
                             <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"/>
                         </div>
                         <div class="search-item long-item">
-                            <select class="easyui-combobox" name="attr" id="attr" style="width:50%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'关键字:'"  labelAlign="right">
+                            <select class="easyui-combobox" name="attr" id="attr" style="width:50%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'关键字'"  labelAlign="right">
                                 <option value="code">登记编号</option>
                                 <option value="plate">车牌号</option>
                                 <option value="tallyAreaNo">理货区号</option>
