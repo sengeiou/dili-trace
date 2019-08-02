@@ -9,6 +9,8 @@
         $('#_phone').textbox({readonly:false});
         $('#_cardNo').textbox({readonly:false});
         $('#_addr').textbox({readonly:false});
+        $('#cardNoImage').siblings(".magnifying").removeAttr("src");
+        $('#businessLicenseImage').siblings(".magnifying").removeAttr("src");
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_userName");
@@ -33,6 +35,10 @@
         formFocus("_form", "_userName");
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
+        $('#cardNoImage').siblings(".magnifying").removeAttr("src");
+        $('#businessLicenseImage').siblings(".magnifying").removeAttr("src");
+        $('#cardNoImage').siblings(".magnifying").attr('src',formData._cardNoUrl);
+        $('#businessLicenseImage').siblings(".magnifying").attr('src',formData._businessLicenseUrl);
         $('#_form').form('load', formData);
     }
 
@@ -192,19 +198,27 @@
         queryUserGrid();
     })
 
+    $('.fileimg-view').on('click', function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    });
 
-    function initFileUpload(){
+        function initFileUpload(){
         $(":file").fileupload({
             dataType : 'json',
             formData: {type:4,compress:true},
             done : function(e, res) {
                 if (res.result.code == 200) {
-                    for (key in res.result.data) {
-                        var url = res.result.data[key];
-                        $(this).next(".magnifying").attr('src', url + '?imageView2/2/w/100/h/100');
-                        $('#headImg').val(key);
-                        break;
-                    }
+                    var url = res.result.data;
+                    $(this).next(".magnifying").attr('src', url);
+                    $(this).siblings("input:hidden").val(url);
                     $('.fileimg-cover,.fileimg-edit').show();
                 }
             },
