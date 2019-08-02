@@ -6,10 +6,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.BizNumberType;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.glossary.*;
 import com.dili.trace.service.RegisterBillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +33,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public int createRegisterBill(RegisterBill registerBill) {
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
         registerBill.setVersion(1);
+        if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()){
+            //交易区没有理货区号
+            registerBill.setTallyAreaNo(null);
+        }
         return saveOrUpdate(registerBill);
     }
 
