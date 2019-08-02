@@ -43,16 +43,20 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     private boolean checkBill(RegisterBill registerBill) {
+        if(registerBill.getRegisterSource()==null || registerBill.getRegisterSource().intValue()==0){
+            LOGGER.error("登记来源不能为空");
+            return true;
+        }
         if(StringUtils.isBlank(registerBill.getName())){
-            LOGGER.error("业务姓名不能为空");
+            LOGGER.error("业户姓名不能为空");
             return true;
         }
         if(StringUtils.isBlank(registerBill.getIdCardNo())){
-            LOGGER.error("业务身份证不能为空");
+            LOGGER.error("业户身份证号不能为空");
             return true;
         }
         if(StringUtils.isBlank(registerBill.getAddr())){
-            LOGGER.error("业务身份证地址不能为空");
+            LOGGER.error("业户身份证地址不能为空");
             return true;
         }
         if(StringUtils.isBlank(registerBill.getProductName())){
