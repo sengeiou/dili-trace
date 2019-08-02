@@ -32,6 +32,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public int createRegisterBill(RegisterBill registerBill) {
+        if (checkBill(registerBill)) return 0;
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
         registerBill.setVersion(1);
         if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()){
@@ -39,6 +40,34 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             registerBill.setTallyAreaNo(null);
         }
         return saveOrUpdate(registerBill);
+    }
+
+    private boolean checkBill(RegisterBill registerBill) {
+        if(StringUtils.isBlank(registerBill.getName())){
+            LOGGER.error("业务姓名不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getIdCardNo())){
+            LOGGER.error("业务身份证不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getAddr())){
+            LOGGER.error("业务身份证地址不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getProductName())){
+            LOGGER.error("商品名称不能为空");
+            return true;
+        }
+        if(StringUtils.isBlank(registerBill.getOriginName())){
+            LOGGER.error("商品产地不能为空");
+            return true;
+        }
+        if(registerBill.getWeight()==null || registerBill.getWeight().longValue()==0L){
+            LOGGER.error("商品重量不能为空");
+            return true;
+        }
+        return false;
     }
 
     @Override
