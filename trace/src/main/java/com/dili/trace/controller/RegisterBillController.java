@@ -98,7 +98,6 @@ public class RegisterBillController {
     @RequestMapping(value="/insert.action", method = RequestMethod.POST)
     public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
         LOGGER.info("保存登记单数据:"+registerBills.size());
-        //RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
         for(RegisterBill registerBill :registerBills){
             registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
             registerBillService.createRegisterBill(registerBill);

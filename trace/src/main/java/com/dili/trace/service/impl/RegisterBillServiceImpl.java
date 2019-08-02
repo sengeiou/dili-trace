@@ -8,6 +8,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.RegisterBillService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +111,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()){
             if(pass){
                 registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
+                if(StringUtils.isNotBlank(registerBill.getDetectReportUrl())){
+                    //有检测报告，直接通过检测
+                    registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+                }
             }else {
                 registerBill.setState(RegisterBillStateEnum.NO_PASS.getCode().intValue());
             }
