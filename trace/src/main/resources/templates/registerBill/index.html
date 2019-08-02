@@ -13,80 +13,32 @@
             <div class="easyui-panel" style="width:100%;" align="left">
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
-                        <!--<div class="search-item">
-                            <input class="easyui-numberbox" name="code" id="code" style="width:100%" labelAlign="right" data-options="label:'编号:', validType:'length[0,19]'" />
-                        </div>-->
+
                         <div class="search-item">
                             <input class="easyui-textbox" name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源', validType:'length[0,3]'" />
                             <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
-                        <!--<div class="search-item">
-                            <input class="easyui-textbox" name="tallyAreaNo" id="tallyAreaNo" style="width:100%" labelAlign="right" data-options="label:'理货区号:', validType:'length[0,20]'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right" data-options="label:'业户姓名:', validType:'length[0,50]'" />
-                        </div>-->
-                       <!-- <div class="search-item">
-                            <input class="easyui-textbox" name="idCardNo" id="idCardNo" style="width:100%" labelAlign="right" data-options="label:'身份证号:', validType:'length[0,20]'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="addr" id="addr" style="width:100%" labelAlign="right" data-options="label:'地址:', validType:'length[0,50]'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-numberbox" name="tradeNo" id="tradeNo" style="width:100%" labelAlign="right" data-options="label:'tradeNo:', validType:'length[0,19]'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-numberbox" name="userId" id="userId" style="width:100%" labelAlign="right" data-options="label:'用户ID:', validType:'length[0,19]'" />
-                        </div>-->
-                        <!--<div class="search-item">
-                            <input class="easyui-textbox" name="plate" id="plate" style="width:100%" labelAlign="right" data-options="label:'车牌:', validType:'length[0,15]'" />
-                        </div>-->
+
                         <div class="search-item">
                             <input class="easyui-textbox" name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'单据状态', " />
                             <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
-                        <!--<div class="search-item">
-                            <input class="easyui-numberbox" name="salesType" id="salesType" style="width:100%" labelAlign="right" data-options="label:'1.分销 2.全销:', validType:'length[0,1]'" />
-                        </div>-->
-                        <!--<div class="search-item">
-                            <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right" data-options="label:'商品名称:', validType:'length[0,20]'" />
-                        </div>-->
-                       <!-- <div class="search-item">
-                            <input class="easyui-numberbox" name="productId" id="productId" style="width:100%" labelAlign="right" data-options="label:'productId:', validType:'length[0,19]'" />
-                        </div>-->
-                        <!--<div class="search-item">
-                            <input class="easyui-numberbox" name="originId" id="originId" style="width:100%" labelAlign="right" data-options="label:'originId:', validType:'length[0,19]'" />
-                        </div>-->
+
                         <div class="search-item">
                             <input class="easyui-textbox" name="orininName" id="orininName" style="width:100%" labelAlign="right" data-options="label:'产地:', validType:'length[0,20]'" />
                         </div>
-                       <!-- <div class="search-item">
-                            <input class="easyui-numberbox" name="weight" id="weight" style="width:100%" labelAlign="right" data-options="label:'weight:', validType:'length[0,10]'" />
-                        </div>-->
+
                         <div class="search-item">
                             <input class="easyui-textbox" name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'" />
                             <#comboProvider _id="detectState" _provider='billDetectStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
-                        <!--<div class="search-item">
-                            <input class="easyui-numberbox" name="latestDetectRecordId" id="latestDetectRecordId" style="width:100%" labelAlign="right" data-options="label:'latestDetectRecordId:', validType:'length[0,19]'" />
-                        </div>-->
-                        <!--<div class="search-item">
-                            <input class="easyui-datetimebox" name="latestDetectTime" id="latestDetectTime" style="width:100%" labelAlign="right" data-options="label:'检测时间:'" />
-                        </div>-->
+
                         <div class="search-item long-item">
                             <input class="easyui-datetimebox" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" style="width:58%" labelAlign="right" data-options="label:'检测时间:'"/>
                             <span style="width: 2%;">-</span>
                             <input class="easyui-datetimebox" name="latestDetectTimeTimeEnd" id="latestDetectTimeTimeEnd" style="width:39%;"/>
                         </div>
-                        <!--<div class="search-item">
-                            <input class="easyui-textbox" name="exeMachineNo" id="exeMachineNo" style="width:100%" labelAlign="right" data-options="label:'exeMachineNo:', validType:'length[0,3]'" />
-                        </div>-->
-                        <!--<div class="search-item">
-                            <input class="easyui-textbox" name="version" id="version" style="width:100%" labelAlign="right" data-options="label:'version:', validType:'length[0,3]'" />
-                        </div>-->
-                        <!--<div class="search-item">
-                            <input class="easyui-datetimebox" name="created" id="created" style="width:100%" labelAlign="right" data-options="label:'登记时间:'" />
-                        </div>-->
+
                         <div class="search-item long-item">
                             <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间:'"/>
                             <span style="width: 2%;">-</span>
@@ -98,14 +50,12 @@
                                 <option value="plate">车牌号</option>
                                 <option value="tallyAreaNo">理货区号</option>
                                 <option value="name">业户姓名</option>
-                                <option value="productName">检测员</option>
+                                <option value="productName">商品</option>
                                 <option value="latestDetectOperator">检测员</option>
                             </select>
                             <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">
                         </div>
-                        <!--<div class="search-item">
-                            <input class="easyui-datetimebox" name="modified" id="modified" style="width:100%" labelAlign="right" data-options="label:'modified:'" />
-                        </div>-->
+
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                onclick="queryRegisterBillGrid()">查询</a>&nbsp;&nbsp;
