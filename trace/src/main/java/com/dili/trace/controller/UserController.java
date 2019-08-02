@@ -1,20 +1,33 @@
 package com.dili.trace.controller;
 
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.util.StrUtil;
+import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.entity.PatternConstants;
+import com.dili.common.exception.BusinessException;
+import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.api.UserApi;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -24,8 +37,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    private static final Logger LOGGER= LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     UserService userService;
+    @Resource
+    DefaultConfiguration defaultConfiguration;
 
     @ApiOperation("跳转到User页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
@@ -56,9 +73,19 @@ public class UserController {
 		@ApiImplicitParam(name="User", paramType="form", value = "User的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput insert(User user) {
-        userService.insertSelective(user);
-        return BaseOutput.success("新增成功");
+    public @ResponseBody BaseOutput<Long> insert(User user) {
+    try{
+        user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
+        user.setState(EnabledStateEnum.ENABLED.getCode());
+        userService.register(user);
+        return BaseOutput.success("新增成功").setData(user.getId());
+    }catch (BusinessException e){
+        LOGGER.error("register",e);
+        return BaseOutput.failure(e.getMessage());
+    }catch (Exception e){
+        LOGGER.error("register",e);
+        return BaseOutput.failure();
+    }
     }
 
     @ApiOperation("修改User")

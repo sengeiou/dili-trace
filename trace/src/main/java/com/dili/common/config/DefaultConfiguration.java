@@ -21,14 +21,10 @@ public class DefaultConfiguration {
     private double imageScale;
     //图片质量
     private double imageQuality;
-    //签名key
-    private String signSalt;
-    //消息域名
-    private String messageHost;
     //系统简称
     private String systemCode;
     //货站默认密码
-    private String stationPassword;
+    private String password;
 
     public long getSessionExpire() {
         return sessionExpire;
@@ -86,22 +82,6 @@ public class DefaultConfiguration {
         this.imageQuality = imageQuality;
     }
 
-    public String getSignSalt() {
-        return signSalt;
-    }
-
-    public void setSignSalt(String signSalt) {
-        this.signSalt = signSalt;
-    }
-
-    public String getMessageHost() {
-        return messageHost;
-    }
-
-    public void setMessageHost(String messageHost) {
-        this.messageHost = messageHost;
-    }
-
     public String getSystemCode() {
         return systemCode;
     }
@@ -110,11 +90,11 @@ public class DefaultConfiguration {
         this.systemCode = systemCode;
     }
 
-    public String getStationPassword() {
-        return stationPassword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setStationPassword(String stationPassword) {
-        this.stationPassword = stationPassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

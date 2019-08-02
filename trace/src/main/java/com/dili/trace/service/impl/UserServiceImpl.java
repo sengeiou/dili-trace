@@ -1,7 +1,11 @@
 package com.dili.trace.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.util.StrUtil;
+import com.dili.common.entity.PatternConstants;
 import com.dili.common.exception.BusinessException;
+import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.UserMapper;
@@ -9,6 +13,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,12 +39,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 //        }
         //验证手机号是否已注册
         if(existsAccount(user.getPhone())){
-            throw new BusinessException("账号已存在");
+            throw new BusinessException("手机号已注册");
         }
 
         //验证理货区号是否已注册
-        if(existsTaillyAreaNo(user.getTaillyAreaNo())){
-            throw new BusinessException("理货区已存在");
+        if(StringUtils.isNotBlank(user.getTaillyAreaNo()) && existsTaillyAreaNo(user.getTaillyAreaNo())){
+            throw new BusinessException("理货区号已注册");
+        }
+
+        //验证身份证号是否已注册
+        if(existsCardNo(user.getCardNo())){
+            throw new BusinessException("身份证号已注册");
         }
 
         insertSelective(user);
@@ -127,6 +137,18 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public boolean existsTaillyAreaNo(String taillyAreaNo){
         User query = DTOUtils.newDTO(User.class);
         query.setTaillyAreaNo(taillyAreaNo);
+        query.setYn(YnEnum.YES.getCode());
+        return !CollUtil.isEmpty(listByExample(query));
+    }
+
+    /**
+     * 检测身份证号是否存在
+     * @param cardNo
+     * @return true 存在 false 不存在
+     */
+    public boolean existsCardNo(String cardNo){
+        User query = DTOUtils.newDTO(User.class);
+        query.setCardNo(cardNo);
         query.setYn(YnEnum.YES.getCode());
         return !CollUtil.isEmpty(listByExample(query));
     }

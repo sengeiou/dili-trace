@@ -88,6 +88,13 @@ $(function () {
                 return /^[0-9]*$/.test(value);
             },
             message: '请输入数字'
+        },
+        //身份证号
+        cardNo:{
+            validator:function (value, param) {
+                return /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value);
+            },
+            message: '请输入正确的身份证号'
         }
     });
 });

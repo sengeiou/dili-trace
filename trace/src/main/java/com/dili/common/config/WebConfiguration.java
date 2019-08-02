@@ -20,11 +20,6 @@ import javax.annotation.Resource;
 
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
-
-
-    @Value("${trace.upload.path}")
-    private String uploadPath;
-
     @Bean
     public SessionFilter sessionFilter() {
         return new SessionFilter();
@@ -43,9 +38,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/image/**")
-                .addResourceLocations("file:" + uploadPath);
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/image/**").addResourceLocations("file:" + defaultConfiguration.getImageDirectory());
     }
 
 
@@ -71,10 +64,8 @@ public class WebConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(sessionInterceptor()).addPathPatterns("/**/*.api");
-        registry.addInterceptor(loginInterceptor()).addPathPatterns("/**/*.api");
-//        registry.addInterceptor(sessionInterceptor()).addPathPatterns("/api/**");
-//        registry.addInterceptor(loginInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(sessionInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(loginInterceptor()).addPathPatterns("/api/**");
     }
 
 }

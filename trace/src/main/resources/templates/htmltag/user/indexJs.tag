@@ -5,11 +5,12 @@
         $('#dlg').dialog("setTitle","用户新增");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
-        $('#_name').textbox({disabled:false});
-        $('#_phone').textbox({disabled:false});
-        $('#_cardNo').textbox({disabled:false});
-        $('#_addr').textbox({disabled:false});
+        $('#_name').textbox({readonly:false});
+        $('#_phone').textbox({readonly:false});
+        $('#_cardNo').textbox({readonly:false});
+        $('#_addr').textbox({readonly:false});
         $('#_form').form('clear');
+        initFileUpload();
         formFocus("_form", "_userName");
     }
 
@@ -23,10 +24,12 @@
         $('#dlg').dialog("setTitle","用户修改");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
-        $('#_name').textbox({disabled:true});
-        $('#_phone').textbox({disabled:true});
-        $('#_cardNo').textbox({disabled:true});
-        $('#_addr').textbox({disabled:true});
+        $('#_name').textbox({readonly:true});
+        $('#_phone').textbox({readonly:true});
+        $('#_cardNo').textbox({readonly:true});
+        $('#_addr').textbox({readonly:true});
+        $('#_form').form('clear');
+        initFileUpload();
         formFocus("_form", "_userName");
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
@@ -54,7 +57,7 @@
             async : true,
             success: function (data) {
                 if(data.code=="200"){
-                    $("#grid").datagrid("reload");
+                    _userGrid.datagrid("reload");
                     $('#dlg').dialog('close');
                 }else{
                     swal('错误',data.result, 'error');
@@ -68,11 +71,53 @@
 
     //根据主键删除
     function del() {
-        var selected = $("#userGrid").datagrid("getSelected");
+        var selected = _userGrid.datagrid("getSelected");
         if (null == selected) {
             swal('警告','请选中一条数据', 'warning');
             return;
         }
+
+        swal({
+            title : '确定要删除该用户吗？',
+            type : 'question',
+            showCancelButton : true,
+            confirmButtonColor : '#3085d6',
+            cancelButtonColor : '#d33',
+            confirmButtonText : '确定',
+            cancelButtonText : '取消',
+            confirmButtonClass : 'btn btn-success',
+            cancelButtonClass : 'btn btn-danger'
+        }).then(function(flag) {
+            if (flag.dismiss == 'cancel' || flag.dismiss == 'overlay' || flag.dismiss == "esc" || flag.dismiss == "close"){
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "${contextPath}/user/delete.action",
+                data: {id: selected.id},
+                processData:true,
+                dataType: "json",
+                async : true,
+                success : function(ret) {
+                    if(ret.success){
+                        _userGrid.datagrid("reload");
+                    }else{
+                        swal(
+                            '错误',
+                            ret.result,
+                            'error'
+                        );
+                    }
+                },
+                error : function() {
+                    swal(
+                        '错误',
+                        '远程访问失败',
+                        'error'
+                    );
+                }
+            });
+        });
     }
 
     /**
@@ -148,6 +193,41 @@
     })
 
 
+    function initFileUpload(){
+        $(":file").fileupload({
+            dataType : 'json',
+            formData: {type:4,compress:true},
+            done : function(e, res) {
+                if (res.result.code == 200) {
+                    for (key in res.result.data) {
+                        var url = res.result.data[key];
+                        $(this).next(".magnifying").attr('src', url + '?imageView2/2/w/100/h/100');
+                        $('#headImg').val(key);
+                        break;
+                    }
+                    $('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".")+1;
+                var fileType = name.substring(index,name.length);
+                if(!acceptFileTypes.test(fileType)){
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return ;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if(size > (1024*10*1024)){
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return ;
+                }
+                data.submit();
+            }
+        });
+    }
+
     /**
      * 初始化用户列表组件
      */
@@ -168,20 +248,6 @@
                 text:'修改',
                 handler:function(){
                     openUpdate();
-                }
-            },
-            {
-                iconCls:'icon-remove',
-                text:'删除',
-                handler:function(){
-                    del();
-                }
-            },
-            {
-                iconCls:'icon-detail',
-                text:'查看',
-                handler:function(){
-                    doDetail();
                 }
             }
         ]
