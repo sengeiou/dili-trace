@@ -35,6 +35,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Override
     public int createRegisterBill(RegisterBill registerBill) {
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
+        registerBill.setVersion(1);
         return saveOrUpdate(registerBill);
     }
 

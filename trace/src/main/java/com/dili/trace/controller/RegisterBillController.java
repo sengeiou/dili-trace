@@ -48,9 +48,6 @@ public class RegisterBillController {
     @Autowired
     TradeTypeService tradeTypeService;
 
-
-    private static HashMap NAME_RESUBMIT=new HashMap();
-
     @ApiOperation("跳转到RegisterBill页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -101,15 +98,6 @@ public class RegisterBillController {
     @RequestMapping(value="/insert.action", method = RequestMethod.POST)
     public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
         LOGGER.info("保存登记单数据:"+registerBills.size());
-        String customerName = registerBills.get(0).getName();
-        if(NAME_RESUBMIT.get(customerName)!=null){
-            Long time = (Long) NAME_RESUBMIT.get(customerName);
-            if(System.currentTimeMillis()-time<3000){
-                LOGGER.error("有重复提交的数据" + customerName);
-                return BaseOutput.failure("请勿重复提交");
-            }
-        }
-        NAME_RESUBMIT.put(customerName,System.currentTimeMillis());
         //RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
         for(RegisterBill registerBill :registerBills){
             registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());

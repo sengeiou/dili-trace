@@ -13,7 +13,7 @@
     <result column="id_card_no" jdbcType="VARCHAR" property="idCardNo" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
     <result column="trade_no" jdbcType="BIGINT" property="tradeNo" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="plate" jdbcType="VARCHAR" property="plate" />
     <result column="state" jdbcType="BIT" property="state" />
     <result column="sales_type" jdbcType="BIT" property="salesType" />
@@ -25,7 +25,7 @@
     <result column="detect_state" jdbcType="BIT" property="detectState" />
     <result column="latest_detect_record_id" jdbcType="BIGINT" property="latestDetectRecordId" />
     <result column="latest_detect_time" jdbcType="TIMESTAMP" property="latestDetectTime" />
-    <result column="exe_machine_no" jdbcType="TINYINT" property="exeMachineNo" />
+    <result column="exe_machine_no" jdbcType="VARCHAR" property="exeMachineNo" />
     <result column="version" jdbcType="TINYINT" property="version" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />

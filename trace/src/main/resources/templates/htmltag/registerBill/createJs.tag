@@ -12,9 +12,9 @@ var resubmit =0;
             resubmit=0;
             return;
         }
-        if($('createRecordForm').validate().form() != true){
+        /*if($('createRecordForm').validate().form() != true){
             return;
-        }
+        }*/
         //console.log("参数:"+$('#createRecordForm').serialize());
         var registerBills = new Array();
         $("#goodsTable").find("tbody").find("tr").each(function(){
