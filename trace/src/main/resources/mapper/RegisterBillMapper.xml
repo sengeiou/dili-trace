@@ -140,7 +140,7 @@
   </select>
 
   <update id="matchDetectBind" >
-    update register_bill  set `trade_no` = #{tradeNo} WHERE  id = #{id}
+    update register_bill  set `trade_no` = #{tradeNo} WHERE  id = #{id} and (trade_no is NULL or trade_no='')
   </update>
   <select id="findByExeMachineNo" resultMap="BaseResultMap">
     select  <include refid="Base_Column_List" />
