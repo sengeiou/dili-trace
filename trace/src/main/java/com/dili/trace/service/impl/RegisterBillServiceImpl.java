@@ -42,9 +42,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             //交易区没有理货区号
             registerBill.setTallyAreaNo(null);
         }
-        UserTicket userTicket = getOptUser();
-        registerBill.setOperatorName(userTicket.getRealName());
-        registerBill.setOperatorId(userTicket.getId());
+        if(StringUtils.isBlank(registerBill.getOperatorName())){
+            UserTicket userTicket = getOptUser();
+            registerBill.setOperatorName(userTicket.getRealName());
+            registerBill.setOperatorId(userTicket.getId());
+        }
         return saveOrUpdate(registerBill);
     }
 

@@ -17,7 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -60,7 +63,7 @@ public class RegisterBillApi {
         LOGGER.info("保存登记单:"+ JSON.toJSONString(registerBill));
         int result =registerBillService.createRegisterBill(registerBill);
         if(result==0){
-            return BaseOutput.failure().setMessage("请检测相关参数完整性");
+            return BaseOutput.failure("请检测相关参数完整性");
         }
         return BaseOutput.success();
     }
@@ -72,24 +75,46 @@ public class RegisterBillApi {
         EasyuiPageOutput easyuiPageOutput = registerBillService.listEasyuiPageByExample(registerBill, true);
         return BaseOutput.success().setData(easyuiPageOutput);
     }
-    @ApiOperation("保存分销单")
+    @ApiOperation("保存分销单&全销总量与登记单相等")
     @ApiImplicitParam(paramType = "body", name = "SeparateSalesRecord", dataType = "SeparateSalesRecord", value = "分销单保存入参")
     @RequestMapping(value = "/createSalesRecord",method = RequestMethod.POST)
     public BaseOutput<Boolean> saveSeparateSalesRecord(SeparateSalesRecord salesRecord){
         LOGGER.info("保存分销单:"+JSON.toJSONString(salesRecord));
         if(StringUtils.isBlank(salesRecord.getRegisterBillCode())){
-            return BaseOutput.failure("没有分销的登记单");
+            return BaseOutput.failure("没有需要分销的登记单");
         }
+        Integer alreadyWeight =separateSalesRecordService.alreadySeparateSalesWeight(salesRecord.getRegisterBillCode());
         RegisterBill registerBill =  registerBillService.findByCode(salesRecord.getRegisterBillCode());
+
+        if((salesRecord.getSalesWeight().intValue()+alreadyWeight)>registerBill.getWeight().intValue()){
+            LOGGER.error("分销重量超过可分销重量SalesWeight："+salesRecord.getSalesWeight()+",alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
+            return BaseOutput.failure("分销重量超过可分销重量").setData(false);
+        }
         if(registerBill.getWeight().intValue() == salesRecord.getSalesWeight().intValue()){
-            registerBill.setSalesType(2);
+            if(alreadyWeight ==0){//未分销过
+                registerBill.setSalesType(2);
+            }else {
+                LOGGER.error("判断有问题？SalesWeight："+salesRecord.getSalesWeight()+",alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
+                return BaseOutput.failure("不能全销").setData(false);
+            }
         }else {
             registerBill.setSalesType(1);
+            separateSalesRecordService.saveOrUpdate(salesRecord);
         }
+        registerBill.setOperatorId(salesRecord.getOperatorId());
+        registerBill.setOperatorName(salesRecord.getOperatorName());
         registerBillService.update(registerBill);
-        separateSalesRecordService.saveOrUpdate(salesRecord);
         return BaseOutput.success().setData(true);
     }
+  /*  @ApiOperation("保存全销单")
+    @RequestMapping(value = "/allSeparateSales/{id}",method = {RequestMethod.POST,RequestMethod.GET})
+    public BaseOutput<Boolean> allSeparateSales(@PathVariable Long id){
+        LOGGER.info("保存全销单:"+id);
+        RegisterBill registerBill =  registerBillService.get(id);
+        registerBill.setSalesType(2);
+        registerBillService.update(registerBill);
+        return BaseOutput.success().setData(true);
+    }*/
     @ApiOperation(value = "通过ID获取登记单和分销单")
     @RequestMapping(value = "id/{id}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getRegisterBill( @PathVariable Long id){

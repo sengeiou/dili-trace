@@ -26,4 +26,13 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
         separateSalesRecord.setRegisterBillCode(registerBillCode);
         return  list(separateSalesRecord);
     }
+
+    @Override
+    public Integer alreadySeparateSalesWeight(String registerBillCode) {
+        Integer alreadyWeight =getActualDao().alreadySeparateSalesWeight(registerBillCode);
+        if(alreadyWeight == null){
+            alreadyWeight=0;
+        }
+        return alreadyWeight;
+    }
 }
