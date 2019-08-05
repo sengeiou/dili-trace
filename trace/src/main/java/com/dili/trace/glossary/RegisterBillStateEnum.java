@@ -19,7 +19,7 @@ public enum RegisterBillStateEnum {
     ALREADY_CHECK(6, "已检测"),
     REVIEW_CHECK(7, "复检中"),
     NO_PASS(8, "审核未通过"),
-    UNDO(9, "撤销"),
+    //UNDO(9, "撤销"),
     ;
 
     private String name;
