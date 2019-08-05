@@ -23,18 +23,10 @@ public class QualityTraceTradeBillServiceImpl extends BaseServiceImpl<QualityTra
 
 	@Override
 	public QualityTraceTradeBill findByTradeNo(String tradeNo) {
-		return null;
+		return getActualDao().findByOrderId(tradeNo);
 	}
 
-	@Override
-	public QualityTraceTradeBill findByTradeCardNo(String tradeCardNo) {
-		return null;
-	}
 
-	@Override
-	public QualityTraceTradeBill findByPrintCardNo(String printCardNo) {
-		return null;
-	}
 
 	@Override
 	public List<QualityTraceTradeBillRepeatDto> selectRepeatedOrderId() {

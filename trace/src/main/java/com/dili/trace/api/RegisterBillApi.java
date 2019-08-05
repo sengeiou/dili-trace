@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import io.swagger.annotations.Api;
@@ -36,6 +39,9 @@ public class RegisterBillApi {
     private RegisterBillService registerBillService;
     @Autowired
     private SeparateSalesRecordService separateSalesRecordService;
+    @Autowired
+    private QualityTraceTradeBillService qualityTraceTradeBillService;
+
 
     @Autowired
     BizNumberFunction bizNumberFunction;
@@ -83,8 +89,22 @@ public class RegisterBillApi {
         if(StringUtils.isBlank(salesRecord.getRegisterBillCode())){
             return BaseOutput.failure("没有需要分销的登记单");
         }
-        Integer alreadyWeight =separateSalesRecordService.alreadySeparateSalesWeight(salesRecord.getRegisterBillCode());
         RegisterBill registerBill =  registerBillService.findByCode(salesRecord.getRegisterBillCode());
+        if(registerBill == null){
+            return BaseOutput.failure("没有查到需要分销的登记单");
+        }
+        if(registerBill.getRegisterSource().intValue()== RegisterSourceEnum.TRADE_AREA.getCode()){//交易区分销校验
+            //校验买家身份证
+            QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
+            if(!qualityTraceTradeBill.getBuyerIDNo().equals("")){
+                return BaseOutput.failure("没有权限分销");
+            }
+        }else {//理货区分销校验
+            if(!registerBill.getUserId().equals("")){
+                return BaseOutput.failure("没有权限分销");
+            }
+        }
+        Integer alreadyWeight =separateSalesRecordService.alreadySeparateSalesWeight(salesRecord.getRegisterBillCode());
 
         if((salesRecord.getSalesWeight().intValue()+alreadyWeight)>registerBill.getWeight().intValue()){
             LOGGER.error("分销重量超过可分销重量SalesWeight："+salesRecord.getSalesWeight()+",alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());

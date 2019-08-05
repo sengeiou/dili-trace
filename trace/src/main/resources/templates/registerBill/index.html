@@ -15,12 +15,12 @@
                     <div class="search-wrap">
 
                         <div class="search-item">
-                            <input class="easyui-textbox" name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'" />
+                            <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'" />
                             <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
 
                         <div class="search-item">
-                            <input class="easyui-textbox" name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'单据状态' " />
+                            <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'单据状态' " />
                             <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
 
@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="search-item">
-                            <input class="easyui-textbox" name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'" />
+                            <input  name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'" />
                             <#comboProvider _id="detectState" _provider='billDetectStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
 

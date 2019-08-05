@@ -13,8 +13,7 @@ import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
 public interface QualityTraceTradeBillService extends BaseService<QualityTraceTradeBill, Long> {
     //通过交易号查询交易区SQLServer数据
     public QualityTraceTradeBill findByTradeNo(String tradeNo);
-    public QualityTraceTradeBill findByTradeCardNo(String tradeCardNo);
-    public QualityTraceTradeBill findByPrintCardNo(String printCardNo);
+
 	
 	public List<QualityTraceTradeBillRepeatDto>selectRepeatedOrderId();
 }

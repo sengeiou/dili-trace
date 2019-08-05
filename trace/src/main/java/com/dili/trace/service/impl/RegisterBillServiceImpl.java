@@ -5,9 +5,11 @@ import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.glossary.*;
+import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
@@ -29,6 +31,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
     @Autowired
     BizNumberFunction bizNumberFunction;
+    @Autowired
+    QualityTraceTradeBillService qualityTraceTradeBillService;
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper)getDao();
     }
@@ -224,5 +228,22 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
     UserTicket getOptUser(){
         return SessionContext.getSessionContext().getUserTicket();
+    }
+
+    @Override
+    public RegisterBill findAndBind(String tradeNo) {
+        if(StringUtils.isBlank(tradeNo)){
+            return null;
+        }
+        RegisterBill registerBill = findByTradeNo(tradeNo);
+        QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(tradeNo);
+        if(registerBill == null){
+            int result = matchDetectBind(tradeNo,"",qualityTraceTradeBill.getProductName(),qualityTraceTradeBill.getSellerIDNo(),qualityTraceTradeBill.getOrderPayDate());
+            if(result==1){
+                registerBill=findByTradeNo(tradeNo);
+            }
+        }
+        registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
+        return registerBill;
     }
 }
