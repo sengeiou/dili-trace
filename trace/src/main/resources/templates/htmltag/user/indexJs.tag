@@ -9,8 +9,7 @@
         $('#_phone').textbox({readonly:false});
         $('#_cardNo').textbox({readonly:false});
         $('#_addr').textbox({readonly:false});
-        $('#cardNoImage').siblings(".magnifying").removeAttr("src");
-        $('#businessLicenseImage').siblings(".magnifying").removeAttr("src");
+        $(".magnifying").hide();
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_userName");
@@ -35,10 +34,15 @@
         formFocus("_form", "_userName");
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
-        $('#cardNoImage').siblings(".magnifying").removeAttr("src");
-        $('#businessLicenseImage').siblings(".magnifying").removeAttr("src");
-        $('#cardNoImage').siblings(".magnifying").attr('src',formData._cardNoUrl);
-        $('#businessLicenseImage').siblings(".magnifying").attr('src',formData._businessLicenseUrl);
+        $(".magnifying").hide();
+        if(formData._cardNoUrl){
+            $('#cardNoImage').siblings(".magnifying").attr('src',formData._cardNoUrl);
+            $('#cardNoImage').siblings(".magnifying").show();
+        }
+        if(formData._businessLicenseUrl){
+            $('#businessLicenseImage').siblings(".magnifying").attr('src',formData._businessLicenseUrl);
+            $('#businessLicenseImage').siblings(".magnifying").show();
+        }
         $('#_form').form('load', formData);
     }
 
@@ -218,6 +222,7 @@
                 if (res.result.code == 200) {
                     var url = res.result.data;
                     $(this).next(".magnifying").attr('src', url);
+                    $(this).next(".magnifying").show();
                     $(this).siblings("input:hidden").val(url);
                     $('.fileimg-cover,.fileimg-edit').show();
                 }
