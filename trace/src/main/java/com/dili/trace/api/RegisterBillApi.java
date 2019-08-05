@@ -64,6 +64,14 @@ public class RegisterBillApi {
         }
         return BaseOutput.success();
     }
+    @ApiOperation(value = "获取登记单列表")
+    @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
+    @RequestMapping(value = "/list",method = RequestMethod.POST)
+    public BaseOutput<EasyuiPageOutput> list(RegisterBillDto registerBill) throws Exception {
+        LOGGER.info("获取登记单列表:"+JSON.toJSON(registerBill).toString());
+        EasyuiPageOutput easyuiPageOutput = registerBillService.listEasyuiPageByExample(registerBill, true);
+        return BaseOutput.success().setData(easyuiPageOutput);
+    }
     @ApiOperation("保存分销单")
     @ApiImplicitParam(paramType = "body", name = "SeparateSalesRecord", dataType = "SeparateSalesRecord", value = "分销单保存入参")
     @RequestMapping(value = "/createSalesRecord",method = RequestMethod.POST)
@@ -133,10 +141,5 @@ public class RegisterBillApi {
         return BaseOutput.success().setData(bills);
     }
 
-    @ApiOperation(value = "获取登记单列表",httpMethod = "GET")
-    @RequestMapping(value = "/queryList",method = RequestMethod.GET)
-    public BaseOutput<EasyuiPageOutput> queryList(RegisterBillDto registerBill) throws Exception {
-        EasyuiPageOutput easyuiPageOutput = registerBillService.listEasyuiPageByExample(registerBill, true);
-        return BaseOutput.success().setData(easyuiPageOutput);
-    }
+
 }
