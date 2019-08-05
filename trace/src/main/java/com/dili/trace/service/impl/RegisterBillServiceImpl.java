@@ -1,5 +1,6 @@
 package com.dili.trace.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
@@ -8,6 +9,8 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.RegisterBillService;
+import com.diligrp.manage.sdk.domain.UserTicket;
+import com.diligrp.manage.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             //交易区没有理货区号
             registerBill.setTallyAreaNo(null);
         }
+        UserTicket userTicket = getOptUser();
+        registerBill.setOperatorName(userTicket.getRealName());
+        registerBill.setOperatorId(userTicket.getId());
         return saveOrUpdate(registerBill);
     }
 
@@ -142,6 +148,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public int auditRegisterBill(Long id,Boolean pass) {
         RegisterBill registerBill =get(id);
         if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()){
+            UserTicket userTicket = getOptUser();
+            registerBill.setOperatorName(userTicket.getRealName());
+            registerBill.setOperatorId(userTicket.getId());
             if(pass){
                 registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
                 if(StringUtils.isNotBlank(registerBill.getDetectReportUrl())){
@@ -160,8 +169,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public int undoRegisterBill(Long id) {
         RegisterBill registerBill =get(id);
         if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()){
-            registerBill.setState(RegisterBillStateEnum.UNDO.getCode().intValue());
-            return update(registerBill);
+            UserTicket userTicket = getOptUser();
+            LOGGER.info(userTicket.getDepName()+":"+userTicket.getRealName()+"删除登记单"+ JSON.toJSON(registerBill).toString());
+            delete(id);
+            //return update(registerBill);
         }
         return 0;
     }
@@ -170,6 +181,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public int autoCheckRegisterBill(Long id) {
         RegisterBill registerBill =get(id);
         if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()){
+            UserTicket userTicket = getOptUser();
+            registerBill.setOperatorName(userTicket.getRealName());
+            registerBill.setOperatorId(userTicket.getId());
             registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
             registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
             return update(registerBill);
@@ -181,6 +195,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public int samplingCheckRegisterBill(Long id) {
         RegisterBill registerBill =get(id);
         if(registerBill.getState().intValue()== RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()){
+            UserTicket userTicket = getOptUser();
+            registerBill.setOperatorName(userTicket.getRealName());
+            registerBill.setOperatorId(userTicket.getId());
             registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
             registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
             return update(registerBill);
@@ -193,11 +210,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         RegisterBill registerBill =get(id);
         if(registerBill.getState().intValue()== RegisterBillStateEnum.ALREADY_CHECK.getCode().intValue()
                 && registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()){
+            UserTicket userTicket = getOptUser();
+            registerBill.setOperatorName(userTicket.getRealName());
+            registerBill.setOperatorId(userTicket.getId());
             registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
             registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
             registerBill.setExeMachineNo(null);
             return update(registerBill);
         }
         return 0;
+    }
+    UserTicket getOptUser(){
+        return SessionContext.getSessionContext().getUserTicket();
     }
 }

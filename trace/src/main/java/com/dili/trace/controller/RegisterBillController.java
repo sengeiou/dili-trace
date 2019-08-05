@@ -91,9 +91,6 @@ public class RegisterBillController {
                     break;
             }
         }
-        if("全部".equals(registerBill.getRegisterSource())){
-            registerBill.setRegisterSource(null);
-        }
         return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
     }
 
