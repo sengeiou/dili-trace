@@ -3,8 +3,10 @@ package com.dili.trace.api;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -129,5 +131,12 @@ public class RegisterBillApi {
         LOGGER.info("获取登记单&分销记录:"+productName);
         List<RegisterBill> bills = registerBillService.findByProductName(productName);
         return BaseOutput.success().setData(bills);
+    }
+
+    @ApiOperation(value = "获取登记单列表",httpMethod = "GET")
+    @RequestMapping(value = "/queryList",method = RequestMethod.GET)
+    public BaseOutput<EasyuiPageOutput> queryList(RegisterBillDto registerBill) throws Exception {
+        EasyuiPageOutput easyuiPageOutput = registerBillService.listEasyuiPageByExample(registerBill, true);
+        return BaseOutput.success().setData(easyuiPageOutput);
     }
 }
