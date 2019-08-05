@@ -27,6 +27,7 @@
 		<junit-platform.version>1.5.0</junit-platform.version>
 
 		<start-class>com.dili.TraceWebApplication</start-class>
+		<springfox-swagger.version>2.7.0</springfox-swagger.version>
 	</properties>
 
 	<!-- 父工程定义 -->
@@ -149,6 +150,16 @@
 			<groupId>com.dili</groupId>
 			<artifactId>ss-beetl</artifactId>
 			<version>${sharp-sword.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>springfox-swagger2</artifactId>
+					<groupId>io.springfox</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>swagger-annotations</artifactId>
+					<groupId>io.swagger</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- if you enable json support in spring mvc. -->
@@ -264,14 +275,16 @@
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.4.0</version>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${springfox-swagger.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>1.5.16</version>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${springfox-swagger.version}</version>
 		</dependency>
+
 
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
