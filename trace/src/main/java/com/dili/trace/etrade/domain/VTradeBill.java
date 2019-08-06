@@ -49,7 +49,7 @@ public class VTradeBill extends BaseDomain {
 	private Date orderPayDate;// datetime
 	// 总金额（分）
 	@Column(name = "totalMoney")
-	private BigDecimal totalMoney;// Money
+	private BigDecimal totalMoney=BigDecimal.ZERO;// Money
 	// 商品编号
 	@Column(name = "productId")
 	private String productId;// varchar(50)
@@ -64,14 +64,14 @@ public class VTradeBill extends BaseDomain {
 	private String cateName;// varchar(50)
 	// 单价（分）
 	@Column(name = "price")
-	private BigDecimal price;// Money
+	private BigDecimal price=BigDecimal.ZERO;// Money
 
 	// 件数
-	private BigDecimal piecequantity;
+	private BigDecimal piecequantity=BigDecimal.ZERO;
 	// 件重（公斤）
-	private BigDecimal pieceweight;
+	private BigDecimal pieceweight=BigDecimal.ZERO;
 	// 总净重（公斤）
-	private BigDecimal netWeight;
+	private BigDecimal netWeight=BigDecimal.ZERO;
 	// 交易类型编码
 	private String tradetypeid;
 	// 交易类型名称
