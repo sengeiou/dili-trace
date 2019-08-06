@@ -22,6 +22,14 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.BaseRowModel;
 import com.alibaba.excel.metadata.Sheet;
+import com.dili.ss.exception.AppException;
+
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 public class ProductModel extends BaseRowModel {
 	@ExcelProperty(index = 0)
@@ -172,28 +180,63 @@ public class ProductModel extends BaseRowModel {
 
 	}
 
-	public static List<ProductModel> rebuildId(ProductModel parent,List<ProductModel> childList, AtomicLong startId) {
+	public static List<ProductModel> rebuildId(ProductModel parent, List<ProductModel> childList, AtomicLong startId) {
 		childList.stream().forEach(item -> {
 			item.setId(String.valueOf(startId.getAndIncrement()));
-			if(parent==null) {
+			if (parent == null) {
 				item.setParent("0");
-				item.setPath(item.getId()+",");
-			}else {
+				item.setPath(item.getId() + ",");
+			} else {
 				item.setParent(parent.getId());
-				item.setPath(parent.getPath()+item.getId()+",");
+				item.setPath(parent.getPath() + item.getId() + ",");
 			}
+			item.setPingying(pingying(item.getName(), false));
+			item.setPyInitals(pingying(item.getName(),true));
+//			item.setPingying(pingying);
 //			System.out.println(item);
-			rebuildId(item,item.getChildrenModel(), startId);
-			
+			rebuildId(item, item.getChildrenModel(), startId);
+
 		});
 
 		return childList;
 	}
+
 	public static List<ProductModel> treeToList(List<ProductModel> childList) {
-		
-		return childList.stream().flatMap(item->{
+
+		return childList.stream().flatMap(item -> {
 			return Stream.concat(Stream.of(item), treeToList(item.getChildrenModel()).stream());
 		}).collect(Collectors.toList());
+	}
+
+	private static HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
+	static {
+		defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);// 输出拼音全部小写
+		defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);// 不带声调
+		defaultFormat.setVCharType(HanyuPinyinVCharType.WITH_V);
+	}
+
+	
+	private static String pingying(String chineseStr, boolean capti) {
+
+		StringBuilder sb = new StringBuilder();
+		char[] words = chineseStr.toCharArray();
+		try {
+			for (int i = 0; i < words.length; i++) {
+				String pingyin = Character.toString(words[i]);
+				// 判断能否为汉字字符
+				if (Character.toString(words[i]).matches("[\\u4E00-\\u9FA5]+")) {
+					String[] pinyins = PinyinHelper.toHanyuPinyinStringArray(words[i], defaultFormat);// 将汉字的几种全拼都存到t2数组中
+					pingyin = pinyins[0];// 取出该汉字全拼的第一种读音并连接到字符串t4后
+				}
+				if (pingyin.length() > 0 && capti) {
+					pingyin = String.valueOf(pingyin.charAt(0));
+				}
+				sb.append(pingyin);
+			}
+		} catch (BadHanyuPinyinOutputFormatCombination e) {
+			throw new AppException("拼音转换出错");
+		}
+		return sb.toString();
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -205,6 +248,25 @@ public class ProductModel extends BaseRowModel {
 			List<ProductModel> treeList=ProductModel.rebuildId(null,rootList, new AtomicLong(5));
 			treeToList(treeList).stream().forEach(System.out::println);
 		}
+
+//		StringBuilder sb = new StringBuilder();
+//		char[] words = "王国风".toCharArray();
+//		try {
+//			for (int i = 0; i < words.length; i++) {
+//				// 判断能否为汉字字符
+//				// System.out.println(t1[i]);
+//				if (Character.toString(words[i]).matches("[\\u4E00-\\u9FA5]+")) {
+//					String[] pinyin = PinyinHelper.toHanyuPinyinStringArray(words[i], defaultFormat);// 将汉字的几种全拼都存到t2数组中
+//					sb.append(pinyin[0]);// 取出该汉字全拼的第一种读音并连接到字符串t4后
+//				} else {
+//					// 如果不是汉字字符，间接取出字符并连接到字符串t4后
+//					sb.append(Character.toString(words[i]));
+//				}
+//			}
+//		} catch (BadHanyuPinyinOutputFormatCombination e) {
+//			e.printStackTrace();
+//		}
+//		System.out.println(sb.toString());
 
 	}
 }

@@ -17,12 +17,17 @@
 		<result column="totalMoney" property="totalMoney" />
 		<result column="productId" jdbcType="VARCHAR" property="productId" />
 		<result column="cateId" jdbcType="VARCHAR" property="cateId" />
+		<result column="piecequantity" property="piecequantity" />
+		<result column="pieceweight" property="pieceweight" />
+		<result column="netWeight" property="netWeight" />
 
 		<result column="cateName" jdbcType="VARCHAR" property="cateName" />
 		<result column="price" property="price" />
 		<result column="saleUnit" property="saleUnit" />
-		<result column="ProvinceName" jdbcType="VARCHAR" property="provinceName" />
-
+		<result column="provinceName" jdbcType="VARCHAR" property="provinceName" />
+		<result column="tradetypeid" jdbcType="VARCHAR" property="tradetypeid" />
+		<result column="tradetypename" jdbcType="VARCHAR" property="tradetypename" />
+		<result column="billActive" property="billActive" />
 	</resultMap>
 
 	<select id="selectTopRemoteData"
