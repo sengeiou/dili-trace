@@ -60,4 +60,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="alreadySeparateSalesWeight" resultType="java.lang.Integer">
+    SELECT  sum(sales_weight) FROM separate_sales_record WHERE register_bill_code = #{registerBillCode}
+  </select>
 </mapper>

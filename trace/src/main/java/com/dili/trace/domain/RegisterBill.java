@@ -252,4 +252,7 @@ public interface RegisterBill extends IBaseDomain {
     void setSeparateSalesRecords(List<SeparateSalesRecord> separateSalesRecords);
     DetectRecord getDetectRecord();
     void setDetectRecord(DetectRecord detectRecord);
+
+    QualityTraceTradeBill getQualityTraceTradeBill();
+    void setQualityTraceTradeBill(QualityTraceTradeBill qualityTraceTradeBill);
 }
