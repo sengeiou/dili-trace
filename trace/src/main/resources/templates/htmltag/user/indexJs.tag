@@ -9,7 +9,10 @@
         $('#_phone').textbox({readonly:false});
         $('#_cardNo').textbox({readonly:false});
         $('#_addr').textbox({readonly:false});
+        $('#_taillyAreaNo').textbox({readonly:false});
         $(".magnifying").hide();
+        $(".fileimg-cover,.fileimg-edit").hide();
+        $(":file").attr('disabled',false);
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_userName");
@@ -29,19 +32,22 @@
         $('#_phone').textbox({readonly:true});
         $('#_cardNo').textbox({readonly:true});
         $('#_addr').textbox({readonly:true});
+        $('#_taillyAreaNo').textbox({readonly:true});
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_userName");
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
         $(".magnifying").hide();
+        $(".fileimg-cover,.fileimg-edit").hide();
+        $(":file").attr('disabled',true);
         if(formData._cardNoUrl){
-            $('#cardNoImage').siblings(".magnifying").attr('src',formData._cardNoUrl);
-            $('#cardNoImage').siblings(".magnifying").show();
+            $('#_cardNoUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#_cardNoUrl').siblings(".magnifying").attr('src',formData._cardNoUrl).show();
         }
         if(formData._businessLicenseUrl){
-            $('#businessLicenseImage').siblings(".magnifying").attr('src',formData._businessLicenseUrl);
-            $('#businessLicenseImage').siblings(".magnifying").show();
+            $('#_businessLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#_businessLicenseUrl').siblings(".magnifying").attr('src',formData._businessLicenseUrl).show();
         }
         $('#_form').form('load', formData);
     }
@@ -221,8 +227,7 @@
             done : function(e, res) {
                 if (res.result.code == 200) {
                     var url = res.result.data;
-                    $(this).next(".magnifying").attr('src', url);
-                    $(this).next(".magnifying").show();
+                    $(this).next(".magnifying").attr('src', url).show();
                     $(this).siblings("input:hidden").val(url);
                     $('.fileimg-cover,.fileimg-edit').show();
                 }
