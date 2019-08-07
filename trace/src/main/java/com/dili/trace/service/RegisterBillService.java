@@ -1,10 +1,12 @@
 package com.dili.trace.service;
 
+import java.util.List;
+import java.util.Map;
+
 import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.RegisterBill;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillStaticsDto;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -22,4 +24,10 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
     int samplingCheckRegisterBill(Long id);
     int reviewCheckRegisterBill(Long id);
     RegisterBill findAndBind(String tradeNo);
+    /**
+     * 根据状态统计数据
+     * @param dto
+     * @return
+     */
+    public RegisterBillStaticsDto groupByState(RegisterBillDto dto);
 }

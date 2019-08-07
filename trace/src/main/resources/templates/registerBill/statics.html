@@ -1,0 +1,273 @@
+ <#body>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <!--<div id="nav" class="top-pos-box">
+                <span><img class="nav-pos-icon" src="${contextPath}/resources/images/pos-icon.png">当前位置:</span>
+                <span>登记单管理&nbsp&gt;</span>
+                <span><a class="link-text" href="">登记单列表</a></span>
+            </div>-->
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="queryForm" class="easyui-form" method="post" fit="true">
+                    <div class="search-wrap">
+
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'"/>
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"/>
+                        </div>
+
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" style="width:58%" labelAlign="right" data-options="label:'检测时间'"/>
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="latestDetectTimeTimeEnd" id="latestDetectTimeTimeEnd" style="width:39%;"/>
+                        </div>
+                       
+
+                     
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="queryRegisterBillGrid()">统计</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
+                        </div>
+                         <br/>
+                        <div class="search-item">
+                            <input class="easyui-textbox" id="pass" style="width:100%" labelAlign="right" data-options="label:'合格:'" value="0条" readonly="readonly" disabled="disabled" />
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox" id="nopass" style="width:100%" labelAlign="right" data-options="label:'不合格:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox" id="check" style="width:100%" labelAlign="right" data-options="label:'主动送检:'"  value="0条" readonly="readonly" disabled="disabled" />
+                        </div>
+                        
+                        <div class="search-item">
+                            <input class="easyui-textbox" id="recheck" style="width:100%" labelAlign="right" data-options="label:'复检:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="客户列表" id="registerBillGrid" fitColumns="true" noheader="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
+                   align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+                <thead>
+                    <tr>
+                        <th width="11%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            登记时间
+                        </th>
+                        <th width="10%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            编号
+                        </th>
+                        <!--<th width="5%"  data-options="field:'registerSource',  _provider:'registerSourceProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                          登记来源
+                        </th>-->
+                        <th width="8%" data-options="field:'tallyAreaNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            理货区号
+                        </th>
+                        <th width="6%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            业户姓名
+                        </th>
+                        <th width="7%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            车牌
+                        </th>
+                        <!--<th width="8%" data-options="field:'idCardNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            身份证号
+                        </th>-->
+                        <th width="8%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            商品名称
+                        </th>
+                        <th width="7%" data-options="field:'weight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            重量/KG
+                        </th>
+                        <!--<th width="10%" data-options="field:'addr',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            地址
+                        </th>-->
+                        <!--<th width="6%" data-options="field:'tradeNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            交易单号
+                        </th>-->
+                        <th width="10%" data-options="field:'originName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            产地
+                        </th>
+
+                        <th width="7%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            状态
+                        </th>
+
+
+                        <th width="11%" data-options="field:'latestDetectTime',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            检测时间
+                        </th>
+
+
+
+                        <th width="7%" data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           检测结果
+                        </th>
+                        <th width="7%" data-options="field:'latestDetectOperator',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            检测员
+                        </th>
+
+
+                        <!--<th width="5%" data-options="field:'exeMachineNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            exeMachineNo
+                        </th>-->
+
+
+                   </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <!-- 隐藏编辑框 -->
+
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+   <script type="text/javascript">
+   $.fn.serializeObject = function()
+   {
+       var o = {};
+       var a = this.serializeArray();
+       $.each(a, function() {
+           if (o[this.name] !== undefined) {
+               if (!o[this.name].push) {
+                   o[this.name] = [o[this.name]];
+               }
+               o[this.name].push(this.value || '');
+           } else {
+               o[this.name] = this.value || '';
+           }
+       });
+       return o;
+   };
+
+
+    //表格查询
+    function queryRegisterBillGrid() {
+        var opts = _registerBillGrid.datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/registerBill/listStaticsPage.action";
+        }
+
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        _registerBillGrid.datagrid("load", bindGridMeta2Form("registerBillGrid", "queryForm"));
+   		var jsonObj = $("#queryForm").serializeObject();  //json对象
+        $.ajax({
+            type: 'post',
+            url: "${contextPath}/registerBill/listStaticsData.action",
+            dataType: 'json',
+            data:jsonObj,
+            async: false,
+            success: function (ret) {
+                if (ret.code == "200") {
+                    var data = ret.data;
+                 	$.each(data,function(k,v){
+                 		$('#'+k).textbox('setValue',v+"条")
+                 	});
+                } else {
+
+                }
+            }
+        });
+    }
+
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+
+    //表格表头右键菜单
+    function headerContextMenu(e, field){
+        e.preventDefault();
+        if (!cmenu){
+            createColumnMenu("registerBillGrid");
+        }
+        cmenu.menu('show', {
+            left:e.pageX,
+            top:e.pageY
+        });
+    }
+
+    /**
+     * 绑定页面回车事件，以及初始化页面时的光标定位
+     * @formId
+     *          表单ID
+     * @elementName
+     *          光标定位在指点表单元素的name属性的值
+     * @submitFun
+     *          表单提交需执行的任务
+     */
+    $(function () {
+        window._registerBillGrid = $('#registerBillGrid');
+        bindFormEvent("queryForm", "createdStart", queryRegisterBillGrid);
+        initRegisterBillGrid();
+        queryRegisterBillGrid();
+    })
+
+
+    /**
+     * 初始化用户列表组件
+     */
+    function initRegisterBillGrid() {
+        var pager = _registerBillGrid.datagrid('getPager');
+        pager.pagination({
+            <#controls_paginationOpts/>,
+            buttons:[
+            /*{
+                iconCls:'icon-detail',
+                text:'查看',
+                handler:function(){
+                    doDetail();
+                }
+            }*/
+        ]
+        });
+    }
+
+    /**
+     * datagrid行点击事件
+     * 目前用于来判断 启禁用是否可点
+     */
+    function onClickRow(index,row) {
+        var state = row.$_state;
+        var detectState= row.$_detectState;
+        
+    }
+
+    function blankFormatter(val,row){
+        if(!val){
+            return "-";
+        }
+        return val;
+    }
+
+    function closeLastWin(id){
+        $('#'+id).last().remove();
+    }
+    function closeWin(id){
+        $('#'+id).remove();
+        $('#grid').datagrid('reload');
+    }
+    function openWin(url){
+        $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
+    }
+  
+
+</script>
+
+ </#body>

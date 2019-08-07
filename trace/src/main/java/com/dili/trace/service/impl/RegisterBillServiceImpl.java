@@ -8,6 +8,8 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
@@ -21,6 +23,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -246,4 +251,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         return registerBill;
     }
+    @Override
+	public RegisterBillStaticsDto groupByState(RegisterBillDto dto) {
+    	return		 this.getActualDao().groupByState(dto);
+		
+	}
 }

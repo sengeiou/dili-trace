@@ -159,4 +159,25 @@
      update register_bill  set `exe_machine_no` = #{exeMachineNo}
       WHERE id IN  (${ids}) and (exe_machine_no is null or exe_machine_no='')
   </update>
+  
+    <select id="groupByState" parameterType="com.dili.trace.dto.RegisterBillDto"  resultType="com.dili.trace.dto.RegisterBillStaticsDto">
+   	select sum( case when detect_state=1 then 1  when detect_state=3 then 1  else 0 end)as 'pass',
+	sum( case when detect_state=2 then 1  when detect_state=4 then 1  else 0 end)as 'nopass',
+	sum( case when detect_state=1 then 1  when detect_state=2 then 1  else 0 end)as 'check',
+	sum( case when detect_state=3 then 1  when detect_state=4 then 1  else 0 end)as 'recheck'
+    from register_bill
+    where 1=1
+    <if test="createdStart != null">
+		and created>=  #{createdStart}
+	</if>
+    <if test="createdEnd != null">
+		and #{createdEnd}>= created
+	</if>
+	<if test="latestDetectTimeTimeStart != null">
+ 		and latest_detect_time>=  #{latestDetectTimeTimeStart}
+	</if>
+    <if test="latestDetectTimeTimeEnd != null">
+		and #{latestDetectTimeTimeEnd}>= latest_detect_time
+	</if> 
+  </select>
 </mapper>
