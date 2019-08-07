@@ -280,7 +280,7 @@
                 iconCls:'icon-reset',
                 text:'重置密码',
                 handler:function(){
-
+                    doResetPassword();
                 }
             },{
                 iconCls:'icon-play',
@@ -299,6 +299,65 @@
                 }
             }
         ]
+        });
+    }
+
+    /**
+     * 禁启用操作
+     * @param enable 是否启用:true-启用
+     */
+    function doResetPassword() {
+        var selected = _userGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+
+        swal({
+            title : '确定要重置密码吗？',
+            type : 'question',
+            showCancelButton : true,
+            confirmButtonColor : '#3085d6',
+            cancelButtonColor : '#d33',
+            confirmButtonText : '确定',
+            cancelButtonText : '取消',
+            confirmButtonClass : 'btn btn-success',
+            cancelButtonClass : 'btn btn-danger'
+        }).then(function(flag) {
+            if (flag.dismiss == 'cancel' || flag.dismiss == 'overlay' || flag.dismiss == "esc" || flag.dismiss == "close"){
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "${contextPath}/user/resetPassword.action",
+                data: {id: selected.id},
+                processData:true,
+                dataType: "json",
+                async : true,
+                success : function(ret) {
+                    if(ret.success){
+                        _userGrid.datagrid("reload");
+                    }else{
+                        swal(
+                            '错误',
+                            ret.result,
+                            'error'
+                        );
+                    }
+                },
+                error : function() {
+                    swal(
+                        '错误',
+                        '远程访问失败',
+                        'error'
+                    );
+                }
+            });
         });
     }
 

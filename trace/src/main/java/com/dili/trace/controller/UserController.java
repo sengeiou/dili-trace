@@ -1,14 +1,11 @@
 package com.dili.trace.controller;
 
-import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
 import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.entity.PatternConstants;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.api.UserApi;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
@@ -17,11 +14,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -56,15 +50,6 @@ public class UserController {
         modelMap.put("createdStart", DateUtils.format(cal.getTime(), "yyyy-MM-dd 00:00:00"));
         modelMap.put("createdEnd", DateUtils.format(new Date(), "yyyy-MM-dd 23:59:59"));
         return "user/index";
-    }
-
-    @ApiOperation(value="查询User", notes = "查询User，返回列表信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="User", paramType="form", value = "User的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/list.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody List<User> list(User user) {
-        return userService.list(user);
     }
 
     @ApiOperation(value="分页查询User", notes = "分页查询User，返回easyui分页信息")
@@ -126,5 +111,16 @@ public class UserController {
     @ResponseBody
     public BaseOutput doEnable(Long id, Boolean enable) {
         return userService.updateEnable(id, enable);
+    }
+
+    @ApiOperation(value ="找回密码【接口已通】", notes = "找回密码")
+    @RequestMapping(value = "/resetPassword.action", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseOutput<Boolean> resetPassword(Long id){
+        User user = DTOUtils.newDTO(User.class);
+        user.setId(id);
+        user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
+        userService.updateSelective(user);
+        return BaseOutput.success().setData(true);
     }
 }
