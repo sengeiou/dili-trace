@@ -228,13 +228,13 @@
         pager.pagination({
             <#controls_paginationOpts/>,
             buttons:[
-            /*{
+            {
                 iconCls:'icon-detail',
                 text:'查看',
                 handler:function(){
                     doDetail();
                 }
-            }*/
+            }
         ]
         });
     }
@@ -266,7 +266,19 @@
     function openWin(url){
         $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
     }
-  
+    function doDetail(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        location.href ='${contextPath}/registerBill/view/' + selected.id;
+    }
 
 </script>
 
