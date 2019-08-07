@@ -62,6 +62,7 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 	String getSellerName();
 
 	void setSellerName(String sellerName);
+
 	@Column(name = "`sellerIDNo`")
 	@FieldDef(label = "卖家身份证", maxLength = 50)
 	@EditMode(editor = FieldEditor.Text, required = true)
@@ -82,6 +83,7 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 	String getBuyerName();
 
 	void setBuyerName(String buyerName);
+
 	@Column(name = "`buyerIDNo`")
 	@FieldDef(label = "买家身份证", maxLength = 50)
 	@EditMode(editor = FieldEditor.Text, required = true)
@@ -166,12 +168,55 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 
 	void setPrice(Long price);
 
-	@Column(name = "`amount`")
+//
+//	@Column(name = "`amount`")
+//	@FieldDef(label = "件数")
+//	@EditMode(editor = FieldEditor.Number, required = true)
+//	Long getAmount();
+//
+//	void setAmount(Long amount);
+	@Column(name = "`piecequantity`")
 	@FieldDef(label = "件数")
 	@EditMode(editor = FieldEditor.Number, required = true)
-	Long getAmount();
+	public Long getPiecequantity();
 
-	void setAmount(Long amount);
+	public void setPiecequantity(Long piecequantity);
+
+	@Column(name = "`pieceweight`")
+	@FieldDef(label = "件重（公斤）")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	public Long getPieceweight();
+
+	public void setPieceweight(Long pieceweight);
+
+	@Column(name = "`netWeight`")
+	@FieldDef(label = "总净重（公斤）")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	public Long getNetWeight();
+
+	public void setNetWeight(Long netWeight);
+
+	@Column(name = "`tradetypeid`")
+	@FieldDef(label = "交易类型编码")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	public String getTradetypeid();
+
+	public void setTradetypeid(String tradetypeid);
+
+	@Column(name = "`tradetypename`")
+	@FieldDef(label = "交易类型名称")
+	@EditMode(editor = FieldEditor.Number, required = true)
+
+	public String getTradetypename();
+
+	public void setTradetypename(String tradetypename);
+
+	@Column(name = "`billActive`")
+	@FieldDef(label = "状态 0：正常1：作废")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	public Integer getBillActive();
+
+	public void setBillActive(Integer billActive);
 
 	@Column(name = "`sale_unit`")
 	@FieldDef(label = "销售单位 1:斤 2：件")
