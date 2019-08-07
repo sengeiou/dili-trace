@@ -115,4 +115,16 @@ public class UserController {
         userService.delete(id);
         return BaseOutput.success("删除成功");
     }
+
+    /**
+     * 启禁用钱包
+     * @param id
+     * @param enable 是否启用
+     * @return
+     */
+    @RequestMapping(value = "/doEnable.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput doEnable(Long id, Boolean enable) {
+        return userService.updateEnable(id, enable);
+    }
 }

@@ -7,6 +7,7 @@ import com.dili.common.entity.PatternConstants;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.User;
@@ -151,5 +152,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setCardNo(cardNo);
         query.setYn(YnEnum.YES.getCode());
         return !CollUtil.isEmpty(listByExample(query));
+    }
+
+    @Override
+    public BaseOutput updateEnable(Long id, Boolean enable) {
+        User user = get(id);
+        if (enable) {
+            user.setState(EnabledStateEnum.ENABLED.getCode());
+        } else {
+            user.setState(EnabledStateEnum.DISABLED.getCode());
+        }
+        this.updateSelective(user);
+        return BaseOutput.success("操作成功");
     }
 }
