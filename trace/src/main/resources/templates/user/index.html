@@ -16,9 +16,9 @@
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
                         <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'注册时间:'"/>
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'注册时间:'" value="${createdStart}!"/>
                             <span style="width: 2%;">-</span>
-                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"/>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;" value="${createdEnd}!"/>
                         </div>
                         <div class="search-item">
                             <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right" data-options="label:'姓名:'" />
@@ -30,7 +30,8 @@
                             <input class="easyui-textbox" name="taillyAreaNo" id="taillyAreaNo" style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
                         </div>
                         <div class="search-item">
-                            <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;" labelAlign="right" data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', hasDownArrow:false, panelHeight:'auto',panelMaxHeight:'300',  editable:true">
+                            <input type="hidden" name="salesCityId" id="salesCityId">
+                            <select class="easyui-combobox" style="width:100%;" labelAlign="right" data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300',  editable:true,onSelect:selectCity">
                             </select>
                         </div>
                         <div class="search-item">

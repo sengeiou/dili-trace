@@ -7,6 +7,7 @@ import com.dili.common.entity.PatternConstants;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.UserApi;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.UserListDto;
@@ -16,6 +17,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -47,6 +51,10 @@ public class UserController {
     @ApiOperation("跳转到User页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        modelMap.put("createdStart", DateUtils.format(cal.getTime(), "yyyy-MM-dd 00:00:00"));
+        modelMap.put("createdEnd", DateUtils.format(new Date(), "yyyy-MM-dd 23:59:59"));
         return "user/index";
     }
 

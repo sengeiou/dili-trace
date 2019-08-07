@@ -160,6 +160,13 @@
         });
     }
 
+    /**
+     * 城市选择
+     * */
+    function selectCity(record) {
+        $('#salesCityId').val(record.value);
+    }
+    
     //表格查询
     function queryUserGrid() {
         var opts = _userGrid.datagrid("options");
