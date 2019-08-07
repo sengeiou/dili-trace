@@ -50,6 +50,7 @@
             $('#_businessLicenseUrl').siblings(".magnifying").attr('src',formData._businessLicenseUrl).show();
         }
         $('#_form').form('load', formData);
+        $('#_salesCityId').combobox('setText',formData._salesCityName);
     }
 
     function saveOrUpdate(){
