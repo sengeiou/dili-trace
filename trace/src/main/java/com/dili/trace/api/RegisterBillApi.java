@@ -157,7 +157,8 @@ public class RegisterBillApi {
     @RequestMapping(value = "/tradeNo/{tradeNo}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getBillByTradeNo( @PathVariable String tradeNo){
         LOGGER.info("getBillByTradeNo获取登记单:"+tradeNo);
-        RegisterBill bill = registerBillService.findByTradeNo(tradeNo);
+        RegisterBill bill = registerBillService.findAndBind(tradeNo);
+        /*RegisterBill bill = registerBillService.findByTradeNo(tradeNo);*/
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
         bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);

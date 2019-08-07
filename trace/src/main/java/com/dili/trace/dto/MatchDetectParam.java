@@ -61,4 +61,16 @@ public class MatchDetectParam implements Serializable {
     public void setEnd(Date end) {
         this.end = end;
     }
+
+    @Override
+    public String toString() {
+        return "MatchDetectParam{" +
+                "tradeNo='" + tradeNo + '\'' +
+                ", tallyAreaNo='" + tallyAreaNo + '\'' +
+                ", productName='" + productName + '\'' +
+                ", idCardNo='" + idCardNo + '\'' +
+                ", start=" + start +
+                ", end=" + end +
+                '}';
+    }
 }
