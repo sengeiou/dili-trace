@@ -143,6 +143,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         return null;
     }
     public int matchDetectBind(String tradeNo,String tallyAreaNo,String productName,String idCardNo,Date settlement){
+
         MatchDetectParam matchDetectParam = new MatchDetectParam();
         matchDetectParam.setTradeNo(tradeNo);
         matchDetectParam.setTallyAreaNo(tallyAreaNo);
@@ -151,6 +152,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         matchDetectParam.setEnd(settlement);
         Date start = new Date(settlement.getTime()-(48*3600000));
         matchDetectParam.setStart(start);
+        LOGGER.info("进行匹配:"+matchDetectParam.toString());
         Long id = getActualDao().findMatchDetectBind(matchDetectParam);
         return getActualDao().matchDetectBind(tradeNo,id);
     }

@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.User;
 
 /**
@@ -41,4 +42,12 @@ public interface UserService extends BaseService<User, Long> {
      * @return
      */
     boolean existsAccount(String phone);
+
+    /**
+     * 根据用户ID，操作启禁用
+     * @param id
+     * @param enable 是否启用(true-启用，false-禁用)
+     * @return
+     */
+    BaseOutput updateEnable(Long id, Boolean enable);
 }

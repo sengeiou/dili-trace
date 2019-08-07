@@ -21,8 +21,6 @@ public class DefaultConfiguration {
     private double imageScale;
     //图片质量
     private double imageQuality;
-    //系统简称
-    private String systemCode;
     //货站默认密码
     private String password;
 
@@ -82,13 +80,6 @@ public class DefaultConfiguration {
         this.imageQuality = imageQuality;
     }
 
-    public String getSystemCode() {
-        return systemCode;
-    }
-
-    public void setSystemCode(String systemCode) {
-        this.systemCode = systemCode;
-    }
 
     public String getPassword() {
         return password;

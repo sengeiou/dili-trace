@@ -2,30 +2,36 @@ package com.dili.trace.api;
 
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.PatternConstants;
 import com.dili.common.entity.SessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.UUIDUtil;
+import com.dili.common.util.VerificationCodeUtil;
+import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.domain.User;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 账号相关api
@@ -39,6 +45,12 @@ public class UserApi {
     private UserService userService;
     @Resource
     private SessionContext sessionContext;
+    @Resource
+    private DefaultConfiguration defaultConfiguration;
+    @Resource
+    private MessageRpc messageRpc;
+    @Resource
+    private RedisUtil redisUtil;
 
     @ApiOperation(value ="注册【接口已通】", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
@@ -55,6 +67,47 @@ public class UserApi {
             LOGGER.error("register",e);
             return BaseOutput.failure();
         }
+    }
+
+    /**
+     *
+     * 发送短信验证码
+     * @param {code:"客户CODE",phone:''}
+     * @return
+     */
+    @RequestMapping(value = "/sendVerificationCode.api", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput<Boolean> sendVerificationCode(@RequestBody JSONObject object) {
+        String phone = object.getString("phone");
+        if(StringUtils.isBlank(phone)){
+            LOGGER.error("参数为空"+ JSON.toJSONString(object));
+            return BaseOutput.failure("参数为空").setCode(ResultCode.PARAMS_ERROR);
+        }
+
+        if(defaultConfiguration.getCheckCodeExpire()-redisUtil.getRedisTemplate().getExpire(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX)<60){
+            return BaseOutput.success();//发送间隔60秒
+        }
+
+        String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
+        //发送短信验证码
+        JSONObject params = new JSONObject();
+        params.put("marketCode", ExecutionConstants.MARKET_CODE);
+        params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
+        params.put("sceneCode", "registerAuthCode");
+        params.put("cellphone", phone);
+        Map<String,Object> content=new HashMap<>();
+        content.put("code",verificationCode);
+        params.put("parameters", content);
+
+        BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
+        if (msgOutput.isSuccess()){
+            redisUtil.set(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX+phone,verificationCode,defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);
+            LOGGER.info("短信验证码发送成功：---------------手机号：【"+phone+"】，验证码：【"+verificationCode+"】--------------");
+        }else{
+            LOGGER.error("发送失败,错误信息："+msgOutput.getResult());
+            return BaseOutput.failure(msgOutput.getResult());
+        }
+        return BaseOutput.success();
     }
 
 
@@ -90,9 +143,6 @@ public class UserApi {
         try{
             if(StrUtil.isBlank(user.getPhone())){
                 return BaseOutput.failure("手机号为空");
-            }
-            if(StrUtil.isBlank(user.getCheckCode())){
-                return BaseOutput.failure("验证码为空");
             }
             if(StrUtil.isBlank(user.getPassword())){
                 return BaseOutput.failure("密码为空");

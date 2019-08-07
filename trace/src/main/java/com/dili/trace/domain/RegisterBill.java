@@ -80,12 +80,19 @@ public interface RegisterBill extends IBaseDomain {
 
     void setTradeNo(String tradeNo);
 
+    @Column(name = "`trade_account`")
+    @FieldDef(label="tradeAccount")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getTradeAccount();
+
+    void setTradeAccount(String tradeAccount);
+
     @Column(name = "`user_id`")
     @FieldDef(label="用户ID")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getUserId();
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Long getUserId();
 
-    void setUserId(String userId);
+    void setUserId(Long userId);
 
     @Column(name = "`plate`")
     @FieldDef(label="plate", maxLength = 15)

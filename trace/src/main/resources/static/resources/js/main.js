@@ -95,6 +95,20 @@ $(function () {
                 return /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value);
             },
             message: '请输入正确的身份证号'
+        },
+        //验证下拉框是否使用下拉选项值
+        comboBoxEditvalid: {
+            validator: function (value, param) {
+                var $combobox = $("#" + param[0]);
+                if (value) {
+                    if ($combobox.combobox('getValue') == $combobox.combobox('getText'))
+                        return false;
+                    return true;
+                }
+                return false;
+
+            },
+            message: '请选择下拉框选项'
         }
     });
 });

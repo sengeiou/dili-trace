@@ -13,6 +13,7 @@
     <result column="id_card_no" jdbcType="VARCHAR" property="idCardNo" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
     <result column="trade_no" jdbcType="BIGINT" property="tradeNo" />
+    <result column="trade_account" jdbcType="BIGINT" property="tradeAccount" />
     <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="plate" jdbcType="VARCHAR" property="plate" />
     <result column="state" jdbcType="BIT" property="state" />
@@ -30,6 +31,8 @@
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="latest_detect_operator" jdbcType="VARCHAR" property="latestDetectOperator" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -38,7 +41,7 @@
     id, code, register_source, tally_area_no, name, id_card_no, addr, trade_no, user_id, 
     plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version, 
-    created, modified,latest_detect_operator
+    created, modified,latest_detect_operator,trade_account,operator_id,operator_name
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -74,10 +77,13 @@
         addr = #{addr,jdbcType=VARCHAR},
       </if>
       <if test="tradeNo != null">
-        trade_no = #{tradeNo,jdbcType=BIGINT},
+        trade_no = #{tradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeAccount != null">
+        trade_account = #{tradeAccount,jdbcType=VARCHAR},
       </if>
       <if test="userId != null">
-        user_id = #{userId,jdbcType=BIGINT},
+        user_id = #{userId,jdbcType=VARCHAR},
       </if>
       <if test="plate != null">
         plate = #{plate,jdbcType=VARCHAR},
@@ -114,6 +120,12 @@
       </if>
       <if test="exeMachineNo != null">
         exe_machine_no = #{exeMachineNo,jdbcType=VARCHAR},
+      </if>
+      <if test="operator_id != null">
+        operator_id = #{operator_id,jdbcType=BIGINT},
+      </if>
+      <if test="operatorName != null">
+        operator_name = #{operatorName,jdbcType=VARCHAR},
       </if>
       <if test="version != null">
         version = #{version,jdbcType=TINYINT},

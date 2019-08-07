@@ -50,6 +50,7 @@
             $('#_businessLicenseUrl').siblings(".magnifying").attr('src',formData._businessLicenseUrl).show();
         }
         $('#_form').form('load', formData);
+        $('#_salesCityId').combobox('setText',formData._salesCityName);
     }
 
     function saveOrUpdate(){
@@ -57,6 +58,7 @@
             return;
         }
         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+//        _formData.salesCityName = $('#salesCityName').val();
         var _url = null;
         //没有id就新增
         if(_formData.id == null || _formData.id==""){
@@ -273,8 +275,151 @@
                 handler:function(){
                     openUpdate();
                 }
+            },
+            {
+                iconCls:'icon-reset',
+                text:'重置密码',
+                handler:function(){
+                    doResetPassword();
+                }
+            },{
+                iconCls:'icon-play',
+                text:'启用',
+                id:'play_btn',
+                handler:function(){
+                    doEnable(true);
+                }
+            },
+            {
+                iconCls:'icon-stop',
+                text:'禁用',
+                id:'stop_btn',
+                handler:function(){
+                    doEnable(false);
+                }
             }
         ]
+        });
+    }
+
+    /**
+     * 禁启用操作
+     * @param enable 是否启用:true-启用
+     */
+    function doResetPassword() {
+        var selected = _userGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+
+        swal({
+            title : '确定要重置密码吗？',
+            type : 'question',
+            showCancelButton : true,
+            confirmButtonColor : '#3085d6',
+            cancelButtonColor : '#d33',
+            confirmButtonText : '确定',
+            cancelButtonText : '取消',
+            confirmButtonClass : 'btn btn-success',
+            cancelButtonClass : 'btn btn-danger'
+        }).then(function(flag) {
+            if (flag.dismiss == 'cancel' || flag.dismiss == 'overlay' || flag.dismiss == "esc" || flag.dismiss == "close"){
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "${contextPath}/user/resetPassword.action",
+                data: {id: selected.id},
+                processData:true,
+                dataType: "json",
+                async : true,
+                success : function(ret) {
+                    if(ret.success){
+                        _userGrid.datagrid("reload");
+                    }else{
+                        swal(
+                            '错误',
+                            ret.result,
+                            'error'
+                        );
+                    }
+                },
+                error : function() {
+                    swal(
+                        '错误',
+                        '远程访问失败',
+                        'error'
+                    );
+                }
+            });
+        });
+    }
+
+    /**
+     * 禁启用操作
+     * @param enable 是否启用:true-启用
+     */
+    function doEnable(enable) {
+        var selected = _userGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+        var msg = (enable || 'true' == enable) ? '确定要启用该用户吗？' : '确定要禁用该用户吗？';
+
+        swal({
+            title : msg,
+            type : 'question',
+            showCancelButton : true,
+            confirmButtonColor : '#3085d6',
+            cancelButtonColor : '#d33',
+            confirmButtonText : '确定',
+            cancelButtonText : '取消',
+            confirmButtonClass : 'btn btn-success',
+            cancelButtonClass : 'btn btn-danger'
+        }).then(function(flag) {
+            if (flag.dismiss == 'cancel' || flag.dismiss == 'overlay' || flag.dismiss == "esc" || flag.dismiss == "close"){
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "${contextPath}/user/doEnable.action",
+                data: {id: selected.id, enable: enable},
+                processData:true,
+                dataType: "json",
+                async : true,
+                success : function(ret) {
+                    if(ret.success){
+                        _userGrid.datagrid("reload");
+                        $('#stop_btn').linkbutton('disable');
+                        $('#play_btn').linkbutton('disable');
+                    }else{
+                        swal(
+                            '错误',
+                            ret.result,
+                            'error'
+                        );
+                    }
+                },
+                error : function() {
+                    swal(
+                        '错误',
+                        '远程访问失败',
+                        'error'
+                    );
+                }
+            });
         });
     }
 
@@ -283,7 +428,20 @@
      * 目前用于来判断 启禁用是否可点
      */
     function onClickRow(index,row) {
-
+        var state = row.$_state;
+        if (state == ${@com.dili.trace.glossary.EnabledStateEnum.DISABLED.getCode()}){
+            //当用户状态为 禁用，可操作 启用
+            $('#play_btn').linkbutton('enable');
+            $('#stop_btn').linkbutton('disable');
+        }else if(state == ${@com.dili.trace.glossary.EnabledStateEnum.ENABLED.getCode()}){
+            //当用户状态为正常时，则只能操作 禁用
+            $('#stop_btn').linkbutton('enable');
+            $('#play_btn').linkbutton('disable');
+        } else{
+            //其它情况，按钮不可用
+            $('#stop_btn').linkbutton('disable');
+            $('#play_btn').linkbutton('disable');
+        }
     }
 
     function blankFormatter(val,row){

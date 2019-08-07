@@ -3,16 +3,22 @@ package com.dili.trace.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.PatternConstants;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.dao.UserMapper;
+import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
+import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +36,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         return (UserMapper)getDao();
     }
 
-    @Transactional
+    @Resource
+    private RedisUtil redisUtil;
+
+    @Transactional(rollbackFor=Exception.class)
     @Override
     public void register(User user) {
         //@TODO验证验证码是否正确
-//        if(!messageService.checkCode(user.getPhone(),user.getCheckCode())){
-//            throw new BusinessException("验证码错误");
-//        }
+        checkVerificationCode(user.getPhone(),user.getCheckCode());
+
         //验证手机号是否已注册
         if(existsAccount(user.getPhone())){
             throw new BusinessException("手机号已注册");
@@ -53,6 +61,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         insertSelective(user);
+    }
+
+    private Boolean checkVerificationCode(String phone,String verCode){
+        String verificationCodeTemp = redisUtil.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone, String.class);
+        if (StringUtils.isBlank(verificationCodeTemp)) {
+            throw new BusinessException("验证码已过期");
+        }
+        if (verificationCodeTemp.equals(verCode)) {
+            redisUtil.remove(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone);
+            return true;
+        }else{
+            throw new BusinessException("验证码不正确");
+        }
     }
 
     @Override
@@ -74,9 +95,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Transactional
     @Override
     public void resetPassword(User user) {
-        //@TODO        if(!messageService.checkCode(user.getPhone(),user.getCheckCode())){
-//@TODO            throw new BusinessException("验证码错误");
-// @TODO       }
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(user.getPhone());
         query.setYn(YnEnum.YES.getCode());
@@ -151,5 +169,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setCardNo(cardNo);
         query.setYn(YnEnum.YES.getCode());
         return !CollUtil.isEmpty(listByExample(query));
+    }
+
+    @Override
+    public BaseOutput updateEnable(Long id, Boolean enable) {
+        User user = get(id);
+        if (enable) {
+            user.setState(EnabledStateEnum.ENABLED.getCode());
+        } else {
+            user.setState(EnabledStateEnum.DISABLED.getCode());
+        }
+        this.updateSelective(user);
+        return BaseOutput.success("操作成功");
     }
 }
