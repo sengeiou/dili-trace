@@ -57,6 +57,7 @@
             return;
         }
         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+//        _formData.salesCityName = $('#salesCityName').val();
         var _url = null;
         //没有id就新增
         if(_formData.id == null || _formData.id==""){
@@ -160,13 +161,6 @@
         });
     }
 
-    /**
-     * 城市选择
-     * */
-    function selectCity(record) {
-        $('#salesCityId').val(record.value);
-    }
-    
     //表格查询
     function queryUserGrid() {
         var opts = _userGrid.datagrid("options");
