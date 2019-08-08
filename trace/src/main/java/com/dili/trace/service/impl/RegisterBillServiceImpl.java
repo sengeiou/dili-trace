@@ -8,6 +8,8 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.MatchDetectParam;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
@@ -21,6 +23,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -137,19 +142,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         return null;
     }
-    public int matchDetectBind(String tradeNo,String tallyAreaNo,String productName,String idCardNo,Date settlement){
+    public int matchDetectBind(QualityTraceTradeBill qualityTraceTradeBill){
 
         MatchDetectParam matchDetectParam = new MatchDetectParam();
-        matchDetectParam.setTradeNo(tradeNo);
-        matchDetectParam.setTallyAreaNo(tallyAreaNo);
-        matchDetectParam.setProductName(productName);
-        matchDetectParam.setIdCardNo(idCardNo);
-        matchDetectParam.setEnd(settlement);
-        Date start = new Date(settlement.getTime()-(48*3600000));
+        matchDetectParam.setTradeNo(qualityTraceTradeBill.getOrderId());
+        matchDetectParam.setTallyAreaNo(qualityTraceTradeBill.getTradetypename());
+        matchDetectParam.setProductName(qualityTraceTradeBill.getProductName());
+        matchDetectParam.setIdCardNo(qualityTraceTradeBill.getSellerIDNo());
+        matchDetectParam.setEnd(qualityTraceTradeBill.getOrderPayDate());
+        Date start = new Date(qualityTraceTradeBill.getOrderPayDate().getTime()-(48*3600000));
         matchDetectParam.setStart(start);
         LOGGER.info("进行匹配:"+matchDetectParam.toString());
         Long id = getActualDao().findMatchDetectBind(matchDetectParam);
-        return getActualDao().matchDetectBind(tradeNo,id);
+        return getActualDao().matchDetectBind(qualityTraceTradeBill.getOrderId(),qualityTraceTradeBill.getNetWeight(),id);
     }
 
     @Override
@@ -240,7 +245,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         RegisterBill registerBill = findByTradeNo(tradeNo);
         QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(tradeNo);
         if(registerBill == null){
-            int result = matchDetectBind(tradeNo,"",qualityTraceTradeBill.getProductName(),qualityTraceTradeBill.getSellerIDNo(),qualityTraceTradeBill.getOrderPayDate());
+            int result = matchDetectBind(qualityTraceTradeBill);
             if(result==1){
                 registerBill=findByTradeNo(tradeNo);
             }
@@ -248,4 +253,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         return registerBill;
     }
+    @Override
+	public RegisterBillStaticsDto groupByState(RegisterBillDto dto) {
+    	return		 this.getActualDao().groupByState(dto);
+		
+	}
 }

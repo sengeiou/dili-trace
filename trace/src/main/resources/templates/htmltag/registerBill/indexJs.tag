@@ -461,4 +461,24 @@
     });
     }
 
+    function cityLoader(param,success,error) {
+        var q = param.q || '';
+        if (q.length < 1){return false}
+        $.ajax({
+            type: "POST",
+            url: '${contextPath}/provider/getLookupList.action',
+            dataType: 'json',
+            data: {
+                provider: 'cityProvider',
+                queryParams: '{required:true}',
+                value: q
+            },
+            success: function(data){
+                success(data);
+            },
+            error: function(){
+                error.apply(this, arguments);
+            }
+        });
+    }
 </script>

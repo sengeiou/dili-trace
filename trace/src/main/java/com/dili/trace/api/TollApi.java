@@ -1,13 +1,19 @@
 package com.dili.trace.api;
 
+import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.City;
+import com.dili.trace.dto.CategoryListInput;
+import com.dili.trace.dto.CityListInput;
+import com.dili.trace.rpc.BaseInfoRpc;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,6 +31,8 @@ import java.util.Map;
 @Api(value ="/api/toll", description = "对接神农基础信息相关接口")
 public class TollApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(TollApi.class);
+    @Autowired
+    BaseInfoRpc baseInfoRpc;
 
 
     @RequestMapping("/category")
@@ -76,8 +84,14 @@ public class TollApi {
     }
 
     private List<Category> queryCategorys(String name) {
+        CategoryListInput query = new CategoryListInput();
+        query.setKeyword(name);
+        BaseOutput<List<Category>> result = baseInfoRpc.listCategoryByCondition(query);
+        if(result.isSuccess()){
+            return result.getData();
+        }
         List<Category> citys = new ArrayList<>();
-        Category city = new Category();
+        /*Category city = new Category();
         city.setName("苹果");
         city.setId(1L);
         city.setParent(0L);
@@ -86,12 +100,18 @@ public class TollApi {
         city1.setName("苹果2");
         city1.setId(2L);
         city1.setParent(1L);
-        citys.add(city1);
+        citys.add(city1);*/
         return citys;
     }
     private List<City> queryCitys(String name) {
+        CityListInput query = new CityListInput();
+        query.setKeyword(name);
+        BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
+        if(result.isSuccess()){
+            return result.getData();
+        }
         List<City> citys = new ArrayList<>();
-        City city = new City();
+        /*City city = new City();
         city.setName("成都");
         city.setMergerName("四川成都");
         city.setId(1L);
@@ -102,7 +122,7 @@ public class TollApi {
         city1.setMergerName("四川成南");
         city1.setId(2L);
         city1.setParentId(1L);
-        citys.add(city1);
+        citys.add(city1);*/
         return citys;
     }
 
