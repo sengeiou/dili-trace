@@ -76,8 +76,8 @@ public class DetectRecordApi {
     public BaseOutput<List<RegisterBill>> getDetectTask( @PathVariable String exeMachineNo,  @PathVariable Integer taskCount){
         TaskGetParam taskGetParam = new TaskGetParam();
         taskGetParam.setExeMachineNo(exeMachineNo);
-        if(taskCount>30){
-            taskCount=30;
+        if(taskCount>95){
+            taskCount=95;
         }
         taskGetParam.setPageSize(taskCount);
         LOGGER.info("获取检查任务:" + JSON.toJSONString(taskGetParam));

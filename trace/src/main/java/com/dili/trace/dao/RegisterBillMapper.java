@@ -16,7 +16,7 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
 
 	Long findMatchDetectBind(MatchDetectParam matchDetectParam);
 
-	int matchDetectBind(@Param("tradeNo") String tradeNo, @Param("id") Long id);
+	int matchDetectBind(@Param("tradeNo") String tradeNo,@Param("weight") Long weight, @Param("id") Long id);
 
 	int taskByExeMachineNo(@Param("exeMachineNo") String exeMachineNo, @Param("ids") String ids);
 
