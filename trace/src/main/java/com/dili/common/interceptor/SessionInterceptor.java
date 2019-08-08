@@ -3,8 +3,11 @@ package com.dili.common.interceptor;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.SessionContext;
+import com.dili.common.service.RedisService;
 import com.dili.ss.redis.service.RedisUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,15 +17,16 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.Set;
 
 public class SessionInterceptor extends HandlerInterceptorAdapter {
     private static final String ATTRIBUTE_CONTEXT_INITIALIZED=SessionInterceptor.class.getName()+".CONTEXT_INITIALIZED";
-
-    private static final String prefix="TRACE_SESSION_";
+    //SESSION KEY
+    private static final String SESSION_PREFIX="TRACE_SESSION_";
     @Resource
     private SessionContext sessionContext;
     @Resource
-    private RedisUtil redisUtil;
+    private RedisService redisService;
     @Resource
     private DefaultConfiguration defaultConfiguration;
     @Override
@@ -39,8 +43,22 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         loadData(sessionId);
+        //检车禁用用户
+        checkDisableUsers(request, response);
         request.setAttribute(ATTRIBUTE_CONTEXT_INITIALIZED, Boolean.TRUE);
         return true;
+    }
+
+    /**
+     * 检查禁用用户
+     * @param request
+     * @param response
+     */
+    private void checkDisableUsers(HttpServletRequest request, HttpServletResponse response) {
+        if(redisService.sHasKey(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, sessionContext.getAccountId())){
+            deleteSession(response,request);
+            sessionContext.setInvalidate(true);
+        }
     }
 
     @Override
@@ -57,26 +75,28 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     private void saveSession(HttpServletResponse response) {
         String sessionId=sessionContext.getSessionId();
         if(!StrUtil.isBlank(sessionId)){
-            redisUtil.set(prefix+sessionId,sessionContext.getMap(),defaultConfiguration.getSessionExpire());
+            redisService.set(SESSION_PREFIX+sessionId,sessionContext.getMap(),defaultConfiguration.getSessionExpire());
         }
     }
 
     private void deleteSession(HttpServletResponse response, HttpServletRequest request) {
         String sessionId=sessionContext.getSessionId();
         if(!StrUtil.isBlank(sessionId)){
-            redisUtil.remove(prefix+sessionId);
+            redisService.del(SESSION_PREFIX+sessionId);
         }
     }
 
     private void loadData(String sessionId){
         sessionContext.setSessionId(sessionId);
-        Map<String,Object> map=(Map<String, Object>) redisUtil.get(prefix+sessionId);
+        Map<String,Object> map=(Map<String, Object>) redisService.get(SESSION_PREFIX+sessionId);
         if(MapUtil.isEmpty(map)){
             return;
         }
-        long expire=redisUtil.getRedisTemplate().getExpire(prefix+sessionId)*1000;
+
+        long expire=redisService.getExpire(SESSION_PREFIX+sessionId)*1000;
         sessionContext.setMillis(expire);
         sessionContext.setMap(map);
+
     }
     private String getSessionId(HttpServletRequest request){
         return StrUtil.isNotBlank(request.getHeader("sessionId"))?request.getHeader("sessionId"):request.getParameter("sessionId");

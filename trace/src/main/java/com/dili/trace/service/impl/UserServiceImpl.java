@@ -3,9 +3,11 @@ package com.dili.trace.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.PatternConstants;
 import com.dili.common.exception.BusinessException;
+import com.dili.common.service.RedisService;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Set;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -37,12 +40,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Resource
-    private RedisUtil redisUtil;
+    private RedisService redisService;
+    @Resource
+    private DefaultConfiguration defaultConfiguration;
 
     @Transactional(rollbackFor=Exception.class)
     @Override
     public void register(User user) {
-        //@TODO验证验证码是否正确
+        //验证验证码是否正确
         checkVerificationCode(user.getPhone(),user.getCheckCode());
 
         //验证手机号是否已注册
@@ -64,12 +69,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     private Boolean checkVerificationCode(String phone,String verCode){
-        String verificationCodeTemp = redisUtil.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone, String.class);
+        String verificationCodeTemp = redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone).toString();
         if (StringUtils.isBlank(verificationCodeTemp)) {
             throw new BusinessException("验证码已过期");
         }
         if (verificationCodeTemp.equals(verCode)) {
-            redisUtil.remove(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone);
+            redisService.del(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone);
             return true;
         }else{
             throw new BusinessException("验证码不正确");
@@ -84,10 +89,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setYn(YnEnum.YES.getCode());
         User po=listByExample(query).stream().findFirst().orElse(null);
         if(po==null){
-            throw new BusinessException("手机号或密码错误");
+            throw new BusinessException("手机号错误或已被禁用");
         }
         if(!po.getPassword().equals(encryptedPassword)){
-            throw new BusinessException("手机号或密码错误");
+            throw new BusinessException("密码错误");
         }
         return po;
     }
@@ -172,14 +177,20 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
+    @Transactional
     public BaseOutput updateEnable(Long id, Boolean enable) {
+        long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         User user = get(id);
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
+            this.updateSelective(user);
+            redisService.setRemove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         } else {
             user.setState(EnabledStateEnum.DISABLED.getCode());
+            this.updateSelective(user);
+            redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
         }
-        this.updateSelective(user);
+
         return BaseOutput.success("操作成功");
     }
 }
