@@ -85,6 +85,7 @@ public class TollApi {
 
     private List<Category> queryCategorys(String name) {
         CategoryListInput query = new CategoryListInput();
+        query.setKeyword(name);
         BaseOutput<List<Category>> result = baseInfoRpc.listCategoryByCondition(query);
         if(result.isSuccess()){
             return result.getData();
@@ -104,6 +105,7 @@ public class TollApi {
     }
     private List<City> queryCitys(String name) {
         CityListInput query = new CityListInput();
+        query.setKeyword(name);
         BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
         if(result.isSuccess()){
             return result.getData();

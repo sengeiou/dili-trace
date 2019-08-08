@@ -27,9 +27,9 @@
                         <div class="search-item">
                             <input type="hidden" name="_salesCityName" id="_salesCityName">
                             <select class="easyui-combobox" name="originId" id="_salesCityId" style="width:100%;" labelAlign="right"
-                                    data-options="label:'产地:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,required:true,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
+                                    data-options="label:'产地',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,required:false,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
                                 $('#_salesCityName').val(record.text);
-                            }">
+                            }"></select>
                         </div>
 
                         <div class="search-item">
