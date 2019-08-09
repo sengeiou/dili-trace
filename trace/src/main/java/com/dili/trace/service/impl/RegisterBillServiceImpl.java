@@ -254,8 +254,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 registerBill=findByTradeNo(tradeNo);
             }
         }
-        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
-        registerBill.setSeparateSalesRecords(records);
+        if(registerBill!=null){
+            List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
+            registerBill.setSeparateSalesRecords(records);
+        }
         registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         return registerBill;
     }
