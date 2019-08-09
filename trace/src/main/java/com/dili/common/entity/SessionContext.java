@@ -53,7 +53,7 @@ public class SessionContext implements Serializable{
 		return changed;
 	}
 	public void setMillis(long millis) {
-		if(millis-System.currentTimeMillis()<600000){
+		if(millis<600000){
 			this.changed=true;
 		}
 		this.millis = millis;
