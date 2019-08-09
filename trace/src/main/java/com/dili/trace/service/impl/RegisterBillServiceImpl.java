@@ -7,12 +7,14 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     BizNumberFunction bizNumberFunction;
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
+    @Autowired
+    SeparateSalesRecordService separateSalesRecordService;
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper)getDao();
     }
@@ -250,6 +254,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 registerBill=findByTradeNo(tradeNo);
             }
         }
+        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
+        registerBill.setSeparateSalesRecords(records);
         registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         return registerBill;
     }
