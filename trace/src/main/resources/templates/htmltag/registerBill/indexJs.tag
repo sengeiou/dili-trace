@@ -111,6 +111,13 @@
                 handler:function(){
                     doDetail();
                 }
+            },
+            {
+                iconCls:'icon-export',
+                text:'导出',
+                handler:function(){
+                    doExport('registerBillGrid');
+                }
             }
         ]
         });

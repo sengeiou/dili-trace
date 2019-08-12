@@ -159,8 +159,7 @@ public class RegisterBillApi {
         LOGGER.info("getBillByTradeNo获取登记单:"+tradeNo);
         RegisterBill bill = registerBillService.findAndBind(tradeNo);
         /*RegisterBill bill = registerBillService.findByTradeNo(tradeNo);*/
-        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
-        bill.setSeparateSalesRecords(records);
+
         return BaseOutput.success().setData(bill);
     }
     @ApiOperation(value = "通过分销记录ID获取分销单")
