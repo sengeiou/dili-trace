@@ -9,6 +9,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
@@ -20,10 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -71,6 +69,24 @@ public class RegisterBillApi {
         if(result==0){
             return BaseOutput.failure("请检测相关参数完整性");
         }
+        return BaseOutput.success();
+    }
+    @ApiOperation("保存多个登记单")
+    @RequestMapping(value = "/createList", method = RequestMethod.POST)
+    public BaseOutput insert(List<RegisterBill> registerBills) {
+        LOGGER.info("保存多个登记单:");
+        //int count = 0;
+        for (RegisterBill registerBill : registerBills) {
+            LOGGER.info("循环保存登记单:"+ JSON.toJSONString(registerBill));
+
+            registerBillService.createRegisterBill(registerBill);
+            /*if (registerBillService.createRegisterBill(registerBill) == 1) {
+                count++;
+            }*/
+        }
+        /*if(count == registerBills.size()){
+            return BaseOutput.success();
+        }*/
         return BaseOutput.success();
     }
     @ApiOperation(value = "获取登记单列表")
