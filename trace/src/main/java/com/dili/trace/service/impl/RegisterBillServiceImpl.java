@@ -49,6 +49,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Override
     public int createRegisterBill(RegisterBill registerBill) {
         if (checkBill(registerBill)) return 0;
+        registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
         registerBill.setVersion(1);
         if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()){

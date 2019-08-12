@@ -4,6 +4,8 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -25,35 +27,35 @@ public interface Customer extends IBaseDomain {
     Long getId();
 
     void setId(Long id);
-
+    @ApiModelProperty(value = "交易账号")
     @Column(name = "`customer_id`")
     @FieldDef(label="customerId")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getCustomerId();
 
     void setCustomerId(String customerId);
-
+    @ApiModelProperty(value = "客户姓名")
     @Column(name = "`name`")
     @FieldDef(label="name", maxLength = 100)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getName();
 
     void setName(String name);
-
+    @ApiModelProperty(value = "客户身份证")
     @Column(name = "`id_no`")
     @FieldDef(label="idNo", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getIdNo();
 
     void setIdNo(String idNo);
-
+    @ApiModelProperty(value = "客户地址")
     @Column(name = "`address`")
     @FieldDef(label="address", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getAddress();
 
     void setAddress(String address);
-
+    @ApiModelProperty(value = "印刷卡号")
     @Column(name = "`printing_card`")
     @FieldDef(label="printingCard", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
