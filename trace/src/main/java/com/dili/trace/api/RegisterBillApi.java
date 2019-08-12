@@ -8,6 +8,7 @@ import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -155,7 +156,7 @@ public class RegisterBillApi {
     @RequestMapping(value = "id/{id}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getRegisterBill( @PathVariable Long id){
         LOGGER.info("获取登记单:"+id);
-        RegisterBill bill = registerBillService.get(id);
+        RegisterBillOutputDto bill = (RegisterBillOutputDto) registerBillService.get(id);
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
         bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);
@@ -164,16 +165,16 @@ public class RegisterBillApi {
     @RequestMapping(value = "/code/{code}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getRegisterBillByCode( @PathVariable String code){
         LOGGER.info("获取登记单:"+code);
-        RegisterBill bill = registerBillService.findByCode(code);
+        RegisterBillOutputDto bill = (RegisterBillOutputDto) registerBillService.findByCode(code);
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
         bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);
     }
     @ApiOperation(value = "通过交易区的交易号获取登记单和分销单")
     @RequestMapping(value = "/tradeNo/{tradeNo}",method = RequestMethod.GET)
-    public BaseOutput<RegisterBill> getBillByTradeNo( @PathVariable String tradeNo){
+    public BaseOutput<RegisterBillOutputDto> getBillByTradeNo( @PathVariable String tradeNo){
         LOGGER.info("getBillByTradeNo获取登记单:"+tradeNo);
-        RegisterBill bill = registerBillService.findAndBind(tradeNo);
+        RegisterBillOutputDto bill = registerBillService.findAndBind(tradeNo);
         /*RegisterBill bill = registerBillService.findByTradeNo(tradeNo);*/
 
         return BaseOutput.success().setData(bill);
@@ -189,7 +190,7 @@ public class RegisterBillApi {
     @RequestMapping(value = "/billSalesRecord/{id}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getBillSalesRecord( @PathVariable Long id){
         LOGGER.info("获取登记单&分销记录:"+id);
-        RegisterBill bill = registerBillService.get(id);
+        RegisterBillOutputDto bill = (RegisterBillOutputDto) registerBillService.get(id);
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
         bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);

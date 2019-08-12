@@ -6,6 +6,7 @@ import java.util.Map;
 import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 
 /**
@@ -16,14 +17,14 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
     List<RegisterBill> findByExeMachineNo(String exeMachineNo,int taskCount);
     List<RegisterBill> findByProductName( String productName);
     RegisterBill findByCode(String code);
-    RegisterBill findByTradeNo(String tradeNo);
+    RegisterBillOutputDto findByTradeNo(String tradeNo);
     int createRegisterBill(RegisterBill registerBill);
     int auditRegisterBill(Long id,Boolean pass);
     int undoRegisterBill(Long id);
     int autoCheckRegisterBill(Long id);
     int samplingCheckRegisterBill(Long id);
     int reviewCheckRegisterBill(Long id);
-    RegisterBill findAndBind(String tradeNo);
+    RegisterBillOutputDto findAndBind(String tradeNo);
     /**
      * 根据状态统计数据
      * @param dto

@@ -10,8 +10,10 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.*;
+import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -42,6 +44,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     QualityTraceTradeBillService qualityTraceTradeBillService;
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
+    @Autowired
+    DetectRecordService detectRecordService;
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper)getDao();
     }
@@ -138,12 +142,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public RegisterBill findByTradeNo(String tradeNo) {
+    public RegisterBillOutputDto findByTradeNo(String tradeNo) {
         RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
         registerBill.setTradeNo(tradeNo);
         List<RegisterBill> list = list(registerBill);
         if(list!=null && list.size()>0){
-            return list.get(0);
+            return (RegisterBillOutputDto)list.get(0);
         }
         return null;
     }
@@ -176,7 +180,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                     registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
                 }
             }else {
-                registerBill.setState(RegisterBillStateEnum.NO_PASS.getCode().intValue());
+                registerBill.setState(-1);
             }
             return update(registerBill);
         }
@@ -243,11 +247,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public RegisterBill findAndBind(String tradeNo) {
+    public RegisterBillOutputDto findAndBind(String tradeNo) {
         if(StringUtils.isBlank(tradeNo)){
             return null;
         }
-        RegisterBill registerBill = findByTradeNo(tradeNo);
+        RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
         QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(tradeNo);
         if(registerBill == null){
             int result = matchDetectBind(qualityTraceTradeBill);
@@ -258,6 +262,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if(registerBill!=null){
             List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
             registerBill.setSeparateSalesRecords(records);
+            registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
         }
         registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         return registerBill;
