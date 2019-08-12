@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
@@ -156,7 +157,7 @@ public class RegisterBillApi {
     @RequestMapping(value = "id/{id}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getRegisterBill( @PathVariable Long id){
         LOGGER.info("获取登记单:"+id);
-        RegisterBillOutputDto bill = (RegisterBillOutputDto) registerBillService.get(id);
+        RegisterBillOutputDto bill = DTOUtils.as(registerBillService.get(id), RegisterBillOutputDto.class);
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
         bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);
@@ -165,7 +166,7 @@ public class RegisterBillApi {
     @RequestMapping(value = "/code/{code}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getRegisterBillByCode( @PathVariable String code){
         LOGGER.info("获取登记单:"+code);
-        RegisterBillOutputDto bill = (RegisterBillOutputDto) registerBillService.findByCode(code);
+        RegisterBillOutputDto bill = DTOUtils.as(registerBillService.findByCode(code),RegisterBillOutputDto.class);
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
         bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);
@@ -190,7 +191,7 @@ public class RegisterBillApi {
     @RequestMapping(value = "/billSalesRecord/{id}",method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getBillSalesRecord( @PathVariable Long id){
         LOGGER.info("获取登记单&分销记录:"+id);
-        RegisterBillOutputDto bill = (RegisterBillOutputDto) registerBillService.get(id);
+        RegisterBillOutputDto bill = DTOUtils.as(registerBillService.get(id),RegisterBillOutputDto.class);
         List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
         bill.setSeparateSalesRecords(records);
         return BaseOutput.success().setData(bill);

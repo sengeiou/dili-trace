@@ -142,7 +142,8 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String create(ModelMap modelMap, @PathVariable Long id) {
-		RegisterBillOutputDto registerBill = (RegisterBillOutputDto) registerBillService.get(id);
+
+		RegisterBillOutputDto registerBill =DTOUtils.as(registerBillService.get(id),RegisterBillOutputDto.class);
 		List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
 		registerBill.setSeparateSalesRecords(records);
 		DetectRecord detectRecord = detectRecordService.findByRegisterBillCode(registerBill.getCode());
