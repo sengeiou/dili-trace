@@ -4,6 +4,8 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 import javax.persistence.*;
 import javax.persistence.Column;
@@ -27,6 +29,7 @@ public interface User extends IBaseDomain {
 
     void setId(Long id);
 
+    @ApiModelProperty(value = "名称")
     @Column(name = "`name`")
     @FieldDef(label="name", maxLength = 30)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -34,6 +37,7 @@ public interface User extends IBaseDomain {
 
     void setName(String name);
 
+    @ApiModelProperty(value = "手机号（帐号）")
     @Column(name = "`phone`")
     @FieldDef(label="phone", maxLength = 15)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -41,6 +45,7 @@ public interface User extends IBaseDomain {
 
     void setPhone(String phone);
 
+    @ApiModelProperty(value = "身份证号")
     @Column(name = "`card_no`")
     @FieldDef(label="cardNo", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -48,6 +53,7 @@ public interface User extends IBaseDomain {
 
     void setCardNo(String cardNo);
 
+    @ApiModelProperty(value = "地址")
     @Column(name = "`addr`")
     @FieldDef(label="addr", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -55,6 +61,7 @@ public interface User extends IBaseDomain {
 
     void setAddr(String addr);
 
+    @ApiModelProperty(value = "身份证URL")
     @Column(name = "`card_no_url`")
     @FieldDef(label="cardNoUrl", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -62,6 +69,7 @@ public interface User extends IBaseDomain {
 
     void setCardNoUrl(String cardNoUrl);
 
+    @ApiModelProperty(value = "理货区号")
     @Column(name = "`tailly_area_no`")
     @FieldDef(label="taillyAreaNo", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -69,6 +77,7 @@ public interface User extends IBaseDomain {
 
     void setTaillyAreaNo(String taillyAreaNo);
 
+    @ApiModelProperty(value = "营业执照URL")
     @Column(name = "`business_license_url`")
     @FieldDef(label="businessLicenseUrl", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -76,6 +85,7 @@ public interface User extends IBaseDomain {
 
     void setBusinessLicenseUrl(String businessLicenseUrl);
 
+    @ApiModelProperty(value = "销售城市ID")
     @Column(name = "`sales_city_id`")
     @FieldDef(label="salesCityId")
     @EditMode(editor = FieldEditor.Number, required = false)
@@ -83,6 +93,7 @@ public interface User extends IBaseDomain {
 
     void setSalesCityId(Long salesCityId);
 
+    @ApiModelProperty(value = "销售城市名称")
     @Column(name = "`sales_city_name`")
     @FieldDef(label="salesCityName", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -90,6 +101,7 @@ public interface User extends IBaseDomain {
 
     void setSalesCityName(String salesCityName);
 
+    @ApiModelProperty(value = "状态")
     @Column(name = "`state`")
     @FieldDef(label="1:启用 2：禁用")
     @EditMode(editor = FieldEditor.Number, required = false)
@@ -97,6 +109,7 @@ public interface User extends IBaseDomain {
 
     void setState(Integer state);
 
+    @ApiModelProperty(value = "密码")
     @Column(name = "`password`")
     @FieldDef(label="password", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -118,6 +131,7 @@ public interface User extends IBaseDomain {
 
     void setVersion(Integer version);
 
+    @ApiModelProperty(value = "创建时间")
     @Column(name = "`created`")
     @FieldDef(label="created")
     @EditMode(editor = FieldEditor.Datetime, required = true)
@@ -125,6 +139,7 @@ public interface User extends IBaseDomain {
 
     void setCreated(Date created);
 
+    @ApiModelProperty(value = "修改时间")
     @Column(name = "`modified`")
     @FieldDef(label="modified")
     @EditMode(editor = FieldEditor.Datetime, required = true)
@@ -132,14 +147,17 @@ public interface User extends IBaseDomain {
 
     void setModified(Date modified);
 
+    @ApiModelProperty(value = "验证码")
     @Transient
     String getCheckCode();
     void setCheckCode(String checkCode);
 
+    @ApiModelProperty(value = "确认密码")
     @Transient
     String getAckPassword();
     void setAckPassword(String ackPassword);
 
+    @ApiModelProperty(value = "旧密码")
     @Transient
     String getOldPassword();
     void setOldPassword(String oldPassword);

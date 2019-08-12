@@ -4,6 +4,8 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 import javax.persistence.*;
 import javax.persistence.Column;
@@ -27,6 +29,7 @@ public interface DetectRecord extends IBaseDomain {
 
     void setId(Long id);
 
+    @ApiModelProperty(value = "检测时间")
     @Column(name = "`detect_time`")
     @FieldDef(label="detectTime")
     @EditMode(editor = FieldEditor.Datetime, required = true)
