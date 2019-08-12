@@ -26,7 +26,6 @@
     <result column="product_name" jdbcType="VARCHAR" property="productName" />
     <result column="cate_name" jdbcType="VARCHAR" property="cateName" />
     <result column="price" jdbcType="BIGINT" property="price" />
-    <result column="amount" jdbcType="BIGINT" property="amount" />
     <result column="sale_unit" jdbcType="INTEGER" property="saleUnit" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -35,7 +34,8 @@
     -->
     id, bill_id,order_id, order_status, seller_account, seller_name,sellerIDNo, buyer_account, buyer_name, buyerIDNo,
     order_create_date, order_pay_date, pdResult, conclusion, check_result_EID, trade_flow_id, 
-    total_money, order_item_id, product_name, cate_name, price, amount, sale_unit
+    total_money, order_item_id, product_name, cate_name, price, piece_quantity,piece_weight,net_weight,tradetype_id,
+    tradetype_name,bill_active, sale_unit
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -116,9 +116,6 @@ select count(1) as ct,order_id from quality_trace_trade_bill group by order_id h
       </if>
       <if test="price != null">
         price = #{price,jdbcType=BIGINT},
-      </if>
-      <if test="amount != null">
-        amount = #{amount,jdbcType=BIGINT},
       </if>
       <if test="saleUnit != null">
         sale_unit = #{saleUnit,jdbcType=INTEGER},

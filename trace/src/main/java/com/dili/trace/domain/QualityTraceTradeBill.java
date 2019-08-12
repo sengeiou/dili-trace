@@ -175,35 +175,35 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 //	Long getAmount();
 //
 //	void setAmount(Long amount);
-	@Column(name = "`piecequantity`")
+	@Column(name = "`piece_quantity`")
 	@FieldDef(label = "件数")
 	@EditMode(editor = FieldEditor.Number, required = true)
 	public Long getPiecequantity();
 
 	public void setPiecequantity(Long piecequantity);
 
-	@Column(name = "`pieceweight`")
+	@Column(name = "`piece_weight`")
 	@FieldDef(label = "件重（公斤）")
 	@EditMode(editor = FieldEditor.Number, required = true)
 	public Long getPieceweight();
 
 	public void setPieceweight(Long pieceweight);
 
-	@Column(name = "`netWeight`")
+	@Column(name = "`net_weight`")
 	@FieldDef(label = "总净重（公斤）")
 	@EditMode(editor = FieldEditor.Number, required = true)
 	public Long getNetWeight();
 
 	public void setNetWeight(Long netWeight);
 
-	@Column(name = "`tradetypeid`")
+	@Column(name = "`tradetype_id`")
 	@FieldDef(label = "交易类型编码")
 	@EditMode(editor = FieldEditor.Number, required = true)
 	public String getTradetypeid();
 
 	public void setTradetypeid(String tradetypeid);
 
-	@Column(name = "`tradetypename`")
+	@Column(name = "`tradetype_name`")
 	@FieldDef(label = "交易类型名称")
 	@EditMode(editor = FieldEditor.Number, required = true)
 
@@ -211,7 +211,7 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 
 	public void setTradetypename(String tradetypename);
 
-	@Column(name = "`billActive`")
+	@Column(name = "`bill_active`")
 	@FieldDef(label = "状态 0：正常1：作废")
 	@EditMode(editor = FieldEditor.Number, required = true)
 	public Integer getBillActive();
