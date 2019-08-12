@@ -1,0 +1,191 @@
+.scan-top{
+  height: 4rem;
+  width: 100%;
+  background: url('/resources/assets/images/scan-top.png') no-repeat center/cover;
+}
+.w{width: 4rem}
+.order-num{
+  padding-left: 1.28rem;
+  font-size: .32rem;
+  color: #fff;
+  margin: .4rem 0;
+  width: 7.06rem;
+  word-break: break-all;
+}
+.scan-bottom{
+  position: absolute;
+  top:3.9rem;
+  left:0;
+  right: 0;
+  bottom: 0;
+  background: url('/resources/assets/images/scan-body.png') no-repeat center/cover;
+  overflow: auto;
+}
+.buyer-seller{
+  margin: 0 0 .7rem 0;
+  padding-left: 1.28rem;
+  .seller,.buyer{
+    width: 5.78rem;
+    margin-bottom: .3rem;
+    border-radius: .08rem;
+    color: #fff;
+    font-size: .32rem;
+    padding: .28rem .3rem;
+    position: relative;
+    &:after{
+      content: '';
+      display: block;
+      position: absolute;
+      width: .22rem;
+      height: .22rem;
+      background-color: #32a12e;
+      border: .12rem solid #fff;
+      border-radius: 50%;
+      left: -.86rem;
+      top: 50%;
+      margin-top: -0.23rem;
+    }
+    &>div:first-child{
+      margin-bottom: .3rem;
+    }
+  }
+  .seller{
+    background-color: #19953f;
+    &:before{
+      content: '';
+      display: block;
+      position: absolute;
+      width: .32rem;
+      height: .24rem;
+      background: url('/resources/assets/images/scan-arrow.png') no-repeat center / cover;
+      left: -.78rem;
+      top: 1.6rem;
+    }
+  }
+  .buyer{
+    background-color: #199565;
+    &:before{
+      content: '';
+      display: block;
+      position: absolute;
+      width: .32rem;
+      height: .24rem;
+      background: url('/resources/assets/images/scan-arrow.png') no-repeat center / cover;
+      left: -0.78rem;
+      top: -.1rem;
+    }
+  }
+}
+.scan-list-container{
+  padding:0 .4rem .7rem .4rem;
+  .list-title{
+    height: .58rem;
+    padding-bottom: .4rem;
+    color: #4f9061;
+    font-size: .28rem;
+    .pull-left{float: left}
+    .pull-right{float: right}
+  }
+  .list-detail{
+    border-top: 1px solid #7bb98e;
+    border-left: 1px solid #7bb98e;
+    border-width: 1px  0 0 1px;
+    overflow-x: auto;
+    table{
+      width: 100%;
+      tr td,tr th{
+        height: .7rem;
+        line-height: .7rem;
+        text-align: center;
+        font-weight: normal;
+        color: #7bb98e;
+        border-right: 1px solid #7bb98e;
+        border-bottom: 1px solid #7bb98e;
+        .ellipsis{
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: 0 .2rem;
+          &.name{
+            width:3.2rem;
+          }
+          &.type{
+            width: 2rem;
+          }
+          &.count{
+            width: 3.2rem;
+          }
+        }
+        &.name{
+          width:50%;
+        }
+        &.type{
+          width: 2rem;
+        }
+        &.count{
+          width: 50%;
+        }
+      }
+    }
+    ul{
+      display: -webkit-box;
+      &:after{
+        content: '';
+        display: table;
+        clear: both;
+      }
+      li{
+        float: none;
+        border: 1px solid #7bb98e;
+        border-width: 0 1px 1px 0;
+        height: .7rem;
+        line-height: .7rem;
+        color: #7bb98e;
+        text-align: center;
+        .ellipsis{
+          padding: 0 .1rem;
+          width: 100%;
+          overflow: hidden;
+          height: .7rem;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        &.name{
+          width: 50%;
+        }
+        &.type{
+          width: 35%;
+        }
+        &.count{
+          width: 20%;
+        }
+      }
+    }
+  }
+}
+.tips{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%,-50%,0);
+  -webkit-transform: translate3d(-50%,-50%,0);
+  width: 80%;
+}
+.close-icon{
+  display: block;
+  background: url("/resources/assets/images/mall-error.png") no-repeat center/cover;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin: 0 auto .8rem;
+}
+.close-des{
+  font-size: .32rem;
+  color: #e5511d;
+  text-align: center;
+}
+.no-message{
+  font-size: .4rem;
+  color: #fff;
+  text-align: center;
+  margin: 1rem;
+}

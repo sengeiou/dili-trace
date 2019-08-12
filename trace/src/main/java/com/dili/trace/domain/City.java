@@ -1,6 +1,8 @@
 package com.dili.trace.domain;
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  *  <br />
  * @createTime 2017-6-15 12:07:08
@@ -10,6 +12,7 @@ package com.dili.trace.domain;
     /**
      * 名称
      */
+    @ApiModelProperty(value = "名称")
     private String name;
 
     /**
@@ -20,25 +23,30 @@ package com.dili.trace.domain;
     /**
      * 简称
      */
+    @ApiModelProperty(value = "简称")
     private String shortName;
 
     /**
      * 级别
      */
+    @ApiModelProperty(value = "级别")
     private Integer levelType;
 
     /**
      * 区号
      */
+    @ApiModelProperty(value = "区号")
     private String cityCode;
     /**
      * 自定义编码
      */
+    @ApiModelProperty(value = "自定义编码")
     private String customCode;
 
     /**
      * 合并名称
      */
+    @ApiModelProperty(value = "合并名称")
     private String mergerName;
 
     /**
@@ -54,11 +62,13 @@ package com.dili.trace.domain;
     /**
      * 拼音
      */
+    @ApiModelProperty(value = "拼音")
     private String pinyin;
 
     /**
      * 拼音简写
      */
+    @ApiModelProperty(value = "拼音简写")
     private String shortPy;
 
     public void setName (String name){

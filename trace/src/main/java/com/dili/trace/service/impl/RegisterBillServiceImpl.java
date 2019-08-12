@@ -7,12 +7,16 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.*;
+import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +42,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     BizNumberFunction bizNumberFunction;
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
+    @Autowired
+    SeparateSalesRecordService separateSalesRecordService;
+    @Autowired
+    DetectRecordService detectRecordService;
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper)getDao();
     }
@@ -45,6 +53,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Override
     public int createRegisterBill(RegisterBill registerBill) {
         if (checkBill(registerBill)) return 0;
+        registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
         registerBill.setVersion(1);
         if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()){
@@ -133,28 +142,28 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public RegisterBill findByTradeNo(String tradeNo) {
+    public RegisterBillOutputDto findByTradeNo(String tradeNo) {
         RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
         registerBill.setTradeNo(tradeNo);
         List<RegisterBill> list = list(registerBill);
         if(list!=null && list.size()>0){
-            return list.get(0);
+            return (RegisterBillOutputDto)list.get(0);
         }
         return null;
     }
-    public int matchDetectBind(String tradeNo,String tallyAreaNo,String productName,String idCardNo,Date settlement){
+    public int matchDetectBind(QualityTraceTradeBill qualityTraceTradeBill){
 
         MatchDetectParam matchDetectParam = new MatchDetectParam();
-        matchDetectParam.setTradeNo(tradeNo);
-        matchDetectParam.setTallyAreaNo(tallyAreaNo);
-        matchDetectParam.setProductName(productName);
-        matchDetectParam.setIdCardNo(idCardNo);
-        matchDetectParam.setEnd(settlement);
-        Date start = new Date(settlement.getTime()-(48*3600000));
+        matchDetectParam.setTradeNo(qualityTraceTradeBill.getOrderId());
+        matchDetectParam.setTallyAreaNo(qualityTraceTradeBill.getTradetypename());
+        matchDetectParam.setProductName(qualityTraceTradeBill.getProductName());
+        matchDetectParam.setIdCardNo(qualityTraceTradeBill.getSellerIDNo());
+        matchDetectParam.setEnd(qualityTraceTradeBill.getOrderPayDate());
+        Date start = new Date(qualityTraceTradeBill.getOrderPayDate().getTime()-(48*3600000));
         matchDetectParam.setStart(start);
         LOGGER.info("进行匹配:"+matchDetectParam.toString());
         Long id = getActualDao().findMatchDetectBind(matchDetectParam);
-        return getActualDao().matchDetectBind(tradeNo,id);
+        return getActualDao().matchDetectBind(qualityTraceTradeBill.getOrderId(),qualityTraceTradeBill.getNetWeight(),id);
     }
 
     @Override
@@ -171,7 +180,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                     registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
                 }
             }else {
-                registerBill.setState(RegisterBillStateEnum.NO_PASS.getCode().intValue());
+                registerBill.setState(-1);
             }
             return update(registerBill);
         }
@@ -238,17 +247,22 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public RegisterBill findAndBind(String tradeNo) {
+    public RegisterBillOutputDto findAndBind(String tradeNo) {
         if(StringUtils.isBlank(tradeNo)){
             return null;
         }
-        RegisterBill registerBill = findByTradeNo(tradeNo);
+        RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
         QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(tradeNo);
         if(registerBill == null){
-            int result = matchDetectBind(tradeNo,"",qualityTraceTradeBill.getProductName(),qualityTraceTradeBill.getSellerIDNo(),qualityTraceTradeBill.getOrderPayDate());
+            int result = matchDetectBind(qualityTraceTradeBill);
             if(result==1){
                 registerBill=findByTradeNo(tradeNo);
             }
+        }
+        if(registerBill!=null){
+            List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
+            registerBill.setSeparateSalesRecords(records);
+            registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
         }
         registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         return registerBill;

@@ -43,7 +43,7 @@
      */
     $(function () {
         window._registerBillGrid = $('#registerBillGrid');
-        bindFormEvent("queryForm", "code", queryRegisterBillGrid);
+        bindFormEvent("queryForm", "registerSource", queryRegisterBillGrid);
         initRegisterBillGrid();
         queryRegisterBillGrid();
     })
@@ -110,6 +110,13 @@
                 text:'查看',
                 handler:function(){
                     doDetail();
+                }
+            },
+            {
+                iconCls:'icon-export',
+                text:'导出',
+                handler:function(){
+                    doExport('registerBillGrid');
                 }
             }
         ]
@@ -190,7 +197,7 @@
         }
         location.href ='/registerBill/view/' + selected.id;
     }
-    /*function audit(){
+    function audit(){
         var selected = _registerBillGrid.datagrid("getSelected");
         if (null == selected) {
             swal({
@@ -201,9 +208,11 @@
             });
             return;
         }
-        openWin('/registerBill/audit/' + selected.id)
-    }*/
-    function audit() {
+        openIframe('/registerBill/audit/' + selected.id,selected.id)
+
+    }
+
+    function audit2() {
         var selected = _registerBillGrid.datagrid("getSelected");
         if (null == selected) {
             swal({
@@ -461,4 +470,87 @@
     });
     }
 
+    function cityLoader(param,success,error) {
+        var q = param.q || '';
+        if (q.length < 1){return false}
+        $.ajax({
+            type: "POST",
+            url: '${contextPath}/provider/getLookupList.action',
+            dataType: 'json',
+            data: {
+                provider: 'cityProvider',
+                queryParams: '{required:true}',
+                value: q
+            },
+            success: function(data){
+                success(data);
+            },
+            error: function(){
+                error.apply(this, arguments);
+            }
+        });
+    }
+    function openIframe(content,id){
+        layer.open({
+            type: 2,
+            title: "审核",
+            shadeClose: true,
+            shade: 0.3,
+            offset: "20%",
+            shadeClose : false,
+            area: ['1100px', "350px"],
+            content: content,//传入一个链接地址 比如：http://www.baidu.com
+            btn: ['确定','取消'],
+            yes: function(index, layero){
+                $.ajax({
+                    type: "GET",
+                    url: "${contextPath}/registerBill/audit/"+ id+"/true",
+                    processData:true,
+                    dataType: "json",
+                    async : true,
+                    success: function (ret) {
+                        if(ret.success){
+                            //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
+                            _registerBillGrid.datagrid("reload");
+                            $('#undo').linkbutton('disable');
+                        }else{
+                            layer.confirm(ret.result, {
+                                type: 0,
+                                title: '提示',
+                                btn: ['确定']
+                            });
+                        }
+                    },
+                    error: function(){
+                        /*swal(
+                                '错误',
+                                '远程访问失败',
+                                'error'
+                        );*/
+                        layer.confirm('远程访问失败', {
+                            type: 0,
+                            title: '提示',
+                            btn: ['确定']
+                        });
+                    }
+                });
+                //按钮【确认】的回调
+                /*var body = layer.getChildFrame('body', index); //iframe的body获取方式
+                var password = $(body).find("#password").val();*/
+            }
+        });
+    }
+    function openLayer(url){
+        layer.open({
+            area: ['600px', "400px"],
+            title: '审核',
+            content: [url, 'no'], //iframe的url
+            btn: ['确定','取消'],
+            yes: function(index, layero){
+                //按钮【确认】的回调
+                var body = layer.getChildFrame('body', index); //iframe的body获取方式
+                var password = $(body).find("#password").val();
+            }
+        });
+    }
 </script>

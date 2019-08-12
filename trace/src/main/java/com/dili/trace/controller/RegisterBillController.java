@@ -5,10 +5,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.dto.BaseBillParam;
-import com.dili.trace.dto.ProductParam;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillStaticsDto;
+import com.dili.trace.dto.*;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
@@ -145,7 +142,8 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String create(ModelMap modelMap, @PathVariable Long id) {
-		RegisterBill registerBill = registerBillService.get(id);
+
+		RegisterBillOutputDto registerBill =DTOUtils.as(registerBillService.get(id),RegisterBillOutputDto.class);
 		List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
 		registerBill.setSeparateSalesRecords(records);
 		DetectRecord detectRecord = detectRecordService.findByRegisterBillCode(registerBill.getCode());

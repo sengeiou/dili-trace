@@ -25,7 +25,11 @@
                         </div>
 
                         <div class="search-item">
-                            <input class="easyui-textbox" name="orininName" id="orininName" style="width:100%" labelAlign="right" data-options="label:'产地', validType:'length[0,20]'" />
+                            <input type="hidden" name="_salesCityName" id="_salesCityName">
+                            <select class="easyui-combobox" name="originId" id="_salesCityId" style="width:100%;" labelAlign="right"
+                                    data-options="label:'产地',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,required:false,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
+                                $('#_salesCityName').val(record.text);
+                            }"></select>
                         </div>
 
                         <div class="search-item">
@@ -71,7 +75,7 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="客户列表" id="registerBillGrid" fitColumns="true" noheader="true"
+            <table class="easyui-datagrid" title="登记单列表" id="registerBillGrid" fitColumns="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
                    loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
                    align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
@@ -295,5 +299,6 @@
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
      <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <#registerBill_indexJs />
  </#body>

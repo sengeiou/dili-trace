@@ -2,7 +2,7 @@ package com.dili.trace.dto;
 
 
 import com.dili.trace.domain.Category;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -13,12 +13,14 @@ import java.io.Serializable;
  */
 public class CategoryListInput extends Category implements Serializable{
     /**
-     * 名称(精确匹配)、简称（精确匹配）
+     * 名称(精确匹配)、简称（精确匹配）、code（精确）
      */
+    @ApiModelProperty(value = "名称(精确匹配)、简称（精确匹配）、code（精确）")
     private String keyWordStr;
     /**
-     * 关键字匹配
+     * 名称(后模糊)、简称（后模糊）、code（精确）
      */
+    @ApiModelProperty(value = "名称(后模糊)、简称（后模糊）、code（精确）")
     private String keyword;
 
 
