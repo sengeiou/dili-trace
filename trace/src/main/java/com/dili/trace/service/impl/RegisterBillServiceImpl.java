@@ -147,7 +147,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setTradeNo(tradeNo);
         List<RegisterBill> list = list(registerBill);
         if(list!=null && list.size()>0){
-            return (RegisterBillOutputDto)list.get(0);
+            return DTOUtils.as(list.get(0), RegisterBillOutputDto.class);
         }
         return null;
     }
@@ -155,7 +155,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         MatchDetectParam matchDetectParam = new MatchDetectParam();
         matchDetectParam.setTradeNo(qualityTraceTradeBill.getOrderId());
-        matchDetectParam.setTallyAreaNo(qualityTraceTradeBill.getTradetypename());
+        matchDetectParam.setTallyAreaNo(qualityTraceTradeBill.getTradetypeName());
         matchDetectParam.setProductName(qualityTraceTradeBill.getProductName());
         matchDetectParam.setIdCardNo(qualityTraceTradeBill.getSellerIDNo());
         matchDetectParam.setEnd(qualityTraceTradeBill.getOrderPayDate());

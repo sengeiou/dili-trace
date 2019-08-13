@@ -197,21 +197,21 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 //	Long getAmount();
 //
 //	void setAmount(Long amount);
-	@ApiModelProperty(value = "件数")
+    @ApiModelProperty(value = "件数")
 	@Column(name = "`piece_quantity`")
 	@FieldDef(label = "件数")
 	@EditMode(editor = FieldEditor.Number, required = true)
-	public Long getPiecequantity();
+	public Long getPieceQuantity();
 
-	public void setPiecequantity(Long piecequantity);
+	public void setPieceQuantity(Long pieceQuantity);
 
 	@ApiModelProperty(value = "件重（公斤")
 	@Column(name = "`piece_weight`")
 	@FieldDef(label = "件重（公斤）")
 	@EditMode(editor = FieldEditor.Number, required = true)
-	public Long getPieceweight();
+	public Long getPieceWeight();
 
-	public void setPieceweight(Long pieceweight);
+	public void setPieceWeight(Long pieceWeight);
 
 	@ApiModelProperty(value = "总净重（公斤")
 	@Column(name = "`net_weight`")
@@ -225,18 +225,18 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 	@Column(name = "`tradetype_id`")
 	@FieldDef(label = "交易类型编码")
 	@EditMode(editor = FieldEditor.Number, required = true)
-	public String getTradetypeid();
+	public String getTradetypeId();
 
-	public void setTradetypeid(String tradetypeid);
+	public void setTradetypeId(String tradetypeId);
 
 	@ApiModelProperty(value = "交易类型名称")
 	@Column(name = "`tradetype_name`")
 	@FieldDef(label = "交易类型名称")
-	@EditMode(editor = FieldEditor.Number, required = true)
+	@EditMode(editor = FieldEditor.Text, required = true)
 
-	public String getTradetypename();
+	public String getTradetypeName();
 
-	public void setTradetypename(String tradetypename);
+	public void setTradetypeName(String tradetypeName);
 
 	@ApiModelProperty(value = "状态 0：正常1：作废")
 	@Column(name = "`bill_active`")

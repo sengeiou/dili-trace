@@ -288,11 +288,11 @@ public class VTradeBill extends BaseDomain {
 		QualityTraceTradeBill bill = DTOUtils.newDTO(QualityTraceTradeBill.class);
 		bill.setBillId(this.billID);
 		bill.setOrderId(this.orderId);
-		bill.setPiecequantity(this.piecequantity.longValue());
-		bill.setPieceweight(this.pieceweight.longValue());
+		bill.setPieceQuantity(this.piecequantity.longValue());
+		bill.setPieceWeight(this.pieceweight.longValue());
 		bill.setNetWeight(this.netWeight.longValue());
-		bill.setTradetypeid(this.tradetypeid);
-		bill.setTradetypename(this.tradetypename);
+		bill.setTradetypeId(this.tradetypeid);
+		bill.setTradetypeName(this.tradetypename);
 		bill.setBillActive(this.billActive);
 //		bill.setAmount(this.getAmount().longValue());
 		bill.setBuyerAccount(this.buyerAccount);

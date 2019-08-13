@@ -15,12 +15,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -234,5 +230,14 @@ public class RegisterBillController {
 
 		return BaseOutput.success().setData(staticsDto);
 	}
+
+	@RequestMapping(value = "/tradeBillDetail.html", method = RequestMethod.GET)
+	public String tradeBillDetail(String tradeNo,ModelMap modelMap) {
+		RegisterBillOutputDto bill = registerBillService.findAndBind(tradeNo);
+		modelMap.put("tradeBill",bill);
+		return "registerBill/tradeBillDetail";
+	}
+
+
 
 }
