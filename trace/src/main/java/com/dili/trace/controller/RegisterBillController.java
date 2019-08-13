@@ -131,58 +131,85 @@ public class RegisterBillController {
 	}
 
 	/**
-	 * 登记单录入页面
+	 * 登记单录查看页面
 	 * 
 	 * @param modelMap
 	 * @return
 	 */
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
-	public String create(ModelMap modelMap, @PathVariable Long id) {
-
-		RegisterBillOutputDto registerBill =DTOUtils.as(registerBillService.get(id),RegisterBillOutputDto.class);
-		List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
-		registerBill.setSeparateSalesRecords(records);
-		DetectRecord detectRecord = detectRecordService.findByRegisterBillCode(registerBill.getCode());
-		if (detectRecord == null) {
-			detectRecord = DTOUtils.newDTO(DetectRecord.class);
-			detectRecord.setPdResult("");
-			detectRecord.setDetectOperator("");
+	public String view(ModelMap modelMap, @PathVariable Long id) {
+		RegisterBill rb= registerBillService.get(id);
+		if(rb == null){
+			return "";
 		}
-		registerBill.setDetectRecord(detectRecord);
+		RegisterBillOutputDto registerBill =registerBillService.conversionDetailOutput(rb);
+
 		modelMap.put("registerBill", registerBill);
 		return "registerBill/view";
 	}
 
+	/**
+	 * 审核页面
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/audit/{id}", method = RequestMethod.GET)
 	public String audit(ModelMap modelMap, @PathVariable Long id) {
 		modelMap.put("registerBill", registerBillService.get(id));
 		return "registerBill/audit";
 	}
 
+	/**
+	 * 审核
+	 * @param id
+	 * @param pass
+	 * @return
+	 */
 	@RequestMapping(value = "/audit/{id}/{pass}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput audit(@PathVariable Long id, @PathVariable Boolean pass) {
 		registerBillService.auditRegisterBill(id, pass);
 		return BaseOutput.success("操作成功");
 	}
 
+	/**
+	 * 撤销
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/undo/{id}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput undo(@PathVariable Long id) {
 		registerBillService.undoRegisterBill(id);
 		return BaseOutput.success("操作成功");
 	}
 
+	/**
+	 * 自动送检
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/autoCheck/{id}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput autoCheck(@PathVariable Long id) {
 		registerBillService.autoCheckRegisterBill(id);
 		return BaseOutput.success("操作成功");
 	}
 
+	/**
+	 * 采样检测
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/samplingCheck/{id}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput samplingCheck(@PathVariable Long id) {
 		registerBillService.samplingCheckRegisterBill(id);
 		return BaseOutput.success("操作成功");
 	}
 
+	/**
+	 * 复检
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/reviewCheck/{id}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput reviewCheck(@PathVariable Long id) {
 		registerBillService.reviewCheckRegisterBill(id);

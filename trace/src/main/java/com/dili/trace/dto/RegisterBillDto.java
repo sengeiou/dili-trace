@@ -1,6 +1,9 @@
 package com.dili.trace.dto;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
+import com.dili.ss.metadata.FieldEditor;
+import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
 import com.dili.trace.domain.RegisterBill;
 import io.swagger.annotations.ApiModelProperty;
@@ -35,6 +38,13 @@ public interface RegisterBillDto extends RegisterBill {
     @Operator(Operator.LITTLE_EQUAL_THAN)
     String getLatestDetectTimeTimeEnd();
     void setLatestDetectTimeTimeEnd(String latestDetectTimeTimeEnd);
+
+    @ApiModelProperty(value = "商品名称LIKE")
+    @Column(name = "`product_name`")
+    @Like(value="RIGHT")
+    String getLikeProductName();
+
+    void setLikeProductName(String productName);
 
     @Transient
     String getAttr();
