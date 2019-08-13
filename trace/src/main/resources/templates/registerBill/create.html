@@ -22,7 +22,12 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>理货区号</label>
-                    <select class="form-control input-sm" name="tallyAreaNo" id="tallyAreaNo" required>
+                        <input type="text" class="form-control input-sm" name="tallyAreaNo" id="tallyAreaNo" onkeyup="onKeyUpEnter(event)"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>交易区号</label>
+                    <select class="form-control input-sm" name="tradeTypeName" id="tradeTypeName"  required>
                         <option>请选择</option>
                         <%if(tradeTypes.~size>0) for(tradeType in tradeTypes){%>
                         <option value="${tradeType.typeId}">${tradeType.typeName}</option>
@@ -46,16 +51,16 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
-                    <input type="text" class="form-control input-sm" name="name" id="name" required />
+                    <input type="text" class="form-control input-sm" name="name" id="name" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>身份证号</label>
-                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm isIdCard0" required />
+                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm isIdCard0" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" id="addr" class="form-control" cols="70" rows="1" maxlength="50" required></textarea>
+                    <textarea name="addr" id="addr" class="form-control" cols="70" rows="1" maxlength="50" required readonly></textarea>
                 </div>
             </div>
 

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -192,5 +193,16 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         return BaseOutput.success("操作成功");
+    }
+
+    @Override
+    public User findByTaillyAreaNo(String taillyAreaNo) {
+        User user = DTOUtils.newDTO(User.class);
+        user.setTaillyAreaNo(taillyAreaNo);
+        List<User> userList = list(user);
+        if(userList.size()>0){
+            return userList.get(0);
+        }
+        return null;
     }
 }

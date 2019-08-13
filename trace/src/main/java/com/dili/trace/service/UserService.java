@@ -50,4 +50,5 @@ public interface UserService extends BaseService<User, Long> {
      * @return
      */
     BaseOutput updateEnable(Long id, Boolean enable);
+    User findByTaillyAreaNo(String taillyAreaNo);
 }

@@ -2,7 +2,9 @@ package com.dili.trace.api;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Customer;
+import com.dili.trace.domain.User;
 import com.dili.trace.service.CustomerService;
+import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 /**
  * Created by laikui on 2019/7/26.
@@ -24,6 +28,8 @@ public class TradeCustomerApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(TradeCustomerApi.class);
     @Autowired
     private CustomerService customerService;
+    @Resource
+    private UserService userService;
 
     /**
      * 根据客户账号获取
@@ -49,6 +55,21 @@ public class TradeCustomerApi {
     @RequestMapping(value = "/card/{printingCard}",method = {RequestMethod.GET, RequestMethod.POST})
     public BaseOutput<Customer> findByPrintingCard( @PathVariable String printingCard){
         Customer customer = customerService.findByPrintingCard(printingCard);
+        if(customer!=null){
+            return BaseOutput.success().setData(customer);
+        }else {
+            return BaseOutput.failure();
+        }
+    }
+    /**
+     * 根据客户账号获取
+     * @param tallyAreaNo
+     * @return
+     */
+    @ApiOperation("根据理货区号获取客户获取")
+    @RequestMapping(value = "/tallyAreaNo/{tallyAreaNo}",method = {RequestMethod.GET, RequestMethod.POST})
+    public BaseOutput<User> findTallyAreaNo( @PathVariable String tallyAreaNo){
+        User customer = userService.findByTaillyAreaNo(tallyAreaNo);
         if(customer!=null){
             return BaseOutput.success().setData(customer);
         }else {

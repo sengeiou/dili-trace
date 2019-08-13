@@ -6,10 +6,10 @@
     $('[name="registerSource"]').on('change', function () {
         if ($(this).val() === '1') {
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').show();
-            $('[name="userId"], [name="b2"]').closest('.form-group').hide();
+            $('[name="userId"], [name="b2"], [name="tradeTypeName"]').closest('.form-group').hide();
         } else {
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').hide();
-            $('[name="userId"], [name="b2"]').closest('.form-group').show();
+            $('[name="userId"], [name="b2"], [name="tradeTypeName"]').closest('.form-group').show();
         }
     })
 
@@ -108,6 +108,35 @@
     function onKeyUpEnter2(e) {
         if (e.keyCode == 13) {
             cardNo();
+        }
+    }
+    function onKeyUpEnter3(e) {
+        if (e.keyCode == 13) {
+            tallyAreaNo();
+        }
+    }
+    function tallyAreaNo() {
+        var tallyAreaNo = $("#tallyAreaNo").val();
+        if(tallyAreaNo == ""){
+            return;
+        }
+        if (tallyAreaNo.length > 0) {
+            $.ajax({
+                type: 'post',
+                url: '/api/trade/customer/tallyAreaNo/'+tallyAreaNo,
+                dataType: 'json',
+                async: false,
+                success: function (ret) {
+                    if (ret.code == "200") {
+                        var customer = ret.data;
+                        $("#idCardNo").val(customer.cardNo);
+                        $("#name").val(customer.name);
+                        $("#addr").val(customer.addr);
+                    } else {
+
+                    }
+                }
+            });
         }
     }
     function customerId() {
