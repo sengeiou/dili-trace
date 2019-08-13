@@ -1,18 +1,18 @@
 package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.SessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.QualityTraceTradeBillService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -45,6 +46,10 @@ public class RegisterBillApi {
 
     @Autowired
     DetectRecordService detectRecordService;
+    @Resource
+    private SessionContext sessionContext;
+    @Autowired
+    UserService userService;
    /* @Autowired
     BizNumberFunction bizNumberFunction;
 
@@ -67,8 +72,15 @@ public class RegisterBillApi {
     @ApiOperation("保存登记单")
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "登记单保存入参")
     @RequestMapping(value = "/create",method = RequestMethod.POST)
+    @InterceptConfiguration
     public BaseOutput saveRegisterBill(RegisterBill registerBill){
         LOGGER.info("保存登记单:"+ JSON.toJSONString(registerBill));
+        User user=userService.get(sessionContext.getAccountId());
+        if(user==null){
+            return BaseOutput.failure("未登陆用户");
+        }
+        registerBill.setOperatorName(user.getName());
+        registerBill.setOperatorId(user.getId());
         int result =registerBillService.createRegisterBill(registerBill);
         if(result==0){
             return BaseOutput.failure("请检测相关参数完整性");
@@ -77,12 +89,18 @@ public class RegisterBillApi {
     }
     @ApiOperation("保存多个登记单")
     @RequestMapping(value = "/createList", method = RequestMethod.POST)
+    @InterceptConfiguration
     public BaseOutput insert(List<RegisterBill> registerBills) {
         LOGGER.info("保存多个登记单:");
+        User user=userService.get(sessionContext.getAccountId());
+        if(user==null){
+            return BaseOutput.failure("未登陆用户");
+        }
         //int count = 0;
         for (RegisterBill registerBill : registerBills) {
             LOGGER.info("循环保存登记单:"+ JSON.toJSONString(registerBill));
-
+            registerBill.setOperatorName(user.getName());
+            registerBill.setOperatorId(user.getId());
             registerBillService.createRegisterBill(registerBill);
             /*if (registerBillService.createRegisterBill(registerBill) == 1) {
                 count++;
@@ -104,8 +122,13 @@ public class RegisterBillApi {
     @ApiOperation("保存分销单&全销总量与登记单相等")
     @ApiImplicitParam(paramType = "body", name = "SeparateSalesRecord", dataType = "SeparateSalesRecord", value = "分销单保存入参")
     @RequestMapping(value = "/createSalesRecord",method = RequestMethod.POST)
+    @InterceptConfiguration
     public BaseOutput<Boolean> saveSeparateSalesRecord(SeparateSalesRecord salesRecord){
         LOGGER.info("保存分销单:"+JSON.toJSONString(salesRecord));
+        User user=userService.get(sessionContext.getAccountId());
+        if(user==null){
+            return BaseOutput.failure("未登陆用户");
+        }
         if(StringUtils.isBlank(salesRecord.getRegisterBillCode())){
             return BaseOutput.failure("没有需要分销的登记单");
         }
@@ -141,8 +164,10 @@ public class RegisterBillApi {
             registerBill.setSalesType(1);
             separateSalesRecordService.saveOrUpdate(salesRecord);
         }
-        registerBill.setOperatorId(salesRecord.getOperatorId());
-        registerBill.setOperatorName(salesRecord.getOperatorName());
+        /*registerBill.setOperatorId(salesRecord.getOperatorId());
+        registerBill.setOperatorName(salesRecord.getOperatorName());*/
+        registerBill.setOperatorName(user.getName());
+        registerBill.setOperatorId(user.getId());
         registerBillService.update(registerBill);
         return BaseOutput.success().setData(true);
     }

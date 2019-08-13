@@ -22,9 +22,9 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>理货区号</label>
-                        <input type="text" class="form-control input-sm" name="tallyAreaNo" id="tallyAreaNo" onkeyup="onKeyUpEnter(event)"/>
+                        <input type="text" class="form-control input-sm" name="tallyAreaNo" id="tallyAreaNo" onkeyup="onKeyUpEnter3(event)"/>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none;">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>交易区号</label>
                     <select class="form-control input-sm" name="tradeTypeName" id="tradeTypeName"  required>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">交易账号</label>
-                    <input type="text" class="form-control input-sm" name="userId" id="userId" onkeyup="onKeyUpEnter(event)"/>
+                    <input type="text" class="form-control input-sm" name="tradeAccount" id="tradeAccount" onkeyup="onKeyUpEnter(event)"/>
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">印刷卡号</label>
@@ -52,6 +52,7 @@
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
                     <input type="text" class="form-control input-sm" name="name" id="name" required readonly/>
+                    <input type="hidden"  name="userId" id="userId" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
