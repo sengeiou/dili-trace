@@ -272,4 +272,33 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     	return		 this.getActualDao().groupByState(dto);
 		
 	}
+
+    @Override
+    public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill) {
+        LOGGER.info("获取登记单信息信息"+JSON.toJSONString(registerBill));
+        RegisterBillOutputDto outputDto = null;
+        if(registerBill == null){
+            return null;
+        }else {
+            outputDto= DTOUtils.as(registerBill,RegisterBillOutputDto.class);
+        }
+        if(StringUtils.isNotBlank(registerBill.getTradeNo())){
+            //交易信息
+            QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
+            outputDto.setQualityTraceTradeBill(qualityTraceTradeBill);
+        }
+        //分销信息
+        if(registerBill.getSalesType().intValue() == 1){
+            //分销
+            List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
+            outputDto.setSeparateSalesRecords(records);
+        }
+
+        //检测信息
+        if(registerBill.getLatestDetectRecordId()!=null){
+            //检测信息
+            outputDto.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
+        }
+        return outputDto;
+    }
 }

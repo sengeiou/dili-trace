@@ -43,7 +43,24 @@ public class DetectRecordApi {
     public BaseOutput<Boolean> saveDetectRecord(DetectRecord detectRecord){
         LOGGER.info("保存检查单:"+ JSON.toJSONString(detectRecord));
         if(StringUtils.isBlank(detectRecord.getRegisterBillCode())){
+            LOGGER.error("上传检测任务结果失败无单号");
             return BaseOutput.failure("没有对应的登记单");
+        }
+        if(StringUtils.isBlank(detectRecord.getDetectOperator())){
+            LOGGER.error("上传检测任务结果失败无检测人员");
+            return BaseOutput.failure("没有对应的检测人员");
+        }
+        if(detectRecord.getDetectState()==null){
+            LOGGER.error("上传检测任务结果失败无检测状态");
+            return BaseOutput.failure("没有对应的检测状态");
+        }
+        if(detectRecord.getDetectTime()==null){
+            LOGGER.error("上传检测任务结果失败无检测时间");
+            return BaseOutput.failure("没有对应的检测时间");
+        }
+        if(StringUtils.isBlank(detectRecord.getPdResult())){
+            LOGGER.error("上传检测任务结果失败无检测值");
+            return BaseOutput.failure("没有对应的检测值");
         }
         saveRecordAndUpdateBill(detectRecord);
         return BaseOutput.success().setData(true);

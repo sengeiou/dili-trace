@@ -1,18 +1,15 @@
 package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.glossary.BizNumberType;
-import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -23,7 +20,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -44,18 +44,20 @@ public class RegisterBillApi {
 
 
     @Autowired
+    DetectRecordService detectRecordService;
+   /* @Autowired
     BizNumberFunction bizNumberFunction;
 
-    /**
+    *//**
      * 测试登记单编号生成器
      * @param
      * @return
-     */
+     *//*
     //@RequestMapping(value = "/testGenId")
     public BaseOutput<String> testGenId(){
         String code = bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL);
         return BaseOutput.success().setData(code);
-    }
+    }*/
 
     /**
      * 保存登记单
@@ -153,31 +155,36 @@ public class RegisterBillApi {
         registerBillService.update(registerBill);
         return BaseOutput.success().setData(true);
     }*/
-    @ApiOperation(value = "通过ID获取登记单和分销单")
+    @ApiOperation(value = "通过登记单ID获取登记单详细信息")
     @RequestMapping(value = "id/{id}",method = RequestMethod.GET)
-    public BaseOutput<RegisterBill> getRegisterBill( @PathVariable Long id){
+    public BaseOutput<RegisterBillOutputDto> getRegisterBill( @PathVariable Long id){
         LOGGER.info("获取登记单:"+id);
-        RegisterBillOutputDto bill = DTOUtils.as(registerBillService.get(id), RegisterBillOutputDto.class);
-        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
-        bill.setSeparateSalesRecords(records);
+        RegisterBill registerBill = registerBillService.get(id);
+        if(registerBill==null){
+            LOGGER.error("获取登记单失败id:" + id);
+            return BaseOutput.failure();
+        }
+        RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
+
         return BaseOutput.success().setData(bill);
     }
-    @ApiOperation(value = "通过登记单编号获取登记单和分销单")
+    @ApiOperation(value = "通过登记单编号获取登记单详细信息")
     @RequestMapping(value = "/code/{code}",method = RequestMethod.GET)
-    public BaseOutput<RegisterBill> getRegisterBillByCode( @PathVariable String code){
+    public BaseOutput<RegisterBillOutputDto> getRegisterBillByCode( @PathVariable String code){
         LOGGER.info("获取登记单:"+code);
-        RegisterBillOutputDto bill = DTOUtils.as(registerBillService.findByCode(code),RegisterBillOutputDto.class);
-        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
-        bill.setSeparateSalesRecords(records);
+        RegisterBill registerBill =registerBillService.findByCode(code);
+        if(registerBill == null){
+            LOGGER.error("获取登记单失败code:" + code);
+            return BaseOutput.failure();
+        }
+        RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
         return BaseOutput.success().setData(bill);
     }
-    @ApiOperation(value = "通过交易区的交易号获取登记单和分销单")
+    @ApiOperation(value = "通过交易区的交易号获取登记单详细信息")
     @RequestMapping(value = "/tradeNo/{tradeNo}",method = RequestMethod.GET)
     public BaseOutput<RegisterBillOutputDto> getBillByTradeNo( @PathVariable String tradeNo){
         LOGGER.info("getBillByTradeNo获取登记单:"+tradeNo);
         RegisterBillOutputDto bill = registerBillService.findAndBind(tradeNo);
-        /*RegisterBill bill = registerBillService.findByTradeNo(tradeNo);*/
-
         return BaseOutput.success().setData(bill);
     }
     @ApiOperation(value = "通过分销记录ID获取分销单")
@@ -187,15 +194,7 @@ public class RegisterBillApi {
         SeparateSalesRecord record = separateSalesRecordService.get(salesRecordId);
         return BaseOutput.success().setData(record);
     }
-    @ApiOperation(value = "通过登记单ID获取登记单和分销单")
-    @RequestMapping(value = "/billSalesRecord/{id}",method = RequestMethod.GET)
-    public BaseOutput<RegisterBill> getBillSalesRecord( @PathVariable Long id){
-        LOGGER.info("获取登记单&分销记录:"+id);
-        RegisterBillOutputDto bill = DTOUtils.as(registerBillService.get(id),RegisterBillOutputDto.class);
-        List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(bill.getCode());
-        bill.setSeparateSalesRecords(records);
-        return BaseOutput.success().setData(bill);
-    }
+
     @ApiOperation(value = "通过登记单商品名获取登记单",httpMethod = "GET", notes="productName=?")
     @RequestMapping(value = "/productName/{productName}",method = RequestMethod.GET)
     public BaseOutput<List<RegisterBill>> getBillByProductName( @PathVariable String productName){
