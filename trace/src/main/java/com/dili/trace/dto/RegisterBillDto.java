@@ -3,6 +3,7 @@ package com.dili.trace.dto;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.ss.metadata.annotation.FieldDef;
 import com.dili.trace.domain.RegisterBill;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
@@ -12,21 +13,24 @@ import java.util.List;
  * Created by laikui on 2019/7/30.
  */
 public interface RegisterBillDto extends RegisterBill {
+    @ApiModelProperty(value = "查询登记开始时间")
     @Column(name = "`created`")
     @Operator(Operator.GREAT_EQUAL_THAN)
     String getCreatedStart();
     void setCreatedStart(String createdStart);
 
+    @ApiModelProperty(value = "查询登记结束时间")
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
     String getCreatedEnd();
     void setCreatedEnd(String createdEnd);
 
+    @ApiModelProperty(value = "查询检测开始时间")
     @Column(name = "`latest_detect_time`")
     @Operator(Operator.GREAT_EQUAL_THAN)
     String getLatestDetectTimeTimeStart();
     void setLatestDetectTimeTimeStart(String latestDetectTimeTimeStart);
-
+    @ApiModelProperty(value = "查询检测结束时间")
     @Column(name = "`latest_detect_time`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
     String getLatestDetectTimeTimeEnd();

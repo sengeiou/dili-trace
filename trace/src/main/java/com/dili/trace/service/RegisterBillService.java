@@ -24,11 +24,12 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
     int autoCheckRegisterBill(Long id);
     int samplingCheckRegisterBill(Long id);
     int reviewCheckRegisterBill(Long id);
-    RegisterBillOutputDto findAndBind(String tradeNo);
+    public RegisterBillOutputDto findAndBind(String tradeNo);
     /**
      * 根据状态统计数据
      * @param dto
      * @return
      */
     public RegisterBillStaticsDto groupByState(RegisterBillDto dto);
+    public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill);
 }
