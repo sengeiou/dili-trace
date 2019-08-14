@@ -44,9 +44,9 @@ public interface RegisterBill extends IBaseDomain {
     @Column(name = "`register_source`")
     @FieldDef(label="1.理货区 2.交易区")
     @EditMode(editor = FieldEditor.Text, required = true)
-    Byte getRegisterSource();
+    Integer getRegisterSource();
 
-    void setRegisterSource(Byte registerSource);
+    void setRegisterSource(Integer registerSource);
 
     @ApiModelProperty(value = "理货区号")
     @Column(name = "`tally_area_no`")

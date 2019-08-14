@@ -273,7 +273,6 @@
             registerBill.name=$("#name").val();
             registerBill.idCardNo=$("#idCardNo").val();
             registerBill.addr=$("#addr").val();
-            registerBill.created= new Date();
 
             $(this).find("input").each(function(){
                 console.log($(this).attr("name")+":参数:"+$(this).val());

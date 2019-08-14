@@ -80,8 +80,17 @@ public class RegisterBillApi {
         if(user==null){
             return BaseOutput.failure("未登陆用户");
         }
+        LOGGER.info("保存登记单 操作用户:"+JSON.toJSONString(user));
         registerBill.setOperatorName(user.getName());
         registerBill.setOperatorId(user.getId());
+        registerBill.setUserId(user.getId());
+        registerBill.setName(user.getName());
+        registerBill.setAddr(user.getAddr());
+        registerBill.setIdCardNo(user.getCardNo());
+        if(registerBill.getRegisterSource() == null){
+            //小程序默认理货区
+            registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
+        }
         BaseOutput result =registerBillService.createRegisterBill(registerBill);
         return result;
     }
@@ -93,11 +102,19 @@ public class RegisterBillApi {
         if(user==null){
             return BaseOutput.failure("未登陆用户");
         }
-
+        LOGGER.info("保存多个登记单 操作用户:"+JSON.toJSONString(user));
         for (RegisterBill registerBill : registerBills) {
             LOGGER.info("循环保存登记单:"+ JSON.toJSONString(registerBill));
             registerBill.setOperatorName(user.getName());
             registerBill.setOperatorId(user.getId());
+            registerBill.setUserId(user.getId());
+            registerBill.setName(user.getName());
+            registerBill.setAddr(user.getAddr());
+            registerBill.setIdCardNo(user.getCardNo());
+            if(registerBill.getRegisterSource() == null){
+                //小程序默认理货区
+                registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
+            }
             BaseOutput result =registerBillService.createRegisterBill(registerBill);
             if(!result.isSuccess()){
                 return result;
@@ -114,6 +131,7 @@ public class RegisterBillApi {
         if(user==null){
             return BaseOutput.failure("未登陆用户");
         }
+        LOGGER.info("获取登记单列表 操作用户:"+JSON.toJSONString(user));
         registerBill.setUserId(user.getId());
         EasyuiPageOutput easyuiPageOutput = registerBillService.listEasyuiPageByExample(registerBill, true);
         return BaseOutput.success().setData(easyuiPageOutput);
@@ -127,6 +145,7 @@ public class RegisterBillApi {
         if(user==null){
             return BaseOutput.failure("未登陆用户");
         }
+        LOGGER.info("保存分销单操作用户:"+JSON.toJSONString(user));
         if(StringUtils.isBlank(salesRecord.getRegisterBillCode())){
             return BaseOutput.failure("没有需要分销的登记单");
         }
