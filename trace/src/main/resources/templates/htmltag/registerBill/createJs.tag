@@ -258,9 +258,10 @@
         }
         //console.log("参数:"+$('#createRecordForm').serialize());
         var registerBills = new Array();
+        var registerSource = $("#registerSource").val();
         $("#goodsTable").find("tbody").find("tr").each(function(){
             var registerBill = new Object();
-            registerBill.registerSource=$("#registerSource").val();
+            registerBill.registerSource=registerSource;
             if(registerBill.registerSource==1){
                 registerBill.tallyAreaNo=$("#tallyAreaNo").val();
                 registerBill.userId = $("#userId").val();
@@ -272,6 +273,7 @@
             registerBill.name=$("#name").val();
             registerBill.idCardNo=$("#idCardNo").val();
             registerBill.addr=$("#addr").val();
+            registerBill.created= new Date();
 
             $(this).find("input").each(function(){
                 console.log($(this).attr("name")+":参数:"+$(this).val());
@@ -306,7 +308,10 @@
             success: function (ret) {
                 if(ret.success){
                     //TLOG.component.operateLog(TLOG.operates.add, "登记单管理", ret.data, ret.data);
-                    location.href = '/registerBill/index.html';
+                    //location.href = '/registerBill/index.html';
+                    var paramStr = JSON.stringify(printDate);
+                    console.log("打印信息:--:"+paramStr);
+                    printDirect(ret.date)
                 }else{
                     resubmit=0;
                     swal(
@@ -329,4 +334,26 @@
         });
     }
 
+    function printDirect(printDate){
+        var registerSource = $("#registerSource").val();
+        if(typeof callbackObj != 'undefined'){
+            window.printFinish=function(){
+                layer.alert("登记成功", {type: 0}, function () {
+                    history.go(-1);
+                });
+            }
+
+            if(registerSource == 1){
+                callbackObj.printDirect(printDate,"TallySamplingDocument");
+            }else{
+                callbackObj.printDirect(printDate,"TransactionSamplingDocument");
+            }
+        }else{
+            layer.confirm('请检查打印的设备是否已连接', {
+                type: 0,
+                title: '提示',
+                btn: ['确定']
+            });
+        }
+    }
 </script>

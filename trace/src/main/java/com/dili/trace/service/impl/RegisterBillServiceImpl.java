@@ -3,6 +3,7 @@ package com.dili.trace.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.QualityTraceTradeBill;
@@ -51,8 +52,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public int createRegisterBill(RegisterBill registerBill) {
-        if (checkBill(registerBill)) return 0;
+    public BaseOutput createRegisterBill(RegisterBill registerBill) {
+        BaseOutput recheck = checkBill(registerBill);
+        if(!recheck.isSuccess()){
+            return recheck;
+        }
         registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
         registerBill.setVersion(1);
@@ -65,39 +69,45 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
         }
-        return saveOrUpdate(registerBill);
+        int result =saveOrUpdate(registerBill);
+        if(result == 0 ){
+            LOGGER.error("新增登记单数据库执行失败"+ JSON.toJSONString(registerBill));
+            recheck = BaseOutput.failure("创建失败");
+        }
+        return recheck;
     }
 
-    private boolean checkBill(RegisterBill registerBill) {
+    private BaseOutput checkBill(RegisterBill registerBill) {
+
         if(registerBill.getRegisterSource()==null || registerBill.getRegisterSource().intValue()==0){
             LOGGER.error("登记来源不能为空");
-            return true;
+            return BaseOutput.failure("登记来源不能为空");
         }
         if(StringUtils.isBlank(registerBill.getName())){
             LOGGER.error("业户姓名不能为空");
-            return true;
+            return BaseOutput.failure("业户姓名不能为空");
         }
         if(StringUtils.isBlank(registerBill.getIdCardNo())){
             LOGGER.error("业户身份证号不能为空");
-            return true;
+            return BaseOutput.failure("业户身份证号不能为空");
         }
         if(StringUtils.isBlank(registerBill.getAddr())){
             LOGGER.error("业户身份证地址不能为空");
-            return true;
+            return BaseOutput.failure("业户身份证地址不能为空");
         }
         if(StringUtils.isBlank(registerBill.getProductName())){
             LOGGER.error("商品名称不能为空");
-            return true;
+            return BaseOutput.failure("商品名称不能为空");
         }
         if(StringUtils.isBlank(registerBill.getOriginName())){
             LOGGER.error("商品产地不能为空");
-            return true;
+            return BaseOutput.failure("商品产地不能为空");
         }
         if(registerBill.getWeight()==null || registerBill.getWeight().longValue()==0L){
             LOGGER.error("商品重量不能为空");
-            return true;
+            return BaseOutput.failure("商品重量不能为空");
         }
-        return false;
+        return BaseOutput.success();
     }
 
     @Override

@@ -81,11 +81,8 @@ public class RegisterBillApi {
         }
         registerBill.setOperatorName(user.getName());
         registerBill.setOperatorId(user.getId());
-        int result =registerBillService.createRegisterBill(registerBill);
-        if(result==0){
-            return BaseOutput.failure("请检测相关参数完整性");
-        }
-        return BaseOutput.success();
+        BaseOutput result =registerBillService.createRegisterBill(registerBill);
+        return result;
     }
     @ApiOperation("保存多个登记单")
     @RequestMapping(value = "/createList", method = RequestMethod.POST)
@@ -96,19 +93,16 @@ public class RegisterBillApi {
         if(user==null){
             return BaseOutput.failure("未登陆用户");
         }
-        //int count = 0;
+
         for (RegisterBill registerBill : registerBills) {
             LOGGER.info("循环保存登记单:"+ JSON.toJSONString(registerBill));
             registerBill.setOperatorName(user.getName());
             registerBill.setOperatorId(user.getId());
-            registerBillService.createRegisterBill(registerBill);
-            /*if (registerBillService.createRegisterBill(registerBill) == 1) {
-                count++;
-            }*/
+            BaseOutput result =registerBillService.createRegisterBill(registerBill);
+            if(!result.isSuccess()){
+                return result;
+            }
         }
-        /*if(count == registerBills.size()){
-            return BaseOutput.success();
-        }*/
         return BaseOutput.success();
     }
     @ApiOperation(value = "获取登记单列表")
@@ -139,11 +133,13 @@ public class RegisterBillApi {
         if(registerBill.getRegisterSource().intValue()== RegisterSourceEnum.TRADE_AREA.getCode()){//交易区分销校验
             //校验买家身份证
             QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
-            if(!qualityTraceTradeBill.getBuyerIDNo().equals("")){
+            if(!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo()).equals(StringUtils.lowerCase(user.getCardNo()))){
+                LOGGER.info("买家身份证"+qualityTraceTradeBill.getBuyerIDNo()+"用户身份证:"+user.getCardNo());
                 return BaseOutput.failure("没有权限分销");
             }
         }else {//理货区分销校验
-            if(!registerBill.getUserId().equals("")){
+            if(registerBill.getUserId().longValue()!=user.getId().longValue()){
+                LOGGER.info("业户ID"+registerBill.getUserId()+"用户ID:"+user.getId());
                 return BaseOutput.failure("没有权限分销");
             }
         }
@@ -154,16 +150,14 @@ public class RegisterBillApi {
             return BaseOutput.failure("分销重量超过可分销重量").setData(false);
         }
         if(registerBill.getWeight().intValue() == salesRecord.getSalesWeight().intValue()){
-            if(alreadyWeight ==0){//未分销过
-                registerBill.setSalesType(2);
-            }else {
+            if(alreadyWeight !=0){//未分销过
                 LOGGER.error("判断有问题？SalesWeight："+salesRecord.getSalesWeight()+",alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
-                return BaseOutput.failure("不能全销").setData(false);
+                return BaseOutput.failure("已有分销，重量不能全销").setData(false);
             }
-        }else {
-            registerBill.setSalesType(1);
-            separateSalesRecordService.saveOrUpdate(salesRecord);
         }
+
+        registerBill.setSalesType(1);
+        separateSalesRecordService.saveOrUpdate(salesRecord);
         /*registerBill.setOperatorId(salesRecord.getOperatorId());
         registerBill.setOperatorName(salesRecord.getOperatorName());*/
         registerBill.setOperatorName(user.getName());
@@ -171,15 +165,41 @@ public class RegisterBillApi {
         registerBillService.update(registerBill);
         return BaseOutput.success().setData(true);
     }
-  /*  @ApiOperation("保存全销单")
-    @RequestMapping(value = "/allSeparateSales/{id}",method = {RequestMethod.POST,RequestMethod.GET})
-    public BaseOutput<Boolean> allSeparateSales(@PathVariable Long id){
-        LOGGER.info("保存全销单:"+id);
+    @ApiOperation("处理不分销单")
+    @RequestMapping(value = "/doNoSalesRecord/{id}",method = {RequestMethod.POST,RequestMethod.GET})
+    @InterceptConfiguration
+    public BaseOutput doNoSalesRecord(@PathVariable Long id){
+        LOGGER.info("不分销销:"+id);
         RegisterBill registerBill =  registerBillService.get(id);
+        if(registerBill == null){
+            return BaseOutput.failure("没有查到需要分销的登记单");
+        }
+        User user=userService.get(sessionContext.getAccountId());
+        if(registerBill.getRegisterSource().intValue()== RegisterSourceEnum.TRADE_AREA.getCode()){//交易区分销校验
+            //校验买家身份证
+            QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
+
+            if(!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo()).equals(StringUtils.lowerCase(user.getCardNo()))){
+                LOGGER.info("买家身份证"+qualityTraceTradeBill.getBuyerIDNo()+"用户身份证:"+user.getCardNo());
+                return BaseOutput.failure("没有权限处理");
+            }
+        }else {//理货区分销校验
+            if(registerBill.getUserId().longValue()!=user.getId().longValue()){
+                LOGGER.info("业户ID"+registerBill.getUserId()+"用户ID:"+user.getId());
+                return BaseOutput.failure("没有权限处理");
+            }
+        }
+        Integer alreadyWeight =separateSalesRecordService.alreadySeparateSalesWeight(registerBill.getCode());
+
+        if(alreadyWeight>0){
+            LOGGER.error("已经有,alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
+            return BaseOutput.failure("已经有分销记录,不能处理").setData(false);
+        }
+
         registerBill.setSalesType(2);
         registerBillService.update(registerBill);
-        return BaseOutput.success().setData(true);
-    }*/
+        return BaseOutput.success();
+    }
     @ApiOperation(value = "通过登记单ID获取登记单详细信息")
     @RequestMapping(value = "id/{id}",method = RequestMethod.GET)
     public BaseOutput<RegisterBillOutputDto> getRegisterBill( @PathVariable Long id){

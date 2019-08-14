@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
@@ -18,7 +19,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
     List<RegisterBill> findByProductName( String productName);
     RegisterBill findByCode(String code);
     RegisterBillOutputDto findByTradeNo(String tradeNo);
-    int createRegisterBill(RegisterBill registerBill);
+    BaseOutput createRegisterBill(RegisterBill registerBill);
     int auditRegisterBill(Long id,Boolean pass);
     int undoRegisterBill(Long id);
     int autoCheckRegisterBill(Long id);
