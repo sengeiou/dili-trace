@@ -118,11 +118,10 @@ public class RegisterBillController {
 				}
 			}
 			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-			if (registerBillService.createRegisterBill(registerBill) == 0) {
-				LOGGER.error("新增登记单数据库执行失败"+ JSON.toJSONString(registerBill));
-				return BaseOutput.failure("新增失败");
+			BaseOutput r = registerBillService.createRegisterBill(registerBill);
+			if(!r.isSuccess()){
+				return  r;
 			}
-			;
 		}
 		return BaseOutput.success("新增成功").setData(registerBills);
 	}
