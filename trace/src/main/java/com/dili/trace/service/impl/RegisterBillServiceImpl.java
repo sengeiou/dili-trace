@@ -298,7 +298,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             outputDto.setQualityTraceTradeBill(qualityTraceTradeBill);
         }
         //分销信息
-        if(registerBill.getSalesType().intValue() == 1){
+        if(registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()){
             //分销
             List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
             outputDto.setSeparateSalesRecords(records);
