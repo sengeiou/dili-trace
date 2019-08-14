@@ -85,13 +85,5 @@ public interface SeparateSalesRecord extends IBaseDomain {
 
     void setModified(Date modified);
 
-    @Transient
-    String getOperatorName();
 
-    void setOperatorName(String operatorName);
-
-    @Transient
-    Long getOperatorId();
-
-    void setOperatorId(Long operatorId);
 }

@@ -1,16 +1,13 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
-import com.dili.trace.service.TradeTypeService;
+import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -41,6 +38,10 @@ public class RegisterBillController {
 	DetectRecordService detectRecordService;
 	@Autowired
 	TradeTypeService tradeTypeService;
+	@Autowired
+	UserService userService;
+	@Autowired
+	CustomerService customerService;
 
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -91,13 +92,37 @@ public class RegisterBillController {
 	public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
 		LOGGER.info("保存登记单数据:" + registerBills.size());
 		for (RegisterBill registerBill : registerBills) {
+			if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()){
+				//理货区
+				User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
+				if(user == null){
+					LOGGER.error("新增登记单失败理货区号["+registerBill.getTallyAreaNo()+"]对应用户不存在");
+					return BaseOutput.failure("理货区号["+registerBill.getTallyAreaNo()+"]对应用户不存在");
+				}
+				registerBill.setName(user.getName());
+				registerBill.setIdCardNo(user.getCardNo());
+				registerBill.setAddr(user.getAddr());
+				registerBill.setUserId(user.getId());
+			}else {
+				if(StringUtils.isNotBlank(registerBill.getTradeAccount())){
+					Customer customer =customerService.findByCustomerId(registerBill.getTradeAccount());
+					if(customer == null){
+						LOGGER.error("新增登记单失败交易账号["+registerBill.getTradeAccount()+"]对应用户不存在");
+						return BaseOutput.failure("交易账号[" +registerBill.getTradeAccount()+"]对应用户不存在");
+					}
+					registerBill.setName(customer.getName());
+					registerBill.setIdCardNo(customer.getIdNo());
+					registerBill.setAddr(customer.getAddress());
+				}
+			}
 			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 			if (registerBillService.createRegisterBill(registerBill) == 0) {
-				return BaseOutput.success("新增失败");
+				LOGGER.error("新增登记单数据库执行失败"+ JSON.toJSONString(registerBill));
+				return BaseOutput.failure("新增失败");
 			}
 			;
 		}
-		return BaseOutput.success("新增成功");
+		return BaseOutput.success("新增成功").setData(registerBills);
 	}
 
 	@ApiOperation("修改RegisterBill")

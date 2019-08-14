@@ -6,10 +6,10 @@
     $('[name="registerSource"]').on('change', function () {
         if ($(this).val() === '1') {
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').show();
-            $('[name="userId"], [name="b2"], [name="tradeTypeName"]').closest('.form-group').hide();
+            $('[name="tradeAccount"], [name="b2"], [name="tradeTypeName"]').closest('.form-group').hide();
         } else {
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').hide();
-            $('[name="userId"], [name="b2"], [name="tradeTypeName"]').closest('.form-group').show();
+            $('[name="tradeAccount"], [name="b2"], [name="tradeTypeName"]').closest('.form-group').show();
         }
     })
 
@@ -132,6 +132,7 @@
                         $("#idCardNo").val(customer.cardNo);
                         $("#name").val(customer.name);
                         $("#addr").val(customer.addr);
+                        $("#userId").val(customer.id);
                     } else {
 
                     }
@@ -140,7 +141,7 @@
         }
     }
     function customerId() {
-        var customerId = $("#userId").val();
+        var customerId = $("#tradeAccount").val();
         if(customerId == ""){
             return;
         }
@@ -181,7 +182,7 @@
                         $("#idCardNo").val(customer.idNo);
                         $("#name").val(customer.name);
                         $("#addr").val(customer.address);
-                        $("#userId").val(customer.customerId);
+                        $("#tradeAccount").val(customer.customerId);
                     } else {
 
                     }
@@ -260,9 +261,14 @@
         $("#goodsTable").find("tbody").find("tr").each(function(){
             var registerBill = new Object();
             registerBill.registerSource=$("#registerSource").val();
-            registerBill.tallyAreaNo=$("#tallyAreaNo").val();
+            if(registerBill.registerSource==1){
+                registerBill.tallyAreaNo=$("#tallyAreaNo").val();
+                registerBill.userId = $("#userId").val();
+            }else{
+                registerBill.tradeAccount=$("#tradeAccount").val();
+                registerBill.tradeTypeName=$("#tradeTypeName").val();
+            }
             registerBill.plate=$("#plate").val();
-            registerBill.userId=$("#userId").val();
             registerBill.name=$("#name").val();
             registerBill.idCardNo=$("#idCardNo").val();
             registerBill.addr=$("#addr").val();
