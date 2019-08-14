@@ -30,7 +30,7 @@ public enum RegisterBillStateEnum {
         this.name = name;
     }
 
-    public static RegisterBillStateEnum getEnabledState(Integer code) {
+    public static RegisterBillStateEnum getRegisterBillStateEnum(Integer code) {
         for (RegisterBillStateEnum anEnum : RegisterBillStateEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return anEnum;
