@@ -1,5 +1,10 @@
 
 <#bodyOrigin>
+    <style>
+        .form-inline .table-showlist table .input-sm {
+             width: 200px;
+        }
+    </style>
 <div class="main-container">
     <div class="topicTop">
         <div class="toppic-title">
@@ -118,7 +123,7 @@
             </div>
             <div class="form-item-group">
                 <h4 class="form-item-title">检疫检测报告</h4>
-                <div class="fileimg-box">
+                <div class="fileimg-box" style="margin-left: 50px;">
                     <span class="fileimg-plus-icon">+</span>
                     <span class="fileimg-des">点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
