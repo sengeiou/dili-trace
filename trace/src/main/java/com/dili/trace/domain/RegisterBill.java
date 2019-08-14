@@ -124,7 +124,7 @@ public interface RegisterBill extends IBaseDomain {
         if(getState()==null){
             return "";
         }
-        return RegisterBillStateEnum.getEnabledState(getState()).getName();
+        return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
     }
 
     @ApiModelProperty(value = "1.分销 2.全销")
@@ -205,7 +205,7 @@ public interface RegisterBill extends IBaseDomain {
         if(getDetectState()==null){
             return "";
         }
-        return BillDetectStateEnum.getEnabledState(getDetectState()).getName();
+        return BillDetectStateEnum.getBillDetectStateEnum(getDetectState()).getName();
     }
 
     @ApiModelProperty(value = "检测记录ID")

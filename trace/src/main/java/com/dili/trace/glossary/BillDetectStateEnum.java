@@ -25,7 +25,7 @@ public enum BillDetectStateEnum {
         this.name = name;
     }
 
-    public static BillDetectStateEnum getEnabledState(Integer code) {
+    public static BillDetectStateEnum getBillDetectStateEnum(Integer code) {
         for (BillDetectStateEnum anEnum : BillDetectStateEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return anEnum;

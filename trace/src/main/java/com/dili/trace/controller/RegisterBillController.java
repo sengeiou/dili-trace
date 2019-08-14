@@ -7,6 +7,7 @@ import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -306,6 +308,7 @@ public class RegisterBillController {
 	public String registerBillQRCcode(Long id,ModelMap modelMap) {
 		RegisterBill bill = registerBillService.get(id);
 		RegisterBillOutputDto outputDto = registerBillService.conversionDetailOutput(bill);
+		modelMap.put("registerBill",outputDto);
 		return "registerBill/registerBillQRCode";
 	}
 
@@ -318,10 +321,12 @@ public class RegisterBillController {
 	@RequestMapping(value = "/separateSalesRecordQRCode.html", method = RequestMethod.GET)
 	public String separateSalesRecordQRCcode(Long id,ModelMap modelMap) {
 		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
-		RegisterBill registerBill = registerBillService.findByCode(separateSalesRecord.getRegisterBillCode());
-		modelMap.put("registerBill",registerBill);
-		modelMap.put("separateSalesRecord",separateSalesRecord);
-		return "registerBill/separateSalesRecordQRCode";
+		RegisterBill bill = registerBillService.get(id);
+		bill.setSalesType(SalesTypeEnum.ONE_SALES.getCode());
+		RegisterBillOutputDto outputDto = registerBillService.conversionDetailOutput(bill);
+		outputDto.setSeparateSalesRecords(Arrays.asList(separateSalesRecord));
+		modelMap.put("registerBill",outputDto);
+		return "registerBill/registerBillQRCode";
 	}
 
 
