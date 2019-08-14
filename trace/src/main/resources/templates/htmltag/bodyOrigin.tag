@@ -25,6 +25,7 @@ ${tag.body}
 <script src="https://cdn.bootcss.com/limonte-sweetalert2/7.28.5/sweetalert2.all.min.js"></script>
 <script src="/resources/assets/dep/bootstrap/js/bootstrap.min.js"></script>
 <script src="/resources/assets/dep/jquery/laydate/laydate.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
 <script src="/resources/assets/dep/jquery/jquery.validate.js"></script>
 <script src="/resources/assets/dep/jquery/jquery.validate-extend.js"></script>
 <script src="/resources/assets/dep/jquery/jquery.autocomplete.min.js"></script>

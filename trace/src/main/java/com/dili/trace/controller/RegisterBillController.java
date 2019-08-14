@@ -258,6 +258,12 @@ public class RegisterBillController {
 		return BaseOutput.success().setData(staticsDto);
 	}
 
+	/**
+	 * 交易区订单溯源页面（二维码）
+	 * @param tradeNo
+	 * @param modelMap
+	 * @return
+	 */
 	@RequestMapping(value = "/tradeBillDetail.html", method = RequestMethod.GET)
 	public String tradeBillDetail(String tradeNo,ModelMap modelMap) {
 		RegisterBillOutputDto bill = registerBillService.findAndBind(tradeNo);
@@ -265,6 +271,34 @@ public class RegisterBillController {
 		return "registerBill/tradeBillDetail";
 	}
 
+
+	/**
+	 * 登记单溯源（二维码）
+	 * @param id
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/registerBillQRCode.html", method = RequestMethod.GET)
+	public String registerBillQRCcode(Long id,ModelMap modelMap) {
+		RegisterBill bill = registerBillService.get(id);
+		RegisterBillOutputDto outputDto = registerBillService.conversionDetailOutput(bill);
+		return "registerBill/registerBillQRCode";
+	}
+
+	/**
+	 * 分销记录溯源（二维码）
+	 * @param id
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/separateSalesRecordQRCode.html", method = RequestMethod.GET)
+	public String separateSalesRecordQRCcode(Long id,ModelMap modelMap) {
+		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
+		RegisterBill registerBill = registerBillService.findByCode(separateSalesRecord.getRegisterBillCode());
+		modelMap.put("registerBill",registerBill);
+		modelMap.put("separateSalesRecord",separateSalesRecord);
+		return "registerBill/separateSalesRecordQRCode";
+	}
 
 
 }

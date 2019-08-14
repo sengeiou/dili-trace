@@ -143,7 +143,11 @@
 
 	<dependencies>
 
-
+		<dependency>
+			<groupId>com.dili</groupId>
+			<artifactId>ss-mbg</artifactId>
+			<version>${sharp-sword.version}</version>
+		</dependency>
 
 		<!-- spring boot 基类 -->
 		<dependency>
@@ -229,7 +233,7 @@
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>commons</artifactId>
-			<version>1.0.16-SNAPSHOT</version>
+			<version>1.0.17-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.dili</groupId>

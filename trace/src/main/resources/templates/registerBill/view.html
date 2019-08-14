@@ -121,9 +121,22 @@
 
             </div>
 
+            <%if(registerBill.salesType == 2){%>
+                <div class="form-item-group">
+                    <h4 class="form-item-title">溯源二维码</h4>
+                    <div class="imageUploadWrap">
+                        <div class="form-group">
+                            <div class="imageUpload rectangle">
+                                <img id="registerBillQRCode"  alt="" class="show-image">
+                                <#imgQR id="registerBillQRCode" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <%}%>
             <%
             var separateSalesRecords = registerBill.separateSalesRecords;
-            if(separateSalesRecords.~size>0){%>
+            if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
             <div class="form-item-group">
                 <h4 class="form-item-title">分销信息</h4>
                 <div class="table-showlist" style="width: 1200px">
@@ -158,10 +171,8 @@
                                 <div class="imageUploadWrap">
                                     <div class="form-group">
                                         <div class="imageUpload rectangle">
-                                            <a href="javascript:;" class="edit-zoom">放大</a>
-                                            <input type="file" name="image" class="form-control input-sm choose-image" accept="image/*">
-                                            <img src="" alt="" class="show-image">
-                                            <input type="hidden" name="originCertifiyUrl" value="http://123">
+                                            <img id="separateSalesRecordQR${recordLP.index}" alt="" class="show-image">
+                                            <#imgQR id="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/separateSalesRecordQRCode.html?id=${record.id!}"/>
                                         </div>
                                     </div>
                                 </div>
@@ -182,6 +193,19 @@
 
 
 <script>
+
+    $('.imageUpload').on('click', function () {
+        var url = $(this).find("img").attr('src');
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['50%', '50%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    });
+
     function returnBack(){
         history.go(-1);
     }

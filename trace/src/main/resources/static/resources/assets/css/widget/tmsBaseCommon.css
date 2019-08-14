@@ -305,6 +305,7 @@ width: auto }
     right: 10px; }
 
 table .imageUpload.rectangle {
+  cursor: pointer;
   width: 50px;
   height: 57px; }
 
