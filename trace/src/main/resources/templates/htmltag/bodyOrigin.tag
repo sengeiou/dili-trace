@@ -21,7 +21,7 @@ ${tag.body}
 
 </body>
 
-<script src="/resources/assets/dep/jquery/jquery-2.2.4.min.js"></script>
+<script type="text/javascript" src="${contextPath}/resources/easyui/js/jquery-3.2.1.min.js"></script>
 <script src="https://cdn.bootcss.com/limonte-sweetalert2/7.28.5/sweetalert2.all.min.js"></script>
 <script src="/resources/assets/dep/bootstrap/js/bootstrap.min.js"></script>
 <script src="/resources/assets/dep/jquery/laydate/laydate.js"></script>

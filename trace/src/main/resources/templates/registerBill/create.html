@@ -98,14 +98,15 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="imageUploadWrap">
-                                    <div class="form-group">
-                                        <div class="imageUpload rectangle">
-                                            <a href="javascript:;" class="edit-zoom">放大</a>
-                                            <input type="file" name="image" class="form-control input-sm choose-image" accept="image/*">
-                                            <img src="" alt="" class="show-image">
-                                            <input type="hidden" name="originCertifiyUrl" value="http://123">
-                                        </div>
+                                <div class="fileimg-box">
+                                    <span class="fileimg-plus-icon">+</span>
+                                    <span class="fileimg-des">点击上传</span>
+                                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                                    <input type="hidden" name="originCertifiyUrl">
+                                    <img class="magnifying">
+                                    <div class="fileimg-cover" style="display: none;"></div>
+                                    <div class="fileimg-edit" style="display: none;">
+                                        <span class="fileimg-view">查看</span>
                                     </div>
                                 </div>
                             </td>
@@ -117,14 +118,15 @@
             </div>
             <div class="form-item-group">
                 <h4 class="form-item-title">检疫检测报告</h4>
-                <div class="imageUploadWrap">
-                    <div class="form-group">
-                        <div class="imageUpload rectangle">
-                            <a href="javascript:;" class="edit-zoom">放大</a>
-                            <input type="file" name="image" class="form-control input-sm choose-image" accept="image/*">
-                            <img src="" alt="" class="show-image">
-                            <input type="hidden" name="originCertifiyUrl" value="http://123">
-                        </div>
+                <div class="fileimg-box">
+                    <span class="fileimg-plus-icon">+</span>
+                    <span class="fileimg-des">点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                    <input type="hidden" name="detectReportUrl">
+                    <img class="magnifying">
+                    <div class="fileimg-cover" style="display: none;"></div>
+                    <div class="fileimg-edit" style="display: none;">
+                        <span class="fileimg-view">查看</span>
                     </div>
                 </div>
             </div>
@@ -139,6 +141,10 @@
 </div>
 </#bodyOrigin>
 <#registerBill_createJs />
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
 
 <script id="goodsItem" type="text/html">
@@ -161,14 +167,15 @@
             </div>
         </td>
         <td>
-            <div class="imageUploadWrap">
-                <div class="form-group">
-                    <div class="imageUpload rectangle">
-                        <a href="javascript:;" class="edit-zoom">放大</a>
-                        <input type="file" name="image" class="form-control input-sm choose-image" accept="image/*">
-                        <img src="" alt="" class="show-image">
-                        <input type="hidden" name="originCertifiyUrl" value="http://123">
-                    </div>
+            <div class="fileimg-box">
+                <span class="fileimg-plus-icon">+</span>
+                <span class="fileimg-des">点击上传</span>
+                <input id="originCertifiyUrl{{index}}" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                <input type="hidden" name="originCertifiyUrl">
+                <img class="magnifying">
+                <div class="fileimg-cover" style="display: none;"></div>
+                <div class="fileimg-edit" style="display: none;">
+                    <span class="fileimg-view">查看</span>
                 </div>
             </div>
         </td>
@@ -177,9 +184,3 @@
 
 </script>
 
-
-<script>
-
-
-
-</script>

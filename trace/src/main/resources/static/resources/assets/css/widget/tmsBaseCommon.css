@@ -271,6 +271,65 @@ width: auto }
   width: 150px;
   height: 150px; }
 
+/*上传图片*/
+.fileimg-box {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  padding-top: 20px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+.fileimg-box .fileimg-plus-icon {
+  display: inline-block;
+  width: 100%;
+  font-size: 40px;
+  font-weight: 700;
+}
+.fileimg-box .magnifying,
+.fileimg-box [type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 120px;
+  height: 120px;
+  z-index: 2;
+}
+.fileimg-box [type="file"] {
+  opacity: 0;
+  z-index: 3;
+}
+.fileimg-box .fileimg-cover,
+.fileimg-box .fileimg-edit {
+  display: none;
+}
+.fileimg-box:hover .fileimg-cover {
+  position: absolute;
+  bottom: 0;
+  z-index: 4;
+  display: block;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  background: #000;
+  opacity: .5;
+}
+.fileimg-box:hover .fileimg-edit {
+  position: absolute;
+  bottom: 0;
+  z-index: 8;
+  display: block;
+  width: 100%;
+  color: #fff;
+  line-height: 30px;
+  text-align: center;
+}
+.fileimg-box .fileimg-edit span {
+  cursor: pointer;
+}
+
+
 .imageUpload {
   position: relative;
   background: url(../../images/base/dfImg.png) no-repeat center center;

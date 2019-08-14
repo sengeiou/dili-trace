@@ -16,8 +16,8 @@
     /* 货品表格  */
     let goodsItemCount = 0;
     $('.main-container').on('click', '#addGoodsItem', function () {
-        $('#goodsTable tbody').append(template('goodsItem', {index: goodsItemCount++}));
-
+        $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
+        initFileUpload('#originCertifiyUrl'+goodsItemCount);
         $('input[name="originName"]').autocomplete({
             noCache: 1,
             serviceUrl: '/api/toll/city',  //数据地址
@@ -68,7 +68,9 @@
             }
         });
 
-    })
+    });
+
+
     $('.main-container').on('click', '.split-minus-btn', function () {
         if ($('#goodsTable tr').length > 2) {
             $(this).closest('tr').remove();
@@ -354,5 +356,54 @@
                 btn: ['确定']
             });
         }
+    }
+
+    $(function () {
+        initFileUpload(':file');
+    });
+
+    $( document ).on( "click", ".fileimg-view",function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    });
+
+    //文件上传组件初始化
+    function initFileUpload(selecter) {
+        $(selecter).fileupload({
+            dataType: 'json',
+            formData: {type: 4, compress: true},
+            done: function (e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    $(this).siblings('.magnifying').attr('src', url).show();
+                    $(this).siblings("input:hidden").val(url);
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".") + 1;
+                var fileType = name.substring(index, name.length);
+                if (!acceptFileTypes.test(fileType)) {
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if (size > (1024 * 10 * 1024)) {
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return;
+                }
+                data.submit();
+            }
+        });
     }
 </script>
