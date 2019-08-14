@@ -9,6 +9,7 @@ import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -21,10 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -52,55 +50,19 @@ public class RegisterBillApi {
     private SessionContext sessionContext;
     @Autowired
     UserService userService;
-   /* @Autowired
-    BizNumberFunction bizNumberFunction;
 
-    *//**
-     * 测试登记单编号生成器
-     * @param
-     * @return
-     *//*
-    //@RequestMapping(value = "/testGenId")
-    public BaseOutput<String> testGenId(){
-        String code = bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL);
-        return BaseOutput.success().setData(code);
-    }*/
 
-    /**
-     * 保存登记单
-     * @param registerBill
-     * @return
-     */
-    @ApiOperation("保存登记单")
-    @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "登记单保存入参")
-    @RequestMapping(value = "/create",method = RequestMethod.POST)
-    public BaseOutput saveRegisterBill(RegisterBill registerBill){
-        LOGGER.info("保存登记单:"+ JSON.toJSONString(registerBill));
-        User user=userService.get(sessionContext.getAccountId());
-        if(user==null){
-            return BaseOutput.failure("未登陆用户");
-        }
-        LOGGER.info("保存登记单 操作用户:"+JSON.toJSONString(user));
-        registerBill.setOperatorName(user.getName());
-        registerBill.setOperatorId(user.getId());
-        registerBill.setUserId(user.getId());
-        registerBill.setName(user.getName());
-        registerBill.setAddr(user.getAddr());
-        registerBill.setIdCardNo(user.getCardNo());
-        if(registerBill.getRegisterSource() == null){
-            //小程序默认理货区
-            registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-        }
-        BaseOutput result =registerBillService.createRegisterBill(registerBill);
-        return result;
-    }
     @ApiOperation("保存多个登记单")
     @RequestMapping(value = "/createList", method = RequestMethod.POST)
-    public BaseOutput insert(List<RegisterBill> registerBills) {
+    public BaseOutput createList(@RequestBody CreateListBillParam createListBillParam) {
         LOGGER.info("保存多个登记单:");
         User user=userService.get(sessionContext.getAccountId());
         if(user==null){
             return BaseOutput.failure("未登陆用户");
+        }
+        List<RegisterBill> registerBills =createListBillParam.getRegisterBills();
+        if(registerBills==null){
+            return BaseOutput.failure("没有登记单");
         }
         LOGGER.info("保存多个登记单 操作用户:"+JSON.toJSONString(user));
         for (RegisterBill registerBill : registerBills) {
@@ -111,6 +73,7 @@ public class RegisterBillApi {
             registerBill.setName(user.getName());
             registerBill.setAddr(user.getAddr());
             registerBill.setIdCardNo(user.getCardNo());
+            registerBill.setTallyAreaNo(user.getTaillyAreaNo());
             if(registerBill.getRegisterSource() == null){
                 //小程序默认理货区
                 registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
@@ -181,8 +144,6 @@ public class RegisterBillApi {
 
         registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
         separateSalesRecordService.saveOrUpdate(salesRecord);
-        /*registerBill.setOperatorId(salesRecord.getOperatorId());
-        registerBill.setOperatorName(salesRecord.getOperatorName());*/
         registerBill.setOperatorName(user.getName());
         registerBill.setOperatorId(user.getId());
         registerBillService.update(registerBill);
