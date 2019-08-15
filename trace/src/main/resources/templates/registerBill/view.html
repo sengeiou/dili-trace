@@ -146,6 +146,7 @@
                             <th><span class="red">&lowast;</span>分销客户</th>
                             <th><span class="red">&lowast;</span>分销地</th>
                             <th><span class="red">&lowast;</span>分销重量/KG</th>
+                            <th>产地证明</th>
                             <th>溯源二维码</th>
                         </tr>
                         </thead>
@@ -171,6 +172,16 @@
                                 <div class="imageUploadWrap">
                                     <div class="form-group">
                                         <div class="imageUpload rectangle">
+                                            <a href="javascript:;" class="edit-zoom">放大</a>
+                                            <img src="http://trace.nong12.com/"${record.originCertifiyUrl} alt="" class="show-image">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="imageUploadWrap">
+                                    <div class="form-group">
+                                        <div class="imageUpload rectangle">
                                             <img id="separateSalesRecordQR${recordLP.index}" alt="" class="show-image">
                                             <#imgQR id="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/separateSalesRecordQRCode.html?id=${record.id!}"/>
                                         </div>
@@ -185,6 +196,18 @@
                 </div>
             </div>
             <%}%>
+            <%%>
+            <div class="form-item-group">
+                <h4 class="form-item-title">检疫检测报告</h4>
+                <div class="imageUploadWrap">
+                    <div class="form-group">
+                        <div class="imageUpload rectangle">
+                            <a href="javascript:;" class="edit-zoom">放大</a>
+                            <img src="${contextPath!}${record.detectReportUrl}" alt="" class="show-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 
@@ -205,7 +228,15 @@
             content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
         });
     });
-
+    /*$('.main-container').on('click', '.imageUploadWrap .edit-zoom', function () {
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + $(this).siblings('.show-image').attr('src') + '" alt="" class="show-image-zoom"></p>'
+        });
+    })*/
     function returnBack(){
         history.go(-1);
     }
