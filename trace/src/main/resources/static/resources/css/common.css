@@ -123,6 +123,7 @@ h2 {
 .fileimg-box [type="file"] {
     opacity: 0;
     z-index: 3;
+    cursor: pointer;
 }
 .fileimg-box .fileimg-cover,
 .fileimg-box .fileimg-edit {

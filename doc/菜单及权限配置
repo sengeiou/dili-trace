@@ -1,0 +1,6 @@
+列表 user/index.html#list
+新增 user/index.html#add
+修改 user/index.html#update
+重置密码 user/index.html#reset
+启用 user/index.html#enabled
+禁用 user/index.html#disabled

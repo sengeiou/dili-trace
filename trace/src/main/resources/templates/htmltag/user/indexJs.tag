@@ -35,12 +35,11 @@
         $('#_taillyAreaNo').textbox({readonly:true});
         $('#_form').form('clear');
         initFileUpload();
-        formFocus("_form", "_userName");
+        formFocus("_form", "_name");
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
-        $(":file").attr('disabled',true);
         if(formData._cardNoUrl){
             $('#_cardNoUrl').siblings('.fileimg-cover,.fileimg-edit').show();
             $('#_cardNoUrl').siblings(".magnifying").attr('src',formData._cardNoUrl).show();
@@ -58,7 +57,6 @@
             return;
         }
         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-//        _formData.salesCityName = $('#salesCityName').val();
         var _url = null;
         //没有id就新增
         if(_formData.id == null || _formData.id==""){
@@ -262,6 +260,7 @@
         pager.pagination({
             <#controls_paginationOpts/>,
             buttons:[
+            <#resource method="post" url="user/index.html#add">
             {
                 iconCls:'icon-add',
                 text:'新增',
@@ -269,6 +268,8 @@
                     openInsert();
                 }
             },
+            </#resource>
+            <#resource method="post" url="user/index.html#update">
             {
                 iconCls:'icon-edit',
                 text:'修改',
@@ -276,13 +277,18 @@
                     openUpdate();
                 }
             },
+            </#resource>
+            <#resource method="post" url="user/index.html#reset">
             {
                 iconCls:'icon-reset',
                 text:'重置密码',
                 handler:function(){
                     doResetPassword();
                 }
-            },{
+            },
+            </#resource>
+            <#resource method="post" url="user/index.html#enabled">
+            {
                 iconCls:'icon-play',
                 text:'启用',
                 id:'play_btn',
@@ -290,6 +296,8 @@
                     doEnable(true);
                 }
             },
+            </#resource>
+            <#resource method="post" url="user/index.html#disabled">
             {
                 iconCls:'icon-stop',
                 text:'禁用',
@@ -298,6 +306,7 @@
                     doEnable(false);
                 }
             }
+            </#resource>
         ]
         });
     }
