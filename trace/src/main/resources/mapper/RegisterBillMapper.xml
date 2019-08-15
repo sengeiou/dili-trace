@@ -146,7 +146,7 @@
   <!--自定义sql-->
   <select id="findMatchDetectBind" parameterType="com.dili.trace.dto.MatchDetectParam" >
     SELECT id  from register_bill
-    where `tally_area_no` = #{tallyAreaNo} and `product_name` = #{productName} and `id_card_no` = #{idCardNo}
+    where `trade_type_name` = #{tradeTypeName} and `product_name` = #{productName} and `id_card_no` = #{idCardNo}
     and `latest_detect_time` BETWEEN #{start} AND #{end} AND register_source = 2 AND trade_no IS NULL
     ORDER BY id DESC limit 1
   </select>

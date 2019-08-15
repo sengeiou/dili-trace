@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class MatchDetectParam implements Serializable {
     private String tradeNo;
-    private String tallyAreaNo;
+    private String tradeTypeName;
     private String productName;
     private String idCardNo;
     private Date start;
@@ -22,12 +22,12 @@ public class MatchDetectParam implements Serializable {
         this.tradeNo = tradeNo;
     }
 
-    public String getTallyAreaNo() {
-        return tallyAreaNo;
+    public String getTradeTypeName() {
+        return tradeTypeName;
     }
 
-    public void setTallyAreaNo(String tallyAreaNo) {
-        this.tallyAreaNo = tallyAreaNo;
+    public void setTradeTypeName(String tradeTypeName) {
+        this.tradeTypeName = tradeTypeName;
     }
 
     public String getProductName() {
@@ -66,7 +66,7 @@ public class MatchDetectParam implements Serializable {
     public String toString() {
         return "MatchDetectParam{" +
                 "tradeNo='" + tradeNo + '\'' +
-                ", tallyAreaNo='" + tallyAreaNo + '\'' +
+                ", tradeTypeName='" + tradeTypeName + '\'' +
                 ", productName='" + productName + '\'' +
                 ", idCardNo='" + idCardNo + '\'' +
                 ", start=" + start +

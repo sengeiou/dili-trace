@@ -165,7 +165,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         MatchDetectParam matchDetectParam = new MatchDetectParam();
         matchDetectParam.setTradeNo(qualityTraceTradeBill.getOrderId());
-        matchDetectParam.setTallyAreaNo(qualityTraceTradeBill.getTradetypeName());
+        matchDetectParam.setTradeTypeName(qualityTraceTradeBill.getTradetypeName());
         matchDetectParam.setProductName(qualityTraceTradeBill.getProductName());
         matchDetectParam.setIdCardNo(qualityTraceTradeBill.getSellerIDNo());
         matchDetectParam.setEnd(qualityTraceTradeBill.getOrderPayDate());
