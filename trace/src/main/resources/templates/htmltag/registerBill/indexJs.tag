@@ -57,6 +57,7 @@
         pager.pagination({
             <#controls_paginationOpts/>,
             buttons:[
+        <#resource method="post" url="registerBill/index.html#add">
             {
                 iconCls:'icon-add',
                 text:'新增',
@@ -64,6 +65,8 @@
                     openInsert();
                 }
             },
+    </#resource>
+        <#resource method="post" url="registerBill/index.html#audit">
             {
                 iconCls:'icon-detail',
                 text:'审核',
@@ -72,6 +75,8 @@
                     audit();
                 }
             },
+    </#resource>
+        <#resource method="post" url="registerBill/index.html#review">
             {
                 iconCls:'icon-detail',
                 text:'复检',
@@ -80,6 +85,8 @@
                     reviewCheck();
                 }
             },
+    </#resource>
+        <#resource method="post" url="registerBill/index.html#auto">
             {
                 iconCls:'icon-detail',
                 text:'主动送检',
@@ -88,6 +95,8 @@
                     autoCheck();
                 }
             },
+    </#resource>
+        <#resource method="post" url="registerBill/index.html#sampling">
             {
                 iconCls:'icon-detail',
                 text:'采样检测',
@@ -96,6 +105,8 @@
                     samplingCheck();
                 }
             },
+    </#resource>
+        <#resource method="post" url="registerBill/index.html#undo">
             {
                 iconCls:'icon-remove',
                 text:'撤销',
@@ -105,6 +116,8 @@
                     undo();
                 }
             },
+    </#resource>
+        <#resource method="post" url="registerBill/index.html#detail">
             {
                 iconCls:'icon-detail',
                 text:'查看',
@@ -112,6 +125,8 @@
                     doDetail();
                 }
             },
+    </#resource>
+        <#resource method="post" url="registerBill/index.html#export">
             {
                 iconCls:'icon-export',
                 text:'导出',
@@ -119,6 +134,7 @@
                     doExport('registerBillGrid');
                 }
             }
+        </#resource>
         ]
         });
     }
