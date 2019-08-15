@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/resources/assets/dep/bootstrap/css/bootstrap.min.css" />
 
     <link rel="stylesheet" href="/resources/assets/css/widget/tmsBaseCommon.css" />
-    <link rel="stylesheet" href="https://cdn.bootcss.com/limonte-sweetalert2/7.28.5/sweetalert2.min.css">
+    <link rel="stylesheet" href="/webjars/sweetalert2/7.28.10/dist/sweetalert2.min.css">
 </head>
 
 <body>
@@ -21,8 +21,9 @@ ${tag.body}
 
 </body>
 
-<script type="text/javascript" src="${contextPath}/resources/easyui/js/jquery-3.2.1.min.js"></script>
-<script src="https://cdn.bootcss.com/limonte-sweetalert2/7.28.5/sweetalert2.all.min.js"></script>
+<script type="text/javascript" src="resources/easyui/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/resources/easyui/js/easyui-datagrid-editor-sweetalert.js"></script>
+<script src="/webjars/sweetalert2/7.28.10/dist/sweetalert2.min.js"></script>
 <script src="/resources/assets/dep/bootstrap/js/bootstrap.min.js"></script>
 <script src="/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
