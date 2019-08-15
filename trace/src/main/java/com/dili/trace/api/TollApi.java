@@ -1,5 +1,6 @@
 package com.dili.trace.api;
 
+import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.City;
@@ -29,6 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api/toll")
 @Api(value ="/api/toll", description = "对接神农基础信息相关接口")
+@InterceptConfiguration
 public class TollApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(TollApi.class);
     @Autowired
