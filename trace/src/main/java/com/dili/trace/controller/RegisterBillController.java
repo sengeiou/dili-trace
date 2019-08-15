@@ -44,6 +44,8 @@ public class RegisterBillController {
 	UserService userService;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	QualityTraceTradeBillService qualityTraceTradeBillService;
 
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -292,8 +294,20 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/tradeBillDetail.html", method = RequestMethod.GET)
 	public String tradeBillDetail(String tradeNo,ModelMap modelMap) {
-		RegisterBillOutputDto bill = registerBillService.findAndBind(tradeNo);
-		modelMap.put("tradeBill",bill);
+		RegisterBillOutputDto registerBill = registerBillService.findByTradeNo(tradeNo);
+		QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(tradeNo);
+		if(registerBill == null){
+			int result = registerBillService.matchDetectBind(qualityTraceTradeBill);
+			if(result==1){
+				registerBill= registerBillService.findByTradeNo(tradeNo);
+			}
+		}
+
+		if(null != registerBill){
+			registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
+		}
+		modelMap.put("tradeBill",registerBill);
+		modelMap.put("qualityTraceTradeBill",qualityTraceTradeBill);
 		return "registerBill/tradeBillDetail";
 	}
 

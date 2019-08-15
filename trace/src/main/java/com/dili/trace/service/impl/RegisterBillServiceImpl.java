@@ -161,6 +161,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         return null;
     }
+
+    @Override
     public int matchDetectBind(QualityTraceTradeBill qualityTraceTradeBill){
 
         MatchDetectParam matchDetectParam = new MatchDetectParam();
@@ -173,7 +175,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         matchDetectParam.setStart(start);
         LOGGER.info("进行匹配:"+matchDetectParam.toString());
         Long id = getActualDao().findMatchDetectBind(matchDetectParam);
-        return getActualDao().matchDetectBind(qualityTraceTradeBill.getOrderId(),qualityTraceTradeBill.getNetWeight(),id);
+        int rows = 0;
+        if(null != id){
+            rows = getActualDao().matchDetectBind(qualityTraceTradeBill.getOrderId(),qualityTraceTradeBill.getNetWeight(),id);
+        }
+        return rows;
     }
 
     @Override
@@ -274,8 +280,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
             registerBill.setSeparateSalesRecords(records);
             registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
+            registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         }
-        registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         return registerBill;
     }
     @Override

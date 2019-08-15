@@ -16,18 +16,18 @@
 <div class="scan-top">
 </div>
 <div class="scan-bottom">
-    <%if(isNotEmpty(tradeBill) && isNotEmpty(tradeBill.qualityTraceTradeBill)){%>
-        <div class="order-num">订单号：${tradeBill.qualityTraceTradeBill.orderId!}</div>
+    <%if(isNotEmpty(qualityTraceTradeBill)){%>
+        <div class="order-num">订单号：${qualityTraceTradeBill.orderId!}</div>
         <div class="scan-detail">
             <div class="buyer-seller">
                 <div class="seller">
                     <div>批发市场：寿光地利</div>
-                    <div>卖方：${tradeBill.qualityTraceTradeBill.sellerName!}(${tradeBill.qualityTraceTradeBill.sellerAccount!})
+                    <div>卖方：${qualityTraceTradeBill.sellerName!}(${qualityTraceTradeBill.sellerAccount!})
                     </div>
                 </div>
                 <div class="buyer">
                     <div>货品去向</div>
-                    <div>买方：${tradeBill.qualityTraceTradeBill.buyerName!}(${tradeBill.qualityTraceTradeBill.buyerAccount!})
+                    <div>买方：${qualityTraceTradeBill.buyerName!}(${qualityTraceTradeBill.buyerAccount!})
                     </div>
                 </div>
             </div>
@@ -36,8 +36,8 @@
             <div class="table-container">
                 <div class="list-title">
                     <span class="pull-left">交易日期：
-                        <%if(null!= tradeBill.qualityTraceTradeBill.orderPayDate){%>
-                            ${tradeBill.qualityTraceTradeBill.orderPayDate,dateFormat='yyyy-MM-dd'}
+                        <%if(null!= qualityTraceTradeBill.orderPayDate){%>
+                            ${qualityTraceTradeBill.orderPayDate,dateFormat='yyyy-MM-dd'}
                             <%}else{%>
                                 -
                             <%}%>
@@ -51,16 +51,16 @@
                             <th class="type">农残留值(%)</th>
                         </tr>
                         <tr>
-                            <td>${tradeBill.qualityTraceTradeBill.productName!}</td>
+                            <td>${qualityTraceTradeBill.productName!}</td>
                             <td>
-                                <%if(tradeBill.qualityTraceTradeBill.saleUnit == 1){%>
-                                    ${tradeBill.qualityTraceTradeBill.netWeight*1000}斤
-                                <%}else if(tradeBill.qualityTraceTradeBill.saleUnit == 2){%>
-                                    ${tradeBill.qualityTraceTradeBill.pieceQuantity!}件
+                                <%if(qualityTraceTradeBill.saleUnit == 1){%>
+                                    ${qualityTraceTradeBill.netWeight}KG
+                                <%}else if(qualityTraceTradeBill.saleUnit == 2){%>
+                                    ${qualityTraceTradeBill.pieceQuantity!}件
                                 <%}%>
                             </td>
                             <td>
-                                <%if(!isNotEmpty(tradeBill.detectState) ||  tradeBill.detectState == 2){%>
+                                <%if( isEmpty(tradeBill) ){%>
                                     0.0(待检测)
                                 <%}else if( tradeBill.detectState == 1 || tradeBill.detectState == 3 ){%>
                                     ${tradeBill.detectRecord.pdResult!}(合格)

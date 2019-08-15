@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
@@ -33,4 +34,11 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      */
     public RegisterBillStaticsDto groupByState(RegisterBillDto dto);
     public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill);
+
+    /**
+     * 检测记录匹配
+      * @param qualityTraceTradeBill
+     * @return
+     */
+   int matchDetectBind(QualityTraceTradeBill qualityTraceTradeBill);
 }
