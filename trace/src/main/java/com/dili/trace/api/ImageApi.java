@@ -32,7 +32,7 @@ public class ImageApi {
                 return BaseOutput.failure("图片格式错误");
             }
             String uri=imageService.save(file,type,compress);
-            return BaseOutput.success(uri);
+            return BaseOutput.success().setData(uri);
         }catch (Exception e){
             LOGGER.error("upload",e);
             return BaseOutput.failure();
