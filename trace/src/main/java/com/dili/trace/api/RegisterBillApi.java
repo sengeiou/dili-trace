@@ -88,6 +88,7 @@ public class RegisterBillApi {
     @ApiOperation(value = "获取登记单列表")
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
     @RequestMapping(value = "/list",method = RequestMethod.POST)
+    //@InterceptConfiguration(loginRequired=false)
     public BaseOutput<EasyuiPageOutput> list(RegisterBillDto registerBill) throws Exception {
         LOGGER.info("获取登记单列表:"+JSON.toJSON(registerBill).toString());
         User user=userService.get(sessionContext.getAccountId());
@@ -96,6 +97,10 @@ public class RegisterBillApi {
         }
         LOGGER.info("获取登记单列表 操作用户:"+JSON.toJSONString(user));
         registerBill.setUserId(user.getId());
+        if(StringUtils.isBlank(registerBill.getOrder())){
+            registerBill.setOrder("desc");
+            registerBill.setSort("id");
+        }
         EasyuiPageOutput easyuiPageOutput = registerBillService.listEasyuiPageByExample(registerBill, true);
         return BaseOutput.success().setData(easyuiPageOutput);
     }
