@@ -229,7 +229,7 @@
             done : function(e, res) {
                 if (res.result.code == 200) {
                     var url = res.result.data;
-                    $(this).next(".magnifying").attr('src', url).show();
+                    $(this).siblings(".magnifying").attr('src', url).show();
                     $(this).siblings("input:hidden").val(url);
                     $('.fileimg-cover,.fileimg-edit').show();
                 }
