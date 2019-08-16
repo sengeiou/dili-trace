@@ -9,13 +9,13 @@
         $('#_phone').textbox({readonly:false});
         $('#_cardNo').textbox({readonly:false});
         $('#_addr').textbox({readonly:false});
-        $('#_taillyAreaNo').textbox({readonly:false});
+        $('#_taillyAreaNo').numberbox({readonly:false});
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
         $(":file").attr('disabled',false);
         $('#_form').form('clear');
         initFileUpload();
-        formFocus("_form", "_userName");
+        formFocus("_form", "_name");
     }
 
     //打开修改窗口
@@ -32,7 +32,7 @@
         $('#_phone').textbox({readonly:true});
         $('#_cardNo').textbox({readonly:true});
         $('#_addr').textbox({readonly:true});
-        $('#_taillyAreaNo').textbox({readonly:true});
+        $('#_taillyAreaNo').numberbox({readonly:true});
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_name");

@@ -109,6 +109,13 @@ $(function () {
 
             },
             message: '请选择下拉框选项'
+        },
+        onlyLength: {
+            validator: function(value, param){
+
+                return value.length == param[0];
+            },
+            message: '请输入{0}位'
         }
     });
 });
