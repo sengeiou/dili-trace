@@ -41,23 +41,24 @@ public class QualityTraceTradeBillSyncPointServiceImpl extends BaseServiceImpl<Q
 		this.qualityTraceTradeBillService.insertSelective(bill);
 		// 删除多余同步点
 		if (localMaxBillId != null) {
-			QualityTraceTradeBillSyncPointDto example = DTOUtils.newDTO(QualityTraceTradeBillSyncPointDto.class);
-			example.setMinBillId(bill.getBillId());
-			this.deleteByExample(example);
+			this.removeOldSyncPoints(bill.getBillId());
 		}
 
 		return bill;
 	}
-
+	private boolean removeOldSyncPoints(Long minBillId) {
+		
+		QualityTraceTradeBillSyncPointDto example = DTOUtils.newDTO(QualityTraceTradeBillSyncPointDto.class);
+		example.setMinBillId(minBillId);
+		this.listByExample(example).stream().map(QualityTraceTradeBillSyncPoint::getId).forEach(id->this.delete(id));;
+		return true;
+	}
 	@Transactional
 	@Override
 	public QualityTraceTradeBillSyncPoint syncPoint(QualityTraceTradeBillSyncPoint point) {
 		this.insertSelective(point);
 		// 删除多余同步点
-		QualityTraceTradeBillSyncPointDto example = DTOUtils.newDTO(QualityTraceTradeBillSyncPointDto.class);
-		example.setMinBillId(point.getBillId());
-		this.deleteByExample(example);
-
+		this.removeOldSyncPoints(point.getBillId());
 		return point;
 	}
 
@@ -77,7 +78,7 @@ public class QualityTraceTradeBillSyncPointServiceImpl extends BaseServiceImpl<Q
 			if (deleteAll) {
 				this.qualityTraceTradeBillService
 						.delete(list.stream().map(QualityTraceTradeBill::getId).collect(Collectors.toList()));
-			} else {
+			} else if(!list.isEmpty()){
 				// 数据重复
 				long maxId = list.get(list.size() - 1).getId();
 				// 保留id最大,删除其他数据
