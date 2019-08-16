@@ -38,7 +38,7 @@
                 setTimeout(function () {
                     $(this).val(suggestion.value);
                     $(originIdNote).val(suggestion.id);
-                    //console.log("name:"+$(this).val()+",id:"+$(originIdNote).val())
+                    console.log("originIdNote,id:"+$(originIdNote).val())
                 }, 50);
             }
         });
@@ -63,7 +63,7 @@
                 setTimeout(function () {
                     $(this).val(suggestion.value);
                     $(categoryIdNote).val(suggestion.id);
-                    //console.log("name:"+$(this).val()+",id:"+$(categoryIdNote).val())
+                    console.log("categoryIdNote,id:"+$(categoryIdNote).val())
                 }, 50);
             }
         });
@@ -213,7 +213,7 @@
             setTimeout(function () {
                 $(this).val(suggestion.value);
                 $(originIdNote).val(suggestion.id);
-                //console.log("name:"+$(this).val()+",id:"+$(originIdNote).val())
+                console.log("originIdNote,id:"+$(originIdNote).val())
             }, 50);
         }
     });
@@ -237,7 +237,7 @@
             setTimeout(function () {
                 $(this).val(suggestion.value);
                 $(categoryIdNote).val(suggestion.id);
-                //console.log("name:"+$(this).val()+",id:"+$(categoryIdNote).val())
+                console.log("categoryIdNote id:"+$(categoryIdNote).val());
             }, 50);
         }
     });

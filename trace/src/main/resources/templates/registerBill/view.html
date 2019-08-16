@@ -10,19 +10,10 @@
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
-               <!-- <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
-                    <%if(registerBill.registerSource==1){%>
-                    理货区
-                    <%}else{%>交易区<%}%>
-                </div>-->
+
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记时间</label>
-                    <!--<%if(null!= registerBill.created){%>
-                    ${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}
-                    <%}else{%>
-                    -
-                    <%}%>-->
+
                     <input class="form-control input-sm" value="<%if(null!= registerBill.created){%>${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
                 </div>
                 <div class="form-group">
@@ -65,30 +56,11 @@
                         <span class="red">&lowast;</span>重量/KG</label>
                     <input type="text" class="form-control input-sm"  value="${registerBill.weight}" required readonly/>
                 </div>
-               <!-- <div class="form-group" style="display: none;">
-                    <label class="label-title text-right">交易账号</label>
-                    <input type="text" class="form-control input-sm" name="userId" id="userId"  value="${registerBill.userId}" readonly/>
-                </div>-->
-                <!--<br>
 
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>身份证号</label>
-                    <input name="idCardNo"  type="text" class="form-control input-sm isIdCard0" value="${registerBill.idCardNo}" required readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" class="form-control" cols="70" rows="1" maxlength="50" required readonly value="${registerBill.addr}"></textarea>
-                </div>-->
             </div>
             <div class="form-item-group">
                 <h4 class="form-item-title">检测信息</h4>
-                <!-- <div class="form-group">
-                     <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
-                     <%if(registerBill.registerSource==1){%>
-                     理货区
-                     <%}else{%>交易区<%}%>
-                 </div>-->
+
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
                     <input class="form-control input-sm" value="<%if(null!= registerBill.latestDetectTime){%>${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
@@ -146,7 +118,7 @@
                             <th><span class="red">&lowast;</span>分销客户</th>
                             <th><span class="red">&lowast;</span>分销地</th>
                             <th><span class="red">&lowast;</span>分销重量/KG</th>
-                            <th>产地证明</th>
+
                             <th>溯源二维码</th>
                         </tr>
                         </thead>
@@ -168,16 +140,7 @@
                                     <input type="text" name="weight" class="form-control input-sm" value="${record.salesWeight}" required readonly/>
                                 </div>
                             </td>
-                            <td>
-                                <div class="imageUploadWrap">
-                                    <div class="form-group">
-                                        <div class="imageUpload rectangle">
-                                            <a href="javascript:;" class="edit-zoom">放大</a>
-                                            <img src="http://trace.nong12.com/"${registerBill.originCertifiyUrl!} alt="" class="show-image">
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
+
                             <td>
                                 <div class="imageUploadWrap">
                                     <div class="form-group">
@@ -198,6 +161,25 @@
             <%}%>
             <%%>
             <div class="form-item-group">
+                <div class="imageUploadWrap">
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>产地证明</label>
+                        <div class="imageUpload rectangle">
+                            <a href="javascript:;" class="edit-zoom">放大</a>
+                            <img src="http://trace.nong12.com/"${registerBill.originCertifiyUrl!} alt="" class="show-image">
+                        </div>
+                    </div>
+                    &nbsp;&nbsp;
+                    <div class="form-group">
+                        <label class="label-title text-right"><span class="red">&lowast;</span>检疫检测报告</label>
+                        <div class="imageUpload rectangle">
+                            <a href="javascript:;" class="edit-zoom">放大</a>
+                            <img src="${contextPath!}${registerBill.detectReportUrl!}" alt="" class="show-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="form-item-group">
                 <h4 class="form-item-title">检疫检测报告</h4>
                 <div class="imageUploadWrap">
                     <div class="form-group">
@@ -207,7 +189,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </form>
     </div>
 

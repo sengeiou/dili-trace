@@ -30,7 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api/toll")
 @Api(value ="/api/toll", description = "对接神农基础信息相关接口")
-@InterceptConfiguration
+//@InterceptConfiguration
 public class TollApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(TollApi.class);
     @Autowired

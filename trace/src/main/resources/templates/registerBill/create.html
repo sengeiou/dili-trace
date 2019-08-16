@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>理货区号</label>
-                        <input type="text" class="form-control input-sm" name="tallyAreaNo" id="tallyAreaNo" onkeyup="onKeyUpEnter3(event)"/>
+                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNo" id="tallyAreaNo" maxlength="6" onkeyup="onKeyUpEnter3(event)"/>
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">
@@ -42,7 +42,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
-                    <input type="text" class="form-control input-sm" name="plate" id="plate" required />
+                    <input type="text" class="form-control input-sm isWord" name="plate" id="plate" maxlength="7" required />
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">交易账号</label>
@@ -99,7 +99,7 @@
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <input type="text" name="weight" class="form-control input-sm" required />
+                                    <input type="text" name="weight" class="form-control input-sm isInt" maxlength="6"  range="0 999999" required />
                                 </div>
                             </td>
                             <td>
@@ -150,7 +150,7 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
 
 <script id="goodsItem" type="text/html">
     <tr>
@@ -168,7 +168,7 @@
         </td>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm" name="weight" required />
+                <input type="text" class="form-control input-sm isInt" name="weight" maxlength="6"  range="0 999999" required />
             </div>
         </td>
         <td>

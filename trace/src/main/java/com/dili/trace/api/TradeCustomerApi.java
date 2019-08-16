@@ -24,7 +24,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping(value = "/api/trade/customer")
-@InterceptConfiguration
+//@InterceptConfiguration
 @Api(value ="/api/trade/customer", description = "交易客户相关接口")
 public class TradeCustomerApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(TradeCustomerApi.class);
