@@ -15,14 +15,9 @@ import javax.persistence.Id;
  * 
  * This file was generated on 2019-07-31 14:56:14.
  */
-@Table(name = "`trade_type`")
+@Table(name = "`vTradeType`")
 public interface TradeType extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+
 
     void setId(Long id);
 

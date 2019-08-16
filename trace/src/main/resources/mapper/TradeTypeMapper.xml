@@ -9,6 +9,6 @@
     <result column="typeName" jdbcType="VARCHAR" property="typeName" />
   </resultMap>
   <select id="findAll" resultMap="BaseResultMap">
-    SELECT typeID AS typeId ,typeName FROM trade_type WHERE 1=1
+    SELECT typeID AS typeId ,typeName FROM vTradeType WHERE 1=1
   </select>
 </mapper>

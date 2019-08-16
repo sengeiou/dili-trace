@@ -1,6 +1,5 @@
-package com.dili.trace.api;
+package com.dili.trace.controller;
 
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.City;
@@ -9,12 +8,10 @@ import com.dili.trace.dto.CityListInput;
 import com.dili.trace.rpc.BaseInfoRpc;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,14 +22,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by laikui on 2019/7/26.
+ * 神农系统中相关基础信息
  */
 @RestController
-@RequestMapping(value = "/api/toll")
-@Api(value ="/api/toll", description = "对接神农基础信息相关接口")
-@InterceptConfiguration
-public class TollApi {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TollApi.class);
+@RequestMapping(value = "/toll")
+public class TollInfoController {
+    private static final Logger LOGGER= LoggerFactory.getLogger(TollInfoController.class);
+
     @Autowired
     BaseInfoRpc baseInfoRpc;
 
@@ -127,5 +123,4 @@ public class TollApi {
         citys.add(city1);*/
         return citys;
     }
-
 }

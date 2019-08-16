@@ -1,6 +1,7 @@
 package com.dili.trace.service.impl;
 
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.datasource.SwitchDataSource;
 import com.dili.trace.dao.CustomerMapper;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.service.CustomerService;
@@ -20,6 +21,7 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer, Long> impleme
         return (CustomerMapper)getDao();
     }
 
+    @SwitchDataSource("etradeDS")
     @Override
     public Customer findByCustomerId(String customerId) {
         List<Customer> customerList = getActualDao().findByCustomerId(customerId);
@@ -29,6 +31,7 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer, Long> impleme
         return null;
     }
 
+    @SwitchDataSource("etradeDS")
     @Override
     public Customer findByPrintingCard(String printingCard) {
         List<Customer> customerList = getActualDao().findByPrintingCard(printingCard);

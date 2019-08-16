@@ -1,12 +1,10 @@
-package com.dili.trace.api;
+package com.dili.trace.controller;
 
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.UserService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * Created by laikui on 2019/7/26.
- * //交易区的客户信息
+ * 寿光sqlserver库中相关基础信息
  */
 @RestController
-@RequestMapping(value = "/api/trade/customer")
-@InterceptConfiguration
-@Api(value ="/api/trade/customer", description = "交易客户相关接口")
-public class TradeCustomerApi {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TradeCustomerApi.class);
+@RequestMapping(value = "/trade/customer")
+public class TradeInfoController {
+    private static final Logger LOGGER= LoggerFactory.getLogger(TradeInfoController.class);
+
     @Autowired
     private CustomerService customerService;
     @Resource
@@ -78,5 +74,4 @@ public class TradeCustomerApi {
             return BaseOutput.failure();
         }
     }
-
 }

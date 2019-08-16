@@ -5,7 +5,6 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="id" jdbcType="BIGINT" property="id" />
     <result column="customerID" jdbcType="VARCHAR" property="customerId" />
     <result column="Name" jdbcType="VARCHAR" property="name" />
     <result column="IDNo" jdbcType="VARCHAR" property="idNo" />
@@ -17,19 +16,19 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, customerID as customerId, Name as name, IDNo AS idNo, Address as address, printingCard, Active as active
+    customerID as customerId, Name as name, IDNo AS idNo, Address as address, printingCard, Active as active
   </sql>
 
   <select id="findByCustomerId" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from customer
+    from vCustomer
     where customerID = #{customerId}
   </select>
   <select id="findByPrintingCard" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from customer
+    from vCustomer
     where printingCard = #{printingCard}
   </select>
 

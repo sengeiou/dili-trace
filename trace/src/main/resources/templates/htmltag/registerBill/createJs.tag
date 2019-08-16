@@ -20,7 +20,7 @@
         initFileUpload('#originCertifiyUrl'+goodsItemCount);
         $('input[name="originName"]').autocomplete({
             noCache: 1,
-            serviceUrl: '/api/toll/city',  //数据地址
+            serviceUrl: '/toll/city',  //数据地址
             //lookup: countries,    本地测试模拟数据使用结合上面的var countries
             dataType: 'json',
             onSearchComplete: function (query, suggestions) {
@@ -45,7 +45,7 @@
 
         $('input[name="productName"]').autocomplete({
             noCache: 1,
-            serviceUrl: '/api/toll/category',  //数据地址
+            serviceUrl: '/toll/category',  //数据地址
             //lookup: countries,    本地测试模拟数据使用结合上面的var countries
             dataType: 'json',
             onSearchComplete: function (query, suggestions) {
@@ -125,7 +125,7 @@
         if (tallyAreaNo.length > 0) {
             $.ajax({
                 type: 'post',
-                url: '/api/trade/customer/tallyAreaNo/'+tallyAreaNo,
+                url: '/trade/customer/tallyAreaNo/'+tallyAreaNo,
                 dataType: 'json',
                 async: false,
                 success: function (ret) {
@@ -136,8 +136,17 @@
                         $("#addr").val(customer.addr);
                         $("#userId").val(customer.id);
                     } else {
-
+                        $("#idCardNo").val("");
+                        $("#name").val("");
+                        $("#addr").val("");
+                        $("#userId").val("");
                     }
+                },
+                error:function(){
+                    $("#idCardNo").val("");
+                    $("#name").val("");
+                    $("#addr").val("");
+                    $("#userId").val("");
                 }
             });
         }
@@ -150,7 +159,7 @@
         if (customerId.length > 0) {
             $.ajax({
                 type: 'post',
-                url: '/api/trade/customer/id/'+customerId,
+                url: '/trade/customer/id/'+customerId,
                 dataType: 'json',
                 async: false,
                 success: function (ret) {
@@ -161,8 +170,17 @@
                         $("#addr").val(customer.address);
                         $("#printingCard").val(customer.printingCard);
                     } else {
-
+                        $("#idCardNo").val("");
+                        $("#name").val("");
+                        $("#addr").val("");
+                        $("#printingCard").val("");
                     }
+                },
+                error:function(){
+                    $("#idCardNo").val("");
+                    $("#name").val("");
+                    $("#addr").val("");
+                    $("#printingCard").val("");
                 }
             });
         }
@@ -175,7 +193,7 @@
         if (cardNo.length > 0) {
             $.ajax({
                 type: 'post',
-                url: '/api/trade/customer/card/'+cardNo,
+                url: '/trade/customer/card/'+cardNo,
                 dataType: 'json',
                 async: false,
                 success: function (ret) {
@@ -186,8 +204,17 @@
                         $("#addr").val(customer.address);
                         $("#tradeAccount").val(customer.customerId);
                     } else {
-
+                        $("#idCardNo").val("");
+                        $("#name").val("");
+                        $("#addr").val("");
+                        $("#tradeAccount").val("");
                     }
+                },
+                error:function(){
+                    $("#idCardNo").val("");
+                    $("#name").val("");
+                    $("#addr").val("");
+                    $("#tradeAccount").val("");
                 }
             });
         }
@@ -195,7 +222,7 @@
     //产地联系输入
     $('input[name="originName"]').autocomplete({
         noCache: 1,
-        serviceUrl: '/api/toll/city',  //数据地址
+        serviceUrl: '/toll/city',  //数据地址
         //lookup: countries,    本地测试模拟数据使用结合上面的var countries
         dataType: 'json',
         onSearchComplete: function (query, suggestions) {
@@ -219,7 +246,7 @@
     });
     $('input[name="productName"]').autocomplete({
         noCache: 1,
-        serviceUrl: '/api/toll/category',  //数据地址
+        serviceUrl: '/toll/category',  //数据地址
         //lookup: countries,    本地测试模拟数据使用结合上面的var countries
         dataType: 'json',
         onSearchComplete: function (query, suggestions) {
@@ -275,6 +302,7 @@
             registerBill.name=$("#name").val();
             registerBill.idCardNo=$("#idCardNo").val();
             registerBill.addr=$("#addr").val();
+            registerBill.detectReportUrl = $("#detectReportUrl").val();
 
             $(this).find("input").each(function(){
                 console.log($(this).attr("name")+":参数:"+$(this).val());
@@ -310,7 +338,7 @@
                 if(ret.success){
                     //TLOG.component.operateLog(TLOG.operates.add, "登记单管理", ret.data, ret.data);
                     //location.href = '/registerBill/index.html';
-                    var paramStr = JSON.stringify(printDate);
+                    var paramStr = JSON.stringify(ret.data);
                     console.log("打印信息:--:"+paramStr);
                     printDirect(ret.date)
                 }else{

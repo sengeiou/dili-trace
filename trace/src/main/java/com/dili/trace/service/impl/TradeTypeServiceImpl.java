@@ -1,6 +1,7 @@
 package com.dili.trace.service.impl;
 
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.datasource.SwitchDataSource;
 import com.dili.trace.dao.TradeTypeMapper;
 import com.dili.trace.domain.TradeType;
 import com.dili.trace.service.TradeTypeService;
@@ -19,6 +20,7 @@ public class TradeTypeServiceImpl extends BaseServiceImpl<TradeType, Long> imple
         return (TradeTypeMapper)getDao();
     }
 
+    @SwitchDataSource("etradeDS")
     @Override
     public List<TradeType> findAll() {
         return getActualDao().findAll();

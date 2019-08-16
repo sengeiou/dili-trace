@@ -17,14 +17,9 @@ import javax.persistence.Id;
  * 
  * This file was generated on 2019-07-31 14:56:14.
  */
-@Table(name = "`customer`")
+@Table(name = "`vCustomer`")
 public interface Customer extends IBaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @FieldDef(label="id")
-    @EditMode(editor = FieldEditor.Number, required = true)
-    Long getId();
+
 
     void setId(Long id);
     @ApiModelProperty(value = "交易账号")
