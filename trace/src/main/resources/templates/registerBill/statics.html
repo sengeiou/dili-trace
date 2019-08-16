@@ -228,13 +228,18 @@
         pager.pagination({
             <#controls_paginationOpts/>,
             buttons:[
-            {
-                iconCls:'icon-detail',
-                text:'查看',
-                handler:function(){
-                    doDetail();
-                }
-            }
+            	
+            	 <#resource method="post" url="registerBill/statics.html#detail">
+                  {
+                         iconCls:'icon-detail',
+                         text:'查看',
+                         id:'detail',
+                         handler:function(){
+                             doDetail();
+                         }
+                 },
+                 </#resource>
+
         ]
         });
     }
