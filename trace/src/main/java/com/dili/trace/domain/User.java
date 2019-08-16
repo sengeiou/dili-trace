@@ -61,13 +61,21 @@ public interface User extends IBaseDomain {
 
     void setAddr(String addr);
 
-    @ApiModelProperty(value = "身份证URL")
-    @Column(name = "`card_no_url`")
-    @FieldDef(label="cardNoUrl", maxLength = 50)
+    @ApiModelProperty(value = "身份证照正面URL")
+    @Column(name = "`card_no_front_url`")
+    @FieldDef(label="cardNoFrontUrl", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
-    String getCardNoUrl();
+    String getCardNoFrontUrl();
 
-    void setCardNoUrl(String cardNoUrl);
+    void setCardNoFrontUrl(String cardNoFrontUrl);
+
+    @ApiModelProperty(value = "身份证照反面URL")
+    @Column(name = "`card_no_back_url`")
+    @FieldDef(label="cardNoBackUrl", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getCardNoBackUrl();
+
+    void setCardNoBackUrl(String cardNoBackUrl);
 
     @ApiModelProperty(value = "理货区号")
     @Column(name = "`tailly_area_no`")
