@@ -14,3 +14,6 @@
 撤销 registerBill/index.html#undo
 查看 registerBill/index.html#detail
 导出 registerBill/index.html#export
+
+#statics(检测统计:registerBill/statics.html)
+查看交易单详情 registerBill/statics.html#detail

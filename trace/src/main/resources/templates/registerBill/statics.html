@@ -15,9 +15,9 @@
                     <div class="search-wrap">
 
                         <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'"/>
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'" value="${createdStart}!"/>
                             <span style="width: 2%;">-</span>
-                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"/>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;" value="${createdEnd}!"/>
                         </div>
 
                         <div class="search-item long-item">
@@ -175,8 +175,14 @@
             success: function (ret) {
                 if (ret.code == "200") {
                     var data = ret.data;
-                 	$.each(data,function(k,v){
-                 		$('#'+k).textbox('setValue',v+"条")
+                    var ids=[ 'pass','nopass','check','recheck'];
+                    $.each(ids,function(k,v){
+                    	var defaultValue='0条';
+                 		if(data&&data[v]){
+                 			defaultValue=data[v]+"条";
+                 		}
+                 		//console.info(defaultValue)
+                 		$('#'+v).textbox('setValue',defaultValue);
                  	});
                 } else {
 
@@ -228,13 +234,18 @@
         pager.pagination({
             <#controls_paginationOpts/>,
             buttons:[
-            {
-                iconCls:'icon-detail',
-                text:'查看',
-                handler:function(){
-                    doDetail();
-                }
-            }
+            	
+            	 <#resource method="post" url="registerBill/statics.html#detail">
+                  {
+                         iconCls:'icon-detail',
+                         text:'查看',
+                         id:'detail',
+                         handler:function(){
+                             doDetail();
+                         }
+                 },
+                 </#resource>
+
         ]
         });
     }

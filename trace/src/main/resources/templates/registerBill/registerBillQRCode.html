@@ -65,33 +65,25 @@
         <p>总重量：<span>${registerBill.weight!}KG</span></p>
         <p>产地：<span>${registerBill.originName!}</span></p>
         <% if(registerBill.registerSource == 2){%>
-        <p>交易买家：<span>${registerBill.qualityTraceTradeBill.buyerName}</span></p>
-        <p>交易卖家：<span>${registerBill.qualityTraceTradeBill.sellerName}</span></p>
+        <p>交易买家：<span>${registerBill.qualityTraceTradeBill.buyerName!}</span></p>
+        <p>交易卖家：<span>${registerBill.qualityTraceTradeBill.sellerName!}</span></p>
         <% } %>
     </div>
     <div class="group">
         <p>检测时间：<span>${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span></p>
-        <p>检测状态：<span>
-            <% if(registerBill.state != null) {%>
-            ${@com.dili.trace.glossary.RegisterBillStateEnum.getRegisterBillStateEnum(registerBill.state).getName()}
-            <% } %>
-        </span></p>
-        <p>检测结果：<span>
-            <% if(registerBill.detectState != null) {%>
-            ${@com.dili.trace.glossary.BillDetectStateEnum.getBillDetectStateEnum(registerBill.detectState).getName()}
-            <% } %>
-        </span></p>
+        <p>检测状态：<span>已检测</span></p>
+        <p>检测结果：<span>合格</span></p>
         <p>检测数值：<span>${registerBill.detectRecord.pdResult!}</span></p>
-        <p>检测机构：<span></span></p>
+        <p>检测机构：<span>山东格林检测</span></p>
         <p>检测员：<span>${registerBill.latestDetectOperator!}</span></p>
     </div>
     <% if(isNotEmpty(registerBill.separateSalesRecords) && registerBill.separateSalesRecords.~size>0){
             for(ssr in registerBill.separateSalesRecords){
     %>
     <div class="group">
-        <p>分销商：<span>${ssr.salesUserName}</span></p>
-        <p>分销重量：<span>${ssr.salesWeight}KG</span></p>
-        <p>分销地：<span>${ssr.salesCityName}</span></p>
+        <p>分销商：<span>${ssr.salesUserName!}</span></p>
+        <p>分销重量：<span>${ssr.salesWeight!}KG</span></p>
+        <p>分销地：<span>${ssr.salesCityName!}</span></p>
     </div>
     <% } } %>
 </section>
