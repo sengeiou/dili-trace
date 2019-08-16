@@ -21,7 +21,7 @@ ${tag.body}
 
 </body>
 
-<script type="text/javascript" src="resources/easyui/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/resources/easyui/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="/resources/easyui/js/easyui-datagrid-editor-sweetalert.js"></script>
 <script src="/webjars/sweetalert2/7.28.10/dist/sweetalert2.min.js"></script>
 <script src="/resources/assets/dep/bootstrap/js/bootstrap.min.js"></script>
