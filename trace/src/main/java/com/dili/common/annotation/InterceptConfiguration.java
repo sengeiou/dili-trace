@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
 public @interface InterceptConfiguration {
     boolean loginRequired() default true;
     boolean signRequired() default false;
-    String signValue() default "sign123";
+    String signValue() default "587ADE285BA7ADE9E6";
 }
