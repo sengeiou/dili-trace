@@ -45,10 +45,9 @@ public class UserController {
     @ApiOperation("跳转到User页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH, -1);
-        modelMap.put("createdStart", DateUtils.format(cal.getTime(), "yyyy-MM-dd 00:00:00"));
-        modelMap.put("createdEnd", DateUtils.format(new Date(), "yyyy-MM-dd 23:59:59"));
+        Date now = new Date();
+        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
         return "user/index";
     }
 
