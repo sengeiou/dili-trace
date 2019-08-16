@@ -268,9 +268,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if(StringUtils.isBlank(tradeNo)){
             return null;
         }
-        RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
         QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(tradeNo);
-        if(registerBill == null && qualityTraceTradeBill!=null){
+        if(qualityTraceTradeBill == null){
+            return null;
+        }
+        RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
+        if(registerBill == null){
             int result = matchDetectBind(qualityTraceTradeBill);
             if(result==1){
                 registerBill=findByTradeNo(tradeNo);
