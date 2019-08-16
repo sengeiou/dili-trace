@@ -254,6 +254,10 @@ public class RegisterBillController {
 	@ApiOperation("跳转到statics页面")
 	@RequestMapping(value = "/statics.html", method = RequestMethod.GET)
 	public String statics(ModelMap modelMap) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		modelMap.put("createdStart", DateUtils.format(cal.getTime(), "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(new Date(), "yyyy-MM-dd 23:59:59"));
 		return "registerBill/statics";
 	}
 
