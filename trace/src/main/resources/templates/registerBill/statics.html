@@ -175,8 +175,14 @@
             success: function (ret) {
                 if (ret.code == "200") {
                     var data = ret.data;
-                 	$.each(data,function(k,v){
-                 		$('#'+k).textbox('setValue',v+"条")
+                    var ids=[ 'pass','nopass','check','recheck'];
+                    $.each(ids,function(k,v){
+                    	var defaultValue='0条';
+                 		if(data&&data[v]){
+                 			defaultValue=data[v]+"条";
+                 		}
+                 		//console.info(defaultValue)
+                 		$('#'+v).textbox('setValue',defaultValue);
                  	});
                 } else {
 
