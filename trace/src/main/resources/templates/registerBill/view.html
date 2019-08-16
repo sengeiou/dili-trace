@@ -121,7 +121,7 @@
 
             </div>
 
-            <%if(registerBill.salesType == 2){%>
+            <%if(registerBill.salesType == 2 && isNotEmpty(registerBill.detectState) && (registerBill.detectState == 1 || registerBill.detectState == 3)){%>
                 <div class="form-item-group">
                     <h4 class="form-item-title">溯源二维码</h4>
                     <div class="imageUploadWrap">
