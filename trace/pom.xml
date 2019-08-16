@@ -58,9 +58,6 @@
 	<profiles>
 		<profile>
 			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<build.profile.id>dev</build.profile.id>
 				<redis.host1>10.28.10.104</redis.host1>
@@ -71,6 +68,8 @@
 			<id>test</id>
 			<properties>
 				<build.profile.id>test</build.profile.id>
+				<redis.host1>10.28.10.168</redis.host1>
+				<redis.port1>6379</redis.port1>
 			</properties>
 		</profile>
 	</profiles>
