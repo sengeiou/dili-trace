@@ -270,7 +270,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
         QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(tradeNo);
-        if(registerBill == null){
+        if(registerBill == null && qualityTraceTradeBill!=null){
             int result = matchDetectBind(qualityTraceTradeBill);
             if(result==1){
                 registerBill=findByTradeNo(tradeNo);
@@ -280,8 +280,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
             registerBill.setSeparateSalesRecords(records);
             registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
-            registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
+        }else {
+            registerBill = DTOUtils.newDTO(RegisterBillOutputDto.class);
         }
+        registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
         return registerBill;
     }
     @Override

@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
 import com.dili.trace.glossary.RegisterBillStateEnum;
@@ -22,6 +23,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,6 +53,10 @@ public class RegisterBillController {
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		modelMap.put("createdStart", DateUtils.format(cal.getTime(), "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(new Date(), "yyyy-MM-dd 23:59:59"));
 		return "registerBill/index";
 	}
 
