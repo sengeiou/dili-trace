@@ -40,9 +40,13 @@
         formData = addKeyStartWith(getOriginalData(formData),"_");
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
-        if(formData._cardNoUrl){
-            $('#_cardNoUrl').siblings('.fileimg-cover,.fileimg-edit').show();
-            $('#_cardNoUrl').siblings(".magnifying").attr('src',formData._cardNoUrl).show();
+        if(formData._cardNoFrontUrl){
+            $('#_cardNoFrontUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#_cardNoFrontUrl').siblings(".magnifying").attr('src',formData._cardNoFrontUrl).show();
+        }
+        if(formData._cardNoBackUrl){
+            $('#_cardNoBackUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#_cardNoBackUrl').siblings(".magnifying").attr('src',formData._cardNoBackUrl).show();
         }
         if(formData._businessLicenseUrl){
             $('#_businessLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
@@ -229,7 +233,7 @@
                     var url = res.result.data;
                     $(this).siblings(".magnifying").attr('src', url).show();
                     $(this).siblings("input:hidden").val(url);
-                    $('.fileimg-cover,.fileimg-edit').show();
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
                 }
             },
             add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;

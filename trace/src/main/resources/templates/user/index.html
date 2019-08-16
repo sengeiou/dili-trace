@@ -135,20 +135,35 @@
             <tr>
                 <td style="padding:5px;">
                     <input type="hidden" name="_salesCityName" id="_salesCityName">
-                    <select class="easyui-combobox" name="_salesCityId" id="_salesCityId" style="width:100%;" labelAlign="right"
+                    <select class="easyui-combobox" name="_salesCityId" id="_salesCityId" style="width:100%;"
                             data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
                                 $('#_salesCityName').val(record.text);
                             }">
                 </td>
             </tr>
+        </table>
+        <table width="430px">
             <tr>
                 <td style="padding:5px;">
                     <div class="fileimg-box" style="margin: 0 auto;">
                         <span class="fileimg-plus-icon">+</span>
-                        <span class="fileimg-des">上传身份证照</span>
-                        <input type="file" name="file" id="_cardNoUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                        <span class="fileimg-des">上传身份证正面照</span>
+                        <input type="file" name="file" id="_cardNoFrontUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
                         <img class="magnifying">
-                        <input type="hidden" name="_cardNoUrl">
+                        <input type="hidden" name="_cardNoFrontUrl">
+                        <div class="fileimg-cover" style="display: none;"></div>
+                        <div class="fileimg-edit" style="display: none;">
+                            <span class="fileimg-view">查看</span>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:5px;">
+                    <div class="fileimg-box" style="margin: 0 auto;">
+                        <span class="fileimg-plus-icon">+</span>
+                        <span class="fileimg-des">上传身份证反面照</span>
+                        <input type="file" name="file" id="_cardNoBackUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                        <img class="magnifying">
+                        <input type="hidden" name="_cardNoBackUrl">
                         <div class="fileimg-cover" style="display: none;"></div>
                         <div class="fileimg-edit" style="display: none;">
                             <span class="fileimg-view">查看</span>
