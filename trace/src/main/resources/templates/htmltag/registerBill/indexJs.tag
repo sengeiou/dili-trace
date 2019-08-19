@@ -68,7 +68,7 @@
     </#resource>
         <#resource method="post" url="registerBill/index.html#audit">
             {
-                iconCls:'icon-detail',
+                iconCls:'icon-man',
                 text:'审核',
                 id:'audit-btn',
                 handler:function(){
@@ -78,7 +78,7 @@
     </#resource>
         <#resource method="post" url="registerBill/index.html#review">
             {
-                iconCls:'icon-detail',
+                iconCls:'icon-man',
                 text:'复检',
                 id:'review-btn',
                 handler:function(){
@@ -88,7 +88,7 @@
     </#resource>
         <#resource method="post" url="registerBill/index.html#auto">
             {
-                iconCls:'icon-detail',
+                iconCls:'icon-man',
                 text:'主动送检',
                 id:'auto-btn',
                 handler:function(){
@@ -98,7 +98,7 @@
     </#resource>
         <#resource method="post" url="registerBill/index.html#sampling">
             {
-                iconCls:'icon-detail',
+                iconCls:'icon-man',
                 text:'采样检测',
                 id:'sampling-btn',
                 handler:function(){
@@ -108,7 +108,7 @@
     </#resource>
         <#resource method="post" url="registerBill/index.html#undo">
             {
-                iconCls:'icon-remove',
+                iconCls:'icon-undo',
                 text:'撤销',
                 id:'undo-btn',
                 handler:undo,
