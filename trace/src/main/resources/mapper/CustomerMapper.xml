@@ -6,17 +6,17 @@
       WARNING - @mbg.generated
     -->
     <result column="customerID" jdbcType="VARCHAR" property="customerId" />
-    <result column="Name" jdbcType="VARCHAR" property="name" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="IDNo" jdbcType="VARCHAR" property="idNo" />
-    <result column="Address" jdbcType="VARCHAR" property="address" />
-    <result column="printingCard" jdbcType="VARCHAR" property="printingCard" />
-    <result column="Active" jdbcType="INTEGER" property="active" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="printingCode" jdbcType="VARCHAR" property="printingCard" />
+    <result column="active" jdbcType="INTEGER" property="active" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
-    customerID as customerId, Name as name, IDNo AS idNo, Address as address, printingCard, Active as active
+    customerID as customerId, name, IDNo AS idNo, address, printingCode, active
   </sql>
 
   <select id="findByCustomerId" parameterType="java.lang.String" resultMap="BaseResultMap">
