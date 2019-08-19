@@ -340,7 +340,7 @@
                     //location.href = '/registerBill/index.html';
                     var paramStr = JSON.stringify(ret.data);
                     console.log("打印信息:--:"+paramStr);
-                    printDirect(ret.date)
+                    printDirect(paramStr)
                 }else{
                     resubmit=0;
                     swal(
