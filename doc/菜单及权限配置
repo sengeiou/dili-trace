@@ -1,10 +1,12 @@
+溯源—用户管理
 列表 user/index.html#list
 新增 user/index.html#add
 修改 user/index.html#update
 重置密码 user/index.html#reset
 启用 user/index.html#enabled
 禁用 user/index.html#disabled
-#registerBill
+
+溯源—登记单管理
 列表 registerBill/index.html#list
 新增 registerBill/index.html#add
 审核 registerBill/index.html#audit
@@ -15,5 +17,6 @@
 查看 registerBill/index.html#detail
 导出 registerBill/index.html#export
 
+溯源—检测统计
 #statics(检测统计:registerBill/statics.html)
 查看交易单详情 registerBill/statics.html#detail
