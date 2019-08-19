@@ -60,6 +60,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
         registerBill.setVersion(1);
+        registerBill.setCreated(new Date());
         if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()){
             //交易区没有理货区号
             registerBill.setTallyAreaNo(null);
