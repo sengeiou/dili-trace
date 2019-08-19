@@ -464,6 +464,20 @@
         return val;
     }
 
+    function phoneFormatter(val,row){
+        if(val){
+            return val.replace(val.substring(3,7), "****")
+        }
+        return val;
+    }
+
+    function cardNoFormatter(val,row){
+        if(val){
+            var val = val.substr(0,4)+'**************';
+        }
+        return val;
+    }
+
     function closeLastWin(id){
         $('#'+id).last().remove();
     }
