@@ -350,7 +350,7 @@ public class RegisterBillController {
 	}
 
 
-	@ApiOperation("新增RegisterBill")
+	@ApiOperation("随机新增10条RegisterBill")
 	@RequestMapping(value = "/insertTest.action", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput insertTest() {
 		List<RegisterBill> registerBills = getTestRegisterBills();
