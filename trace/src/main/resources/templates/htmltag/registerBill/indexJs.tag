@@ -235,57 +235,7 @@
 
     }
 
-    function audit2() {
-        var selected = _registerBillGrid.datagrid("getSelected");
-        if (null == selected) {
-            swal({
-                title: '警告',
-                text: '请选中一条数据',
-                type: 'warning',
-                width: 300,
-            });
-            return;
-        }
-        swal({
-            title: "请确认是否审核通过？",
-            type: 'question',
-            showCancelButton: true,
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33'
-        }).then((result) => {
-            if(result.value){
-            $.ajax({
-                type: "GET",
-                url: "${contextPath}/registerBill/audit/"+ selected.id+"/true",
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (ret) {
-                    if(ret.success){
-                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
-                        _registerBillGrid.datagrid("reload");
-                        $('#undo').linkbutton('disable');
-                    }else{
-                        swal(
-                                '错误',
-                                ret.result,
-                                'error'
-                        );
-                    }
-                },
-                error: function(){
-                    swal(
-                            '错误',
-                            '远程访问失败',
-                            'error'
-                    );
-                }
-            });
-        }
-    });
-    }
+
     function autoCheck() {
         var selected = _registerBillGrid.datagrid("getSelected");
         if (null == selected) {
@@ -315,9 +265,12 @@
                 async : true,
                 success: function (ret) {
                     if(ret.success){
-                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
                         _registerBillGrid.datagrid("reload");
-                        $('#undo').linkbutton('disable');
+                        swal(
+                                '操作',
+                                '操作成功',
+                                'info'
+                        );
                     }else{
                         swal(
                                 '错误',
@@ -345,7 +298,7 @@
                 title: '警告',
                 text: '请选中一条数据',
                 type: 'warning',
-                width: 300,
+                width: 300
             });
             return;
         }
@@ -367,9 +320,12 @@
                 async : true,
                 success: function (ret) {
                     if(ret.success){
-                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
                         _registerBillGrid.datagrid("reload");
-                        $('#undo').linkbutton('disable');
+                        swal(
+                                '操作',
+                                '操作成功',
+                                'info'
+                        );
                     }else{
                         swal(
                                 '错误',
@@ -419,9 +375,12 @@
                 async : true,
                 success: function (ret) {
                     if(ret.success){
-                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
                         _registerBillGrid.datagrid("reload");
-                        $('#undo').linkbutton('disable');
+                        swal(
+                                '操作',
+                                '操作成功',
+                                'info'
+                        );
                     }else{
                         swal(
                                 '错误',
@@ -448,7 +407,7 @@
                 title: '警告',
                 text: '请选中一条数据',
                 type: 'warning',
-                width: 300,
+                width: 300
             });
             return;
         }
@@ -470,9 +429,12 @@
                 async : true,
                 success: function (ret) {
                     if(ret.success){
-                        //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
                         _registerBillGrid.datagrid("reload");
-                        $('#undo').linkbutton('disable');
+                        swal(
+                                '操作',
+                                '操作成功',
+                                'info'
+                        );
                     }else{
                         swal(
                                 '错误',
@@ -533,33 +495,33 @@
                     async : true,
                     success: function (ret) {
                         if(ret.success){
-                            //TLOG.component.operateLog(TLOG.operates.undo, "接车单管理", selected.number, selected.number);
                             _registerBillGrid.datagrid("reload");
-                            $('#undo').linkbutton('disable');
+
+                            swal(
+                                    '操作',
+                                    '操作成功',
+                                    'info'
+                            );
                         }else{
-                            layer.confirm(ret.result, {
-                                type: 0,
-                                title: '提示',
-                                btn: ['确定']
-                            });
+                            swal(
+                                    '操作',
+                                    ret.result,
+                                    'info'
+                            );
+
                         }
+                        layer.closeAll();
                     },
                     error: function(){
-                        /*swal(
+
+                        swal(
                                 '错误',
                                 '远程访问失败',
                                 'error'
-                        );*/
-                        layer.confirm('远程访问失败', {
-                            type: 0,
-                            title: '提示',
-                            btn: ['确定']
-                        });
+                        );
+                        layer.closeAll();
                     }
                 });
-                //按钮【确认】的回调
-                /*var body = layer.getChildFrame('body', index); //iframe的body获取方式
-                var password = $(body).find("#password").val();*/
             }
         });
     }
