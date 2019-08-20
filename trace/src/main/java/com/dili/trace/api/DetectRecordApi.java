@@ -132,11 +132,12 @@ public class DetectRecordApi {
         List<RegisterBill> registerBills = getTestRegisterBills();
         LOGGER.info("进行测试登记单数据-----------:" + registerBills.size());
         for (RegisterBill registerBill : registerBills) {
-            registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
             BaseOutput r = registerBillService.createRegisterBill(registerBill);
             if(!r.isSuccess()){
                 return  r;
             }
+            registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+            registerBillService.update(registerBill);
         }
         LOGGER.info("进行测试登记单数据----end-------:" + registerBills.size());
         return BaseOutput.success("新增成功").setData(registerBills);
@@ -153,13 +154,15 @@ public class DetectRecordApi {
             registerBill.setName(name[i]);
             registerBill.setPlate(plate[i]);
             registerBill.setProductName(product[i]);
+            registerBill.setProductId(100L+i);
             registerBill.setOriginName(city[i]);
+            registerBill.setOriginId(200L+i);
             registerBill.setOperatorName("系统测试");
             registerBill.setWeight(i + 698);
             registerBill.setState(4);
             registerBill.setIdCardNo("51102319890605399"+i);
             registerBill.setAddr(city[i]+"地址"+i);
-            if(1%2==0){
+            if(i%2==0){
                 registerBill.setTallyAreaNo(tallyAreaNo[i]);
                 registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
             }else {
