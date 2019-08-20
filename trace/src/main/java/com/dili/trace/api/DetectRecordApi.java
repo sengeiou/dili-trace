@@ -56,6 +56,9 @@ public class DetectRecordApi {
         if(detectRecord.getDetectState()==null){
             LOGGER.error("上传检测任务结果失败无检测状态");
             return BaseOutput.failure("没有对应的检测状态");
+        }else if(detectRecord.getDetectState()>2 || detectRecord.getDetectState()<0){
+            LOGGER.error("上传检测任务结果失败无,检测状态异常"+detectRecord.getDetectState());
+            return BaseOutput.failure("没有对应的检测状态");
         }
         if(detectRecord.getDetectTime()==null){
             LOGGER.error("上传检测任务结果失败无检测时间");
@@ -82,9 +85,13 @@ public class DetectRecordApi {
     private void saveRecordAndUpdateBill(DetectRecordParam detectRecord,RegisterBill registerBill) {
 
         if(registerBill.getLatestDetectRecordId()!=null){
+            //复检
+            ///1.第一次送检 2：复检 状态 1.合格 2.不合格
             detectRecord.setDetectType(2);
+            //'默认null,1.合格 2.不合格 3.复检合格 4.复检不合格',
             registerBill.setDetectState(detectRecord.getDetectState()+2);
         }else {
+            //第一次检测
             detectRecord.setDetectType(1);
             registerBill.setDetectState(detectRecord.getDetectState());
         }

@@ -22,10 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -351,6 +348,69 @@ public class RegisterBillController {
 		modelMap.put("registerBill",outputDto);
 		return "registerBill/registerBillQRCode";
 	}
+
+
+	@ApiOperation("新增RegisterBill")
+	@RequestMapping(value = "/insertTest.action", method = RequestMethod.POST)
+	public @ResponseBody BaseOutput insertTest() {
+		List<RegisterBill> registerBills = getTestRegisterBills();
+		LOGGER.info("进行测试登记单数据-----------:" + registerBills.size());
+		for (RegisterBill registerBill : registerBills) {
+			if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()){
+				//理货区
+				User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
+				if(user == null){
+					LOGGER.error("新增登记单失败理货区号["+registerBill.getTallyAreaNo()+"]对应用户不存在");
+					return BaseOutput.failure("理货区号["+registerBill.getTallyAreaNo()+"]对应用户不存在");
+				}
+				registerBill.setName(user.getName());
+				registerBill.setIdCardNo(user.getCardNo());
+				registerBill.setAddr(user.getAddr());
+				registerBill.setUserId(user.getId());
+			}else {
+				if(StringUtils.isNotBlank(registerBill.getTradeAccount())){
+					Customer customer =customerService.findByCustomerId(registerBill.getTradeAccount());
+					if(customer == null){
+						LOGGER.error("新增登记单失败交易账号["+registerBill.getTradeAccount()+"]对应用户不存在");
+						return BaseOutput.failure("交易账号[" +registerBill.getTradeAccount()+"]对应用户不存在");
+					}
+					registerBill.setName(customer.getName());
+					registerBill.setIdCardNo(customer.getIdNo());
+					registerBill.setAddr(customer.getAddress());
+				}
+			}
+			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+			BaseOutput r = registerBillService.createRegisterBill(registerBill);
+			if(!r.isSuccess()){
+				return  r;
+			}
+		}
+		LOGGER.info("进行测试登记单数据----end-------:" + registerBills.size());
+		return BaseOutput.success("新增成功").setData(registerBills);
+	}
+	private List<RegisterBill> getTestRegisterBills(){
+		String[] name = {"张三","李四","王五","张亿","Jick","Rose","Tom","Good","蒋介","兰芝"};
+		String[] product={"苹果","梨","黄瓜","芹菜","一级蔬菜","萝卜","Fish","火龙果","木瓜","火龙果"};
+		String[] city={"成都","北京","哈达","贵阳","兰州","四川成都","云南","香港","杭州","天津"};
+		String[] plate={"川A07194","吉J96781","黑MR4039","辽C73037","川B07194","川C07194","川AB7194","川AB7111","川AC7111","川AB71e1"};
+		String[] tallyAreaNo={"ta1234","ta1235","ta1236","ta12374","ta1238","ta1239","ta1231","ta1232","ta12355","ta12340"};
+		List<RegisterBill> list = new ArrayList<>();
+		for(int i=0;i<10;i++){
+			RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+			registerBill.setName(name[i]);
+			registerBill.setPlate(plate[i]);
+			registerBill.setProductName(product[i]);
+			registerBill.setOriginName(city[i]);
+			registerBill.setOperatorName("系统测试");
+			registerBill.setWeight(i + 698);
+			registerBill.setTallyAreaNo(tallyAreaNo[i]);
+			registerBill.setState(4);
+			registerBill.setTradeAccount("100020"+i);
+			list.add(registerBill);
+		}
+		return list;
+	}
+
 
 
 }

@@ -168,7 +168,7 @@
   </select>
 
   <update id="taskByExeMachineNo">
-     update register_bill  set `exe_machine_no` = #{exeMachineNo}
+     update register_bill  set `exe_machine_no` = #{exeMachineNo},state = 5
       WHERE id IN  (${ids}) and (exe_machine_no is null or exe_machine_no='')
   </update>
   
