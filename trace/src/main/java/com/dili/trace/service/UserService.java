@@ -12,9 +12,10 @@ public interface UserService extends BaseService<User, Long> {
 
     /**
      * 注册
+     * flag 是否有验证码
      * @param user
      */
-    void register(User user);
+    void register(User user,Boolean flag);
 
     /**
      * 登录

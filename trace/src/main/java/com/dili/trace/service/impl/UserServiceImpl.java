@@ -47,9 +47,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Transactional(rollbackFor=Exception.class)
     @Override
-    public void register(User user) {
+    public void register(User user,Boolean flag) {
         //验证验证码是否正确
-        checkVerificationCode(user.getPhone(),user.getCheckCode());
+        if(!flag){
+            checkVerificationCode(user.getPhone(),user.getCheckCode());
+        }
 
         //验证手机号是否已注册
         if(existsAccount(user.getPhone())){

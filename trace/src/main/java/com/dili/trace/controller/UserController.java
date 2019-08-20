@@ -69,7 +69,7 @@ public class UserController {
     try{
         user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
         user.setState(EnabledStateEnum.ENABLED.getCode());
-        userService.register(user);
+        userService.register(user,false);
         return BaseOutput.success("新增成功").setData(user.getId());
     }catch (BusinessException e){
         LOGGER.error("register",e);
