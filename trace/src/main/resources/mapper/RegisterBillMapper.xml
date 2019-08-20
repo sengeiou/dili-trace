@@ -31,6 +31,7 @@
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
     <result column="latest_detect_operator" jdbcType="VARCHAR" property="latestDetectOperator" />
+    <result column="latest_pd_result" jdbcType="VARCHAR" property="latestPdResult" />
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
     <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
   </resultMap>
@@ -41,7 +42,7 @@
     id, code, register_source, tally_area_no, name, id_card_no, addr, trade_no, user_id, 
     plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version, 
-    created, modified,latest_detect_operator,trade_account,operator_id,operator_name
+    created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--

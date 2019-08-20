@@ -229,6 +229,15 @@ public interface RegisterBill extends IBaseDomain {
     Date getLatestDetectOperator();
 
     void setLatestDetectOperator(String latestDetectOperator);
+
+    @ApiModelProperty(value = "检测值结果")
+    @Column(name = "`latest_pd_result`")
+    @FieldDef(label="latestPdResult")
+    @EditMode(editor = FieldEditor.Text, required = true)
+    Date getLatestPdResult();
+
+    void setLatestPdResult(String latestPdResult);
+
     @ApiModelProperty(value = "仪器编号")
     @Column(name = "`exe_machine_no`")
     @FieldDef(label="exeMachineNo")
