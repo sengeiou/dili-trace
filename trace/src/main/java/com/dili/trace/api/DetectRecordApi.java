@@ -161,10 +161,10 @@ public class DetectRecordApi {
             registerBill.setAddr(city[i]+"地址"+i);
             if(1%2==0){
                 registerBill.setTallyAreaNo(tallyAreaNo[i]);
-                registerBill.setSampleSource(RegisterSourceEnum.TALLY_AREA.getCode());
+                registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
             }else {
                 registerBill.setTradeAccount("100020" + i);
-                registerBill.setSampleSource(RegisterSourceEnum.TRADE_AREA.getCode());
+                registerBill.setRegisterSource(RegisterSourceEnum.TRADE_AREA.getCode());
             }
             list.add(registerBill);
         }
