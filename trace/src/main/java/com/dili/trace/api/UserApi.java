@@ -244,10 +244,16 @@ public class UserApi {
         if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
             throw new BusinessException("手机号为空或格式错误");
         }
+        if(StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO,user.getCardNo())){
+            throw new BusinessException("身份证为空或格式错误");
+        }
         if(StrUtil.isBlank(user.getCheckCode())){
             throw new BusinessException("验证码为空");
         }
-        if(StrUtil.isBlank(user.getName()) || !ReUtil.isMatch(PatternConstants.C,user.getName())){
+        if(StrUtil.isBlank(user.getTaillyAreaNo()) || user.getTaillyAreaNo().length() != 6){
+            throw new BusinessException("理货区号为空或格式错误");
+        }
+        if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
             throw new BusinessException("姓名为空或格式错误");
         }
         if(StrUtil.isBlank(user.getPassword())){
