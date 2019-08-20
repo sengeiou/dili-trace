@@ -3,10 +3,13 @@ package com.dili.trace.api;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.dto.TaskGetParam;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import io.swagger.annotations.Api;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -98,6 +102,7 @@ public class DetectRecordApi {
         detectRecordService.saveDetectRecord(detectRecord);
         registerBill.setLatestDetectRecordId(detectRecord.getId());
         registerBill.setLatestDetectTime(detectRecord.getDetectTime());
+        registerBill.setLatestPdResult(detectRecord.getPdResult());
         registerBillService.update(registerBill);
     }
 
@@ -121,4 +126,52 @@ public class DetectRecordApi {
         return BaseOutput.success().setData(registerBills);
     }
 
+
+    @ApiOperation("随机新增10条RegisterBill")
+    @RequestMapping(value = "/insertTest", method = RequestMethod.GET)
+    public @ResponseBody BaseOutput insertTest() {
+        List<RegisterBill> registerBills = getTestRegisterBills();
+        LOGGER.info("进行测试登记单数据-----------:" + registerBills.size());
+        for (RegisterBill registerBill : registerBills) {
+            BaseOutput r = registerBillService.createRegisterBill(registerBill);
+            if(!r.isSuccess()){
+                return  r;
+            }
+            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+            registerBillService.update(registerBill);
+        }
+        LOGGER.info("进行测试登记单数据----end-------:" + registerBills.size());
+        return BaseOutput.success("新增成功").setData(registerBills);
+    }
+    private List<RegisterBill> getTestRegisterBills(){
+        String[] name = {"张三","李四","王五","张亿","Jick","Rose","Tom","Good","蒋介","兰芝"};
+        String[] product={"苹果","梨","黄瓜","芹菜","一级蔬菜","萝卜","Fish","火龙果","木瓜","火龙果"};
+        String[] city={"成都","北京","哈达","贵阳","兰州","四川成都","云南","香港","杭州","天津"};
+        String[] plate={"川A07194","吉J96781","黑MR4039","辽C73037","川B07194","川C07194","川AB7194","川AB7111","川AC7111","川AB71e1"};
+        String[] tallyAreaNo={"ta1234","ta1235","ta1236","ta12374","ta1238","ta1239","ta1231","ta1232","ta12355","ta12340"};
+        List<RegisterBill> list = new ArrayList<>();
+        for(int i=0;i<10;i++){
+            RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+            registerBill.setName(name[i]);
+            registerBill.setPlate(plate[i]);
+            registerBill.setProductName(product[i]);
+            registerBill.setProductId(100L + i);
+            registerBill.setOriginName(city[i]);
+            registerBill.setOriginId(200L+i);
+            registerBill.setOperatorName("系统测试");
+            registerBill.setWeight(i + 698);
+            registerBill.setState(4);
+            registerBill.setIdCardNo("51102319890605399"+i);
+            registerBill.setAddr(city[i]+"地址"+i);
+            if(i%2==0){
+                registerBill.setTallyAreaNo(tallyAreaNo[i]);
+                registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
+            }else {
+                registerBill.setTradeAccount("100020" + i);
+                registerBill.setRegisterSource(RegisterSourceEnum.TRADE_AREA.getCode());
+            }
+            list.add(registerBill);
+        }
+        return list;
+    }
 }

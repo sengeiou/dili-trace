@@ -107,7 +107,7 @@ public class RegisterBillApi {
     @ApiOperation("保存分销单&全销总量与登记单相等")
     @ApiImplicitParam(paramType = "body", name = "SeparateSalesRecord", dataType = "SeparateSalesRecord", value = "分销单保存入参")
     @RequestMapping(value = "/createSalesRecord",method = RequestMethod.POST)
-    public BaseOutput<Boolean> saveSeparateSalesRecord(SeparateSalesRecord salesRecord){
+    public BaseOutput<SeparateSalesRecord> saveSeparateSalesRecord(SeparateSalesRecord salesRecord){
         LOGGER.info("保存分销单:"+JSON.toJSONString(salesRecord));
         User user=userService.get(sessionContext.getAccountId());
         if(user==null){
@@ -152,7 +152,7 @@ public class RegisterBillApi {
         registerBill.setOperatorName(user.getName());
         registerBill.setOperatorId(user.getId());
         registerBillService.update(registerBill);
-        return BaseOutput.success().setData(true);
+        return BaseOutput.success().setData(salesRecord);
     }
     @ApiOperation("处理不分销单")
     @RequestMapping(value = "/doNoSalesRecord/{id}",method = {RequestMethod.POST,RequestMethod.GET})
