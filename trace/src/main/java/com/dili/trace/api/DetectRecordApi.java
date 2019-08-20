@@ -136,7 +136,7 @@ public class DetectRecordApi {
             if(!r.isSuccess()){
                 return  r;
             }
-            registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
             registerBillService.update(registerBill);
         }
         LOGGER.info("进行测试登记单数据----end-------:" + registerBills.size());
@@ -154,7 +154,7 @@ public class DetectRecordApi {
             registerBill.setName(name[i]);
             registerBill.setPlate(plate[i]);
             registerBill.setProductName(product[i]);
-            registerBill.setProductId(100L+i);
+            registerBill.setProductId(100L + i);
             registerBill.setOriginName(city[i]);
             registerBill.setOriginId(200L+i);
             registerBill.setOperatorName("系统测试");
