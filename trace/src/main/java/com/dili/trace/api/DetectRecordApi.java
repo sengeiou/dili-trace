@@ -9,6 +9,7 @@ import com.dili.trace.dto.TaskGetParam;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import io.swagger.annotations.Api;
@@ -126,7 +127,7 @@ public class DetectRecordApi {
 
 
     @ApiOperation("随机新增10条RegisterBill")
-    @RequestMapping(value = "/insertTest.action", method = RequestMethod.POST)
+    @RequestMapping(value = "/insertTest", method = RequestMethod.GET)
     public @ResponseBody BaseOutput insertTest() {
         List<RegisterBill> registerBills = getTestRegisterBills();
         LOGGER.info("进行测试登记单数据-----------:" + registerBills.size());
@@ -155,9 +156,16 @@ public class DetectRecordApi {
             registerBill.setOriginName(city[i]);
             registerBill.setOperatorName("系统测试");
             registerBill.setWeight(i + 698);
-            registerBill.setTallyAreaNo(tallyAreaNo[i]);
             registerBill.setState(4);
-            registerBill.setTradeAccount("100020"+i);
+            registerBill.setIdCardNo("51102319890605399"+i);
+            registerBill.setAddr(city[i]+"地址"+i);
+            if(1%2==0){
+                registerBill.setTallyAreaNo(tallyAreaNo[i]);
+                registerBill.setSampleSource(RegisterSourceEnum.TALLY_AREA.getCode());
+            }else {
+                registerBill.setTradeAccount("100020" + i);
+                registerBill.setSampleSource(RegisterSourceEnum.TRADE_AREA.getCode());
+            }
             list.add(registerBill);
         }
         return list;
