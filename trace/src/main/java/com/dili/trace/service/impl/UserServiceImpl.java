@@ -49,7 +49,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     public void register(User user,Boolean flag) {
         //验证验证码是否正确
-        if(!flag){
+        if(flag){
             checkVerificationCode(user.getPhone(),user.getCheckCode());
         }
 
