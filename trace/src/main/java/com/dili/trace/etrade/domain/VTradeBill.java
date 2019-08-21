@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.QualityTraceTradeBill;
@@ -297,7 +299,7 @@ public class VTradeBill extends BaseDomain {
 //		bill.setAmount(this.getAmount().longValue());
 		bill.setBuyerAccount(this.buyerAccount);
 		bill.setBuyerName(this.buyerName);
-		bill.setBuyerIDNo(this.buyerIDNo);
+		bill.setBuyerIDNo(StringUtils.trimToEmpty(this.buyerIDNo).toUpperCase());
 		bill.setCateName(this.cateName);
 //		bill.setCheckResultEid(checkResultEid);
 //		bill.setConclusion(conclusion);
@@ -311,7 +313,7 @@ public class VTradeBill extends BaseDomain {
 		bill.setSaleUnit(this.saleUnit);
 		bill.setSellerAccount(this.sellerAccount);
 		bill.setSellerName(this.sellerName);
-		bill.setSellerIDNo(this.sellerIDNo);
+		bill.setSellerIDNo(StringUtils.trimToEmpty(this.sellerIDNo).toUpperCase());
 		bill.setTotalMoney(this.totalMoney.longValue());
 //		bill.setTradeFlowId("");
 

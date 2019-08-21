@@ -70,6 +70,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
         }
+        
+        registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
         //车牌转大写
         registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
         int result =saveOrUpdate(registerBill);
