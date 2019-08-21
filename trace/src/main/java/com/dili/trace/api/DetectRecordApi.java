@@ -2,6 +2,7 @@ package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.config.DefaultConfiguration;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dto.DetectRecordParam;
@@ -40,8 +41,8 @@ public class DetectRecordApi {
     private RegisterBillService registerBillService;
     @Autowired
     private DetectRecordService detectRecordService;
-    @Value("${environment.tag}")
-    private String enTag;
+    @Autowired
+    private DefaultConfiguration defaultConfiguration;
 
     /**
      * 保存检查单
@@ -51,7 +52,7 @@ public class DetectRecordApi {
     @ApiOperation("上传检测记录")
     @RequestMapping(value = "/saveRecord",method = RequestMethod.POST)
     public BaseOutput<Boolean> saveDetectRecord(DetectRecordParam detectRecord){
-        LOGGER.info(enTag+"=sys.en.tag]保存检查单:"+ JSON.toJSONString(detectRecord));
+        LOGGER.info(defaultConfiguration.getEnTag()+"=sys.en.tag]保存检查单:"+ JSON.toJSONString(detectRecord));
         if(StringUtils.isBlank(detectRecord.getRegisterBillCode())){
             LOGGER.error("上传检测任务结果失败无单号");
             return BaseOutput.failure("没有对应的登记单");
@@ -124,7 +125,7 @@ public class DetectRecordApi {
             taskCount=95;
         }
         taskGetParam.setPageSize(taskCount);
-        LOGGER.info(enTag+"=sys.en.tag]获取检查任务:" + JSON.toJSONString(taskGetParam)+tag);
+        LOGGER.info(defaultConfiguration.getEnTag()+"=sys.en.tag]获取检查任务:" + JSON.toJSONString(taskGetParam)+tag);
         List<RegisterBill> registerBills=registerBillService.findByExeMachineNo(taskGetParam.getExeMachineNo(), taskGetParam.getPageSize());
         return BaseOutput.success().setData(registerBills);
     }
