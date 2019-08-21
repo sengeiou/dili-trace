@@ -103,7 +103,9 @@ public class DetectRecordApi {
             detectRecord.setDetectType(1);
             registerBill.setDetectState(detectRecord.getDetectState());
         }
+        
         detectRecordService.saveDetectRecord(detectRecord);
+        registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
         registerBill.setLatestDetectRecordId(detectRecord.getId());
         registerBill.setLatestDetectTime(detectRecord.getDetectTime());
         registerBill.setLatestPdResult(detectRecord.getPdResult());
