@@ -13,10 +13,16 @@ import javax.persistence.Column;
  */
 public interface DetectRecordParam extends DetectRecord {
     @ApiModelProperty(value = "仪器编号")
-    @Column(name = "`exe_machine_no`")
     @FieldDef(label="exeMachineNo")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getExeMachineNo();
 
     void setExeMachineNo(String exeMachineNo);
+
+    @ApiModelProperty(value = "环境标记")
+    @FieldDef(label="tag")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getTag();
+
+    void setTag(String tag);
 }
