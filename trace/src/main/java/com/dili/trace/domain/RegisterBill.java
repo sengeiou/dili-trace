@@ -213,14 +213,14 @@ public interface RegisterBill extends IBaseDomain {
         }
     }
     
-    @Transient
-    default boolean getIsPass(){
-    	Integer detectState=this.getDetectState();
-    	if(detectState!=null&&(detectState.equals(1)||detectState.equals(3))) {
-    		return true;
-    	}
-    	return false;
-    }
+//    @Transient
+//    default boolean getIsPass(){
+//    	Integer detectState=this.getDetectState();
+//    	if(detectState!=null&&(detectState.equals(1)||detectState.equals(3))) {
+//    		return true;
+//    	}
+//    	return false;
+//    }
 
     @ApiModelProperty(value = "检测记录ID")
     @Column(name = "`latest_detect_record_id`")
