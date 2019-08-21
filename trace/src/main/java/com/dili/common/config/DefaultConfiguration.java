@@ -23,6 +23,15 @@ public class DefaultConfiguration {
     private double imageQuality;
     //货站默认密码
     private String password;
+    private String enTag;
+
+    public String getEnTag() {
+        return enTag;
+    }
+
+    public void setEnTag(String enTag) {
+        this.enTag = enTag;
+    }
 
     public long getSessionExpire() {
         return sessionExpire;
