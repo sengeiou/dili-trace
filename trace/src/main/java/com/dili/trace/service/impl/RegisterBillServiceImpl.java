@@ -70,6 +70,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
         }
+        //车牌转大写
+        registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
         int result =saveOrUpdate(registerBill);
         if(result == 0 ){
             LOGGER.error("新增登记单数据库执行失败"+ JSON.toJSONString(registerBill));
