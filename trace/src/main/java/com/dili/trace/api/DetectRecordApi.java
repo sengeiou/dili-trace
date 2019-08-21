@@ -109,7 +109,7 @@ public class DetectRecordApi {
         registerBill.setLatestDetectRecordId(detectRecord.getId());
         registerBill.setLatestDetectTime(detectRecord.getDetectTime());
         registerBill.setLatestPdResult(detectRecord.getPdResult());
-        registerBillService.update(registerBill);
+        registerBillService.updateSelective(registerBill);
     }
 
 
