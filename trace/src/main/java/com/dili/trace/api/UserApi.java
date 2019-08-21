@@ -65,7 +65,7 @@ public class UserApi {
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
             LOGGER.error("register",e);
-            return BaseOutput.failure();
+            return BaseOutput.failure(e.getMessage());
         }
     }
 
@@ -104,8 +104,8 @@ public class UserApi {
             redisUtil.set(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX+phone,verificationCode,defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);
             LOGGER.info("短信验证码发送成功：---------------手机号：【"+phone+"】，验证码：【"+verificationCode+"】--------------");
         }else{
-            LOGGER.error("发送失败,错误信息："+msgOutput.getResult());
-            return BaseOutput.failure(msgOutput.getResult());
+            LOGGER.error("发送失败,错误信息："+msgOutput.getMessage());
+            return BaseOutput.failure(msgOutput.getMessage());
         }
         return BaseOutput.success();
     }
