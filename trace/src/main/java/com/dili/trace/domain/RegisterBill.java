@@ -205,7 +205,21 @@ public interface RegisterBill extends IBaseDomain {
         if(getDetectState()==null){
             return "";
         }
-        return BillDetectStateEnum.getBillDetectStateEnum(getDetectState()).getName();
+        BillDetectStateEnum state=BillDetectStateEnum.getBillDetectStateEnum(getDetectState());
+        if(BillDetectStateEnum.PASS==state||BillDetectStateEnum.REVIEW_PASS==state) {
+        	return BillDetectStateEnum.PASS.getName();
+        }else {
+        	return BillDetectStateEnum.NO_PASS.getName();
+        }
+    }
+    
+    @Transient
+    default boolean getIsPass(){
+    	Integer detectState=this.getDetectState();
+    	if(detectState!=null&&(detectState.equals(1)||detectState.equals(3))) {
+    		return true;
+    	}
+    	return false;
     }
 
     @ApiModelProperty(value = "检测记录ID")
