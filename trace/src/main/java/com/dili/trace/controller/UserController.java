@@ -101,7 +101,7 @@ public class UserController {
     }
 
     /**
-     * 启禁用钱包
+     *
      * @param id
      * @param enable 是否启用
      * @return

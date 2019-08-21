@@ -72,7 +72,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     private Boolean checkVerificationCode(String phone,String verCode){
-        String verificationCodeTemp = redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone).toString();
+        String verificationCodeTemp = String.valueOf(redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone));
         if (StringUtils.isBlank(verificationCodeTemp)) {
             throw new BusinessException("验证码已过期");
         }

@@ -5,7 +5,9 @@ package com.dili.common.entity;
  */
 public class PatternConstants {
     //手机号
-    public static final String PHONE="1[3-9][0-9]{9}";
+    public static final String PHONE="^1[3-9]\\d{9}$";
+    //身份证号
+    public static final String CARD_NO="(^\\d{15}$)|(^\\d{18}$)|(^\\d{17}(\\d|X|x)$)";
     //中文
     public static final String C="[\\u4e00-\\u9fa5]*";
     //字母 数字 中文
