@@ -341,7 +341,7 @@ public class RegisterBillController {
 	@RequestMapping(value = "/separateSalesRecordQRCode.html", method = RequestMethod.GET)
 	public String separateSalesRecordQRCcode(Long id,ModelMap modelMap) {
 		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
-		RegisterBill bill = registerBillService.get(id);
+		RegisterBill bill = registerBillService.findByCode(separateSalesRecord.getRegisterBillCode());
 		bill.setSalesType(SalesTypeEnum.ONE_SALES.getCode());
 		RegisterBillOutputDto outputDto = registerBillService.conversionDetailOutput(bill);
 		outputDto.setSeparateSalesRecords(Arrays.asList(separateSalesRecord));
