@@ -240,7 +240,7 @@ public interface RegisterBill extends IBaseDomain {
     @Column(name = "`latest_detect_operator`")
     @FieldDef(label="latestDetectOperator")
     @EditMode(editor = FieldEditor.Text, required = true)
-    Date getLatestDetectOperator();
+    String getLatestDetectOperator();
 
     void setLatestDetectOperator(String latestDetectOperator);
 

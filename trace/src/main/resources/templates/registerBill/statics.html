@@ -57,7 +57,7 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="客户列表" id="registerBillGrid" fitColumns="true" noheader="true"
+            <table class="easyui-datagrid" title="检测统计" id="registerBillGrid" fitColumns="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
                    loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
                    align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
@@ -245,6 +245,15 @@
                          }
                  },
                  </#resource>
+                 <#resource method="post" url="registerBill/statics.html#export">
+                 {
+                     iconCls:'icon-export',
+                     text:'导出',
+                     handler:function(){
+                         doExport('registerBillGrid');
+                     }
+                 },
+             </#resource>
 
         ]
         });
