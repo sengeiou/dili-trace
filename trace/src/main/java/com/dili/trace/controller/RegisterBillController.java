@@ -14,6 +14,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -98,24 +101,31 @@ public class RegisterBillController {
 	@RequestMapping(value = "/insert.action", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
 		LOGGER.info("保存登记单数据:" + registerBills.size());
+		Map<String, String> tradeTypeMap = CollectionUtils.emptyIfNull(tradeTypeService.findAll()).stream().filter(Objects::nonNull)
+				.collect(Collectors.toMap(TradeType::getTypeId, TradeType::getTypeName));
+		
 		for (RegisterBill registerBill : registerBills) {
-			if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()){
-				//理货区
+			
+			if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+				// 理货区
 				User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
-				if(user == null){
-					LOGGER.error("新增登记单失败理货区号["+registerBill.getTallyAreaNo()+"]对应用户不存在");
-					return BaseOutput.failure("理货区号["+registerBill.getTallyAreaNo()+"]对应用户不存在");
+				if (user == null) {
+					LOGGER.error("新增登记单失败理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
+					return BaseOutput.failure("理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
 				}
 				registerBill.setName(user.getName());
 				registerBill.setIdCardNo(user.getCardNo());
 				registerBill.setAddr(user.getAddr());
 				registerBill.setUserId(user.getId());
-			}else {
-				if(StringUtils.isNotBlank(registerBill.getTradeAccount())){
-					Customer customer =customerService.findByCustomerId(registerBill.getTradeAccount());
-					if(customer == null){
-						LOGGER.error("新增登记单失败交易账号["+registerBill.getTradeAccount()+"]对应用户不存在");
-						return BaseOutput.failure("交易账号[" +registerBill.getTradeAccount()+"]对应用户不存在");
+			} else {
+				String tradeTypeId = StringUtils.trimToEmpty(registerBill.getTradeTypeId());
+				registerBill.setTradeTypeName(tradeTypeMap.getOrDefault(tradeTypeId, null));
+				
+				if (StringUtils.isNotBlank(registerBill.getTradeAccount())) {
+					Customer customer = customerService.findByCustomerId(registerBill.getTradeAccount());
+					if (customer == null) {
+						LOGGER.error("新增登记单失败交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
+						return BaseOutput.failure("交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
 					}
 					registerBill.setName(customer.getName());
 					registerBill.setIdCardNo(customer.getIdNo());
@@ -124,8 +134,8 @@ public class RegisterBillController {
 			}
 			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 			BaseOutput r = registerBillService.createRegisterBill(registerBill);
-			if(!r.isSuccess()){
-				return  r;
+			if (!r.isSuccess()) {
+				return r;
 			}
 		}
 		return BaseOutput.success("新增成功").setData(registerBills);
@@ -169,11 +179,11 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap, @PathVariable Long id) {
-		RegisterBill rb= registerBillService.get(id);
-		if(rb == null){
+		RegisterBill rb = registerBillService.get(id);
+		if (rb == null) {
 			return "";
 		}
-		RegisterBillOutputDto registerBill =registerBillService.conversionDetailOutput(rb);
+		RegisterBillOutputDto registerBill = registerBillService.conversionDetailOutput(rb);
 
 		modelMap.put("registerBill", registerBill);
 		return "registerBill/view";
@@ -181,6 +191,7 @@ public class RegisterBillController {
 
 	/**
 	 * 审核页面
+	 * 
 	 * @param modelMap
 	 * @param id
 	 * @return
@@ -193,6 +204,7 @@ public class RegisterBillController {
 
 	/**
 	 * 审核
+	 * 
 	 * @param id
 	 * @param pass
 	 * @return
@@ -205,6 +217,7 @@ public class RegisterBillController {
 
 	/**
 	 * 撤销
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -216,6 +229,7 @@ public class RegisterBillController {
 
 	/**
 	 * 自动送检
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -227,6 +241,7 @@ public class RegisterBillController {
 
 	/**
 	 * 采样检测
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -238,6 +253,7 @@ public class RegisterBillController {
 
 	/**
 	 * 复检
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -294,64 +310,61 @@ public class RegisterBillController {
 
 	/**
 	 * 交易区订单溯源页面（二维码）
+	 * 
 	 * @param tradeNo
 	 * @param modelMap
 	 * @return
 	 */
 	@RequestMapping(value = "/tradeBillDetail.html", method = RequestMethod.GET)
-	public String tradeBillDetail(String tradeNo,ModelMap modelMap) {
+	public String tradeBillDetail(String tradeNo, ModelMap modelMap) {
 		RegisterBillOutputDto registerBill = registerBillService.findByTradeNo(tradeNo);
-		QualityTraceTradeBill qualityTraceTradeBill =qualityTraceTradeBillService.findByTradeNo(tradeNo);
-		if(registerBill == null){
+		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
+		if (registerBill == null) {
 			int result = registerBillService.matchDetectBind(qualityTraceTradeBill);
-			if(result==1){
-				registerBill= registerBillService.findByTradeNo(tradeNo);
+			if (result == 1) {
+				registerBill = registerBillService.findByTradeNo(tradeNo);
 			}
 		}
 
-		if(null != registerBill){
+		if (null != registerBill) {
 			registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
 		}
-		modelMap.put("tradeBill",registerBill);
-		modelMap.put("qualityTraceTradeBill",qualityTraceTradeBill);
+		modelMap.put("tradeBill", registerBill);
+		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
 		return "registerBill/tradeBillDetail";
 	}
 
-
 	/**
 	 * 登记单溯源（二维码）
+	 * 
 	 * @param id
 	 * @param modelMap
 	 * @return
 	 */
 	@RequestMapping(value = "/registerBillQRCode.html", method = RequestMethod.GET)
-	public String registerBillQRCcode(Long id,ModelMap modelMap) {
+	public String registerBillQRCcode(Long id, ModelMap modelMap) {
 		RegisterBill bill = registerBillService.get(id);
 		RegisterBillOutputDto outputDto = registerBillService.conversionDetailOutput(bill);
-		modelMap.put("registerBill",outputDto);
+		modelMap.put("registerBill", outputDto);
 		return "registerBill/registerBillQRCode";
 	}
 
 	/**
 	 * 分销记录溯源（二维码）
+	 * 
 	 * @param id
 	 * @param modelMap
 	 * @return
 	 */
 	@RequestMapping(value = "/separateSalesRecordQRCode.html", method = RequestMethod.GET)
-	public String separateSalesRecordQRCcode(Long id,ModelMap modelMap) {
+	public String separateSalesRecordQRCcode(Long id, ModelMap modelMap) {
 		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
 		RegisterBill bill = registerBillService.findByCode(separateSalesRecord.getRegisterBillCode());
 		bill.setSalesType(SalesTypeEnum.ONE_SALES.getCode());
 		RegisterBillOutputDto outputDto = registerBillService.conversionDetailOutput(bill);
 		outputDto.setSeparateSalesRecords(Arrays.asList(separateSalesRecord));
-		modelMap.put("registerBill",outputDto);
+		modelMap.put("registerBill", outputDto);
 		return "registerBill/registerBillQRCode";
 	}
-
-
-
-
-
 
 }

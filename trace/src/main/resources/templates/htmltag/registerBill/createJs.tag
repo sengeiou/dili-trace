@@ -6,10 +6,10 @@
     $('[name="registerSource"]').on('change', function () {
         if ($(this).val() === '1') {
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').show();
-            $('[name="tradeAccount"], [name="b2"], [name="tradeTypeName"]').closest('.form-group').hide();
+            $('[name="tradeAccount"], [name="b2"], [name="tradeTypeId"]').closest('.form-group').hide();
         } else {
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').hide();
-            $('[name="tradeAccount"], [name="b2"], [name="tradeTypeName"]').closest('.form-group').show();
+            $('[name="tradeAccount"], [name="b2"], [name="tradeTypeId"]').closest('.form-group').show();
         }
     })
 
@@ -296,7 +296,8 @@
                 registerBill.userId = $("#userId").val();
             }else{
                 registerBill.tradeAccount=$("#tradeAccount").val();
-                registerBill.tradeTypeName=$("#tradeTypeName").val();
+               // registerBill.tradeTypeName=$("#tradeTypeName").val();
+                registerBill.tradeTypeId=$("#tradeTypeId").val();
             }
             registerBill.plate=$("#plate").val();
             registerBill.name=$("#name").val();
@@ -368,7 +369,8 @@
         if(typeof callbackObj != 'undefined'){
             window.printFinish=function(){
                 layer.alert("登记成功", {type: 0}, function () {
-                    history.go(-1);
+                    //history.go(-1);
+                	parent.closeWin('view_win');
                 });
             }
 

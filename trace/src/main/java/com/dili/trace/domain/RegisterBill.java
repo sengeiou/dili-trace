@@ -294,6 +294,21 @@ public interface RegisterBill extends IBaseDomain {
     Long getOperatorId();
 
     void setOperatorId(Long operatorId);
+    
+    
+    @Column(name = "`trade_type_id`")
+    @FieldDef(label="trade_type_id")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getTradeTypeId();
+
+    void setTradeTypeId(String tradeTypeId);
+    
+    @Column(name = "`trade_type_name`")
+    @FieldDef(label="trade_type_name")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getTradeTypeName();
+
+    void setTradeTypeName(String tradeTypeName);
 
 
 }
