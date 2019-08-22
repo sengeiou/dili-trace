@@ -248,7 +248,7 @@ public interface RegisterBill extends IBaseDomain {
     @Column(name = "`latest_pd_result`")
     @FieldDef(label="latestPdResult")
     @EditMode(editor = FieldEditor.Text, required = true)
-    Date getLatestPdResult();
+    String getLatestPdResult();
 
     void setLatestPdResult(String latestPdResult);
 
