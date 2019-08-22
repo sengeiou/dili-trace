@@ -147,8 +147,9 @@
   <!--自定义sql-->
   <select id="findMatchDetectBind" parameterType="com.dili.trace.dto.MatchDetectParam" resultType="java.lang.Long">
     SELECT id  from register_bill
-    where `trade_type_name` = #{tradeTypeName} and `product_name` = #{productName} and `id_card_no` = #{idCardNo}
+    where `trade_type_id` = #{tradeTypeId} and `product_name` = #{productName} and `id_card_no` = #{idCardNo}
     and `latest_detect_time` BETWEEN #{start} AND #{end} AND register_source = 2 AND trade_no IS NULL
+    AND detect_state in(1,3)
     ORDER BY id DESC limit 1
   </select>
 

@@ -8,13 +8,22 @@ import java.util.Date;
  */
 public class MatchDetectParam implements Serializable {
     private String tradeNo;
+    private String tradeTypeId;
     private String tradeTypeName;
     private String productName;
     private String idCardNo;
     private Date start;
     private Date end;
 
-    public String getTradeNo() {
+    public String getTradeTypeId() {
+		return tradeTypeId;
+	}
+
+	public void setTradeTypeId(String tradeTypeId) {
+		this.tradeTypeId = tradeTypeId;
+	}
+
+	public String getTradeNo() {
         return tradeNo;
     }
 

@@ -44,6 +44,8 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
     public DetectRecord findByRegisterBillCode(String registerBillCode) {
         DetectRecord detectRecord = DTOUtils.newDTO(DetectRecord.class);
         detectRecord.setRegisterBillCode(registerBillCode);
+        detectRecord.setSort("id");
+        detectRecord.setOrder("desc");
         List<DetectRecord> list = list(detectRecord);
         if(list!=null && list.size()>0){
             return list.get(0);
