@@ -199,13 +199,14 @@
     }
     function closeWin(id){
         $('#'+id).remove();
-        $('#grid').datagrid('reload');
+        $('#registerBillGrid').datagrid('reload');
     }
     function openWin(url){
         $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
     }
     function openInsert(){
-        location.href = '/registerBill/create.html';
+//        location.href = '/registerBill/create.html';
+        openWin('/registerBill/create.html');
     }
     function doDetail(){
         var selected = _registerBillGrid.datagrid("getSelected");
@@ -218,7 +219,8 @@
             });
             return;
         }
-        location.href ='/registerBill/view/' + selected.id;
+        openWin('/registerBill/view/' + selected.id);
+//        location.href ='/registerBill/view/' + selected.id;
     }
     function audit(){
         var selected = _registerBillGrid.datagrid("getSelected");
