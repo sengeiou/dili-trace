@@ -53,6 +53,12 @@ public class DetectRecordApi {
     @RequestMapping(value = "/saveRecord",method = RequestMethod.POST)
     public BaseOutput<Boolean> saveDetectRecord(DetectRecordParam detectRecord){
         LOGGER.info(defaultConfiguration.getEnTag()+"=sys.en.tag]保存检查单:"+ JSON.toJSONString(detectRecord));
+        
+        if(!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecord.getTag())) {
+            LOGGER.error("上传检测任务结果失败:签名出错");
+            return BaseOutput.failure("签名出错");
+        }
+        
         if(StringUtils.isBlank(detectRecord.getRegisterBillCode())){
             LOGGER.error("上传检测任务结果失败无单号");
             return BaseOutput.failure("没有对应的登记单");
@@ -121,6 +127,14 @@ public class DetectRecordApi {
     @ApiOperation("获取检测任务")
     @RequestMapping(value = "/getDetectTask/{exeMachineNo}/{taskCount}/{tag}",method = RequestMethod.POST)
     public BaseOutput<List<RegisterBill>> getDetectTask(@PathVariable String tag, @PathVariable String exeMachineNo, @PathVariable Integer taskCount){
+    	
+        if(!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(tag)) {
+            LOGGER.error("上传检测任务结果失败:签名出错");
+            return BaseOutput.failure("签名出错");
+        }
+        
+        
+        
         TaskGetParam taskGetParam = new TaskGetParam();
         taskGetParam.setExeMachineNo(exeMachineNo);
         if(taskCount>95){
