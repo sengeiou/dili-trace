@@ -69,7 +69,7 @@
         <#resource method="post" url="registerBill/index.html#audit">
             {
                 iconCls:'icon-man',
-                text:'审核',
+                text:'进场审核',
                 id:'audit-btn',
                 handler:function(){
                     audit();
@@ -485,7 +485,7 @@
             shadeClose : false,
             area: ['1100px', "350px"],
             content: content,//传入一个链接地址 比如：http://www.baidu.com
-            btn: ['确定','取消'],
+            btn: ['进场审核','取消'],
             yes: function(index, layero){
                 $.ajax({
                     type: "GET",
