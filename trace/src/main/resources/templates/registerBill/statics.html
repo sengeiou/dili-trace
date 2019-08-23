@@ -134,6 +134,7 @@
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <script src="http://base.nong12.com/static/log/log.build.js"></script>
    <script type="text/javascript">
    $.fn.serializeObject = function()
@@ -250,7 +251,16 @@
                      iconCls:'icon-export',
                      text:'导出',
                      handler:function(){
-                         doExport('registerBillGrid');
+                    	 layer.confirm('确认导出数据?', {
+                             type: 0,
+                             title: '提示',
+                             btn: ['确定','取消'],
+                             yes:function(){
+                            	 layer.closeAll();
+                            	 doExport('registerBillGrid');
+                            	
+                             }
+                         });
                      }
                  },
              </#resource>
