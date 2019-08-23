@@ -131,7 +131,16 @@
                 iconCls:'icon-export',
                 text:'导出',
                 handler:function(){
-                    doExport('registerBillGrid');
+               	 layer.confirm('确认导出数据?', {
+                     type: 0,
+                     title: '提示',
+                     btn: ['确定','取消'],
+                     yes:function(){
+                    	 layer.closeAll();
+                    	 doExport('registerBillGrid');
+                     }
+                 });
+                   
                 }
             }
         </#resource>
