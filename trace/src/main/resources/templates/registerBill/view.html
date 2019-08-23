@@ -28,13 +28,13 @@
                 <% if(registerBill.registerSource == 1){ %>
                     <div class="form-group">
                         <label class="label-title text-right">
-                            <span class="red">&lowast;</span>区号</label>
+                            <span class="red">&lowast;</span>理货区号</label>
                         <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo!}" required readonly/>
                     </div>
                 <% }else if(registerBill.registerSource == 2){ %>
                     <div class="form-group">
                         <label class="label-title text-right">
-                            <span class="red">&lowast;</span>区号</label>
+                            <span class="red">&lowast;</span>交易区号</label>
                         <input type="text" class="form-control input-sm"  value="${registerBill.tradeTypeId!}" required readonly/>
                     </div>
                 <% } %>
