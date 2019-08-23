@@ -13,7 +13,6 @@ public enum RegisterBillStateEnum {
 
     WAIT_AUDIT(1, "待审核"),
     WAIT_SAMPLE(2, "待采样"),
-    ALREADY_SAMPLE(3, "已采样"),
     WAIT_CHECK(4, "待检测"),
     CHECKING(5, "检测中"),
     ALREADY_CHECK(6, "已检测"),
