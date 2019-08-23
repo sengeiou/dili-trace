@@ -448,6 +448,7 @@ public class ExportUtilsConfig {
 		                        .execute();
 		            }
 		            if(resp.isSuccessful()){
+		            	log.info("code={}",resp.code());
 			            log.info(String.format("远程调用["+url+"]成功,code:[%s], message:[%s]", resp.code(),resp.message()));
 			            byte[]bytes=resp.body().bytes();
 			            log.info("UTF-8->resp={}",new String(bytes,"UTF-8"));
