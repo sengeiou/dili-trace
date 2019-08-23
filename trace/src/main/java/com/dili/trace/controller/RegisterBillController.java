@@ -130,6 +130,7 @@ public class RegisterBillController {
 					registerBill.setName(customer.getName());
 					registerBill.setIdCardNo(customer.getIdNo());
 					registerBill.setAddr(customer.getAddress());
+					registerBill.setTradePrintingCard(customer.getPrintingCard());
 				}
 			}
 			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
