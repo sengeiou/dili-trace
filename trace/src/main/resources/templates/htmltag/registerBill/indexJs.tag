@@ -170,6 +170,13 @@
             $('#undo-btn').linkbutton('disable');
             $('#audit-btn').linkbutton('disable');
             $('#review-btn').linkbutton('disable');
+        }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_CHECK.getCode()} ){
+            //按钮不可用
+            $('#auto-btn').linkbutton('disable');
+            $('#sampling-btn').linkbutton('disable');
+            $('#undo-btn').linkbutton('disable');
+            $('#audit-btn').linkbutton('disable');
+            $('#review-btn').linkbutton('disable');
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.CHECKING.getCode()} ){
             //按钮不可用
             $('#auto-btn').linkbutton('disable');
@@ -177,8 +184,7 @@
             $('#undo-btn').linkbutton('disable');
             $('#audit-btn').linkbutton('disable');
             $('#review-btn').linkbutton('disable');
-        }
-        if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.ALREADY_CHECK.getCode()}){
+        }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.ALREADY_CHECK.getCode()}){
             //按钮不可用
             $('#auto-btn').linkbutton('disable');
             $('#sampling-btn').linkbutton('disable');
