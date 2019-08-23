@@ -46,7 +46,7 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         detectRecord.setRegisterBillCode(registerBillCode);
         detectRecord.setSort("id");
         detectRecord.setOrder("desc");
-        List<DetectRecord> list = list(detectRecord);
+        List<DetectRecord> list = this.listByExample(detectRecord);
         if(list!=null && list.size()>0){
             return list.get(0);
         }
