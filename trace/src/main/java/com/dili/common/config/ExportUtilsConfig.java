@@ -394,6 +394,7 @@ public class ExportUtilsConfig {
 					        headersMap.put(key, request.getHeader(key));
 				        }
 			        }
+			        log.info("headersMap:{}",headersMap.toString());
 		            if("POST".equalsIgnoreCase(httpMethod)){
 		                JSONObject paramJo = (JSONObject)JSONObject.toJSON(paramObj);
 //		                FormBody.Builder builder = new FormBody.Builder();
@@ -448,7 +449,11 @@ public class ExportUtilsConfig {
 		            }
 		            if(resp.isSuccessful()){
 			            log.info(String.format("远程调用["+url+"]成功,code:[%s], message:[%s]", resp.code(),resp.message()));
-		                return new String(resp.body().bytes(),"UTF-8");
+			            byte[]bytes=resp.body().bytes();
+			            log.info("UTF-8->resp={}",new String(bytes,"UTF-8"));
+			            log.info("GBK->resp={}",new String(bytes,"GBK"));
+			            log.info("ISO8859-1->resp={}",new String(bytes,"ISO8859-1"));
+		                return new String(bytes,"UTF-8");
 //		                String retVal = new String(resp.body().bytes(), "UTF-8");
 //		                log.info("==============================================================");
 //			            log.info("远程调用结果:"+retVal);
