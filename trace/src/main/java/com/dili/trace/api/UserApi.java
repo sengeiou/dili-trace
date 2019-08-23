@@ -168,16 +168,13 @@ public class UserApi {
     @ApiOperation(value ="用户获取个人信息【接口已通】", notes = "用户获取个人信息")
     @RequestMapping(value = "/get.api", method = RequestMethod.POST)
     @InterceptConfiguration
-    public BaseOutput<Map<String,Object>> get(){
+    public BaseOutput<User> get(){
         try{
-            Map<String,Object> result=new HashMap<>();
             User user=userService.get(sessionContext.getAccountId());
             if(user==null){
                 return BaseOutput.failure("用户不存在");
             }
-            result.put("id",user.getId());
-            result.put("name",user.getName());
-            return BaseOutput.success().setData(result);
+            return BaseOutput.success().setData(user);
         }catch (Exception e){
             LOGGER.error("get",e);
             return BaseOutput.failure();
