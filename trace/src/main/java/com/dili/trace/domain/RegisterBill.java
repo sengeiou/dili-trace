@@ -96,6 +96,14 @@ public interface RegisterBill extends IBaseDomain {
 
     void setTradeAccount(String tradeAccount);
 
+    @ApiModelProperty(value = "印刷卡号")
+    @Column(name = "`trade_printing_card`")
+    @FieldDef(label="tradePrintingCard")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getTradePrintingCard();
+
+    void setTradePrintingCard(String tradePrintingCard);
+
     @ApiModelProperty(value = "用户iD")
     @Column(name = "`user_id`")
     @FieldDef(label="用户ID")

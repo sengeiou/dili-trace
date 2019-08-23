@@ -18,22 +18,41 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.code}"  readonly/>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.code!}"  readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>操作人</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.operatorName}"  readonly/>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.operatorName!}"  readonly/>
+                </div>
+                <br>
+                <% if(registerBill.registerSource == 1){ %>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>区号</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo!}" required readonly/>
+                    </div>
+                <% }else if(registerBill.registerSource == 2){ %>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>区号</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.tradeTypeId!}" required readonly/>
+                    </div>
+                <% } %>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>业户姓名</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.name!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>身份证号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.idCardNo!}" required readonly/>
                 </div>
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>理货区号</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo}" required readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>业户姓名</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.name}" required readonly/>
+                        <span class="red">&lowast;</span>身份证地址</label>
+                    <textarea name="addr" id="addr" class="form-control" cols="70" rows="1" required readonly>${registerBill.addr!}</textarea>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -61,7 +80,18 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>状态</label>
                     <input type="text" class="form-control input-sm"value="${registerBill.stateName}" required readonly/>
                 </div>
-
+                <% if(registerBill.registerSource == 2){ %>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>交易账号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.tradeAccount!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>印刷卡号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.tradePrintingCard!}" required readonly/>
+                </div>
+                <% } %>
             </div>
             <div class="form-item-group">
                 <h4 class="form-item-title">检测信息</h4>

@@ -23,7 +23,7 @@ public interface Customer extends IBaseDomain {
 
     void setId(Long id);
     @ApiModelProperty(value = "交易账号")
-    @Column(name = "`customer_id`")
+    @Column(name = "`customerID`")
     @FieldDef(label="customerId")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getCustomerId();
@@ -37,7 +37,7 @@ public interface Customer extends IBaseDomain {
 
     void setName(String name);
     @ApiModelProperty(value = "客户身份证")
-    @Column(name = "`id_no`")
+    @Column(name = "`IDNo`")
     @FieldDef(label="idNo", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getIdNo();
@@ -51,7 +51,7 @@ public interface Customer extends IBaseDomain {
 
     void setAddress(String address);
     @ApiModelProperty(value = "印刷卡号")
-    @Column(name = "`printing_card`")
+    @Column(name = "`printingCode`")
     @FieldDef(label="printingCard", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getPrintingCard();
