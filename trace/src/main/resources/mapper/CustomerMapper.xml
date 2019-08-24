@@ -29,7 +29,7 @@
     select
     <include refid="Base_Column_List" />
     from vCustomer
-    where printingCard = #{printingCard}
+    where printingCode = #{printingCard}
   </select>
 
 
