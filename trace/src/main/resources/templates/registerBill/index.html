@@ -150,15 +150,15 @@
             </table>
         </div>
     </div>
-    <!-- 隐藏编辑框 -->
- <!--   <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="RegisterBill信息" style="padding:20px" modal="true" border="thin" closed="true"
+   <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
-				iconCls: 'icon-save',
-				height: 480,
+				iconCls: 'icon-edit',
+				height: 380,
 				buttons: [{
 					text:'确认',
 					iconCls:'icon-ok',
-					handler:saveOrUpdate
+					handler:saveOrUpdateHandleResult
 				},{
 					text:'取消',
 					iconCls:'icon-cancel',
@@ -169,139 +169,151 @@
 			">
     <form id="_form" class="easyui-form" method="post" fit="true">
         <input name="_id" id="_id" type="hidden">
-        <table width="360px">
+        <table width="400px">
             <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_code" id="_code" style="width:100%" data-options="label:'编号:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_registerSource" id="_registerSource" style="width:100%" data-options="label:'1.理货区 2.交易区:', validType:'length[0,3]'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_tallyAreaNo" id="_tallyAreaNo" style="width:100%" data-options="label:'tallyAreaNo:', validType:'length[0,20]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'业户姓名:', validType:'length[0,50]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_idCardNo" id="_idCardNo" style="width:100%" data-options="label:'身份证号:', validType:'length[0,20]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_addr" id="_addr" style="width:100%" data-options="label:'地址:', validType:'length[0,50]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_tradeNo" id="_tradeNo" style="width:100%" data-options="label:'tradeNo:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_userId" id="_userId" style="width:100%" data-options="label:'用户ID:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_plate" id="_plate" style="width:100%" data-options="label:'plate:', validType:'length[0,15]'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_state" id="_state" style="width:100%" data-options="label:'1.待审核 2.待采样 3.已采样 4.待检测 5.检测中 6.已检测 7.复检中:', validType:'length[0,1]'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_salesType" id="_salesType" style="width:100%" data-options="label:'1.分销 2.全销:', validType:'length[0,1]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_productName" id="_productName" style="width:100%" data-options="label:'productName:', validType:'length[0,20]'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_productId" id="_productId" style="width:100%" data-options="label:'productId:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_originId" id="_originId" style="width:100%" data-options="label:'originId:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_orininName" id="_orininName" style="width:100%" data-options="label:'orininName:', validType:'length[0,20]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_weight" id="_weight" style="width:100%" data-options="label:'weight:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_detectState" id="_detectState" style="width:100%" data-options="label:'1.合格 2.不合格 3.复检合格 4.复检不合格:', validType:'length[0,1]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-numberbox" name="_latestDetectRecordId" id="_latestDetectRecordId" style="width:100%" data-options="label:'latestDetectRecordId:'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_latestDetectTime" id="_latestDetectTime" style="width:100%" editable="false" data-options="label:'latestDetectTime:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_exeMachineNo" id="_exeMachineNo" style="width:100%" data-options="label:'exeMachineNo:', validType:'length[0,3]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_version" id="_version" style="width:100%" data-options="label:'version:', validType:'length[0,3]'" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_created" id="_created" style="width:100%" editable="false" data-options="label:'created:'" 
-                        required="true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-datetimebox" name="_modified" id="_modified" style="width:100%" editable="false" data-options="label:'modified:'" 
-                        required="true" />
+                <td style="padding:10px;">
+                    <div class="fileimg-box" style="margin: 0 auto;">
+                        <span class="fileimg-plus-icon">+</span>
+                        <span class="fileimg-des">上传处理结果图片</span>
+                        <input type="file" name="file" id="_handleResultUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                        <img class="magnifying">
+                        <input type="hidden" name="_handleResultUrl">
+                        <div class="fileimg-cover" style="display: none;"></div>
+                        <div class="fileimg-edit" style="display: none;">
+                            <span class="fileimg-view">查看</span>
+                        </div>
+                    </div>
                 </td>
             </tr>
         </table>
+        <table width="400px">
+            <tr>
+                <td style="padding:10px;">
+                    <input class="easyui-textbox"  name="_handleResult" id="_handleResult" style="width:100%" data-options="labelWidth:100,label:'处理结果备注*:', validType:'length[2,50]',required:true,multiline:true,rows:5,height:80" />
+                </td>
+            </tr>
+        </table>
+        
     </form>
 
-    </div>-->
+    </div>
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
      <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <#registerBill_indexJs />
+     <script>
+     
+   //打开新增窗口
+     function doHandler(){
+         var selected = _registerBillGrid.datagrid("getSelected");
+         if (null == selected) {
+             swal({
+                 title: '警告',
+                 text: '请选中一条数据',
+                 type: 'warning',
+                 width: 300
+             });
+             return;
+         }
+           
+         $('#dlg').dialog("setTitle","上传处理结果");
+         $('#dlg').dialog('open');
+         $('#dlg').dialog('center');
+         $(".magnifying").hide();
+         $(".fileimg-cover,.fileimg-edit").hide();
+         $(":file").attr('disabled',false);
+         $('#_form').form('clear');
+         var formData = $.extend({},selected);
+         formData = addKeyStartWith(getOriginalData(formData),"_");
+         $('#_form').form('load', formData);
+         
+         initFileUpload();
+     }
+
+
+     function saveOrUpdateHandleResult(){
+         if(!$('#_form').form("validate")){
+             return;
+         }
+         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+         console.info(_formData)
+         var _url = "${contextPath}/registerBill/saveHandleResult.action";
+         $.ajax({
+             type: "POST",
+             url: _url,
+             data: _formData,
+             processData:true,
+             dataType: "json",
+             async : true,
+             success: function (data) {
+                 if(data.code=="200"){
+                	 $('#dlg').dialog('close');	 
+                     layer.alert('处理成功',function(){
+                    	 layer.closeAll();
+                    	 $('#handle-btn').linkbutton('disable');
+                    	 queryRegisterBillGrid();
+                     })
+                     
+                 }else{
+                     swal('错误',data.result, 'error');
+                 }
+             },
+             error: function(){
+                 swal('错误', '远程访问失败', 'error');
+             }
+         });
+     }
+     
+     $('.fileimg-view').on('click', function () {
+         var url = $(this).parent().siblings(".magnifying").attr('src');
+         layer.open({
+             title:'图片',
+             type: 1,
+             skin: 'layui-layer-rim',
+             closeBtn: 2,
+             area: ['90%', '90%'], //宽高
+             content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+         });
+     });
+
+     function initFileUpload(){
+         $(":file").fileupload({
+             dataType : 'json',
+             formData: {type:5,compress:true},
+             done : function(e, res) {
+                 if (res.result.code == 200) {
+                     var url = res.result.data;
+                     $(this).siblings(".magnifying").attr('src', url).show();
+                     $(this).siblings("input:hidden").val(url);
+                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                 }
+             },
+             add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                 var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                 var name = data.originalFiles[0]["name"];
+                 var index = name.lastIndexOf(".")+1;
+                 var fileType = name.substring(index,name.length);
+                 if(!acceptFileTypes.test(fileType)){
+                     swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                     return ;
+                 }
+                 var size = data.originalFiles[0]["size"];
+                 // 10M
+                 if(size > (1024*10*1024)){
+                     swal('错误', '上传文件超过最大限制!', 'error');
+                     return ;
+                 }
+                 data.submit();
+             }
+         });
+     }
+     
+     </script>
  </#body>

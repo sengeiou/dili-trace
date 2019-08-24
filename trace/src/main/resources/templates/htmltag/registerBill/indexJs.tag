@@ -117,6 +117,16 @@
                 }
             },
     </#resource>
+            {
+                iconCls:'icon-undo',
+                text:'处理上传',
+                id:'handle-btn',
+                disabled :true,
+                handler:doHandler,
+                handler:function(){
+                    doHandler();
+                }
+            },
         <#resource method="post" url="registerBill/index.html#detail">
             {
                 iconCls:'icon-detail',
@@ -196,6 +206,14 @@
                 $('#review-btn').linkbutton('disable');
             }
         }
+       
+        if(row.handleResultUrl&&row.handleResult&&row.handleResultUrl!=null&&row.handleResult!=null&&row.handleResultUrl!=''&&row.handleResult!=''){
+        	 $('#handle-btn').linkbutton('disable');
+        }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}){
+        	 $('#handle-btn').linkbutton('enable');
+        }
+       
+        //handle-btn
     }
 
     function blankFormatter(val,row){
