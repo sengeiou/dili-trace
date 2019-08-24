@@ -51,7 +51,7 @@ public class VTradeBill extends BaseDomain {
 	private Date orderPayDate;// datetime
 	// 总金额（分）
 	@Column(name = "totalMoney")
-	private BigDecimal totalMoney=BigDecimal.ZERO;// Money
+	private BigDecimal totalMoney = BigDecimal.ZERO;// Money
 	// 商品编号
 	@Column(name = "productId")
 	private String productId;// varchar(50)
@@ -66,14 +66,14 @@ public class VTradeBill extends BaseDomain {
 	private String cateName;// varchar(50)
 	// 单价（分）
 	@Column(name = "price")
-	private BigDecimal price=BigDecimal.ZERO;// Money
+	private BigDecimal price = BigDecimal.ZERO;// Money
 
 	// 件数
-	private BigDecimal piecequantity=BigDecimal.ZERO;
+	private BigDecimal piecequantity = BigDecimal.ZERO;
 	// 件重（公斤）
-	private BigDecimal pieceweight=BigDecimal.ZERO;
+	private BigDecimal pieceweight = BigDecimal.ZERO;
 	// 总净重（公斤）
-	private BigDecimal netWeight=BigDecimal.ZERO;
+	private BigDecimal netWeight = BigDecimal.ZERO;
 	// 交易类型编码
 	private String tradetypeid;
 	// 交易类型名称
@@ -212,8 +212,6 @@ public class VTradeBill extends BaseDomain {
 		this.price = price;
 	}
 
-
-
 	public BigDecimal getPiecequantity() {
 		return piecequantity;
 	}
@@ -290,9 +288,24 @@ public class VTradeBill extends BaseDomain {
 		QualityTraceTradeBill bill = DTOUtils.newDTO(QualityTraceTradeBill.class);
 		bill.setBillId(this.billID);
 		bill.setOrderId(this.orderId);
-		bill.setPieceQuantity(this.piecequantity.longValue());
-		bill.setPieceWeight(this.pieceweight.longValue());
-		bill.setNetWeight(this.netWeight.longValue());
+		
+		if (this.piecequantity != null) {
+			bill.setPieceQuantity(this.piecequantity.longValue());
+		}
+
+		if (this.pieceweight != null) {
+			bill.setPieceWeight(this.pieceweight.longValue());
+		}
+
+		if (this.netWeight != null) {
+			bill.setNetWeight(this.netWeight.longValue());
+		}
+		if (this.price != null) {
+			bill.setPrice(this.price.longValue());
+		}
+		if (this.totalMoney != null) {
+			bill.setTotalMoney(this.totalMoney.longValue());
+		}
 		bill.setTradetypeId(this.tradetypeid);
 		bill.setTradetypeName(this.tradetypename);
 		bill.setBillActive(this.billActive);
@@ -308,13 +321,13 @@ public class VTradeBill extends BaseDomain {
 		bill.setOrderPayDate(this.orderPayDate);
 //		bill.setOrderStatus("");
 //		bill.setPdresult("");
-		bill.setPrice(this.price.longValue());
+
 		bill.setProductName(this.productName);
 		bill.setSaleUnit(this.saleUnit);
 		bill.setSellerAccount(this.sellerAccount);
 		bill.setSellerName(this.sellerName);
 		bill.setSellerIDNo(StringUtils.trimToEmpty(this.sellerIDNo).toUpperCase());
-		bill.setTotalMoney(this.totalMoney.longValue());
+
 //		bill.setTradeFlowId("");
 
 		return bill;
