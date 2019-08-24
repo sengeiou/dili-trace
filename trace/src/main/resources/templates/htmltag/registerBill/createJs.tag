@@ -11,6 +11,10 @@
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').hide();
             $('[name="tradeAccount"], [name="b2"], [name="tradeTypeId"]').closest('.form-group').show();
         }
+        $("#idCardNo").val("");
+        $("#name").val("");
+        $("#addr").val("");
+        $("#userId").val("");
     })
 
     /* 货品表格  */
@@ -326,8 +330,33 @@
                     registerBill.originCertifiyUrl=$(this).val();
                 }
             });
+
             registerBills.push(registerBill);
         });
+
+        
+        for(var i in registerBills){
+        	var bill=registerBills[i];
+        	if(bill.productId==''){
+            	swal(
+                        '错误',
+                        '请选择商品',
+                        'error'
+                );
+            	return;
+            }
+        	
+        	if(bill.originId==''){
+            	swal(
+                        '错误',
+                        '请选择产地',
+                        'error'
+                );
+            	return;
+            }
+        	
+        }
+       
         $.ajax({
             type: "POST",
             url: "${contextPath}/registerBill/insert.action",
