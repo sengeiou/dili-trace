@@ -14,6 +14,7 @@ public enum ImageTypeEnum {
     BUSINESS_LICENSE(2, "营业执照"),
     ORIGIN_CERTIFICATE(3, "产地证明"),
     DETECT_REPORT(4, "检测报告"),
+    HANDLE_RESULT(5, "处理结果"),
     ;
 
     private String name;
