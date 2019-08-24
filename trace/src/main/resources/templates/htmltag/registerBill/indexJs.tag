@@ -208,10 +208,10 @@
                 $('#review-btn').linkbutton('disable');
             }
         }
-       
+        $('#handle-btn').linkbutton('disable');
         if(row.handleResultUrl&&row.handleResult&&row.handleResultUrl!=null&&row.handleResult!=null&&row.handleResultUrl!=''&&row.handleResult!=''){
         	 $('#handle-btn').linkbutton('disable');
-        }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}){
+        }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}&&row.handleResultUrl==null&&row.handleResult==null){
         	 $('#handle-btn').linkbutton('enable');
         }
        
