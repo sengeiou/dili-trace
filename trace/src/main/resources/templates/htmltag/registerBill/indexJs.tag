@@ -120,7 +120,7 @@
      <#resource method="post" url="registerBill/index.html#handle">
             {
                 iconCls:'icon-redo',
-                text:'处理上传',
+                text:'上传处理结果',
                 id:'handle-btn',
                 disabled :true,
                 handler:doHandler,
