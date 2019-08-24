@@ -117,7 +117,7 @@
                 }
             },
     </#resource>
-            <#resource method="post" url="registerBill/index.html#handle">
+     <#resource method="post" url="registerBill/index.html#handle">
             {
                 iconCls:'icon-redo',
                 text:'处理上传',
@@ -128,7 +128,7 @@
                     doHandler();
                 }
             },
-            </#resource>
+        </#resource>
         <#resource method="post" url="registerBill/index.html#detail">
             {
                 iconCls:'icon-detail',
@@ -606,7 +606,11 @@
             return;
         }
         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-        console.info(_formData)
+       if(!_formData.handleResultUrl||_formData.handleResultUrl==''){
+    	   layer.alert('请上传处理结果图片');
+    	   return;
+    	   
+       }
         var _url = "${contextPath}/registerBill/saveHandleResult.action";
         $.ajax({
             type: "POST",

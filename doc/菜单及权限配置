@@ -16,7 +16,10 @@
 撤销 registerBill/index.html#undo
 查看 registerBill/index.html#detail
 导出 registerBill/index.html#export
+结果处理 registerBill/index.html#handle
 
 溯源—检测统计 http://trace.nong12.com/registerBill/statics.html
 #statics(检测统计:registerBill/statics.html)
 查看交易单详情 registerBill/statics.html#detail
+
+
