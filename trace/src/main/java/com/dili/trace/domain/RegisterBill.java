@@ -317,6 +317,25 @@ public interface RegisterBill extends IBaseDomain {
     String getTradeTypeName();
 
     void setTradeTypeName(String tradeTypeName);
+    
+    @ApiModelProperty(value = "处理结果图片URL")
+    @Column(name = "`handle_result_url`")
+    @FieldDef(label="handle_result_url")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getHandleResultUrl();
+
+    void setHandleResultUrl(String handleResultUrl);
+    
+    
+    
+    @ApiModelProperty(value = "处理结果备注")
+    @Column(name = "`handle_result`")
+    @FieldDef(label="handle_result")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getHandleResult();
+
+    void setHandleResult(String handleResult);
+
 
 
 }

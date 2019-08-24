@@ -117,6 +117,18 @@
                 }
             },
     </#resource>
+     <#resource method="post" url="registerBill/index.html#handle">
+            {
+                iconCls:'icon-redo',
+                text:'处理上传',
+                id:'handle-btn',
+                disabled :true,
+                handler:doHandler,
+                handler:function(){
+                    doHandler();
+                }
+            },
+        </#resource>
         <#resource method="post" url="registerBill/index.html#detail">
             {
                 iconCls:'icon-detail',
@@ -196,6 +208,14 @@
                 $('#review-btn').linkbutton('disable');
             }
         }
+       
+        if(row.handleResultUrl&&row.handleResult&&row.handleResultUrl!=null&&row.handleResult!=null&&row.handleResultUrl!=''&&row.handleResult!=''){
+        	 $('#handle-btn').linkbutton('disable');
+        }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}){
+        	 $('#handle-btn').linkbutton('enable');
+        }
+       
+        //handle-btn
     }
 
     function blankFormatter(val,row){
@@ -548,6 +568,116 @@
                 //按钮【确认】的回调
                 var body = layer.getChildFrame('body', index); //iframe的body获取方式
                 var password = $(body).find("#password").val();
+            }
+        });
+    }
+    
+    
+  //打开处理结果窗口
+    function doHandler(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+          
+        $('#dlg').dialog("setTitle","上传处理结果");
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+        $(".magnifying").hide();
+        $(".fileimg-cover,.fileimg-edit").hide();
+        $(":file").attr('disabled',false);
+        $('#_form').form('clear');
+        var formData = $.extend({},selected);
+        formData = addKeyStartWith(getOriginalData(formData),"_");
+        $('#_form').form('load', formData);
+        
+        initFileUpload();
+    }
+
+
+    function saveOrUpdateHandleResult(){
+        if(!$('#_form').form("validate")){
+            return;
+        }
+        var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+       if(!_formData.handleResultUrl||_formData.handleResultUrl==''){
+    	   layer.alert('请上传处理结果图片');
+    	   return;
+    	   
+       }
+        var _url = "${contextPath}/registerBill/saveHandleResult.action";
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: _formData,
+            processData:true,
+            dataType: "json",
+            async : true,
+            success: function (data) {
+                if(data.code=="200"){
+               	 $('#dlg').dialog('close');	 
+                    layer.alert('处理成功',function(){
+                   	 layer.closeAll();
+                   	 $('#handle-btn').linkbutton('disable');
+                   	 queryRegisterBillGrid();
+                    })
+                    
+                }else{
+                    swal('错误',data.result, 'error');
+                }
+            },
+            error: function(){
+                swal('错误', '远程访问失败', 'error');
+            }
+        });
+    }
+    
+    $('.fileimg-view').on('click', function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    });
+
+    function initFileUpload(){
+        $(":file").fileupload({
+            dataType : 'json',
+            formData: {type:5,compress:true},
+            done : function(e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    $(this).siblings(".magnifying").attr('src', url).show();
+                    $(this).siblings("input:hidden").val(url);
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".")+1;
+                var fileType = name.substring(index,name.length);
+                if(!acceptFileTypes.test(fileType)){
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return ;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if(size > (1024*10*1024)){
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return ;
+                }
+                data.submit();
             }
         });
     }

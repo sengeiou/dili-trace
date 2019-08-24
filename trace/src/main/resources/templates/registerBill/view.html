@@ -227,6 +227,24 @@
                     </div>
                 </div>
             </div>-->
+ 		<%if(registerBill.detectState == 4&&isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
+                <div class="form-item-group">
+					<div class="imageUploadWrap">
+	                    <div class="form-group">
+	                        <label class="label-title text-right"><span class="red">&lowast;</span>处理结果图片</label>
+	                        <div class="imageUpload rectangle">
+	                            <img <% if(isNotEmpty(registerBill.handleResultUrl)){ %>src="${contextPath!}${registerBill.handleResultUrl!}"<% } %> alt="产地证明" class="show-image">
+	                        </div>
+	                    </div>
+	                    
+		                 <div class="form-group">
+		                    <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
+		                    <input type="text" class="form-control input-sm"  value="${registerBill.handleResult}" required readonly/>
+	                	 </div>
+	                </div>
+                </div>
+               
+            <%}%>
         </form>
     </div>
 

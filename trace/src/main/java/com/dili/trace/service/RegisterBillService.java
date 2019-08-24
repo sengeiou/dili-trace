@@ -114,4 +114,11 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * @return
      */
    int matchDetectBind(QualityTraceTradeBill qualityTraceTradeBill);
+   
+   /**
+    * 保存处理结果
+    * @param input
+    * @return
+    */
+   public Long saveHandleResult(RegisterBill input);
 }

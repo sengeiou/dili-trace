@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
@@ -101,11 +102,11 @@ public class RegisterBillController {
 	@RequestMapping(value = "/insert.action", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
 		LOGGER.info("保存登记单数据:" + registerBills.size());
-		Map<String, String> tradeTypeMap = CollectionUtils.emptyIfNull(tradeTypeService.findAll()).stream().filter(Objects::nonNull)
-				.collect(Collectors.toMap(TradeType::getTypeId, TradeType::getTypeName));
-		
+		Map<String, String> tradeTypeMap = CollectionUtils.emptyIfNull(tradeTypeService.findAll()).stream()
+				.filter(Objects::nonNull).collect(Collectors.toMap(TradeType::getTypeId, TradeType::getTypeName));
+
 		for (RegisterBill registerBill : registerBills) {
-			
+
 			if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 				// 理货区
 				User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
@@ -120,7 +121,7 @@ public class RegisterBillController {
 			} else {
 				String tradeTypeId = StringUtils.trimToEmpty(registerBill.getTradeTypeId());
 				registerBill.setTradeTypeName(tradeTypeMap.getOrDefault(tradeTypeId, null));
-				
+
 				if (StringUtils.isNotBlank(registerBill.getTradeAccount())) {
 					Customer customer = customerService.findByCustomerId(registerBill.getTradeAccount());
 					if (customer == null) {
@@ -366,6 +367,23 @@ public class RegisterBillController {
 		outputDto.setSeparateSalesRecords(Arrays.asList(separateSalesRecord));
 		modelMap.put("registerBill", outputDto);
 		return "registerBill/registerBillQRCode";
+	}
+
+	/**
+	 * 保存处理结果
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/saveHandleResult.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> saveHandleResult(RegisterBill input) {
+		try {
+			Long id = this.registerBillService.saveHandleResult(input);
+			return BaseOutput.success().setData(id);
+		} catch (AppException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+
 	}
 
 }
