@@ -1,19 +1,18 @@
 package com.dili.trace.service.impl;
 
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.dao.DetectRecordMapper;
-import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.RegisterBillService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.dao.DetectRecordMapper;
+import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.RegisterBillService;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -47,7 +46,7 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         detectRecord.setSort("id");
         detectRecord.setOrder("desc");
         List<DetectRecord> list = this.listByExample(detectRecord);
-        if(list!=null && list.size()>0){
+        if(list!=null && !list.isEmpty()){
             return list.get(0);
         }
         return null;
