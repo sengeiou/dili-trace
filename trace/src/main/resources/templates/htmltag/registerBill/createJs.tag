@@ -275,17 +275,7 @@
 
     var resubmit =0;
     function create(){
-        if(resubmit==0){
-            resubmit=1;
-        }else{
-            resubmit=0;
-            swal(
-                    '错误',
-                    '重复提交',
-                    'error'
-            );
-            return;
-        }
+
         if($('#createRecordForm').validate().form() != true){
             return;
         }
@@ -356,7 +346,17 @@
             }
         	
         }
-       
+        if(resubmit==0){
+            resubmit=1;
+        }else{
+            resubmit=0;
+            swal(
+                    '错误',
+                    '重复提交',
+                    'error'
+            );
+            return;
+        }
         $.ajax({
             type: "POST",
             url: "${contextPath}/registerBill/insert.action",
