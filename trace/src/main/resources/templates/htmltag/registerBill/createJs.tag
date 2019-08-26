@@ -28,7 +28,7 @@
             //lookup: countries,    本地测试模拟数据使用结合上面的var countries
             dataType: 'json',
             onSearchComplete: function (query, suggestions) {
-                var originIdNote = $(this).next();
+                var originIdNote = $(this).siblings('input');
                 //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
                 if ($(this).data('selectVal') != $(this).val()) {
                     $(originIdNote).val("");
@@ -37,7 +37,7 @@
             showNoSuggestionNotice: true,
             noSuggestionNotice: "不存在，请重输！",
             onSelect: function (suggestion) {
-                var originIdNote = $(this).next();
+                var originIdNote = $(this).siblings('input');
                 $(this).data('selectVal', suggestion.value);
                 setTimeout(function () {
                     $(this).val(suggestion.value);
@@ -53,7 +53,7 @@
             //lookup: countries,    本地测试模拟数据使用结合上面的var countries
             dataType: 'json',
             onSearchComplete: function (query, suggestions) {
-                var categoryIdNote = $(this).next();
+                var categoryIdNote = $(this).siblings('input');
                 //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
                 if ($(this).data('selectVal') != $(this).val()) {
                     $(categoryIdNote).val("");
@@ -62,7 +62,7 @@
             showNoSuggestionNotice: true,
             noSuggestionNotice: "不存在，请重输！",
             onSelect: function (suggestion) {
-                var categoryIdNote = $(this).next();
+                var categoryIdNote = $(this).siblings('input');
                 $(this).data('selectVal', suggestion.value);
                 setTimeout(function () {
                     $(this).val(suggestion.value);
