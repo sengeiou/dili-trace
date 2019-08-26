@@ -341,12 +341,6 @@ public class RegisterBillController {
 	public String tradeBillDetail(String tradeNo, ModelMap modelMap) {
 		RegisterBillOutputDto registerBill = registerBillService.findByTradeNo(tradeNo);
 		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
-		if (registerBill == null) {
-			int result = registerBillService.matchDetectBind(qualityTraceTradeBill);
-			if (result == 1) {
-				registerBill = registerBillService.findByTradeNo(tradeNo);
-			}
-		}
 
 		if (null != registerBill) {
 			registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));

@@ -234,7 +234,7 @@ public class RegisterBillApi {
         if(user==null){
             return BaseOutput.failure("未登陆用户");
         }
-        RegisterBillOutputDto bill = registerBillService.findAndBind(tradeNo);
+        RegisterBillOutputDto bill = registerBillService.findAndBind(tradeNo,user.getCardNo());
         return BaseOutput.success().setData(bill);
     }
     @ApiOperation(value = "通过分销记录ID获取分销单")

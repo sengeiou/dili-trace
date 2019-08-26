@@ -93,7 +93,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * @param tradeNo
      * @return
      */
-    public RegisterBillOutputDto findAndBind(String tradeNo);
+    public RegisterBillOutputDto findAndBind(String tradeNo,String cardNo);
     /**
      * 根据状态统计数据
      * @param dto

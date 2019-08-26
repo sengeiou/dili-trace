@@ -208,7 +208,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				registerBill.setState(-1);
 			}
 			return update(registerBill);
-		}else {
+		} else {
 			throw new AppException("操作失败，数据状态已改变");
 		}
 	}
@@ -222,7 +222,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					+ JSON.toJSON(registerBill).toString());
 			return delete(id);
 			// return update(registerBill);
-		}else {
+		} else {
 			throw new AppException("操作失败，数据状态已改变");
 		}
 	}
@@ -237,7 +237,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
 			registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
 			return update(registerBill);
-		}else {
+		} else {
 			throw new AppException("操作失败，数据状态已改变");
 		}
 	}
@@ -252,7 +252,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
 			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
 			return update(registerBill);
-		}else {
+		} else {
 			throw new AppException("操作失败，数据状态已改变");
 		}
 	}
@@ -269,7 +269,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
 			registerBill.setExeMachineNo(null);
 			return update(registerBill);
-		}else {
+		} else {
 			throw new AppException("操作失败，数据状态已改变");
 		}
 	}
@@ -279,7 +279,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	@Override
-	public RegisterBillOutputDto findAndBind(String tradeNo) {
+	public RegisterBillOutputDto findAndBind(String tradeNo, String cardNo) {
 		if (StringUtils.isBlank(tradeNo)) {
 			return null;
 		}
@@ -287,13 +287,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (qualityTraceTradeBill == null) {
 			return null;
 		}
+
 		RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
-		if (registerBill == null) {
-			int result = matchDetectBind(qualityTraceTradeBill);
-			if (result == 1) {
-				registerBill = findByTradeNo(tradeNo);
+
+		if (qualityTraceTradeBill.getBuyerIDNo().equalsIgnoreCase(cardNo)) {
+			if (registerBill == null) {
+				int result = matchDetectBind(qualityTraceTradeBill);
+				if (result == 1) {
+					registerBill = findByTradeNo(tradeNo);
+				}
 			}
 		}
+
 		if (registerBill != null) {
 			List<SeparateSalesRecord> records = separateSalesRecordService
 					.findByRegisterBillCode(registerBill.getCode());
