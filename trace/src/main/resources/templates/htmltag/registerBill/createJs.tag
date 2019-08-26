@@ -1,4 +1,12 @@
 <script type="text/javascript">
+    let goodsItemCount = 0;
+    $(function () {
+        $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
+        initFileUpload(':file');
+        initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
+        initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
+    });
+
     function returnBack(){
         history.go(-1);
     }
@@ -18,60 +26,11 @@
     })
 
     /* 货品表格  */
-    let goodsItemCount = 0;
     $('.main-container').on('click', '#addGoodsItem', function () {
         $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
-        initFileUpload('#originCertifiyUrl'+goodsItemCount);
-        $('input[name="originName"]').autocomplete({
-            noCache: 1,
-            serviceUrl: '/toll/city',  //数据地址
-            //lookup: countries,    本地测试模拟数据使用结合上面的var countries
-            dataType: 'json',
-            onSearchComplete: function (query, suggestions) {
-                var originIdNote = $(this).siblings('input');
-                //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
-                if ($(this).data('selectVal') != $(this).val()) {
-                    $(originIdNote).val("");
-                }
-            },
-            showNoSuggestionNotice: true,
-            noSuggestionNotice: "不存在，请重输！",
-            onSelect: function (suggestion) {
-                var originIdNote = $(this).siblings('input');
-                $(this).data('selectVal', suggestion.value);
-                setTimeout(function () {
-                    $(this).val(suggestion.value);
-                    $(originIdNote).val(suggestion.id);
-                    console.log("originIdNote,id:"+$(originIdNote).val())
-                }, 50);
-            }
-        });
-
-        $('input[name="productName"]').autocomplete({
-            noCache: 1,
-            serviceUrl: '/toll/category',  //数据地址
-            //lookup: countries,    本地测试模拟数据使用结合上面的var countries
-            dataType: 'json',
-            onSearchComplete: function (query, suggestions) {
-                var categoryIdNote = $(this).siblings('input');
-                //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
-                if ($(this).data('selectVal') != $(this).val()) {
-                    $(categoryIdNote).val("");
-                }
-            },
-            showNoSuggestionNotice: true,
-            noSuggestionNotice: "不存在，请重输！",
-            onSelect: function (suggestion) {
-                var categoryIdNote = $(this).siblings('input');
-                $(this).data('selectVal', suggestion.value);
-                setTimeout(function () {
-                    $(this).val(suggestion.value);
-                    $(categoryIdNote).val(suggestion.id);
-                    console.log("categoryIdNote,id:"+$(categoryIdNote).val())
-                }, 50);
-            }
-        });
-
+        initFileUpload('#originCertifiyUrl_'+goodsItemCount);
+        initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
+        initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
     });
 
 
@@ -121,6 +80,7 @@
             tallyAreaNo();
         }
     }
+
     function tallyAreaNo() {
         var tallyAreaNo = $("#tallyAreaNo").val();
         if(tallyAreaNo == ""){
@@ -135,10 +95,10 @@
                 success: function (ret) {
                     if (ret.code == "200") {
                         var customer = ret.data;
-                        $("#idCardNo").val(customer.cardNo);
-                        $("#name").val(customer.name);
-                        $("#addr").val(customer.addr);
-                        $("#userId").val(customer.id);
+                        $("#idCardNo").val(customer.cardNo).valid();
+                        $("#name").val(customer.name).valid();
+                        $("#addr").val(customer.addr).valid();
+                        $("#userId").val(customer.id).valid();
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
@@ -169,10 +129,10 @@
                 success: function (ret) {
                     if (ret.code == "200") {
                         var customer = ret.data;
-                        $("#idCardNo").val(customer.idNo);
-                        $("#name").val(customer.name);
-                        $("#addr").val(customer.address);
-                        $("#printingCard").val(customer.printingCard);
+                        $("#idCardNo").val(customer.idNo).valid();
+                        $("#name").val(customer.name).valid();
+                        $("#addr").val(customer.address).valid();
+                        $("#printingCard").val(customer.printingCard).valid();
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
@@ -188,6 +148,7 @@
                 }
             });
         }
+
     }
     function cardNo() {
         var cardNo = $("#printingCard").val();
@@ -203,10 +164,10 @@
                 success: function (ret) {
                     if (ret.code == "200") {
                         var customer = ret.data;
-                        $("#idCardNo").val(customer.idNo);
-                        $("#name").val(customer.name);
-                        $("#addr").val(customer.address);
-                        $("#tradeAccount").val(customer.customerId);
+                        $("#idCardNo").val(customer.idNo).valid();
+                        $("#name").val(customer.name).valid();
+                        $("#addr").val(customer.address).valid();
+                        $("#tradeAccount").val(customer.customerId).valid();
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
@@ -223,65 +184,55 @@
             });
         }
     }
-    //产地联系输入
-    $('input[name="originName"]').autocomplete({
-        noCache: 1,
-        serviceUrl: '/toll/city',  //数据地址
-        //lookup: countries,    本地测试模拟数据使用结合上面的var countries
-        dataType: 'json',
-        onSearchComplete: function (query, suggestions) {
-            var originIdNote = $(this).siblings('input');
-            //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
-            if ($(this).data('selectVal') != $(this).val()) {
-                $(originIdNote).val("");
+
+    /**
+     * 初始化自动完成框
+     */
+    function initAutoComplete(selector,url){
+        $(selector).on('change',function () {
+            $(this).siblings('input').val('');
+        });
+        //产地联系输入
+        $(selector).autocomplete({
+            noCache: 1,
+            serviceUrl: url,  //数据地址
+            //lookup: countries,    本地测试模拟数据使用结合上面的var countries
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            onSelect: function (suggestion) {
+                var self = this;
+                var idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value);
+                $(self).valid();
             }
-        },
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "不存在，请重输！",
-        onSelect: function (suggestion) {
-            var originIdNote = $(this).siblings('input');
-            $(this).data('selectVal', suggestion.value);
-            setTimeout(function () {
-                $(this).val(suggestion.value);
-                $(originIdNote).val(suggestion.id);
-                console.log("originIdNote,id:"+$(originIdNote).val())
-            }, 50);
-        }
-    });
-    $('input[name="productName"]').autocomplete({
-        noCache: 1,
-        serviceUrl: '/toll/category',  //数据地址
-        //lookup: countries,    本地测试模拟数据使用结合上面的var countries
-        dataType: 'json',
-        onSearchComplete: function (query, suggestions) {
-            var categoryIdNote = $(this).siblings('input');
-            //console.log("1:"+$(this).data('selectVal')+"2:"+$(this).val());
-            if ($(this).data('selectVal') != $(this).val()) {
-                $(categoryIdNote).val("");
-            }
-        },
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "不存在，请重输！",
-        onSelect: function (suggestion) {
-            var categoryIdNote = $(this).siblings('input');
-            $(this).data('selectVal', suggestion.value);
-            setTimeout(function () {
-                $(this).val(suggestion.value);
-                $(categoryIdNote).val(suggestion.id);
-                console.log("categoryIdNote id:"+$(categoryIdNote).val());
-            }, 50);
-        }
-    });
+        });
+    }
 
     var resubmit =0;
     function create(){
-
+        if(resubmit==0){
+            resubmit=1;
+        }else{
+            resubmit=0;
+            swal(
+                    '错误',
+                    '重复提交',
+                    'error'
+            );
+            return;
+        }
         if($('#createRecordForm').validate().form() != true){
+            resubmit = 0;
             return;
         }
         //console.log("参数:"+$('#createRecordForm').serialize());
         var registerBills = new Array();
         var registerSource = $("#registerSource").val();
+        let index = 0;
         $("#goodsTable").find("tbody").find("tr").each(function(){
             var registerBill = new Object();
             registerBill.registerSource=registerSource;
@@ -299,64 +250,12 @@
             registerBill.addr=$("#addr").val();
             registerBill.detectReportUrl = $("#detectReportUrl").val();
 
-            $(this).find("input").each(function(){
-                console.log($(this).attr("name")+":参数:"+$(this).val());
-                if($(this).attr("name")=="productName"){
-                    registerBill.productName=$(this).val();
-                }
-                if($(this).attr("name")=="productId"){
-                    registerBill.productId=$(this).val();
-                }
-                if($(this).attr("name")=="originName"){
-                    registerBill.originName=$(this).val();
-                }
-                if($(this).attr("name")=="originId"){
-                    registerBill.originId=$(this).val();
-                }
-                if($(this).attr("name")=="weight"){
-                    registerBill.weight=$(this).val();
-                }
-                if($(this).attr("name")=="originCertifiyUrl"){
-                    registerBill.originCertifiyUrl=$(this).val();
-                }
+            $(this).find("input").each(function(t,el){
+                let fieldName = $(this).attr("name").split('_')[0];
+                registerBill[fieldName] = $(this).val();
             });
-
             registerBills.push(registerBill);
         });
-
-        
-        for(var i in registerBills){
-        	var bill=registerBills[i];
-        	if(bill.productId==''){
-            	swal(
-                        '错误',
-                        '请选择商品',
-                        'error'
-                );
-            	return;
-            }
-        	
-        	if(bill.originId==''){
-            	swal(
-                        '错误',
-                        '请选择产地',
-                        'error'
-                );
-            	return;
-            }
-        	
-        }
-        if(resubmit==0){
-            resubmit=1;
-        }else{
-            resubmit=0;
-            swal(
-                    '错误',
-                    '重复提交',
-                    'error'
-            );
-            return;
-        }
         $.ajax({
             type: "POST",
             url: "${contextPath}/registerBill/insert.action",
@@ -379,7 +278,6 @@
                             'error'
                     );
                 }
-                saveFlag=false;
             },
             error: function(){
                 resubmit=0;
@@ -388,7 +286,6 @@
                         '远程访问失败',
                         'error'
                 );
-                saveFlag=false;
             }
         });
     }
@@ -416,10 +313,6 @@
             });
         }
     }
-
-    $(function () {
-        initFileUpload(':file');
-    });
 
     $( document ).on( "click", ".fileimg-view",function () {
         var url = $(this).parent().siblings(".magnifying").attr('src');

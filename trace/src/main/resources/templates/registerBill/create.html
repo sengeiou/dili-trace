@@ -25,10 +25,13 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>理货区号</label>
+                    <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
+                    <div class="input-group">
                         <input type="text" class="form-control input-sm isInt" name="tallyAreaNo" id="tallyAreaNo" maxlength="6" onkeyup="onKeyUpEnter3(event)"/>
+                        <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
+                    </div>
                 </div>
+
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>交易区号</label>
@@ -46,11 +49,17 @@
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">交易账号</label>
-                    <input type="text" class="form-control input-sm" name="tradeAccount" id="tradeAccount" onkeyup="onKeyUpEnter(event)"/>
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" name="tradeAccount" id="tradeAccount" onkeyup="onKeyUpEnter(event)"/>
+                        <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
+                    </div>
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">印刷卡号</label>
-                    <input type="text" class="form-control input-sm" name="b2" id="printingCard" onkeyup="onKeyUpEnter2(event)"/>
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" name="b2" id="printingCard" onkeyup="onKeyUpEnter2(event)"/>
+                        <span class="input-group-addon"> <span class="glyphicon" onclick="cardNo()">检索</span> </span>
+                    </div>
                 </div>
                 <br>
                 <div class="form-group">
@@ -66,7 +75,7 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" id="addr" class="form-control" cols="70" rows="1" maxlength="50" required readonly></textarea>
+                    <textarea name="addr" id="addr" class="form-control" cols="74" rows="1" maxlength="50" required readonly></textarea>
                 </div>
             </div>
 
@@ -84,39 +93,7 @@
                             <th>操作</th>
                         </tr>
                         </thead>
-                        <tr>
-                            <td>
-                                <div class="form-group">
-                                    <input type="text" id="productName" name="productName" class="form-control input-sm" required />
-                                    <input type="text" name="productId" hidden value=""/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group">
-                                    <input type="text" name="originName" class="form-control input-sm" required />
-                                    <input type="text" name="originId" hidden value=""/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group">
-                                    <input type="text" name="weight" class="form-control input-sm isInt" maxlength="6"  range="0 999999" required />
-                                </div>
-                            </td>
-                            <td>
-                                <div class="fileimg-box">
-                                    <span class="fileimg-plus-icon">+</span>
-                                    <span class="fileimg-des">点击上传</span>
-                                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                                    <input type="hidden" name="originCertifiyUrl">
-                                    <img class="magnifying">
-                                    <div class="fileimg-cover" style="display: none;"></div>
-                                    <div class="fileimg-edit" style="display: none;">
-                                        <span class="fileimg-view">查看</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><a href="javascript:;" class="split-minus-btn">删除</a></td>
-                        </tr>
+                        <tbody></tbody>
                     </table>
                     <!-- 表格后的统计 end -->
                 </div>
@@ -156,27 +133,27 @@
     <tr>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm" name="productName" required />
-                <input type="text" name="productId" hidden value=""/>
+                <input type="text" class="form-control input-sm isSelected" name="productName_{{index}}" id="productName_{{index}}" required />
+                <input type="text" name="productId_{{index}}" hidden value=""/>
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text"   name="originName" class="form-control input-sm" required />
-                <input type="text" name="originId" hidden value="" />
+                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected" id="originName_{{index}}" required />
+                <input type="text" name="originId_{{index}}" hidden value="" />
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm isInt" name="weight" maxlength="6"  range="0 999999" required />
+                <input type="text" class="form-control input-sm isInt" name="weight_{{index}}" maxlength="6"  range="0 999999" required />
             </div>
         </td>
         <td>
             <div class="fileimg-box">
                 <span class="fileimg-plus-icon">+</span>
                 <span class="fileimg-des">点击上传</span>
-                <input id="originCertifiyUrl{{index}}" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                <input type="hidden" name="originCertifiyUrl">
+                <input id="originCertifiyUrl_{{index}}" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                <input type="hidden" name="originCertifiyUrl_{{index}}">
                 <img class="magnifying">
                 <div class="fileimg-cover" style="display: none;"></div>
                 <div class="fileimg-edit" style="display: none;">

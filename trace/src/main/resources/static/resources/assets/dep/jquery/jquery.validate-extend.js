@@ -74,5 +74,7 @@ $.extend($.validator.messages, {
     return this.optional(a) || /^((19|20)[0-9]{2})-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/.test(t)
 }, "格式(YYYY-MM-DD)"), jQuery.validator.addMethod("isIP", function (t, a) {
     return this.optional(a) || /^\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(t)
-}, "请输入正确IP地址");
+}, "请输入正确IP地址"), jQuery.validator.addMethod("isSelected", function (t, a) {
+    return this.optional(a) || $(a).siblings('input').val()?true:false
+}, "请选择下拉框选项");
 //# sourceMappingURL=../../../maps/static/dep/jquery/jquery.validate-extend.js.map
