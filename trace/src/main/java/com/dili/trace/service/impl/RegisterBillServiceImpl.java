@@ -208,8 +208,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				registerBill.setState(-1);
 			}
 			return update(registerBill);
+		}else {
+			throw new AppException("操作失败，数据状态已改变");
 		}
-		return 0;
 	}
 
 	@Override
@@ -219,10 +220,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			UserTicket userTicket = getOptUser();
 			LOGGER.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
 					+ JSON.toJSON(registerBill).toString());
-			delete(id);
+			return delete(id);
 			// return update(registerBill);
+		}else {
+			throw new AppException("操作失败，数据状态已改变");
 		}
-		return 0;
 	}
 
 	@Override
@@ -235,8 +237,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
 			registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
 			return update(registerBill);
+		}else {
+			throw new AppException("操作失败，数据状态已改变");
 		}
-		return 0;
 	}
 
 	@Override
@@ -249,8 +252,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
 			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
 			return update(registerBill);
+		}else {
+			throw new AppException("操作失败，数据状态已改变");
 		}
-		return 0;
 	}
 
 	@Override
@@ -265,8 +269,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
 			registerBill.setExeMachineNo(null);
 			return update(registerBill);
+		}else {
+			throw new AppException("操作失败，数据状态已改变");
 		}
-		return 0;
 	}
 
 	UserTicket getOptUser() {

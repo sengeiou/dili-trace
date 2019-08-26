@@ -213,7 +213,11 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/audit/{id}/{pass}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput audit(@PathVariable Long id, @PathVariable Boolean pass) {
-		registerBillService.auditRegisterBill(id, pass);
+		try {
+			registerBillService.auditRegisterBill(id, pass);
+		} catch (AppException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 		return BaseOutput.success("操作成功");
 	}
 
@@ -225,7 +229,11 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/undo/{id}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput undo(@PathVariable Long id) {
-		registerBillService.undoRegisterBill(id);
+		try {
+			registerBillService.undoRegisterBill(id);
+		} catch (AppException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 		return BaseOutput.success("操作成功");
 	}
 
@@ -237,7 +245,11 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/autoCheck/{id}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput autoCheck(@PathVariable Long id) {
-		registerBillService.autoCheckRegisterBill(id);
+		try {
+			registerBillService.autoCheckRegisterBill(id);
+		} catch (AppException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 		return BaseOutput.success("操作成功");
 	}
 
@@ -249,7 +261,11 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/samplingCheck/{id}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput samplingCheck(@PathVariable Long id) {
-		registerBillService.samplingCheckRegisterBill(id);
+		try {
+			registerBillService.samplingCheckRegisterBill(id);
+		} catch (AppException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 		return BaseOutput.success("操作成功");
 	}
 
@@ -261,7 +277,11 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/reviewCheck/{id}", method = RequestMethod.GET)
 	public @ResponseBody BaseOutput reviewCheck(@PathVariable Long id) {
-		registerBillService.reviewCheckRegisterBill(id);
+		try {
+			registerBillService.reviewCheckRegisterBill(id);
+		} catch (AppException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
 		return BaseOutput.success("操作成功");
 	}
 
@@ -371,6 +391,7 @@ public class RegisterBillController {
 
 	/**
 	 * 保存处理结果
+	 * 
 	 * @param input
 	 * @return
 	 */
