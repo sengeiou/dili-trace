@@ -1,4 +1,4 @@
-溯源—用户管理 http://trace.nong12.com/registerBill/index.html
+溯源—用户管理 http://trace.nong12.com/user/index.html
 列表 user/index.html#list
 新增 user/index.html#add
 修改 user/index.html#update
@@ -16,10 +16,11 @@
 撤销 registerBill/index.html#undo
 查看 registerBill/index.html#detail
 导出 registerBill/index.html#export
-结果处理 registerBill/index.html#handle
+上传处理结果 registerBill/index.html#handle
 
 溯源—检测统计 http://trace.nong12.com/registerBill/statics.html
-#statics(检测统计:registerBill/statics.html)
-查看交易单详情 registerBill/statics.html#detail
+列表 registerBill/statics.html#list
+查看 registerBill/statics.html#detail
+导出 registerBill/statics.html#export
 
 
