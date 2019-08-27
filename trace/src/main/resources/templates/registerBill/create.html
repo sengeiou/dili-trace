@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNo" id="tallyAreaNo" maxlength="6" onkeyup="onKeyUpEnter3(event)"/>
+                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNo" id="tallyAreaNo" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
                     </div>
                 </div>
@@ -50,14 +50,14 @@
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">交易账号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="tradeAccount" id="tradeAccount" onkeyup="onKeyUpEnter(event)"/>
+                        <input type="text" class="form-control input-sm" name="tradeAccount" id="tradeAccount" onkeyup="onKeyUpEnter(event)" style="width: 147px;"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
                     </div>
                 </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">印刷卡号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="b2" id="printingCard" onkeyup="onKeyUpEnter2(event)"/>
+                        <input type="text" class="form-control input-sm" name="b2" id="printingCard" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="cardNo()">检索</span> </span>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" id="addr" class="form-control" cols="74" rows="1" maxlength="50" required readonly></textarea>
+                    <textarea name="addr" id="addr" class="form-control"  rows="1" maxlength="50" required readonly style="width: 200px;"></textarea>
                 </div>
             </div>
 
@@ -145,7 +145,7 @@
         </td>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm isInt" name="weight_{{index}}" maxlength="6"  range="0 999999" required />
+                <input type="text" class="form-control input-sm isInt" name="weight_{{index}}" maxlength="6"  range="0 999999" value="0" required />
             </div>
         </td>
         <td>
