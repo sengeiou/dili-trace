@@ -78,6 +78,17 @@
 				<redis.port1>6379</redis.port1>
 			</properties>
 		</profile>
+		<profile>
+			<id>prod</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+				<redis.host1>168.88.24.31</redis.host1>
+				<redis.port1>6379</redis.port1>
+			</properties>
+		</profile>
 	</profiles>
 
 	<build>
