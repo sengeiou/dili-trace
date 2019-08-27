@@ -88,11 +88,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public User login(String phone, String encryptedPassword) {
         User query= DTOUtils.newDTO(User.class);
         query.setPhone(phone);
-        query.setState(EnabledStateEnum.ENABLED.getCode());
         query.setYn(YnEnum.YES.getCode());
         User po=listByExample(query).stream().findFirst().orElse(null);
-        if(po==null){
-            throw new BusinessException("手机号错误或已被禁用");
+        if(po == null){
+            throw new BusinessException("手机号未注册");
+        }
+        if(EnabledStateEnum.DISABLED.getCode().equals(po.getState())){
+            throw new BusinessException("手机号已禁用");
         }
         if(!po.getPassword().equals(encryptedPassword)){
             throw new BusinessException("密码错误");
