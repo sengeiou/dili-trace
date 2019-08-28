@@ -2,7 +2,8 @@
     let goodsItemCount = 0;
     $(function () {
         $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
-        initFileUpload(':file');
+        initFileUpload('#detectReportUrlFile');
+        initFileUpload1('#originCertifiyUrl_'+goodsItemCount);
         initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
         initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
     });
@@ -28,7 +29,7 @@
     /* 货品表格  */
     $('.main-container').on('click', '#addGoodsItem', function () {
         $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
-        initFileUpload('#originCertifiyUrl_'+goodsItemCount);
+        initFileUpload1('#originCertifiyUrl_'+goodsItemCount);
         initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
         initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
     });
@@ -326,6 +327,18 @@
         });
     });
 
+    $( document ).on( "click", ".img-view-a",function () {
+        var url = $('#originCertifiyUrl_'+$(this).attr('data-index')).siblings("input:hidden").val();
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    });
+
     //文件上传组件初始化
     function initFileUpload(selecter) {
         $(selecter).fileupload({
@@ -337,6 +350,39 @@
                     $(this).siblings('.magnifying').attr('src', url).show();
                     $(this).siblings("input:hidden").val(url);
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".") + 1;
+                var fileType = name.substring(index, name.length);
+                if (!acceptFileTypes.test(fileType)) {
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if (size > (1024 * 10 * 1024)) {
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return;
+                }
+                data.submit();
+            }
+        });
+    }
+
+    //文件上传组件初始化
+    function initFileUpload1(selecter) {
+        $(selecter).fileupload({
+            dataType: 'json',
+            formData: {type: 4, compress: true},
+            done: function (e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    $(this).siblings("input:hidden").val(url);
+                    $(this).parent().parent().hide();
+                    $(this).parent().parent().next().show();
                 }
             },
             add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;

@@ -103,7 +103,7 @@
                 <div class="fileimg-box" style="margin-left: 50px;">
                     <span class="fileimg-plus-icon">+</span>
                     <span class="fileimg-des">点击上传</span>
-                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                    <input id="detectReportUrlFile" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
                     <input type="hidden" name="detectReportUrl" id="detectReportUrl">
                     <img class="magnifying">
                     <div class="fileimg-cover" style="display: none;"></div>
@@ -128,7 +128,37 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
+<style>
+    /*a  upload */
+    .a-upload {
+        padding: 4px 28px;
+        position: relative;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+        color: #fff !important;
+        background-color: #3370ff;
+    }
 
+    .a-upload  input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        cursor: pointer
+    }
+
+    .a-upload:hover {
+        color: #444;
+        background: #eee;
+        border-color: #ccc;
+        text-decoration: none
+    }
+</style>
 <script id="goodsItem" type="text/html">
     <tr>
         <td>
@@ -149,16 +179,16 @@
             </div>
         </td>
         <td>
-            <div class="fileimg-box">
-                <span class="fileimg-plus-icon">+</span>
-                <span class="fileimg-des">点击上传</span>
-                <input id="originCertifiyUrl_{{index}}" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                <input type="hidden" name="originCertifiyUrl_{{index}}">
-                <img class="magnifying">
-                <div class="fileimg-cover" style="display: none;"></div>
-                <div class="fileimg-edit" style="display: none;">
-                    <span class="fileimg-view">查看</span>
-                </div>
+            <div class="upload-div">
+                <a href="javascript:;" class="a-upload">
+                    <input type="file" id="originCertifiyUrl_{{index}}"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
+                    <span>上传</span>
+                    <input type="hidden" name="originCertifiyUrl_{{index}}">
+                </a>
+            </div>
+            <div class="view-div" style="display: none;">
+                <span>已上传</span>
+                <a href="javascript:;" data-index="{{index}}" class="img-view-a">查看图片</a>
             </div>
         </td>
         <td><a href="javascript:;" class="split-minus-btn">删除</a></td>
