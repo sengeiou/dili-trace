@@ -70,7 +70,7 @@ public class DetectRecordApi {
         if(detectRecord.getDetectState()==null){
             LOGGER.error("上传检测任务结果失败无检测状态");
             return BaseOutput.failure("没有对应的检测状态");
-        }else if(detectRecord.getDetectState()>2 || detectRecord.getDetectState()<0){
+        }else if(detectRecord.getDetectState()>2 || detectRecord.getDetectState()<1){
             LOGGER.error("上传检测任务结果失败无,检测状态异常"+detectRecord.getDetectState());
             return BaseOutput.failure("没有对应的检测状态");
         }
