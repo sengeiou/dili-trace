@@ -135,6 +135,7 @@ public class RegisterBillController {
 				}
 			}
 			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+			registerBill.setDetectReportUrl(StringUtils.trimToNull(registerBill.getDetectReportUrl()));
 			BaseOutput r = registerBillService.createRegisterBill(registerBill);
 			if (!r.isSuccess()) {
 				return r;
