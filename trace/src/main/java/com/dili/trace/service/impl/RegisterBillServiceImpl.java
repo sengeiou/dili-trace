@@ -21,6 +21,8 @@ import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,17 +121,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount) {
 		List<RegisterBill> exist = getActualDao().findByExeMachineNo(exeMachineNo);
-		int existCount = exist.size();
-		if (existCount == taskCount) {
+		if(!exist.isEmpty()) {
 			LOGGER.info("获取的任务已经有相应的数量了" + taskCount);
-			return exist;
-		} else if (existCount < taskCount) {
-			// 还需要再拿多少个。
-			taskCount = taskCount - existCount;
-			LOGGER.info("还需要再拿多少个：" + taskCount);
-
+			if(exist.size()>=taskCount) {
+				return exist.subList(0, taskCount);
+			}
 		}
-		List<Long> ids = getActualDao().findIdsByExeMachineNo(taskCount);
+		
+		int fetchSize=taskCount-exist.size();
+		LOGGER.info("还需要再拿多少个：" + fetchSize);
+		
+		List<Long> ids = getActualDao().findIdsByExeMachineNo(fetchSize);
 		StringBuilder sb = new StringBuilder();
 		sb.append(0);
 		for (Long id : ids) {

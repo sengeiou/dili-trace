@@ -138,7 +138,9 @@ public class DetectRecordApi {
             return BaseOutput.failure("签名出错");
         }
         
-        
+        if(taskCount==null||taskCount<=0) {
+        	  return BaseOutput.failure("限制数量出错");
+        }
         
         TaskGetParam taskGetParam = new TaskGetParam();
         taskGetParam.setExeMachineNo(exeMachineNo);
