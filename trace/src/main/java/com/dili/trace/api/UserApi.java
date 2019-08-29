@@ -248,7 +248,7 @@ public class UserApi {
         if(StrUtil.isBlank(user.getCheckCode())){
             throw new BusinessException("验证码为空");
         }
-        if(StrUtil.isBlank(user.getTaillyAreaNo()) || user.getTaillyAreaNo().length() != 6){
+        if(StrUtil.isBlank(user.getTaillyAreaNo()) || user.getTaillyAreaNo().length() != 3){
             throw new BusinessException("理货区号为空或格式错误");
         }
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
