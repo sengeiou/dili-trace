@@ -2,6 +2,7 @@ package com.dili.trace.dto;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
+import com.dili.ss.dto.IMybatisForceParams;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Created by laikui on 2019/7/30.
  */
-public interface RegisterBillDto extends RegisterBill {
+public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     @ApiModelProperty(value = "查询登记开始时间")
     @Column(name = "`created`")
     @Operator(Operator.GREAT_EQUAL_THAN)
@@ -52,4 +53,9 @@ public interface RegisterBillDto extends RegisterBill {
     @Transient
     String getAttrValue();
     void setAttrValue(String attrValue);
+    
+    @Transient
+    Boolean getHasReport();
+    void setHasReport(Boolean hasReport);
+    
 }

@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
@@ -95,6 +96,16 @@ public class RegisterBillController {
 				break;
 			}
 		}
+		if(registerBill.getHasReport()!=null) {
+			if(registerBill.getHasReport()) {
+				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is not null AND detect_report_url<>'')");
+			}else {
+				registerBill.mset(IDTO.AND_CONDITION_EXPR, 	"  (detect_report_url is  null or detect_report_url='')");
+			}
+			
+			
+		}
+
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
 	}
 
