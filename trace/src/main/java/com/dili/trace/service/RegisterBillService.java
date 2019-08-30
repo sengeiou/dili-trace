@@ -121,4 +121,11 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
     * @return
     */
    public Long saveHandleResult(RegisterBill input);
+   
+   /**
+    * 保存修改数据
+    * @param input
+    * @return
+    */
+   public Long doModifyRegisterBill(RegisterBill input);
 }

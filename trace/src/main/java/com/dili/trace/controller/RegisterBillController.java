@@ -203,6 +203,23 @@ public class RegisterBillController {
 		modelMap.put("registerBill", registerBill);
 		return "registerBill/view";
 	}
+	/**
+	 * 登记单录修改页面
+	 * 
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/modify/{id}", method = RequestMethod.GET)
+	public String modify(ModelMap modelMap, @PathVariable Long id) {
+		RegisterBill rb = registerBillService.get(id);
+		if (rb == null) {
+			return "";
+		}
+		RegisterBillOutputDto registerBill = registerBillService.conversionDetailOutput(rb);
+
+		modelMap.put("registerBill", registerBill);
+		return "registerBill/modify";
+	}
 
 	/**
 	 * 审核页面
@@ -407,6 +424,24 @@ public class RegisterBillController {
 	public BaseOutput<?> saveHandleResult(RegisterBill input) {
 		try {
 			Long id = this.registerBillService.saveHandleResult(input);
+			return BaseOutput.success().setData(id);
+		} catch (AppException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+
+	}
+	
+	/**
+	 * 保存处理结果
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/doModifyRegisterBill.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> doModifyRegisterBill(RegisterBill input) {
+		try {
+			Long id = this.registerBillService.doModifyRegisterBill(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
 			return BaseOutput.failure(e.getMessage());
