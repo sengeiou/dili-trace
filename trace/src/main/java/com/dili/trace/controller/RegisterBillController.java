@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
@@ -95,6 +96,16 @@ public class RegisterBillController {
 				break;
 			}
 		}
+		if(registerBill.getHasReport()!=null) {
+			if(registerBill.getHasReport()) {
+				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is not null AND detect_report_url<>'')");
+			}else {
+				registerBill.mset(IDTO.AND_CONDITION_EXPR, 	"  (detect_report_url is  null or detect_report_url='')");
+			}
+			
+			
+		}
+
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
 	}
 
@@ -192,6 +203,23 @@ public class RegisterBillController {
 
 		modelMap.put("registerBill", registerBill);
 		return "registerBill/view";
+	}
+	/**
+	 * 登记单录修改页面
+	 * 
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/modify/{id}", method = RequestMethod.GET)
+	public String modify(ModelMap modelMap, @PathVariable Long id) {
+		RegisterBill rb = registerBillService.get(id);
+		if (rb == null) {
+			return "";
+		}
+		RegisterBillOutputDto registerBill = registerBillService.conversionDetailOutput(rb);
+
+		modelMap.put("registerBill", registerBill);
+		return "registerBill/modify";
 	}
 
 	/**
@@ -397,6 +425,24 @@ public class RegisterBillController {
 	public BaseOutput<?> saveHandleResult(RegisterBill input) {
 		try {
 			Long id = this.registerBillService.saveHandleResult(input);
+			return BaseOutput.success().setData(id);
+		} catch (AppException e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+
+	}
+	
+	/**
+	 * 保存处理结果
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/doModifyRegisterBill.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> doModifyRegisterBill(RegisterBill input) {
+		try {
+			Long id = this.registerBillService.doModifyRegisterBill(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
 			return BaseOutput.failure(e.getMessage());

@@ -129,6 +129,17 @@
                 }
             },
         </#resource>
+        <#resource method="post" url="registerBill/index.html#modify">
+            {
+                iconCls:'icon-edit',
+                text:'上传检测报告',
+                id:'edit-btn',
+                handler:doModify,
+                handler:function(){
+                    doModify();
+                }
+            },
+        </#resource>
         <#resource method="post" url="registerBill/index.html#detail">
             {
                 iconCls:'icon-detail',
@@ -508,6 +519,20 @@
             }
         });
     }
+    function doModify(){
+    	
+    	var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        openWin('/registerBill/modify/' + selected.id);
+    }
     function openIframe(content,id){
         layer.open({
             type: 2,
@@ -681,4 +706,13 @@
             }
         });
     }
+    
+    
+    function hasDetectReport(v){
+		  if(v==undefined||v==''||v==null){
+			  return '否'
+		  }
+		  return '是';
+		  
+	  }
 </script>

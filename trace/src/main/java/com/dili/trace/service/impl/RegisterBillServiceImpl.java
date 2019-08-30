@@ -372,4 +372,23 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return example.getId();
 
 	}
+
+	@Override
+	public Long doModifyRegisterBill(RegisterBill input) {
+		if (input == null || input.getId() == null) {
+			throw new AppException("参数错误");
+		}
+		RegisterBill item = this.get(input.getId());
+		if (item == null) {
+			throw new AppException("数据错误");
+		}
+
+		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
+		example.setId(item.getId());
+		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
+		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
+		this.updateSelective(example);
+
+		return example.getId();
+	}
 }
