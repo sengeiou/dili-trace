@@ -50,6 +50,14 @@ public interface Customer extends IBaseDomain {
     String getAddress();
 
     void setAddress(String address);
+
+    @ApiModelProperty(value = "业户手机号")
+    @Column(name = "`phone`")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getPhone();
+
+    void setPhone(String phone);
+
     @ApiModelProperty(value = "印刷卡号")
     @Column(name = "`printingCode`")
     @FieldDef(label="printingCard", maxLength = 50)

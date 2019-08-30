@@ -12,6 +12,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="id_card_no" jdbcType="VARCHAR" property="idCardNo" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="trade_no" jdbcType="VARCHAR" property="tradeNo" />
     <result column="trade_account" jdbcType="VARCHAR" property="tradeAccount" />
     <result column="trade_printing_card" jdbcType="VARCHAR" property="tradePrintingCard" />
@@ -40,7 +41,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, code, register_source, tally_area_no, name, id_card_no, addr, trade_no, user_id, 
+    id, code, register_source, tally_area_no, name, id_card_no, addr,phone, trade_no, user_id,
     plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version, 
     created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result

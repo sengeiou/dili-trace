@@ -133,19 +133,19 @@
                         $("#idCardNo").val(customer.idNo).valid();
                         $("#name").val(customer.name).valid();
                         $("#addr").val(customer.address).valid();
-                        $("#printingCard").val(customer.printingCard).valid();
+                        $("#phone").val(customer.phone).valid();
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
                         $("#addr").val("");
-                        $("#printingCard").val("");
+                        $("#phone").val("");
                     }
                 },
                 error:function(){
                     $("#idCardNo").val("");
                     $("#name").val("");
                     $("#addr").val("");
-                    $("#printingCard").val("");
+                    $("#phone").val("");
                 }
             });
         }
@@ -168,12 +168,13 @@
                         $("#idCardNo").val(customer.idNo).valid();
                         $("#name").val(customer.name).valid();
                         $("#addr").val(customer.address).valid();
-                        $("#tradeAccount").val(customer.customerId).valid();
+                        $("#phone").val(customer.phone).valid();
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
                         $("#addr").val("");
                         $("#tradeAccount").val("");
+                        $("#phone").val("");
                     }
                 },
                 error:function(){
@@ -181,6 +182,7 @@
                     $("#name").val("");
                     $("#addr").val("");
                     $("#tradeAccount").val("");
+                    $("#phone").val("");
                 }
             });
         }
@@ -250,6 +252,7 @@
             registerBill.idCardNo=$("#idCardNo").val();
             registerBill.addr=$("#addr").val();
             registerBill.detectReportUrl = $("#detectReportUrl").val();
+            registerBill.phone = $("#phone").val();
 
             $(this).find("input").each(function(t,el){
                 let fieldName = $(this).attr("name").split('_')[0];

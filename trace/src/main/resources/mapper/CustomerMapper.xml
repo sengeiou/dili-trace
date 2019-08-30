@@ -9,6 +9,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="IDNo" jdbcType="VARCHAR" property="idNo" />
     <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="mobile" jdbcType="VARCHAR" property="phone" />
     <result column="printingCode" jdbcType="VARCHAR" property="printingCard" />
     <result column="active" jdbcType="INTEGER" property="active" />
   </resultMap>
@@ -16,7 +17,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    customerID as customerId, name, IDNo AS idNo, address, printingCode, active
+    customerID as customerId, name, IDNo AS idNo, address,mobile, printingCode, active
   </sql>
 
   <select id="findByCustomerId" parameterType="java.lang.String" resultMap="BaseResultMap">

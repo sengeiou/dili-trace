@@ -80,6 +80,14 @@ public interface RegisterBill extends IBaseDomain {
 
     void setAddr(String addr);
 
+    @ApiModelProperty(value = "业户手机号")
+    @Column(name = "`phone`")
+    @FieldDef(label="业户手机号", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getPhone();
+
+    void setPhone(String phone);
+
     @ApiModelProperty(value = "交易单号")
     @Column(name = "`trade_no`")
     @FieldDef(label="tradeNo")
