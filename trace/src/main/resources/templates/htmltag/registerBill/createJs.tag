@@ -24,6 +24,7 @@
         $("#name").val("");
         $("#addr").val("");
         $("#userId").val("");
+        $("#phone").val("");
     })
 
     /* 货品表格  */
@@ -100,11 +101,13 @@
                         $("#name").val(customer.name).valid();
                         $("#addr").val(customer.addr).valid();
                         $("#userId").val(customer.id).valid();
+                        $("#phone").val(customer.phone).valid();
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
                         $("#addr").val("");
                         $("#userId").val("");
+                        $("#phone").val("");
                     }
                 },
                 error:function(){
@@ -112,6 +115,7 @@
                     $("#name").val("");
                     $("#addr").val("");
                     $("#userId").val("");
+                    $("#phone").val("");
                 }
             });
         }
