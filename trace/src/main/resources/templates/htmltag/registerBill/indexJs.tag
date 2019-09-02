@@ -706,13 +706,4 @@
             }
         });
     }
-    
-    
-    function hasDetectReport(v){
-		  if(v==undefined||v==''||v==null){
-			  return '否'
-		  }
-		  return '是';
-		  
-	  }
 </script>
