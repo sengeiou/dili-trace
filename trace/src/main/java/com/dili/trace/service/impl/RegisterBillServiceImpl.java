@@ -111,10 +111,24 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			LOGGER.error("商品产地不能为空");
 			return BaseOutput.failure("商品产地不能为空");
 		}
-		if (registerBill.getWeight() == null || registerBill.getWeight().longValue() < 0L) {
-			LOGGER.error("商品重量不能为空或负数");
-			return BaseOutput.failure("商品重量不能为空或负数");
+		
+		if (registerBill.getWeight() == null) {
+			LOGGER.error("商品重量不能为空");
+			return BaseOutput.failure("商品重量不能为空");
 		}
+		
+		if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+			if (registerBill.getWeight().longValue() <= 0L) {
+				LOGGER.error("商品重量不能小于0");
+				return BaseOutput.failure("商品重量不能小于0");
+			}
+		}else {
+			if (registerBill.getWeight().longValue() < 0L) {
+				LOGGER.error("商品重量不能为负");
+				return BaseOutput.failure("商品重量不能为负");
+			}
+		}
+		
 		return BaseOutput.success();
 	}
 
