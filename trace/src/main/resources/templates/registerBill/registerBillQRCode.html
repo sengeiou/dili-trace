@@ -75,7 +75,7 @@
         <p>检测时间：<span>${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span></p>
         <p>检测结果：<span>合格</span></p>
         <p>检测数值：<span>${registerBill.latestPdResult!}</span></p>
-        <% if( isEmpty(registerBill.detectReportUrl) ){%>
+        <% if( isNotEmpty(registerBill.detectReportUrl) || registerBill.detectReportUrl == ""){%>
         <p>检测机构：<span></span></p>
         <% } else{ %>
         <p>检测机构：<span>山东格林检测</span></p>
