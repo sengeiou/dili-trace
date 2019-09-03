@@ -121,7 +121,7 @@
         }
     }
     function customerId() {
-        var customerId = $("#tradeAccount").val();
+        var customerId = $("#tradeAccountInput").val();
         if(customerId == ""){
             return;
         }
@@ -134,11 +134,14 @@
                 success: function (ret) {
                     if (ret.code == "200") {
                         var customer = ret.data;
+                        
+                        $("#tradeAccount").val(customer.customerId).valid();
                         $("#idCardNo").val(customer.idNo).valid();
                         $("#name").val(customer.name).valid();
                         $("#addr").val(customer.address).valid();
                         $("#phone").val(customer.phone).valid();
                     } else {
+                    	$("#tradeAccount").val('')
                         $("#idCardNo").val("");
                         $("#name").val("");
                         $("#addr").val("");
@@ -146,6 +149,7 @@
                     }
                 },
                 error:function(){
+                	$("#tradeAccount").val('')
                     $("#idCardNo").val("");
                     $("#name").val("");
                     $("#addr").val("");
