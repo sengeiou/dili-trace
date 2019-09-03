@@ -32,8 +32,18 @@
     from vCustomer
     where printingCode = #{printingCard}
   </select>
-
-
-
-
+  
+  
+    <select id="findByCustomerIdAndPrintingCard" parameterType="com.dili.trace.domain.Customer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vCustomer
+    where 1=1
+    <if test="customerId != null">
+        and customerID = #{customerId}
+    </if>
+    <if test="printingCard != null">
+       and printingCode = #{printingCard}
+    </if>
+  </select>
 </mapper>

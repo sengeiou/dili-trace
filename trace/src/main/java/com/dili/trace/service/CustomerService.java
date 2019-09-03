@@ -12,4 +12,5 @@ import java.util.List;
 public interface CustomerService extends BaseService<Customer, Long> {
     Customer findByCustomerId(String customerId);
     Customer findByPrintingCard(String printingCard);
+    List<Customer> findByCustomerIdAndPrintingCard(Customer customer);
 }

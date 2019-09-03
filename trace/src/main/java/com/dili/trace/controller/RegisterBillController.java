@@ -99,14 +99,14 @@ public class RegisterBillController {
 				break;
 			}
 		}
-		if(registerBill.getHasReport()!=null) {
-			if(registerBill.getHasReport()) {
-				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is not null AND detect_report_url<>'')");
-			}else {
-				registerBill.mset(IDTO.AND_CONDITION_EXPR, 	"  (detect_report_url is  null or detect_report_url='')");
+		if (registerBill.getHasReport() != null) {
+			if (registerBill.getHasReport()) {
+				registerBill.mset(IDTO.AND_CONDITION_EXPR,
+						"  (detect_report_url is not null AND detect_report_url<>'')");
+			} else {
+				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
 			}
-			
-			
+
 		}
 
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
@@ -136,8 +136,12 @@ public class RegisterBillController {
 				String tradeTypeId = StringUtils.trimToEmpty(registerBill.getTradeTypeId());
 				registerBill.setTradeTypeName(tradeTypeMap.getOrDefault(tradeTypeId, null));
 
-				if (StringUtils.isNotBlank(registerBill.getTradeAccount())) {
-					Customer customer = customerService.findByCustomerId(registerBill.getTradeAccount());
+				if (StringUtils.isNotBlank(registerBill.getTradeAccount())
+						|| StringUtils.isNotBlank(registerBill.getTradePrintingCard())) {
+					Customer condition = DTOUtils.newDTO(Customer.class);
+					condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
+					condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
+					Customer customer = this.customerService.findByCustomerIdAndPrintingCard(condition).stream().findFirst().orElse(null);
 					if (customer == null) {
 						LOGGER.error("新增登记单失败交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
 						return BaseOutput.failure("交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
@@ -147,7 +151,21 @@ public class RegisterBillController {
 					registerBill.setAddr(customer.getAddress());
 					registerBill.setTradePrintingCard(customer.getPrintingCard());
 					registerBill.setPhone(customer.getPhone());
+
 				}
+
+//				if (StringUtils.isNotBlank(registerBill.getTradeAccount())) {
+//					Customer customer = customerService.findByCustomerId(registerBill.getTradeAccount());
+//					if (customer == null) {
+//						LOGGER.error("新增登记单失败交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
+//						return BaseOutput.failure("交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
+//					}
+//					registerBill.setName(customer.getName());
+//					registerBill.setIdCardNo(customer.getIdNo());
+//					registerBill.setAddr(customer.getAddress());
+//					registerBill.setTradePrintingCard(customer.getPrintingCard());
+//					registerBill.setPhone(customer.getPhone());
+//				}
 			}
 			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 			registerBill.setDetectReportUrl(StringUtils.trimToNull(registerBill.getDetectReportUrl()));
@@ -207,7 +225,7 @@ public class RegisterBillController {
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/view";
 	}
-	
+
 	/**
 	 * 登记单录修改页面
 	 * 
@@ -435,7 +453,7 @@ public class RegisterBillController {
 		}
 
 	}
-	
+
 	/**
 	 * 保存处理结果
 	 * 
@@ -453,10 +471,9 @@ public class RegisterBillController {
 		}
 
 	}
-	
-	
+
 	private RegisterBillOutputDto maskRegisterBillOutputDto(RegisterBillOutputDto dto) {
-		if(dto==null) {
+		if (dto == null) {
 			return dto;
 		}
 		if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {

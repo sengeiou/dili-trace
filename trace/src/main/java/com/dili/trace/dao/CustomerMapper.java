@@ -8,4 +8,6 @@ import java.util.List;
 public interface CustomerMapper extends MyMapper<Customer> {
     List<Customer> findByCustomerId(String customerId);
     List<Customer> findByPrintingCard(String printingCard);
+    
+    List<Customer> findByCustomerIdAndPrintingCard(Customer customer);
 }

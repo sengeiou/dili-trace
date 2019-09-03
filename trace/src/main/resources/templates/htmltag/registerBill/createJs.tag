@@ -136,11 +136,18 @@
                         var customer = ret.data;
                         
                         $("#tradeAccount").val(customer.customerId).valid();
+                        
+                        
+                        $("#printingCardInput").val(customer.printingCard).valid();
+                        $("#tradePrintingCard").val(customer.printingCard).valid();
+                        
                         $("#idCardNo").val(customer.idNo).valid();
                         $("#name").val(customer.name).valid();
                         $("#addr").val(customer.address).valid();
                         $("#phone").val(customer.phone).valid();
                     } else {
+                        $("#printingCardInput").val('')
+                        $("#tradePrintingCard").val('')
                     	$("#tradeAccount").val('')
                         $("#idCardNo").val("");
                         $("#name").val("");
@@ -149,6 +156,8 @@
                     }
                 },
                 error:function(){
+                    $("#printingCardInput").val('')
+                    $("#tradePrintingCard").val('')
                 	$("#tradeAccount").val('')
                     $("#idCardNo").val("");
                     $("#name").val("");
@@ -160,7 +169,7 @@
 
     }
     function cardNo() {
-        var cardNo = $("#printingCard").val();
+        var cardNo = $("#printingCardInput").val();
         if(cardNo == ""){
             return;
         }
@@ -173,11 +182,17 @@
                 success: function (ret) {
                     if (ret.code == "200") {
                         var customer = ret.data;
+                        $("#tradeAccountInput").val(customer.customerId).valid();
+                        $("#tradeAccount").val(customer.customerId).valid();
+                        $("#tradePrintingCard").val(customer.printingCard).valid();
                         $("#idCardNo").val(customer.idNo).valid();
                         $("#name").val(customer.name).valid();
                         $("#addr").val(customer.address).valid();
                         $("#phone").val(customer.phone).valid();
                     } else {
+                    	$("#tradeAccountInput").val('')
+                    	$("#tradeAccount").val('')
+                    	$("#printingCard").val('')
                         $("#idCardNo").val("");
                         $("#name").val("");
                         $("#addr").val("");
@@ -186,6 +201,9 @@
                     }
                 },
                 error:function(){
+                	$("#tradeAccountInput").val('')
+                	$("#tradeAccount").val('')
+                	$("#tradePrintingCard").val('')
                     $("#idCardNo").val("");
                     $("#name").val("");
                     $("#addr").val("");
@@ -252,6 +270,7 @@
                 registerBill.userId = $("#userId").val();
             }else{
                 registerBill.tradeAccount=$("#tradeAccount").val();
+                registerBill.tradePrintingCard=$("#tradePrintingCard").val();
                // registerBill.tradeTypeName=$("#tradeTypeName").val();
                 registerBill.tradeTypeId=$("#tradeTypeId").val();
             }

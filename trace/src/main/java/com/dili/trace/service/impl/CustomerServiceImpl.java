@@ -40,4 +40,9 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer, Long> impleme
         }
         return null;
     }
+    @SwitchDataSource("etradeDS")
+	@Override
+	public List<Customer> findByCustomerIdAndPrintingCard(Customer customer) {
+		return this.getActualDao().findByCustomerIdAndPrintingCard(customer);
+	}
 }
