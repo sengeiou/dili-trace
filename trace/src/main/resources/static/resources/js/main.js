@@ -101,7 +101,7 @@ $(function () {
             validator: function (value, param) {
                 var $combobox = $("#" + param[0]);
                 if (value) {
-                    if ($combobox.combobox('getValue') == $combobox.combobox('getText'))
+                    if ($combobox.combobox('getValue').trim() == $combobox.combobox('getText').trim())
                         return false;
                     return true;
                 }
