@@ -12,6 +12,9 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.service.*;
+import com.dili.trace.util.MaskUserInfo;
+import com.diligrp.manage.sdk.session.SessionContext;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -201,9 +204,10 @@ public class RegisterBillController {
 		}
 		RegisterBillOutputDto registerBill = registerBillService.conversionDetailOutput(rb);
 
-		modelMap.put("registerBill", registerBill);
+		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/view";
 	}
+	
 	/**
 	 * 登记单录修改页面
 	 * 
@@ -218,7 +222,7 @@ public class RegisterBillController {
 		}
 		RegisterBillOutputDto registerBill = registerBillService.conversionDetailOutput(rb);
 
-		modelMap.put("registerBill", registerBill);
+		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/modify";
 	}
 
@@ -446,6 +450,21 @@ public class RegisterBillController {
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
 			return BaseOutput.failure(e.getMessage());
+		}
+
+	}
+	
+	
+	private RegisterBillOutputDto maskRegisterBillOutputDto(RegisterBillOutputDto dto) {
+		if(dto==null) {
+			return dto;
+		}
+		if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
+			return dto;
+		} else {
+			dto.setIdCardNo(MaskUserInfo.maskIdNo(dto.getIdCardNo()));
+			dto.setAddr(MaskUserInfo.maskAddr(dto.getAddr()));
+			return dto;
 		}
 
 	}

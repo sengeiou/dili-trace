@@ -5,6 +5,7 @@ import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.UserService;
+import com.dili.trace.util.MaskUserInfo;
 import com.diligrp.manage.sdk.session.SessionContext;
 
 import io.swagger.annotations.ApiOperation;
@@ -90,21 +91,8 @@ public class TradeInfoController {
 		if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
 			return user;
 		} else {
-			String idNo = StringUtils.trimToEmpty(user.getCardNo());
-			String phone = StringUtils.trimToEmpty(user.getPhone());
-			String addr = StringUtils.trimToEmpty(user.getAddr());
-
-			if (idNo.length() == 16) {
-				idNo=replace(idNo, 8, 5, "*");
-			}else if(idNo.length()==18) {
-				idNo=replace(idNo, 10, 5, "*");
-			}
-
-			if(addr.length()>0) {
-				addr=replace(addr, (addr.length()-1)/3,  (addr.length()-1)/2, "*");
-			}
-			user.setCardNo(idNo);
-			user.setAddr(addr);
+			user.setCardNo(MaskUserInfo.maskIdNo(user.getCardNo()));
+			user.setAddr(MaskUserInfo.maskAddr(user.getAddr()));
 			return user;
 		}
 
@@ -115,43 +103,12 @@ public class TradeInfoController {
 		if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
 			return customer;
 		} else {
-			String idNo = StringUtils.trimToEmpty(customer.getIdNo());
-			String phone = StringUtils.trimToEmpty(customer.getPhone());
-			String addr = StringUtils.trimToEmpty(customer.getAddress());
-
-			if (idNo.length() == 16) {
-				idNo=replace(idNo, 8, 5, "*");
-			}else if(idNo.length()==18) {
-				idNo=replace(idNo, 10, 5, "*");
-			}
-
-			if(addr.length()>0) {
-				addr=replace(addr, (addr.length()-1)/3,  (addr.length()-1)/2, "*");
-			}
-			customer.setIdNo(idNo);
-			customer.setAddress(addr);
+			customer.setIdNo(MaskUserInfo.maskIdNo(customer.getIdNo()));
+			customer.setAddress(MaskUserInfo.maskAddr(customer.getAddress()));
 			return customer;
 		}
 
 	}
 
-	private String replace(String str,int startIndex,int length,String replacement) {
-		
-		if(str!=null&&str.length()>startIndex) {
-			StringBuilder sb=new StringBuilder();
-			for(int i=0;i<str.length();i++) {
-				char ch=str.charAt(i);
-				if(i>=startIndex&&i<=(startIndex+length)) {
-					sb.append(replacement);
-				}else {
-					sb.append(ch);	
-				}
-			}
-			
-			return sb.toString();
-		}
-		return str;
-		
-	}
 	
 }

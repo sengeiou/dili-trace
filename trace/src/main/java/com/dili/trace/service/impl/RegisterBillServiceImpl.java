@@ -163,7 +163,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public RegisterBillOutputDto findByTradeNo(String tradeNo) {
 		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
 		registerBill.setTradeNo(tradeNo);
-		List<RegisterBill> list = list(registerBill);
+		List<RegisterBill> list = this.listByExample(registerBill);
 		if (list != null && list.size() > 0) {
 			return DTOUtils.as(list.get(0), RegisterBillOutputDto.class);
 		}
