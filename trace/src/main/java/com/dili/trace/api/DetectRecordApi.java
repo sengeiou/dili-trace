@@ -154,22 +154,22 @@ public class DetectRecordApi {
     }
 
 
-    @ApiOperation("随机新增10条RegisterBill")
-    @RequestMapping(value = "/insertTest", method = RequestMethod.GET)
-    public @ResponseBody BaseOutput insertTest() {
-        List<RegisterBill> registerBills = getTestRegisterBills();
-        LOGGER.info("进行测试登记单数据-----------:" + registerBills.size());
-        for (RegisterBill registerBill : registerBills) {
-            BaseOutput r = registerBillService.createRegisterBill(registerBill);
-            if(!r.isSuccess()){
-                return  r;
-            }
-            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
-            registerBillService.update(registerBill);
-        }
-        LOGGER.info("进行测试登记单数据----end-------:" + registerBills.size());
-        return BaseOutput.success("新增成功").setData(registerBills);
-    }
+//    @ApiOperation("随机新增10条RegisterBill")
+//    @RequestMapping(value = "/insertTest", method = RequestMethod.GET)
+//    public @ResponseBody BaseOutput insertTest() {
+//        List<RegisterBill> registerBills = getTestRegisterBills();
+//        LOGGER.info("进行测试登记单数据-----------:" + registerBills.size());
+//        for (RegisterBill registerBill : registerBills) {
+//            BaseOutput r = registerBillService.createRegisterBill(registerBill);
+//            if(!r.isSuccess()){
+//                return  r;
+//            }
+//            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+//            registerBillService.update(registerBill);
+//        }
+//        LOGGER.info("进行测试登记单数据----end-------:" + registerBills.size());
+//        return BaseOutput.success("新增成功").setData(registerBills);
+//    }
     private List<RegisterBill> getTestRegisterBills(){
         String[] name = {"张三","李四","王五","张亿","Jick","Rose","Tom","Good","蒋介","兰芝"};
         String[] product={"苹果","梨","黄瓜","芹菜","一级蔬菜","萝卜","Fish","火龙果","木瓜","火龙果"};
