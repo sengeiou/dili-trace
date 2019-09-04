@@ -299,8 +299,17 @@
                     //TLOG.component.operateLog(TLOG.operates.add, "登记单管理", ret.data, ret.data);
                     //location.href = '/registerBill/index.html';
                     var paramStr = JSON.stringify(ret.data);
-                    console.log("打印信息:--:"+paramStr);
-                    printDirect(paramStr)
+                    var registerSource = $("#registerSource").val();
+                      if(registerSource == 1){
+                          console.log("打印信息:--:"+paramStr);
+                          printDirect(paramStr)
+                      }else{
+                          layer.alert("登记成功", {type: 0}, function () {
+                          	parent.closeWin('view_win');
+                          });
+                      }
+                    
+
                 }else{
                     resubmit=0;
                     swal(
