@@ -164,8 +164,8 @@ public class DetectRecordApi {
             if(!r.isSuccess()){
                 return  r;
             }
-            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
-            registerBillService.update(registerBill);
+//            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+//            registerBillService.update(registerBill);
         }
         LOGGER.info("进行测试登记单数据----end-------:" + registerBills.size());
         return BaseOutput.success("新增成功").setData(registerBills);
