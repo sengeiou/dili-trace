@@ -259,7 +259,7 @@
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>ss-uid</artifactId>
-			<version>${sharp-sword.version}</version>
+			<version>3.3.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.dili</groupId>
