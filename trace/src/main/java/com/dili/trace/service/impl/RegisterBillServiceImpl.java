@@ -10,6 +10,7 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
@@ -67,6 +68,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
 			// 交易区没有理货区号
 			registerBill.setTallyAreaNo(null);
+			//交易区数据直接进行待检测状态
+			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
+			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());	
 		}
 		if (StringUtils.isBlank(registerBill.getOperatorName())) {
 			UserTicket userTicket = getOptUser();
@@ -77,6 +81,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
 		registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
+		
 		int result = saveOrUpdate(registerBill);
 		if (result == 0) {
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
