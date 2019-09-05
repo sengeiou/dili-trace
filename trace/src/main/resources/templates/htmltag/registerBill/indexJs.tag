@@ -664,14 +664,16 @@
     
     $('.fileimg-view').on('click', function () {
         var url = $(this).parent().siblings(".magnifying").attr('src');
-        layer.open({
-            title:'图片',
-            type: 1,
-            skin: 'layui-layer-rim',
-            closeBtn: 2,
-            area: ['90%', '90%'], //宽高
-            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-        });
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
     });
 
     function initFileUpload(){
