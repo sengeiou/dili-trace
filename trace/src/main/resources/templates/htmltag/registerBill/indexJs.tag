@@ -262,7 +262,6 @@
             return;
         }
         openWin('/registerBill/view/' + selected.id);
-//        location.href ='/registerBill/view/' + selected.id;
     }
     function audit(){
         var selected = _registerBillGrid.datagrid("getSelected");
