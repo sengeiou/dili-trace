@@ -69,8 +69,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			// 交易区没有理货区号
 			registerBill.setTallyAreaNo(null);
 			//交易区数据直接进行待检测状态
-			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());	
+//			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
+//			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());	
 		}
 		if (StringUtils.isBlank(registerBill.getOperatorName())) {
 			UserTicket userTicket = getOptUser();
