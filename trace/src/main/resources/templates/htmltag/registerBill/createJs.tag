@@ -57,13 +57,16 @@
         }
     })
     $('.main-container').on('click', '.imageUploadWrap .edit-zoom', function () {
-        layer.open({
-            type: 1,
-            skin: 'layui-layer-rim',
-            closeBtn: 2,
-            area: ['90%', '90%'], //宽高
-            content: '<p style="text-align:center"><img src="' + $(this).siblings('.show-image').attr('src') + '" alt="" class="show-image-zoom"></p>'
-        });
+        var url = $(this).siblings('.show-image').attr('src');
+        if(url){
+            layer.open({
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
     })
 
 
@@ -356,26 +359,30 @@
 
     $( document ).on( "click", ".fileimg-view",function () {
         var url = $(this).parent().siblings(".magnifying").attr('src');
-        layer.open({
-            title:'图片',
-            type: 1,
-            skin: 'layui-layer-rim',
-            closeBtn: 2,
-            area: ['90%', '90%'], //宽高
-            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-        });
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
     });
 
     $( document ).on( "click", ".img-view-a",function () {
         var url = $('#originCertifiyUrl_'+$(this).attr('data-index')).siblings("input:hidden").val();
-        layer.open({
-            title:'图片',
-            type: 1,
-            skin: 'layui-layer-rim',
-            closeBtn: 2,
-            area: ['90%', '90%'], //宽高
-            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-        });
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
     });
 
     //文件上传组件初始化
