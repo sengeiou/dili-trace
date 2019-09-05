@@ -198,14 +198,14 @@
                     <div class="form-group">
                         <label class="label-title text-right"><span class="red">&lowast;</span>产地证明</label>
                         <div class="imageUpload rectangle">
-                            <img <% if(isNotEmpty(registerBill.originCertifiyUrl)){ %>src="http://trace.nong12.com/${registerBill.originCertifiyUrl!}"<% } %> alt="产地证明" class="show-image">
+                            <img <% if(isNotEmpty(registerBill.originCertifiyUrl)){ %>src="http://trace.nong12.com${registerBill.originCertifiyUrl!}"<% } %> alt="产地证明" class="show-image">
                         </div>
                     </div>
                     &nbsp;&nbsp;
                     <div class="form-group">
                         <label class="label-title text-right"><span class="red">&lowast;</span>检测报告</label>
                         <div class="imageUpload rectangle">
-                            <img <% if(isNotEmpty(registerBill.detectReportUrl)){ %>src="http://trace.nong12.com/${registerBill.detectReportUrl!}"<% } %> alt="检测报告" class="show-image">
+                            <img <% if(isNotEmpty(registerBill.detectReportUrl)){ %>src="http://trace.nong12.com${registerBill.detectReportUrl!}"<% } %> alt="检测报告" class="show-image">
                         </div>
                     </div>
                 </div>
@@ -255,7 +255,7 @@
             type: 1,
             skin: 'layui-layer-rim',
             closeBtn: 2,
-            area: ['50%', '50%'], //宽高
+            area: ['90%', '90%'], //宽高
             content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
         });
     });
