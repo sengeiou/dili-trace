@@ -212,8 +212,8 @@
                     <input id="originCertifiyUrlFile" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
                     <input type="hidden" name="originCertifiyUrl" id="originCertifiyUrl">
                     <img class="magnifying" <% if(isNotEmpty(registerBill.originCertifiyUrl)){ %>src="http://trace.nong12.com${registerBill.originCertifiyUrl!}"<% } %> alt="产地证明">
-                    <div class="fileimg-cover" style="display: none;"></div>
-                    <div class="fileimg-edit" style="display: none;">
+                    <div class="fileimg-cover" <% if(isEmpty(registerBill.originCertifiyUrl)){ %>style="display: none;"<% } %>></div>
+                    <div class="fileimg-edit" <% if(isEmpty(registerBill.originCertifiyUrl)){ %>style="display: none;"<% } %>>
                         <span class="fileimg-view">查看</span>
                     </div>
                 </div>
@@ -225,8 +225,8 @@
                     <input id="detectReportUrlFile" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
                     <input type="hidden" name="detectReportUrl" id="detectReportUrl">
                     <img class="magnifying" <% if(isNotEmpty(registerBill.detectReportUrl)){ %>src="http://trace.nong12.com${registerBill.detectReportUrl!}"<% } %> alt="检测报告">
-                    <div class="fileimg-cover" style="display: none;"></div>
-                    <div class="fileimg-edit" style="display: none;">
+                    <div class="fileimg-cover"  <% if(isEmpty(registerBill.detectReportUrl)){ %>style="display: none;"<% } %> ></div>
+                    <div class="fileimg-edit" <% if(isEmpty(registerBill.detectReportUrl)){ %>style="display: none;"<% } %>>
                         <span class="fileimg-view">查看</span>
                     </div>
                 </div>
