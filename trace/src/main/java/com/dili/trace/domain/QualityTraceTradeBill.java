@@ -29,6 +29,23 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 	Long getId();
 
 	void setId(Long id);
+	
+
+    @ApiModelProperty(value = "编号")
+    @Column(name = "`register_bill_code`")
+    @FieldDef(label="编号")
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getRegisterBillCode();
+
+    void setRegisterBillCode(String registerBillCode);
+    
+    @ApiModelProperty(value = "1.分销 2.全销")
+    @Column(name = "`sales_type`")
+    @FieldDef(label="1.分销 2.全销")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getSalesType();
+
+    void setSalesType(Integer salesType);
 
 	@ApiModelProperty(value = "流水号")
 	@Column(name = "`bill_id`")

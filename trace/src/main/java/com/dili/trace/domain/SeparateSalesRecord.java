@@ -42,6 +42,15 @@ public interface SeparateSalesRecord extends IBaseDomain {
     String getSalesUserName();
 
     void setSalesUserName(String salesUserName);
+    
+    @ApiModelProperty(value = "交易单号")
+    @Column(name = "`trade_no`")
+    @FieldDef(label="trade_no", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getTradeNo();
+
+    void setTradeNo(String salesUserName);
+    
     @ApiModelProperty(value = "分销城市ID")
     @Column(name = "`sales_city_id`")
     @FieldDef(label="salesCityId")
