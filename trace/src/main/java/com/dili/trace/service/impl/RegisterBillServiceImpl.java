@@ -68,7 +68,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
 			// 交易区没有理货区号
 			registerBill.setTallyAreaNo(null);
-			//交易区数据直接进行待检测状态
+			// 交易区数据直接进行待检测状态
 //			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
 //			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());	
 		}
@@ -81,7 +81,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
 		registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
-		
+
 		int result = saveOrUpdate(registerBill);
 		if (result == 0) {
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
@@ -116,40 +116,40 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			LOGGER.error("商品产地不能为空");
 			return BaseOutput.failure("商品产地不能为空");
 		}
-		
+
 		if (registerBill.getWeight() == null) {
 			LOGGER.error("商品重量不能为空");
 			return BaseOutput.failure("商品重量不能为空");
 		}
-		
-		if(registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+
+		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 			if (registerBill.getWeight().longValue() <= 0L) {
 				LOGGER.error("商品重量不能小于0");
 				return BaseOutput.failure("商品重量不能小于0");
 			}
-		}else {
+		} else {
 			if (registerBill.getWeight().longValue() < 0L) {
 				LOGGER.error("商品重量不能为负");
 				return BaseOutput.failure("商品重量不能为负");
 			}
 		}
-		
+
 		return BaseOutput.success();
 	}
 
 	@Override
 	public List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount) {
 		List<RegisterBill> exist = getActualDao().findByExeMachineNo(exeMachineNo);
-		if(!exist.isEmpty()) {
+		if (!exist.isEmpty()) {
 			LOGGER.info("获取的任务已经有相应的数量了" + taskCount);
-			if(exist.size()>=taskCount) {
+			if (exist.size() >= taskCount) {
 				return exist.subList(0, taskCount);
 			}
 		}
-		
-		int fetchSize=taskCount-exist.size();
+
+		int fetchSize = taskCount - exist.size();
 		LOGGER.info("还需要再拿多少个：" + fetchSize);
-		
+
 		List<Long> ids = getActualDao().findIdsByExeMachineNo(fetchSize);
 		StringBuilder sb = new StringBuilder();
 		sb.append(0);
@@ -180,11 +180,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public RegisterBillOutputDto findByTradeNo(String tradeNo) {
-		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
-		registerBill.setTradeNo(tradeNo);
-		List<RegisterBill> list = this.listByExample(registerBill);
-		if (list != null && list.size() > 0) {
-			return DTOUtils.as(list.get(0), RegisterBillOutputDto.class);
+		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
+		if(qualityTraceTradeBill!=null) {
+			RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+			registerBill.setCode(qualityTraceTradeBill.getRegisterBillCode());
+			List<RegisterBill> list = this.listByExample(registerBill);
+			if (list != null && list.size() > 0) {
+				return DTOUtils.as(list.get(0), RegisterBillOutputDto.class);
+			}
 		}
 		return null;
 	}

@@ -13,4 +13,6 @@ import java.util.List;
 public interface SeparateSalesRecordService extends BaseService<SeparateSalesRecord, Long> {
     List<SeparateSalesRecord> findByRegisterBillCode(String registerBillCode);
     Integer alreadySeparateSalesWeight(String registerBillCode);
+    
+    Integer getAlreadySeparateSalesWeightByTradeNo(String tradeNo);
 }
