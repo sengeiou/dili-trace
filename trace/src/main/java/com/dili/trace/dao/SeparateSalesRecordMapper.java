@@ -6,4 +6,5 @@ import org.apache.ibatis.annotations.Param;
 
 public interface SeparateSalesRecordMapper extends MyMapper<SeparateSalesRecord> {
     Integer alreadySeparateSalesWeight(@Param("registerBillCode") String registerBillCode);
+    Integer getAlreadySeparateSalesWeightByTradeNo(@Param("tradeNo") String tradeNo);
 }
