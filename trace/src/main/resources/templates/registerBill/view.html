@@ -110,23 +110,23 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
                     <input type="text" class="form-control input-sm"  value="${registerBill.detectStateName}" required readonly/>
                 </div>
-                <%
-                var detectRecord = registerBill.detectRecord;
-                %>
-
                 <div class="form-group" >
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测数值</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.detectRecord.pdResult!}" readonly/>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.latestPdResult!}" readonly/>
                 </div>
                 <br>
                 <div class="form-group" >
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测人员</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.detectRecord.detectOperator!}" readonly/>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.latestDetectOperator!}" readonly/>
                 </div>
 
             </div>
-
-            <%if(registerBill.salesType == 2 && isNotEmpty(registerBill.detectState) && (registerBill.detectState == 1 || registerBill.detectState == 3)){%>
+            <%
+            if(registerBill.registerSource == 1){
+                if( registerBill.salesType == 2
+                        && !isEmpty(registerBill.detectState)
+                            && (registerBill.detectState == 1 || registerBill.detectState == 3)){
+            %>
                 <div class="form-item-group">
                     <h4 class="form-item-title">溯源二维码</h4>
                     <div class="imageUploadWrap">
@@ -138,14 +138,13 @@
                         </div>
                     </div>
                 </div>
-            <%}%>
+            <% } %>
             <%
-            var separateSalesRecords = registerBill.separateSalesRecords;
             if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
             <div class="form-item-group">
                 <h4 class="form-item-title">分销信息</h4>
                 <div class="table-showlist" style="width: 1200px">
-                    <table class="table table-bordered" id="goodsTable">
+                    <table class="table table-bordered">
                         <thead>
                         <tr>
                             <th><span class="red">&lowast;</span>分销客户</th>
@@ -185,14 +184,55 @@
                                 </div>
                             </td>
                         </tr>
-                        <%}
-                        %>
+                        <% } %>
                     </table>
                     <!-- 表格后的统计 end -->
                 </div>
             </div>
-            <%}%>
-            <%%>
+            <%}
+                }else{ %>
+
+                        <%
+                        if(isNotEmpty(qualityTraceTradeBills) && qualityTraceTradeBills.~size>0){
+                        %>
+                        <div class="form-item-group">
+                            <h4 class="form-item-title">交易单</h4>
+                            <div class="table-showlist" style="width: 1200px">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>交易单号</th>
+                                        <th>结算时间</th>
+                                        <th>重量/KG</th>
+                                        <th>卖家</th>
+                                        <th>买家</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                        <%
+                            for(qttb in qualityTraceTradeBills){
+                        %>
+                        <tr>
+                            <td>${qttb.orderId!}</td>
+                            <td>${qttb.orderPayDate,dateFormat='yyyy-MM-dd HH:mm:ss'}</td>
+                            <td>${qttb.netWeight!}</td>
+                            <td>${qttb.sellerName!}</td>
+                            <td>${qttb.buyerName!}</td>
+                            <td>
+                                <% if(!isEmpty(qttb.salesType)) {
+                                    if(qttb.salesType == 1){
+                                %>
+                                <a href="javascript:void(0)" data-trade-id="${qttb.id!}" class="ssr-view">分销记录</a></td>
+                                <% }else{ %>
+                                <a href="javascript:void(0)" class="show-img"><img id="tradeBillQR${qttbLP.index}" alt="" width="30px" height="30px" class="show-image"></a>
+                                <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
+                                <% } } %>
+                        </tr>
+                        <% } %>
+                                </table>
+                            </div>
+                        </div>
+                            <%} }  %>
             <div class="form-item-group">
                 <div class="imageUploadWrap">
                     <div class="form-group">
@@ -248,7 +288,7 @@
 
 <script>
 
-    $('.imageUpload').on('click', function () {
+    $('.imageUpload,.show-img').on('click', function () {
         var url = $(this).find("img").attr('src');
         if(url){
             layer.open({
@@ -261,16 +301,17 @@
             });
         }
     });
-    /*$('.main-container').on('click', '.imageUploadWrap .edit-zoom', function () {
+
+    $('.ssr-view').on('click', function () {
+        let tradeId = $(this).attr('data-trade-id');
         layer.open({
-            type: 1,
-            skin: 'layui-layer-rim',
-            closeBtn: 2,
-            area: ['90%', '90%'], //宽高
-            content: '<p style="text-align:center"><img src="' + $(this).siblings('.show-image').attr('src') + '" alt="" class="show-image-zoom"></p>'
+            type: 2,
+            area: ['800px', '450px'],
+            title: '分销记录',
+            scrollbar: true,
+            content: ['/registerBill/tradeBillSsRecord/'+tradeId, 'no'], //iframe的url
+            yes: function (index, layero) {
+            }
         });
-    })*/
-    function returnBack(){
-        history.go(-1);
-    }
+    });
 </script>

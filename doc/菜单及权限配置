@@ -26,6 +26,13 @@
 导出 registerBill/statics.html#export
 
 
+ALTER TABLE `separate_sales_record`
+MODIFY COLUMN `register_bill_code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '被分销的登记单编码' AFTER `sales_weight`,
+ADD COLUMN `trade_no`  varchar(20) NULL AFTER `register_bill_code`;
+
+
+
+
 
 
 

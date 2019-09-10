@@ -10,7 +10,8 @@
     <meta name="description" content="智能流通管理系统" />
     <meta name="author" content="农丰时代科技有限公司">
     <link rel="stylesheet" href="/resources/assets/dep/bootstrap/css/bootstrap.min.css" />
-
+    <link rel="stylesheet" href="/resources/assets/css/widget/common.css" />
+    <link rel="stylesheet" href="/resources/assets/css/widget/layerDialog.css" />
     <link rel="stylesheet" href="/resources/assets/css/widget/tmsBaseCommon.css" />
     <link rel="stylesheet" href="/webjars/sweetalert2/7.28.10/dist/sweetalert2.min.css">
 </head>
