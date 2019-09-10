@@ -351,12 +351,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} else {
 			outputDto = DTOUtils.as(registerBill, RegisterBillOutputDto.class);
 		}
-		if (StringUtils.isNotBlank(registerBill.getTradeNo())) {
-			// 交易信息
-			QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
-					.findByTradeNo(registerBill.getTradeNo());
-			outputDto.setQualityTraceTradeBill(qualityTraceTradeBill);
-		}
+		//查询交易单信息
+		QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
+		example.setRegisterBillCode(registerBill.getCode());
+		List<QualityTraceTradeBill> qualityTraceTradeBillList = this.qualityTraceTradeBillService
+				.listByExample(example);
+
+		outputDto.setQualityTraceTradeBillList(qualityTraceTradeBillList);
+//		if (StringUtils.isNotBlank(registerBill.getTradeNo())) {
+//			// 交易信息
+//			QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
+//					.findByTradeNo(registerBill.getTradeNo());
+//			outputDto.setQualityTraceTradeBill(qualityTraceTradeBill);
+//		}
 		// 分销信息
 		if (registerBill.getSalesType() != null
 				&& registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
@@ -367,10 +374,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 
 		// 检测信息
-		if (registerBill.getLatestDetectRecordId() != null) {
-			// 检测信息
-			outputDto.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
-		}
+//		if (registerBill.getLatestDetectRecordId() != null) {
+//			// 检测信息
+//			outputDto.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
+//		}
 		return outputDto;
 	}
 

@@ -22,4 +22,8 @@ public interface RegisterBillOutputDto extends RegisterBill {
 
     QualityTraceTradeBill getQualityTraceTradeBill();
     void setQualityTraceTradeBill(QualityTraceTradeBill qualityTraceTradeBill);
+    
+    
+    List<QualityTraceTradeBill> getQualityTraceTradeBillList();
+    void setQualityTraceTradeBillList(List<QualityTraceTradeBill> qualityTraceTradeBillList);
 }
