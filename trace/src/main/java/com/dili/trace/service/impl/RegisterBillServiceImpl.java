@@ -332,7 +332,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} else {
 			registerBill = DTOUtils.newDTO(RegisterBillOutputDto.class);
 		}
-		registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
+		
+		//查询交易单信息
+		QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
+		example.setRegisterBillCode(registerBill.getCode());
+		List<QualityTraceTradeBill> qualityTraceTradeBillList = this.qualityTraceTradeBillService
+				.listByExample(example);
+
+		registerBill.setQualityTraceTradeBillList(qualityTraceTradeBillList);
+		
+//		registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
 		return registerBill;
 	}
 
