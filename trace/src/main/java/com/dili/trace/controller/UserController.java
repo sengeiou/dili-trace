@@ -62,22 +62,23 @@ public class UserController {
 
     @ApiOperation("新增User")
     @ApiImplicitParams({
-		@ApiImplicitParam(name="User", paramType="form", value = "User的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput<Long> insert(User user) {
-    try{
-        user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
-        user.setState(EnabledStateEnum.ENABLED.getCode());
-        userService.register(user,false);
-        return BaseOutput.success("新增成功").setData(user.getId());
-    }catch (BusinessException e){
-        LOGGER.error("register",e);
-        return BaseOutput.failure(e.getMessage());
-    }catch (Exception e){
-        LOGGER.error("register",e);
-        return BaseOutput.failure();
-    }
+            @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string")
+    })
+    @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput<Long> insert(User user) {
+        try {
+            user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
+            user.setState(EnabledStateEnum.ENABLED.getCode());
+            userService.register(user, false);
+            return BaseOutput.success("新增成功").setData(user.getId());
+        } catch (BusinessException e) {
+            LOGGER.error("register", e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("register", e);
+            return BaseOutput.failure();
+        }
     }
 
     @ApiOperation("修改User")
@@ -86,8 +87,17 @@ public class UserController {
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput update(User user) {
-        userService.updateSelective(user);
-        return BaseOutput.success("修改成功");
+        try {
+            userService.updateUser(user);
+            return BaseOutput.success("修改成功");
+        } catch (BusinessException e) {
+            LOGGER.error("修改用户", e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("修改用户", e);
+            return BaseOutput.failure();
+        }
+
     }
 
     @ApiOperation("删除User")
