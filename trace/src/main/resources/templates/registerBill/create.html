@@ -37,7 +37,8 @@
                         <span class="red">&lowast;</span>交易区号</label>
                     <select class="form-control input-sm" name="tradeTypeId" id="tradeTypeId"  required>
                         <option value="">请选择</option>
-                        <%if(tradeTypes.~size>0) for(tradeType in tradeTypes){%>
+                        <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
+                            for(tradeType in tradeTypes){%>
                         <option value="${tradeType.typeId}">${tradeType.typeName}</option>
                         <%}%>
                     </select>
