@@ -271,6 +271,10 @@ public class RegisterBillController {
 				List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
 				modelMap.put("separateSalesRecords",records);
 			}
+		}else{
+			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+			condition.setRegisterBillCode(registerBill.getCode());
+			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/modify";

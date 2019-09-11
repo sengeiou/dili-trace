@@ -53,7 +53,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" id="addr" class="form-control" cols="70" rows="1" required readonly>${registerBill.addr!}</textarea>
+                    <textarea name="addr" id="addr" class="form-control" cols="82" rows="1" required readonly>${registerBill.addr!}</textarea>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -96,66 +96,47 @@
             </div>
             <div class="form-item-group">
                 <h4 class="form-item-title">检测信息</h4>
-
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
                     <input class="form-control input-sm" value="${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测编号</label>
-                    <%
-                    var code;
-                    if((registerBill.state == @com.dili.trace.glossary.RegisterBillStateEnum.CHECKING.getCode() && isNotEmpty(registerBill.detectRecord))
-                                || registerBill.state == @com.dili.trace.glossary.RegisterBillStateEnum.ALREADY_CHECK.getCode()
-                    ){
-                        if(!isEmpty(registerBill.detectReportUrl)){
-                            code = registerBill.code;
-                        }
-                    }
-                    %>
-                    <input type="text" class="form-control input-sm"  value="${code!}"  readonly/>
-                </div>
-
-                <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
                     <input type="text" class="form-control input-sm"  value="${registerBill.detectStateName}" required readonly/>
                 </div>
-                <br>
-                <%
-                var detectRecord = registerBill.detectRecord;
-                %>
-
                 <div class="form-group" >
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测数值</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.detectRecord.pdResult!}" readonly/>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.latestPdResult!}" readonly/>
                 </div>
+                <br>
                 <div class="form-group" >
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测人员</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.detectRecord.detectOperator!}" readonly/>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.latestDetectOperator!}" readonly/>
                 </div>
-
             </div>
 
-            <%if(registerBill.salesType == 2 && isNotEmpty(registerBill.detectState) && (registerBill.detectState == 1 || registerBill.detectState == 3)){%>
-                <div class="form-item-group">
-                    <h4 class="form-item-title">溯源二维码</h4>
-                    <div class="imageUploadWrap">
-                        <div class="form-group">
-                            <div class="imageUpload rectangle">
-                                <img id="registerBillQRCode"  alt="" class="show-image">
-                                <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
-                            </div>
+            <%
+            if(registerBill.registerSource == 1){
+                if( registerBill.salesType == 2 && !isEmpty(registerBill.detectState) && (registerBill.detectState == 1 || registerBill.detectState == 3)){
+            %>
+            <div class="form-item-group">
+                <h4 class="form-item-title">溯源二维码</h4>
+                <div class="imageUploadWrap">
+                    <div class="form-group">
+                        <div class="imageUpload rectangle">
+                            <img id="registerBillQRCode" alt="" class="show-image">
+                            <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
                         </div>
                     </div>
                 </div>
-            <%}%>
+            </div>
+            <% } %>
             <%
-            var separateSalesRecords = registerBill.separateSalesRecords;
-            if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
+                if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
             <div class="form-item-group">
                 <h4 class="form-item-title">分销信息</h4>
                 <div class="table-showlist" style="width: 1200px">
-                    <table class="table table-bordered" id="goodsTable">
+                    <table class="table table-bordered">
                         <thead>
                         <tr>
                             <th><span class="red">&lowast;</span>分销客户</th>
@@ -170,17 +151,20 @@
                         <tr>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control input-sm" value="${record.salesUserName!}" required readonly/>
+                                    <input type="text" class="form-control input-sm" value="${record.salesUserName!}"
+                                           required readonly/>
                                 </div>
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <input type="text"  class="form-control input-sm" value="${record.salesCityName!}" required readonly />
+                                    <input type="text" class="form-control input-sm" value="${record.salesCityName!}"
+                                           required readonly/>
                                 </div>
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" name="weight" class="form-control input-sm" value="${record.salesWeight}" required readonly/>
+                                    <input type="text" name="weight" class="form-control input-sm"
+                                           value="${record.salesWeight}" required readonly/>
                                 </div>
                             </td>
 
@@ -195,15 +179,58 @@
                                 </div>
                             </td>
                         </tr>
-                        <%}
-                        %>
+                        <% } %>
                     </table>
                     <!-- 表格后的统计 end -->
                 </div>
             </div>
-            <%}%>
-            <%%>
-            
+            <%}
+            }else{ %>
+
+            <%
+            if(isNotEmpty(qualityTraceTradeBills) && qualityTraceTradeBills.~size>0){
+            %>
+            <div class="form-item-group">
+                <h4 class="form-item-title">交易单</h4>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>交易单号</th>
+                            <th>结算时间</th>
+                            <th>重量/KG</th>
+                            <th>卖家</th>
+                            <th>买家</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <%
+                        for(qttb in qualityTraceTradeBills){
+                        %>
+                        <tr>
+                            <td>${qttb.orderId!}</td>
+                            <td>${qttb.orderPayDate,dateFormat='yyyy-MM-dd HH:mm:ss'}</td>
+                            <td>${qttb.netWeight!}</td>
+                            <td>${qttb.sellerName!}</td>
+                            <td>${qttb.buyerName!}</td>
+                            <td>
+                                <% if(!isEmpty(qttb.salesType)) {
+                                if(qttb.salesType == 1){
+                                %>
+                                <a href="javascript:void(0)" data-trade-id="${qttb.id!}" class="ssr-view">分销记录</a></td>
+                            <% }else{ %>
+                            <a href="javascript:void(0)" class="show-img"><img id="tradeBillQR${qttbLP.index}" alt=""
+                                                                               width="30px" height="30px"
+                                                                               class="show-image"></a>
+                            <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
+                            <% } } %>
+                        </tr>
+                        <% } %>
+                    </table>
+                </div>
+            </div>
+            <%} } %>
+
            <div class="form-item-group">
                 <h4 class="form-item-title">产地证明</h4>
                 <div class="fileimg-box" style="margin-left: 50px;">
@@ -308,7 +335,7 @@
 		
 		
 	}
-    $('.imageUpload').on('click', function () {
+    $('.imageUpload,.show-img').on('click', function () {
         var url = $(this).find("img").attr('src');
         if(url){
             layer.open({
@@ -320,6 +347,19 @@
                 content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
             });
         }
+    });
+
+    $('.ssr-view').on('click', function () {
+        let tradeId = $(this).attr('data-trade-id');
+        layer.open({
+            type: 2,
+            area: ['820px', '450px'],
+            title: '分销记录',
+            scrollbar: true,
+            content: ['/registerBill/tradeBillSsRecord/'+tradeId], //iframe的url
+            yes: function (index, layero) {
+            }
+        });
     });
     /*$('.main-container').on('click', '.imageUploadWrap .edit-zoom', function () {
         layer.open({
