@@ -88,13 +88,6 @@ public interface RegisterBill extends IBaseDomain {
 
     void setPhone(String phone);
 
-    @ApiModelProperty(value = "交易单号")
-    @Column(name = "`trade_no`")
-    @FieldDef(label="tradeNo")
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getTradeNo();
-
-    void setTradeNo(String tradeNo);
 
     @ApiModelProperty(value = "交易账号")
     @Column(name = "`trade_account`")
@@ -222,11 +215,12 @@ public interface RegisterBill extends IBaseDomain {
             return "";
         }
         BillDetectStateEnum state=BillDetectStateEnum.getBillDetectStateEnum(getDetectState());
-        if(BillDetectStateEnum.PASS==state||BillDetectStateEnum.REVIEW_PASS==state) {
-        	return BillDetectStateEnum.PASS.getName();
-        }else {
-        	return BillDetectStateEnum.NO_PASS.getName();
-        }
+        return state.getName();
+//        if(BillDetectStateEnum.PASS==state||BillDetectStateEnum.REVIEW_PASS==state) {
+//        	return BillDetectStateEnum.PASS.getName();
+//        }else {
+//        	return BillDetectStateEnum.NO_PASS.getName();
+//        }
     }
     
 //    @Transient
