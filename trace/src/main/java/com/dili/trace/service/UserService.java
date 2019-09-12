@@ -18,6 +18,12 @@ public interface UserService extends BaseService<User, Long> {
     void register(User user,Boolean flag);
 
     /**
+     * 修改用户信息
+     * @param user
+     */
+    void updateUser(User user);
+
+    /**
      * 登录
      * @param phone 账号
      * @param encryptedPassword MD5加密密码

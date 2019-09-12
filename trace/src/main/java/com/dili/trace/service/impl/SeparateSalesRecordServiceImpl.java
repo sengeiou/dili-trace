@@ -35,4 +35,13 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
         }
         return alreadyWeight;
     }
+
+	@Override
+	public Integer getAlreadySeparateSalesWeightByTradeNo(String tradeNo) {
+		 Integer alreadyWeight =getActualDao().getAlreadySeparateSalesWeightByTradeNo(tradeNo);
+	        if(alreadyWeight == null){
+	            alreadyWeight=0;
+	        }
+	        return alreadyWeight;
+	}
 }

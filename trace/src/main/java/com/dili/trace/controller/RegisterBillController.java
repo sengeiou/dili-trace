@@ -216,14 +216,40 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap, @PathVariable Long id) {
-		RegisterBill rb = registerBillService.get(id);
-		if (rb == null) {
+		RegisterBill registerBill = registerBillService.get(id);
+		if (registerBill == null) {
 			return "";
 		}
-		RegisterBillOutputDto registerBill = registerBillService.conversionDetailOutput(rb);
-
+		if(RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())){
+			// 分销信息
+			if (registerBill.getSalesType() != null && registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+				// 分销
+				List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
+				modelMap.put("separateSalesRecords",records);
+			}
+		}else{
+			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+			condition.setRegisterBillCode(registerBill.getCode());
+			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+		}
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/view";
+	}
+
+	/**
+	 * 交易区交易单分销记录
+	 * @param modelMap
+	 * @param id 交易单ID
+	 * @return
+	 */
+	@RequestMapping(value = "/tradeBillSsRecord/{id}", method = RequestMethod.GET)
+	public String tradeBillSRecord(ModelMap modelMap, @PathVariable Long id) {
+		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.get(id);
+		SeparateSalesRecord condition = DTOUtils.newDTO(SeparateSalesRecord.class);
+		condition.setTradeNo(qualityTraceTradeBill.getOrderId());
+		List<SeparateSalesRecord> separateSalesRecords = separateSalesRecordService.listByExample(condition);
+		modelMap.put("separateSalesRecords",separateSalesRecords);
+		return "registerBill/tradeBillSsRecord";
 	}
 
 	/**
@@ -234,12 +260,22 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/modify/{id}", method = RequestMethod.GET)
 	public String modify(ModelMap modelMap, @PathVariable Long id) {
-		RegisterBill rb = registerBillService.get(id);
-		if (rb == null) {
+		RegisterBill registerBill = registerBillService.get(id);
+		if (registerBill == null) {
 			return "";
 		}
-		RegisterBillOutputDto registerBill = registerBillService.conversionDetailOutput(rb);
-
+		if(RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())){
+			// 分销信息
+			if (registerBill.getSalesType() != null && registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+				// 分销
+				List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
+				modelMap.put("separateSalesRecords",records);
+			}
+		}else{
+			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+			condition.setRegisterBillCode(registerBill.getCode());
+			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+		}
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/modify";
 	}
@@ -404,7 +440,7 @@ public class RegisterBillController {
 	}
 
 	/**
-	 * 登记单溯源（二维码）
+	 * 登记单溯源（二维码） 没有分销记录
 	 * 
 	 * @param id
 	 * @param modelMap
@@ -413,13 +449,12 @@ public class RegisterBillController {
 	@RequestMapping(value = "/registerBillQRCode.html", method = RequestMethod.GET)
 	public String registerBillQRCcode(Long id, ModelMap modelMap) {
 		RegisterBill bill = registerBillService.get(id);
-		RegisterBillOutputDto outputDto = registerBillService.conversionDetailOutput(bill);
-		modelMap.put("registerBill", outputDto);
+		modelMap.put("registerBill", bill);
 		return "registerBill/registerBillQRCode";
 	}
 
 	/**
-	 * 分销记录溯源（二维码）
+	 * 登记单分销记录溯源（二维码）
 	 * 
 	 * @param id
 	 * @param modelMap
@@ -429,11 +464,43 @@ public class RegisterBillController {
 	public String separateSalesRecordQRCcode(Long id, ModelMap modelMap) {
 		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
 		RegisterBill bill = registerBillService.findByCode(separateSalesRecord.getRegisterBillCode());
-		bill.setSalesType(SalesTypeEnum.ONE_SALES.getCode());
-		RegisterBillOutputDto outputDto = registerBillService.conversionDetailOutput(bill);
-		outputDto.setSeparateSalesRecords(Arrays.asList(separateSalesRecord));
-		modelMap.put("registerBill", outputDto);
+		modelMap.put("registerBill", bill);
+		modelMap.put("separateSalesRecord", separateSalesRecord);
 		return "registerBill/registerBillQRCode";
+	}
+
+	/**
+	 * 交易单溯源（二维码） 没有分销记录
+	 *
+	 * @param id 交易单ID
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/tradeBillQRCcode.html", method = RequestMethod.GET)
+	public String tradeBillQRCcode(Long id, ModelMap modelMap) {
+		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.get(id);
+		RegisterBill bill = registerBillService.findByCode(qualityTraceTradeBill.getRegisterBillCode());
+		modelMap.put("registerBill", bill);
+		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
+		return "registerBill/tradeBillQRCode";
+	}
+
+	/**
+	 * 交易单分销记录溯源（二维码）
+	 *
+	 * @param id
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/tradeSsrQRCcode.html", method = RequestMethod.GET)
+	public String tradeSsrQRCcode(Long id, ModelMap modelMap) {
+		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
+		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(separateSalesRecord.getTradeNo());
+		RegisterBill bill = registerBillService.findByCode(qualityTraceTradeBill.getRegisterBillCode());
+		modelMap.put("registerBill", bill);
+		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
+		modelMap.put("separateSalesRecord", separateSalesRecord);
+		return "registerBill/tradeBillQRCode";
 	}
 
 	/**
@@ -472,7 +539,7 @@ public class RegisterBillController {
 
 	}
 
-	private RegisterBillOutputDto maskRegisterBillOutputDto(RegisterBillOutputDto dto) {
+	private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
 		if (dto == null) {
 			return dto;
 		}

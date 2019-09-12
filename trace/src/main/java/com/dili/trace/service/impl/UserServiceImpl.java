@@ -71,7 +71,39 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         insertSelective(user);
     }
 
-    private Boolean checkVerificationCode(String phone,String verCode){
+    @Override
+    public void updateUser(User user) {
+
+        //手机号验重
+        if(StringUtils.isNotBlank(user.getPhone())){
+            User condition = DTOUtils.newDTO(User.class);
+            condition.setPhone(user.getPhone());
+            List<User> users = listByExample(condition);
+            if(CollectionUtils.isNotEmpty(users)){
+                users.forEach(o->{
+                    if(!o.getId().equals(user.getId()) && o.getPhone().equals(user.getPhone())){
+                        throw new BusinessException("手机号已注册");
+                    }
+                });
+            }
+        }
+        //理货区号验重
+        if(StringUtils.isNotBlank(user.getTaillyAreaNo())){
+            User condition = DTOUtils.newDTO(User.class);
+            condition.setTaillyAreaNo(user.getTaillyAreaNo());
+            List<User> users = listByExample(condition);
+            if(CollectionUtils.isNotEmpty(users)){
+                users.forEach(o->{
+                    if(!o.getId().equals(user.getId()) && o.getTaillyAreaNo().equals(user.getTaillyAreaNo())){
+                        throw new BusinessException("理货区号已注册");
+                    }
+                });
+            }
+        }
+        updateSelective(user);
+    }
+
+    private Boolean checkVerificationCode(String phone, String verCode){
         String verificationCodeTemp = String.valueOf(redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone));
         if (StringUtils.isBlank(verificationCodeTemp)) {
             throw new BusinessException("验证码已过期");

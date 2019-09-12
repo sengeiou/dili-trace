@@ -29,10 +29,8 @@
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
         $('#_name').textbox({readonly:true});
-        $('#_phone').textbox({readonly:true});
         $('#_cardNo').textbox({readonly:true});
         $('#_addr').textbox({readonly:true});
-        $('#_taillyAreaNo').textbox({readonly:true});
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_name");

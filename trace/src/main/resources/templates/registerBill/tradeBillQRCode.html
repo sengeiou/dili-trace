@@ -63,9 +63,11 @@
             </span>
         </p>
         <p>商品名称：<span>${registerBill.productName!}</span></p>
-        <p>总重量：<span>${registerBill.weight!}KG</span></p>
+        <p>总重量：<span>${qualityTraceTradeBill.netWeight!}KG</span></p>
         <p>产地：<span>${registerBill.originName!}</span></p>
         <p>状态：<span>已检测</span></p>
+        <p>交易买家：<span>${qualityTraceTradeBill.buyerName!}</span></p>
+        <p>交易卖家：<span>${qualityTraceTradeBill.sellerName!}</span></p>
     </div>
     <div class="group">
         <p>检测时间：<span>${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span></p>

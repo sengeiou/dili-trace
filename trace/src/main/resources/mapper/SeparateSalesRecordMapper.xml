@@ -63,4 +63,8 @@
   <select id="alreadySeparateSalesWeight" resultType="java.lang.Integer">
     SELECT  sum(sales_weight) FROM separate_sales_record WHERE register_bill_code = #{registerBillCode}
   </select>
+  
+    <select id="getAlreadySeparateSalesWeightByTradeNo" resultType="java.lang.Integer">
+    SELECT  sum(sales_weight) FROM separate_sales_record WHERE trade_no = #{tradeNo}
+  </select>
 </mapper>
