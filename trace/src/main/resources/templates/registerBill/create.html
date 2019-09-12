@@ -19,7 +19,7 @@
                 <h4 class="form-item-title">基础信息</h4>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
-                    <select class="form-control input-sm" name="registerSource" id="registerSource" required>
+                    <select class="form-control input-sm" name="registerSource" id="registerSource" required tabindex="0">
                         <option value="1">理货区</option>
                         <option value="2">交易区</option>
                     </select>
@@ -68,22 +68,22 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
-                    <input type="text" class="form-control input-sm" name="name" id="name" required readonly/>
+                    <input type="text" class="form-control input-sm" name="name" id="name" tabindex="-1" required readonly/>
                     <input type="hidden"  name="userId" id="userId" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>身份证号</label>
-                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm" required readonly/>
+                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm" tabindex="-1" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" id="addr" class="form-control"  rows="1" maxlength="50" readonly style="width: 200px;"></textarea>
+                    <textarea name="addr" id="addr" class="form-control"  rows="1" maxlength="50" tabindex="-1" readonly style="width: 200px;"></textarea>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户手机号</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" readonly/>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1" readonly/>
                 </div>
             </div>
 
@@ -188,7 +188,7 @@
         </td>
         <td>
             <div class="upload-div">
-                <a href="javascript:;" class="a-upload">
+                <a href="javascript:;" class="a-upload" tabindex="-1">
                     <input type="file" id="originCertifiyUrl_{{index}}"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
                     <span>上传</span>
                     <input type="hidden" name="originCertifiyUrl_{{index}}">

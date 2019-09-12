@@ -1,6 +1,7 @@
 <script type="text/javascript">
     let goodsItemCount = 0;
     $(function () {
+        $('#registerSource').focus();
         $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
         initFileUpload('#detectReportUrlFile');
         initFileUpload1('#originCertifiyUrl_'+goodsItemCount);
