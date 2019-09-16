@@ -181,7 +181,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public RegisterBillOutputDto findByTradeNo(String tradeNo) {
 		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
-		if(qualityTraceTradeBill!=null) {
+		if(qualityTraceTradeBill!=null&&StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
 			RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
 			registerBill.setCode(qualityTraceTradeBill.getRegisterBillCode());
 			List<RegisterBill> list = this.listByExample(registerBill);

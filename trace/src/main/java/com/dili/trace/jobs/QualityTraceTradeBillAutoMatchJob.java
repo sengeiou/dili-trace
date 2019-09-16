@@ -53,6 +53,30 @@ public class QualityTraceTradeBillAutoMatchJob {
 
 		this.registeTrigger(this::executeMatch7daysRegisterBill, 60 * match7DaysDelay);
 		this.registeTrigger(this::executeMatchTodayRegisterBill, 60 * matchTodaysDelay);
+		
+		/*this.registeTrigger(()->{
+			while (true) {
+				List<QualityTraceTradeBill> qualityTraceTradeBillList = this
+						.queryQualityTraceTradeBill(Arrays.asList(QualityTraceTradeBillMatchStatusEnum.INITED.getCode()));
+				if (qualityTraceTradeBillList.isEmpty()) {
+					logger.info("executeMatchTodayRegisterBill no data");
+					break;
+				}
+				qualityTraceTradeBillList.stream().filter(Objects::nonNull).filter(qb -> qb.getOrderPayDate() != null)
+						.forEach(qualityTraceTradeBill -> {
+							try {
+								if(!this.match7days(qualityTraceTradeBill)) {
+									this.matchToday(qualityTraceTradeBill);	
+								}
+							} catch (Exception e) {
+								logger.error(e.getMessage(), e);
+							}
+						});
+			}
+			
+			
+			
+		}, 60 * matchTodaysDelay);*/
 
 	}
 
@@ -139,33 +163,33 @@ public class QualityTraceTradeBillAutoMatchJob {
 		return false;
 	}
 
-	private void match7days(QualityTraceTradeBill qualityTraceTradeBill) {
+	private boolean match7days(QualityTraceTradeBill qualityTraceTradeBill) {
 
 		LocalDateTime payDate = qualityTraceTradeBill.getOrderPayDate().toInstant().atZone(ZoneId.systemDefault())
 				.toLocalDateTime();
 		LocalDateTime start = payDate.minusDays(7);
 		LocalDateTime end = payDate;
 
-		this.matchRegisterBill(qualityTraceTradeBill, start, end);
+		return this.matchRegisterBill(qualityTraceTradeBill, start, end);
 
 	}
 
-	private void matchToday(QualityTraceTradeBill qualityTraceTradeBill) {
+	private boolean matchToday(QualityTraceTradeBill qualityTraceTradeBill) {
 
 		LocalDateTime payDate = qualityTraceTradeBill.getOrderPayDate().toInstant().atZone(ZoneId.systemDefault())
 				.toLocalDateTime();
 		LocalDateTime start = payDate;
 		LocalDateTime end = payDate.withHour(23).withMinute(59).withSecond(59);
 
-		this.matchRegisterBill(qualityTraceTradeBill, start, end);
+		return this.matchRegisterBill(qualityTraceTradeBill, start, end);
 
 	}
 
-	private void matchRegisterBill(QualityTraceTradeBill qualityTraceTradeBill, LocalDateTime start,
+	private boolean matchRegisterBill(QualityTraceTradeBill qualityTraceTradeBill, LocalDateTime start,
 			LocalDateTime end) {
 		boolean endMatch = this.endMatch(qualityTraceTradeBill);
 		if (endMatch) {
-			return;
+			return true;
 		}
 		MatchDetectParam matchDetectParam = new MatchDetectParam();
 		// matchDetectParam.setTradeNo(qualityTraceTradeBill.getOrderId());
@@ -189,7 +213,9 @@ public class QualityTraceTradeBillAutoMatchJob {
 			condition.setId(qualityTraceTradeBill.getId());
 			condition.setMatchStatus(qualityTraceTradeBill.getMatchStatus());
 			this.qualityTraceTradeBillService.updateSelectiveByExample(domain, condition);
+			return true;
 		}
+		return false;
 
 	}
 

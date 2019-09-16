@@ -30,6 +30,7 @@
     <result column="piece_weight" jdbcType="BIGINT" property="pieceWeight" />
     <result column="net_weight" jdbcType="BIGINT" property="netWeight" />
     <result column="sale_unit" jdbcType="INTEGER" property="saleUnit" />
+     <result column="register_bill_code" jdbcType="VARCHAR" property="registerBillCode" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -38,7 +39,7 @@
     id, bill_id,order_id, order_status, seller_account, seller_name,sellerIDNo, buyer_account, buyer_name, buyerIDNo,
     order_create_date, order_pay_date, pdResult, conclusion, check_result_EID, trade_flow_id, 
     total_money, order_item_id, product_name, cate_name, price, piece_quantity,piece_weight,net_weight,tradetype_id,
-      tradetype_name,bill_active,sale_unit
+      tradetype_name,bill_active,sale_unit,register_bill_code
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
