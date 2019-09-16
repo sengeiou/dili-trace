@@ -154,6 +154,19 @@
   <update id="matchDetectBind" >
     update register_bill  set `weight` = #{weight} WHERE  id = #{id} 
   </update>
+  
+  
+  
+  <!--自定义sql-->
+  <select id="findUnMatchedRegisterBill" parameterType="com.dili.trace.dto.MatchDetectParam" resultType="com.dili.trace.domain.RegisterBill">
+    SELECT   <include refid="Base_Column_List" />  from register_bill
+    where `trade_type_id` = #{tradeTypeId} and `product_name` = #{productName} and `id_card_no` = #{idCardNo}
+    and `latest_detect_time` BETWEEN #{start} AND #{end}
+    AND register_source = 2 
+    AND detect_state in(1,3)
+    ORDER BY id DESC limit 1
+  </select>
+  
   <select id="findByExeMachineNo" resultType="com.dili.trace.domain.RegisterBill">
     select  <include refid="Base_Column_List" />
     from register_bill
