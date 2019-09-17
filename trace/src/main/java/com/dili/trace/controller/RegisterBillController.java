@@ -513,7 +513,7 @@ public class RegisterBillController {
 	public String copy(Long id, ModelMap modelMap) {
 		RegisterBill bill = registerBillService.get(id);
 		modelMap.put("registerBill", bill);
-		return "registerBill/create";
+		return "registerBill/copy";
 	}
 
 	/**
