@@ -42,32 +42,34 @@ public class QualityTraceTradeBillAutoMatchJob {
 	RegisterBillMapper registerBillMapper;
 	@Autowired
 	private TaskScheduler taskScheduler;
-	
-	//每10分钟匹配一次前七天的登记单
+
+	@Value("${qualityTraceTradeBill.enable:true}")
+	private boolean qualityTraceTradeBillEnable;
+	// 每10分钟匹配一次前七天的登记单
 	@Value("${qualityTraceTradeBill.match7DaysDelay:10}")
 	private Long match7DaysDelay;
-	
-	//每2分钟匹配一次前七天的登记单
+
+	// 每2分钟匹配一次当天的登记单
 	@Value("${qualityTraceTradeBill.matchTodaysDelay:2}")
 	private Long matchTodaysDelay;
 
 	@PostConstruct
 	public void init() {
-
-		this.registeTrigger(this::executeMatch7daysRegisterBill, 60 * match7DaysDelay);
-		this.registeTrigger(this::executeMatchTodayRegisterBill, 60 * matchTodaysDelay);
-		
+		if (qualityTraceTradeBillEnable) {
+			this.registeTrigger(this::executeMatch7daysRegisterBill, 60 * match7DaysDelay);
+			this.registeTrigger(this::executeMatchTodayRegisterBill, 60 * matchTodaysDelay);
+		}
 
 	}
 
-	
 	// 间隔两分钟同步数据
 //	@Async
 //	@Scheduled(fixedDelay = 1000L * 60L * 30L)
 	public void executeMatchTodayRegisterBill() {
 		while (true) {
-			List<QualityTraceTradeBill> qualityTraceTradeBillList = this
-					.queryQualityTraceTradeBill(Arrays.asList(QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS.getCode(),QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY.getCode()));
+			List<QualityTraceTradeBill> qualityTraceTradeBillList = this.queryQualityTraceTradeBill(
+					Arrays.asList(QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS.getCode(),
+							QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY.getCode()));
 			if (qualityTraceTradeBillList.isEmpty()) {
 				logger.info("executeMatchTodayRegisterBill no data");
 				break;
@@ -150,7 +152,8 @@ public class QualityTraceTradeBillAutoMatchJob {
 		LocalDateTime start = payDate.minusDays(7);
 		LocalDateTime end = payDate;
 
-		return this.matchRegisterBill(qualityTraceTradeBill, start, end,QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS);
+		return this.matchRegisterBill(qualityTraceTradeBill, start, end,
+				QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS);
 
 	}
 
@@ -161,12 +164,13 @@ public class QualityTraceTradeBillAutoMatchJob {
 		LocalDateTime start = payDate;
 		LocalDateTime end = payDate.withHour(23).withMinute(59).withSecond(59);
 
-		return this.matchRegisterBill(qualityTraceTradeBill, start, end,QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY);
+		return this.matchRegisterBill(qualityTraceTradeBill, start, end,
+				QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY);
 
 	}
 
 	private boolean matchRegisterBill(QualityTraceTradeBill qualityTraceTradeBill, LocalDateTime start,
-			LocalDateTime end,QualityTraceTradeBillMatchStatusEnum unMatchStatus) {
+			LocalDateTime end, QualityTraceTradeBillMatchStatusEnum unMatchStatus) {
 		boolean endMatch = this.endMatch(qualityTraceTradeBill);
 		if (endMatch) {
 			return true;
@@ -194,7 +198,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 			condition.setMatchStatus(qualityTraceTradeBill.getMatchStatus());
 			this.qualityTraceTradeBillService.updateSelectiveByExample(domain, condition);
 			return true;
-		}else if(unMatchStatus!=null){
+		} else if (unMatchStatus != null) {
 			QualityTraceTradeBill domain = DTOUtils.newDTO(QualityTraceTradeBill.class);
 			domain.setId(qualityTraceTradeBill.getId());
 			domain.setMatchStatus(unMatchStatus.getCode());
@@ -204,12 +208,11 @@ public class QualityTraceTradeBillAutoMatchJob {
 			condition.setMatchStatus(qualityTraceTradeBill.getMatchStatus());
 			this.qualityTraceTradeBillService.updateSelectiveByExample(domain, condition);
 			return true;
-			
+
 		}
 		return false;
 
 	}
-
 
 	private Trigger registeTrigger(Runnable task, final Long delaySeconds) {
 

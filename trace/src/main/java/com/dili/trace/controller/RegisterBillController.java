@@ -141,7 +141,8 @@ public class RegisterBillController {
 					Customer condition = DTOUtils.newDTO(Customer.class);
 					condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
 					condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
-					Customer customer = this.customerService.findByCustomerIdAndPrintingCard(condition).stream().findFirst().orElse(null);
+					Customer customer = this.customerService.findByCustomerIdAndPrintingCard(condition).stream()
+							.findFirst().orElse(null);
 					if (customer == null) {
 						LOGGER.error("新增登记单失败交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
 						return BaseOutput.failure("交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
@@ -220,14 +221,16 @@ public class RegisterBillController {
 		if (registerBill == null) {
 			return "";
 		}
-		if(RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())){
+		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
 			// 分销信息
-			if (registerBill.getSalesType() != null && registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+			if (registerBill.getSalesType() != null
+					&& registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
 				// 分销
-				List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
-				modelMap.put("separateSalesRecords",records);
+				List<SeparateSalesRecord> records = separateSalesRecordService
+						.findByRegisterBillCode(registerBill.getCode());
+				modelMap.put("separateSalesRecords", records);
 			}
-		}else{
+		} else {
 			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
 			condition.setRegisterBillCode(registerBill.getCode());
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
@@ -238,8 +241,9 @@ public class RegisterBillController {
 
 	/**
 	 * 交易区交易单分销记录
+	 * 
 	 * @param modelMap
-	 * @param id 交易单ID
+	 * @param id       交易单ID
 	 * @return
 	 */
 	@RequestMapping(value = "/tradeBillSsRecord/{id}", method = RequestMethod.GET)
@@ -248,7 +252,7 @@ public class RegisterBillController {
 		SeparateSalesRecord condition = DTOUtils.newDTO(SeparateSalesRecord.class);
 		condition.setTradeNo(qualityTraceTradeBill.getOrderId());
 		List<SeparateSalesRecord> separateSalesRecords = separateSalesRecordService.listByExample(condition);
-		modelMap.put("separateSalesRecords",separateSalesRecords);
+		modelMap.put("separateSalesRecords", separateSalesRecords);
 		return "registerBill/tradeBillSsRecord";
 	}
 
@@ -264,14 +268,16 @@ public class RegisterBillController {
 		if (registerBill == null) {
 			return "";
 		}
-		if(RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())){
+		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
 			// 分销信息
-			if (registerBill.getSalesType() != null && registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+			if (registerBill.getSalesType() != null
+					&& registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
 				// 分销
-				List<SeparateSalesRecord> records = separateSalesRecordService.findByRegisterBillCode(registerBill.getCode());
-				modelMap.put("separateSalesRecords",records);
+				List<SeparateSalesRecord> records = separateSalesRecordService
+						.findByRegisterBillCode(registerBill.getCode());
+				modelMap.put("separateSalesRecords", records);
 			}
-		}else{
+		} else {
 			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
 			condition.setRegisterBillCode(registerBill.getCode());
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
@@ -472,7 +478,7 @@ public class RegisterBillController {
 	/**
 	 * 交易单溯源（二维码） 没有分销记录
 	 *
-	 * @param id 交易单ID
+	 * @param id       交易单ID
 	 * @param modelMap
 	 * @return
 	 */
@@ -495,13 +501,15 @@ public class RegisterBillController {
 	@RequestMapping(value = "/tradeSsrQRCcode.html", method = RequestMethod.GET)
 	public String tradeSsrQRCcode(Long id, ModelMap modelMap) {
 		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(separateSalesRecord.getTradeNo());
+		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
+				.findByTradeNo(separateSalesRecord.getTradeNo());
 		RegisterBill bill = registerBillService.findByCode(qualityTraceTradeBill.getRegisterBillCode());
 		modelMap.put("registerBill", bill);
 		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
 		modelMap.put("separateSalesRecord", separateSalesRecord);
 		return "registerBill/tradeBillQRCode";
 	}
+
 	/**
 	 * 交易单复制
 	 *
@@ -511,9 +519,47 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/copy.html", method = RequestMethod.GET)
 	public String copy(Long id, ModelMap modelMap) {
-		RegisterBill bill = registerBillService.get(id);
-		modelMap.put("registerBill", bill);
+		RegisterBill registerBill = registerBillService.get(id);
+		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill);
+		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
+		modelMap.put("tradeTypes", tradeTypeService.findAll());
+		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/copy";
+	}
+
+	private UserInfoDto findUserInfoDto(RegisterBill registerBill) {
+		UserInfoDto userInfoDto=new UserInfoDto();
+		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+			// 理货区
+			User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
+		
+			if(user!=null) {
+				userInfoDto.setUserId(String.valueOf(user.getId()));
+				userInfoDto.setName(user.getName());
+				userInfoDto.setIdCardNo(user.getCardNo());
+				userInfoDto.setPhone(user.getPhone());
+				userInfoDto.setAddr(user.getAddr());
+				
+			}
+	
+		} else {
+
+			Customer condition = DTOUtils.newDTO(Customer.class);
+			condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
+			condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
+			Customer customer = this.customerService.findByCustomerIdAndPrintingCard(condition).stream().findFirst()
+					.orElse(null);
+			if(customer!=null) {
+				userInfoDto.setUserId(customer.getCustomerId());
+				userInfoDto.setName(customer.getName());
+				userInfoDto.setIdCardNo(customer.getIdNo());
+				userInfoDto.setPhone(customer.getPhone());
+				userInfoDto.setAddr(customer.getAddress());
+				userInfoDto.setPrintingCard(customer.getPrintingCard());
+			}
+			
+		}
+		return userInfoDto;
 	}
 
 	/**
@@ -564,6 +610,13 @@ public class RegisterBillController {
 			return dto;
 		}
 
+	}
+	private UserInfoDto maskUserInfoDto(UserInfoDto dto) {
+		
+		if (dto == null) {
+			return dto;
+		}
+		return dto.mask(!SessionContext.hasAccess("post", "registerBill/create.html#user"));
 	}
 
 }

@@ -140,6 +140,17 @@
                 }
             },
         </#resource>
+            <#resource method="post" url="registerBill/index.html#copy">
+            {
+                iconCls:'icon-copy',
+                text:'复制登记单',
+                id:'edit-btn',
+                handler:doCopy,
+                handler:function(){
+                	doCopy();
+                }
+            },
+        </#resource>
         <#resource method="post" url="registerBill/index.html#detail">
             {
                 iconCls:'icon-detail',
@@ -531,6 +542,21 @@
         }
         openWin('/registerBill/modify/' + selected.id);
     }
+    
+    function doCopy(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        openWin('/registerBill/copy.html?id=' + selected.id);
+    }
+    
     function openIframe(content,id){
         layer.open({
             type: 2,
