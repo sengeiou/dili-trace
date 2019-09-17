@@ -7,6 +7,7 @@ import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
@@ -93,7 +94,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * @param tradeNo
      * @return
      */
-    public RegisterBillOutputDto findAndBind(String tradeNo,String cardNo);
+    public QualityTraceTradeBillOutDto findQualityTraceTradeBill(String tradeNo);
     /**
      * 根据状态统计数据
      * @param dto

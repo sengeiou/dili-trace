@@ -12,6 +12,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.MatchDetectParam;
+import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
@@ -181,7 +182,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public RegisterBillOutputDto findByTradeNo(String tradeNo) {
 		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
-		if(qualityTraceTradeBill!=null&&StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
+		if (qualityTraceTradeBill != null && StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
 			RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
 			registerBill.setCode(qualityTraceTradeBill.getRegisterBillCode());
 			List<RegisterBill> list = this.listByExample(registerBill);
@@ -304,7 +305,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	@Override
-	public RegisterBillOutputDto findAndBind(String tradeNo, String cardNo) {
+	public QualityTraceTradeBillOutDto findQualityTraceTradeBill(String tradeNo) {
 		if (StringUtils.isBlank(tradeNo)) {
 			return null;
 		}
@@ -312,37 +313,51 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (qualityTraceTradeBill == null) {
 			return null;
 		}
+		QualityTraceTradeBillOutDto dto = DTOUtils.newDTO(QualityTraceTradeBillOutDto.class);
+		dto.setQualityTraceTradeBill(qualityTraceTradeBill);
 
-		RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
+		if (StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
+			RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
 
-		if (qualityTraceTradeBill.getBuyerIDNo().equalsIgnoreCase(cardNo)) {
-			if (registerBill == null) {
-				int result = matchDetectBind(qualityTraceTradeBill);
-				if (result == 1) {
-					registerBill = findByTradeNo(tradeNo);
-				}
+			registerBill.setCode(qualityTraceTradeBill.getRegisterBillCode());
+			List<RegisterBill> list = this.listByExample(registerBill);
+			if (!list.isEmpty()) {
+				dto.setRegisterBill(list.get(0));
 			}
 		}
 
-		if (registerBill != null) {
-			List<SeparateSalesRecord> records = separateSalesRecordService
-					.findByRegisterBillCode(registerBill.getCode());
-			registerBill.setSeparateSalesRecords(records);
-			registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
-		} else {
-			registerBill = DTOUtils.newDTO(RegisterBillOutputDto.class);
-		}
-		
-		//查询交易单信息
-		QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
-		example.setRegisterBillCode(registerBill.getCode());
-		List<QualityTraceTradeBill> qualityTraceTradeBillList = this.qualityTraceTradeBillService
-				.listByExample(example);
+//		RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
 
-		registerBill.setQualityTraceTradeBillList(qualityTraceTradeBillList);
-		
+//		if (qualityTraceTradeBill.getBuyerIDNo().equalsIgnoreCase(cardNo)) {
+//			if (registerBill == null) {
+//				int result = matchDetectBind(qualityTraceTradeBill);
+//				if (result == 1) {
+//					registerBill = findByTradeNo(tradeNo);
+//				}
+//			}
+//		}
+
+//		if (registerBill != null) {
+//			List<SeparateSalesRecord> records = separateSalesRecordService
+//					.findByRegisterBillCode(registerBill.getCode());
+//			registerBill.setSeparateSalesRecords(records);
+//			registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
+//		} else {
+//			registerBill = DTOUtils.newDTO(RegisterBillOutputDto.class);
+//		}
+
+		// 查询交易单信息
+//		if(StringUtils.isNotBlank(registerBill.getCode())) {
+//			QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
+//			example.setRegisterBillCode(registerBill.getCode());
+//			List<QualityTraceTradeBill> qualityTraceTradeBillList = this.qualityTraceTradeBillService
+//					.listByExample(example);
+//
+//			registerBill.setQualityTraceTradeBillList(qualityTraceTradeBillList);
+//		}
+
 //		registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
-		return registerBill;
+		return dto;
 	}
 
 	@Override
@@ -360,7 +375,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} else {
 			outputDto = DTOUtils.as(registerBill, RegisterBillOutputDto.class);
 		}
-		//查询交易单信息
+		// 查询交易单信息
 		QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
 		example.setRegisterBillCode(registerBill.getCode());
 		List<QualityTraceTradeBill> qualityTraceTradeBillList = this.qualityTraceTradeBillService

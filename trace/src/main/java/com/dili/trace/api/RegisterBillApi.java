@@ -10,6 +10,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
+import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.SeparateSalesRecordDTO;
@@ -342,13 +343,13 @@ public class RegisterBillApi {
     }
     @ApiOperation(value = "通过交易区的交易号获取登记单详细信息")
     @RequestMapping(value = "/tradeNo/{tradeNo}",method = RequestMethod.GET)
-    public BaseOutput<RegisterBillOutputDto> getBillByTradeNo( @PathVariable String tradeNo){
+    public BaseOutput<QualityTraceTradeBillOutDto> getBillByTradeNo( @PathVariable String tradeNo){
         LOGGER.info("getBillByTradeNo获取登记单:"+tradeNo);
-        User user=userService.get(sessionContext.getAccountId());
-        if(user==null){
-            return BaseOutput.failure("未登陆用户");
-        }
-        RegisterBillOutputDto bill = registerBillService.findAndBind(tradeNo,user.getCardNo());
+//        User user=userService.get(sessionContext.getAccountId());
+//        if(user==null){
+//            return BaseOutput.failure("未登陆用户");
+//        }
+        QualityTraceTradeBillOutDto bill = registerBillService.findQualityTraceTradeBill(tradeNo);
         return BaseOutput.success().setData(bill);
     }
     @ApiOperation(value = "通过分销记录ID获取分销单")
