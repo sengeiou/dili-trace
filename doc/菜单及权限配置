@@ -44,3 +44,6 @@ ALTER TABLE `biz_number` MODIFY COLUMN `version`  bigint(20) NULL DEFAULT NULL C
 
 
 
+
+
+
