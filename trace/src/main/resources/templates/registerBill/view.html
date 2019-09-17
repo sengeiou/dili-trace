@@ -99,28 +99,49 @@
                 </div>
                 <% } %>
             </div>
+
             <div class="form-item-group">
                 <h4 class="form-item-title">检测信息</h4>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered">
+                        <thead>
+                            <th><span class="red">&lowast;</span>检测时间</th>
+                            <th><span class="red">&lowast;</span>检测结果</th>
+                            <th><span class="red">&lowast;</span>检测数值</th>
+ 							<th><span class="red">&lowast;</span>检测人员</th>
+                        </tr>
+                        </thead>
+                       <% for(detectRecord in detectRecordList){%>
+                        <tr>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="${detectRecord.detectTime,'yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required readonly />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control" value="${detectRecord.pdResult}" required readonly/>
+                                </div>
+                            </td>
 
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
-                    <input class="form-control input-sm" value="${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
+                             <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control input-sm" value="${detectRecord.detectOperator}" required readonly/>
+                                </div>
+                            </td>
+                        </tr>
+                        <%}%>
+                    </table>
+                    <!-- 表格后的统计 end -->
                 </div>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.detectStateName}" required readonly/>
-                </div>
-                <div class="form-group" >
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测数值</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.latestPdResult!}" readonly/>
-                </div>
-                <br>
-                <div class="form-group" >
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测人员</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.latestDetectOperator!}" readonly/>
-                </div>
-
             </div>
+            
+			 
             <%
             if(registerBill.registerSource == 1){
                 if( registerBill.salesType == 2
