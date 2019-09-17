@@ -14,6 +14,7 @@ import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.SeparateSalesRecordDTO;
+import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.service.*;
@@ -374,6 +375,27 @@ public class RegisterBillApi {
         }
         List<RegisterBill> bills = registerBillService.findByProductName(productName);
         return BaseOutput.success().setData(bills);
+    }
+    
+    
+    @ApiOperation(value = "通过code删除登记单",httpMethod = "GET", notes="productName=?")
+    @RequestMapping(value = "/deleteRegisterBillByCode/{registerBillCode}",method = RequestMethod.GET)
+    public BaseOutput<List<RegisterBill>> deleteRegisterBillByCode( @PathVariable String registerBillCode){
+        LOGGER.info("通过code删除登记单:{}",registerBillCode);
+        User user=userService.get(sessionContext.getAccountId());
+        if(StringUtils.isBlank(registerBillCode)){
+            return BaseOutput.failure("参数错误");
+        }
+        RegisterBill registerBill= this.registerBillService.findByCode(registerBillCode);
+        if(registerBill==null) {
+        	return BaseOutput.failure("登记单不存在");
+        }
+        if(!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(registerBill.getState())) {
+        	return BaseOutput.failure("不能删除当前状态登记单");
+        }
+        this.registerBillService.delete(registerBill.getId());
+        return BaseOutput.success().setData(true);	
+        
     }
 
 
