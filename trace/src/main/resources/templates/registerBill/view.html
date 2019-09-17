@@ -99,26 +99,37 @@
                 </div>
                 <% } %>
             </div>
-            <div class="form-item-group">
-                <h4 class="form-item-title">检测信息</h4>
 
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
-                    <input class="form-control input-sm" value="${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
+			 <div class="form-item-group">
+			  <h4 class="form-item-title">检测信息</h4>
+              <div class="form-group">
+               <table class="table table-bordered">
+				<thead>
+					<tr>
+						<td>检测时间</td>
+						<td>检测结果</td>
+						<td>检测数值</td>
+						<td>检测人员</td>
+					</tr>
+				</thead>
+				<tbody>
+				 <% for(detectRecord in detectRecordList){%>
+                 <tr>
+					<td>${detectRecord.detectTime,'yyyy-MM-dd HH:mm:ss'}</td>
+					<td><%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%></td>
+					<td>${detectRecord.pdResult}</td>
+					<td>${detectRecord.detectOperator}</td>
+				</tr>
+                <%}%>
+                        
+				
+				
+				</tbody>
+				
+				
+				</table>
                 </div>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.detectStateName}" required readonly/>
-                </div>
-                <div class="form-group" >
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测数值</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.latestPdResult!}" readonly/>
-                </div>
-                <br>
-                <div class="form-group" >
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测人员</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.latestDetectOperator!}" readonly/>
-                </div>
+               
 
             </div>
             <%
