@@ -144,7 +144,8 @@
             {
                 iconCls:'icon-copy',
                 text:'复制登记单',
-                id:'edit-btn',
+                id:'copy-btn',
+                disabled :true,
                 handler:doCopy,
                 handler:function(){
                 	doCopy();
@@ -189,6 +190,7 @@
     function onClickRow(index,row) {
         var state = row.$_state;
         var detectState= row.$_detectState;
+        $('#copy-btn').linkbutton('enable');
         if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
             $('#undo-btn').linkbutton('enable');
