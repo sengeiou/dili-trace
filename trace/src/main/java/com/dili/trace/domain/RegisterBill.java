@@ -39,6 +39,14 @@ public interface RegisterBill extends IBaseDomain {
     String getCode();
 
     void setCode(String code);
+    
+    @ApiModelProperty(value = "采样编号")
+    @Column(name = "`sample_code`")
+    @FieldDef(label="采样编号")
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getSampleCode();
+
+    void setSampleCode(String sampleCode);
 
     @ApiModelProperty(value = "1.理货区 2.交易区")
     @Column(name = "`register_source`")
