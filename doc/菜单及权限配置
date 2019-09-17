@@ -25,10 +25,26 @@
 查看 registerBill/statics.html#detail
 导出 registerBill/statics.html#export
 
-
+//2.0版本脚本变动
 ALTER TABLE `separate_sales_record`
 MODIFY COLUMN `register_bill_code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '被分销的登记单编码' AFTER `sales_weight`,
 ADD COLUMN `trade_no`  varchar(20) NULL AFTER `register_bill_code`;
+
+ALTER TABLE `quality_trace_trade_bill`
+ADD COLUMN `register_bill_code`  varchar(20) NULL AFTER `bill_id`;
+
+ALTER TABLE `register_bill` DROP COLUMN `trade_no`;
+ALTER TABLE `biz_number` MODIFY COLUMN `version`  bigint(20) NULL DEFAULT NULL COMMENT '版本号' AFTER `memo`;
+
+ALTER TABLE `separate_sales_record`
+ADD COLUMN `sales_plate`  varchar(15) NULL COMMENT '分销车牌号' AFTER `sales_user_name`;
+
+ALTER TABLE `register_bill`
+ADD COLUMN `sample_code`  varchar(20) NULL COMMENT '采样编号' AFTER `code`;
+
+
+
+
 
 
 

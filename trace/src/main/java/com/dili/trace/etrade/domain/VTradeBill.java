@@ -12,6 +12,7 @@ import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
+import com.dili.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
 
 @Table(name = "VTradeBill")
 public class VTradeBill extends BaseDomain {
@@ -327,6 +328,7 @@ public class VTradeBill extends BaseDomain {
 		bill.setSellerAccount(this.sellerAccount);
 		bill.setSellerName(this.sellerName);
 		bill.setSellerIDNo(StringUtils.trimToEmpty(this.sellerIDNo).toUpperCase());
+		bill.setMatchStatus(QualityTraceTradeBillMatchStatusEnum.INITED.getCode());
 
 //		bill.setTradeFlowId("");
 

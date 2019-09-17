@@ -502,6 +502,19 @@ public class RegisterBillController {
 		modelMap.put("separateSalesRecord", separateSalesRecord);
 		return "registerBill/tradeBillQRCode";
 	}
+	/**
+	 * 交易单复制
+	 *
+	 * @param id
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/copy.html", method = RequestMethod.GET)
+	public String copy(Long id, ModelMap modelMap) {
+		RegisterBill bill = registerBillService.get(id);
+		modelMap.put("registerBill", bill);
+		return "registerBill/copy";
+	}
 
 	/**
 	 * 保存处理结果

@@ -1,11 +1,22 @@
 <script type="text/javascript">
     let goodsItemCount = 0;
     $(function () {
+        $('#registerSource').focus();
         $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
         initFileUpload('#detectReportUrlFile');
         initFileUpload1('#originCertifiyUrl_'+goodsItemCount);
         initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
         initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
+
+        var registerSource = localStorage.getItem('registerSource');
+        var tradeTypeId = localStorage.getItem('tradeTypeId');
+        if(registerSource){
+            $('#registerSource').val(registerSource);
+            $('[name="registerSource"]').trigger('change');
+        }
+        if(tradeTypeId){
+            $('#tradeTypeId').val(tradeTypeId);
+        }
     });
 
     function returnBack(){
@@ -305,8 +316,10 @@
                     var registerSource = $("#registerSource").val();
                       if(registerSource == 1){
                           console.log("打印信息:--:"+paramStr);
-                          printDirect(paramStr)
+                          printDirect(paramStr);
                       }else{
+                          localStorage.setItem('registerSource',$("#registerSource").val());
+                          localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
                           layer.alert("登记成功", {type: 0}, function () {
                           	parent.closeWin('view_win');
                           });

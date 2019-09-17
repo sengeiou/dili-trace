@@ -270,4 +270,13 @@ public interface QualityTraceTradeBill extends IBaseDomain {
 	Integer getSaleUnit();
 
 	void setSaleUnit(Integer saleUnit);
+	
+	
+	@ApiModelProperty(value = "匹配状态")
+	@Column(name = "`match_status`")
+	@FieldDef(label = "匹配状态")
+	@EditMode(editor = FieldEditor.Number, required = true)
+	Integer getMatchStatus();
+
+	void setMatchStatus(Integer matchStatus);
 }

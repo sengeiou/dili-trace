@@ -71,15 +71,12 @@ public class MatchDetectParam implements Serializable {
         this.end = end;
     }
 
-    @Override
-    public String toString() {
-        return "MatchDetectParam{" +
-                "tradeNo='" + tradeNo + '\'' +
-                ", tradeTypeName='" + tradeTypeName + '\'' +
-                ", productName='" + productName + '\'' +
-                ", idCardNo='" + idCardNo + '\'' +
-                ", start=" + start +
-                ", end=" + end +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "MatchDetectParam [tradeNo=" + tradeNo + ", tradeTypeId=" + tradeTypeId + ", tradeTypeName="
+				+ tradeTypeName + ", productName=" + productName + ", idCardNo=" + idCardNo + ", start=" + start
+				+ ", end=" + end + "]";
+	}
+
+    
 }
