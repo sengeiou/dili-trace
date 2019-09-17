@@ -36,6 +36,12 @@ ADD COLUMN `register_bill_code`  varchar(20) NULL AFTER `bill_id`;
 ALTER TABLE `register_bill` DROP COLUMN `trade_no`;
 ALTER TABLE `biz_number` MODIFY COLUMN `version`  bigint(20) NULL DEFAULT NULL COMMENT '版本号' AFTER `memo`;
 
+ALTER TABLE `separate_sales_record`
+ADD COLUMN `sales_plate`  varchar(15) NULL COMMENT '分销车牌号' AFTER `sales_user_name`;
+
+ALTER TABLE `register_bill`
+ADD COLUMN `sample_code`  varchar(20) NULL COMMENT '采样编号' AFTER `code`;
+
 
 
 
