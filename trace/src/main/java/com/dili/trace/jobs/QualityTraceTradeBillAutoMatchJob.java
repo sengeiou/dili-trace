@@ -71,7 +71,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 					Arrays.asList(QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS.getCode(),
 							QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY.getCode()));
 			if (qualityTraceTradeBillList.isEmpty()) {
-				logger.info("executeMatchTodayRegisterBill no data");
+				logger.info("没有数据可以当天登记单匹配");
 				break;
 			}
 			qualityTraceTradeBillList.stream().filter(Objects::nonNull).filter(qb -> qb.getOrderPayDate() != null)
@@ -93,7 +93,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 			List<QualityTraceTradeBill> qualityTraceTradeBillList = this
 					.queryQualityTraceTradeBill(Arrays.asList(QualityTraceTradeBillMatchStatusEnum.INITED.getCode()));
 			if (qualityTraceTradeBillList.isEmpty()) {
-				logger.info("executeMatch7daysRegisterBill no data");
+				logger.info("没有数据可以进行前七天登记单匹配");
 				break;
 			}
 			qualityTraceTradeBillList.stream().filter(Objects::nonNull).filter(qb -> qb.getOrderPayDate() != null)
@@ -151,7 +151,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 				.toLocalDateTime();
 		LocalDateTime start = payDate.minusDays(7);
 		LocalDateTime end = payDate;
-
+		logger.info("交易单:{} 进行前七天{}-{}匹配",qualityTraceTradeBill.getId(),start,end);
 		return this.matchRegisterBill(qualityTraceTradeBill, start, end,
 				QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS);
 
@@ -163,7 +163,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 				.toLocalDateTime();
 		LocalDateTime start = payDate;
 		LocalDateTime end = payDate.withHour(23).withMinute(59).withSecond(59);
-
+		logger.info("交易单:{} 进行当天{}-{}匹配",qualityTraceTradeBill.getId(),start,end);
 		return this.matchRegisterBill(qualityTraceTradeBill, start, end,
 				QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY);
 
@@ -173,6 +173,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 			LocalDateTime end, QualityTraceTradeBillMatchStatusEnum unMatchStatus) {
 		boolean endMatch = this.endMatch(qualityTraceTradeBill);
 		if (endMatch) {
+			logger.info("交易单:{} 已过今天,不再匹配",qualityTraceTradeBill.getId());
 			return true;
 		}
 		MatchDetectParam matchDetectParam = new MatchDetectParam();
@@ -184,10 +185,11 @@ public class QualityTraceTradeBillAutoMatchJob {
 
 		matchDetectParam.setStart(Date.from(start.toInstant(OffsetDateTime.now().getOffset())));
 		matchDetectParam.setEnd(Date.from(end.toInstant(OffsetDateTime.now().getOffset())));
-		logger.info("进行匹配:{}", matchDetectParam);
+		logger.info("进行条件匹配:{}", matchDetectParam);
 		List<RegisterBill> registerBillList = this.registerBillMapper.findUnMatchedRegisterBill(matchDetectParam);
 		RegisterBill registerBill = registerBillList.stream().findFirst().orElse(null);
 		if (registerBill != null) {
+			
 			QualityTraceTradeBill domain = DTOUtils.newDTO(QualityTraceTradeBill.class);
 			domain.setId(qualityTraceTradeBill.getId());
 			domain.setMatchStatus(QualityTraceTradeBillMatchStatusEnum.MATCHED.getCode());
@@ -197,8 +199,10 @@ public class QualityTraceTradeBillAutoMatchJob {
 			condition.setId(qualityTraceTradeBill.getId());
 			condition.setMatchStatus(qualityTraceTradeBill.getMatchStatus());
 			this.qualityTraceTradeBillService.updateSelectiveByExample(domain, condition);
+			logger.info("交易单:{} 匹配到登记单:{},更新为新匹配状态:{}",qualityTraceTradeBill.getId(),registerBill.getId(),QualityTraceTradeBillMatchStatusEnum.MATCHED);
 			return true;
 		} else if (unMatchStatus != null) {
+			logger.info("交易单:{} 没有匹配到登记单,更新为新匹配状态:{}",qualityTraceTradeBill.getId(),unMatchStatus);
 			QualityTraceTradeBill domain = DTOUtils.newDTO(QualityTraceTradeBill.class);
 			domain.setId(qualityTraceTradeBill.getId());
 			domain.setMatchStatus(unMatchStatus.getCode());
@@ -210,6 +214,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 			return true;
 
 		}
+		logger.info("交易单:{} 没有匹配到登记单,保持原有匹配状态:{}",qualityTraceTradeBill.getId(),qualityTraceTradeBill.getMatchStatus());
 		return false;
 
 	}
