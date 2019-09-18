@@ -143,7 +143,7 @@
             <#resource method="post" url="registerBill/index.html#copy">
             {
                 iconCls:'icon-copy',
-                text:'复制登记单',
+                text:'复制',
                 id:'copy-btn',
                 disabled :true,
                 handler:doCopy,
