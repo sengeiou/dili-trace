@@ -223,13 +223,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setOperatorName(userTicket.getRealName());
 			registerBill.setOperatorId(userTicket.getId());
 			if (pass) {
+				registerBill.setSampleCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE));
 				registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
-				if (StringUtils.isNotBlank(registerBill.getDetectReportUrl())) {
-					// 有检测报告，直接通过检测
-//					registerBill.setLatestDetectTime(new Date());
-					registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-					registerBill.setDetectState(BillDetectStateEnum.PASS.getCode());
-				}
+//				if (StringUtils.isNotBlank(registerBill.getDetectReportUrl())) {
+//					// 有检测报告，直接通过检测
+////					registerBill.setLatestDetectTime(new Date());
+//					registerBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+//					registerBill.setDetectState(BillDetectStateEnum.PASS.getCode());
+//				}
 			} else {
 				registerBill.setState(-1);
 			}

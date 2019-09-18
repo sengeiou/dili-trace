@@ -235,6 +235,14 @@ public class RegisterBillController {
 			condition.setRegisterBillCode(registerBill.getCode());
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
+		
+		
+		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
+		conditon.setRegisterBillCode(registerBill.getCode());
+		conditon.setSort("id");
+		conditon.setOrder("desc");
+		List<DetectRecord>detectRecordList=this.detectRecordService.listByExample(conditon);
+		modelMap.put("detectRecordList", detectRecordList);
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/view";
 	}
