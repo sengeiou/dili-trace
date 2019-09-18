@@ -425,27 +425,5 @@ public class RegisterBillApi {
 
 	}
 
-	@ApiOperation(value = "查询登记单", httpMethod = "GET", notes = "productName=?")
-	@RequestMapping(value = "/listAllRegisterBill", method = RequestMethod.POST)
-	public BaseOutput<List<RegisterBill>> listAllRegisterBill(RegisterBillDto input) {
-		if(input.getPage()==null) {
-			input.setPage(1);
-		}
-		if(input.getRows()==null) {
-			input.setRows(10);
-		}
-		
-		LOGGER.info("查询登记单:{}", input);
-		User user = userService.get(sessionContext.getAccountId());
-		RegisterBillDto condition = DTOUtils.newDTO(RegisterBillDto.class);
-		condition.setState(input.getState());
-		condition.setDetectState(input.getDetectState());
-		condition.setPage(input.getPage());
-		condition.setRows(input.getRows());
-		
-		BasePage<RegisterBill> list = this.registerBillService.listPageByExample(condition);
 
-		return BaseOutput.success().setData(list);
-
-	}
 }
