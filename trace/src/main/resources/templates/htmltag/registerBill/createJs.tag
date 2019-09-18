@@ -8,7 +8,7 @@
         initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
         initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
 
-        if(location.hash){
+        if(!location.hash){
             var registerSource = localStorage.getItem('registerSource');
             var tradeTypeId = localStorage.getItem('tradeTypeId');
             if(registerSource){
