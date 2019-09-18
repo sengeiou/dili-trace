@@ -556,7 +556,7 @@
             });
             return;
         }
-        openWin('/registerBill/copy.html?id=' + selected.id);
+        openWin('/registerBill/copy.html?id=' + selected.id+"#copy");
     }
     
     function openIframe(content,id){

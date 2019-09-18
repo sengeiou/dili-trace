@@ -16,6 +16,7 @@ public enum RegisterBillStateEnum {
     WAIT_CHECK(4, "待检测"),
     CHECKING(5, "检测中"),
     ALREADY_CHECK(6, "已检测"),
+    ALREADY_AUDIT(7, "已审核"),
     //NO_PASS(8, "审核未通过"),
     //UNDO(9, "撤销"),
     ;

@@ -72,6 +72,17 @@ public interface SeparateSalesRecord extends IBaseDomain {
     Integer getSalesWeight();
 
     void setSalesWeight(Integer salesWeight);
+    
+    
+    @ApiModelProperty(value = "车牌号")
+    @Column(name = "`sales_plate`")
+    @FieldDef(label="sales_plate")
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getSalesPlate();
+
+    void setSalesPlate(String salesPlate);
+    
+    
     @ApiModelProperty(value = "被分销的登记单")
     @Column(name = "`register_bill_code`")
     @FieldDef(label="registerBillCode")

@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -156,6 +158,14 @@ public class RegisterBillApi {
              if(registerBill == null){
                  return BaseOutput.failure("没有查到需要分销的登记单");
              }
+             if(registerBill.getState()==null) {
+            	 return BaseOutput.failure("登记单状态错误");
+             }
+             List<Integer>stateList=Arrays.asList(RegisterBillStateEnum.ALREADY_CHECK.getCode(),RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+             if(!stateList.contains(registerBill.getState())) {
+            	 return BaseOutput.failure("当前状态登记单不能分销");
+             }
+             
             if(registerBill.getUserId().longValue()!=user.getId().longValue()){
                 LOGGER.info("业户ID"+registerBill.getUserId()+"用户ID:"+user.getId());
                 return BaseOutput.failure("没有权限分销");
