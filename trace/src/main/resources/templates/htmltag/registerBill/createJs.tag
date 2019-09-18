@@ -8,14 +8,16 @@
         initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
         initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
 
-        var registerSource = localStorage.getItem('registerSource');
-        var tradeTypeId = localStorage.getItem('tradeTypeId');
-        if(registerSource){
-            $('#registerSource').val(registerSource);
-            $('[name="registerSource"]').trigger('change');
-        }
-        if(tradeTypeId){
-            $('#tradeTypeId').val(tradeTypeId);
+        if(location.hash){
+            var registerSource = localStorage.getItem('registerSource');
+            var tradeTypeId = localStorage.getItem('tradeTypeId');
+            if(registerSource){
+                $('#registerSource').val(registerSource);
+                $('[name="registerSource"]').trigger('change');
+            }
+            if(tradeTypeId){
+                $('#tradeTypeId').val(tradeTypeId);
+            }
         }
     });
 
