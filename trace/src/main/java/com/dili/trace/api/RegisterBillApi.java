@@ -126,6 +126,9 @@ public class RegisterBillApi {
 			// 校验买家身份证
 			QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
 					.findByTradeNo(salesRecord.getTradeNo());
+			if(qualityTraceTradeBill==null) {
+				return BaseOutput.failure("没有查找到交易单");
+			}
 			if (!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo())
 					.equals(StringUtils.lowerCase(user.getCardNo()))) {
 				LOGGER.info("买家身份证" + qualityTraceTradeBill.getBuyerIDNo() + "用户身份证:" + user.getCardNo());
