@@ -536,6 +536,17 @@ public class RegisterBillController {
 		LOGGER.info("============================param id="+id+"===========================");
 		return "registerBill/tsqrc";
 	}
+	/**
+	 * 交易单分销记录溯源（二维码）
+	 *
+	 * @param id
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/tsqrc1.html", method = RequestMethod.GET)
+	public String tsqrc3(Long id, ModelMap modelMap) {
+		return "registerBill/tsqrc";
+	}
 
 	/**
 	 * 交易单分销记录溯源（二维码）
