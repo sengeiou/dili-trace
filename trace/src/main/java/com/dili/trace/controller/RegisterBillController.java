@@ -534,7 +534,7 @@ public class RegisterBillController {
 		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
 		modelMap.put("separateSalesRecord", separateSalesRecord);
 		LOGGER.info("============================param id="+id+"===========================");
-		return "registerBill/tradeBillQRCode";
+		return "registerBill/tsqrc";
 	}
 
 	/**

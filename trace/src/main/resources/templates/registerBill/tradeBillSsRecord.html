@@ -6,7 +6,7 @@
                 <th><span class="red">&lowast;</span>分销客户</th>
                 <th><span class="red">&lowast;</span>分销地</th>
                 <th><span class="red">&lowast;</span>分销重量/KG</th>
-
+                <th><span class="red">&lowast;</span>车牌号</th>
                 <th>溯源二维码</th>
             </tr>
             </thead>
@@ -15,7 +15,8 @@
             <tr>
                 <td>${record.salesUserName!}</td>
                 <td>${record.salesCityName!}</td>
-                <td>${record.salesWeight}</td>
+                <td>${record.salesWeight!}</td>
+                <td>${record.salesPlate!}</td>
                 <td>
                     <a href="javascript:void(0)" class="show-img"><img id="separateSalesRecordQR${recordLP.index}" alt="" width="30px" height="30px" class="show-image"></a>
                     <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/tradeSsrQRCcode.html?id=${record.id!}"/>
