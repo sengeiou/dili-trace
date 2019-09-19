@@ -7,12 +7,12 @@ package com.dili.trace.glossary;
  *
  * @author yuehongbo
  * @createTime 2018/11/8 18:43
- * 1.合格 2.不合格 3.复检合格 4.复检不合格
+ * 1.初检合格 2.不合格 3.复检合格 4.复检不合格
  */
 public enum BillDetectStateEnum {
 
-    PASS(1, "合格"),
-    NO_PASS(2, "不合格"),
+    PASS(1, "初检合格"),
+    NO_PASS(2, "初检不合格"),
     REVIEW_PASS(3, "复检合格"),
     REVIEW_NO_PASS(4, "复检不合格"),
     ;
