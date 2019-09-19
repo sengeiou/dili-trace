@@ -177,7 +177,7 @@
                             <th><span class="red">&lowast;</span>分销客户</th>
                             <th><span class="red">&lowast;</span>分销地</th>
                             <th><span class="red">&lowast;</span>分销重量/KG</th>
-
+                            <th><span class="red">&lowast;</span>车牌号</th>
                             <th>溯源二维码</th>
                         </tr>
                         </thead>
@@ -199,7 +199,11 @@
                                     <input type="text" name="weight" class="form-control input-sm" value="${record.salesWeight}" required readonly/>
                                 </div>
                             </td>
-
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="salesPlate" class="form-control input-sm" value="${record.salesPlate}" required readonly/>
+                                </div>
+                            </td>
                             <td>
                                 <div class="imageUploadWrap">
                                     <div class="form-group">
