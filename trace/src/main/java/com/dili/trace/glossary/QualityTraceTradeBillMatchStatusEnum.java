@@ -4,8 +4,8 @@ public enum QualityTraceTradeBillMatchStatusEnum {
 	   INITED(1, "初始"),
 	    MATCHED(2, "已匹配"),
 	    UNMATCHED(3, "未匹配"),
-	    UNMATCHE_7DAYS(4, "未匹配"),
-	    UNMATCHE_TODAY(5, "未匹配"),
+	    UNMATCHE_7DAYS(4, "未匹配前七天"),
+	    UNMATCHE_TODAY(5, "未匹配当天"),
 	    ;
 
 	    private String name;
