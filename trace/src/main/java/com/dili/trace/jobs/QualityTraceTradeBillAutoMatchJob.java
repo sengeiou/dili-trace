@@ -164,18 +164,25 @@ public class QualityTraceTradeBillAutoMatchJob {
 		LocalDateTime start = payDate;
 		LocalDateTime end = payDate.withHour(23).withMinute(59).withSecond(59);
 		logger.info("交易单:{} 进行当天{}-{}匹配",qualityTraceTradeBill.getId(),start,end);
-		return this.matchRegisterBill(qualityTraceTradeBill, start, end,
+		boolean matched= this.matchRegisterBill(qualityTraceTradeBill, start, end,
 				QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY);
+		
+		//如果没有匹配到交易日当天,则进行时间判断,决定是否终止匹配
+		if(!matched) {
+			boolean endMatch = this.endMatch(qualityTraceTradeBill);
+			if (endMatch) {
+				logger.info("交易单:{} 已过今天,不再匹配",qualityTraceTradeBill.getId());
+				return true;
+			}
+		}
+		
+		return false;
 
 	}
 
 	private boolean matchRegisterBill(QualityTraceTradeBill qualityTraceTradeBill, LocalDateTime start,
 			LocalDateTime end, QualityTraceTradeBillMatchStatusEnum unMatchStatus) {
-		boolean endMatch = this.endMatch(qualityTraceTradeBill);
-		if (endMatch) {
-			logger.info("交易单:{} 已过今天,不再匹配",qualityTraceTradeBill.getId());
-			return true;
-		}
+
 		MatchDetectParam matchDetectParam = new MatchDetectParam();
 		// matchDetectParam.setTradeNo(qualityTraceTradeBill.getOrderId());
 		matchDetectParam.setTradeTypeId(qualityTraceTradeBill.getTradetypeId());
