@@ -517,56 +517,6 @@ public class RegisterBillController {
 		modelMap.put("separateSalesRecord", separateSalesRecord);
 		return "registerBill/tradeBillQRCode";
 	}
-	/**
-	 * 交易单分销记录溯源（二维码）
-	 *
-	 * @param id
-	 * @param modelMap
-	 * @return
-	 */
-	@RequestMapping(value = "/tsqrc.html", method = RequestMethod.GET)
-	public String tsqrc1(Long id, ModelMap modelMap) {
-		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
-				.findByTradeNo(separateSalesRecord.getTradeNo());
-		RegisterBill bill = registerBillService.findByCode(qualityTraceTradeBill.getRegisterBillCode());
-		modelMap.put("registerBill", bill);
-		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
-		modelMap.put("separateSalesRecord", separateSalesRecord);
-		LOGGER.info("============================param id="+id+"===========================");
-		return "registerBill/tsqrc";
-	}
-	/**
-	 * 交易单分销记录溯源（二维码）
-	 *
-	 * @param id
-	 * @param modelMap
-	 * @return
-	 */
-	@RequestMapping(value = "/tsqrc1.html", method = RequestMethod.GET)
-	public String tsqrc3(Long id, ModelMap modelMap) {
-		return "registerBill/tsqrc";
-	}
-
-	/**
-	 * 交易单分销记录溯源（二维码）
-	 *
-	 * @param id
-	 * @param modelMap
-	 * @return
-	 */
-	@RequestMapping(value = "/tsqrc/{id}", method = RequestMethod.GET)
-	public String tsqrc2(@PathVariable Long id, ModelMap modelMap) {
-		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
-				.findByTradeNo(separateSalesRecord.getTradeNo());
-		RegisterBill bill = registerBillService.findByCode(qualityTraceTradeBill.getRegisterBillCode());
-		modelMap.put("registerBill", bill);
-		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
-		modelMap.put("separateSalesRecord", separateSalesRecord);
-		LOGGER.info("============================param id="+id+"===========================");
-		return "registerBill/tradeBillQRCode";
-	}
 
 	/**
 	 * 交易单复制
