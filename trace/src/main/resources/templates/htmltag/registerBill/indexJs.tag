@@ -190,6 +190,8 @@
     function onClickRow(index,row) {
         var state = row.$_state;
         var detectState= row.$_detectState;
+        var handleResult= row.handleResult;
+        console.info(handleResult)
         $('#copy-btn').linkbutton('enable');
         if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
@@ -226,11 +228,17 @@
             $('#sampling-btn').linkbutton('disable');
             $('#undo-btn').linkbutton('disable');
             $('#audit-btn').linkbutton('disable');
-            if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
+            if(handleResult==null||handleResult==''){
+            	 $('#review-btn').linkbutton('enable');
+            }else{
+            	$('#review-btn').linkbutton('disable');
+            }
+            
+           /* if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
                 $('#review-btn').linkbutton('enable');
             }else{
                 $('#review-btn').linkbutton('disable');
-            }
+            }*/
         }
         $('#handle-btn').linkbutton('disable');
         if(row.handleResultUrl&&row.handleResult&&row.handleResultUrl!=null&&row.handleResult!=null&&row.handleResultUrl!=''&&row.handleResult!=''){
