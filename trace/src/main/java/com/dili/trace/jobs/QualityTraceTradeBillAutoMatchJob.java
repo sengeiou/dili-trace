@@ -66,9 +66,10 @@ public class QualityTraceTradeBillAutoMatchJob {
 //	@Async
 //	@Scheduled(fixedDelay = 1000L * 60L * 30L)
 	public void executeMatchTodayRegisterBill() {
+		int page=1;
 		while (true) {
 			List<QualityTraceTradeBill> qualityTraceTradeBillList = this.queryQualityTraceTradeBill(
-					Arrays.asList(QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS.getCode()));
+					Arrays.asList(QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS.getCode()),page++);
 			if (qualityTraceTradeBillList.isEmpty()) {
 				logger.info("没有数据可以当天登记单匹配");
 				break;
@@ -88,9 +89,10 @@ public class QualityTraceTradeBillAutoMatchJob {
 //	@Async
 //	@Scheduled(fixedDelay = 1000L * 60L * 1L)
 	public void executeMatch7daysRegisterBill() {
+		int page=1;
 		while (true) {
 			List<QualityTraceTradeBill> qualityTraceTradeBillList = this
-					.queryQualityTraceTradeBill(Arrays.asList(QualityTraceTradeBillMatchStatusEnum.INITED.getCode()));
+					.queryQualityTraceTradeBill(Arrays.asList(QualityTraceTradeBillMatchStatusEnum.INITED.getCode()),page++);
 			if (qualityTraceTradeBillList.isEmpty()) {
 				logger.info("没有数据可以进行前七天登记单匹配");
 				break;
@@ -108,13 +110,13 @@ public class QualityTraceTradeBillAutoMatchJob {
 		}
 	}
 
-	private List<QualityTraceTradeBill> queryQualityTraceTradeBill(List<Integer> matchStatusList) {
+	private List<QualityTraceTradeBill> queryQualityTraceTradeBill(List<Integer> matchStatusList,int page) {
 
 		QualityTraceTradeBillDto queryCondtion = DTOUtils.newDTO(QualityTraceTradeBillDto.class);
 		queryCondtion.setMatchStatusList(matchStatusList);
 		queryCondtion.setSort("id");
 		queryCondtion.setOrder("asc");
-		queryCondtion.setPage(1);
+		queryCondtion.setPage(page);
 		queryCondtion.setRows(100);
 		List<QualityTraceTradeBill> qualityTraceTradeBillList = this.qualityTraceTradeBillService
 				.listPageByExample(queryCondtion).getDatas();
