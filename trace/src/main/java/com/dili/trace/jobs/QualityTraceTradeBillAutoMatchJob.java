@@ -68,8 +68,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 	public void executeMatchTodayRegisterBill() {
 		while (true) {
 			List<QualityTraceTradeBill> qualityTraceTradeBillList = this.queryQualityTraceTradeBill(
-					Arrays.asList(QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS.getCode(),
-							QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY.getCode()));
+					Arrays.asList(QualityTraceTradeBillMatchStatusEnum.UNMATCHE_7DAYS.getCode()));
 			if (qualityTraceTradeBillList.isEmpty()) {
 				logger.info("没有数据可以当天登记单匹配");
 				break;
@@ -164,8 +163,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 		LocalDateTime start = payDate;
 		LocalDateTime end = payDate.withHour(23).withMinute(59).withSecond(59);
 		logger.info("交易单:{} 进行当天{}-{}匹配",qualityTraceTradeBill.getId(),start,end);
-		boolean matched= this.matchRegisterBill(qualityTraceTradeBill, start, end,
-				QualityTraceTradeBillMatchStatusEnum.UNMATCHE_TODAY);
+		boolean matched= this.matchRegisterBill(qualityTraceTradeBill, start, end,null);
 		
 		//如果没有匹配到交易日当天,则进行时间判断,决定是否终止匹配
 		if(!matched) {
