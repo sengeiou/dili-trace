@@ -65,7 +65,11 @@
         <p>商品名称：<span>${registerBill.productName!}</span></p>
         <p>总重量：<span>${registerBill.weight!}KG</span></p>
         <p>产地：<span>${registerBill.originName!}</span></p>
+        <% if(registerBill.state == 7){ %>
+        <p>状态：<span>已审核</span></p>
+        <% }else{ %>
         <p>状态：<span>已检测</span></p>
+        <% } %>
     </div>
     <div class="group">
         <p>检测时间：<span>${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span></p>
