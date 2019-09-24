@@ -69,7 +69,8 @@ public class AllRegisterBillApi {
 		if(input.getRows()==null) {
 			input.setRows(10);
 		}
-		
+		input.setSort("created");
+		input.setOrder("desc");
 		LOGGER.info("查询登记单:{}", input);
 		RegisterBillDto condition = DTOUtils.newDTO(RegisterBillDto.class);
 		condition.setState(input.getState());
