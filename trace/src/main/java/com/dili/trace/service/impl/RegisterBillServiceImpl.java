@@ -231,7 +231,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					// 有检测报告，直接已审核
 //					registerBill.setLatestDetectTime(new Date());
 					registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-					registerBill.setDetectState(BillDetectStateEnum.PASS.getCode());
+					registerBill.setDetectState(null);
 				}
 
 			} else {
