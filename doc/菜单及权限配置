@@ -49,6 +49,9 @@ ADD COLUMN `sample_code`  varchar(20) NULL COMMENT '采样编号' AFTER `code`;
 
 INSERT INTO `biz_number` (`id`, `type`, `value`, `memo`, `version`) VALUES ('2', 'register_bill_sample_code', '2019092500001', '登记单采样编号', '0');
 
+ALTER TABLE `quality_trace_trade_bill`
+ADD UNIQUE INDEX `BILL_ID_UNIQUE_INDEX` (`bill_id`) ;
+
 
 
 

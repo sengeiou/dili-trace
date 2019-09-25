@@ -63,7 +63,7 @@
                                 <%if( isEmpty(tradeBill) ){%>
                                     0.0(待检测)
                                 <%}else if( tradeBill.detectState == 1 || tradeBill.detectState == 3 ){%>
-                                    ${tradeBill.detectRecord.pdResult!}(合格)
+                                    ${tradeBill.detectRecord.pdResult!}(${@com.dili.trace.glossary.BillDetectStateEnum.getBillDetectStateEnum(tradeBill.detectState).getName()})
                                 <%}%>
                             </td>
                         </tr>

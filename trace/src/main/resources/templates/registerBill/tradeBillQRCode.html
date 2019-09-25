@@ -53,6 +53,7 @@
 <section class="info">
     <div class="group">
         <p>登记编号：<span>${registerBill.code!}</span></p>
+        <p>交易单号：<span>${qualityTraceTradeBill.orderId!}</span></p>
         <p>进场登记时间：
             <span>
                 <%if(null!= registerBill.created){%>
@@ -75,7 +76,11 @@
     </div>
     <div class="group">
         <p>检测时间：<span>${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span></p>
-        <p>检测结果：<span>合格</span></p>
+        <% if( isEmpty(registerBill.detectState)){%>
+        <p>检测结果：<span></span></p>
+        <% } else{ %>
+        <p>检测结果：<span>${@com.dili.trace.glossary.BillDetectStateEnum.getBillDetectStateEnum(registerBill.detectState).getName()}</span></p>
+        <% } %>
         <p>检测数值：<span>${registerBill.latestPdResult!}</span></p>
         <% if( isEmpty(registerBill.detectState) || isEmpty(registerBill.latestDetectRecordId) ){%>
         <p>检测机构：<span></span></p>
