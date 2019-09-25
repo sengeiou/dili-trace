@@ -73,10 +73,10 @@
     </div>
     <div class="group">
         <p>检测时间：<span>${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span></p>
-        <% if( isEmpty(registerBill.detectState)){%>
+        <% if(isEmpty(registerBill.detectState)){%>
         <p>检测结果：<span></span></p>
         <% } else{ %>
-        <p>检测结果：<span>${@com.dili.trace.glossary.BillDetectStateEnum.getBillDetectStateEnum(registerBill.detectState).getName()}</span></p>
+        <p>检测结果：<span>合格</span></p>
         <% } %>
         <p>检测数值：<span>${registerBill.latestPdResult!}</span></p>
         <% if( isEmpty(registerBill.detectState) || isEmpty(registerBill.latestDetectRecordId) ){%>
