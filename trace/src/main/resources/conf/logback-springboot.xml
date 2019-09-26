@@ -48,7 +48,7 @@
         <appender name="appender"  class="ch.qos.logback.core.rolling.RollingFileAppender">
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
                 <!--日志文件输出的文件名-->
-                <FileNamePattern>${worker_log_file_path}log-%d{yyyy-MM-dd}.log</FileNamePattern>
+                <FileNamePattern>${worker_log_file_path}/log-%d{yyyy-MM-dd}.log</FileNamePattern>
                 <!--日志文件保留天数-->
                 <MaxHistory>90</MaxHistory>
             </rollingPolicy>
