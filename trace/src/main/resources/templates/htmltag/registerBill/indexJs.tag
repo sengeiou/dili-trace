@@ -140,7 +140,6 @@
                 iconCls:'icon-edit',
                 text:'上传检测报告',
                 id:'edit-btn',
-                disabled :true,
                 handler:doModify,
                 handler:function(){
                     doModify();
