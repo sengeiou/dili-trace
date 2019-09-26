@@ -221,17 +221,13 @@
             //按钮不可用
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.ALREADY_CHECK.getCode()}){
             //按钮不可用
-           if(handleResult==null||handleResult==''){
-            	 $('#review-btn').linkbutton('enable');
-            }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
-            	 $('#review-btn').linkbutton('enable');
-            }
-            
-           /* if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
-                $('#review-btn').linkbutton('enable');
-            }else{
-                $('#review-btn').linkbutton('disable');
-            }*/
+        	if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
+           	 	$('#review-btn').linkbutton('enable');
+           }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}){
+        	  if(handleResult==null||handleResult==''){
+              	 $('#review-btn').linkbutton('enable');
+              }
+           }
         }
       
         if(row.handleResultUrl&&row.handleResult&&row.handleResultUrl!=null&&row.handleResult!=null&&row.handleResultUrl!=''&&row.handleResult!=''){
