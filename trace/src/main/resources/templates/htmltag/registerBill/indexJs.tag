@@ -11,6 +11,7 @@
             return false;
         }
         _registerBillGrid.datagrid("load", bindGridMeta2Form("registerBillGrid", "queryForm"));
+        initBtnStatus();
 
     }
 
@@ -71,6 +72,7 @@
                 iconCls:'icon-man',
                 text:'进场审核',
                 id:'audit-btn',
+                disabled :true,
                 handler:function(){
                     audit();
                 }
@@ -81,6 +83,7 @@
                 iconCls:'icon-man',
                 text:'复检',
                 id:'review-btn',
+                disabled :true,
                 handler:function(){
                     reviewCheck();
                 }
@@ -91,6 +94,7 @@
                 iconCls:'icon-man',
                 text:'主动送检',
                 id:'auto-btn',
+                disabled :true,
                 handler:function(){
                     autoCheck();
                 }
@@ -101,6 +105,7 @@
                 iconCls:'icon-man',
                 text:'采样检测',
                 id:'sampling-btn',
+                disabled :true,
                 handler:function(){
                     samplingCheck();
                 }
@@ -111,6 +116,7 @@
                 iconCls:'icon-undo',
                 text:'撤销',
                 id:'undo-btn',
+                disabled :true,
                 handler:undo,
                 handler:function(){
                     undo();
@@ -134,6 +140,7 @@
                 iconCls:'icon-edit',
                 text:'上传检测报告',
                 id:'edit-btn',
+                disabled :true,
                 handler:doModify,
                 handler:function(){
                     doModify();
@@ -145,7 +152,6 @@
                 iconCls:'icon-copy',
                 text:'补录',
                 id:'copy-btn',
-                disabled :true,
                 handler:doCopy,
                 handler:function(){
                 	doCopy();
@@ -182,7 +188,14 @@
         ]
         });
     }
-
+	function initBtnStatus(){
+        $('#undo-btn').linkbutton('disable');
+        $('#audit-btn').linkbutton('disable');
+        $('#auto-btn').linkbutton('disable');
+        $('#sampling-btn').linkbutton('disable');
+        $('#review-btn').linkbutton('disable');
+        $('#handle-btn').linkbutton('disable');
+	}
     /**
      * datagrid行点击事件
      * 目前用于来判断 启禁用是否可点
@@ -191,47 +204,27 @@
         var state = row.$_state;
         var detectState= row.$_detectState;
         var handleResult= row.handleResult;
-        console.info(handleResult)
-        $('#copy-btn').linkbutton('enable');
+        //console.info(handleResult)
+        initBtnStatus();
         if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
             $('#undo-btn').linkbutton('enable');
             $('#audit-btn').linkbutton('enable');
 
-            $('#auto-btn').linkbutton('disable');
-            $('#sampling-btn').linkbutton('disable');
-            $('#review-btn').linkbutton('disable');
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
             $('#auto-btn').linkbutton('enable');
             $('#sampling-btn').linkbutton('enable');
             //按钮不可用
-            $('#undo-btn').linkbutton('disable');
-            $('#audit-btn').linkbutton('disable');
-            $('#review-btn').linkbutton('disable');
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_CHECK.getCode()} ){
             //按钮不可用
-            $('#auto-btn').linkbutton('disable');
-            $('#sampling-btn').linkbutton('disable');
-            $('#undo-btn').linkbutton('disable');
-            $('#audit-btn').linkbutton('disable');
-            $('#review-btn').linkbutton('disable');
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.CHECKING.getCode()} ){
             //按钮不可用
-            $('#auto-btn').linkbutton('disable');
-            $('#sampling-btn').linkbutton('disable');
-            $('#undo-btn').linkbutton('disable');
-            $('#audit-btn').linkbutton('disable');
-            $('#review-btn').linkbutton('disable');
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.ALREADY_CHECK.getCode()}){
             //按钮不可用
-            $('#auto-btn').linkbutton('disable');
-            $('#sampling-btn').linkbutton('disable');
-            $('#undo-btn').linkbutton('disable');
-            $('#audit-btn').linkbutton('disable');
            if(handleResult==null||handleResult==''){
             	 $('#review-btn').linkbutton('enable');
-            }else{
-            	$('#review-btn').linkbutton('disable');
+            }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
+            	 $('#review-btn').linkbutton('enable');
             }
             
            /* if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
@@ -240,9 +233,9 @@
                 $('#review-btn').linkbutton('disable');
             }*/
         }
-        $('#handle-btn').linkbutton('disable');
+      
         if(row.handleResultUrl&&row.handleResult&&row.handleResultUrl!=null&&row.handleResult!=null&&row.handleResultUrl!=''&&row.handleResult!=''){
-        	 $('#handle-btn').linkbutton('disable');
+        	 //$('#handle-btn').linkbutton('disable');
         }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}&&row.handleResultUrl==null&&row.handleResult==null){
         	 $('#handle-btn').linkbutton('enable');
         }
