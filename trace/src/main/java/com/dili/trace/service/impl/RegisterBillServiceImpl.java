@@ -223,11 +223,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setOperatorName(userTicket.getRealName());
 			registerBill.setOperatorId(userTicket.getId());
 			if (pass) {
-				registerBill.setSampleCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE));
+				registerBill
+						.setSampleCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE));
 				registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
-				
-				//理货区
-				if(RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())&&StringUtils.isNotBlank(registerBill.getDetectReportUrl())) {
+
+				// 理货区
+				if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())
+						&& StringUtils.isNotBlank(registerBill.getDetectReportUrl())) {
 					// 有检测报告，直接已审核
 //					registerBill.setLatestDetectTime(new Date());
 					registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
@@ -290,8 +292,20 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public int reviewCheckRegisterBill(Long id) {
 		RegisterBill registerBill = get(id);
-		if (registerBill.getState().intValue() == RegisterBillStateEnum.ALREADY_CHECK.getCode().intValue()
-				&& registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()) {
+		if (registerBill.getState().intValue() != RegisterBillStateEnum.ALREADY_CHECK.getCode().intValue()) {
+			throw new AppException("操作失败，数据状态已改变");
+		}
+
+		boolean updateState = false;
+		//第一次复检
+		if (registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()) {
+			updateState = true;
+		} else if (StringUtils.isBlank(registerBill.getHandleResult()) && registerBill.getDetectState() != null
+				&& (registerBill.getDetectState() == 2 || registerBill.getDetectState() == 4)) {
+			//多次复检
+			updateState = true;
+		}
+		if (updateState) {
 			UserTicket userTicket = getOptUser();
 			registerBill.setOperatorName(userTicket.getRealName());
 			registerBill.setOperatorId(userTicket.getId());
@@ -320,19 +334,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		QualityTraceTradeBillOutDto dto = DTOUtils.newDTO(QualityTraceTradeBillOutDto.class);
 		dto.setQualityTraceTradeBill(qualityTraceTradeBill);
 
-		RegisterBill registerBill=DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
 		if (StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
 			RegisterBill condition = DTOUtils.newDTO(RegisterBill.class);
 
 			condition.setCode(qualityTraceTradeBill.getRegisterBillCode());
 			List<RegisterBill> list = this.listByExample(condition);
 			if (!list.isEmpty()) {
-				registerBill=list.get(0);
-			
+				registerBill = list.get(0);
+
 			}
 		}
 		dto.setRegisterBill(registerBill);
-		
+
 //		RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
 
 //		if (qualityTraceTradeBill.getBuyerIDNo().equalsIgnoreCase(cardNo)) {
@@ -344,12 +358,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 //			}
 //		}
 
-		if (registerBill != null&&StringUtils.isNotBlank(registerBill.getCode())) {
+		if (registerBill != null && StringUtils.isNotBlank(registerBill.getCode())) {
 			List<SeparateSalesRecord> records = separateSalesRecordService
 					.findByRegisterBillCode(registerBill.getCode());
 			dto.setSeparateSalesRecords(records);
 //			registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
-		} 
+		}
 		// 查询交易单信息
 //		if(StringUtils.isNotBlank(registerBill.getCode())) {
 //			QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
