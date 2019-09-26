@@ -87,22 +87,25 @@ public class DetectRecordApi {
             LOGGER.error("上传检测任务结果失败该单号无登记单");
             return BaseOutput.failure("没有对应的登记单");
         }
-        
+        if(RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {
+        	LOGGER.error("上传检测任务结果失败,该单号已完成检测");
+            return BaseOutput.failure("已完成检测");
+        }
         if(!registerBill.getExeMachineNo().equals(detectRecord.getExeMachineNo())){
             LOGGER.error("上传检测任务结果失败，该仪器没有获取该登记单");
             return BaseOutput.failure("该仪器无权操作该单据");
         }
-        //对不合格且没有提交处理结果的登记单,可以进行无限次提交检测结果!
-        if(RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {
-        	if(registerBill.getDetectState()!=null&&StringUtils.isBlank(registerBill.getHandleResult())) {
-        		if(registerBill.getDetectState()==2||registerBill.getDetectState()==4) {
-        			 this.saveRecordAndUpdateBill(detectRecord,registerBill);
-        			 return BaseOutput.success().setData(true);
-        		}
-        	}
-        	LOGGER.error("上传检测任务结果失败,该单号已完成检测");
-            return BaseOutput.failure("已完成检测");
-        }
+//        //对不合格且没有提交处理结果的登记单,可以进行无限次提交检测结果!
+//        if(RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {
+//        	if(registerBill.getDetectState()!=null&&StringUtils.isBlank(registerBill.getHandleResult())) {
+//        		if(registerBill.getDetectState()==2||registerBill.getDetectState()==4) {
+//        			 this.saveRecordAndUpdateBill(detectRecord,registerBill);
+//        			 return BaseOutput.success().setData(true);
+//        		}
+//        	}
+//        	LOGGER.error("上传检测任务结果失败,该单号已完成检测");
+//            return BaseOutput.failure("已完成检测");
+//        }
         saveRecordAndUpdateBill(detectRecord,registerBill);
         return BaseOutput.success().setData(true);
     }

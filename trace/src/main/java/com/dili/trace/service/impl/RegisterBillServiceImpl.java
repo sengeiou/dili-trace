@@ -300,9 +300,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		//第一次复检
 		if (registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()) {
 			updateState = true;
-		} else if (StringUtils.isBlank(registerBill.getHandleResult()) && registerBill.getDetectState() != null
-				&& (registerBill.getDetectState() == 2 || registerBill.getDetectState() == 4)) {
-			//多次复检
+		} else if (registerBill.getDetectState().intValue() == BillDetectStateEnum.REVIEW_NO_PASS.getCode().intValue()&&StringUtils.isBlank(registerBill.getHandleResult())) {
+		//多次复检
 			updateState = true;
 		}
 		if (updateState) {
