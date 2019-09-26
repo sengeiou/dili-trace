@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,10 +36,16 @@ public class QualityTraceTradeBillSyncJob {
 	@Autowired
 	QualityTraceTradeBillSyncPointService qualityTraceTradeBillSyncPointService;
 
+
+	@Value("${schedule.enable:true}")
+	private boolean scheduleEnable;
+	
 	// 间隔两分钟同步数据
 	@Scheduled(fixedDelay = 1000L * 60L * 2L)
 	public void execute() {
-
+		if(!scheduleEnable) {
+			return;
+		}
 		logger.info("===sync data===");
 		// List<VTradeBill>list=this.vTradeBillService.listByExample(new VTradeBill());
 		// System.out.println(list);
