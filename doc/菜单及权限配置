@@ -41,6 +41,9 @@ ADD INDEX `REGISTER_BILL_CODE_INDEX` (`register_bill_code`) USING BTREE ;
 ALTER TABLE `quality_trace_trade_bill`
 ADD COLUMN `match_status`  int NULL COMMENT '匹配状态';
 
+ALTER TABLE `quality_trace_trade_bill`
+ADD COLUMN `sales_type`  tinyint(1) NULL COMMENT '1.分销 2.全销' AFTER `register_bill_code` ;
+
 ALTER TABLE `register_bill` DROP COLUMN `trade_no`;
 ALTER TABLE `biz_number` MODIFY COLUMN `version`  bigint(20) NULL DEFAULT NULL COMMENT '版本号' AFTER `memo`;
 
