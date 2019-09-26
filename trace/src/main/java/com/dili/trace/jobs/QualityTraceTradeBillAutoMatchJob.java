@@ -43,8 +43,8 @@ public class QualityTraceTradeBillAutoMatchJob {
 	@Autowired
 	private TaskScheduler taskScheduler;
 
-	@Value("${qualityTraceTradeBill.enable:true}")
-	private boolean qualityTraceTradeBillEnable;
+	@Value("${schedule.enable:true}")
+	private boolean scheduleEnable;
 	// 每10分钟匹配一次前七天的登记单
 	@Value("${qualityTraceTradeBill.match7DaysDelay:10}")
 	private Long match7DaysDelay;
@@ -55,7 +55,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 
 	@PostConstruct
 	public void init() {
-		if (qualityTraceTradeBillEnable) {
+		if (scheduleEnable) {
 			this.registeTrigger(this::executeMatch7daysRegisterBill, 60 * match7DaysDelay);
 			this.registeTrigger(this::executeMatchTodayRegisterBill, 60 * matchTodaysDelay);
 		}
