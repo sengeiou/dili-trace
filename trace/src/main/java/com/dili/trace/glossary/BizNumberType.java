@@ -25,7 +25,7 @@ public enum BizNumberType {
 
     //线上订单编号需要区别下测试和开发环境
     REGISTER_BILL("register_bill","登记单编号", "d", "yyyyMMdd", 5, "1"),
-	REGISTER_BILL_SAMPLE_CODE("register_bill_sample_code","登记单采样编号", "", "yyyyMMdd", 5, "1"),;
+	REGISTER_BILL_SAMPLE_CODE("register_bill_sample_code","登记单采样编号", "c", "yyyyMMdd", 5, "1"),;
     //业务号类型,对应biz_number表中的type
     private String type;
     //中文名称描述
