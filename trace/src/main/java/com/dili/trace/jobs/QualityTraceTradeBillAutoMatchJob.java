@@ -129,7 +129,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 
 		LocalDateTime payDate = qualityTraceTradeBill.getOrderPayDate().toInstant().atZone(ZoneId.systemDefault())
 				.toLocalDateTime();
-		LocalDateTime todayEndOfPayDate = payDate.withHour(23).withMinute(59).withSecond(59);
+		LocalDateTime todayEndOfPayDate = payDate.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
 		if (now.isAfter(todayEndOfPayDate)) {
 			logger.info("超时,未能匹配:{}", qualityTraceTradeBill.getId());
