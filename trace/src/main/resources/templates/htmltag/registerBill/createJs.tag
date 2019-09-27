@@ -316,16 +316,16 @@
                     //location.href = '/registerBill/index.html';
                     var paramStr = JSON.stringify(ret.data);
                     var registerSource = $("#registerSource").val();
-                      if(registerSource == 1){
-                          console.log("打印信息:--:"+paramStr);
-                          printDirect(paramStr);
-                      }else{
+                     // if(registerSource == 1){
+                     //     console.log("打印信息:--:"+paramStr);
+                     //     printDirect(paramStr);
+                      //}else{
                           localStorage.setItem('registerSource',$("#registerSource").val());
                           localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
                           layer.alert("登记成功", {type: 0}, function () {
                           	parent.closeWin('view_win');
                           });
-                      }
+                      //}
                     
 
                 }else{

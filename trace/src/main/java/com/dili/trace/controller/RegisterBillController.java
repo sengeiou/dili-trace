@@ -601,7 +601,11 @@ public class RegisterBillController {
 			Long id = this.registerBillService.doModifyRegisterBill(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
+			LOGGER.error(e.getMessage(),e);
 			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure("服务端出错");
 		}
 
 	}

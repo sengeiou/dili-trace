@@ -448,6 +448,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (input == null || input.getId() == null) {
 			throw new AppException("参数错误");
 		}
+		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+			throw new AppException("请上传报告");
+		}
 		RegisterBill item = this.get(input.getId());
 		if (item == null) {
 			throw new AppException("数据错误");
