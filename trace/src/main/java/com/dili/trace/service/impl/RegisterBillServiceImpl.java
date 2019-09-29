@@ -223,9 +223,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setOperatorName(userTicket.getRealName());
 			registerBill.setOperatorId(userTicket.getId());
 			if (pass) {
-				registerBill
-						.setSampleCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE));
-				registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
+
 
 				// 理货区
 				if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())
@@ -234,6 +232,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 //					registerBill.setLatestDetectTime(new Date());
 					registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
 					registerBill.setDetectState(null);
+				}
+				if(!RegisterBillStateEnum.ALREADY_AUDIT.getCode().equals(registerBill.getState())) {
+					registerBill
+					.setSampleCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE));
+					registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
 				}
 
 			} else {
