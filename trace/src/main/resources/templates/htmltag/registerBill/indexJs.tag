@@ -188,13 +188,22 @@
         });
     }
 	function initBtnStatus(){
-        $('#undo-btn').linkbutton('disable');
+        /*$('#undo-btn').linkbutton('disable');
         $('#audit-btn').linkbutton('disable');
         $('#auto-btn').linkbutton('disable');
         $('#sampling-btn').linkbutton('disable');
         $('#review-btn').linkbutton('disable');
-        $('#handle-btn').linkbutton('disable');
+        $('#handle-btn').linkbutton('disable');*/
+        var btnArray=['undo-btn','audit-btn','auto-btn','sampling-btn','review-btn','handle-btn']
+	    for (var i = 0; i < btnArray.length; i++) {
+	        var btnId = btnArray[i];
+	        $('#'+btnId).linkbutton('enable');
+	        $('#'+btnId).hide();
+	      
+	    }
 	}
+	//initBtnStatus();
+
     /**
      * datagrid行点击事件
      * 目前用于来判断 启禁用是否可点
@@ -207,12 +216,12 @@
         initBtnStatus();
         if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
-            $('#undo-btn').linkbutton('enable');
-            $('#audit-btn').linkbutton('enable');
+            $('#undo-btn').show();
+            $('#audit-btn').show();
 
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
-            $('#auto-btn').linkbutton('enable');
-            $('#sampling-btn').linkbutton('enable');
+            $('#auto-btn').show();
+            $('#sampling-btn').show();
             //按钮不可用
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_CHECK.getCode()} ){
             //按钮不可用
@@ -221,10 +230,10 @@
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.ALREADY_CHECK.getCode()}){
             //按钮不可用
         	if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
-           	 	$('#review-btn').linkbutton('enable');
+           	 	$('#review-btn').show();
            }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}){
         	  if(handleResult==null||handleResult==''){
-              	 $('#review-btn').linkbutton('enable');
+              	 $('#review-btn').show();
               }
            }
         }
@@ -232,7 +241,7 @@
         if(row.handleResultUrl&&row.handleResult&&row.handleResultUrl!=null&&row.handleResult!=null&&row.handleResultUrl!=''&&row.handleResult!=''){
         	 //$('#handle-btn').linkbutton('disable');
         }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}&&row.handleResultUrl==null&&row.handleResult==null){
-        	 $('#handle-btn').linkbutton('enable');
+        	 $('#handle-btn').show();
         }
        
         //handle-btn
