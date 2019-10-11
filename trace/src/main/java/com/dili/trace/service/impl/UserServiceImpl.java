@@ -16,16 +16,20 @@ import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserTallyArea;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserService;
+import com.dili.trace.service.UserTallyAreaService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,10 +48,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     private RedisService redisService;
     @Resource
     private DefaultConfiguration defaultConfiguration;
+    @Resource
+    private UserTallyAreaService userTallyAreaService;
 
     @Transactional(rollbackFor=Exception.class)
     @Override
-    public void register(User user,Boolean flag) {
+    public void register(UserListDto user,Boolean flag) {
         //验证验证码是否正确
         if(flag){
             checkVerificationCode(user.getPhone(),user.getCheckCode());
@@ -59,8 +65,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         //验证理货区号是否已注册
-        if(StringUtils.isNotBlank(user.getTaillyAreaNo()) && existsTaillyAreaNo(user.getTaillyAreaNo())){
-            throw new BusinessException("理货区号已注册");
+        if(CollectionUtils.isNotEmpty(user.getUserTallyAreaNos()) ){
+            existsTallyAreaNo(null,user.getUserTallyAreaNos());
         }
 
         //验证身份证号是否已注册
@@ -72,7 +78,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public void updateUser(User user) {
+    public void updateUser(UserListDto user) {
 
         //手机号验重
         if(StringUtils.isNotBlank(user.getPhone())){
@@ -87,18 +93,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 });
             }
         }
-        //理货区号验重
-        if(StringUtils.isNotBlank(user.getTaillyAreaNo())){
-            User condition = DTOUtils.newDTO(User.class);
-            condition.setTaillyAreaNo(user.getTaillyAreaNo());
-            List<User> users = listByExample(condition);
-            if(CollectionUtils.isNotEmpty(users)){
-                users.forEach(o->{
-                    if(!o.getId().equals(user.getId()) && o.getTaillyAreaNo().equals(user.getTaillyAreaNo())){
-                        throw new BusinessException("理货区号已注册");
-                    }
-                });
-            }
+        //验证理货区号是否已注册
+        if(CollectionUtils.isNotEmpty(user.getUserTallyAreaNos()) ){
+            existsTallyAreaNo(user.getId(),user.getUserTallyAreaNos());
         }
         updateSelective(user);
     }
@@ -190,15 +187,20 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     /**
-     * 检测手机号是否存在
-     * @param taillyAreaNo
-     * @return true 存在 false 不存在
+     * 检测理货区号是否已注册
+     * @param userId
+     * @param tallyAreaNos
      */
-    public boolean existsTaillyAreaNo(String taillyAreaNo){
-        User query = DTOUtils.newDTO(User.class);
-        query.setTaillyAreaNo(taillyAreaNo);
-        query.setYn(YnEnum.YES.getCode());
-        return !CollUtil.isEmpty(listByExample(query));
+    public void existsTallyAreaNo(Long userId,List<String> tallyAreaNos){
+        tallyAreaNos.forEach(tallyAreaNo->{
+            UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+            query.setTallyAreaNo(tallyAreaNo);
+            query.setState(EnabledStateEnum.ENABLED.getCode());
+            UserTallyArea userTallyArea = userTallyAreaService.listByExample(query).stream().findFirst().orElse(null);
+            if (null != userTallyArea && !userTallyArea.getUserId().equals(userId)) {
+                throw new BusinessException("理货区号【"+tallyAreaNo+"】已被注册");
+            }
+        });
     }
 
     /**
@@ -232,13 +234,18 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public User findByTaillyAreaNo(String taillyAreaNo) {
-        User user = DTOUtils.newDTO(User.class);
-        user.setTaillyAreaNo(taillyAreaNo);
-        List<User> userList = list(user);
-        if(userList.size()>0){
-            return userList.get(0);
+    public User findByTallyAreaNo(String tallyAreaNo) {
+        UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+        query.setTallyAreaNo(tallyAreaNo);
+        query.setState(EnabledStateEnum.ENABLED.getCode());
+        UserTallyArea userTallyArea = userTallyAreaService.list(query).stream().findFirst().orElse(null);
+        if (null == userTallyArea){
+            return null;
         }
-        return null;
+
+        User userQuery = DTOUtils.newDTO(User.class);
+        userQuery.setId(userTallyArea.getUserId());
+        userQuery.setState(EnabledStateEnum.ENABLED.getCode());
+        return list(userQuery).stream().findFirst().orElse(null);
     }
 }

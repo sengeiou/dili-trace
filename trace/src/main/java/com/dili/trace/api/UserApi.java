@@ -17,12 +17,14 @@ import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,7 @@ public class UserApi {
 
     @ApiOperation(value ="注册【接口已通】", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
-    public BaseOutput<Long> register(@RequestBody User user){
+    public BaseOutput<Long> register(@RequestBody UserListDto user){
         try{
             checkRegisterParams(user);
             user.setPassword(MD5Util.md5(user.getPassword()));
@@ -238,7 +240,7 @@ public class UserApi {
         }
     }
 
-    private void checkRegisterParams(User user){
+    private void checkRegisterParams(UserListDto user){
         if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
             throw new BusinessException("手机号为空或格式错误");
         }
@@ -248,8 +250,8 @@ public class UserApi {
         if(StrUtil.isBlank(user.getCheckCode())){
             throw new BusinessException("验证码为空");
         }
-        if(StrUtil.isBlank(user.getTaillyAreaNo()) || user.getTaillyAreaNo().length() != 3){
-            throw new BusinessException("理货区号为空或格式错误");
+        if(CollectionUtils.isNotEmpty(user.getUserTallyAreaNos())){
+            throw new BusinessException("理货区号为空");
         }
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
             throw new BusinessException("姓名为空或格式错误");

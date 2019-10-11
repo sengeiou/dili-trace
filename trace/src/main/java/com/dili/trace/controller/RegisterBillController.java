@@ -123,7 +123,7 @@ public class RegisterBillController {
 
 			if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 				// 理货区
-				User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
+				User user = userService.findByTallyAreaNo(registerBill.getTallyAreaNo());
 				if (user == null) {
 					LOGGER.error("新增登记单失败理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
 					return BaseOutput.failure("理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
@@ -539,7 +539,7 @@ public class RegisterBillController {
 		UserInfoDto userInfoDto=new UserInfoDto();
 		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 			// 理货区
-			User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
+			User user = userService.findByTallyAreaNo(registerBill.getTallyAreaNo());
 		
 			if(user!=null) {
 				userInfoDto.setUserId(String.valueOf(user.getId()));

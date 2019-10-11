@@ -77,14 +77,6 @@ public interface User extends IBaseDomain {
 
     void setCardNoBackUrl(String cardNoBackUrl);
 
-    @ApiModelProperty(value = "理货区号")
-    @Column(name = "`tailly_area_no`")
-    @FieldDef(label="taillyAreaNo", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getTaillyAreaNo();
-
-    void setTaillyAreaNo(String taillyAreaNo);
-
     @ApiModelProperty(value = "营业执照URL")
     @Column(name = "`business_license_url`")
     @FieldDef(label="businessLicenseUrl", maxLength = 50)

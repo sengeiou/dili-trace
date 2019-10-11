@@ -17,7 +17,7 @@ import javax.persistence.Id;
  * This file was generated on 2019-10-11 10:05:11.
  */
 @Table(name = "`user_taily_area`")
-public interface UserTailyArea extends IBaseDomain {
+public interface UserTallyArea extends IBaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
@@ -27,12 +27,12 @@ public interface UserTailyArea extends IBaseDomain {
 
     void setId(Long id);
 
-    @Column(name = "`tailly_area_no`")
+    @Column(name = "`tally_area_no`")
     @FieldDef(label="理货区号", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
-    String getTaillyAreaNo();
+    String getTallyAreaNo();
 
-    void setTaillyAreaNo(String taillyAreaNo);
+    void setTallyAreaNo(String tallyAreaNo);
 
     @Column(name = "`user_id`")
     @FieldDef(label="用户id")

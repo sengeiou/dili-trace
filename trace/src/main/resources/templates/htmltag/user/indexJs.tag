@@ -9,7 +9,7 @@
         $('#_phone').textbox({readonly:false});
         $('#_cardNo').textbox({readonly:false});
         $('#_addr').textbox({readonly:false});
-        $('#_taillyAreaNo').textbox({readonly:false});
+        $('#_tallyAreaNo').textbox({readonly:false});
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
         $(":file").attr('disabled',false);

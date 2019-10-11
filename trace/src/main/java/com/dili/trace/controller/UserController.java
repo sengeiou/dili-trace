@@ -66,7 +66,7 @@ public class UserController {
     })
     @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput<Long> insert(User user) {
+    BaseOutput<Long> insert(UserListDto user) {
         try {
             user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
             user.setState(EnabledStateEnum.ENABLED.getCode());
@@ -86,7 +86,7 @@ public class UserController {
 		@ApiImplicitParam(name="User", paramType="form", value = "User的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(User user) {
+    public @ResponseBody BaseOutput update(UserListDto user) {
         try {
             userService.updateUser(user);
             return BaseOutput.success("修改成功");

@@ -79,7 +79,7 @@ public class TradeInfoController {
 	@ApiOperation("根据理货区号获取客户获取")
 	@RequestMapping(value = "/tallyAreaNo/{tallyAreaNo}", method = { RequestMethod.GET, RequestMethod.POST })
 	public BaseOutput<User> findTallyAreaNo(@PathVariable String tallyAreaNo) {
-		User customer = userService.findByTaillyAreaNo(tallyAreaNo);
+		User customer = userService.findByTallyAreaNo(tallyAreaNo);
 		if (customer != null) {
 			return BaseOutput.success().setData(this.maskUser(customer));
 		} else {

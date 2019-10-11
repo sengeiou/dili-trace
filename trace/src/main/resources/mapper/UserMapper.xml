@@ -11,7 +11,7 @@
     <result column="card_no" jdbcType="VARCHAR" property="cardNo" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
     <result column="card_no_url" jdbcType="VARCHAR" property="cardNoUrl" />
-    <result column="tailly_area_no" jdbcType="VARCHAR" property="taillyAreaNo" />
+    <result column="tally_area_no" jdbcType="VARCHAR" property="tallyAreaNo" />
     <result column="business_license_url" jdbcType="VARCHAR" property="businessLicenseUrl" />
     <result column="sales_city_id" jdbcType="BIGINT" property="salesCityId" />
     <result column="sales_city_name" jdbcType="VARCHAR" property="salesCityName" />
@@ -24,7 +24,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, user_name, phone, card_no, addr, card_no_url, tailly_area_no, business_license_url, 
+    id, user_name, phone, card_no, addr, card_no_url, tally_area_no, business_license_url,
     sales_city_id, sales_city_name, state, pwd, created, modified
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -57,8 +57,8 @@
       <if test="cardNoUrl != null">
         card_no_url = #{cardNoUrl,jdbcType=VARCHAR},
       </if>
-      <if test="taillyAreaNo != null">
-        tailly_area_no = #{taillyAreaNo,jdbcType=VARCHAR},
+      <if test="tallyAreaNo != null">
+        tally_area_no = #{tallyAreaNo,jdbcType=VARCHAR},
       </if>
       <if test="businessLicenseUrl != null">
         business_license_url = #{businessLicenseUrl,jdbcType=VARCHAR},

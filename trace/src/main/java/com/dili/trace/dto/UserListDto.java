@@ -9,6 +9,7 @@ import com.dili.trace.domain.User;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -25,5 +26,12 @@ public interface UserListDto extends User {
     @Operator(Operator.LITTLE_EQUAL_THAN)
     Date getCreatedEnd();
     void setCreatedEnd(Date createdEnd);
+
+    /**
+     * 用户理货区
+     * @return
+     */
+    List<String> getUserTallyAreaNos();
+    void setUserTallyAreaNos(List<String> userTallyAreaNos);
 
 }

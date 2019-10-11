@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dili.trace.dao.UserTailyAreaMapper">
-  <resultMap id="BaseResultMap" type="com.dili.trace.domain.UserTailyArea">
+<mapper namespace="com.dili.trace.dao.UserTallyAreaMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.UserTallyArea">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="tailly_area_no" jdbcType="VARCHAR" property="taillyAreaNo" />
+    <result column="tally_area_no" jdbcType="VARCHAR" property="tallyAreaNo" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="state" jdbcType="BIT" property="state" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
@@ -16,7 +16,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, tailly_area_no, user_id, state, created, modified
+    id, tally_area_no, user_id, state, created, modified
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -27,14 +27,14 @@
     from user_taily_area
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <update id="updateBy" parameterType="com.dili.trace.domain.UserTailyArea">
+  <update id="updateBy" parameterType="com.dili.trace.domain.UserTallyArea">
     <!--
       WARNING - @mbg.generated
     -->
     update user_taily_area
     <set>
-      <if test="taillyAreaNo != null">
-        tailly_area_no = #{taillyAreaNo,jdbcType=VARCHAR},
+      <if test="tallyAreaNo != null">
+        tally_area_no = #{tallyAreaNo,jdbcType=VARCHAR},
       </if>
       <if test="userId != null">
         user_id = #{userId,jdbcType=BIGINT},
