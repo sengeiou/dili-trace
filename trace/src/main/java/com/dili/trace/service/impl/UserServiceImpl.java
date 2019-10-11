@@ -1,26 +1,18 @@
 package com.dili.trace.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
-import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
-import com.dili.common.entity.PatternConstants;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.service.RedisService;
-import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -46,8 +37,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Resource
     private RedisService redisService;
-    @Resource
-    private DefaultConfiguration defaultConfiguration;
     @Resource
     private UserTallyAreaService userTallyAreaService;
 
@@ -75,7 +64,34 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         insertSelective(user);
+        //更新用户理货区
+        updateUserTallyArea(user.getId(),user.getUserTallyAreaNos());
     }
+
+    /**
+     * 更新用户理货区
+     * @param userId
+     * @param tallyAreaNos
+     */
+    private void updateUserTallyArea(Long userId,List<String> tallyAreaNos){
+        if(null != userId){
+            UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+            query.setUserId(userId);
+            userTallyAreaService.deleteByExample(query);
+        }
+
+        List<UserTallyArea> userTallyAreas = new ArrayList<>();
+        tallyAreaNos.forEach(tallyAreaNo->{
+            UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
+            userTallyArea.setUserId(userId);
+            userTallyArea.setState(EnabledStateEnum.ENABLED.getCode());
+            userTallyArea.setTallyAreaNo(tallyAreaNo);
+            userTallyAreas.add(userTallyArea);
+        });
+
+        userTallyAreaService.batchInsert(userTallyAreas);
+    }
+
 
     @Override
     public void updateUser(UserListDto user) {
@@ -98,6 +114,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             existsTallyAreaNo(user.getId(),user.getUserTallyAreaNos());
         }
         updateSelective(user);
+
+        //更新用户理货区
+        updateUserTallyArea(user.getId(),user.getUserTallyAreaNos());
     }
 
     private Boolean checkVerificationCode(String phone, String verCode){
