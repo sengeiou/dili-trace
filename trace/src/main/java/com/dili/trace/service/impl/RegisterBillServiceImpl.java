@@ -11,6 +11,8 @@ import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.BatchAuditDto;
+import com.dili.trace.dto.BatchResultDto;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
@@ -218,12 +220,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public int auditRegisterBill(Long id, Boolean pass) {
 		RegisterBill registerBill = get(id);
+		return auditRegisterBill(pass, registerBill);
+	}
+
+	private int auditRegisterBill(Boolean pass, RegisterBill registerBill) {
 		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
 			UserTicket userTicket = getOptUser();
 			registerBill.setOperatorName(userTicket.getRealName());
 			registerBill.setOperatorId(userTicket.getId());
 			if (pass) {
-
 
 				// 理货区
 				if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())
@@ -233,9 +238,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
 					registerBill.setDetectState(null);
 				}
-				if(!RegisterBillStateEnum.ALREADY_AUDIT.getCode().equals(registerBill.getState())) {
-					registerBill
-					.setSampleCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE));
+				if (!RegisterBillStateEnum.ALREADY_AUDIT.getCode().equals(registerBill.getState())) {
+					registerBill.setSampleCode(
+							bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE));
 					registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
 				}
 
@@ -265,6 +270,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public int autoCheckRegisterBill(Long id) {
 		RegisterBill registerBill = get(id);
+		return autoCheckRegisterBill(registerBill);
+	}
+
+	private int autoCheckRegisterBill(RegisterBill registerBill) {
 		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
 			UserTicket userTicket = getOptUser();
 			registerBill.setOperatorName(userTicket.getRealName());
@@ -278,8 +287,60 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	@Override
+	public BaseOutput doBatchAutoCheck(List<Long> idList) {
+		BatchResultDto<RegisterBill> dto = new BatchResultDto<>();
+		for (Long id : idList) {
+			RegisterBill registerBill = get(id);
+			try {
+				this.autoCheckRegisterBill(registerBill);
+				dto.getSuccessList().add(registerBill);
+			} catch (Exception e) {
+				dto.getFailureList().add(registerBill);
+			}
+		}
+
+		return BaseOutput.success().setData(dto);
+
+	}
+
+	@Override
+	public BaseOutput doBatchSamplingCheck(List<Long> idList) {
+		BatchResultDto<RegisterBill> dto = new BatchResultDto<>();
+		for (Long id : idList) {
+			RegisterBill registerBill = get(id);
+			try {
+				this.samplingCheckRegisterBill(registerBill);
+				dto.getSuccessList().add(registerBill);
+			} catch (Exception e) {
+				dto.getFailureList().add(registerBill);
+			}
+		}
+		return BaseOutput.success().setData(dto);
+
+	}
+
+	@Override
+	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) {
+		BatchResultDto<RegisterBill> dto = new BatchResultDto<>();
+		for (Long id : batchAuditDto.getRegisterBillIdList()) {
+			RegisterBill registerBill = get(id);
+			try {
+				this.auditRegisterBill(batchAuditDto.getPass(), registerBill);
+				dto.getSuccessList().add(registerBill);
+			} catch (Exception e) {
+				dto.getFailureList().add(registerBill);
+			}
+		}
+		return BaseOutput.success().setData(dto);
+	}
+
+	@Override
 	public int samplingCheckRegisterBill(Long id) {
 		RegisterBill registerBill = get(id);
+		return samplingCheckRegisterBill(registerBill);
+	}
+
+	private int samplingCheckRegisterBill(RegisterBill registerBill) {
 		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
 			UserTicket userTicket = getOptUser();
 			registerBill.setOperatorName(userTicket.getRealName());
@@ -300,11 +361,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 
 		boolean updateState = false;
-		//第一次复检
+		// 第一次复检
 		if (registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()) {
 			updateState = true;
-		} else if (registerBill.getDetectState().intValue() == BillDetectStateEnum.REVIEW_NO_PASS.getCode().intValue()&&StringUtils.isBlank(registerBill.getHandleResult())) {
-		//多次复检
+		} else if (registerBill.getDetectState().intValue() == BillDetectStateEnum.REVIEW_NO_PASS.getCode().intValue()
+				&& StringUtils.isBlank(registerBill.getHandleResult())) {
+			// 多次复检
 			updateState = true;
 		}
 		if (updateState) {

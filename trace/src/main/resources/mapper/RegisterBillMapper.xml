@@ -204,5 +204,15 @@
     <if test="latestDetectTimeTimeEnd != null">
 		and #{latestDetectTimeTimeEnd}>= latest_detect_time
 	</if> 
+	
+	 <if test="name != null and name!='' ">
+		and name=#{name}
+	</if> 
+	 <if test="tallyAreaNo != null and tallyAreaNov!='' ">
+		and  tally_area_no=#{tallyAreaNo}
+	</if> 
+	<if test="tradeTypeId != null and tallyAreaNov!='' ">
+		and trade_type_id=#{tradeTypeId}
+	</if> 
   </select>
 </mapper>
