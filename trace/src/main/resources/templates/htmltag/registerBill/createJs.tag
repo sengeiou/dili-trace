@@ -322,8 +322,6 @@
                       //}else{
                           localStorage.setItem('registerSource',$("#registerSource").val());
                           localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
-                          layer.alert('登记成功',{type: 0,time : 3000});  
-                          
                           
                           layer.alert('登记成功',{
                         	  type: 0,
