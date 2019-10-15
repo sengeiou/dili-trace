@@ -120,7 +120,17 @@ public class UserController {
     @RequestMapping(value = "/doEnable.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput doEnable(Long id, Boolean enable) {
-        return userService.updateEnable(id, enable);
+        try {
+            userService.updateEnable(id, enable);
+            return BaseOutput.success("修改用户状态成功");
+        } catch (BusinessException e) {
+            LOGGER.error("修改用户状态", e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("修改用户状态", e);
+            return BaseOutput.failure();
+        }
+
     }
 
     @ApiOperation(value ="找回密码【接口已通】", notes = "找回密码")

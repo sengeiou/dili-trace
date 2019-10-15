@@ -244,10 +244,29 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
+
+            //验证理货区号是否已注册
+            if(StringUtils.isNotEmpty(user.getTallyAreaNos()) ){
+                existsTallyAreaNo(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
+            }
+
+            UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
+            userTallyAreaQuery.setUserId(id);
+
+            UserTallyArea utaPo = DTOUtils.newDTO(UserTallyArea.class);
+            utaPo.setState(EnabledStateEnum.ENABLED.getCode());
+            userTallyAreaService.updateSelectiveByExample(utaPo,userTallyAreaQuery);
             redisService.setRemove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         } else {
             user.setState(EnabledStateEnum.DISABLED.getCode());
             this.updateSelective(user);
+
+            UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
+            userTallyAreaQuery.setUserId(id);
+
+            UserTallyArea utaPo = DTOUtils.newDTO(UserTallyArea.class);
+            utaPo.setState(EnabledStateEnum.DISABLED.getCode());
+            userTallyAreaService.updateSelectiveByExample(utaPo,userTallyAreaQuery);
             redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
         }
 
