@@ -237,11 +237,11 @@ public class RegisterBillController {
 		}
 		
 		
-		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
-		conditon.setRegisterBillCode(registerBill.getCode());
-		conditon.setSort("id");
-		conditon.setOrder("desc");
-		List<DetectRecord>detectRecordList=this.detectRecordService.listByExample(conditon);
+//		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
+//		conditon.setRegisterBillCode(registerBill.getCode());
+//		conditon.setSort("id");
+//		conditon.setOrder("desc");
+		List<DetectRecord>detectRecordList=this.detectRecordService.findTop2AndLatest(registerBill.getCode());
 		modelMap.put("detectRecordList", detectRecordList);
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/view";

@@ -64,4 +64,26 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+  
+   <select id="findTop2AndLatest" parameterType="java.lang.String" resultMap="BaseResultMap">
+   
+select * from 
+(
+    (
+    select 
+    <include refid="Base_Column_List" />
+    from detect_record
+    where register_bill_code = #{registerBillCode,jdbcType=VARCHAR} order by id desc limit 1
+    )
+    union 
+    (
+     select 
+    <include refid="Base_Column_List" />
+    from detect_record
+    where register_bill_code = #{registerBillCode,jdbcType=VARCHAR} order by id asc limit 2
+    )
+) tmp
+order by id desc
+  </select>
 </mapper>

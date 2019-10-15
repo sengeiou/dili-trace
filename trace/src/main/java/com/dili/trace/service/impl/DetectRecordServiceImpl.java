@@ -51,4 +51,9 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
         }
         return null;
     }
+
+	@Override
+	public List<DetectRecord> findTop2AndLatest(String registerBillCode) {
+		return this.getActualDao().findTop2AndLatest(registerBillCode);
+	}
 }
