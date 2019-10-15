@@ -323,7 +323,61 @@ public class RegisterBillController {
 		}
 		return BaseOutput.success("操作成功");
 	}
+	/**
+	 * 批量主动送检
+	 * 
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/doBatchAutoCheck", method = RequestMethod.POST)
+	public @ResponseBody BaseOutput doBatchAutoCheck(ModelMap modelMap,@RequestBody List<Long> idList) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+		idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(idList)) {
+			return BaseOutput.failure("参数错误");
+		}
+		return this.registerBillService.doBatchAutoCheck(idList);
+	}
 
+	/**
+	 * 批量采样检测
+	 * 
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/doBatchSamplingCheck", method = RequestMethod.POST)
+	public @ResponseBody BaseOutput doBatchSamplingCheck(ModelMap modelMap,@RequestBody List<Long> idList) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+		idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(idList)) {
+			return BaseOutput.failure("参数错误");
+		}
+		return this.registerBillService.doBatchSamplingCheck(idList);
+	}
+	/**
+	 * 批量审核
+	 * 
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/doBatchAudit", method = RequestMethod.POST)
+	public @ResponseBody BaseOutput doBatchAudit(ModelMap modelMap,@RequestBody  BatchAuditDto batchAuditDto) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+//		if (batchAuditDto.getPass() == null) {
+//			return BaseOutput.failure("参数错误");
+//		}
+		List<Long> idList = CollectionUtils.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream()
+				.filter(Objects::nonNull).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(idList)) {
+			return BaseOutput.failure("参数错误");
+		}
+		batchAuditDto.setPass(true);
+		batchAuditDto.setRegisterBillIdList(idList);
+		return this.registerBillService.doBatchAudit(batchAuditDto);
+	}
 	/**
 	 * 撤销
 	 * 
