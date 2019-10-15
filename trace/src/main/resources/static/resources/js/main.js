@@ -22,7 +22,7 @@ var UAP_TOOLS = {
         return yearStr + "-" + monthStr + "-" + dateStr + " " + hourStr + ":" + minuteStr + ":" + secondStr;
     }
 };
-
+$.fn.tagbox.defaults.missingMessage = '该输入项为必输项';
 $(function () {
     //去掉输入框中的前后空格
     $(document).on('change', 'input[type=text], textarea', function () {
@@ -35,6 +35,7 @@ $(function () {
             e.preventDefault();
         }
     });
+
 
     /**
      * 扩展easyui的验证框架，可加入一些自定义的验证
@@ -116,6 +117,47 @@ $(function () {
                 return value.length == param[0];
             },
             message: '请输入{0}位'
+        },
+        uniquetag: {
+            validator: function(value, param){
+                var newValues = value.split(',');
+                var valid = {};
+                for (let val of newValues){
+                    if(!valid[val]){
+                        valid[val] = val;
+                    }else{
+                        return false;
+                    }
+                }
+                return true;
+            },
+            message: '存在重复的值。'
+        },
+        tagLength: {
+            validator: function(value, param){
+                var newValues = value.split(',');
+                var valid = {};
+                for (let val of newValues){
+                    if(val.length >0 && val.length != param[0]){
+                        return false;
+                    }
+                }
+                return true;
+            },
+            message: '请输入{0}位'
+        },
+        tagNum: {
+            validator: function(value, param){
+                var newValues = value.split(',');
+                var valid = {};
+                for (let val of newValues){
+                    if(val.length >0 && !/^[0-9]*$/.test(val)){
+                        return false;
+                    }
+                }
+                return true;
+            },
+            message: '请输入数字'
         }
     });
 });

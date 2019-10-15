@@ -61,7 +61,7 @@ ADD UNIQUE INDEX `BILL_ID_UNIQUE_INDEX` (`bill_id`) ;
 2.1
 
 ALTER TABLE `user`
-CHANGE COLUMN `tailly_area_no` `tally_area_no` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `card_no_back_url`;
+CHANGE COLUMN `tailly_area_no` `tally_area_nos` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `card_no_back_url`;
 ##用户理货区
 CREATE TABLE `user_tally_area` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -76,13 +76,7 @@ CREATE TABLE `user_tally_area` (
 
 ##理货区数据迁移
 INSERT INTO user_tally_area (tally_area_no,user_id,state,created)
-SELECT tally_area_no,id,1,now()
-FROM `user`;
-ALTER TABLE `user` DROP COLUMN `tally_area_no`;
-
-
-
-
+SELECT tally_area_nos,id,1,now() FROM `user`;
 
 
 

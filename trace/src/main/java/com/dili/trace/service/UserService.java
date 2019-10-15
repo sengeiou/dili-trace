@@ -16,13 +16,13 @@ public interface UserService extends BaseService<User, Long> {
      * flag 是否有验证码
      * @param user
      */
-    void register(UserListDto user, Boolean flag);
+    void register(User user, Boolean flag);
 
     /**
      * 修改用户信息
      * @param user
      */
-    void updateUser(UserListDto user);
+    void updateUser(User user);
 
     /**
      * 登录

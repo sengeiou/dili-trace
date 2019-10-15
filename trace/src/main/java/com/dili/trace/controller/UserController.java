@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -66,7 +67,7 @@ public class UserController {
     })
     @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput<Long> insert(UserListDto user) {
+    BaseOutput<Long> insert(@RequestBody User user) {
         try {
             user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
             user.setState(EnabledStateEnum.ENABLED.getCode());
@@ -86,7 +87,7 @@ public class UserController {
 		@ApiImplicitParam(name="User", paramType="form", value = "User的form信息", required = true, dataType = "string")
 	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(UserListDto user) {
+    public @ResponseBody BaseOutput update(User user) {
         try {
             userService.updateUser(user);
             return BaseOutput.success("修改成功");

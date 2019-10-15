@@ -59,6 +59,9 @@
             return;
         }
         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+        if(_formData.tallyAreaNos instanceof Array){
+            _formData.tallyAreaNos = _formData.tallyAreaNos.join(',');
+        }
         var _url = null;
         //没有id就新增
         if(_formData.id == null || _formData.id==""){
@@ -69,10 +72,11 @@
         $.ajax({
             type: "POST",
             url: _url,
-            data: _formData,
+            data: JSON.stringify(_formData),
             processData:true,
             dataType: "json",
             async : true,
+            contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if(data.code=="200"){
                     _userGrid.datagrid("reload");

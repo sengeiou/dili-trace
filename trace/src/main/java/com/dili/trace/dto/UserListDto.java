@@ -1,5 +1,6 @@
 package com.dili.trace.dto;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
@@ -28,10 +29,11 @@ public interface UserListDto extends User {
     void setCreatedEnd(Date createdEnd);
 
     /**
-     * 用户理货区
+     * 昵称模糊查询
      * @return
      */
-    List<String> getUserTallyAreaNos();
-    void setUserTallyAreaNos(List<String> userTallyAreaNos);
-
+    @Column(name = "tally_area_nos")
+    @Like
+    String getLikeTallyAreaNos();
+    void setLikeTallyAreaNos(String likeTallyAreaNos);
 }

@@ -24,14 +24,14 @@
     -->
     select 
     <include refid="Base_Column_List" />
-    from user_taily_area
+    from user_tally_area
     where id = #{id,jdbcType=BIGINT}
   </select>
   <update id="updateBy" parameterType="com.dili.trace.domain.UserTallyArea">
     <!--
       WARNING - @mbg.generated
     -->
-    update user_taily_area
+    update user_tally_area
     <set>
       <if test="tallyAreaNo != null">
         tally_area_no = #{tallyAreaNo,jdbcType=VARCHAR},

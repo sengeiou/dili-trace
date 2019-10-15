@@ -17,11 +17,13 @@ import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.server.PathContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,7 +44,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Transactional(rollbackFor=Exception.class)
     @Override
-    public void register(UserListDto user,Boolean flag) {
+    public void register(User user,Boolean flag) {
         //验证验证码是否正确
         if(flag){
             checkVerificationCode(user.getPhone(),user.getCheckCode());
@@ -54,8 +56,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         //验证理货区号是否已注册
-        if(CollectionUtils.isNotEmpty(user.getUserTallyAreaNos()) ){
-            existsTallyAreaNo(null,user.getUserTallyAreaNos());
+        if(StringUtils.isNotEmpty(user.getTallyAreaNos()) ){
+            existsTallyAreaNo(null, Arrays.asList(user.getTallyAreaNos().split(",")));
         }
 
         //验证身份证号是否已注册
@@ -65,7 +67,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         insertSelective(user);
         //更新用户理货区
-        updateUserTallyArea(user.getId(),user.getUserTallyAreaNos());
+        updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
     }
 
     /**
@@ -94,7 +96,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 
     @Override
-    public void updateUser(UserListDto user) {
+    public void updateUser(User user) {
 
         //手机号验重
         if(StringUtils.isNotBlank(user.getPhone())){
@@ -110,13 +112,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             }
         }
         //验证理货区号是否已注册
-        if(CollectionUtils.isNotEmpty(user.getUserTallyAreaNos()) ){
-            existsTallyAreaNo(user.getId(),user.getUserTallyAreaNos());
+        if(StringUtils.isNotEmpty(user.getTallyAreaNos()) ){
+            existsTallyAreaNo(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
         }
         updateSelective(user);
 
         //更新用户理货区
-        updateUserTallyArea(user.getId(),user.getUserTallyAreaNos());
+        updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
     }
 
     private Boolean checkVerificationCode(String phone, String verCode){

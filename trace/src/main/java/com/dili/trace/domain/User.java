@@ -45,6 +45,14 @@ public interface User extends IBaseDomain {
 
     void setPhone(String phone);
 
+    @ApiModelProperty(value = "理货区号")
+    @Column(name = "`tally_area_nos`")
+    @FieldDef(label="tallyAreaNos", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getTallyAreaNos();
+
+    void setTallyAreaNos(String tallyAreaNos);
+
     @ApiModelProperty(value = "身份证号")
     @Column(name = "`card_no`")
     @FieldDef(label="cardNo", maxLength = 20)

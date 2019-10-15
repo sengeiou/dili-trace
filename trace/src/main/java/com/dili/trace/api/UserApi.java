@@ -250,7 +250,7 @@ public class UserApi {
         if(StrUtil.isBlank(user.getCheckCode())){
             throw new BusinessException("验证码为空");
         }
-        if(CollectionUtils.isNotEmpty(user.getUserTallyAreaNos())){
+        if(StringUtils.isNotEmpty(user.getTallyAreaNos())){
             throw new BusinessException("理货区号为空");
         }
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){

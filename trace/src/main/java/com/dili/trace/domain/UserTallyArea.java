@@ -16,7 +16,7 @@ import javax.persistence.Id;
  * 
  * This file was generated on 2019-10-11 10:05:11.
  */
-@Table(name = "`user_taily_area`")
+@Table(name = "`user_tally_area`")
 public interface UserTallyArea extends IBaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
