@@ -507,11 +507,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        swal(
-                                '操作',
-                                '操作成功',
-                                'info'
-                        );
+                        layer.alert('操作成功',{title:'操作',time : 3000});  
                     }else{
                         swal(
                                 '错误',
@@ -562,11 +558,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        swal(
-                                '操作',
-                                '操作成功',
-                                'info'
-                        );
+                        layer.alert('操作成功',{title:'操作',time : 3000});  
                     }else{
                         swal(
                                 '错误',
@@ -757,11 +749,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        swal(
-                                '操作',
-                                '操作成功',
-                                'info'
-                        );
+                        layer.alert('操作成功',{title:'操作',time : 3000});  
                     }else{
                         swal(
                                 '错误',
