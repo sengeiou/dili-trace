@@ -282,17 +282,22 @@
         }
         return false;
 	}
-	function onUnselect(index,row){
+	function onUnselectAll (){
+		onClickRow();
+	}
+	function onSelectAll(){
+		onClickRow();
 		
+	}
+	function onUnselect(index,row){
+		onClickRow(index,row);
 	}
     /**
      * datagrid行点击事件
      * 目前用于来判断 启禁用是否可点
      */
     function onClickRow(index,row) {
-        var state = row.$_state;
-        var detectState= row.$_detectState;
-        var handleResult= row.handleResult;
+
         //console.info(handleResult)
 
         initBtnStatus();
@@ -306,6 +311,9 @@
         	$('#batch-auto-btn').show();
         }
         
+        if(!row){
+        	return;
+        }
         if(_registerBillGrid.datagrid("getSelections").length>1){
         	return;
         }else{
@@ -313,6 +321,11 @@
         	$('#copy-btn').show();
         	 $('#detail-btn').show();
         }
+        
+        var state = row.$_state;
+        var detectState= row.$_detectState;
+        var handleResult= row.handleResult;
+        
         if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
             $('#undo-btn').show();
