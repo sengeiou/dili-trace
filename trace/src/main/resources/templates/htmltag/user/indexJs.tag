@@ -52,6 +52,9 @@
         }
         $('#_form').form('load', formData);
         $('#_salesCityId').combobox('setText',formData._salesCityName);
+        if(formData._state == 0){
+            $('#_tallyAreaNos').tagbox('disable');
+        }
     }
 
     function saveOrUpdate(){

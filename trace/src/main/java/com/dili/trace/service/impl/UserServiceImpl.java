@@ -111,14 +111,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 });
             }
         }
-        //验证理货区号是否已注册
-        if(StringUtils.isNotBlank(user.getTallyAreaNos()) ){
+
+        User userPO = get(user.getId());
+        if(EnabledStateEnum.ENABLED.getCode().equals(userPO.getState())){
             existsTallyAreaNo(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
+            //更新用户理货区
+            updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
         }
+
         updateSelective(user);
 
-        //更新用户理货区
-        updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
+
     }
 
     private Boolean checkVerificationCode(String phone, String verCode){
