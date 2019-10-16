@@ -71,6 +71,8 @@ public class AllRegisterBillApi {
 		condition.setRows(input.getRows());
 		condition.setSort(input.getSort());
 		condition.setOrder(input.getOrder());
+		condition.setStateList(input.getStateList());
+		condition.setDetectStateList(input.getDetectStateList());
 		BasePage<RegisterBill> list = this.registerBillService.listPageByExample(condition);
 
 		return BaseOutput.success().setData(list);

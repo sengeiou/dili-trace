@@ -58,4 +58,14 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     Boolean getHasReport();
     void setHasReport(Boolean hasReport);
     
+    @Column(name = "`state`")
+    @Operator(Operator.IN)
+    List<Integer> getStateList();
+    void setStateList(List<Integer> stateList);
+    
+    @Column(name = "`detect_state`")
+    @Operator(Operator.IN)
+    List<Integer> getDetectStateList();
+    void setDetectStateList(List<Integer> detectStateList);
+    
 }
