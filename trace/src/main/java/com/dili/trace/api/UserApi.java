@@ -56,7 +56,7 @@ public class UserApi {
 
     @ApiOperation(value ="注册【接口已通】", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
-    public BaseOutput<Long> register(@RequestBody UserListDto user){
+    public BaseOutput<Long> register(@RequestBody User user){
         try{
             checkRegisterParams(user);
             user.setPassword(MD5Util.md5(user.getPassword()));
@@ -240,7 +240,7 @@ public class UserApi {
         }
     }
 
-    private void checkRegisterParams(UserListDto user){
+    private void checkRegisterParams(User user){
         if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
             throw new BusinessException("手机号为空或格式错误");
         }
