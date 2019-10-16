@@ -100,7 +100,7 @@
     }
 
     function tallyAreaNo() {
-        var tallyAreaNo = $("#tallyAreaNo").val();
+        var tallyAreaNo = $("#tallyAreaNoInput").val();
         if(tallyAreaNo == ""){
             return;
         }
