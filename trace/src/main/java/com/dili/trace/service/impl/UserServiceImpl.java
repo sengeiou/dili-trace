@@ -56,7 +56,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         //验证理货区号是否已注册
-        if(StringUtils.isNotEmpty(user.getTallyAreaNos()) ){
+        if(StringUtils.isNotBlank(user.getTallyAreaNos()) ){
             existsTallyAreaNo(null, Arrays.asList(user.getTallyAreaNos().split(",")));
         }
 
@@ -112,7 +112,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             }
         }
         //验证理货区号是否已注册
-        if(StringUtils.isNotEmpty(user.getTallyAreaNos()) ){
+        if(StringUtils.isNotBlank(user.getTallyAreaNos()) ){
             existsTallyAreaNo(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
         }
         updateSelective(user);
