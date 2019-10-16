@@ -21,6 +21,10 @@
 用户数据是否可见 registerBill/create.html#user
 小程序后台数据查看 registerBill/index.html#weichat-view
 
+批量审核 registerBill/index.html#batchAudit
+批量主动送检 registerBill/index.html#batchAuto
+批量采样检测 registerBill/index.html#batchSampling
+
 溯源—检测统计 http://trace.nong12.com/registerBill/statics.html
 列表 registerBill/statics.html#list
 查看 registerBill/statics.html#detail
