@@ -288,14 +288,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public BaseOutput doBatchAutoCheck(List<Long> idList) {
-		BatchResultDto<RegisterBill> dto = new BatchResultDto<>();
+		BatchResultDto<String> dto = new BatchResultDto<>();
 		for (Long id : idList) {
 			RegisterBill registerBill = get(id);
+			if(registerBill==null) {
+				continue;
+			}
 			try {
 				this.autoCheckRegisterBill(registerBill);
-				dto.getSuccessList().add(registerBill);
+				dto.getSuccessList().add(registerBill.getCode());
 			} catch (Exception e) {
-				dto.getFailureList().add(registerBill);
+				dto.getFailureList().add(registerBill.getCode());
 			}
 		}
 
@@ -305,14 +308,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public BaseOutput doBatchSamplingCheck(List<Long> idList) {
-		BatchResultDto<RegisterBill> dto = new BatchResultDto<>();
+		BatchResultDto<String> dto = new BatchResultDto<>();
 		for (Long id : idList) {
 			RegisterBill registerBill = get(id);
+			if(registerBill==null) {
+				continue;
+			}
 			try {
 				this.samplingCheckRegisterBill(registerBill);
-				dto.getSuccessList().add(registerBill);
+				dto.getSuccessList().add(registerBill.getCode());
 			} catch (Exception e) {
-				dto.getFailureList().add(registerBill);
+				dto.getFailureList().add(registerBill.getCode());
 			}
 		}
 		return BaseOutput.success().setData(dto);
@@ -321,14 +327,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) {
-		BatchResultDto<RegisterBill> dto = new BatchResultDto<>();
+		BatchResultDto<String> dto = new BatchResultDto<>();
 		for (Long id : batchAuditDto.getRegisterBillIdList()) {
 			RegisterBill registerBill = get(id);
+			if(registerBill==null) {
+				continue;
+			}
 			try {
 				this.auditRegisterBill(batchAuditDto.getPass(), registerBill);
-				dto.getSuccessList().add(registerBill);
+				dto.getSuccessList().add(registerBill.getCode());
 			} catch (Exception e) {
-				dto.getFailureList().add(registerBill);
+				dto.getFailureList().add(registerBill.getCode());
 			}
 		}
 		return BaseOutput.success().setData(dto);
