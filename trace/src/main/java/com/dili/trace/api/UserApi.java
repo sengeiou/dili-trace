@@ -108,6 +108,7 @@ public class UserApi {
             LOGGER.info("短信验证码发送成功：---------------手机号：【"+phone+"】，验证码：【"+verificationCode+"】--------------");
         }else{
             LOGGER.error("发送失败,错误信息："+msgOutput.getMessage());
+            LOGGER.info("短信验证码发送失败：---------------手机号：【"+phone+"】，验证码：【"+verificationCode+"】--------------");
             return BaseOutput.failure(msgOutput.getMessage());
         }
         return BaseOutput.success();
