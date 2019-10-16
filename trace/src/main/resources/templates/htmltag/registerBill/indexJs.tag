@@ -1039,7 +1039,5 @@
         });
     }
     
-    layer.alert('登记成功',{type: 0,time : 3000,cancel: function(index, layero){
-    	alert('ddd')
-    		}    });
+
 </script>
