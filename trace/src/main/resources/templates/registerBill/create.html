@@ -27,7 +27,8 @@
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNo" id="tallyAreaNo" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;"/>
+                        <input type="hidden" name="tallyAreaNo" id="tallyAreaNo"/>
+                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
                     </div>
                 </div>

@@ -55,6 +55,7 @@
     }
 
     function saveOrUpdate(){
+        $('#_tallyAreaNos').tagbox('textbox').trigger($.Event("keydown", {keyCode: 13}));
         if(!$('#_form').form("validate")){
             return;
         }
