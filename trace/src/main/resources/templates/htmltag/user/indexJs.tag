@@ -314,6 +314,24 @@
                 handler:function(){
                     doEnable(false);
                 }
+            },
+            </#resource>
+            <#resource method="post" url="user/index.html#export">
+            {
+                iconCls:'icon-export',
+                text:'导出',
+                id:'stop_btn',
+                handler:function(){
+                    layer.confirm('确认导出数据?', {
+                        type: 0,
+                        title: '提示',
+                        btn: ['确定','取消'],
+                        yes:function(){
+                            layer.closeAll();
+                            doExport('userGrid');
+                        }
+                    });
+                }
             }
             </#resource>
         ]
