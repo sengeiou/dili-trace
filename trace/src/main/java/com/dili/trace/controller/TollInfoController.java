@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +57,16 @@ public class TollInfoController {
         map.put("suggestions", list);
         return map;
     }
+    
+    private int checkPriority(City city) {
+    	List<String>prirityCitys=Arrays.asList("青州市","寿光市","辽宁省","河北省","吉林省");
+    	for(int i=0;i<prirityCitys.size();i++) {
+    		if(city.getMergerName().contains(prirityCitys.get(i))) {
+    			return i;
+    		}
+    	}
+    	return -1;
+    }
     @RequestMapping(value="/city",method=RequestMethod.GET)
     @ResponseBody
     public Map<String, ?> queryCity(String name) {
@@ -62,6 +74,25 @@ public class TollInfoController {
         if(StringUtils.isNotBlank(name)){
             try{
                 List<City> citys =queryCitys(name);
+                if(citys!=null&&!citys.isEmpty()) {
+                	
+                	Collections.sort(citys, (o1, o2) -> {
+						int index1=checkPriority(o1);
+						int index2=checkPriority(o2);
+						if(index1!=-1&&index2!=-1) {
+							return index1-index2;
+						}else if(index1!=-1){
+							return -1;
+						}else if(index2!=-1){
+							return 1;
+						}else {
+							return 0;
+						}
+					});
+                	
+                }
+                
+                
                 for (City city : citys) {
                     Map<String, Object> obj = Maps.newHashMap();
                     obj.put("id", city.getId());
@@ -72,6 +103,7 @@ public class TollInfoController {
                     list.add(obj);
                 }
             } catch (Exception e) {
+//青州、寿光、辽宁、河北,吉林
 
             }
         }
