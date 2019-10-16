@@ -118,12 +118,14 @@
                         $("#addr").val(customer.addr).valid();
                         $("#userId").val(customer.id).valid();
                         $("#phone").val(customer.phone).valid();
+                        $("#tallyAreaNo").val(tallyAreaNo);
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
                         $("#addr").val("");
                         $("#userId").val("");
                         $("#phone").val("");
+                        $("#tallyAreaNo").val("");
                     }
                 },
                 error:function(){
@@ -132,6 +134,7 @@
                     $("#addr").val("");
                     $("#userId").val("");
                     $("#phone").val("");
+                    $("#tallyAreaNo").val("");
                 }
             });
         }
