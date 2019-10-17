@@ -86,7 +86,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         tallyAreaNos.forEach(tallyAreaNo->{
             UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
             userTallyArea.setUserId(userId);
-            userTallyArea.setState(EnabledStateEnum.ENABLED.getCode());
             userTallyArea.setTallyAreaNo(tallyAreaNo);
             userTallyAreas.add(userTallyArea);
         });
@@ -219,7 +218,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         tallyAreaNos.forEach(tallyAreaNo->{
             UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
             query.setTallyAreaNo(tallyAreaNo);
-            query.setState(EnabledStateEnum.ENABLED.getCode());
             UserTallyArea userTallyArea = userTallyAreaService.listByExample(query).stream().findFirst().orElse(null);
             if (null != userTallyArea && !userTallyArea.getUserId().equals(userId)) {
                 throw new BusinessException("理货区号【"+tallyAreaNo+"】已被注册");
@@ -244,32 +242,30 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public BaseOutput updateEnable(Long id, Boolean enable) {
         long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         User user = get(id);
+        List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
 
-            //验证理货区号是否已注册
-            if(StringUtils.isNotEmpty(user.getTallyAreaNos()) ){
-                existsTallyAreaNo(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
-            }
-
-            UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
-            userTallyAreaQuery.setUserId(id);
-
-            UserTallyArea utaPo = DTOUtils.newDTO(UserTallyArea.class);
-            utaPo.setState(EnabledStateEnum.ENABLED.getCode());
-            userTallyAreaService.updateSelectiveByExample(utaPo,userTallyAreaQuery);
+            //验证理货区号是否已注册，未注册则添加用户理货区关系
+            existsTallyAreaNo(user.getId(),tallyAreaNos);
+            List<UserTallyArea> userTallyAreas = new ArrayList<>();
+            tallyAreaNos.forEach(tallyAreaNo->{
+                UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
+                userTallyArea.setUserId(user.getId());
+                userTallyArea.setTallyAreaNo(tallyAreaNo);
+                userTallyAreas.add(userTallyArea);
+            });
+            userTallyAreaService.batchInsert(userTallyAreas);
             redisService.setRemove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         } else {
             user.setState(EnabledStateEnum.DISABLED.getCode());
             this.updateSelective(user);
 
+            //删除用户理货区关系
             UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
             userTallyAreaQuery.setUserId(id);
-
-            UserTallyArea utaPo = DTOUtils.newDTO(UserTallyArea.class);
-            utaPo.setState(EnabledStateEnum.DISABLED.getCode());
-            userTallyAreaService.updateSelectiveByExample(utaPo,userTallyAreaQuery);
+            userTallyAreaService.deleteByExample(userTallyAreaQuery);
             redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
         }
 
@@ -280,7 +276,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public User findByTallyAreaNo(String tallyAreaNo) {
         UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
         query.setTallyAreaNo(tallyAreaNo);
-        query.setState(EnabledStateEnum.ENABLED.getCode());
         UserTallyArea userTallyArea = userTallyAreaService.list(query).stream().findFirst().orElse(null);
         if (null == userTallyArea){
             return null;
