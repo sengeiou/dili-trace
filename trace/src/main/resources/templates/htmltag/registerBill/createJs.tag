@@ -334,16 +334,18 @@
                           localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
                           
                           layer.alert('登记成功',{
-                        	  type: 0,
-                        	  time : 3000,
-                        	  cancel: function(index, layero){
-                        	  	parent.closeWin('view_win');
-                          		}  
-                             }
-                             ,function () {
-                                 parent.closeWin('view_win');
-                              }
-                          );
+                           	 type:0,
+                           	  time : 3000,
+                           	end :function(){
+                           		parent.closeWin('view_win');
+                           		
+                           	}
+                          },
+                           	 
+                              function () {
+                                    parent.closeWin('view_win');
+                                 }
+                             );
                        
                       //}
                     
@@ -487,10 +489,10 @@
     }
     function selectCity(cthis,id,mergeName){
     	$('.originaNameInput').each(function(k,v){
-    		if($(this).val()==''){
+    		//if($(this).val()==''){
     			$(this).val(mergeName);
     			$(this).siblings('input:hidden').val(id)
-    		}
+    		//}
     	});
     }
 </script>

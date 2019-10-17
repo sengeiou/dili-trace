@@ -609,6 +609,7 @@ public class RegisterBillController {
 		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
 		modelMap.put("tradeTypes", tradeTypeService.findAll());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+		modelMap.put("citys", this.queryCitys());
 		return "registerBill/copy";
 	}
 

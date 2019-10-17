@@ -106,6 +106,13 @@
                     <!-- 表格后的统计 end -->
                 </div>
             </div>
+            <div class="form-group">
+                <div class="table-showlist" style="width: 1200px">
+                 常用产地: <% for(city in citys){%>
+                        <a href="javascript:void(0)" onclick="selectCity(this,${city.id},'${city.mergerName}')">${city.name}</a>
+                    <%}%>
+                </div>
+            </div>
             <div class="form-item-group">
                 <h4 class="form-item-title">检测报告</h4>
                 <div class="fileimg-box" style="margin-left: 50px;">
@@ -183,7 +190,7 @@ var registerSource=$('[name="registerSource"]').val();
         </td>
         <td>
             <div class="form-group">
-                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected" id="originName_{{index}}" required />
+                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}" required />
                 <input type="text" name="originId_{{index}}" hidden value="" />
             </div>
         </td>
