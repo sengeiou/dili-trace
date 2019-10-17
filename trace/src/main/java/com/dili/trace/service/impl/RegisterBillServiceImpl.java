@@ -256,7 +256,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public int undoRegisterBill(Long id) {
 		RegisterBill registerBill = get(id);
-		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()
+				||registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
 			UserTicket userTicket = getOptUser();
 			LOGGER.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
 					+ JSON.toJSON(registerBill).toString());

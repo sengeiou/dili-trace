@@ -333,6 +333,7 @@
             $('#batch-audit-btn').show();
 
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
+        	 $('#undo-btn').show();
             $('#auto-btn').show();
             $('#sampling-btn').show();
             //按钮不可用
