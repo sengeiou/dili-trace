@@ -96,7 +96,7 @@ public class UserController {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("修改用户", e);
-            return BaseOutput.failure();
+            return BaseOutput.failure(e.getMessage());
         }
 
     }
