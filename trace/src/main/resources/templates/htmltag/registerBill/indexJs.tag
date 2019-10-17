@@ -301,27 +301,29 @@
         //console.info(handleResult)
 
         initBtnStatus();
-        if(isOnlyBatchAudit()){
-        	$('#batch-audit-btn').show();
-        }
-        if(isOnlyBatchSimpling()){
-        	$('#batch-sampling-btn').show();
-        }
-        if(isOnlyBatchAuto()){
-        	$('#batch-auto-btn').show();
-        }
-        
-        if(!row){
+        var rows=_registerBillGrid.datagrid("getSelections");
+        if(rows.length==0){
         	return;
         }
-        if(_registerBillGrid.datagrid("getSelections").length>1){
-        	return;
-        }else{
-        	$('#edit-btn').show();
-        	$('#copy-btn').show();
-        	 $('#detail-btn').show();
+        if(rows.length>1){
+        	//batch
+            if(isOnlyBatchAudit()){
+            	$('#batch-audit-btn').show();
+            }
+            if(isOnlyBatchSimpling()){
+            	$('#batch-sampling-btn').show();
+            }
+            if(isOnlyBatchAuto()){
+            	$('#batch-auto-btn').show();
+            }
+            return;
         }
-        var selected = _registerBillGrid.datagrid("getSelected");
+
+        $('#edit-btn').show();
+    	$('#copy-btn').show();
+    	$('#detail-btn').show();
+    	
+        var selected = rows[0];
         var state = selected.$_state;
         var detectState= selected.$_detectState;
         var handleResult= selected.handleResult;
