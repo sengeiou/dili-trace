@@ -72,16 +72,15 @@ CREATE TABLE `user_tally_area` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `tally_area_no` varchar(20) NOT NULL COMMENT '理货区号',
   `user_id` bigint(20) NOT NULL COMMENT '用户id',
-  `state` tinyint(1) NOT NULL COMMENT '1:启用 0：禁用',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `GROUP_UNIQUE_INDEX` (`tally_area_no`,`state`)
+  UNIQUE KEY `TALLY_AREA_NO_UNIQUE_INDEX` (`tally_area_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ##理货区数据迁移
-INSERT INTO user_tally_area (tally_area_no,user_id,state,created)
-SELECT tally_area_nos,id,1,now() FROM `user`;
+INSERT INTO user_tally_area (tally_area_no,user_id,created)
+SELECT tally_area_nos,id,now() FROM `user`;
 
 
 批量审核 registerBill/index.html#batchAudit

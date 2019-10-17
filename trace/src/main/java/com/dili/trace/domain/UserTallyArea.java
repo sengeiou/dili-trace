@@ -41,13 +41,6 @@ public interface UserTallyArea extends IBaseDomain {
 
     void setUserId(Long userId);
 
-    @Column(name = "`state`")
-    @FieldDef(label="1:启用 0：禁用")
-    @EditMode(editor = FieldEditor.Number, required = false)
-    Integer getState();
-
-    void setState(Integer state);
-
     @Column(name = "`created`")
     @FieldDef(label="created")
     @EditMode(editor = FieldEditor.Datetime, required = true)

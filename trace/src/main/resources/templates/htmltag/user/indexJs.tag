@@ -13,6 +13,7 @@
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
         $(":file").attr('disabled',false);
+        $('#_tallyAreaNos').tagbox('enable');
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_name");
@@ -31,6 +32,7 @@
         $('#_name').textbox({readonly:true});
         $('#_cardNo').textbox({readonly:true});
         $('#_addr').textbox({readonly:true});
+        $('#_tallyAreaNos').tagbox('enable');
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_name");
@@ -52,6 +54,9 @@
         }
         $('#_form').form('load', formData);
         $('#_salesCityId').combobox('setText',formData._salesCityName);
+        if(formData._state == 0){
+            $('#_tallyAreaNos').tagbox('disable');
+        }
     }
 
     function saveOrUpdate(){
@@ -61,6 +66,10 @@
         }
         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
         if(_formData.tallyAreaNos instanceof Array){
+            if(_formData.tallyAreaNos.length>15){
+                swal('错误','理货区数量最多15个', 'error');
+                return;
+            }
             _formData.tallyAreaNos = _formData.tallyAreaNos.join(',');
         }
         var _url = null;
