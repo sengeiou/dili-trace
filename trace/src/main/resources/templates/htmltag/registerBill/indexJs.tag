@@ -321,10 +321,10 @@
         	$('#copy-btn').show();
         	 $('#detail-btn').show();
         }
-        
-        var state = row.$_state;
-        var detectState= row.$_detectState;
-        var handleResult= row.handleResult;
+        var selected = _registerBillGrid.datagrid("getSelected");
+        var state = selected.$_state;
+        var detectState= selected.$_detectState;
+        var handleResult= selected.handleResult;
         
         if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
