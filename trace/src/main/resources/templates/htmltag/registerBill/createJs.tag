@@ -260,6 +260,13 @@
         });
     }
 
+    
+    jQuery.validator.addMethod("isPlate", function(value, element) {  
+        var length = value.length;  
+        var regName = /[^\u4e00-\u9fa5]/g;
+        return this.optional(element) || !regName.test( value.charAt(0) );    
+    }, "第一个字符必须为汉字");  
+  
     var resubmit =0;
     function create(){
         if(resubmit==0){
@@ -477,5 +484,13 @@
                 data.submit();
             }
         });
+    }
+    function selectCity(cthis,id,mergeName){
+    	$('.originaNameInput').each(function(k,v){
+    		if($(this).val()==''){
+    			$(this).val(mergeName);
+    			$(this).siblings('input:hidden').val(id)
+    		}
+    	});
     }
 </script>

@@ -11,6 +11,7 @@ import com.dili.trace.dto.*;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
+import com.dili.trace.rpc.BaseInfoRpc;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
 import com.diligrp.manage.sdk.session.SessionContext;
@@ -54,6 +55,8 @@ public class RegisterBillController {
 	CustomerService customerService;
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
+    @Autowired
+    BaseInfoRpc baseInfoRpc;
 
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -206,9 +209,29 @@ public class RegisterBillController {
 	@RequestMapping(value = "/create.html")
 	public String create(ModelMap modelMap) {
 		modelMap.put("tradeTypes", tradeTypeService.findAll());
+		modelMap.put("citys", this.queryCitys());
+
 		return "registerBill/create";
 	}
-
+	private List<City> queryCitys() {
+		List<String>prirityCityNames=Arrays.asList("青州市","寿光市","辽宁省","河北省","吉林省");
+		
+		List<City>cityList=new ArrayList<>();
+		for(String name:prirityCityNames) {
+			 CityListInput query = new CityListInput();
+		        query.setKeyword(name);
+		        BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
+		        if(result.isSuccess()){
+		        	City city=  result.getData().stream().filter(item->item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+		        	if(city!=null) {
+		        		cityList.add(city);
+		        	}
+		        }
+		      
+		}
+		return cityList;
+       
+    }
 	/**
 	 * 登记单录查看页面
 	 * 
