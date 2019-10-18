@@ -214,7 +214,7 @@ public class RegisterBillController {
 		return "registerBill/create";
 	}
 	private List<City> queryCitys() {
-		List<String>prirityCityNames=Arrays.asList("青州市","寿光市","辽宁省","河北省","吉林省");
+		List<String>prirityCityNames=Arrays.asList("青州市","寿光市","莱西市","平度市","莱芜市","青岛市","博兴县","临朐县","辽宁省","河北省","吉林省","内蒙古自治区");
 		
 		List<City>cityList=new ArrayList<>();
 		for(String name:prirityCityNames) {
