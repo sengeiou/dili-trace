@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -251,8 +253,11 @@ public class UserApi {
         if(StrUtil.isBlank(user.getCheckCode())){
             throw new BusinessException("验证码为空");
         }
-        if(StrUtil.isBlank(user.getTallyAreaNos())){
-            throw new BusinessException("理货区号为空");
+        if(StrUtil.isBlank(user.getTallyAreaNos()) || !ReUtil.isMatch(PatternConstants.TALLY_AREA_NO,user.getTallyAreaNos())){
+            throw new BusinessException("理货区号为空或格式错误");
+        }
+        if(Arrays.asList(user.getTallyAreaNos().split(",")).size()>15){
+            throw new BusinessException("用户最多添加15个理货区");
         }
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
             throw new BusinessException("姓名为空或格式错误");
