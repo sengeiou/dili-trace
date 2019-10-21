@@ -893,16 +893,31 @@
                     success: function (ret) {
                         if(ret.success){
                             _registerBillGrid.datagrid("reload");
-                            layer.alert('操作成功',{title:'操作',time : 3000});  
+                           // layer.alert('操作成功',{title:'操作',time : 3000}); 
+                            
+                            layer.alert('操作成功',{
+                            	 title:'操作',
+                              	time : 3000,
+                              	end :function(){
+                              		 layer.closeAll();
+                              		
+                              	}
+                             },
+                             function () {
+                            	 layer.closeAll();
+                                    }
+                                );
+                            
                         }else{
                             swal(
                                     '操作',
                                     ret.result,
                                     'info'
                             );
+                            layer.closeAll();
 
                         }
-                        layer.closeAll();
+                        
                     },
                     error: function(){
 
