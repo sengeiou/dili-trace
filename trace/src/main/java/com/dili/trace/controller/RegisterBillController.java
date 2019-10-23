@@ -11,6 +11,7 @@ import com.dili.trace.dto.*;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
+import com.dili.trace.rpc.BaseInfoRpc;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
 import com.diligrp.manage.sdk.session.SessionContext;
@@ -54,6 +55,8 @@ public class RegisterBillController {
 	CustomerService customerService;
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
+    @Autowired
+    BaseInfoRpc baseInfoRpc;
 
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -123,7 +126,7 @@ public class RegisterBillController {
 
 			if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 				// 理货区
-				User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
+				User user = userService.findByTallyAreaNo(registerBill.getTallyAreaNo());
 				if (user == null) {
 					LOGGER.error("新增登记单失败理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
 					return BaseOutput.failure("理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
@@ -206,9 +209,29 @@ public class RegisterBillController {
 	@RequestMapping(value = "/create.html")
 	public String create(ModelMap modelMap) {
 		modelMap.put("tradeTypes", tradeTypeService.findAll());
+		modelMap.put("citys", this.queryCitys());
+
 		return "registerBill/create";
 	}
-
+	private List<City> queryCitys() {
+		List<String>prirityCityNames=Arrays.asList("青州市","寿光市","莱西市","平度市","莱芜市","青岛市","博兴县","临朐县","辽宁省","河北省","吉林省","内蒙古自治区");
+		
+		List<City>cityList=new ArrayList<>();
+		for(String name:prirityCityNames) {
+			 CityListInput query = new CityListInput();
+		        query.setKeyword(name);
+		        BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
+		        if(result.isSuccess()){
+		        	City city=  result.getData().stream().filter(item->item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+		        	if(city!=null) {
+		        		cityList.add(city);
+		        	}
+		        }
+		      
+		}
+		return cityList;
+       
+    }
 	/**
 	 * 登记单录查看页面
 	 * 
@@ -237,11 +260,11 @@ public class RegisterBillController {
 		}
 		
 		
-		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
-		conditon.setRegisterBillCode(registerBill.getCode());
-		conditon.setSort("id");
-		conditon.setOrder("desc");
-		List<DetectRecord>detectRecordList=this.detectRecordService.listByExample(conditon);
+//		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
+//		conditon.setRegisterBillCode(registerBill.getCode());
+//		conditon.setSort("id");
+//		conditon.setOrder("desc");
+		List<DetectRecord>detectRecordList=this.detectRecordService.findTop2AndLatest(registerBill.getCode());
 		modelMap.put("detectRecordList", detectRecordList);
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/view";
@@ -323,7 +346,61 @@ public class RegisterBillController {
 		}
 		return BaseOutput.success("操作成功");
 	}
+	/**
+	 * 批量主动送检
+	 * 
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/doBatchAutoCheck", method = RequestMethod.POST)
+	public @ResponseBody BaseOutput doBatchAutoCheck(ModelMap modelMap,@RequestBody List<Long> idList) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+		idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(idList)) {
+			return BaseOutput.failure("参数错误");
+		}
+		return this.registerBillService.doBatchAutoCheck(idList);
+	}
 
+	/**
+	 * 批量采样检测
+	 * 
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/doBatchSamplingCheck", method = RequestMethod.POST)
+	public @ResponseBody BaseOutput doBatchSamplingCheck(ModelMap modelMap,@RequestBody List<Long> idList) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+		idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(idList)) {
+			return BaseOutput.failure("参数错误");
+		}
+		return this.registerBillService.doBatchSamplingCheck(idList);
+	}
+	/**
+	 * 批量审核
+	 * 
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/doBatchAudit", method = RequestMethod.POST)
+	public @ResponseBody BaseOutput doBatchAudit(ModelMap modelMap,@RequestBody  BatchAuditDto batchAuditDto) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+//		if (batchAuditDto.getPass() == null) {
+//			return BaseOutput.failure("参数错误");
+//		}
+		List<Long> idList = CollectionUtils.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream()
+				.filter(Objects::nonNull).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(idList)) {
+			return BaseOutput.failure("参数错误");
+		}
+		batchAuditDto.setPass(true);
+		batchAuditDto.setRegisterBillIdList(idList);
+		return this.registerBillService.doBatchAudit(batchAuditDto);
+	}
 	/**
 	 * 撤销
 	 * 
@@ -532,6 +609,7 @@ public class RegisterBillController {
 		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
 		modelMap.put("tradeTypes", tradeTypeService.findAll());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+		modelMap.put("citys", this.queryCitys());
 		return "registerBill/copy";
 	}
 
@@ -539,7 +617,7 @@ public class RegisterBillController {
 		UserInfoDto userInfoDto=new UserInfoDto();
 		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 			// 理货区
-			User user = userService.findByTaillyAreaNo(registerBill.getTallyAreaNo());
+			User user = userService.findByTallyAreaNo(registerBill.getTallyAreaNo());
 		
 			if(user!=null) {
 				userInfoDto.setUserId(String.valueOf(user.getId()));

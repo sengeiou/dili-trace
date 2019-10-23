@@ -78,6 +78,18 @@
                 }
             },
     </#resource>
+    <#resource method="post" url="registerBill/index.html#batchAudit">
+            {
+                iconCls:'icon-man',
+                text:'批量审核',
+                id:'batch-audit-btn',
+                disabled :true,
+                handler:function(){
+                    batchAudit();
+                }
+            },
+            
+    </#resource>
         <#resource method="post" url="registerBill/index.html#review">
             {
                 iconCls:'icon-man',
@@ -89,7 +101,7 @@
                 }
             },
     </#resource>
-        <#resource method="post" url="registerBill/index.html#auto">
+     <#resource method="post" url="registerBill/index.html#auto">
             {
                 iconCls:'icon-man',
                 text:'主动送检',
@@ -100,7 +112,19 @@
                 }
             },
     </#resource>
-        <#resource method="post" url="registerBill/index.html#sampling">
+            
+    <#resource method="post" url="registerBill/index.html#batchAuto">
+            {
+                iconCls:'icon-man',
+                text:'批量主动送检',
+                id:'batch-auto-btn',
+                disabled :true,
+                handler:function(){
+                    batchAutoCheck();
+                }
+            },
+    </#resource>
+    <#resource method="post" url="registerBill/index.html#sampling">
             {
                 iconCls:'icon-man',
                 text:'采样检测',
@@ -108,6 +132,17 @@
                 disabled :true,
                 handler:function(){
                     samplingCheck();
+                }
+            },
+    </#resource>
+    <#resource method="post" url="registerBill/index.html#batchSampling">
+            {
+                iconCls:'icon-man',
+                text:'批量采样检测',
+                id:'batch-sampling-btn',
+                disabled :true,
+                handler:function(){
+                    batchSamplingCheck();
                 }
             },
     </#resource>
@@ -140,6 +175,7 @@
                 iconCls:'icon-edit',
                 text:'上传检测报告',
                 id:'edit-btn',
+                disabled :true,
                 handler:doModify,
                 handler:function(){
                     doModify();
@@ -151,6 +187,7 @@
                 iconCls:'icon-copy',
                 text:'补录',
                 id:'copy-btn',
+                disabled :true,
                 handler:doCopy,
                 handler:function(){
                 	doCopy();
@@ -160,7 +197,9 @@
         <#resource method="post" url="registerBill/index.html#detail">
             {
                 iconCls:'icon-detail',
+                id:'detail-btn',
                 text:'查看',
+                disabled :true,
                 handler:function(){
                     doDetail();
                 }
@@ -188,31 +227,117 @@
         });
     }
 	function initBtnStatus(){
-        $('#undo-btn').linkbutton('disable');
+        /*$('#undo-btn').linkbutton('disable');
         $('#audit-btn').linkbutton('disable');
         $('#auto-btn').linkbutton('disable');
         $('#sampling-btn').linkbutton('disable');
         $('#review-btn').linkbutton('disable');
-        $('#handle-btn').linkbutton('disable');
+        $('#handle-btn').linkbutton('disable');*/
+        
+        var btnArray=['edit-btn','copy-btn','detail-btn','undo-btn','audit-btn','auto-btn','sampling-btn','review-btn','handle-btn'
+        	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn']
+	    for (var i = 0; i < btnArray.length; i++) {
+	        var btnId = btnArray[i];
+	        $('#'+btnId).linkbutton('enable');
+	        $('#'+btnId).hide();
+	      
+	    }
+	}
+	function isOnlyBatchAudit(){
+		//var batched=true;
+		var rows=_registerBillGrid.datagrid("getSelections");
+        if(rows.length>1){
+        	for(var i=0;i<rows.length;i++){
+        		 var state = rows[i].$_state;
+        		 if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
+        			  return true;
+                 }
+        	}
+        }
+        return false;
+	}
+	function isOnlyBatchSimpling(){
+		//var batched=true;
+		var rows=_registerBillGrid.datagrid("getSelections");
+        if(rows.length>1){
+        	for(var i=0;i<rows.length;i++){
+        		 var state = rows[i].$_state;
+        		 if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
+        			  return true;
+                 }
+        	}
+        }
+        return false;
+	}
+	function isOnlyBatchAuto(){
+		//var batched=true;
+		var rows=_registerBillGrid.datagrid("getSelections");
+        if(rows.length>1){
+        	for(var i=0;i<rows.length;i++){
+        		 var state = rows[i].$_state;
+        		 if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
+        			  return true;
+                 }
+        	}
+        }
+        return false;
+	}
+	function onUnselectAll (){
+		onClickRow();
+	}
+	function onSelectAll(){
+		onClickRow();
+		
+	}
+	function onUnselect(index,row){
+		onClickRow(index,row);
 	}
     /**
      * datagrid行点击事件
      * 目前用于来判断 启禁用是否可点
      */
     function onClickRow(index,row) {
-        var state = row.$_state;
-        var detectState= row.$_detectState;
-        var handleResult= row.handleResult;
+
         //console.info(handleResult)
+
         initBtnStatus();
+        var rows=_registerBillGrid.datagrid("getSelections");
+        if(rows.length==0){
+        	return;
+        }
+        if(rows.length>1){
+        	//batch
+            if(isOnlyBatchAudit()){
+            	$('#batch-audit-btn').show();
+            }
+            if(isOnlyBatchSimpling()){
+            	$('#batch-sampling-btn').show();
+            }
+            if(isOnlyBatchAuto()){
+            	$('#batch-auto-btn').show();
+            }
+            return;
+        }
+
+        $('#edit-btn').show();
+    	$('#copy-btn').show();
+    	$('#detail-btn').show();
+    	
+        var selected = rows[0];
+        var state = selected.$_state;
+        var detectState= selected.$_detectState;
+        var handleResult= selected.handleResult;
+        
         if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
-            $('#undo-btn').linkbutton('enable');
-            $('#audit-btn').linkbutton('enable');
+            $('#undo-btn').show();
+            $('#audit-btn').show();
+            $('#batch-audit-btn').show();
 
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
-            $('#auto-btn').linkbutton('enable');
-            $('#sampling-btn').linkbutton('enable');
+        	 $('#undo-btn').show();
+            $('#auto-btn').show();
+            $('#sampling-btn').show();
             //按钮不可用
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_CHECK.getCode()} ){
             //按钮不可用
@@ -221,10 +346,10 @@
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.ALREADY_CHECK.getCode()}){
             //按钮不可用
         	if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.NO_PASS.getCode()}){
-           	 	$('#review-btn').linkbutton('enable');
+           	 	$('#review-btn').show();
            }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}){
         	  if(handleResult==null||handleResult==''){
-              	 $('#review-btn').linkbutton('enable');
+              	 $('#review-btn').show();
               }
            }
         }
@@ -232,7 +357,7 @@
         if(row.handleResultUrl&&row.handleResult&&row.handleResultUrl!=null&&row.handleResult!=null&&row.handleResultUrl!=''&&row.handleResult!=''){
         	 //$('#handle-btn').linkbutton('disable');
         }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}&&row.handleResultUrl==null&&row.handleResult==null){
-        	 $('#handle-btn').linkbutton('enable');
+        	 $('#handle-btn').show();
         }
        
         //handle-btn
@@ -285,6 +410,74 @@
         openIframe('/registerBill/audit/' + selected.id,selected.id)
 
     }
+    function batchAudit(){
+    	var rows=_registerBillGrid.datagrid("getSelections");
+    	if (rows.length==0) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        
+
+          
+       	var codeList=[];
+        var batchIdList=[];
+       	for(var i=0;i<rows.length;i++){
+       		 if (rows[i].$_state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
+       			  batchIdList.push(rows[i].id);
+       			  codeList.push(rows[i].code)
+                }
+       	}
+		if(codeList.length==0){
+			layer.alert('所选登记单子不能审核')
+			return;
+		}
+        layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量审核"}, function () {
+        	$.ajax({
+        		type: "POST",
+                url: "${contextPath}/registerBill/doBatchAudit",
+                processData:true,
+                contentType:'application/json;charset=utf-8',
+                data:JSON.stringify({registerBillIdList:batchIdList,pass:true}),
+                dataType: "json",
+                async : true,
+                success: function (ret) {
+                    if(ret.success){
+                   	 var failureList=ret.data.failureList;
+                	 if(failureList.length==0){
+                         _registerBillGrid.datagrid("reload");
+                         layer.alert('操作成功',{title:'操作',time : 3000});  
+
+                	 }else{
+                		 swal(
+                                 '操作',
+                                 '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
+                                 'info'
+                         );
+                	 }
+                    }else{
+                        swal(
+                                '错误',
+                                ret.result,
+                                'error'
+                        );
+                    }
+                },
+                error: function(){
+                    swal(
+                            '错误',
+                            '远程访问失败',
+                            'error'
+                    );
+                }
+            });
+        })
+
+    }
 
 
     function autoCheck() {
@@ -317,11 +510,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        swal(
-                                '操作',
-                                '操作成功',
-                                'info'
-                        );
+                        layer.alert('操作成功',{title:'操作',time : 3000});  
                     }else{
                         swal(
                                 '错误',
@@ -341,7 +530,7 @@
         }
     });
     }
-
+    
     function samplingCheck() {
         var selected = _registerBillGrid.datagrid("getSelected");
         if (null == selected) {
@@ -372,11 +561,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        swal(
-                                '操作',
-                                '操作成功',
-                                'info'
-                        );
+                        layer.alert('操作成功',{title:'操作',time : 3000});  
                     }else{
                         swal(
                                 '错误',
@@ -396,7 +581,147 @@
         }
     });
     }
+    
+    
+    function batchAutoCheck(){
+    	var rows=_registerBillGrid.datagrid("getSelections");
+    	if (rows.length==0) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        
+    	var codeList=[];
+        var batchIdList=[];
+       	for(var i=0;i<rows.length;i++){
+       		 if (rows[i].$_state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
+       			  batchIdList.push(rows[i].id);
+       			  codeList.push(rows[i].code)
+                }
+       	}
+		if(codeList.length==0){
+			layer.alert('所选登记单子不能主动送检')
+			return;
+		}
+        layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量主动送检"}, function () {
+        	 $.ajax({
+                 type: "POST",
+                 url: "${contextPath}/registerBill/doBatchAutoCheck",
+                 processData:true,
+                 dataType: "json",
+                 contentType:'application/json;charset=utf-8',
+                 data:JSON.stringify(batchIdList),
+                 async : true,
+                 success: function (ret) {
+                     if(ret.success){
+                    	 var failureList=ret.data.failureList;
+                    	 if(failureList.length==0){
+                             _registerBillGrid.datagrid("reload");
+                           layer.alert('操作成功',{title:'操作',time : 3000});   
+                               
+                    	 }else{
+                    		 swal(
+                                     '操作',
+                                     '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
+                                     'info'
+                             );
+                    	 }
+                    	 
+                    	 
 
+                     }else{
+                         swal(
+                                 '错误',
+                                 ret.result,
+                                 'error'
+                         );
+                     }
+                 },
+                 error: function(){
+                     swal(
+                             '错误',
+                             '远程访问失败',
+                             'error'
+                     );
+                 }
+             });
+        	
+        	
+        	
+        	
+        })
+    	
+    }
+    
+    function batchSamplingCheck(){
+    	var rows=_registerBillGrid.datagrid("getSelections");
+    	if (rows.length==0) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+    	var codeList=[];
+        var batchIdList=[];
+       	for(var i=0;i<rows.length;i++){
+       		 if (rows[i].$_state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
+       			  batchIdList.push(rows[i].id);
+       			  codeList.push(rows[i].code)
+                }
+       	}
+		if(codeList.length==0){
+			layer.alert('所选登记单子不能采样检测')
+			return;
+		}
+        layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量采样检测"}, function () {
+        	$.ajax({
+        		type: "POST",
+                url: "${contextPath}/registerBill/doBatchSamplingCheck",
+                processData:true,
+                contentType:'application/json;charset=utf-8',
+                data:JSON.stringify(batchIdList),
+                dataType: "json",
+                async : true,
+                success: function (ret) {
+                    if(ret.success){
+                   	 var failureList=ret.data.failureList;
+                	 if(failureList.length==0){
+                         _registerBillGrid.datagrid("reload");
+                         layer.alert('操作成功',{title:'操作',time : 3000});  
+
+                	 }else{
+                		 swal(
+                                 '操作',
+                                 '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
+                                 'info'
+                         );
+                	 }
+                    }else{
+                        swal(
+                                '错误',
+                                ret.result,
+                                'error'
+                        );
+                    }
+                },
+                error: function(){
+                    swal(
+                            '错误',
+                            '远程访问失败',
+                            'error'
+                    );
+                }
+            });
+        })
+    	
+    }
     function reviewCheck() {
         var selected = _registerBillGrid.datagrid("getSelected");
         if (null == selected) {
@@ -427,11 +752,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        swal(
-                                '操作',
-                                '操作成功',
-                                'info'
-                        );
+                        layer.alert('操作成功',{title:'操作',time : 3000});  
                     }else{
                         swal(
                                 '错误',
@@ -481,11 +802,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        swal(
-                                '操作',
-                                '操作成功',
-                                'info'
-                        );
+                        layer.alert('操作成功',{title:'操作',time : 3000});  
                     }else{
                         swal(
                                 '错误',
@@ -576,21 +893,31 @@
                     success: function (ret) {
                         if(ret.success){
                             _registerBillGrid.datagrid("reload");
-
-                            swal(
-                                    '操作',
-                                    '操作成功',
-                                    'info'
-                            );
+                           // layer.alert('操作成功',{title:'操作',time : 3000}); 
+                            
+                            layer.alert('操作成功',{
+                            	 title:'操作',
+                              	time : 3000,
+                              	end :function(){
+                              		 layer.closeAll();
+                              		
+                              	}
+                             },
+                             function () {
+                            	 layer.closeAll();
+                                    }
+                                );
+                            
                         }else{
                             swal(
                                     '操作',
                                     ret.result,
                                     'info'
                             );
+                            layer.closeAll();
 
                         }
-                        layer.closeAll();
+                        
                     },
                     error: function(){
 
@@ -730,4 +1057,6 @@
             }
         });
     }
+    
+
 </script>

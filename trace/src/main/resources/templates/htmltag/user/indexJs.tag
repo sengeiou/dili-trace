@@ -9,10 +9,11 @@
         $('#_phone').textbox({readonly:false});
         $('#_cardNo').textbox({readonly:false});
         $('#_addr').textbox({readonly:false});
-        $('#_taillyAreaNo').textbox({readonly:false});
+        $('#_tallyAreaNo').textbox({readonly:false});
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
         $(":file").attr('disabled',false);
+        $('#_tallyAreaNos').tagbox('enable');
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_name");
@@ -31,6 +32,7 @@
         $('#_name').textbox({readonly:true});
         $('#_cardNo').textbox({readonly:true});
         $('#_addr').textbox({readonly:true});
+        $('#_tallyAreaNos').tagbox('enable');
         $('#_form').form('clear');
         initFileUpload();
         formFocus("_form", "_name");
@@ -52,13 +54,24 @@
         }
         $('#_form').form('load', formData);
         $('#_salesCityId').combobox('setText',formData._salesCityName);
+        if(formData._state == 0){
+            $('#_tallyAreaNos').tagbox('disable');
+        }
     }
 
     function saveOrUpdate(){
+        $('#_tallyAreaNos').tagbox('textbox').trigger($.Event("keydown", {keyCode: 13}));
         if(!$('#_form').form("validate")){
             return;
         }
         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+        if(_formData.tallyAreaNos instanceof Array){
+            if(_formData.tallyAreaNos.length>15){
+                swal('错误','理货区数量最多15个', 'error');
+                return;
+            }
+            _formData.tallyAreaNos = _formData.tallyAreaNos.join(',');
+        }
         var _url = null;
         //没有id就新增
         if(_formData.id == null || _formData.id==""){
@@ -69,10 +82,11 @@
         $.ajax({
             type: "POST",
             url: _url,
-            data: _formData,
+            data: JSON.stringify(_formData),
             processData:true,
             dataType: "json",
             async : true,
+            contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if(data.code=="200"){
                     _userGrid.datagrid("reload");
@@ -308,6 +322,24 @@
                 id:'stop_btn',
                 handler:function(){
                     doEnable(false);
+                }
+            },
+            </#resource>
+            <#resource method="post" url="user/index.html#export">
+            {
+                iconCls:'icon-export',
+                text:'导出',
+                id:'stop_btn',
+                handler:function(){
+                    layer.confirm('确认导出数据?', {
+                        type: 0,
+                        title: '提示',
+                        btn: ['确定','取消'],
+                        yes:function(){
+                            layer.closeAll();
+                            doExport('userGrid');
+                        }
+                    });
                 }
             }
             </#resource>

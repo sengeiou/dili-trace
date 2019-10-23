@@ -5,6 +5,7 @@
 重置密码 user/index.html#reset
 启用 user/index.html#enabled
 禁用 user/index.html#disabled
+导出 user/index.html#export
 
 溯源—登记单管理 http://trace.nong12.com/registerBill/index.html
 列表 registerBill/index.html#list
@@ -20,6 +21,10 @@
 复制登记单: registerBill/index.html#copy
 用户数据是否可见 registerBill/create.html#user
 小程序后台数据查看 registerBill/index.html#weichat-view
+
+批量审核 registerBill/index.html#batchAudit
+批量主动送检 registerBill/index.html#batchAuto
+批量采样检测 registerBill/index.html#batchSampling
 
 溯源—检测统计 http://trace.nong12.com/registerBill/statics.html
 列表 registerBill/statics.html#list
@@ -58,13 +63,30 @@ INSERT INTO `biz_number` (`id`, `type`, `value`, `memo`, `version`) VALUES ('2',
 ALTER TABLE `quality_trace_trade_bill`
 ADD UNIQUE INDEX `BILL_ID_UNIQUE_INDEX` (`bill_id`) ;
 
+2.1
+
+ALTER TABLE `user`
+CHANGE COLUMN `tailly_area_no` `tally_area_nos` varchar(60) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `card_no_back_url`;
+##用户理货区
+CREATE TABLE `user_tally_area` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tally_area_no` varchar(20) NOT NULL COMMENT '理货区号',
+  `user_id` bigint(20) NOT NULL COMMENT '用户id',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `TALLY_AREA_NO_UNIQUE_INDEX` (`tally_area_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+##理货区数据迁移
+INSERT INTO user_tally_area (tally_area_no,user_id,created)
+SELECT tally_area_nos,id,now() FROM `user`;
 
 
-
-
-
-
-
+批量审核 registerBill/index.html#batchAudit
+批量主动送检 registerBill/index.html#batchAuto
+批量采样检测 registerBill/index.html#batchSampling
+用户导出 user/index.html#export
 
 
 

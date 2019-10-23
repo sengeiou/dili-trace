@@ -1,33 +1,30 @@
 package com.dili.trace.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
-import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
-import com.dili.common.entity.PatternConstants;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.service.RedisService;
-import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserTallyArea;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserService;
+import com.dili.trace.service.UserTallyAreaService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.server.PathContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -43,7 +40,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Resource
     private RedisService redisService;
     @Resource
-    private DefaultConfiguration defaultConfiguration;
+    private UserTallyAreaService userTallyAreaService;
 
     @Transactional(rollbackFor=Exception.class)
     @Override
@@ -59,8 +56,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         //验证理货区号是否已注册
-        if(StringUtils.isNotBlank(user.getTaillyAreaNo()) && existsTaillyAreaNo(user.getTaillyAreaNo())){
-            throw new BusinessException("理货区号已注册");
+        if(StringUtils.isNotBlank(user.getTallyAreaNos()) ){
+            existsTallyAreaNo(null, Arrays.asList(user.getTallyAreaNos().split(",")));
         }
 
         //验证身份证号是否已注册
@@ -69,7 +66,33 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         insertSelective(user);
+        //更新用户理货区
+        updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
     }
+
+    /**
+     * 更新用户理货区
+     * @param userId
+     * @param tallyAreaNos
+     */
+    private void updateUserTallyArea(Long userId,List<String> tallyAreaNos){
+        if(null != userId){
+            UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+            query.setUserId(userId);
+            userTallyAreaService.deleteByExample(query);
+        }
+
+        List<UserTallyArea> userTallyAreas = new ArrayList<>();
+        tallyAreaNos.forEach(tallyAreaNo->{
+            UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
+            userTallyArea.setUserId(userId);
+            userTallyArea.setTallyAreaNo(tallyAreaNo);
+            userTallyAreas.add(userTallyArea);
+        });
+
+        userTallyAreaService.batchInsert(userTallyAreas);
+    }
+
 
     @Override
     public void updateUser(User user) {
@@ -87,20 +110,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 });
             }
         }
-        //理货区号验重
-        if(StringUtils.isNotBlank(user.getTaillyAreaNo())){
-            User condition = DTOUtils.newDTO(User.class);
-            condition.setTaillyAreaNo(user.getTaillyAreaNo());
-            List<User> users = listByExample(condition);
-            if(CollectionUtils.isNotEmpty(users)){
-                users.forEach(o->{
-                    if(!o.getId().equals(user.getId()) && o.getTaillyAreaNo().equals(user.getTaillyAreaNo())){
-                        throw new BusinessException("理货区号已注册");
-                    }
-                });
-            }
+
+        User userPO = get(user.getId());
+        if(EnabledStateEnum.ENABLED.getCode().equals(userPO.getState())){
+            existsTallyAreaNo(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
+            //更新用户理货区
+            updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
         }
+
         updateSelective(user);
+
+
     }
 
     private Boolean checkVerificationCode(String phone, String verCode){
@@ -190,15 +210,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     /**
-     * 检测手机号是否存在
-     * @param taillyAreaNo
-     * @return true 存在 false 不存在
+     * 检测理货区号是否已注册
+     * @param userId
+     * @param tallyAreaNos
      */
-    public boolean existsTaillyAreaNo(String taillyAreaNo){
-        User query = DTOUtils.newDTO(User.class);
-        query.setTaillyAreaNo(taillyAreaNo);
-        query.setYn(YnEnum.YES.getCode());
-        return !CollUtil.isEmpty(listByExample(query));
+    public void existsTallyAreaNo(Long userId,List<String> tallyAreaNos){
+        tallyAreaNos.forEach(tallyAreaNo->{
+            UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+            query.setTallyAreaNo(tallyAreaNo);
+            UserTallyArea userTallyArea = userTallyAreaService.listByExample(query).stream().findFirst().orElse(null);
+            if (null != userTallyArea && !userTallyArea.getUserId().equals(userId)) {
+                throw new BusinessException("理货区号【"+tallyAreaNo+"】已被注册");
+            }
+        });
     }
 
     /**
@@ -218,13 +242,30 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public BaseOutput updateEnable(Long id, Boolean enable) {
         long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         User user = get(id);
+        List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
+
+            //验证理货区号是否已注册，未注册则添加用户理货区关系
+            existsTallyAreaNo(user.getId(),tallyAreaNos);
+            List<UserTallyArea> userTallyAreas = new ArrayList<>();
+            tallyAreaNos.forEach(tallyAreaNo->{
+                UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
+                userTallyArea.setUserId(user.getId());
+                userTallyArea.setTallyAreaNo(tallyAreaNo);
+                userTallyAreas.add(userTallyArea);
+            });
+            userTallyAreaService.batchInsert(userTallyAreas);
             redisService.setRemove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         } else {
             user.setState(EnabledStateEnum.DISABLED.getCode());
             this.updateSelective(user);
+
+            //删除用户理货区关系
+            UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
+            userTallyAreaQuery.setUserId(id);
+            userTallyAreaService.deleteByExample(userTallyAreaQuery);
             redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
         }
 
@@ -232,13 +273,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public User findByTaillyAreaNo(String taillyAreaNo) {
-        User user = DTOUtils.newDTO(User.class);
-        user.setTaillyAreaNo(taillyAreaNo);
-        List<User> userList = list(user);
-        if(userList.size()>0){
-            return userList.get(0);
+    public User findByTallyAreaNo(String tallyAreaNo) {
+        UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+        query.setTallyAreaNo(tallyAreaNo);
+        UserTallyArea userTallyArea = userTallyAreaService.list(query).stream().findFirst().orElse(null);
+        if (null == userTallyArea){
+            return null;
         }
-        return null;
+
+        User userQuery = DTOUtils.newDTO(User.class);
+        userQuery.setId(userTallyArea.getUserId());
+        userQuery.setState(EnabledStateEnum.ENABLED.getCode());
+        return list(userQuery).stream().findFirst().orElse(null);
     }
 }

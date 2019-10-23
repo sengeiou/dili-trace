@@ -46,7 +46,7 @@
                 <div class="form-group" <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
-                    <input type="text" class="form-control input-sm isWord" name="plate" id="plate" maxlength="8"  value="${registerBill.plate!}" required />
+                    <input type="text" class="form-control input-sm isWord isPlate" name="plate" id="plate" maxlength="8"  minlength="7"  value="${registerBill.plate!}" required />
                 </div>
                 <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
                     <label class="label-title text-right">交易账号</label>
@@ -104,6 +104,13 @@
                         <tbody></tbody>
                     </table>
                     <!-- 表格后的统计 end -->
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="table-showlist" style="width: 1200px">
+                 常用产地: <% for(city in citys){%>
+                        <a href="javascript:void(0)" onclick="selectCity(this,${city.id},'${city.mergerName}')"  title="${city.mergerName}">${city.name}</a>
+                    <%}%>
                 </div>
             </div>
             <div class="form-item-group">
@@ -183,7 +190,7 @@ var registerSource=$('[name="registerSource"]').val();
         </td>
         <td>
             <div class="form-group">
-                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected" id="originName_{{index}}" required />
+                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}" required />
                 <input type="text" name="originId_{{index}}" hidden value="" />
             </div>
         </td>

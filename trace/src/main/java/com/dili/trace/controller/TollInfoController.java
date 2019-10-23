@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +57,8 @@ public class TollInfoController {
         map.put("suggestions", list);
         return map;
     }
+    
+   
     @RequestMapping(value="/city",method=RequestMethod.GET)
     @ResponseBody
     public Map<String, ?> queryCity(String name) {
@@ -72,6 +76,7 @@ public class TollInfoController {
                     list.add(obj);
                 }
             } catch (Exception e) {
+//青州、寿光、辽宁、河北,吉林
 
             }
         }

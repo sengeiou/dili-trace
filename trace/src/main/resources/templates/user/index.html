@@ -27,7 +27,7 @@
                             <input class="easyui-textbox" name="phone" id="phone" style="width:100%" labelAlign="right" data-options="label:'手机号:'" />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="taillyAreaNo" id="taillyAreaNo" style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
+                            <input class="easyui-textbox" name="likeTallyAreaNos" id="likeTallyAreaNos" style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
                         </div>
                         <div class="search-item">
                             <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;" labelAlign="right" data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300',  editable:true,validType:'comboBoxEditvalid[\'salesCityId\']'">
@@ -73,7 +73,7 @@
                         <th width="15%" data-options="field:'cardNo',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             身份证号
                         </th>
-                        <th width="10%" data-options="field:'taillyAreaNo',formatter:blankFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'tallyAreaNos',formatter:blankFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             理货区号
                         </th>
                         <th width="10%" data-options="field:'salesCityName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -132,7 +132,7 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_taillyAreaNo" id="_taillyAreaNo" style="width:100%" data-options="label:'理货区号*:',validType:['number','onlyLength[3]'],required:true"/>
+                    <input class="easyui-tagbox" name="_tallyAreaNos" id="_tallyAreaNos" style="width:100%" required="true" data-options="label:'理货区号*:',prompt:'输入3位数字后敲回车',validType:['uniquetag','tagNum','tagLength[3]']"/>
                 </td>
             </tr>
             <tr>

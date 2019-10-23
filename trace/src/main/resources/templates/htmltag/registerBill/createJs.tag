@@ -100,7 +100,7 @@
     }
 
     function tallyAreaNo() {
-        var tallyAreaNo = $("#tallyAreaNo").val();
+        var tallyAreaNo = $("#tallyAreaNoInput").val();
         if(tallyAreaNo == ""){
             return;
         }
@@ -118,12 +118,14 @@
                         $("#addr").val(customer.addr).valid();
                         $("#userId").val(customer.id).valid();
                         $("#phone").val(customer.phone).valid();
+                        $("#tallyAreaNo").val(tallyAreaNo);
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
                         $("#addr").val("");
                         $("#userId").val("");
                         $("#phone").val("");
+                        $("#tallyAreaNo").val("");
                     }
                 },
                 error:function(){
@@ -132,6 +134,7 @@
                     $("#addr").val("");
                     $("#userId").val("");
                     $("#phone").val("");
+                    $("#tallyAreaNo").val("");
                 }
             });
         }
@@ -257,6 +260,13 @@
         });
     }
 
+    
+    jQuery.validator.addMethod("isPlate", function(value, element) {  
+        var length = value.length;  
+        var regName = /[^\u4e00-\u9fa5]/g;
+        return this.optional(element) || !regName.test( value.charAt(0) );    
+    }, "第一个字符必须为汉字");  
+  
     var resubmit =0;
     function create(){
         if(resubmit==0){
@@ -322,9 +332,21 @@
                       //}else{
                           localStorage.setItem('registerSource',$("#registerSource").val());
                           localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
-                          layer.alert("登记成功", {type: 0}, function () {
-                          	parent.closeWin('view_win');
-                          });
+                          
+                          layer.alert('登记成功',{
+                           	 type:0,
+                           	  time : 3000,
+                           	end :function(){
+                           		parent.closeWin('view_win');
+                           		
+                           	}
+                          },
+                           	 
+                              function () {
+                                    parent.closeWin('view_win');
+                                 }
+                             );
+                       
                       //}
                     
 
@@ -464,5 +486,13 @@
                 data.submit();
             }
         });
+    }
+    function selectCity(cthis,id,mergeName){
+    	$('.originaNameInput').each(function(k,v){
+    		//if($(this).val()==''){
+    			$(this).val(mergeName);
+    			$(this).siblings('input:hidden').val(id)
+    		//}
+    	});
     }
 </script>

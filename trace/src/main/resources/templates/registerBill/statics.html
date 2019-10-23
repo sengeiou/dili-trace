@@ -14,6 +14,12 @@
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
 
+                        <div class="search-item">
+                            <input  name="tradeTypeId" id="tradeTypeId" style="width:100%" labelAlign="right" data-options="label:'交易区'"  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+
+                        
                         <div class="search-item long-item">
                             <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'" value="${createdStart}!"/>
                             <span style="width: 2%;">-</span>
@@ -26,6 +32,13 @@
                             <input class="easyui-datetimebox" name="latestDetectTimeTimeEnd" id="latestDetectTimeTimeEnd" style="width:39%;"/>
                         </div>
                        
+						<div class="search-item long-item">
+                            <select class="easyui-combobox" name="attr" id="attr" style="width:50%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'关键字'"  labelAlign="right">
+                                <option value="tallyAreaNo" selected="selected">理货区号</option>
+                                <option value="name">业户姓名</option>
+                            </select>
+                            <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">
+                        </div>
 
                      
                         <div class="search-wrap-btn">

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -66,7 +67,7 @@ public class UserController {
     })
     @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    BaseOutput<Long> insert(User user) {
+    BaseOutput<Long> insert(@RequestBody User user) {
         try {
             user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
             user.setState(EnabledStateEnum.ENABLED.getCode());
@@ -95,7 +96,7 @@ public class UserController {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("修改用户", e);
-            return BaseOutput.failure();
+            return BaseOutput.failure(e.getMessage());
         }
 
     }
@@ -119,7 +120,17 @@ public class UserController {
     @RequestMapping(value = "/doEnable.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput doEnable(Long id, Boolean enable) {
-        return userService.updateEnable(id, enable);
+        try {
+            userService.updateEnable(id, enable);
+            return BaseOutput.success("修改用户状态成功");
+        } catch (BusinessException e) {
+            LOGGER.error("修改用户状态", e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("修改用户状态", e);
+            return BaseOutput.failure();
+        }
+
     }
 
     @ApiOperation(value ="找回密码【接口已通】", notes = "找回密码")

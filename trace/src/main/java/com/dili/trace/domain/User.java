@@ -45,6 +45,14 @@ public interface User extends IBaseDomain {
 
     void setPhone(String phone);
 
+    @ApiModelProperty(value = "理货区号")
+    @Column(name = "`tally_area_nos`")
+    @FieldDef(label="tallyAreaNos", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getTallyAreaNos();
+
+    void setTallyAreaNos(String tallyAreaNos);
+
     @ApiModelProperty(value = "身份证号")
     @Column(name = "`card_no`")
     @FieldDef(label="cardNo", maxLength = 20)
@@ -76,14 +84,6 @@ public interface User extends IBaseDomain {
     String getCardNoBackUrl();
 
     void setCardNoBackUrl(String cardNoBackUrl);
-
-    @ApiModelProperty(value = "理货区号")
-    @Column(name = "`tailly_area_no`")
-    @FieldDef(label="taillyAreaNo", maxLength = 20)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getTaillyAreaNo();
-
-    void setTaillyAreaNo(String taillyAreaNo);
 
     @ApiModelProperty(value = "营业执照URL")
     @Column(name = "`business_license_url`")

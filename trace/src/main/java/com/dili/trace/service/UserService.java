@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.UserListDto;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -15,7 +16,7 @@ public interface UserService extends BaseService<User, Long> {
      * flag 是否有验证码
      * @param user
      */
-    void register(User user,Boolean flag);
+    void register(User user, Boolean flag);
 
     /**
      * 修改用户信息
@@ -57,5 +58,5 @@ public interface UserService extends BaseService<User, Long> {
      * @return
      */
     BaseOutput updateEnable(Long id, Boolean enable);
-    User findByTaillyAreaNo(String taillyAreaNo);
+    User findByTallyAreaNo(String tallyAreaNo);
 }

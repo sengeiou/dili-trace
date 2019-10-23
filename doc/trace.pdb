@@ -3762,7 +3762,7 @@ ATT DTTP</a:History>
 <o:Column Id="o66">
 <a:ObjectID>02238EDE-0DEA-4FC0-B7DB-BAF90C999596</a:ObjectID>
 <a:Name>理货区号</a:Name>
-<a:Code>tailly_area_no</a:Code>
+<a:Code>tally_area_no</a:Code>
 <a:CreationDate>1564047351</a:CreationDate>
 <a:Creator>admin</a:Creator>
 <a:ModificationDate>1564047351</a:ModificationDate>

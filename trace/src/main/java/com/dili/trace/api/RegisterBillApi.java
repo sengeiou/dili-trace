@@ -78,7 +78,6 @@ public class RegisterBillApi {
 			registerBill.setName(user.getName());
 			registerBill.setAddr(user.getAddr());
 			registerBill.setIdCardNo(user.getCardNo());
-			registerBill.setTallyAreaNo(user.getTaillyAreaNo());
 			if (registerBill.getRegisterSource() == null) {
 				// 小程序默认理货区
 				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());

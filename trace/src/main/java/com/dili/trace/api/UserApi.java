@@ -17,18 +17,22 @@ import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -106,6 +110,7 @@ public class UserApi {
             LOGGER.info("短信验证码发送成功：---------------手机号：【"+phone+"】，验证码：【"+verificationCode+"】--------------");
         }else{
             LOGGER.error("发送失败,错误信息："+msgOutput.getMessage());
+            LOGGER.info("短信验证码发送失败：---------------手机号：【"+phone+"】，验证码：【"+verificationCode+"】--------------");
             return BaseOutput.failure(msgOutput.getMessage());
         }
         return BaseOutput.success();
@@ -248,8 +253,11 @@ public class UserApi {
         if(StrUtil.isBlank(user.getCheckCode())){
             throw new BusinessException("验证码为空");
         }
-        if(StrUtil.isBlank(user.getTaillyAreaNo()) || user.getTaillyAreaNo().length() != 3){
+        if(StrUtil.isBlank(user.getTallyAreaNos()) || !ReUtil.isMatch(PatternConstants.TALLY_AREA_NO,user.getTallyAreaNos())){
             throw new BusinessException("理货区号为空或格式错误");
+        }
+        if(Arrays.asList(user.getTallyAreaNos().split(",")).size()>15){
+            throw new BusinessException("用户最多添加15个理货区");
         }
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
             throw new BusinessException("姓名为空或格式错误");
