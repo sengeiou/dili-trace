@@ -205,12 +205,15 @@
 		and #{latestDetectTimeTimeEnd}>= latest_detect_time
 	</if> 
 	
-	 <if test="name != null and name!='' ">
-		and name=#{name}
-	</if> 
-	 <if test="tallyAreaNo != null and tallyAreaNov!='' ">
-		and  tally_area_no=#{tallyAreaNo}
-	</if> 
+	 <if test="attr != null  and attrValue!=''">
+		<if test="attr =='name'">
+		 and name=#{attrValue}
+		</if>
+		<if test="attr == 'tallyAreaNo'">
+			and  tally_area_no like '%${attrValue}%'
+		</if>
+	</if>
+	
 	<if test="tradeTypeId != null and tallyAreaNov!='' ">
 		and trade_type_id=#{tradeTypeId}
 	</if> 

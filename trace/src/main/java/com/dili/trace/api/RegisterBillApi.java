@@ -7,10 +7,12 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
@@ -56,6 +58,10 @@ public class RegisterBillApi {
 	private SessionContext sessionContext;
 	@Autowired
 	UserService userService;
+	@Autowired
+	UserTallyAreaService userTallyAreaService;
+	@Autowired
+	CustomerService customerService;
 
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createList", method = RequestMethod.POST)
@@ -82,6 +88,10 @@ public class RegisterBillApi {
 				// 小程序默认理货区
 				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
 			}
+			if(registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
+				registerBill.setTallyAreaNo(user.getTallyAreaNos());
+			}
+			
 			BaseOutput result = registerBillService.createRegisterBill(registerBill);
 			if (!result.isSuccess()) {
 				return result;

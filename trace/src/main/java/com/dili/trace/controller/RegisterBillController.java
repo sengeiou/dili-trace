@@ -89,7 +89,8 @@ public class RegisterBillController {
 				registerBill.setPlate(registerBill.getAttrValue());
 				break;
 			case "tallyAreaNo":
-				registerBill.setTallyAreaNo(registerBill.getAttrValue());
+//				registerBill.setTallyAreaNo(registerBill.getAttrValue());
+				registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
 				break;
 			case "latestDetectOperator":
 				registerBill.setLatestDetectOperator(registerBill.getAttrValue());
@@ -485,7 +486,8 @@ public class RegisterBillController {
 				registerBill.setPlate(registerBill.getAttrValue());
 				break;
 			case "tallyAreaNo":
-				registerBill.setTallyAreaNo(registerBill.getAttrValue());
+//				registerBill.setTallyAreaNo(registerBill.getAttrValue());
+				registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
 				break;
 			case "latestDetectOperator":
 				registerBill.setLatestDetectOperator(registerBill.getAttrValue());
