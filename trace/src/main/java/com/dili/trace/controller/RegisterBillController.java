@@ -137,6 +137,7 @@ public class RegisterBillController {
 				registerBill.setIdCardNo(user.getCardNo());
 				registerBill.setAddr(user.getAddr());
 				registerBill.setUserId(user.getId());
+				registerBill.setTallyAreaNo(user.getTallyAreaNos());
 			} else {
 				String tradeTypeId = StringUtils.trimToEmpty(registerBill.getTradeTypeId());
 				registerBill.setTradeTypeName(tradeTypeMap.getOrDefault(tradeTypeId, null));
