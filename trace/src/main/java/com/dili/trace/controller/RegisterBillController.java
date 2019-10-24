@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -607,19 +608,23 @@ public class RegisterBillController {
 	@RequestMapping(value = "/copy.html", method = RequestMethod.GET)
 	public String copy(Long id, ModelMap modelMap) {
 		RegisterBill registerBill = registerBillService.get(id);
-		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill);
+		String firstTallyAreaNo=Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(",")).filter(StringUtils::isNotBlank).findFirst().orElse("");
+		registerBill.setTallyAreaNo(firstTallyAreaNo);
+		
+		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill,firstTallyAreaNo);
 		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
 		modelMap.put("tradeTypes", tradeTypeService.findAll());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+			
 		modelMap.put("citys", this.queryCitys());
 		return "registerBill/copy";
 	}
 
-	private UserInfoDto findUserInfoDto(RegisterBill registerBill) {
+	private UserInfoDto findUserInfoDto(RegisterBill registerBill,String firstTallyAreaNo) {
 		UserInfoDto userInfoDto=new UserInfoDto();
 		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 			// 理货区
-			User user = userService.findByTallyAreaNo(registerBill.getTallyAreaNo());
+			User user = userService.findByTallyAreaNo(firstTallyAreaNo);
 		
 			if(user!=null) {
 				userInfoDto.setUserId(String.valueOf(user.getId()));
