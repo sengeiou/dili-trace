@@ -88,6 +88,10 @@ SELECT tally_area_nos,id,now() FROM `user`;
 批量采样检测 registerBill/index.html#batchSampling
 用户导出 user/index.html#export
 
+ALTER TABLE `register_bill`
+MODIFY COLUMN `tally_area_no` varchar(60) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '理货区号' AFTER `register_source`;
+UPDATE register_bill rb,`user` u set rb.tally_area_no = u.tally_area_nos WHERE rb.user_id = u.id AND rb.tally_area_no IS NULL AND rb.register_source = 1;
+
 
 
 

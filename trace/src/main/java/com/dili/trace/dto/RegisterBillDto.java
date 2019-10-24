@@ -68,4 +68,13 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     List<Integer> getDetectStateList();
     void setDetectStateList(List<Integer> detectStateList);
     
+    /**
+     * 昵称模糊查询
+     * @return
+     */
+    @Column(name = "tally_area_no")
+    @Like
+    String getLikeTallyAreaNo();
+    void setLikeTallyAreaNo(String likeTallyAreaNo);
+    
 }

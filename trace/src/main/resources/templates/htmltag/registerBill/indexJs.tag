@@ -332,7 +332,7 @@
             //接车状态是“已打回”,启用“撤销打回”操作
             $('#undo-btn').show();
             $('#audit-btn').show();
-            $('#batch-audit-btn').show();
+            //$('#batch-audit-btn').show();
 
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
         	 $('#undo-btn').show();
