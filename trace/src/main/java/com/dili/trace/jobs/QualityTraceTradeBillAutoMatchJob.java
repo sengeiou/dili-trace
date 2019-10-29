@@ -185,7 +185,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 
 		MatchDetectParam matchDetectParam = new MatchDetectParam();
 		// matchDetectParam.setTradeNo(qualityTraceTradeBill.getOrderId());
-		matchDetectParam.setTradeTypeId(qualityTraceTradeBill.getTradetypeId());
+//		matchDetectParam.setTradeTypeId(qualityTraceTradeBill.getTradetypeId());
 		// matchDetectParam.setTradeTypeName(qualityTraceTradeBill.getTradetypeName());
 		matchDetectParam.setProductName(qualityTraceTradeBill.getProductName());
 		matchDetectParam.setIdCardNo(qualityTraceTradeBill.getSellerIDNo());

@@ -22,12 +22,14 @@
             <div class="buyer-seller">
                 <div class="seller">
                     <div>批发市场：寿光地利</div>
-                    <div>卖方：${qualityTraceTradeBill.sellerName!}(${qualityTraceTradeBill.sellerAccount!})
+                    <div>卖方：${isEmpty(qualityTraceTradeBill.sellerName)?'':strutil.subStringTo(qualityTraceTradeBill.sellerName,0,1)}**
+                        (${isEmpty(qualityTraceTradeBill.sellerAccount)?'':reg.replace(qualityTraceTradeBill.sellerAccount,'^0+','')})
                     </div>
                 </div>
                 <div class="buyer">
                     <div>货品去向</div>
-                    <div>买方：${qualityTraceTradeBill.buyerName!}(${qualityTraceTradeBill.buyerAccount!})
+                    <div>买方：${isEmpty(qualityTraceTradeBill.buyerName)?'':strutil.subStringTo(qualityTraceTradeBill.buyerName,0,1)}**
+                        (${isEmpty(qualityTraceTradeBill.buyerAccount)?'':reg.replace(qualityTraceTradeBill.buyerAccount,'^0+','')})
                     </div>
                 </div>
             </div>
