@@ -54,9 +54,18 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     String getAttrValue();
     void setAttrValue(String attrValue);
     
+//    @Transient
+//    Boolean getHasReport();
+//    void setHasReport(Boolean hasReport);
+    
     @Transient
-    Boolean getHasReport();
-    void setHasReport(Boolean hasReport);
+    Boolean getHasDetectReport();
+    void setHasDetectReport(Boolean hasDetectReport);
+    
+    @Transient
+    Boolean getHasOriginCertifiy();
+    void setHasOriginCertifiy(Boolean hasOriginCertifiy);
+
     
     @Column(name = "`state`")
     @Operator(Operator.IN)

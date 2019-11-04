@@ -102,16 +102,36 @@ public class RegisterBillController {
 			case "productName":
 				registerBill.setProductName(registerBill.getAttrValue());
 				break;
+			case "sampleCode":
+				registerBill.setSampleCode(registerBill.getAttrValue());
+				break;
 			}
 		}
-		if (registerBill.getHasReport() != null) {
-			if (registerBill.getHasReport()) {
+//		if (registerBill.getHasReport() != null) {
+//			if (registerBill.getHasReport()) {
+//				registerBill.mset(IDTO.AND_CONDITION_EXPR,
+//						"  (detect_report_url is not null AND detect_report_url<>'')");
+//			} else {
+//				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
+//			}
+//		}
+		
+		if (registerBill.getHasDetectReport() != null) {
+			if (registerBill.getHasDetectReport()) {
 				registerBill.mset(IDTO.AND_CONDITION_EXPR,
 						"  (detect_report_url is not null AND detect_report_url<>'')");
 			} else {
 				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
 			}
-
+		}
+		
+		if (registerBill.getHasOriginCertifiy() != null) {
+			if (registerBill.getHasOriginCertifiy()) {
+				registerBill.mset(IDTO.AND_CONDITION_EXPR,
+						"  (origin_certifiy_url is not null AND origin_certifiy_url<>'')");
+			} else {
+				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (origin_certifiy_url is  null or origin_certifiy_url='')");
+			}
 		}
 
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();

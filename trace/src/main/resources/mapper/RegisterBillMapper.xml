@@ -40,7 +40,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, code, register_source, tally_area_no, name, id_card_no, addr,phone, user_id,
+    id, code, register_source, tally_area_no, name, id_card_no, addr,phone, user_id,sample_code,
     plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version, 
     created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result
@@ -211,6 +211,9 @@
 		</if>
 		<if test="attr == 'tallyAreaNo'">
 			and  tally_area_no like '%${attrValue}%'
+		</if>
+		<if test="attr == 'productName'">
+			and  product_name = ${attrValue}
 		</if>
 	</if>
 	

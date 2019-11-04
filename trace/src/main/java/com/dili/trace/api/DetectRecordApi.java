@@ -59,8 +59,8 @@ public class DetectRecordApi {
             return BaseOutput.failure("签名出错");
         }
         
-        if(StringUtils.isBlank(detectRecord.getRegisterBillCode())){
-            LOGGER.error("上传检测任务结果失败无单号");
+        if(StringUtils.isBlank(detectRecord.getSampleCode())){
+            LOGGER.error("上传检测任务结果失败无采样编号");
             return BaseOutput.failure("没有对应的登记单");
         }
         if(StringUtils.isBlank(detectRecord.getDetectOperator())){
@@ -82,9 +82,9 @@ public class DetectRecordApi {
             LOGGER.error("上传检测任务结果失败无检测值");
             return BaseOutput.failure("没有对应的检测值");
         }
-        RegisterBill registerBill = registerBillService.findByCode(detectRecord.getRegisterBillCode());
+        RegisterBill registerBill = registerBillService.findBySampleCode(detectRecord.getSampleCode());
         if(registerBill== null){
-            LOGGER.error("上传检测任务结果失败该单号无登记单");
+            LOGGER.error("上传检测任务结果失败该采样单号无登记单");
             return BaseOutput.failure("没有对应的登记单");
         }
         if(RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {

@@ -450,7 +450,7 @@
                    	 var failureList=ret.data.failureList;
                 	 if(failureList.length==0){
                          _registerBillGrid.datagrid("reload");
-                         layer.alert('操作成功',{title:'操作',time : 3000});  
+                         layer.alert('操作成功',{title:'操作',time : 800});  
 
                 	 }else{
                 		 swal(
@@ -510,7 +510,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        layer.alert('操作成功',{title:'操作',time : 3000});  
+                        layer.alert('操作成功',{title:'操作',time : 800});  
                     }else{
                         swal(
                                 '错误',
@@ -561,7 +561,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        layer.alert('操作成功',{title:'操作',time : 3000});  
+                        layer.alert('操作成功',{title:'操作',time : 800});  
                     }else{
                         swal(
                                 '错误',
@@ -621,7 +621,7 @@
                     	 var failureList=ret.data.failureList;
                     	 if(failureList.length==0){
                              _registerBillGrid.datagrid("reload");
-                           layer.alert('操作成功',{title:'操作',time : 3000});   
+                           layer.alert('操作成功',{title:'操作',time : 800});   
                                
                     	 }else{
                     		 swal(
@@ -694,7 +694,7 @@
                    	 var failureList=ret.data.failureList;
                 	 if(failureList.length==0){
                          _registerBillGrid.datagrid("reload");
-                         layer.alert('操作成功',{title:'操作',time : 3000});  
+                         layer.alert('操作成功',{title:'操作',time : 800});  
 
                 	 }else{
                 		 swal(
@@ -752,7 +752,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        layer.alert('操作成功',{title:'操作',time : 3000});  
+                        layer.alert('操作成功',{title:'操作',time : 800});  
                     }else{
                         swal(
                                 '错误',
@@ -802,7 +802,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
-                        layer.alert('操作成功',{title:'操作',time : 3000});  
+                        layer.alert('操作成功',{title:'操作',time : 800});  
                     }else{
                         swal(
                                 '错误',
@@ -882,7 +882,7 @@
             shadeClose : false,
             area: ['1100px', "350px"],
             content: content,//传入一个链接地址 比如：http://www.baidu.com
-            btn: ['进场审核','取消'],
+            btn: ['进场审核','核通过不检测','取消'],
             yes: function(index, layero){
                 $.ajax({
                     type: "GET",
@@ -897,7 +897,7 @@
                             
                             layer.alert('操作成功',{
                             	 title:'操作',
-                              	time : 3000,
+                              	time : 800,
                               	end :function(){
                               		 layer.closeAll();
                               		

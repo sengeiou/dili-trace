@@ -45,6 +45,14 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	RegisterBill findByCode(String code);
+	
+	/**
+	 * 通过采样编号查找
+	 * 
+	 * @param sampleCode
+	 * @return
+	 */
+	RegisterBill findBySampleCode(String sampleCode);
 
 	/**
 	 * 通过交易区交易单查询

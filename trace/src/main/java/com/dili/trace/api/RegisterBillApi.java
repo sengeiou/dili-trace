@@ -380,6 +380,22 @@ public class RegisterBillApi {
 		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
 		return BaseOutput.success().setData(bill);
 	}
+	@ApiOperation(value = "通过采样编号获取登记单详细信息")
+	@RequestMapping(value = "/sampleCode/{sampleCode}", method = RequestMethod.GET)
+	public BaseOutput<RegisterBillOutputDto> getRegisterBillBySampleCode(@PathVariable String sampleCode) {
+		LOGGER.info("获取登记单:(采样编号) " + sampleCode);
+		User user = userService.get(sessionContext.getAccountId());
+		if (user == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
+		RegisterBill registerBill = registerBillService.findBySampleCode(sampleCode);
+		if (registerBill == null) {
+			LOGGER.error("获取登记单失败sampleCode:" + sampleCode);
+			return BaseOutput.failure();
+		}
+		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
+		return BaseOutput.success().setData(bill);
+	}
 
 	@ApiOperation(value = "通过交易区的交易号获取登记单详细信息")
 	@RequestMapping(value = "/tradeNo/{tradeNo}", method = RequestMethod.GET)

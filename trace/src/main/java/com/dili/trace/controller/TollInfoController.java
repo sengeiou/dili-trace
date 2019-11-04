@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.City;
@@ -8,6 +9,8 @@ import com.dili.trace.dto.CityListInput;
 import com.dili.trace.rpc.BaseInfoRpc;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 神农系统中相关基础信息
@@ -31,8 +35,10 @@ import java.util.Map;
 public class TollInfoController {
     private static final Logger LOGGER= LoggerFactory.getLogger(TollInfoController.class);
 
+//    @Autowired
+//    BaseInfoRpc baseInfoRpc;
     @Autowired
-    BaseInfoRpc baseInfoRpc;
+    BaseInfoRpcService baseInfoRpcService;
 
 
     @RequestMapping("/category")
@@ -41,11 +47,8 @@ public class TollInfoController {
         List<Category> categorys = queryCategorys(name);
 
         List<Map<String, Object>> list = Lists.newArrayList();
-        if (categorys != null && categorys.size() > 0) {
+        if (categorys != null && !categorys.isEmpty()) {
             for (Category c : categorys) {
-                /*String[] split = c.getPath().split(",");
-                Long parentId = c.getParent();
-                String parentName = c.getName();*/
                 Map<String, Object> obj = Maps.newHashMap();
                 obj.put("id", c.getId());
                 obj.put("data", name);
@@ -87,45 +90,47 @@ public class TollInfoController {
     }
 
     private List<Category> queryCategorys(String name) {
-        CategoryListInput query = new CategoryListInput();
-        query.setKeyword(name);
-        BaseOutput<List<Category>> result = baseInfoRpc.listCategoryByCondition(query);
-        if(result.isSuccess()){
-            return result.getData();
-        }
-        List<Category> citys = new ArrayList<>();
-        /*Category city = new Category();
-        city.setName("苹果");
-        city.setId(1L);
-        city.setParent(0L);
-        citys.add(city);
-        Category city1 = new Category();
-        city1.setName("苹果2");
-        city1.setId(2L);
-        city1.setParent(1L);
-        citys.add(city1);*/
-        return citys;
+    	return this.baseInfoRpcService.listCategoryByCondition(name);
+//        CategoryListInput query = new CategoryListInput();
+//        query.setKeyword(name);
+//        BaseOutput<List<Category>> result = baseInfoRpc.listCategoryByCondition(query);
+//        if(result.isSuccess()){
+//            return result.getData();
+//        }
+//        List<Category> citys = new ArrayList<>();
+//        /*Category city = new Category();
+//        city.setName("苹果");
+//        city.setId(1L);
+//        city.setParent(0L);
+//        citys.add(city);
+//        Category city1 = new Category();
+//        city1.setName("苹果2");
+//        city1.setId(2L);
+//        city1.setParent(1L);
+//        citys.add(city1);*/
+//        return citys;
     }
     private List<City> queryCitys(String name) {
-        CityListInput query = new CityListInput();
-        query.setKeyword(name);
-        BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
-        if(result.isSuccess()){
-            return result.getData();
-        }
-        List<City> citys = new ArrayList<>();
-        /*City city = new City();
-        city.setName("成都");
-        city.setMergerName("四川成都");
-        city.setId(1L);
-        city.setParentId(0L);
-        citys.add(city);
-        City city1 = new City();
-        city1.setName("成南");
-        city1.setMergerName("四川成南");
-        city1.setId(2L);
-        city1.setParentId(1L);
-        citys.add(city1);*/
-        return citys;
+    	return this.baseInfoRpcService.listCityByCondition(name);
+//        CityListInput query = new CityListInput();
+//        query.setKeyword(name);
+//        BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
+//        if(result.isSuccess()){
+//            return result.getData();
+//        }
+//        List<City> citys = new ArrayList<>();
+//        /*City city = new City();
+//        city.setName("成都");
+//        city.setMergerName("四川成都");
+//        city.setId(1L);
+//        city.setParentId(0L);
+//        citys.add(city);
+//        City city1 = new City();
+//        city1.setName("成南");
+//        city1.setMergerName("四川成南");
+//        city1.setId(2L);
+//        city1.setParentId(1L);
+//        citys.add(city1);*/
+//        return citys;
     }
 }

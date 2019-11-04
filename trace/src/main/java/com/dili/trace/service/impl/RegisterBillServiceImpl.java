@@ -180,6 +180,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		return null;
 	}
+	@Override
+	public RegisterBill findBySampleCode(String sampleCode) {
+		if(StringUtils.isBlank(sampleCode)) {
+			return null;
+		}
+		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+		registerBill.setSampleCode(sampleCode.trim());
+		List<RegisterBill> list = list(registerBill);
+		if (list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
 	@Override
 	public RegisterBillOutputDto findByTradeNo(String tradeNo) {

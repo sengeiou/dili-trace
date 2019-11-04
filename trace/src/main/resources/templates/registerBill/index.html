@@ -39,9 +39,24 @@
                             <input  name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'"  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="detectState" _provider='billDetectStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
- 						<div class="search-item">
+ 						<!--div class="search-item">
                             <select class="easyui-combobox" name="hasReport" id="hasReport" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'检测报告'"  labelAlign="right">
                                 <option value="">全部</option>
+                                <option value="true">有</option>
+                                <option value="false">无</option>
+                            </select>
+                        </div-->
+                        
+                        <div class="search-item">
+                            <select class="easyui-combobox" name="hasDetectReport" id="hasDetectReport" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'检测报告'"  labelAlign="right">
+                        		<option value="">全部</option>
+                                <option value="true">有</option>
+                                <option value="false">无</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <select class="easyui-combobox" name="hasOriginCertifiy" id="hasOriginCertifiy" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'产地证明'"  labelAlign="right">
+                        		<option value="">全部</option>
                                 <option value="true">有</option>
                                 <option value="false">无</option>
                             </select>
@@ -63,6 +78,8 @@
                                 <option value="tallyAreaNo" selected="selected">理货区号</option>
                                 <option value="name">业户姓名</option>
                                 <option value="latestDetectOperator">检测员</option>
+                                <option value="sampleCode">采样单编号</option>
+                                
                             </select>
                             <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">
                         </div>
