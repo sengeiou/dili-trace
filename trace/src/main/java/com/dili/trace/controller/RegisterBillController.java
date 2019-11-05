@@ -716,6 +716,28 @@ public class RegisterBillController {
 
 	}
 
+	/**
+	 * 保存处理结果
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/doAuditWithoutDetect.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> doAuditWithoutDetect(RegisterBill input) {
+		try {
+			Long id = this.registerBillService.doAuditWithoutDetect(input);
+			return BaseOutput.success().setData(id);
+		} catch (AppException e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure("服务端出错");
+		}
+
+	}
+
 	private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
 		if (dto == null) {
 			return dto;

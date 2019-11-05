@@ -552,4 +552,30 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		return example.getId();
 	}
+
+	@Override
+	public Long doAuditWithoutDetect(RegisterBill input) {
+		if(input==null||input.getId()==null) {
+			throw new AppException("参数错误");
+		}
+		RegisterBill registerBill = this.get(input.getId());
+		if (registerBill == null) {
+			throw new AppException("数据错误");
+		}
+		if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl()) ) {
+			throw new AppException("数据错误");
+		}
+		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+			throw new AppException("数据状态错误");
+		}
+		if (!RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
+			throw new AppException("数据来源错误");
+			
+		}
+		registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+//		registerBill.setDetectState(null);
+		this.updateSelective(registerBill);
+		
+		return registerBill.getId();
+	}
 }

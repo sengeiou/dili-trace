@@ -335,7 +335,7 @@
                           
                           layer.alert('登记成功',{
                            	 type:0,
-                           	  time : 800,
+                           	  time : 600,
                            	end :function(){
                            		parent.closeWin('view_win');
                            		

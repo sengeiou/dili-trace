@@ -158,6 +158,14 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doModifyRegisterBill(RegisterBill input);
+	
+	/**
+	 * 直接审核通过不需要检测
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public Long doAuditWithoutDetect(RegisterBill input);
 
 	/**
 	 * 批量主动送检
