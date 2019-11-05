@@ -7,6 +7,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
@@ -576,6 +577,36 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 //		registerBill.setDetectState(null);
 		this.updateSelective(registerBill);
 		
+		return registerBill.getId();
+	}
+	@Override
+	public Long doEdit(RegisterBill input) {
+		if(input==null||input.getId()==null) {
+			throw new AppException("参数错误");
+		}
+		RegisterBill registerBill = this.get(input.getId());
+		if (registerBill == null) {
+			throw new AppException("数据错误");
+		}
+		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+			throw new AppException("数据状态错误");
+		}
+		
+		if (input.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+			// 理货区
+			registerBill.setPlate(input.getPlate());
+		} else {
+			
+		}
+		registerBill.setProductId(input.getProductId());
+		registerBill.setProductName(input.getProductName());
+		
+		registerBill.setOriginId(input.getOriginId());
+		registerBill.setOriginName(input.getOriginName());
+		
+		registerBill.setWeight(input.getWeight());
+		
+		this.updateSelective(registerBill);
 		return registerBill.getId();
 	}
 }

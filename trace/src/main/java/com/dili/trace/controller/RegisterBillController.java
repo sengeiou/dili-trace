@@ -768,7 +768,9 @@ public class RegisterBillController {
 	@ResponseBody
 	public BaseOutput<?> doEdit(RegisterBill input) {
 		try {
-			return BaseOutput.success().setData(0L);
+			
+			Long id = this.registerBillService.doEdit(input);
+			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
 			LOGGER.error(e.getMessage(),e);
 			return BaseOutput.failure(e.getMessage());
