@@ -8,7 +8,7 @@
 <div class="main-container">
     <div class="topicTop">
         <div class="toppic-title">
-            <span class="topic-title-text maincolor">进场货品登记</span>
+            <span class="topic-title-text maincolor">修改登记单</span>
             <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
         </div>
     </div>
@@ -134,7 +134,7 @@
     </div>
     <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
     <div class="text-center mt30">
-        <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
+        <button class="btn-main2 btn-sm" onclick="doEdit()">提交</button>&nbsp;&nbsp;
         <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
     </div>
 </div>
@@ -147,8 +147,71 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-
 <!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
+<script type="text/javascript">
+   
+   $(function () {
+	     $('#goodsTable').find('input[name="productName_1"]').val('${registerBill.productName!}');
+	     $('#goodsTable').find('input[name="productId_1"]').val(${registerBill.productId});
+	     $('#goodsTable').find('input[name="originName_1"]').val('${registerBill.originName!}');
+	     $('#goodsTable').find('input[name="originId_1"]').val(${registerBill.originId});
+	     $('#goodsTable').find('input[name="weight_1"]').val(${registerBill.weight});
+	     $('#goodsTable').find('input[name="originCertifiyUrl_1"]').val('${registerBill.originCertifiyUrl!}');
+   });
+   function doEdit(){
+	   
+	   
+	   var registerSource = $("#registerSource").val();
+       var registerBills = buildTableData(registerSource);
+       debugger
+       return;
+	   $.ajax({
+           type: "POST",
+           url: "${contextPath}/registerBill/doAuditWithoutDetect.action",
+           processData:true,
+           dataType: "json",
+           data:$(form).serialize(),
+           async : true,
+           success: function (ret) {
+               if(ret.success){
+                   _registerBillGrid.datagrid("reload");
+                   layer.alert('操作成功',{
+							title:'操作',
+                         	time : 600,
+                         	end :function(){
+                         		 layer.closeAll();
+                         	}
+                        },
+                   	 function () {
+                   	  layer.closeAll();
+                           }
+                   );
+                   
+               }else{
+                   swal(
+                           '操作',
+                           ret.result,
+                           'info'
+                   );
+                   layer.closeAll();
+
+               }
+               
+           },
+           error: function(){
+
+               swal(
+                       '错误',
+                       '远程访问失败',
+                       'error'
+               );
+               layer.closeAll();
+           }
+       });
+   }
+</script>
+
+
 <style>
     /*a  upload */
     .a-upload {
@@ -184,14 +247,14 @@
     <tr>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm isSelected" name="productName_{{index}}" id="productName_{{index}}" required />
-                <input type="text" name="productId_{{index}}" hidden value=""/>
+                <input type="text" class="form-control input-sm isSelected" name="productName_{{index}}" id="productName_{{index}}"  required />
+                <input type="text" name="productId_{{index}}" hidden/>
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}" required />
-                <input type="text" name="originId_{{index}}" hidden value="" />
+                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}"  required />
+                <input type="text" name="originId_{{index}}" hidden  />
             </div>
         </td>
         <td>

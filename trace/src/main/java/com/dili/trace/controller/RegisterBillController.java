@@ -737,7 +737,47 @@ public class RegisterBillController {
 		}
 
 	}
+	/**
+	 * 交易单修改
+	 *
+	 * @param id
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
+	public String edit(Long id, ModelMap modelMap) {
+		RegisterBill registerBill = registerBillService.get(id);
+		String firstTallyAreaNo=Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(",")).filter(StringUtils::isNotBlank).findFirst().orElse("");
+		registerBill.setTallyAreaNo(firstTallyAreaNo);
+		
+		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill,firstTallyAreaNo);
+		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
+		modelMap.put("tradeTypes", tradeTypeService.findAll());
+		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+			
+		modelMap.put("citys", this.queryCitys());
+		return "registerBill/edit";
+	}
+	/**
+	 * 保存处理结果
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/doEdit.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> doEdit(RegisterBill input) {
+		try {
+			return BaseOutput.success().setData(0L);
+		} catch (AppException e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure("服务端出错");
+		}
 
+	}
 	private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
 		if (dto == null) {
 			return dto;

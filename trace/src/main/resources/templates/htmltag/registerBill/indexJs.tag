@@ -66,7 +66,18 @@
                     openInsert();
                 }
             },
-    </#resource>
+        </#resource>
+            <#resource method="post" url="registerBill/index.html#edit">
+            {
+                iconCls:'icon-edit',
+                text:'修改',
+                id:'edit-btn',
+                disabled :true,
+                handler:function(){
+                    openEdit();
+                }
+            },
+        </#resource>
         <#resource method="post" url="registerBill/index.html#audit">
             {
                 iconCls:'icon-man',
@@ -185,7 +196,7 @@
             {
                 iconCls:'icon-edit',
                 text:'上传检测报告',
-                id:'edit-btn',
+                id:'modify-btn',
                 disabled :true,
                 handler:doModify,
                 handler:function(){
@@ -245,7 +256,7 @@
         $('#review-btn').linkbutton('disable');
         $('#handle-btn').linkbutton('disable');*/
         
-        var btnArray=['edit-btn','copy-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
+        var btnArray=['modify-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
         	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn']
 	    for (var i = 0; i < btnArray.length; i++) {
 	        var btnId = btnArray[i];
@@ -330,7 +341,7 @@
             return;
         }
 
-        $('#edit-btn').show();
+        $('#modify-btn').show();
     	$('#copy-btn').show();
     	$('#detail-btn').show();
     	
@@ -345,6 +356,7 @@
             //接车状态是“已打回”,启用“撤销打回”操作
             $('#undo-btn').show();
             $('#audit-btn').show();
+            $('#edit-btn').show();
             //$('#batch-audit-btn').show();
            if(selected.registerSource==${@com.dili.trace.glossary.RegisterSourceEnum.TALLY_AREA.getCode()}){
         	   if(selected.originCertifiyUrl&&selected.originCertifiyUrl!=null&&selected.originCertifiyUrl!=''){
@@ -400,6 +412,19 @@
     }
     function openInsert(){
         openWin('/registerBill/create.html');
+    }
+    function openEdit(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+    	openWin('/registerBill/edit.html?id='+ selected.id);
     }
     function doDetail(){
         var selected = _registerBillGrid.datagrid("getSelected");
