@@ -160,7 +160,9 @@
 	     $('#goodsTable').find('input[name="originCertifiyUrl_1"]').val('${registerBill.originCertifiyUrl!}');
    });
    function doEdit(){
-	   
+       if($('#createRecordForm').validate().form() != true){
+           return;
+       }
 	   var registerSource = $("#registerSource").val();
        var registerBills = buildTableData(registerSource);
        if(registerBills.length!=1){
