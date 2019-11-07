@@ -24,7 +24,7 @@ public class BaseInfoRpcService {
 		BaseOutput<List<Category>> out = baseInfoRpc.listCategoryByCondition(query);
 		if (out.isSuccess()) {
 			List<Category> list = CollectionUtils.emptyIfNull(out.getData()).stream().filter(c -> {
-				return !c.getName().equals("蔬菜") && !c.getName().equals("椒类");
+				return !c.getName().contains("蔬菜") && !c.getName().equals("椒类");
 			}).collect(Collectors.toList());
 			return list;
 		}

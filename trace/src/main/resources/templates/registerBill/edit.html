@@ -157,7 +157,13 @@
 	     $('#goodsTable').find('input[name="originName_1"]').val('${registerBill.originName!}');
 	     $('#goodsTable').find('input[name="originId_1"]').val(${registerBill.originId});
 	     $('#goodsTable').find('input[name="weight_1"]').val(${registerBill.weight});
-	     $('#goodsTable').find('input[name="originCertifiyUrl_1"]').val('${registerBill.originCertifiyUrl!}');
+	     var  originCertifiyUrl='${registerBill.originCertifiyUrl!}';
+	     $('#goodsTable').find('input[name="originCertifiyUrl_1"]').val(originCertifiyUrl);
+	     if(originCertifiyUrl!=''){
+	    	 $('.view-div').show();
+	    	 $('.upload-div').hide();
+	     }
+	     
    });
    function doEdit(){
        if($('#createRecordForm').validate().form() != true){

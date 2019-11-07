@@ -598,6 +598,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} else {
 			
 		}
+
 		registerBill.setProductId(input.getProductId());
 		registerBill.setProductName(input.getProductName());
 		
@@ -606,6 +607,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		
 		registerBill.setWeight(input.getWeight());
 		
+		registerBill.setOriginCertifiyUrl(input.getOriginCertifiyUrl());
 		this.updateSelective(registerBill);
 		return registerBill.getId();
 	}
