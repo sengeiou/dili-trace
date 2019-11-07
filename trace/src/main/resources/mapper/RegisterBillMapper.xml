@@ -205,7 +205,7 @@
 		and #{latestDetectTimeTimeEnd}>= latest_detect_time
 	</if> 
 	
-	 <if test="attr != null  and attrValue!=''">
+	 <if test="attr != null  and attrValue !=''">
 		<if test="attr =='name'">
 		 and name=#{attrValue}
 		</if>
@@ -217,7 +217,7 @@
 		</if>
 	</if>
 	
-	<if test="tradeTypeId != null and tallyAreaNov!='' ">
+	<if test="tradeTypeId != null and tallyAreaNo!='' ">
 		and trade_type_id=#{tradeTypeId}
 	</if> 
   </select>

@@ -528,7 +528,7 @@ public class RegisterBillController {
 	@RequestMapping(value = "/listStaticsData.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput<?> listStaticsData(RegisterBillDto registerBill) {
-
+		registerBill.setAttrValue(StringUtils.trimToEmpty(registerBill.getAttrValue()));
 		RegisterBillStaticsDto staticsDto = this.registerBillService.groupByState(registerBill);
 
 		return BaseOutput.success().setData(staticsDto);
