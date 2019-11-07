@@ -45,7 +45,7 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     @Like(value="RIGHT")
     String getLikeProductName();
 
-    void setLikeProductName(String productName);
+    void setLikeProductName(String likeProductName);
 
     @Transient
     String getAttr();

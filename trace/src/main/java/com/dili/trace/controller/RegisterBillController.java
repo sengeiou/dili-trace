@@ -518,7 +518,7 @@ public class RegisterBillController {
 				registerBill.setName(registerBill.getAttrValue());
 				break;
 			case "productName":
-				registerBill.setProductName(registerBill.getAttrValue());
+				registerBill.setLikeProductName(registerBill.getAttrValue());
 				break;
 			}
 		}
