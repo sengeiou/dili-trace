@@ -160,8 +160,8 @@
 	     var  originCertifiyUrl='${registerBill.originCertifiyUrl!}';
 	     $('#goodsTable').find('input[name="originCertifiyUrl_1"]').val(originCertifiyUrl);
 	     if(originCertifiyUrl!=''){
-	    	 $('.view-div').show();
-	    	 $('.upload-div').hide();
+	    	 //$('.view-div').show();
+	    	 //$('.upload-div').hide();
 	     }
 	     
    });
@@ -285,10 +285,8 @@
         </td>
         <td>
             <div class="upload-div">
-                <a href="javascript:;" class="a-upload" tabindex="-1">
-                    <input type="file" id="originCertifiyUrl_{{index}}"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
+                <a href="javascript:;" class="a-upload" tabindex="-1" style="background: #eee;    border-color: #ccc;    text-decoration: none;">
                     <span>上传</span>
-                    <input type="hidden" name="originCertifiyUrl_{{index}}">
                 </a>
             </div>
             <div class="view-div" style="display: none;">
