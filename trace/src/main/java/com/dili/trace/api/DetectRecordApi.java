@@ -6,9 +6,11 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dto.DetectRecordParam;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.TaskGetParam;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.User;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.DetectRecordService;
@@ -182,6 +184,19 @@ public class DetectRecordApi {
         LOGGER.info("进行测试登记单数据----end-------:" + registerBills.size());
         return BaseOutput.success("新增成功").setData(registerBills);
     }
+    @ApiOperation(value = "通过采样编号获取登记单详细信息")
+	@RequestMapping(value = "/sampleCode/{sampleCode}", method = RequestMethod.GET)
+	public BaseOutput<RegisterBillOutputDto> getRegisterBillBySampleCode(@PathVariable String sampleCode) {
+		LOGGER.info("获取登记单:(采样编号) " + sampleCode);
+
+		RegisterBill registerBill = registerBillService.findBySampleCode(sampleCode);
+		if (registerBill == null) {
+			LOGGER.error("获取登记单失败sampleCode:" + sampleCode);
+			return BaseOutput.failure();
+		}
+		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
+		return BaseOutput.success().setData(bill);
+	}
     private List<RegisterBill> getTestRegisterBills(){
         String[] name = {"张三","李四","王五","张亿","Jick","Rose","Tom","Good","蒋介","兰芝"};
         String[] product={"苹果","梨","黄瓜","芹菜","一级蔬菜","萝卜","Fish","火龙果","木瓜","火龙果"};
