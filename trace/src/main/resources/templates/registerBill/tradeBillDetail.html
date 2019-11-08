@@ -11,6 +11,63 @@
     <title>地利集团农产品流通安全追溯</title>
     <link rel="stylesheet" href="/resources/assets/etrade/common/main.css">
     <link rel="stylesheet" href="/resources/assets/etrade/common/scan.css">
+    <style type="text/css">
+    
+    
+    .img-rotate-box {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      /* filter: alpha(Opacity=80);
+      -moz-opacity: 0.5;
+      opacity: 0.5; */
+    }
+    #img {
+      flex: 1;
+      justify-content: space-around;
+      align-items: center;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      overflow: hidden;
+    }
+    #img img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: pink;
+    }
+    #rotateImg {
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+    }
+    .button-box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 50px;
+      background: #fff;
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    </style>
 </head>
 <body>
 <div class="scan-top">
@@ -76,12 +133,77 @@
             <div class="btm-tips">
                 说明：根据国标GB/T5009.199-2003，凡酶抑制率&lt;50% 合格，≥50% 不合格
             </div>
+             <div class="img-rotate-box" style="z-index: 1000;height: 100%">
+		      <div id="img">
+		        <div id="rotateImg" data-deg="0" style="background-image: url();"></div>
+		      </div>
+		      <div class="button-box">
+		        <span id="left">逆时针旋转90°</span>
+		        <span id="right">顺时针旋转90°</span>
+		      </div>
+		    </div>
+            <div align="center">
+             <%if(isNotEmpty(tradeBill.originCertifiyUrl)){%>
+              <a href="javascript:void(0);" onclick="openImage('${tradeBill.originCertifiyUrl}')" title="查看产地证明">产地证明</a>
+             <%}%>
+             
+             <%if(isNotEmpty(tradeBill.detectReportUrl)){%>
+             
+              <span style="width: 10%;display:inline-block"></span>
+	            <a href="javascript:void(0);" onclick="openImage('${tradeBill.detectReportUrl}')" title="查看检测报告">检测报告</a>
+             <%}%>
+	           
+	           
+            </div>
         </div>
     <%}else{%>
         <div class="no-message">查无数据</div>
     <%}%>
 </div>
 </body>
+<script type="text/javascript">
+
+/*const url =
+    'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573105614637&di=fa3542c9402fab7c075ec13575a1b8c3&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201806%2F18%2F20180618112547_jv2xs.thumb.700_0.jpeg'
+   */ 		
+     var imgBox = document.querySelector('.img-rotate-box');
+     var img = document.querySelector('#rotateImg');
+     var imgCover = document.querySelector('#img');
+  window.onload = function() {
+
+
+   /* document.querySelector('#openImg').addEventListener('click', function() {
+      imgBox.style.display = 'flex'
+      img.style.backgroundImage = 'url(' + url + ')'
+    })*/
+    imgCover.addEventListener('click', function() {
+      imgBox.style.display = 'none'
+    })
+    document.querySelector('#left').onclick = function() {
+      var deg = (img.dataset['deg'] % 360) - 90
+      rotate(deg)
+    }
+    document.querySelector('#right').onclick = function() {
+      var deg = (img.dataset['deg'] % 360) + 90
+      rotate(deg)
+    }
+  }
+  function rotate(deg) {
+    var width = document.body.clientWidth,
+      height = document.body.clientHeight - 50
+    var img = document.querySelector('#rotateImg')
+
+    var scale = deg % 180 ? width / height : 1
+    img.style.transform = 'scale(' + scale + ') rotate(' + deg + 'deg) '
+
+    img.dataset['deg'] = deg
+  }
+  
+  function openImage(url){
+	   imgBox.style.display = 'flex'
+		      img.style.backgroundImage = 'url(' + url + ')'
+	}
+</script>
 </html>
 <script src="/resources/assets/etrade/js/mui.min.js" charset="utf-8"></script>
 <script src="/resources/assets/etrade/js/rem.js" charset="utf-8"></script>
