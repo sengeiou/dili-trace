@@ -86,4 +86,11 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     String getLikeTallyAreaNo();
     void setLikeTallyAreaNo(String likeTallyAreaNo);
     
+
+    @Column(name = "`sample_code`")
+    @Like
+    String getLikeSampleCode();
+    void setLikeSampleCode(String likeSampleCode);
+
+    
 }

@@ -102,8 +102,8 @@ public class RegisterBillController {
 			case "productName":
 				registerBill.setProductName(registerBill.getAttrValue());
 				break;
-			case "sampleCode":
-				registerBill.setSampleCode(registerBill.getAttrValue());
+			case "likeSampleCode":
+				registerBill.setLikeSampleCode(registerBill.getAttrValue());
 				break;
 			}
 		}
@@ -519,6 +519,9 @@ public class RegisterBillController {
 				break;
 			case "productName":
 				registerBill.setLikeProductName(registerBill.getAttrValue());
+				break;
+			case "likeSampleCode":
+				registerBill.setLikeSampleCode(registerBill.getAttrValue());
 				break;
 			}
 		}

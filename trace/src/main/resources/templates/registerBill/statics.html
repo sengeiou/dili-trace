@@ -13,7 +13,14 @@
             <div class="easyui-panel" style="width:100%;" align="left">
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
-
+                        <div class="search-item">
+                            <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        <div class="search-item">
+                            <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部",excludes:[7]}' />
+                        </div>
                         <div class="search-item">
                             <input  name="tradeTypeId" id="tradeTypeId" style="width:100%" labelAlign="right" data-options="label:'交易区'"  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
@@ -37,6 +44,7 @@
                                 <option value="tallyAreaNo" selected="selected">理货区号</option>
                                 <option value="name">业户姓名</option>
                                 <option value="productName">商品名称</option>
+                                <option value="likeSampleCode">采样单编号</option>
                             </select>
                             <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">
                         </div>

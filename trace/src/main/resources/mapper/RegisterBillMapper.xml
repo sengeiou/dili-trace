@@ -192,6 +192,12 @@
 	sum( case when detect_state=3 then 1  when detect_state=4 then 1  else 0 end)as 'recheck'
     from register_bill
     where 1=1
+    <if test="registerSource != null">
+        register_source = #{registerSource,jdbcType=TINYINT},
+    </if>
+    <if test="state != null">
+        state = #{state,jdbcType=BIT},
+    </if>
     <if test="createdStart != null">
 		and created>=  #{createdStart}
 	</if>
@@ -214,6 +220,9 @@
 		</if>
 		<if test="attr == 'productName'">
 			and  product_name like '${attrValue}%'
+		</if>
+		<if test="attr == 'likeSampleCode'">
+			and  sample_code like '%${attrValue}%'
 		</if>
 	</if>
 	
