@@ -116,25 +116,36 @@ public class RegisterBillController {
 //			}
 //		}
 		
+		StringBuilder sql = this.buildDynamicCondition(registerBill);
+		if(sql.length()>0) {
+			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
+		}
+		
+
+		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
+	}
+
+	private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
+		StringBuilder sql=new StringBuilder();
 		if (registerBill.getHasDetectReport() != null) {
 			if (registerBill.getHasDetectReport()) {
-				registerBill.mset(IDTO.AND_CONDITION_EXPR,
-						"  (detect_report_url is not null AND detect_report_url<>'')");
+				sql.append("  (detect_report_url is not null AND detect_report_url<>'') ");
 			} else {
-				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
+				sql.append( "  (detect_report_url is  null or detect_report_url='') ");
 			}
 		}
 		
 		if (registerBill.getHasOriginCertifiy() != null) {
+			if(sql.length()>0) {
+				sql.append(" AND ");
+			}
 			if (registerBill.getHasOriginCertifiy()) {
-				registerBill.mset(IDTO.AND_CONDITION_EXPR,
-						"  (origin_certifiy_url is not null AND origin_certifiy_url<>'')");
+				sql.append("  (origin_certifiy_url is not null AND origin_certifiy_url<>'') ");
 			} else {
-				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (origin_certifiy_url is  null or origin_certifiy_url='')");
+				sql.append("  (origin_certifiy_url is  null or origin_certifiy_url='') ");
 			}
 		}
-
-		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
+		return sql;
 	}
 
 	@ApiOperation("新增RegisterBill")
