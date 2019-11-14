@@ -1,5 +1,7 @@
 package com.dili.trace.provider;
 
+import com.dili.common.service.BaseInfoRpcService;
+
 /**
  * <B>Description</B>
  * 本软件源代码版权归农丰时代及其团队所有,未经许可不得任意复制与传播
@@ -17,6 +19,8 @@ import com.dili.ss.metadata.ValueProvider;
 import com.dili.trace.domain.Category;
 import com.dili.trace.dto.CategoryListInput;
 import com.dili.trace.rpc.BaseInfoRpc;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -25,15 +29,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 城市提供者
+ * 品类提供者
  * @author asiamaster
  */
 @Component
 public class CategoryProvider implements ValueProvider {
 
-    @Resource
-    BaseInfoRpc baseInfoRpc;
-
+//    @Resource
+//    BaseInfoRpc baseInfoRpc;
+    @Autowired
+    BaseInfoRpcService baseInfoRpcService;
     @Override
     public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) {
         CategoryListInput categoryInput = new CategoryListInput();
@@ -44,13 +49,16 @@ public class CategoryProvider implements ValueProvider {
             categoryInput.setKeyword(val.toString());
         }
 
-        BaseOutput<List<Category>> categoryListOutput = baseInfoRpc.listCategoryByCondition(categoryInput);
+//        BaseOutput<List<Category>> categoryListOutput = baseInfoRpc.listCategoryByCondition(categoryInput);
         List<ValuePair<?>> buffer = new ArrayList<ValuePair<?>>();
-        if(categoryListOutput.isSuccess()) {
-            categoryListOutput.getData().forEach(o -> {
-                buffer.add(new ValuePairImpl(o.getName(), o.getId().toString()));
-            });
-        }
+//        if(categoryListOutput.isSuccess()) {
+//            categoryListOutput.getData().forEach(o -> {
+//                buffer.add(new ValuePairImpl(o.getName(), o.getId().toString()));
+//            });
+//        }
+        this.baseInfoRpcService.listCategoryByCondition(categoryInput).forEach(o -> {
+            buffer.add(new ValuePairImpl(o.getName(), o.getId().toString()));
+        });
         return buffer;
     }
 

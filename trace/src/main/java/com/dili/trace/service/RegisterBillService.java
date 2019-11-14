@@ -23,6 +23,13 @@ import com.dili.trace.dto.RegisterBillStaticsDto;
 public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	/**
 	 * 查找任务
+	 * @param exeMachineNo
+	 * @param sampleCodeList
+	 * @return
+	 */
+	List<RegisterBill> getDetectTaskBySampleCodeList(String exeMachineNo, List<String>sampleCodeList);
+	/**
+	 * 查找任务
 	 * 
 	 * @param exeMachineNo
 	 * @param taskCount
@@ -45,6 +52,14 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	RegisterBill findByCode(String code);
+	
+	/**
+	 * 通过采样编号查找
+	 * 
+	 * @param sampleCode
+	 * @return
+	 */
+	RegisterBill findBySampleCode(String sampleCode);
 
 	/**
 	 * 通过交易区交易单查询
@@ -150,6 +165,21 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doModifyRegisterBill(RegisterBill input);
+	
+	/**
+	 * 直接审核通过不需要检测
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public Long doAuditWithoutDetect(RegisterBill input);
+	
+	/**
+	 * 修改登记单
+	 * @param input
+	 * @return
+	 */
+	public Long doEdit(RegisterBill input);
 
 	/**
 	 * 批量主动送检

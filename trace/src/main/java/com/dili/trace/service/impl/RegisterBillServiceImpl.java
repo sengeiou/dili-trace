@@ -7,6 +7,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
@@ -174,6 +175,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public RegisterBill findByCode(String code) {
 		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
 		registerBill.setCode(code);
+		List<RegisterBill> list = list(registerBill);
+		if (list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+	@Override
+	public RegisterBill findBySampleCode(String sampleCode) {
+		if(StringUtils.isBlank(sampleCode)) {
+			return null;
+		}
+		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+		registerBill.setSampleCode(sampleCode.trim());
 		List<RegisterBill> list = list(registerBill);
 		if (list != null && list.size() > 0) {
 			return list.get(0);
@@ -538,5 +552,83 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.updateSelective(example);
 
 		return example.getId();
+	}
+
+	@Override
+	public Long doAuditWithoutDetect(RegisterBill input) {
+		if(input==null||input.getId()==null) {
+			throw new AppException("参数错误");
+		}
+		RegisterBill registerBill = this.get(input.getId());
+		if (registerBill == null) {
+			throw new AppException("数据错误");
+		}
+		if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl()) ) {
+			throw new AppException("数据错误");
+		}
+		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+			throw new AppException("数据状态错误");
+		}
+		if (!RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
+			throw new AppException("数据来源错误");
+			
+		}
+		registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+//		registerBill.setDetectState(null);
+		this.updateSelective(registerBill);
+		
+		return registerBill.getId();
+	}
+	@Override
+	public Long doEdit(RegisterBill input) {
+		if(input==null||input.getId()==null) {
+			throw new AppException("参数错误");
+		}
+		RegisterBill registerBill = this.get(input.getId());
+		if (registerBill == null) {
+			throw new AppException("数据错误");
+		}
+		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+			throw new AppException("数据状态错误");
+		}
+		
+		if (input.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+			// 理货区
+			registerBill.setPlate(input.getPlate());
+		} else {
+			
+		}
+
+		registerBill.setProductId(input.getProductId());
+		registerBill.setProductName(input.getProductName());
+		
+		registerBill.setOriginId(input.getOriginId());
+		registerBill.setOriginName(input.getOriginName());
+		
+		registerBill.setWeight(input.getWeight());
+		
+//		registerBill.setOriginCertifiyUrl(input.getOriginCertifiyUrl());
+		this.updateSelective(registerBill);
+		return registerBill.getId();
+	}
+
+	@Override
+	public List<RegisterBill> getDetectTaskBySampleCodeList(String exeMachineNo, List<String> sampleCodeList) {
+		
+		RegisterBillDto query=DTOUtils.newDTO(RegisterBillDto.class);
+		query.setSampleCodeList(sampleCodeList);
+
+		String newTaskIdList=this.listByExample(query).stream().filter(rb->{
+			return RegisterBillStateEnum.WAIT_CHECK.getCode().equals(rb.getState())&&
+			StringUtils.isBlank(rb.getExeMachineNo());
+		}).map(RegisterBill::getId).map(String::valueOf).collect(Collectors.joining(","));
+		
+		if(!newTaskIdList.isEmpty()) {
+			getActualDao().taskByExeMachineNo(exeMachineNo, String.join(",", newTaskIdList));
+		}
+		query.setState(RegisterBillStateEnum.CHECKING.getCode());
+		query.setExeMachineNo(exeMachineNo);
+		return this.listByExample(query);
+		
 	}
 }

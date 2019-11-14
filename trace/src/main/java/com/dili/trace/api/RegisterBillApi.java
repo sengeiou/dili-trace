@@ -380,6 +380,7 @@ public class RegisterBillApi {
 		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
 		return BaseOutput.success().setData(bill);
 	}
+	
 
 	@ApiOperation(value = "通过交易区的交易号获取登记单详细信息")
 	@RequestMapping(value = "/tradeNo/{tradeNo}", method = RequestMethod.GET)

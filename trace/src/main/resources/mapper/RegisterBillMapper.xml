@@ -40,7 +40,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, code, register_source, tally_area_no, name, id_card_no, addr,phone, user_id,
+    id, code, register_source, tally_area_no, name, id_card_no, addr,phone, user_id,sample_code,
     plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version, 
     created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result
@@ -192,6 +192,12 @@
 	sum( case when detect_state=3 then 1  when detect_state=4 then 1  else 0 end)as 'recheck'
     from register_bill
     where 1=1
+    <if test="registerSource != null">
+        register_source = #{registerSource,jdbcType=TINYINT},
+    </if>
+    <if test="state != null">
+        state = #{state,jdbcType=BIT},
+    </if>
     <if test="createdStart != null">
 		and created>=  #{createdStart}
 	</if>
@@ -205,16 +211,22 @@
 		and #{latestDetectTimeTimeEnd}>= latest_detect_time
 	</if> 
 	
-	 <if test="attr != null  and attrValue!=''">
+	 <if test="attr != null  and attrValue !=''">
 		<if test="attr =='name'">
 		 and name=#{attrValue}
 		</if>
 		<if test="attr == 'tallyAreaNo'">
 			and  tally_area_no like '%${attrValue}%'
 		</if>
+		<if test="attr == 'productName'">
+			and  product_name like '${attrValue}%'
+		</if>
+		<if test="attr == 'likeSampleCode'">
+			and  sample_code like '%${attrValue}%'
+		</if>
 	</if>
 	
-	<if test="tradeTypeId != null and tallyAreaNov!='' ">
+	<if test="tradeTypeId != null and tallyAreaNo!='' ">
 		and trade_type_id=#{tradeTypeId}
 	</if> 
   </select>

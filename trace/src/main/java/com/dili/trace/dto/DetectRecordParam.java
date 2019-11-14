@@ -7,6 +7,7 @@ import com.dili.trace.domain.DetectRecord;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 
 /**
  * Created by laikui on 2019/8/15.
@@ -25,4 +26,13 @@ public interface DetectRecordParam extends DetectRecord {
     String getTag();
 
     void setTag(String tag);
+    
+    /**
+     * 采样编号
+     * @return
+     */
+    @Transient
+    String getSampleCode();
+
+    void setSampleCode(String sampleCode);
 }

@@ -7,18 +7,23 @@
         initFileUpload1('#originCertifiyUrl_'+goodsItemCount);
         initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
         initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
-
-        if(!location.hash){
-            var registerSource = localStorage.getItem('registerSource');
-            var tradeTypeId = localStorage.getItem('tradeTypeId');
-            if(registerSource){
-                $('#registerSource').val(registerSource);
-                $('[name="registerSource"]').trigger('change');
-            }
-            if(tradeTypeId){
-                $('#tradeTypeId').val(tradeTypeId);
-            }
+        
+        if(typeof(initWithLocalStorage)=='undefined'||initWithLocalStorage==true){
+	        if(!location.hash){
+	            var registerSource = localStorage.getItem('registerSource');
+	            var tradeTypeId = localStorage.getItem('tradeTypeId');
+	            if(registerSource){
+	                $('#registerSource').val(registerSource);
+	                $('[name="registerSource"]').trigger('change');
+	            }
+	            if(tradeTypeId){
+	                $('#tradeTypeId').val(tradeTypeId);
+	            }
+	        }
+        }else if(initWithLocalStorage==false){
+        	  console.info('disable init')
         }
+
     });
 
     function returnBack(){
@@ -266,28 +271,11 @@
         var regName = /[^\u4e00-\u9fa5]/g;
         return this.optional(element) || !regName.test( value.charAt(0) );    
     }, "第一个字符必须为汉字");  
-  
-    var resubmit =0;
-    function create(){
-        if(resubmit==0){
-            resubmit=1;
-        }else{
-            resubmit=0;
-            swal(
-                    '错误',
-                    '重复提交',
-                    'error'
-            );
-            return;
-        }
-        if($('#createRecordForm').validate().form() != true){
-            resubmit = 0;
-            return;
-        }
-        //console.log("参数:"+$('#createRecordForm').serialize());
-        var registerBills = new Array();
-        var registerSource = $("#registerSource").val();
-        let index = 0;
+    
+  	function buildTableData(registerSource){
+  		 var registerBills = new Array();
+  		 
+  	    let index = 0;
         $("#goodsTable").find("tbody").find("tr").each(function(){
             var registerBill = new Object();
             registerBill.registerSource=registerSource;
@@ -313,6 +301,55 @@
             });
             registerBills.push(registerBill);
         });
+  		return registerBills;
+  	}
+    var resubmit =0;
+    function create(){
+        if(resubmit==0){
+            resubmit=1;
+        }else{
+            resubmit=0;
+            swal(
+                    '错误',
+                    '重复提交',
+                    'error'
+            );
+            return;
+        }
+        if($('#createRecordForm').validate().form() != true){
+            resubmit = 0;
+            return;
+        }
+        //console.log("参数:"+$('#createRecordForm').serialize());
+       
+        var registerSource = $("#registerSource").val();
+        var registerBills = buildTableData(registerSource);
+        /*let index = 0;
+        $("#goodsTable").find("tbody").find("tr").each(function(){
+            var registerBill = new Object();
+            registerBill.registerSource=registerSource;
+            if(registerBill.registerSource==1){
+                registerBill.tallyAreaNo=$("#tallyAreaNo").val();
+                registerBill.userId = $("#userId").val();
+            }else{
+                registerBill.tradeAccount=$("#tradeAccount").val();
+                registerBill.tradePrintingCard=$("#tradePrintingCard").val();
+               // registerBill.tradeTypeName=$("#tradeTypeName").val();
+                registerBill.tradeTypeId=$("#tradeTypeId").val();
+            }
+            registerBill.plate=$("#plate").val();
+            registerBill.name=$("#name").val();
+            registerBill.idCardNo=$("#idCardNo").val();
+            registerBill.addr=$("#addr").val();
+            registerBill.detectReportUrl = $("#detectReportUrl").val();
+            registerBill.phone = $("#phone").val();
+
+            $(this).find("input").each(function(t,el){
+                let fieldName = $(this).attr("name").split('_')[0];
+                registerBill[fieldName] = $(this).val();
+            });
+            registerBills.push(registerBill);
+        });*/
         $.ajax({
             type: "POST",
             url: "${contextPath}/registerBill/insert.action",
@@ -335,7 +372,7 @@
                           
                           layer.alert('登记成功',{
                            	 type:0,
-                           	  time : 3000,
+                           	  time : 600,
                            	end :function(){
                            		parent.closeWin('view_win');
                            		

@@ -102,19 +102,50 @@ public class RegisterBillController {
 			case "productName":
 				registerBill.setProductName(registerBill.getAttrValue());
 				break;
+			case "likeSampleCode":
+				registerBill.setLikeSampleCode(registerBill.getAttrValue());
+				break;
 			}
 		}
-		if (registerBill.getHasReport() != null) {
-			if (registerBill.getHasReport()) {
-				registerBill.mset(IDTO.AND_CONDITION_EXPR,
-						"  (detect_report_url is not null AND detect_report_url<>'')");
-			} else {
-				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
-			}
-
+//		if (registerBill.getHasReport() != null) {
+//			if (registerBill.getHasReport()) {
+//				registerBill.mset(IDTO.AND_CONDITION_EXPR,
+//						"  (detect_report_url is not null AND detect_report_url<>'')");
+//			} else {
+//				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
+//			}
+//		}
+		
+		StringBuilder sql = this.buildDynamicCondition(registerBill);
+		if(sql.length()>0) {
+			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
 		}
+		
 
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
+	}
+
+	private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
+		StringBuilder sql=new StringBuilder();
+		if (registerBill.getHasDetectReport() != null) {
+			if (registerBill.getHasDetectReport()) {
+				sql.append("  (detect_report_url is not null AND detect_report_url<>'') ");
+			} else {
+				sql.append( "  (detect_report_url is  null or detect_report_url='') ");
+			}
+		}
+		
+		if (registerBill.getHasOriginCertifiy() != null) {
+			if(sql.length()>0) {
+				sql.append(" AND ");
+			}
+			if (registerBill.getHasOriginCertifiy()) {
+				sql.append("  (origin_certifiy_url is not null AND origin_certifiy_url<>'') ");
+			} else {
+				sql.append("  (origin_certifiy_url is  null or origin_certifiy_url='') ");
+			}
+		}
+		return sql;
 	}
 
 	@ApiOperation("新增RegisterBill")
@@ -498,7 +529,10 @@ public class RegisterBillController {
 				registerBill.setName(registerBill.getAttrValue());
 				break;
 			case "productName":
-				registerBill.setProductName(registerBill.getAttrValue());
+				registerBill.setLikeProductName(registerBill.getAttrValue());
+				break;
+			case "likeSampleCode":
+				registerBill.setLikeSampleCode(registerBill.getAttrValue());
 				break;
 			}
 		}
@@ -508,7 +542,7 @@ public class RegisterBillController {
 	@RequestMapping(value = "/listStaticsData.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput<?> listStaticsData(RegisterBillDto registerBill) {
-
+		registerBill.setAttrValue(StringUtils.trimToEmpty(registerBill.getAttrValue()));
 		RegisterBillStaticsDto staticsDto = this.registerBillService.groupByState(registerBill);
 
 		return BaseOutput.success().setData(staticsDto);
@@ -696,6 +730,70 @@ public class RegisterBillController {
 
 	}
 
+	/**
+	 * 保存处理结果
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/doAuditWithoutDetect.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> doAuditWithoutDetect(RegisterBill input) {
+		try {
+			Long id = this.registerBillService.doAuditWithoutDetect(input);
+			return BaseOutput.success().setData(id);
+		} catch (AppException e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure("服务端出错");
+		}
+
+	}
+	/**
+	 * 交易单修改
+	 *
+	 * @param id
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
+	public String edit(Long id, ModelMap modelMap) {
+		RegisterBill registerBill = registerBillService.get(id);
+		String firstTallyAreaNo=Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(",")).filter(StringUtils::isNotBlank).findFirst().orElse("");
+		registerBill.setTallyAreaNo(firstTallyAreaNo);
+		
+		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill,firstTallyAreaNo);
+		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
+		modelMap.put("tradeTypes", tradeTypeService.findAll());
+		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+			
+		modelMap.put("citys", this.queryCitys());
+		return "registerBill/edit";
+	}
+	/**
+	 * 保存处理结果
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/doEdit.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> doEdit(RegisterBill input) {
+		try {
+			
+			Long id = this.registerBillService.doEdit(input);
+			return BaseOutput.success().setData(id);
+		} catch (AppException e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure("服务端出错");
+		}
+
+	}
 	private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
 		if (dto == null) {
 			return dto;

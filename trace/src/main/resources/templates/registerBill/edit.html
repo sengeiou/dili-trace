@@ -8,18 +8,19 @@
 <div class="main-container">
     <div class="topicTop">
         <div class="toppic-title">
-            <span class="topic-title-text maincolor">进场货品登记</span>
+            <span class="topic-title-text maincolor">修改登记单</span>
             <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
         </div>
     </div>
     <div class="form-box border">
 
         <form id="createRecordForm" class="form-inline" role="form">
+        	<input type="hidden" name="id" value="${registerBill.id}">
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
-                    <select class="form-control input-sm" name="registerSource" id="registerSource" required tabindex="0"  >
+                    <select class="form-control input-sm" name="registerSource" id="registerSource" required  readonly="readonly" disabled="disabled" tabindex="0"  >
                         <option value="1"  <% if( registerBill.registerSource==1){%>selected<%}%>>理货区</option>
                         <option value="2" <% if( registerBill.registerSource==2){%>selected<%}%>>交易区</option>
                     </select>
@@ -27,8 +28,8 @@
                 <div class="form-group"  <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>  >
                     <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
                     <div class="input-group">
-                        <input type="hidden" name="tallyAreaNo" id="tallyAreaNo" value="${registerBill.tallyAreaNo!}"/>
-                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;" value="${registerBill.tallyAreaNo!}"/>
+                        <input type="hidden" name="tallyAreaNo" id="tallyAreaNo" value="${registerBill.tallyAreaNo!}" />
+                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;" value="${registerBill.tallyAreaNo!}" readonly="readonly" disabled="disabled"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
                         
                     </div>
@@ -37,7 +38,7 @@
                 <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>交易区号</label>
-                    <select class="form-control input-sm" name="tradeTypeId" id="tradeTypeId"  required>
+                    <select class="form-control input-sm" name="tradeTypeId" id="tradeTypeId"  required readonly="readonly" disabled="disabled">
                         <option value="">请选择</option>
                         <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
                             for(tradeType in tradeTypes){%>
@@ -53,7 +54,7 @@
                 <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
                     <label class="label-title text-right">交易账号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="tradeAccountInput" id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"  value="${userInfo.userId}" />
+                        <input type="text" class="form-control input-sm" name="tradeAccountInput" id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"  value="${userInfo.userId}" readonly="readonly" disabled="disabled"/>
                         <input type="hidden" name="tradeAccount" id="tradeAccount"  value="${userInfo.userId}"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
                     </div>
@@ -61,7 +62,7 @@
                 <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
                     <label class="label-title text-right">印刷卡号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="b2" id="printingCardInput" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"  value="${userInfo.printingCard}" />
+                        <input type="text" class="form-control input-sm" name="b2" id="printingCardInput" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"  value="${userInfo.printingCard}" readonly="readonly" disabled="disabled"/>
                         <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"  value="${userInfo.printingCard}" />
                         <span class="input-group-addon"> <span class="glyphicon" onclick="cardNo()">检索</span> </span>
                     </div>
@@ -91,7 +92,7 @@
 
             <div class="form-item-group">
                 <h4 class="form-item-title">货品信息</h4>
-                <button type="button" class="btn-main2 btn-sm" id="addGoodsItem" style="width: 85px;">添加货品</button>
+
                 <div class="table-showlist" style="width: 1200px">
                     <table class="table table-bordered" id="goodsTable">
                         <thead>
@@ -115,7 +116,7 @@
                     <%}%>
                 </div>
             </div>
-            <div class="form-item-group">
+            <!--div class="form-item-group">
                 <h4 class="form-item-title">检测报告</h4>
                 <div class="fileimg-box" style="margin-left: 50px;">
                     <span class="fileimg-plus-icon">+</span>
@@ -128,13 +129,13 @@
                         <span class="fileimg-view">查看</span>
                     </div>
                 </div>
-            </div>
+            </div-->
         </form>
 
     </div>
     <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
     <div class="text-center mt30">
-        <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
+        <button class="btn-main2 btn-sm" onclick="doEdit()">提交</button>&nbsp;&nbsp;
         <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
     </div>
 </div>
@@ -147,8 +148,91 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-
 <!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
+<script type="text/javascript">
+   
+   $(function () {
+	     $('#goodsTable').find('input[name="productName_1"]').val('${registerBill.productName!}');
+	     $('#goodsTable').find('input[name="productId_1"]').val(${registerBill.productId});
+	     $('#goodsTable').find('input[name="originName_1"]').val('${registerBill.originName!}');
+	     $('#goodsTable').find('input[name="originId_1"]').val(${registerBill.originId});
+	     $('#goodsTable').find('input[name="weight_1"]').val(${registerBill.weight});
+	     var  originCertifiyUrl='${registerBill.originCertifiyUrl!}';
+	     $('#goodsTable').find('input[name="originCertifiyUrl_1"]').val(originCertifiyUrl);
+	     if(originCertifiyUrl!=''){
+	    	 //$('.view-div').show();
+	    	 //$('.upload-div').hide();
+	     }
+	     
+   });
+   function doEdit(){
+       if($('#createRecordForm').validate().form() != true){
+           return;
+       }
+	   var registerSource = $("#registerSource").val();
+       var registerBills = buildTableData(registerSource);
+       if(registerBills.length!=1){
+    	   
+       }
+       var formData=registerBills[0];
+       formData['id']=$('form').find('input[name="id"]').val();
+       //console.info(formData)
+       
+        layer.confirm('确认修改数据?', {
+                     type: 0,
+                     title: '提示',
+                     btn: ['确定','取消'],
+                     yes:function(){
+                    	 $.ajax({
+                             type: "POST",
+                             url: "${contextPath}/registerBill/doEdit.action",
+                             processData:true,
+                             dataType: "json",
+                             data:formData,
+                             async : true,
+                             success: function (ret) {
+                                 if(ret.success){
+                                     layer.alert('操作成功',{
+                  							title:'操作',
+                                           	time : 600,
+                                           	end :function(){
+                                           		 parent.closeWin('view_win');
+                                           	}
+                                          },
+                                     	 function () {
+                                          	 parent.closeWin('view_win');
+                                             }
+                                     );
+                                     
+                                 }else{
+                                     swal(
+                                             '操作',
+                                             ret.result,
+                                             'info'
+                                     );
+                                     layer.closeAll();
+
+                                 }
+                                 
+                             },
+                             error: function(){
+
+                                 swal(
+                                         '错误',
+                                         '远程访问失败',
+                                         'error'
+                                 );
+                                 layer.closeAll();
+                             }
+                         });
+                     }
+          });
+       
+	   
+   }
+</script>
+
+
 <style>
     /*a  upload */
     .a-upload {
@@ -184,14 +268,14 @@
     <tr>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm isSelected" name="productName_{{index}}" id="productName_{{index}}" required />
-                <input type="text" name="productId_{{index}}" hidden value=""/>
+                <input type="text" class="form-control input-sm isSelected" name="productName_{{index}}" id="productName_{{index}}"  required />
+                <input type="text" name="productId_{{index}}" hidden/>
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}" required />
-                <input type="text" name="originId_{{index}}" hidden value="" />
+                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}"  required />
+                <input type="text" name="originId_{{index}}" hidden  />
             </div>
         </td>
         <td>
@@ -201,10 +285,8 @@
         </td>
         <td>
             <div class="upload-div">
-                <a href="javascript:;" class="a-upload" tabindex="-1">
-                    <input type="file" id="originCertifiyUrl_{{index}}"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
+                <a href="javascript:;" class="a-upload" tabindex="-1" style="background: #eee;    border-color: #ccc;    text-decoration: none;">
                     <span>上传</span>
-                    <input type="hidden" name="originCertifiyUrl_{{index}}">
                 </a>
             </div>
             <div class="view-div" style="display: none;">
@@ -213,7 +295,7 @@
                 <a href="javascript:$('#originCertifiyUrl_{{index}}').trigger('click')">重新上传</a>
             </div>
         </td>
-        <td><a href="javascript:;" class="split-minus-btn">删除</a></td>
+        <td></td>
     </tr>
 
 </script>
