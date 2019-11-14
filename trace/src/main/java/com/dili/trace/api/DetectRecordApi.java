@@ -204,6 +204,18 @@ public class DetectRecordApi {
 		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
 		return BaseOutput.success().setData(bill);
 	}
+    @ApiOperation(value = "通过采样编号获取登记单详细信息")
+	@RequestMapping(value = "/registerBill/sampleCode/{sampleCode}", method = RequestMethod.GET)
+	public BaseOutput<RegisterBill> findRegisterBillBySampleCode(@PathVariable String sampleCode) {
+		LOGGER.info("获取登记单:(采样编号) " + sampleCode);
+
+		RegisterBill registerBill = registerBillService.findBySampleCode(sampleCode);
+		if (registerBill == null) {
+			LOGGER.error("获取登记单失败sampleCode:" + sampleCode);
+			return BaseOutput.failure();
+		}
+		return BaseOutput.success().setData(registerBill);
+	}
     private List<RegisterBill> getTestRegisterBills(){
         String[] name = {"张三","李四","王五","张亿","Jick","Rose","Tom","Good","蒋介","兰芝"};
         String[] product={"苹果","梨","黄瓜","芹菜","一级蔬菜","萝卜","Fish","火龙果","木瓜","火龙果"};
