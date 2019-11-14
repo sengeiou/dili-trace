@@ -91,6 +91,16 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     @Like
     String getLikeSampleCode();
     void setLikeSampleCode(String likeSampleCode);
+    
+    
+    @Column(name = "`sample_code`")
+    @Operator(Operator.IN)
+    List<String> getSampleCodeList();
+    void setSampleCodeList(List<String> sampleCodeList);
+    
+    @Transient
+    String getTag();
+    void setTag(String tag);
 
     
 }

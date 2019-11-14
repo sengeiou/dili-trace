@@ -23,6 +23,13 @@ import com.dili.trace.dto.RegisterBillStaticsDto;
 public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	/**
 	 * 查找任务
+	 * @param exeMachineNo
+	 * @param sampleCodeList
+	 * @return
+	 */
+	List<RegisterBill> getDetectTaskBySampleCodeList(String exeMachineNo, List<String>sampleCodeList);
+	/**
+	 * 查找任务
 	 * 
 	 * @param exeMachineNo
 	 * @param taskCount

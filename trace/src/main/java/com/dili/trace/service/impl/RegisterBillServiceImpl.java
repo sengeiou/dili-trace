@@ -611,4 +611,24 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.updateSelective(registerBill);
 		return registerBill.getId();
 	}
+
+	@Override
+	public List<RegisterBill> getDetectTaskBySampleCodeList(String exeMachineNo, List<String> sampleCodeList) {
+		
+		RegisterBillDto query=DTOUtils.newDTO(RegisterBillDto.class);
+		query.setSampleCodeList(sampleCodeList);
+
+		String newTaskIdList=this.listByExample(query).stream().filter(rb->{
+			return RegisterBillStateEnum.WAIT_CHECK.getCode().equals(rb.getState())&&
+			StringUtils.isBlank(rb.getExeMachineNo());
+		}).map(RegisterBill::getId).map(String::valueOf).collect(Collectors.joining(","));
+		
+		if(!newTaskIdList.isEmpty()) {
+			getActualDao().taskByExeMachineNo(exeMachineNo, String.join(",", newTaskIdList));
+		}
+		
+		query.setExeMachineNo(exeMachineNo);
+		return this.listByExample(query);
+		
+	}
 }
