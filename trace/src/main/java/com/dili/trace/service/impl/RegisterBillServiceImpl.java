@@ -626,7 +626,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if(!newTaskIdList.isEmpty()) {
 			getActualDao().taskByExeMachineNo(exeMachineNo, String.join(",", newTaskIdList));
 		}
-		
+		query.setState(RegisterBillStateEnum.CHECKING.getCode());
 		query.setExeMachineNo(exeMachineNo);
 		return this.listByExample(query);
 		
