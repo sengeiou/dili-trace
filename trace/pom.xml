@@ -65,6 +65,8 @@
 				<build.profile.id>dev</build.profile.id>
 				<redis.host1>10.28.10.104</redis.host1>
 				<redis.port1>6379</redis.port1>
+				
+				<project.schedule.enable>true</project.schedule.enable>
 			</properties>
 		</profile>
 		<profile>
@@ -76,6 +78,8 @@
 				<build.profile.id>test</build.profile.id>
 				<redis.host1>10.28.10.168</redis.host1>
 				<redis.port1>6379</redis.port1>
+				
+				<project.schedule.enable>true</project.schedule.enable>
 			</properties>
 		</profile>
 		<profile>
@@ -87,6 +91,8 @@
 				<build.profile.id>prod</build.profile.id>
 				<redis.host1>168.88.24.31</redis.host1>
 				<redis.port1>6379</redis.port1>
+				
+				<project.schedule.enable>false</project.schedule.enable>
 			</properties>
 		</profile>
 		<profile>
@@ -98,6 +104,8 @@
 				<build.profile.id>prod-worker</build.profile.id>
 				<redis.host1>168.88.24.31</redis.host1>
 				<redis.port1>6379</redis.port1>
+				
+				<project.schedule.enable>true</project.schedule.enable>
 			</properties>
 		</profile>
 	</profiles>
