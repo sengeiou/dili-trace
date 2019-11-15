@@ -193,10 +193,10 @@
     from register_bill
     where 1=1
     <if test="registerSource != null">
-        register_source = #{registerSource,jdbcType=TINYINT},
+        and register_source = #{registerSource,jdbcType=TINYINT}
     </if>
     <if test="state != null">
-        state = #{state,jdbcType=BIT},
+        and state = #{state,jdbcType=BIT}
     </if>
     <if test="createdStart != null">
 		and created>=  #{createdStart}
