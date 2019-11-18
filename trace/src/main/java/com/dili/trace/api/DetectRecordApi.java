@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by laikui on 2019/7/26.
@@ -66,8 +67,7 @@ public class DetectRecordApi {
 			return BaseOutput.failure("签名出错");
 		}
 
-		if (StringUtils.isBlank(detectRecord.getSampleCode())
-				&& StringUtils.isBlank(detectRecord.getRegisterBillCode())) {
+		if (StringUtils.isBlank(detectRecord.getRegisterBillCode())) {
 			LOGGER.error("上传检测任务结果失败无编号");
 			return BaseOutput.failure("没有对应的登记单");
 		}
@@ -90,13 +90,9 @@ public class DetectRecordApi {
 			LOGGER.error("上传检测任务结果失败无检测值");
 			return BaseOutput.failure("没有对应的检测值");
 		}
-		RegisterBill registerBill = null;
-
-		if (StringUtils.isNotBlank(detectRecord.getSampleCode())) {
-			registerBill = registerBillService.findBySampleCode(detectRecord.getSampleCode());
-		} else if (StringUtils.isNotBlank(detectRecord.getRegisterBillCode())) {
-			registerBill = registerBillService.findByCode(detectRecord.getRegisterBillCode());
-		}
+		
+		//对code,samplecode进行互换(检测程序那边他们懒得改)
+		RegisterBill registerBill = registerBillService.findBySampleCode(detectRecord.getRegisterBillCode());
 
 		if (registerBill == null) {
 			LOGGER.error("上传检测任务结果失败该采样单号无登记单");
@@ -178,7 +174,12 @@ public class DetectRecordApi {
 		taskGetParam.setPageSize(taskCount);
 		LOGGER.info(defaultConfiguration.getEnTag() + "=sys.en.tag]获取检查任务:" + JSON.toJSONString(taskGetParam) + tag);
 		List<RegisterBill> registerBills = registerBillService.findByExeMachineNo(taskGetParam.getExeMachineNo(),
-				taskGetParam.getPageSize());
+				taskGetParam.getPageSize()).stream().map(rb->{
+					//对code,samplecode进行互换(检测程序那边他们懒得改)
+					rb.setCode(rb.getSampleCode());
+					rb.setSampleCode(null);
+					return rb;
+				}).collect(Collectors.toList());
 		return BaseOutput.success().setData(registerBills);
 	}
 
