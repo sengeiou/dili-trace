@@ -13,19 +13,17 @@
             <div class="easyui-panel" style="width:100%;" align="left">
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
-                        <div class="search-item">
-                            <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto"/>
+                        <div class="search-item  long-item">
+                            <input  name="registerSource" id="registerSource" style="width:50%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
+                            
+                            <input  name="tradeTypeId" id="tradeTypeId" style="width:33%" labelAlign="right" data-options=""  panelWidth="auto" panelHeight="auto" disabled="disabled"/>
+                            <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
                         <div class="search-item">
                             <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部",excludes:[7]}' />
                         </div>
-                        <div class="search-item">
-                            <input  name="tradeTypeId" id="tradeTypeId" style="width:100%" labelAlign="right" data-options="label:'交易区'"  panelWidth="auto" panelHeight="auto"/>
-                            <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
-                        </div>
-
                         
                         <div class="search-item long-item">
                             <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'" value="${createdStart}!"/>
@@ -340,7 +338,24 @@
         }
         openWin('${contextPath}/registerBill/view/' + selected.id);
     }
-
+    
+    $('#registerSource').combobox({  
+          onChange: function (newValue, oldValue) {  
+             if(newValue==${@com.dili.trace.glossary.RegisterSourceEnum.TRADE_AREA.getCode()}){
+        	  //交易区
+        	   $('#tradeTypeId').combobox('setValue','');
+               $('#tradeTypeId').combobox('enable')
+             }else if(newValue==${@com.dili.trace.glossary.RegisterSourceEnum.TALLY_AREA.getCode()}){
+               //理货区
+               $('#tradeTypeId').combobox('setValue','');
+               $('#tradeTypeId').combobox('disable')
+             }else{
+               $('#tradeTypeId').combobox('setValue','');
+               $('#tradeTypeId').combobox('disable')
+             }
+          }  
+      });
+   
 </script>
 
  </#body>
