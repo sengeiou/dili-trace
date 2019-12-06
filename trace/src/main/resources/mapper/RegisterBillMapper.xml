@@ -187,10 +187,12 @@
   </update>
   
     <select id="groupByState" parameterType="com.dili.trace.dto.RegisterBillDto"  resultType="com.dili.trace.dto.RegisterBillStaticsDto">
-   	select sum( case when detect_state=1 then 1  when detect_state=3 then 1  else 0 end)as 'pass',
-	sum( case when detect_state=2 then 1  when detect_state=4 then 1  else 0 end)as 'nopass',
-	sum( case when (sample_source=2 and detect_state  in (1,2,3,4) )then 1 else 0 end)as 'check',
-	sum( case when detect_state=3 then 1  when detect_state=4 then 1  else 0 end)as 'recheck'
+   	select sum( case when detect_state=1 then 1  when detect_state=3 then 1  else 0 end)as 'passNum',
+	sum( case when detect_state=2 then 1  when detect_state=4 then 1  else 0 end)as 'nopassNum',
+	sum( case when (sample_source=2 and detect_state  in (1,2,3,4) )then 1 else 0 end)as 'checkNum',
+	sum( case when detect_state=3 then 1  when detect_state=4 then 1  else 0 end)as 'recheckNum',
+	0 as 'hasOriginCertifiyNum',
+	0 as 'hasDetectReportNum'
     from register_bill
     where 1=1
     <if test="registerSource != null">
@@ -230,5 +232,31 @@
 	<if test="tradeTypeId != null and tallyAreaNo!='' ">
 		and trade_type_id=#{tradeTypeId}
 	</if> 
+	
+	<if test="stateList != null">
+			AND state IN
+			<foreach collection="stateList" open="(" separator=","
+				close=")" item="state">
+				#{state}
+			</foreach>
+	</if>
+	
+	<if test="hasDetectReport != null">
+		<if test="hasDetectReport == true">
+			AND (detect_report_url is not null AND detect_report_url &lt;&gt; '')
+		</if> 
+		<if test="hasDetectReport == false">
+			AND (detect_report_url is  null or detect_report_url='') 
+		</if> 
+	</if> 
+	<if test="hasOriginCertifiy != null">
+		<if test="hasOriginCertifiy ==true">
+		   AND (origin_certifiy_url is not null AND origin_certifiy_url &lt;&gt; '')
+		</if>
+		<if test="hasOriginCertifiy ==false">
+			AND (origin_certifiy_url is  null or origin_certifiy_url='') 
+		</if> 
+	</if> 
+	
   </select>
 </mapper>

@@ -21,8 +21,39 @@
                             <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
                         <div class="search-item">
-                            <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"/>
-                            <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部",excludes:[7]}' />
+                            <input  name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'"  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="detectState" _provider='billDetectStateProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                         <div class="search-item">
+                            <input  name="sampleSource" id="sampleSource" style="width:100%" labelAlign="right" data-options="label:'送检方式'"  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="sampleSource" _provider='sampleSourceProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        
+  						<div class="search-item">
+	                        <input class="easyui-combotree" name="stateList" id="stateList" style="width: 100%" 
+								data-options="
+								label:'状态:',
+								labelAlign:'right',
+								loadFilter:treeLoadFilter,
+								_idField:'id', 
+								_textField:'name', 
+								multiple: true,
+								_parentIdField:'parentId',
+								editable:false,panelHeight:'auto',panelMaxHeight:400" />
+						 </div>	
+                        <div class="search-item">
+                            <select class="easyui-combobox" name="hasDetectReport" id="hasDetectReport" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'检测报告'"  labelAlign="right">
+                        		<option value="">全部</option>
+                                <option value="true">有</option>
+                                <option value="false">无</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <select class="easyui-combobox" name="hasOriginCertifiy" id="hasOriginCertifiy" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'产地证明'"  labelAlign="right">
+                        		<option value="">全部</option>
+                                <option value="true">有</option>
+                                <option value="false">无</option>
+                            </select>
                         </div>
                         
                         <div class="search-item long-item">
@@ -54,18 +85,29 @@
                             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
                         </div>
                          <br/>
+                         
                         <div class="search-item">
-                            <input class="easyui-textbox" id="pass" style="width:100%" labelAlign="right" data-options="label:'合格:'" value="0条" readonly="readonly" disabled="disabled" />
+                            <input class="easyui-textbox statics" id="hasOriginCertifiyNum" style="width:100%" labelAlign="right" data-options="label:'有产地证明:'" value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" id="nopass" style="width:100%" labelAlign="right" data-options="label:'不合格:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                            <input class="easyui-textbox statics" id="hasDetectReportNum" style="width:100%" labelAlign="right" data-options="label:'有检测报告:'" value="0条" readonly="readonly" disabled="disabled" />
+                        </div>
+
+                        <div class="search-item">
+                            <input class="easyui-textbox statics" id="passNum" style="width:100%" labelAlign="right" data-options="label:'合格:'" value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" id="check" style="width:100%" labelAlign="right" data-options="label:'主动送检:'"  value="0条" readonly="readonly" disabled="disabled" />
+                            <input class="easyui-textbox statics" id="nopassNum" style="width:100%" labelAlign="right" data-options="label:'不合格:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox statics" id="checkNum" style="width:100%" labelAlign="right" data-options="label:'主动送检:'"  value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                         
                         <div class="search-item">
-                            <input class="easyui-textbox" id="recheck" style="width:100%" labelAlign="right" data-options="label:'复检:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                            <input class="easyui-textbox statics" id="recheckNum" style="width:100%" labelAlign="right" data-options="label:'复检:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox statics" id="autoCheckNum" style="width:100%" labelAlign="right" data-options="label:'主动送检:'" value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                     </div>
                 </form>
@@ -183,7 +225,75 @@
        return o;
    };
 
+   $('#state').combobox({
+       multiple: true,
+       editable: false,
+       formatter: function (row) { // formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法
+    	   var opts = $(this).combobox('options');
 
+           return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]
+
+       },
+       onLoadSuccess: function () { // 下拉框数据加载成功调用
+           // 正常情况下是默认选中“所有”，但我想实现点击所有全选功能，这这样会冲突，暂时默认都不选
+           $("#state").combobox('clear'); //清空
+/*
+            var opts = $(this).combobox('options');
+            var values =$(this).combobox('getValues');
+            $.map(opts.data, function (opt) {
+                if (opt.id === '') { // 将"所有"的复选框勾选
+                    $('#'+opt.domId + ' input[type="checkbox"]').prop("checked", true);
+                }
+            });*/
+       },
+       onSelect: function (row) {
+    	   var opts = $(this).combobox('options');
+    	   var trigger=$(this)._propAttr('trigger');
+    	   var values = $(this).combobox('getValues');
+    	   var datas = $(this).combobox('getData');
+    	   
+       
+          var text=row[opts.textField];
+       	   if(typeof(trigger)=='undefined'||trigger!='全部'){
+           	   $(this)._propAttr('trigger',text);
+         	   var textList=[];
+           	   var valueList=[];
+	           	for (var i = 0; i < datas.length; i++) {
+	           		var data=datas[i];
+	           	    var el = opts.finder.getEl(this, data[opts.valueField]);
+	                el.find('input.combobox-checkbox')._propAttr('checked', true);
+	            	$(this).combobox('select',data[opts.valueField]);
+	           		valueList.push(data[opts.valueField]);
+	           		textList.push(data[opts.textField]);
+	            }
+	           
+	           //	$(this).combobox('setValues',valueList);
+	        //	$(this).combobox('setText',textList.join(','));
+	        setTimeout(function(){
+	        	
+	        	$("#state").combobox('setText','全部,待审核,待采样,待检测,检测中,已检测');
+	        },100)
+	        	
+	        	console.info(textList.join(','))
+           }else{
+        	  console.info(values)
+        	   console.info(1)
+        	   //
+           }
+       //	$(this).combobox('setText','全部,待审核,待采样,待检测,检测中,已检测');
+       	
+           //debugger
+           
+       },
+
+       onUnselect: function (row) {
+    	   var opts = $(this).combobox('options');
+           var el = opts.finder.getEl(this, row[opts.valueField]);
+           //el.find('input.combobox-checkbox')._propAttr('checked', false);
+           //console.info('onUnselect')
+
+       }
+   });
     //表格查询
     function queryRegisterBillGrid() {
         var opts = _registerBillGrid.datagrid("options");
@@ -205,15 +315,15 @@
             success: function (ret) {
                 if (ret.code == "200") {
                     var data = ret.data;
-                    var ids=[ 'pass','nopass','check','recheck'];
-                    $.each(ids,function(k,v){
+                    $.each($('.statics'),function(){
+                    	var staticsId=$(this).attr('id');
                     	var defaultValue='0条';
-                 		if(data&&data[v]){
-                 			defaultValue=data[v]+"条";
+                    	if(data&&data[staticsId]){
+                 			defaultValue=data[staticsId]+"条";
                  		}
-                 		//console.info(defaultValue)
-                 		$('#'+v).textbox('setValue',defaultValue);
-                 	});
+                    	$(this).textbox('setValue',defaultValue);
+                    })
+
                 } else {
 
                 }
@@ -356,6 +466,14 @@
           }  
       });
    
+	$.ajax({
+		url:'${contextPath!}/registerBill/listState.action',
+		success:function(resp){
+			resp.unshift({id:'',name:'全部'});
+			$('#stateList').combotree({data:resp});
+		}
+	})
+	
 </script>
 
  </#body>

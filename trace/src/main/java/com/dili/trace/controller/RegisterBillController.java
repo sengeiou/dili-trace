@@ -536,6 +536,10 @@ public class RegisterBillController {
 				break;
 			}
 		}
+		StringBuilder sql = this.buildDynamicCondition(registerBill);
+		if(sql.length()>0) {
+			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
+		}
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
 	}
 
@@ -792,6 +796,28 @@ public class RegisterBillController {
 			LOGGER.error(e.getMessage(),e);
 			return BaseOutput.failure("服务端出错");
 		}
+
+	}
+	/**
+	 * 所有状态列表
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/listState.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public List<Map<String,String>> listState() {
+		
+			
+		return	Stream.of(RegisterBillStateEnum.values()).map(e->{
+				Map<String,String>map=new HashMap<>();
+				map.put("id", e.getCode().toString());
+				map.put("name", e.getName());
+				map.put("parentId", "");
+				return map;
+				
+			}).collect(Collectors.toList());
+		
 
 	}
 	private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
