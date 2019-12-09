@@ -1,4 +1,12 @@
 <script type="text/javascript">
+
+var currentUser={"depId":"${user.depId!}"
+		,"id":"${user.id!}"
+		,"realName":"${user.realName!}"
+		,"userName":"${user.userName!}"
+		,"departmentName":"${department.name!}"};
+		
+		
     let goodsItemCount = 0;
     $(function () {
         $('#registerSource').focus();

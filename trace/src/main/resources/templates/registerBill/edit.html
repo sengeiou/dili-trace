@@ -150,7 +150,12 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
 <script type="text/javascript">
-   
+var currentUser={"depId":"${user.depId!}"
+	,"id":"${user.id!}"
+	,"realName":"${user.realName!}"
+	,"userName":"${user.userName!}"
+	,"departmentName":"${department.name!}"};
+	
    $(function () {
 	     $('#goodsTable').find('input[name="productName_1"]').val('${registerBill.productName!}');
 	     $('#goodsTable').find('input[name="productId_1"]').val(${registerBill.productId});

@@ -1,5 +1,11 @@
 <script type="text/javascript">
-
+var currentUser={"depId":"${user.depId!}"
+	,"id":"${user.id!}"
+	,"realName":"${user.realName!}"
+	,"userName":"${user.userName!}"
+	,"depName":"${user.depName!}"};
+	
+	
     //表格查询
     function queryRegisterBillGrid() {
         var opts = _registerBillGrid.datagrid("options");
@@ -192,6 +198,18 @@
                 }
             },
         </#resource>
+            <#resource method="post" url="registerBill/index.html#uploadOrigincertifiy">
+            {
+                iconCls:'icon-edit',
+                text:'上传产地证明',
+                id:'upload-origincertifiy-btn',
+                disabled :true,
+                handler:doUploadOrigincertifiy,
+                handler:function(){
+                	doUploadOrigincertifiy();
+                }
+            },
+        </#resource>
         <#resource method="post" url="registerBill/index.html#modify">
             {
                 iconCls:'icon-edit',
@@ -256,7 +274,7 @@
         $('#review-btn').linkbutton('disable');
         $('#handle-btn').linkbutton('disable');*/
         
-        var btnArray=['modify-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
+        var btnArray=['modify-btn','upload-origincertifiy-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
         	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn']
 	    for (var i = 0; i < btnArray.length; i++) {
 	        var btnId = btnArray[i];
@@ -344,6 +362,7 @@
         $('#modify-btn').show();
     	$('#copy-btn').show();
     	$('#detail-btn').show();
+    	$('#upload-origincertifiy-btn').show();
     	
     	
     	
@@ -450,7 +469,7 @@
             });
             return;
         }
-        openIframe('/registerBill/audit/' + selected.id,selected.id)
+        openIframe('/registerBill/audit/' + selected.id,selected)
 
     }
 	function    auditWithoutDetect(){
@@ -476,6 +495,7 @@
                  success: function (ret) {
                      if(ret.success){
                          _registerBillGrid.datagrid("reload");
+                         TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
                          layer.alert('操作成功',{
  								title:'操作',
 	                           	time : 600,
@@ -552,6 +572,7 @@
                    	 var failureList=ret.data.failureList;
                 	 if(failureList.length==0){
                          _registerBillGrid.datagrid("reload");
+                         TLOG.component.operateLog('登记单管理',"批量审核","【编号】:"+codeList.join(','));
                          layer.alert('操作成功',{title:'操作',time : 600});  
 
                 	 }else{
@@ -612,6 +633,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
+                        TLOG.component.operateLog('登记单管理',"主动送检","【编号】:"+selected.code);
                         layer.alert('操作成功',{title:'操作',time : 600});  
                     }else{
                         swal(
@@ -663,6 +685,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
+                        TLOG.component.operateLog('登记单管理',"采样检测","【编号】:"+selected.code);
                         layer.alert('操作成功',{title:'操作',time : 600});  
                     }else{
                         swal(
@@ -723,6 +746,7 @@
                     	 var failureList=ret.data.failureList;
                     	 if(failureList.length==0){
                              _registerBillGrid.datagrid("reload");
+                             TLOG.component.operateLog('登记单管理',"批量主动送检","【编号】:"+codeList.join(','));
                            layer.alert('操作成功',{title:'操作',time : 600});   
                                
                     	 }else{
@@ -796,6 +820,7 @@
                    	 var failureList=ret.data.failureList;
                 	 if(failureList.length==0){
                          _registerBillGrid.datagrid("reload");
+                         TLOG.component.operateLog('登记单管理',"批量采样检测","【编号】:"+codeList.join(','));
                          layer.alert('操作成功',{title:'操作',time : 600});  
 
                 	 }else{
@@ -854,6 +879,7 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
+                        TLOG.component.operateLog('登记单管理',"复检","【编号】:"+selected.code);
                         layer.alert('操作成功',{title:'操作',time : 600});  
                     }else{
                         swal(
@@ -904,6 +930,17 @@
                 success: function (ret) {
                     if(ret.success){
                         _registerBillGrid.datagrid("reload");
+                        TLOG.component.operateLog('登记单管理',"撤销","【编号】:"+selected.code
+                        		+"<br/>【采样编号】:"+(typeof(selected.sampleCode)=='undefined'?'':selected.sampleCode)
+                        		+"<br/>【理货区号】:"+(typeof(selected.tallyAreaNo)=='undefined'?'':selected.tallyAreaNo) 
+                        		+"<br/>【业户姓名】:"+(typeof(selected.name)=='undefined'?'':selected.name)
+                        		+"<br/>【身份证号】:"+(typeof(selected.idCardNo)=='undefined'?'':selected.idCardNo) 
+                        		+"<br/>【业户手机号】:"+(typeof(selected.phone)=='undefined'?'':selected.phone) 
+                        		+"<br/>【交易账号】:"+(typeof(selected.tradeAccount)=='undefined'?'':selected.tradeAccount) 
+                        		+"<br/>【印刷卡号】:"+(typeof(selected.tradePrintingCard)=='undefined'?'':selected.tradePrintingCard)
+                        		+"<br/>【车牌】:"+(typeof(selected.plate)=='undefined'?'':selected.plate) 
+                        
+                        );
                         layer.alert('操作成功',{title:'操作',time : 600});  
                     }else{
                         swal(
@@ -945,6 +982,20 @@
             }
         });
     }
+    function doUploadOrigincertifiy(){
+    	
+    	var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        openWin('/registerBill/uploadOrigincertifiy/' + selected.id);
+    }
     function doModify(){
     	
     	var selected = _registerBillGrid.datagrid("getSelected");
@@ -974,7 +1025,7 @@
         openWin('/registerBill/copy.html?id=' + selected.id+"#copy");
     }
     
-    function openIframe(content,id){
+    function openIframe(content,selected){
         layer.open({
             type: 2,
             title: "审核",
@@ -988,13 +1039,14 @@
             yes: function(index, layero){
                 $.ajax({
                     type: "GET",
-                    url: "${contextPath}/registerBill/audit/"+ id+"/true",
+                    url: "${contextPath}/registerBill/audit/"+ selected.id+"/true",
                     processData:true,
                     dataType: "json",
                     async : true,
                     success: function (ret) {
                         if(ret.success){
                             _registerBillGrid.datagrid("reload");
+                            TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
                            // layer.alert('操作成功',{title:'操作',time : 3000}); 
                             
                             layer.alert('操作成功',{
@@ -1097,6 +1149,7 @@
             async : true,
             success: function (data) {
                 if(data.code=="200"){
+                	TLOG.component.operateLog('登记单管理',"上传处理结果",'【图片ID】:'+_formData.handleResultUrl);
                	 $('#dlg').dialog('close');	 
                     layer.alert('处理成功',function(){
                    	 layer.closeAll();

@@ -1,5 +1,6 @@
 package com.dili.trace.rpc;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;
 import com.dili.ss.retrofitful.annotation.Restful;
@@ -37,4 +38,9 @@ public interface BaseInfoRpc {
      */
     @POST("/api/category/listCategoryByCondition")
     public BaseOutput<List<Category>> listCategoryByCondition(@VOBody CategoryListInput query);
+    
+    
+    @POST("/api/department/queryByIds")
+    public JSONObject queryDepartmentsByIds(@VOBody Long[]ids);
+    
 }

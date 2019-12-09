@@ -2,7 +2,7 @@
 <div class="main-container">
     <div class="topicTop">
         <div class="toppic-title">
-            <span class="topic-title-text maincolor">上传检测报告</span>
+            <span class="topic-title-text maincolor">上传产地证明</span>
             <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
         </div>
     </div>
@@ -299,11 +299,10 @@
 
 <script>
 var currentUser={"depId":"${user.depId!}"
-		,"id":"${user.id!}"
-		,"realName":"${user.realName!}"
-		,"userName":"${user.userName!}"
-		,"departmentName":"${department.name!}"};
-		
+	,"id":"${user.id!}"
+	,"realName":"${user.realName!}"
+	,"userName":"${user.userName!}"
+	,"departmentName":"${department.name!}"};
 	function doModifyRegisterBill(){
 		if($('#modifyRegisterBillForm').validate().form() != true){
             return;

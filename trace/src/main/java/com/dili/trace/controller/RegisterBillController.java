@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -11,9 +11,9 @@ import com.dili.trace.dto.*;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
-import com.dili.trace.rpc.BaseInfoRpc;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
+import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
@@ -56,8 +56,8 @@ public class RegisterBillController {
 	CustomerService customerService;
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
-    @Autowired
-    BaseInfoRpc baseInfoRpc;
+	@Autowired
+	BaseInfoRpcService baseInfoRpcService;
 
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -65,6 +65,10 @@ public class RegisterBillController {
 		Date now = new Date();
 		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+		
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+		
 		return "registerBill/index";
 	}
 
@@ -115,28 +119,27 @@ public class RegisterBillController {
 //				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
 //			}
 //		}
-		
+
 		StringBuilder sql = this.buildDynamicCondition(registerBill);
-		if(sql.length()>0) {
+		if (sql.length() > 0) {
 			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
 		}
-		
 
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
 	}
 
 	private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
-		StringBuilder sql=new StringBuilder();
+		StringBuilder sql = new StringBuilder();
 		if (registerBill.getHasDetectReport() != null) {
 			if (registerBill.getHasDetectReport()) {
 				sql.append("  (detect_report_url is not null AND detect_report_url<>'') ");
 			} else {
-				sql.append( "  (detect_report_url is  null or detect_report_url='') ");
+				sql.append("  (detect_report_url is  null or detect_report_url='') ");
 			}
 		}
-		
+
 		if (registerBill.getHasOriginCertifiy() != null) {
-			if(sql.length()>0) {
+			if (sql.length() > 0) {
 				sql.append(" AND ");
 			}
 			if (registerBill.getHasOriginCertifiy()) {
@@ -247,25 +250,26 @@ public class RegisterBillController {
 
 		return "registerBill/create";
 	}
+
 	private List<City> queryCitys() {
-		List<String>prirityCityNames=Arrays.asList("青州市","寿光市","莱西市","平度市","莱芜市","青岛市","博兴县","临朐县","辽宁省","河北省","吉林省","内蒙古自治区");
-		
-		List<City>cityList=new ArrayList<>();
-		for(String name:prirityCityNames) {
-			 CityListInput query = new CityListInput();
-		        query.setKeyword(name);
-		        BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
-		        if(result.isSuccess()){
-		        	City city=  result.getData().stream().filter(item->item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
-		        	if(city!=null) {
-		        		cityList.add(city);
-		        	}
-		        }
-		      
+		List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市", "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
+				"河北省", "吉林省", "内蒙古自治区");
+
+		List<City> cityList = new ArrayList<>();
+		for (String name : prirityCityNames) {
+			CityListInput query = new CityListInput();
+			query.setKeyword(name);
+			List<City> list = this.baseInfoRpcService.listCityByCondition(name);
+			City city = list.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+			if (city != null) {
+				cityList.add(city);
+			}
+
 		}
 		return cityList;
-       
-    }
+
+	}
+
 	/**
 	 * 登记单录查看页面
 	 * 
@@ -292,13 +296,12 @@ public class RegisterBillController {
 			condition.setRegisterBillCode(registerBill.getCode());
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
-		
-		
+
 //		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
 //		conditon.setRegisterBillCode(registerBill.getCode());
 //		conditon.setSort("id");
 //		conditon.setOrder("desc");
-		List<DetectRecord>detectRecordList=this.detectRecordService.findTop2AndLatest(registerBill.getCode());
+		List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(registerBill.getCode());
 		modelMap.put("detectRecordList", detectRecordList);
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		return "registerBill/view";
@@ -348,7 +351,45 @@ public class RegisterBillController {
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+		
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+		
 		return "registerBill/modify";
+	}
+
+	/**
+	 * 上传产地证明
+	 * 
+	 * @param modelMap
+	 * @return
+	 */
+	@RequestMapping(value = "/uploadOrigincertifiy/{id}", method = RequestMethod.GET)
+	public String uploadOrigincertifiy(ModelMap modelMap, @PathVariable Long id) {
+		RegisterBill registerBill = registerBillService.get(id);
+		if (registerBill == null) {
+			return "";
+		}
+		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
+			// 分销信息
+			if (registerBill.getSalesType() != null
+					&& registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+				// 分销
+				List<SeparateSalesRecord> records = separateSalesRecordService
+						.findByRegisterBillCode(registerBill.getCode());
+				modelMap.put("separateSalesRecords", records);
+			}
+		} else {
+			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+			condition.setRegisterBillCode(registerBill.getCode());
+			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+		}
+		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+		
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+		
+		return "registerBill/upload-origincertifiy";
 	}
 
 	/**
@@ -380,6 +421,7 @@ public class RegisterBillController {
 		}
 		return BaseOutput.success("操作成功");
 	}
+
 	/**
 	 * 批量主动送检
 	 * 
@@ -388,7 +430,7 @@ public class RegisterBillController {
 	 * @return
 	 */
 	@RequestMapping(value = "/doBatchAutoCheck", method = RequestMethod.POST)
-	public @ResponseBody BaseOutput doBatchAutoCheck(ModelMap modelMap,@RequestBody List<Long> idList) {
+	public @ResponseBody BaseOutput doBatchAutoCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
 //		modelMap.put("registerBill", registerBillService.get(id));
 		idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(idList)) {
@@ -405,7 +447,7 @@ public class RegisterBillController {
 	 * @return
 	 */
 	@RequestMapping(value = "/doBatchSamplingCheck", method = RequestMethod.POST)
-	public @ResponseBody BaseOutput doBatchSamplingCheck(ModelMap modelMap,@RequestBody List<Long> idList) {
+	public @ResponseBody BaseOutput doBatchSamplingCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
 //		modelMap.put("registerBill", registerBillService.get(id));
 		idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(idList)) {
@@ -413,6 +455,7 @@ public class RegisterBillController {
 		}
 		return this.registerBillService.doBatchSamplingCheck(idList);
 	}
+
 	/**
 	 * 批量审核
 	 * 
@@ -421,7 +464,7 @@ public class RegisterBillController {
 	 * @return
 	 */
 	@RequestMapping(value = "/doBatchAudit", method = RequestMethod.POST)
-	public @ResponseBody BaseOutput doBatchAudit(ModelMap modelMap,@RequestBody  BatchAuditDto batchAuditDto) {
+	public @ResponseBody BaseOutput doBatchAudit(ModelMap modelMap, @RequestBody BatchAuditDto batchAuditDto) {
 //		modelMap.put("registerBill", registerBillService.get(id));
 //		if (batchAuditDto.getPass() == null) {
 //			return BaseOutput.failure("参数错误");
@@ -435,6 +478,7 @@ public class RegisterBillController {
 		batchAuditDto.setRegisterBillIdList(idList);
 		return this.registerBillService.doBatchAudit(batchAuditDto);
 	}
+
 	/**
 	 * 撤销
 	 * 
@@ -537,7 +581,7 @@ public class RegisterBillController {
 			}
 		}
 		StringBuilder sql = this.buildDynamicCondition(registerBill);
-		if(sql.length()>0) {
+		if (sql.length() > 0) {
 			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
 		}
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
@@ -647,33 +691,34 @@ public class RegisterBillController {
 	@RequestMapping(value = "/copy.html", method = RequestMethod.GET)
 	public String copy(Long id, ModelMap modelMap) {
 		RegisterBill registerBill = registerBillService.get(id);
-		String firstTallyAreaNo=Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(",")).filter(StringUtils::isNotBlank).findFirst().orElse("");
+		String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
+				.filter(StringUtils::isNotBlank).findFirst().orElse("");
 		registerBill.setTallyAreaNo(firstTallyAreaNo);
-		
-		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill,firstTallyAreaNo);
+
+		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
 		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
 		modelMap.put("tradeTypes", tradeTypeService.findAll());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
-			
+
 		modelMap.put("citys", this.queryCitys());
 		return "registerBill/copy";
 	}
 
-	private UserInfoDto findUserInfoDto(RegisterBill registerBill,String firstTallyAreaNo) {
-		UserInfoDto userInfoDto=new UserInfoDto();
+	private UserInfoDto findUserInfoDto(RegisterBill registerBill, String firstTallyAreaNo) {
+		UserInfoDto userInfoDto = new UserInfoDto();
 		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 			// 理货区
 			User user = userService.findByTallyAreaNo(firstTallyAreaNo);
-		
-			if(user!=null) {
+
+			if (user != null) {
 				userInfoDto.setUserId(String.valueOf(user.getId()));
 				userInfoDto.setName(user.getName());
 				userInfoDto.setIdCardNo(user.getCardNo());
 				userInfoDto.setPhone(user.getPhone());
 				userInfoDto.setAddr(user.getAddr());
-				
+
 			}
-	
+
 		} else {
 
 			Customer condition = DTOUtils.newDTO(Customer.class);
@@ -681,7 +726,7 @@ public class RegisterBillController {
 			condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
 			Customer customer = this.customerService.findByCustomerIdAndPrintingCard(condition).stream().findFirst()
 					.orElse(null);
-			if(customer!=null) {
+			if (customer != null) {
 				userInfoDto.setUserId(customer.getCustomerId());
 				userInfoDto.setName(customer.getName());
 				userInfoDto.setIdCardNo(customer.getIdNo());
@@ -689,7 +734,7 @@ public class RegisterBillController {
 				userInfoDto.setAddr(customer.getAddress());
 				userInfoDto.setPrintingCard(customer.getPrintingCard());
 			}
-			
+
 		}
 		return userInfoDto;
 	}
@@ -725,10 +770,10 @@ public class RegisterBillController {
 			Long id = this.registerBillService.doModifyRegisterBill(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
-			LOGGER.error(e.getMessage(),e);
+			LOGGER.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(),e);
+			LOGGER.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
 
@@ -747,14 +792,15 @@ public class RegisterBillController {
 			Long id = this.registerBillService.doAuditWithoutDetect(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
-			LOGGER.error(e.getMessage(),e);
+			LOGGER.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(),e);
+			LOGGER.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
 
 	}
+
 	/**
 	 * 交易单修改
 	 *
@@ -765,17 +811,22 @@ public class RegisterBillController {
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(Long id, ModelMap modelMap) {
 		RegisterBill registerBill = registerBillService.get(id);
-		String firstTallyAreaNo=Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(",")).filter(StringUtils::isNotBlank).findFirst().orElse("");
+		String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
+				.filter(StringUtils::isNotBlank).findFirst().orElse("");
 		registerBill.setTallyAreaNo(firstTallyAreaNo);
-		
-		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill,firstTallyAreaNo);
+
+		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
 		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
 		modelMap.put("tradeTypes", tradeTypeService.findAll());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
-			
+
 		modelMap.put("citys", this.queryCitys());
+		
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
 		return "registerBill/edit";
 	}
+
 	/**
 	 * 保存处理结果
 	 * 
@@ -786,18 +837,19 @@ public class RegisterBillController {
 	@ResponseBody
 	public BaseOutput<?> doEdit(RegisterBill input) {
 		try {
-			
+
 			Long id = this.registerBillService.doEdit(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
-			LOGGER.error(e.getMessage(),e);
+			LOGGER.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(),e);
+			LOGGER.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
 
 	}
+
 	/**
 	 * 所有状态列表
 	 * 
@@ -806,20 +858,19 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/listState.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public List<Map<String,String>> listState() {
-		
-			
-		return	Stream.of(RegisterBillStateEnum.values()).map(e->{
-				Map<String,String>map=new HashMap<>();
-				map.put("id", e.getCode().toString());
-				map.put("name", e.getName());
-				map.put("parentId", "");
-				return map;
-				
-			}).collect(Collectors.toList());
-		
+	public List<Map<String, String>> listState() {
+
+		return Stream.of(RegisterBillStateEnum.values()).map(e -> {
+			Map<String, String> map = new HashMap<>();
+			map.put("id", e.getCode().toString());
+			map.put("name", e.getName());
+			map.put("parentId", "");
+			return map;
+
+		}).collect(Collectors.toList());
 
 	}
+
 	private RegisterBill maskRegisterBillOutputDto(RegisterBill dto) {
 		if (dto == null) {
 			return dto;
@@ -833,8 +884,9 @@ public class RegisterBillController {
 		}
 
 	}
+
 	private UserInfoDto maskUserInfoDto(UserInfoDto dto) {
-		
+
 		if (dto == null) {
 			return dto;
 		}
