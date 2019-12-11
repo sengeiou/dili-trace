@@ -34,6 +34,13 @@
                             </select>
                         </div>
                         <div class="search-item">
+                            <select class="easyui-combobox" name="hasBusinessLicense" id="hasBusinessLicense" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'营业执照'"  labelAlign="right">
+                        		<option value="">全部</option>
+                                <option value="true">有</option>
+                                <option value="false">无</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
                             <input name="state" id="state" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="状态:" labelAlign="right"/>
                             <#comboProvider _id="state" _provider='enabledStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>

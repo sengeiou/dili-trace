@@ -36,4 +36,8 @@ public interface UserListDto extends User {
     @Like
     String getLikeTallyAreaNos();
     void setLikeTallyAreaNos(String likeTallyAreaNos);
+    
+    @Transient
+    Boolean getHasBusinessLicense();
+    void setHasBusinessLicense(Boolean hasBusinessLicense);
 }
