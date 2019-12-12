@@ -1,6 +1,10 @@
 package com.dili.trace.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.service.RedisService;
@@ -13,6 +17,7 @@ import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
+import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,6 +30,9 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -41,6 +49,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     private RedisService redisService;
     @Resource
     private UserTallyAreaService userTallyAreaService;
+    @Resource
+    UserPlateService userPlateService;;
 
     @Transactional(rollbackFor=Exception.class)
     @Override
@@ -54,6 +64,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if(existsAccount(user.getPhone())){
             throw new BusinessException("手机号已注册");
         }
+       
 
         //验证理货区号是否已注册
         if(StringUtils.isNotBlank(user.getTallyAreaNos()) ){
@@ -64,10 +75,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if(existsCardNo(user.getCardNo())){
             throw new BusinessException("身份证号已注册");
         }
-
+      
         insertSelective(user);
         //更新用户理货区
         updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
+        //增加车牌信息
+        List<String>plateList=this.parsePlate(user.getPlates());
+        if(!plateList.isEmpty()) {
+        	boolean isEmpty=this.userPlateService.findUserPlateByPlates(plateList).isEmpty();
+        	if(!isEmpty) {
+        		throw new BusinessException("车牌已被其他用户使用");
+        	}
+        	this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
+        }
     }
 
     /**
@@ -117,12 +137,39 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             //更新用户理货区
             updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
         }
-
+        List<String>plateList=this.parsePlate(user.getPlates());
+        if(!plateList.isEmpty()) {
+        	boolean otherHasPlate=this.userPlateService.findUserPlateByPlates(plateList).stream().anyMatch(p->{
+        		return !p.getUserId().equals(userPO.getId());
+        	});
+        	if(otherHasPlate) {
+        		throw new BusinessException("车牌已被其他用户使用");
+        	}
+        	this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
+        }
         updateSelective(user);
 
 
     }
+    private List<String>parsePlate(String plates){
+    	List<String>plateList=new ArrayList<>();
+    	if(JSON.isValid(plates)) {
+    		if(JSON.isValidArray(plates)) {
+    			JSON.parseArray(plates).stream().filter(Objects::nonNull).map(String::valueOf).collect(Collectors.toCollection(()->plateList));
+    		}else {
+    			
+    			plateList.add(JSON.parseObject(plates).toString());
+    		}
+    		
+    	}
 
+    	
+        	return plateList.stream()
+        			.filter(StringUtils::isNotBlank)
+        			.map(String::trim)
+        			.collect(Collectors.toList());
+    	
+    }
     private Boolean checkVerificationCode(String phone, String verCode){
         String verificationCodeTemp = String.valueOf(redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone));
         if (StringUtils.isBlank(verificationCodeTemp)) {

@@ -101,7 +101,7 @@
     <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-edit',
-				height: 510,
+				height: 540,
 				buttons: [{
 					text:'确认',
 					iconCls:'icon-ok',
@@ -142,6 +142,11 @@
                     <input class="easyui-tagbox" name="_tallyAreaNos" id="_tallyAreaNos" style="width:100%" required="true" data-options="label:'理货区号*:',prompt:'输入3位数字后敲回车',validType:['uniquetag','tagNum','tagLength[3]']"/>
                 </td>
             </tr>
+                        <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-tagbox" name="_plates" id="_plates" style="width:100%" data-options="label:'车牌号*:',prompt:'输入车牌号后敲回车',validType:['uniquetag','tagLength[8]']"/>
+                </td>
+            </tr>
             <tr>
                 <td style="padding:5px;">
                     <input type="hidden" name="_salesCityName" id="_salesCityName">
@@ -149,6 +154,14 @@
                             data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
                                 $('#_salesCityName').val(record.text);
                             }">
+                </td>
+            </tr>
+                        <tr>
+                <td style="padding:5px;">
+                <label>常用销地城市:</label>
+                                     <% for(city in cities){%>
+                        <a href="javascript:void(0)" onclick="selectCity(this,${city.id},'${city.mergerName}')" title="${city.mergerName}">${city.name}</a>
+                    <%}%>
                 </td>
             </tr>
         </table>
@@ -208,4 +221,16 @@
      <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <#user_indexJs />
+     <script>
+     function selectCity(cthis,id,name){
+    	 
+    	 $('#_salesCityId').combobox('setValue',id);
+    	 $('#_salesCityId').combobox('setText',name);
+    	 $('#_salesCityName').val(name);
+    	 
+    	 
+     }
+     
+     
+     </script>
 </#body>

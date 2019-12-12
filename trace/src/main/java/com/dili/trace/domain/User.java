@@ -169,5 +169,9 @@ public interface User extends IBaseDomain {
     @Transient
     String getOldPassword();
     void setOldPassword(String oldPassword);
+    
+    @Transient
+    String getPlates();
+    void setPlates(String plates);
 
 }

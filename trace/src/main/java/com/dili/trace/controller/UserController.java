@@ -2,14 +2,19 @@ package com.dili.trace.controller;
 
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.BusinessException;
+import com.dili.common.service.BaseInfoRpcService;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
+import com.dili.trace.domain.City;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
+import com.dili.trace.dto.CityListInput;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -26,133 +31,170 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * 由MyBatis Generator工具自动生成
- * This file was generated on 2019-07-26 09:20:35.
+ * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
  */
 @Api("/user")
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    private static final Logger LOGGER= LoggerFactory.getLogger(UserController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    UserService userService;
-    @Resource
-    DefaultConfiguration defaultConfiguration;
+	@Autowired
+	UserService userService;
+	@Autowired
+	UserPlateService userPlateService;
+	@Resource
+	DefaultConfiguration defaultConfiguration;
+	@Autowired
+	BaseInfoRpcService baseInfoRpcService;
 
-    @ApiOperation("跳转到User页面")
-    @RequestMapping(value="/index.html", method = RequestMethod.GET)
-    public String index(ModelMap modelMap) {
-        Date now = new Date();
-        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-        return "user/index";
-    }
+	@ApiOperation("跳转到User页面")
+	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
+	public String index(ModelMap modelMap) {
+		Date now = new Date();
+		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+		modelMap.put("cities", this.queryCitys());
+		return "user/index";
+	}
 
-    @ApiOperation(value="分页查询User", notes = "分页查询User，返回easyui分页信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="User", paramType="form", value = "User的form信息", required = false, dataType = "string")
-	})
-    @RequestMapping(value="/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(UserListDto user) throws Exception {
-    	
-    	if(user!=null&&user.getHasBusinessLicense()!=null) {
-    		if(user.getHasBusinessLicense()) {
-    			user.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is not null and business_license_url<>'') ");
-    		}else {
-    			user.mset(IDTO.AND_CONDITION_EXPR,  " (business_license_url is null or business_license_url='') ");
-    		}
-    		
-    	}
-    	
-    	
-        return userService.listEasyuiPageByExample(user, true).toString();
-    }
+	@ApiOperation(value = "分页查询User", notes = "分页查询User，返回easyui分页信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody String listPage(UserListDto user) throws Exception {
 
-    @ApiOperation("新增User")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string")
-    })
-    @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    BaseOutput<Long> insert(@RequestBody User user) {
-        try {
-            user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
-            user.setState(EnabledStateEnum.ENABLED.getCode());
-            userService.register(user, false);
-            return BaseOutput.success("新增成功").setData(user.getId());
-        } catch (BusinessException e) {
-            LOGGER.error("register", e);
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("register", e);
-            return BaseOutput.failure();
-        }
-    }
+		if (user != null && user.getHasBusinessLicense() != null) {
+			if (user.getHasBusinessLicense()) {
+				user.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is not null and business_license_url<>'') ");
+			} else {
+				user.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is null or business_license_url='') ");
+			}
 
-    @ApiOperation("修改User")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="User", paramType="form", value = "User的form信息", required = true, dataType = "string")
-	})
-    @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(User user) {
-        try {
-            userService.updateUser(user);
-            return BaseOutput.success("修改成功");
-        } catch (BusinessException e) {
-            LOGGER.error("修改用户", e);
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("修改用户", e);
-            return BaseOutput.failure(e.getMessage());
-        }
+		}
 
-    }
+		return userService.listEasyuiPageByExample(user, true).toString();
+	}
 
-    @ApiOperation("删除User")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "User的主键", required = true, dataType = "long")
-	})
-    @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput delete(Long id) {
-        userService.delete(id);
-        return BaseOutput.success("删除成功");
-    }
+	@ApiOperation("新增User")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
+	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput<Long> insert(@RequestBody User user) {
+		try {
+			user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
+			user.setState(EnabledStateEnum.ENABLED.getCode());
+			userService.register(user, false);
+			return BaseOutput.success("新增成功").setData(user.getId());
+		} catch (BusinessException e) {
+			LOGGER.error("register", e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("register", e);
+			return BaseOutput.failure();
+		}
+	}
 
-    /**
-     *
-     * @param id
-     * @param enable 是否启用
-     * @return
-     */
-    @RequestMapping(value = "/doEnable.action", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public BaseOutput doEnable(Long id, Boolean enable) {
-        try {
-            userService.updateEnable(id, enable);
-            return BaseOutput.success("修改用户状态成功");
-        } catch (BusinessException e) {
-            LOGGER.error("修改用户状态", e);
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("修改用户状态", e);
-            return BaseOutput.failure();
-        }
+	@ApiOperation("修改User")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
+	@RequestMapping(value = "/update.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput update(User user) {
+		try {
+			userService.updateUser(user);
+			return BaseOutput.success("修改成功");
+		} catch (BusinessException e) {
+			LOGGER.error("修改用户", e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("修改用户", e);
+			return BaseOutput.failure(e.getMessage());
+		}
 
-    }
+	}
 
-    @ApiOperation(value ="找回密码【接口已通】", notes = "找回密码")
-    @RequestMapping(value = "/resetPassword.action", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseOutput<Boolean> resetPassword(Long id){
-        User user = DTOUtils.newDTO(User.class);
-        user.setId(id);
-        user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
-        userService.updateSelective(user);
-        return BaseOutput.success().setData(true);
-    }
+	@ApiOperation("删除User")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
+	@RequestMapping(value = "/delete.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput delete(Long id) {
+		userService.delete(id);
+		return BaseOutput.success("删除成功");
+	}
+
+	/**
+	 *
+	 * @param id
+	 * @param enable 是否启用
+	 * @return
+	 */
+	@RequestMapping(value = "/doEnable.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput doEnable(Long id, Boolean enable) {
+		try {
+			userService.updateEnable(id, enable);
+			return BaseOutput.success("修改用户状态成功");
+		} catch (BusinessException e) {
+			LOGGER.error("修改用户状态", e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("修改用户状态", e);
+			return BaseOutput.failure();
+		}
+
+	}
+
+	@ApiOperation(value = "找回密码【接口已通】", notes = "找回密码")
+	@RequestMapping(value = "/resetPassword.action", method = RequestMethod.POST)
+	@ResponseBody
+	public BaseOutput<Boolean> resetPassword(Long id) {
+		User user = DTOUtils.newDTO(User.class);
+		user.setId(id);
+		user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
+		userService.updateSelective(user);
+		return BaseOutput.success().setData(true);
+	}
+
+	@RequestMapping(value = "/findPlates.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput findPlates(Long userId) {
+		try {
+			List<String> plateList = this.userPlateService.findUserPlateByUserId(userId).stream().map(UserPlate::getPlate)
+					.collect(Collectors.toList());
+			return BaseOutput.success().setData(plateList);
+
+		} catch (Exception e) {
+			LOGGER.error("查询失败", e);
+			return BaseOutput.failure();
+		}
+
+	}
+
+	private List<City> queryCitys() {
+		List<String> prirityCityNames = Arrays.asList("北京市", "哈尔滨市", "牡丹江市", "佳木斯市", "鹤岗市", "绥化市", "内蒙古自治区", "呼和浩特市",
+				"包头市", "呼伦贝尔市", "天津市", "沈阳市", "大连市", "河北省", "江苏市", "烟台市", "合肥市", "长春市", "四平市", "上海市 ");
+
+		List<City> cityList = new ArrayList<>();
+		for (String name : prirityCityNames) {
+			CityListInput query = new CityListInput();
+			query.setKeyword(name);
+			List<City> list = this.baseInfoRpcService.listCityByCondition(name);
+			City city = list.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+			if (city != null) {
+				cityList.add(city);
+			}
+
+		}
+		return cityList;
+
+	}
 }

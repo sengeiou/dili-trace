@@ -57,6 +57,27 @@
         if(formData._state == 0){
             $('#_tallyAreaNos').tagbox('disable');
         }
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/user/findPlates.action?userId="+selected.id,
+            
+            processData:true,
+            dataType: "json",
+            async : false,
+            success: function (data) {
+                if(data.code=="200"){
+                	$('#_plates').tagbox('setValues',data.data);
+                	//$('#_plates').tagbox('setText',data.data);
+                }else{
+                    swal('错误',data.result, 'error');
+                }
+            },
+            error: function(){
+                swal('错误', '远程访问失败', 'error');
+            }
+        });
+        
+        
     }
 
     function saveOrUpdate(){

@@ -17,9 +17,11 @@ import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.rpc.MessageRpc;
+import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,6 +36,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -55,6 +58,8 @@ public class UserApi {
     private MessageRpc messageRpc;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    UserPlateService userPlateService;
 
     @ApiOperation(value ="注册【接口已通】", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
@@ -182,6 +187,22 @@ public class UserApi {
             return BaseOutput.success().setData(user);
         }catch (Exception e){
             LOGGER.error("get",e);
+            return BaseOutput.failure();
+        }
+    }
+    @ApiOperation(value ="查询车牌信息", notes = "用户获取个人信息")
+    @RequestMapping(value = "/getUserPlate.api", method = RequestMethod.POST)
+    @InterceptConfiguration
+    public BaseOutput<List<UserPlate>> getUserPlate(){
+        try{
+            User user=userService.get(sessionContext.getAccountId());
+            if(user==null){
+                return BaseOutput.failure("用户不存在");
+            }
+            List<UserPlate>userPlateList=  this.userPlateService.findUserPlateByUserId(user.getId());
+            return BaseOutput.success().setData(userPlateList);
+        }catch (Exception e){
+            LOGGER.error("查询车牌信息错误",e);
             return BaseOutput.failure();
         }
     }

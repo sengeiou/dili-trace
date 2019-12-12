@@ -29,6 +29,8 @@
 批量主动送检 registerBill/index.html#batchAuto
 批量采样检测 registerBill/index.html#batchSampling
 
+上传产地证明 registerBill/index.html#uploadOrigincertifiy
+
 溯源—检测统计 http://trace.nong12.com/registerBill/statics.html
 列表 registerBill/statics.html#list
 查看 registerBill/statics.html#detail
@@ -96,5 +98,16 @@ MODIFY COLUMN `tally_area_no` varchar(60) CHARACTER SET utf8 COLLATE utf8_genera
 UPDATE register_bill rb,`user` u set rb.tally_area_no = u.tally_area_nos WHERE rb.user_id = u.id AND rb.tally_area_no IS NULL AND rb.register_source = 1;
 
 
+
+
+CREATE TABLE `user_plate`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `plate` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '车牌号',
+  `user_id` bigint(20) NOT NULL COMMENT '用户id',
+  `created` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+  `modified` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0),
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `TALLY_AREA_NO_UNIQUE_INDEX`(`plate`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 
