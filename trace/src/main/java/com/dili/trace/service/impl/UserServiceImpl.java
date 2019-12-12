@@ -145,8 +145,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         	if(otherHasPlate) {
         		throw new BusinessException("车牌已被其他用户使用");
         	}
-        	this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         }
+        this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         updateSelective(user);
 
 

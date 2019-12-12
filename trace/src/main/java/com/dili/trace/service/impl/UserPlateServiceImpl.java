@@ -54,7 +54,11 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 			item.setCreated(new Date());
 			return item;
 		}).collect(Collectors.toList());
-		return this.batchInsert(list);
+		if(!list.isEmpty()) {
+			return this.batchInsert(list);	
+		}
+		return 0;
+		
 	}
 
 }
