@@ -10,9 +10,13 @@ import com.dili.common.exception.BusinessException;
 import com.dili.common.service.RedisService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
 import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
@@ -30,6 +34,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -333,4 +338,34 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         userQuery.setState(EnabledStateEnum.ENABLED.getCode());
         return list(userQuery).stream().findFirst().orElse(null);
     }
+
+	@Override
+	public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception {
+
+		if (dto != null && dto.getHasBusinessLicense() != null) {
+			if (dto.getHasBusinessLicense()) {
+				dto.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is not null and business_license_url<>'') ");
+			} else {
+				dto.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is null or business_license_url='') ");
+			}
+
+		}
+		EasyuiPageOutput out=this.listEasyuiPageByExample(dto, true);
+		List<DTO>users=out.getRows();
+		List<Long>userIdList=users.stream().map(o->{return (Long)o.get("id");}).collect(Collectors.toList());
+		Map<Long,List<UserPlate>> userPlateMap=this.userPlateService.findUserPlateByUserIdList(userIdList);
+		List<DTO>	userList=users.stream().map(u->{
+			Long userId=(Long)u.get("id");
+			if(userPlateMap.containsKey(userId)) {
+				String plates=userPlateMap.get(userId).stream().map(UserPlate::getPlate).collect(Collectors.joining(","));
+				u.put("plates",plates);
+			}else {
+				u.put("plates","");
+			}
+			return u;
+		}).collect(Collectors.toList());
+		out.setRows(userList);
+
+		return out;
+	}
 }

@@ -5,6 +5,7 @@ import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
@@ -73,16 +74,9 @@ public class UserController {
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(UserListDto user) throws Exception {
 
-		if (user != null && user.getHasBusinessLicense() != null) {
-			if (user.getHasBusinessLicense()) {
-				user.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is not null and business_license_url<>'') ");
-			} else {
-				user.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is null or business_license_url='') ");
-			}
-
-		}
-
-		return userService.listEasyuiPageByExample(user, true).toString();
+		EasyuiPageOutput out=this.userService.listEasyuiPageByExample(user);
+		
+		return out.toString();
 	}
 
 	@ApiOperation("新增User")

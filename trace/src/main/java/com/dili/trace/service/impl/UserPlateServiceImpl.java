@@ -2,7 +2,9 @@ package com.dili.trace.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.service.UserPlateService;
 
@@ -59,6 +62,17 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 		}
 		return 0;
 		
+	}
+
+	@Override
+	public Map<Long, List<UserPlate>> findUserPlateByUserIdList(List<Long> userIdList) {
+		if(CollectionUtils.isEmpty(userIdList)) {
+			return new HashMap<>(0);
+		}
+		Example example = new Example(UserPlate.class);
+		example.and().andIn("userId", userIdList);
+		List<UserPlate>userPlateList= this.getDao().selectByExampleExpand(example);
+		return userPlateList.stream().collect(Collectors.groupingBy(UserPlate::getUserId));
 	}
 
 }

@@ -68,16 +68,16 @@
                         <th width="12%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             注册时间
                         </th>
-                        <th width="8%" data-options="field:'id',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="5%" data-options="field:'id',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             ID
                         </th>
                         <th width="10%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             姓名
                         </th>
-                        <th width="15%" data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             手机号
                         </th>
-                        <th width="15%" data-options="field:'cardNo',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="12%" data-options="field:'cardNo',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             身份证号
                         </th>
                         <th width="10%" data-options="field:'tallyAreaNos',formatter:blankFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -85,6 +85,9 @@
                         </th>
                         <th width="10%" data-options="field:'salesCityName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             销地城市
+                        </th>
+                        <th width="10%" data-options="field:'plates',   sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            车牌
                         </th>
                         <th width="10%" data-options="field:'businessLicenseUrl',formatter:function(val){return val?'有':'无'},   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             营业执照
@@ -101,7 +104,7 @@
     <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-edit',
-				height: 540,
+				height: 570,
 				buttons: [{
 					text:'确认',
 					iconCls:'icon-ok',
