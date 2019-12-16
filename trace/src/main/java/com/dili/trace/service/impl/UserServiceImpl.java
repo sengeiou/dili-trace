@@ -87,9 +87,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         //增加车牌信息
         List<String>plateList=this.parsePlate(user.getPlates());
         if(!plateList.isEmpty()) {
-        	boolean isEmpty=this.userPlateService.findUserPlateByPlates(plateList).isEmpty();
-        	if(!isEmpty) {
-        		throw new BusinessException("车牌已被其他用户使用");
+        	UserPlate up=this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
+        	if(up!=null) {
+        		throw new BusinessException("车牌["+up.getPlate()+"]已被其他用户使用");
         	}
         	this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
         }
@@ -144,11 +144,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         List<String>plateList=this.parsePlate(user.getPlates());
         if(!plateList.isEmpty()) {
-        	boolean otherHasPlate=this.userPlateService.findUserPlateByPlates(plateList).stream().anyMatch(p->{
+        	UserPlate up=this.userPlateService.findUserPlateByPlates(plateList).stream().filter(p->{
         		return !p.getUserId().equals(userPO.getId());
-        	});
-        	if(otherHasPlate) {
-        		throw new BusinessException("车牌已被其他用户使用");
+        	}).findFirst().orElse(null);
+        	if(up!=null) {
+        		throw new BusinessException("车牌["+up.getPlate()+"]已被其他用户使用");
         	}
         }
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
@@ -162,8 +162,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     		if(JSON.isValidArray(plates)) {
     			JSON.parseArray(plates).stream().filter(Objects::nonNull).map(String::valueOf).collect(Collectors.toCollection(()->plateList));
     		}else {
-    			
-    			plateList.add(JSON.parseObject(plates).toString());
+    			plateList.add(plates);
     		}
     		
     	}
