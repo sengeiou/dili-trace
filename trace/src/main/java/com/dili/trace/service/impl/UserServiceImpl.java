@@ -85,9 +85,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         //更新用户理货区
         updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
         //增加车牌信息
-        LOGGER.info("输入车牌:",user.getPlates());
+        LOGGER.info("输入车牌:{}",user.getPlates());
         List<String>plateList=this.parsePlate(user.getPlates());
-        LOGGER.info("解析车牌:",plateList.toString());
+        LOGGER.info("解析车牌:{}",plateList.toString());
         if(!plateList.isEmpty()) {
         	UserPlate up=this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
         	if(up!=null) {
@@ -144,9 +144,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             //更新用户理货区
             updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
         }
-        LOGGER.info("输入车牌:",user.getPlates());
+        LOGGER.info("输入车牌:{}",user.getPlates());
         List<String>plateList=this.parsePlate(user.getPlates());
-        LOGGER.info("解析车牌:",plateList.toString());
+        LOGGER.info("解析车牌:{}",plateList.toString());
         if(!plateList.isEmpty()) {
         	UserPlate up=this.userPlateService.findUserPlateByPlates(plateList).stream().filter(p->{
         		return !p.getUserId().equals(userPO.getId());
@@ -165,12 +165,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     	if(StringUtils.isBlank(plates)) {
     		return plateList;
     	}
-    	if(JSON.isValid(plates)) {
-    		if(JSON.isValidArray(plates)) {
+    	if(JSON.isValid(plates)&&JSON.isValidArray(plates)) {
     			JSON.parseArray(plates).stream().filter(Objects::nonNull).map(String::valueOf).collect(Collectors.toCollection(()->plateList));
-    		}else {
-    			plateList.add(plates);
-    		}
+    	}else {
+    		plateList.add(plates);
     	}
 
     	
