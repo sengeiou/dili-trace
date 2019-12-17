@@ -14,7 +14,7 @@
     </div>
     <div class="form-box border">
 
-        <form id="createRecordForm" class="form-inline" role="form">
+        <form id="createRecordForm" class="form-inline" role="form" targetId="${registerBill.code}">
         	<input type="hidden" name="id" value="${registerBill.id}">
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
@@ -145,6 +145,7 @@
 </script>
 <#registerBill_createJs />
 <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
@@ -155,7 +156,52 @@ var currentUser={"depId":"${user.depId!}"
 	,"realName":"${user.realName!}"
 	,"userName":"${user.userName!}"
 	,"departmentName":"${department.name!}"};
-	
+	var editForm={
+			tableData:[],
+			plate:''
+	}
+	function buildEditFormData(editForm){
+	     $('#goodsTable tbody tr').each(function(){
+		  	    var inputs=$(this).find('.input-sm');
+		  	     var oldRow=[];
+		  	     //debugger
+			  	 inputs.each(function(k,v){
+			  		oldRow.push($(this).val())
+			  	 });
+		  	   editForm.tableData.push(oldRow);
+		     });
+	     editForm.plate=$('#plate').val();
+	}
+	function submitLog(){
+		var newData={
+				tableData:[],
+				plate:''
+		};
+		buildEditFormData(newData);
+		var content="【编号】："+$('#createRecordForm').attr('targetId');
+		if(editForm.plate!=newData.plate){
+			content=content+'<br/>【车牌号】:从"'+editForm.plate+'"改为"'+newData.plate+'"';
+		}
+		
+		$.each(newData.tableData,function(i,arr){
+			var oldArr=editForm.tableData[i];
+			$.each(arr,function(k,v){
+				if(v!=oldArr[k]){
+					if(k==0){
+						content=content+'<br/>【商品名称】:从"'+oldArr[k]+'"改为"'+v+'"';
+					}else if(k==1){
+						content=content+'<br/>【产地】:从"'+oldArr[k]+'"改为"'+v+'"';
+					}else if(k==2){
+						content=content+'<br/>【商品重量】:从"'+oldArr[k]+'"改为"'+v+'"';
+					}
+					
+				}
+			})
+			
+		});
+		TLOG.component.operateLog('登记单管理',"修改",content);
+		
+	}
    $(function () {
 	     $('#goodsTable').find('input[name="productName_1"]').val('${registerBill.productName!}');
 	     $('#goodsTable').find('input[name="productId_1"]').val(${registerBill.productId});
@@ -168,8 +214,9 @@ var currentUser={"depId":"${user.depId!}"
 	    	 //$('.view-div').show();
 	    	 //$('.upload-div').hide();
 	     }
-	     
+	     buildEditFormData(editForm);
    });
+   
    function doEdit(){
        if($('#createRecordForm').validate().form() != true){
            return;
@@ -182,7 +229,6 @@ var currentUser={"depId":"${user.depId!}"
        var formData=registerBills[0];
        formData['id']=$('form').find('input[name="id"]').val();
        //console.info(formData)
-       
         layer.confirm('确认修改数据?', {
                      type: 0,
                      title: '提示',
@@ -197,6 +243,7 @@ var currentUser={"depId":"${user.depId!}"
                              async : true,
                              success: function (ret) {
                                  if(ret.success){
+                                	 submitLog();
                                      layer.alert('操作成功',{
                   							title:'操作',
                                            	time : 600,
