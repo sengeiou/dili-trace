@@ -51,7 +51,7 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 		List<UserPlate> list =plateList.stream().map(p->{
 			
 			UserPlate item = DTOUtils.newDTO(UserPlate.class);
-			item.setPlate(p);
+			item.setPlate(p.toUpperCase());
 			item.setUserId(userId);
 			item.setModified(new Date());
 			item.setCreated(new Date());

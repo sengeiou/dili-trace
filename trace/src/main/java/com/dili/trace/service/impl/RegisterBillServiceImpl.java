@@ -12,6 +12,7 @@ import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.BatchResultDto;
 import com.dili.trace.dto.MatchDetectParam;
@@ -24,6 +25,7 @@ import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.UserPlateService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +57,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
 	DetectRecordService detectRecordService;
+	@Autowired
+	UserPlateService userPlateService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -85,7 +90,25 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
 		registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
+		
+		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 
+			List<String> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId()).stream()
+					.map(UserPlate::getPlate).collect(Collectors.toList());
+			if (!userPlateList.isEmpty()) {
+				if (!userPlateList.contains(registerBill.getPlate())) {
+					return BaseOutput.failure("请输入与当前用户绑定的车牌号");
+				}
+			} else {
+				List<String> otherUserPlateList = this.userPlateService
+						.findUserPlateByPlates(Arrays.asList(registerBill.getPlate())).stream().map(UserPlate::getPlate)
+						.collect(Collectors.toList());
+				if (!otherUserPlateList.isEmpty()) {
+					return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
+				}
+			}
+		}
+			
 		int result = saveOrUpdate(registerBill);
 		if (result == 0) {
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
