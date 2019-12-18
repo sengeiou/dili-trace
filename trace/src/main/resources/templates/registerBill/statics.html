@@ -100,11 +100,11 @@
                             <input class="easyui-textbox statics" id="nopassNum" style="width:100%" labelAlign="right" data-options="label:'不合格:'"  value="0条" readonly="readonly" disabled="disabled"/>
                         </div>
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="checkNum" style="width:100%" labelAlign="right" data-options="label:'主动送检:'"  value="0条" readonly="readonly" disabled="disabled" />
+                            <input class="easyui-textbox statics" id="checkNum" style="width:100%" labelAlign="right" data-options="label:'复检合格:'"  value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                         
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="recheckNum" style="width:100%" labelAlign="right" data-options="label:'复检:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                            <input class="easyui-textbox statics" id="recheckNum" style="width:100%" labelAlign="right" data-options="label:'复检不合格:'"  value="0条" readonly="readonly" disabled="disabled"/>
                         </div>
                         <div class="search-item" style="width: 14%">
                             <input class="easyui-textbox statics" id="autoCheckNum" style="width:100%" labelAlign="right" data-options="label:'主动送检:'" value="0条" readonly="readonly" disabled="disabled" />
@@ -446,7 +446,7 @@
             });
             return;
         }
-        openWin('${contextPath}/registerBill/view/' + selected.id);
+        openWin('${contextPath}/registerBill/view/' + selected.id+"/false");
     }
     
     $('#registerSource').combobox({  

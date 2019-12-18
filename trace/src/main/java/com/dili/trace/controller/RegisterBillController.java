@@ -276,11 +276,14 @@ public class RegisterBillController {
 	 * @param modelMap
 	 * @return
 	 */
-	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
-	public String view(ModelMap modelMap, @PathVariable Long id) {
+	@RequestMapping(value = "/view/{id}/{displayWeight}", method = RequestMethod.GET)
+	public String view(ModelMap modelMap, @PathVariable Long id,@PathVariable(required = false) Boolean displayWeight) {
 		RegisterBill registerBill = registerBillService.get(id);
 		if (registerBill == null) {
 			return "";
+		}
+		if(displayWeight==null) {
+			displayWeight=false;
 		}
 		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
 			// 分销信息
@@ -304,6 +307,7 @@ public class RegisterBillController {
 		List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(registerBill.getCode());
 		modelMap.put("detectRecordList", detectRecordList);
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+		modelMap.put("displayWeight", displayWeight);
 		return "registerBill/view";
 	}
 

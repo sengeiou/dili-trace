@@ -456,7 +456,7 @@ var currentUser={"depId":"${user.depId!}"
             });
             return;
         }
-        openWin('/registerBill/view/' + selected.id);
+        openWin('/registerBill/view/' + selected.id+'/true');
     }
     function audit(){
         var selected = _registerBillGrid.datagrid("getSelected");
