@@ -587,7 +587,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new AppException("数据错误");
 		}
 		if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl()) ) {
-			throw new AppException("数据错误");
+			throw new AppException("请上传产地证明");
 		}
 		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
 			throw new AppException("数据状态错误");
