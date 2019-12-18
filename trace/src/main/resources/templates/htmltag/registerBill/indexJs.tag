@@ -378,7 +378,7 @@ var currentUser={"depId":"${user.depId!}"
             $('#edit-btn').show();
             //$('#batch-audit-btn').show();
            if(selected.registerSource==${@com.dili.trace.glossary.RegisterSourceEnum.TALLY_AREA.getCode()}){
-        	   if(selected.originCertifiyUrl&&selected.originCertifiyUrl!=null&&selected.originCertifiyUrl!=''){
+        	   if(selected.originCertifiyUrl&&selected.originCertifiyUrl!=null&&selected.originCertifiyUrl!=''&&selected.originCertifiyUrl!='无'){
         		   $('#audit-withoutDetect-btn').show();
         	   }
            }
