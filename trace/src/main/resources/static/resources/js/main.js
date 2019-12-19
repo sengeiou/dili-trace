@@ -146,6 +146,24 @@ $(function () {
             },
             message: '请输入{0}位'
         },
+        tagLengthRange: {
+            validator: function(value, param){
+                var newValues = value.split(',');
+                var valid = {};
+                var min=param[0];
+                var max=param[1];
+                for (let val of newValues){
+                	var len=val.length;
+                    if(len >0 ){
+                    	if(len<min||len>max){
+                    		return false;	
+                    	}
+                    }
+                }
+                return true;
+            },
+            message: '请输入{0}-{1}位'
+        },
         tagNum: {
             validator: function(value, param){
                 var newValues = value.split(',');

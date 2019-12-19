@@ -107,6 +107,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
 				}
 			}
+		}else {
+			List<String> otherUserPlateList = this.userPlateService
+					.findUserPlateByPlates(Arrays.asList(registerBill.getPlate())).stream().map(UserPlate::getPlate)
+					.collect(Collectors.toList());
+			if (!otherUserPlateList.isEmpty()) {
+				return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
+			}
 		}
 			
 		int result = saveOrUpdate(registerBill);
