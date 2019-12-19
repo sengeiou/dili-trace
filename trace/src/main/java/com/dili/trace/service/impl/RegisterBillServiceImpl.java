@@ -90,32 +90,26 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
 		registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
-		
+
 		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 
-			List<String> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId()).stream()
-					.map(UserPlate::getPlate).collect(Collectors.toList());
-			if (!userPlateList.isEmpty()) {
-				if (!userPlateList.contains(registerBill.getPlate())) {
-					return BaseOutput.failure("请输入与当前用户绑定的车牌号");
-				}
-			} else {
-				List<String> otherUserPlateList = this.userPlateService
-						.findUserPlateByPlates(Arrays.asList(registerBill.getPlate())).stream().map(UserPlate::getPlate)
-						.collect(Collectors.toList());
-				if (!otherUserPlateList.isEmpty()) {
+			List<UserPlate> userPlateList = this.userPlateService.findUserPlateByPlates(Arrays.asList(registerBill.getPlate()));
+			
+			if(!userPlateList.isEmpty()) {
+				boolean noMatch=userPlateList.stream().noneMatch(up->up.getUserId().equals(registerBill.getUserId()));
+				if(noMatch) {
 					return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
 				}
 			}
-		}else {
+		} /*else {
 			List<String> otherUserPlateList = this.userPlateService
 					.findUserPlateByPlates(Arrays.asList(registerBill.getPlate())).stream().map(UserPlate::getPlate)
 					.collect(Collectors.toList());
 			if (!otherUserPlateList.isEmpty()) {
 				return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
 			}
-		}
-			
+		}*/
+
 		int result = saveOrUpdate(registerBill);
 		if (result == 0) {
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
@@ -211,9 +205,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		return null;
 	}
+
 	@Override
 	public RegisterBill findBySampleCode(String sampleCode) {
-		if(StringUtils.isBlank(sampleCode)) {
+		if (StringUtils.isBlank(sampleCode)) {
 			return null;
 		}
 		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
@@ -301,7 +296,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public int undoRegisterBill(Long id) {
 		RegisterBill registerBill = get(id);
 		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()
-				||registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
+				|| registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
 			UserTicket userTicket = getOptUser();
 			LOGGER.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
 					+ JSON.toJSON(registerBill).toString());
@@ -336,7 +331,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		BatchResultDto<String> dto = new BatchResultDto<>();
 		for (Long id : idList) {
 			RegisterBill registerBill = get(id);
-			if(registerBill==null) {
+			if (registerBill == null) {
 				continue;
 			}
 			try {
@@ -356,7 +351,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		BatchResultDto<String> dto = new BatchResultDto<>();
 		for (Long id : idList) {
 			RegisterBill registerBill = get(id);
-			if(registerBill==null) {
+			if (registerBill == null) {
 				continue;
 			}
 			try {
@@ -375,7 +370,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		BatchResultDto<String> dto = new BatchResultDto<>();
 		for (Long id : batchAuditDto.getRegisterBillIdList()) {
 			RegisterBill registerBill = get(id);
-			if(registerBill==null) {
+			if (registerBill == null) {
 				continue;
 			}
 			try {
@@ -586,14 +581,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public Long doAuditWithoutDetect(RegisterBill input) {
-		if(input==null||input.getId()==null) {
+		if (input == null || input.getId() == null) {
 			throw new AppException("参数错误");
 		}
 		RegisterBill registerBill = this.get(input.getId());
 		if (registerBill == null) {
 			throw new AppException("数据错误");
 		}
-		if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl()) ) {
+		if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl())) {
 			throw new AppException("请上传产地证明");
 		}
 		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
@@ -601,17 +596,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		if (!RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
 			throw new AppException("数据来源错误");
-			
+
 		}
 		registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
 //		registerBill.setDetectState(null);
 		this.updateSelective(registerBill);
-		
+
 		return registerBill.getId();
 	}
+
 	@Override
 	public Long doEdit(RegisterBill input) {
-		if(input==null||input.getId()==null) {
+		if (input == null || input.getId() == null) {
 			throw new AppException("参数错误");
 		}
 		RegisterBill registerBill = this.get(input.getId());
@@ -621,26 +617,25 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
 			throw new AppException("数据状态错误");
 		}
-		
+
 		if (input.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 			// 理货区
 			registerBill.setPlate(input.getPlate());
 		} else {
-			
+
 		}
 
 		registerBill.setProductId(input.getProductId());
 		registerBill.setProductName(input.getProductName());
-		
+
 		registerBill.setOriginId(input.getOriginId());
 		registerBill.setOriginName(input.getOriginName());
-		
+
 		registerBill.setWeight(input.getWeight());
-		
+
 //		registerBill.setOriginCertifiyUrl(input.getOriginCertifiyUrl());
 		this.updateSelective(registerBill);
 		return registerBill.getId();
 	}
-
 
 }
