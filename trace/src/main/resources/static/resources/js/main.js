@@ -23,6 +23,11 @@ var UAP_TOOLS = {
     }
 };
 $.fn.tagbox.defaults.missingMessage = '该输入项为必输项';
+// 正则验证车牌,验证通过返回true,不通过返回false
+function isLicensePlate(str) {
+    return /^(([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z](([0-9]{5}[DF])|([DF]([A-HJ-NP-Z0-9])[0-9]{4})))|([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳使领]))$/.test(str);
+}
+
 $(function () {
     //去掉输入框中的前后空格
     $(document).on('change', 'input[type=text], textarea', function () {
@@ -163,6 +168,22 @@ $(function () {
                 return true;
             },
             message: '请输入{0}-{1}位'
+        },
+        isLicensePlate: {
+            validator: function(value, param){
+                var newValues = value.split(',');
+                var valid = {};
+                var min=param[0];
+                var max=param[1];
+                for (let val of newValues){
+                	var checkValue=isLicensePlate(val);
+                	if(checkValue==false){
+                		return checkValue;
+                	}
+                }
+                return true;
+            },
+            message: '请输入正确格式的车牌'
         },
         tagNum: {
             validator: function(value, param){

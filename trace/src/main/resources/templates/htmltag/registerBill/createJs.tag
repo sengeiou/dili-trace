@@ -275,11 +275,16 @@ var currentUser={"depId":"${user.depId!}"
 
     
     jQuery.validator.addMethod("isPlate", function(value, element) {  
-        var length = value.length;  
-        var regName = /[^\u4e00-\u9fa5]/g;
-        return this.optional(element) || !regName.test( value.charAt(0) );    
-    }, "第一个字符必须为汉字");  
+        return this.optional(element) || !isLicensePlate(value);    
+    }, "请输入正确格式的车牌");  
     
+    
+ // 正则验证车牌,验证通过返回true,不通过返回false
+    function isLicensePlate(str) {
+        return /^(([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z](([0-9]{5}[DF])|([DF]([A-HJ-NP-Z0-9])[0-9]{4})))|([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳使领]))$/.test(str);
+    }
+   
+
   	function buildTableData(registerSource){
   		 var registerBills = new Array();
   		 

@@ -111,3 +111,18 @@ CREATE TABLE `user_plate`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 
+
+
+CREATE TABLE trace.code_generate (
+	id bigint(20) auto_increment NOT NULL,
+	`type` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '编号类型',
+	`suffix` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '编号前缀',
+	`code` bigint(20) NOT NULL COMMENT '当前编号',
+	created timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	modified timestamp DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL,
+	CONSTRAINT `PRIMARY` PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8
+COLLATE=utf8_general_ci
+COMMENT='';
