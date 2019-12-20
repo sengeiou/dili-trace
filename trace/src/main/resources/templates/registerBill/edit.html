@@ -49,7 +49,13 @@
                 <div class="form-group" <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
-                    <input type="text" class="form-control input-sm isWord isPlate" name="plate" id="plate" value="${registerBill.plate!}" required />
+                        <input type="text" class="form-control input-sm isPlate" list="plateList" name="plate" value="${registerBill.plate!}"  required>
+						<datalist id="plateList">
+							<option value="Lily">
+							<option value="Lucy">
+							<option value="Jim">
+						</datalist>
+						
                 </div>
                 <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
                     <label class="label-title text-right">交易账号</label>

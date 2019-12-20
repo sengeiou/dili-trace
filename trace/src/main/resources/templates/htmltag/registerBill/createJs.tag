@@ -46,6 +46,7 @@ var currentUser={"depId":"${user.depId!}"
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').hide();
             $('[name="tradeAccount"], [name="b2"], [name="tradeTypeId"]').closest('.form-group').show();
         }
+        $('#plateList').empty();
         $("#idCardNo").val("");
         $("#name").val("");
         $("#addr").val("");
@@ -111,7 +112,30 @@ var currentUser={"depId":"${user.depId!}"
             tallyAreaNo();
         }
     }
-
+    function findUserPlateByUserId(userId){
+    	
+        $.ajax({
+            type: 'post',
+            url: '/trade/customer/findUserPlateByUserId',
+            data:{userId:userId},
+            dataType: 'json',
+            async: false,
+            success: function (ret) {
+                if (ret.code == "200") {
+                    var userplateList = ret.data;
+                    $.each(userplateList,function(){
+                    	$('#plateList').append('<option value="'+$(this).plate+'">');
+                    })
+                  
+                } else {
+                	$('#plateList').empty();
+                }
+            },
+            error:function(){
+            	$('#plateList').empty();
+            }
+        });
+    }
     function tallyAreaNo() {
         var tallyAreaNo = $("#tallyAreaNoInput").val();
         if(tallyAreaNo == ""){
@@ -132,6 +156,7 @@ var currentUser={"depId":"${user.depId!}"
                         $("#userId").val(customer.id).valid();
                         $("#phone").val(customer.phone).valid();
                         $("#tallyAreaNo").val(tallyAreaNo);
+                        findUserPlateByUserId(customer.id);
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");

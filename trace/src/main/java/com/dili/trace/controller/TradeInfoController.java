@@ -3,7 +3,9 @@ package com.dili.trace.controller;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
 import com.dili.trace.service.CustomerService;
+import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.MaskUserInfo;
 import com.diligrp.manage.sdk.session.SessionContext;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 /**
@@ -33,6 +37,8 @@ public class TradeInfoController {
 	private CustomerService customerService;
 	@Resource
 	private UserService userService;
+	@Resource
+	private UserPlateService userPlateService;
 
 	/**
 	 * 根据客户账号获取
@@ -87,6 +93,21 @@ public class TradeInfoController {
 		}
 	}
 
+	/**
+	 * 根据客户ID获取车牌号
+	 * 
+	 * @param tallyAreaNo
+	 * @return
+	 */
+	@ApiOperation("根据理货区号获取客户获取")
+	@RequestMapping(value = "/findUserPlateByUserId", method = { RequestMethod.GET, RequestMethod.POST })
+	public BaseOutput<List<UserPlate>> findUserPlateByUserId(Long userId) {
+
+		List<UserPlate> list = this.userPlateService.findUserPlateByUserId(userId);
+
+		return BaseOutput.success().setData(list);
+	}
+
 	private User maskUser(User user) {
 		if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
 			return user;
@@ -98,7 +119,6 @@ public class TradeInfoController {
 
 	}
 
-	
 	private Customer maskCustomer(Customer customer) {
 		if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
 			return customer;
@@ -110,5 +130,4 @@ public class TradeInfoController {
 
 	}
 
-	
 }
