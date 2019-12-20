@@ -173,13 +173,15 @@ $(function () {
             validator: function(value, param){
                 var newValues = value.split(',');
                 var valid = {};
-                var min=param[0];
-                var max=param[1];
                 for (let val of newValues){
-                	var checkValue=isLicensePlate(val);
-                	if(checkValue==false){
-                		return checkValue;
+                	var len=val.length;
+                	if(len >0 ){
+                    	var checkValue=isLicensePlate(val);
+                    	if(checkValue==false){
+                    		return checkValue;
+                    	}
                 	}
+
                 }
                 return true;
             },

@@ -274,8 +274,8 @@ var currentUser={"depId":"${user.depId!}"
     }
 
     
-    jQuery.validator.addMethod("isPlate", function(value, element) {  
-        return this.optional(element) || !isLicensePlate(value);    
+    jQuery.validator.addMethod("isPlate", function(value, element) { 
+        return this.optional(element) || isLicensePlate(value);
     }, "请输入正确格式的车牌");  
     
     
@@ -333,6 +333,8 @@ var currentUser={"depId":"${user.depId!}"
             resubmit = 0;
             return;
         }
+        resubmit = 0;
+        return;
         //console.log("参数:"+$('#createRecordForm').serialize());
        
         var registerSource = $("#registerSource").val();
