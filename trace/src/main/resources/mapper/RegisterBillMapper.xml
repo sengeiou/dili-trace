@@ -193,8 +193,8 @@
 	sum( case when detect_state=3 then 1  when detect_state=4 then 1  else 0 end)as 'recheckNum',
 	sum( case when origin_certifiy_url is not null AND origin_certifiy_url &lt;&gt; '' then 1 else 0 end) as 'hasOriginCertifiyNum',
 	sum( case when detect_report_url is not null AND detect_report_url &lt;&gt; '' then 1 else 0 end) as 'hasDetectReportNum',
-	sum( case when sampleSource=1 then 1 else 0 end)as 'sampleCheckNum',
-	sum( case when sampleSource=2 then 1 else 0 end)as 'autoCheckNum'
+	sum( case when sample_source=1 then 1 else 0 end)as 'sampleCheckNum',
+	sum( case when sample_source=2 then 1 else 0 end)as 'autoCheckNum'
 	
     from register_bill
     where 1=1
