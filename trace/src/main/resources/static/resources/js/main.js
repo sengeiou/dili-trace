@@ -176,7 +176,7 @@ $(function () {
                 for (let val of newValues){
                 	var len=val.length;
                 	if(len >0 ){
-                    	var checkValue=isLicensePlate(val);
+                    	var checkValue=isLicensePlate(val.toUpperCase());
                     	if(checkValue==false){
                     		return checkValue;
                     	}

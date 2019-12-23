@@ -300,7 +300,7 @@ var currentUser={"depId":"${user.depId!}"
 
     
     jQuery.validator.addMethod("isPlate", function(value, element) { 
-        return this.optional(element) || isLicensePlate(value);
+        return this.optional(element) || isLicensePlate(value.toUpperCase());
     }, "请输入正确格式的车牌");  
     
     
