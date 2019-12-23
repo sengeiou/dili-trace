@@ -113,7 +113,7 @@ CREATE TABLE `user_plate`  (
 
 
 
-CREATE TABLE trace.code_generate (
+CREATE TABLE `code_generate` (
 	id bigint(20) auto_increment NOT NULL,
 	`type` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '编号类型',
 	`suffix` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '编号前缀',
