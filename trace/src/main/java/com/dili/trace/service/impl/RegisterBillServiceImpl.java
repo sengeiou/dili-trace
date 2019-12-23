@@ -90,18 +90,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
 		registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
+		if(!this.checkPlate(registerBill)) {
+			return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
+		}
 
-		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-
-			List<UserPlate> userPlateList = this.userPlateService.findUserPlateByPlates(Arrays.asList(registerBill.getPlate()));
-			
-			if(!userPlateList.isEmpty()) {
-				boolean noMatch=userPlateList.stream().noneMatch(up->up.getUserId().equals(registerBill.getUserId()));
-				if(noMatch) {
-					return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
-				}
-			}
-		} /*else {
+ /*else {
 			List<String> otherUserPlateList = this.userPlateService
 					.findUserPlateByPlates(Arrays.asList(registerBill.getPlate())).stream().map(UserPlate::getPlate)
 					.collect(Collectors.toList());
@@ -118,6 +111,23 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return recheck;
 	}
 
+	private boolean checkPlate(RegisterBill registerBill) {
+		
+		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+
+			List<UserPlate> userPlateList = this.userPlateService.findUserPlateByPlates(Arrays.asList(registerBill.getPlate()));
+			
+			if(!userPlateList.isEmpty()) {
+				boolean noMatch=userPlateList.stream().noneMatch(up->up.getUserId().equals(registerBill.getUserId()));
+				if(noMatch) {
+					//throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
+					return false;
+				}
+			}
+		}
+		return true;
+		
+	}
 	private BaseOutput checkBill(RegisterBill registerBill) {
 
 		if (registerBill.getRegisterSource() == null || registerBill.getRegisterSource().intValue() == 0) {
@@ -623,6 +633,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setPlate(input.getPlate());
 		} else {
 
+		}
+		if(!this.checkPlate(registerBill)) {
+			throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
 		}
 
 		registerBill.setProductId(input.getProductId());
