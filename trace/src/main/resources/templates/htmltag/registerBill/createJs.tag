@@ -123,8 +123,8 @@ var currentUser={"depId":"${user.depId!}"
             success: function (ret) {
                 if (ret.code == "200") {
                     var userplateList = ret.data;
-                    $.each(userplateList,function(){
-                    	$('#plateList').append('<option value="'+$(this).plate+'">');
+                    $.each(userplateList,function(k,v){
+                    	$('#plateList').append('<option value="'+v.plate+'">');
                     })
                   
                 } else {
@@ -358,8 +358,6 @@ var currentUser={"depId":"${user.depId!}"
             resubmit = 0;
             return;
         }
-        resubmit = 0;
-        return;
         //console.log("参数:"+$('#createRecordForm').serialize());
        
         var registerSource = $("#registerSource").val();
