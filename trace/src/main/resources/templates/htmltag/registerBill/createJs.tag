@@ -122,6 +122,7 @@ var currentUser={"depId":"${user.depId!}"
             async: false,
             success: function (ret) {
                 if (ret.code == "200") {
+                	$('#plateList').empty();
                     var userplateList = ret.data;
                     $.each(userplateList,function(k,v){
                     	$('#plateList').append('<option value="'+v.plate+'">'+v.plate+'</option>');
