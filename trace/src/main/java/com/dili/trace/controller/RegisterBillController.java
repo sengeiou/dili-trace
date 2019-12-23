@@ -53,6 +53,8 @@ public class RegisterBillController {
 	@Autowired
 	UserService userService;
 	@Autowired
+	UserPlateService userPlateService;
+	@Autowired
 	CustomerService customerService;
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
@@ -705,6 +707,14 @@ public class RegisterBillController {
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
 		modelMap.put("citys", this.queryCitys());
+		
+		if(registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
+			List<UserPlate>userPlateList=this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
+			modelMap.put("userPlateList", userPlateList);
+		}else {
+			modelMap.put("userPlateList", new ArrayList<>(0));
+		}
+	
 		return "registerBill/copy";
 	}
 
@@ -828,6 +838,13 @@ public class RegisterBillController {
 		
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
+		
+		if(registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
+			List<UserPlate>userPlateList=this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
+			modelMap.put("userPlateList", userPlateList);
+		}else {
+			modelMap.put("userPlateList", new ArrayList<>(0));
+		}
 		return "registerBill/edit";
 	}
 

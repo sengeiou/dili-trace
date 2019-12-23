@@ -124,7 +124,7 @@ var currentUser={"depId":"${user.depId!}"
                 if (ret.code == "200") {
                     var userplateList = ret.data;
                     $.each(userplateList,function(k,v){
-                    	$('#plateList').append('<option value="'+v.plate+'">');
+                    	$('#plateList').append('<option value="'+v.plate+'">'+v.plate+'</option>');
                     })
                   
                 } else {
@@ -326,7 +326,8 @@ var currentUser={"depId":"${user.depId!}"
                // registerBill.tradeTypeName=$("#tradeTypeName").val();
                 registerBill.tradeTypeId=$("#tradeTypeId").val();
             }
-            registerBill.plate=$("#plate").val();
+            registerBill.plate=$("input[name='plate']").val();
+            debugger
             registerBill.name=$("#name").val();
             registerBill.idCardNo=$("#idCardNo").val();
             registerBill.addr=$("#addr").val();

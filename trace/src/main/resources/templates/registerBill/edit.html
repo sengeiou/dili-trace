@@ -51,9 +51,11 @@
                         <span class="red">&lowast;</span>车牌号</label>
                         <input type="text" class="form-control input-sm isPlate" list="plateList" name="plate" value="${registerBill.plate!}"  required>
 						<datalist id="plateList">
-							<option value="Lily">
-							<option value="Lucy">
-							<option value="Jim">
+						
+						<% for(up in userPlateList){%>
+                        <option value="${up.plate}">${up.plate}</option>
+                    <%}%>
+                    
 						</datalist>
 						
                 </div>
