@@ -20,6 +20,7 @@
     }
 
     //打开修改窗口
+    var formOldData={};
     function openUpdate(){
         var selected = $("#userGrid").datagrid("getSelected");
         if (null == selected) {
@@ -57,7 +58,8 @@
         if(formData._state == 0){
             $('#_tallyAreaNos').tagbox('disable');
         }
-        $.ajax({
+        formOldData=$('#_form').serializeObject();
+        /*$.ajax({
             type: "POST",
             url: "${contextPath}/user/findPlates.action?userId="+selected.id,
             
@@ -75,7 +77,7 @@
             error: function(){
                 swal('错误', '远程访问失败', 'error');
             }
-        });
+        });*/
         
         
     }
@@ -94,11 +96,13 @@
             _formData.tallyAreaNos = _formData.tallyAreaNos.join(',');
         }
         var _url = null;
+        var isNewData=false;
         //没有id就新增
         if(_formData.id == null || _formData.id==""){
             _url = "${contextPath}/user/insert.action";
         }else{//有id就修改
             _url = "${contextPath}/user/update.action";
+            isNewData=true;
         }
         $.ajax({
             type: "POST",
@@ -110,6 +114,7 @@
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if(data.code=="200"){
+                	 submitLog(isNewData);
                     _userGrid.datagrid("reload");
                     $('#dlg').dialog('close');
                 }else{
@@ -121,7 +126,34 @@
             }
         });
     }
-
+	function submitLog(isNewData){
+		if(isNewData==true){
+			 var formNewData=$('#_form').serializeObject(); 
+			 console.info(formOldData);
+			 console.info(formNewData);
+			var content="【ID】："+formOldData._id;
+			if(formOldData._phone!=formNewData._phone){
+				//手机号	 
+				content=content+'<br/>【手机号】:从'+formOldData._phone+'"改为"'+formNewData._phone+'"';
+			}
+			if(JSON.stringify(formOldData._tallyAreaNos)!=JSON.stringify(formNewData._tallyAreaNos)){
+				 //理货区号
+				content=content+'<br/>【理货区号】:从'+$.makeArray(formOldData._tallyAreaNos).join(',')+'"改为"'+$.makeArray(formNewData._tallyAreaNos).join(',')+'"';
+			}
+			if(JSON.stringify(formOldData._plates)!=JSON.stringify(formNewData._plates)){
+				 //车牌号
+				content=content+'<br/>【车牌号】:从'+$.makeArray(formOldData._plates).join(',')+'"改为"'+$.makeArray(formNewData._plates).join(',')+'"';
+			}
+			
+			if(formOldData._salesCityName!=formNewData._salesCityName){
+				 //销地城市
+				content=content+'<br/>【销地城市】:从'+formOldData._salesCityName+'"改为"'+formNewData._salesCityName+'"';
+			}
+			TLOG.component.operateLog('用户管理',"用户修改",content);
+		}
+		
+		
+	}
     //根据主键删除
     function del() {
         var selected = _userGrid.datagrid("getSelected");
