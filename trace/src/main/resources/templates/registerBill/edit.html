@@ -49,15 +49,12 @@
                 <div class="form-group" <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
-                        <input type="text" class="form-control input-sm isPlate" list="plateList" name="plate" value="${registerBill.plate!}"  required>
-						<datalist id="plateList">
-						
-						<% for(up in userPlateList){%>
-                        <option value="${up.plate}">${up.plate}</option>
-                    <%}%>
-                    
-						</datalist>
-						
+                        <select  class="form-control input-sm editableSelect" id = "plate" name="plate"  value="${registerBill.plate!}"  required>
+						         <% for(up in userPlateList){%>
+			                        <option value="${up.plate}">${up.plate}</option>
+			                    <%}%>     
+						 </select>
+						 
                 </div>
                 <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
                     <label class="label-title text-right">交易账号</label>
@@ -153,11 +150,12 @@
 </script>
 <#registerBill_createJs />
 <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
 <script src="http://base.nong12.com/static/log/log.build.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-<!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 <script type="text/javascript">
 var currentUser={"depId":"${user.depId!}"
 	,"id":"${user.id!}"
@@ -223,6 +221,12 @@ var currentUser={"depId":"${user.depId!}"
 	    	 //$('.upload-div').hide();
 	     }
 	     buildEditFormData(editForm);
+
+         //初始化控件
+         $('.editableSelect').editableSelect({ 
+             filter: false ,
+         });
+
    });
    
    function doEdit(){
@@ -359,4 +363,3 @@ var currentUser={"depId":"${user.depId!}"
     </tr>
 
 </script>
-

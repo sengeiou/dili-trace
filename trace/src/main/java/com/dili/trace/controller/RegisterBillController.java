@@ -247,7 +247,11 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/create.html")
 	public String create(ModelMap modelMap) {
+		try {
 		modelMap.put("tradeTypes", tradeTypeService.findAll());
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 		modelMap.put("citys", this.queryCitys());
 
 		return "registerBill/create";

@@ -122,18 +122,28 @@ var currentUser={"depId":"${user.depId!}"
             async: false,
             success: function (ret) {
                 if (ret.code == "200") {
-                	$('#plateList').empty();
-                    var userplateList = ret.data;
-                    $.each(userplateList,function(k,v){
-                    	$('#plateList').append('<option value="'+v.plate+'">'+v.plate+'</option>');
-                    })
+                	//$('#plate').empty();
+                	 var userplateList = ret.data;
+
+                	$('#plate').editableSelect('clear');//清空现有数据
+                    $.each(userplateList, function (i, t) {
+                    	$('#plate').editableSelect('add', function () {
+                            $(this).val(t.plate);
+                            $(this).text(t.plate);
+                        });//调用add方法 通过函数的方式绑定上val和txt
+
+   
+                   
+                    //$.each(userplateList,function(k,v){
+                    //	$('#plate').append('<option value="'+v.plate+'">'+v.plate+'</option>');
+                   })
                   
                 } else {
-                	$('#plateList').empty();
+                	$('#plate').editableSelect('clear');
                 }
             },
             error:function(){
-            	$('#plateList').empty();
+            	$('#plate').editableSelect('clear');
             }
         });
     }
