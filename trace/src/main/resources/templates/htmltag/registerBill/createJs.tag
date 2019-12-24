@@ -354,7 +354,7 @@ var currentUser={"depId":"${user.depId!}"
   		return registerBills;
   	}
   	function cachePlate(plate){
-  		var plateArray=getCachedPlate();
+  		var plateArray=getCachedPlateArray();
   		if(jQuery.inArray(plate, plateArray )==-1){
   	  		plateArray.push(plate);
   	  		localStorage.setItem('plateArray',JSON.stringify(plateArray));
@@ -369,7 +369,7 @@ var currentUser={"depId":"${user.depId!}"
   		}
   		return []
   	}
-  	cachePlate('abc')
+  	//cachePlate('abc')
     var resubmit =0;
     function create(){
         if(resubmit==0){
