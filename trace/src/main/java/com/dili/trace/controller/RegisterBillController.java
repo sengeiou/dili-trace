@@ -259,7 +259,20 @@ public class RegisterBillController {
 
 	private List<City> queryCitys() {
 		List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市", "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
-				"河北省", "吉林省", "内蒙古自治区");
+				"河北省", "吉林省", "内蒙古自治区",
+				"元谋县","保山市","茂名市","中山市","雷州市","湛江市","澄迈县",
+				"东方市",
+				"海口市",
+				"漳州市",
+				"崇明县",
+				"临海市",
+				"慈溪市",
+				"宁波市",
+				"南通市"
+				
+				
+				
+				);
 
 		List<City> cityList = new ArrayList<>();
 		for (String name : prirityCityNames) {
