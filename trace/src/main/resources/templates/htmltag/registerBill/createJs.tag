@@ -354,12 +354,22 @@ var currentUser={"depId":"${user.depId!}"
   		return registerBills;
   	}
   	function cachePlate(plate){
-  		//存：localStorage.setItem('weekDay',JSON.stringify(weekArray));
-  		//取： weekArray = JSON.parse(localStorage.getItem('weekDay'));
+  		var plateArray=getCachedPlate();
+  		if(jQuery.inArray(plate, plateArray )==-1){
+  	  		plateArray.push(plate);
+  	  		localStorage.setItem('plateArray',JSON.stringify(plateArray));
+  		}
   	}
-  	function getCachedPlate(){
-  		
+  	function getCachedPlateArray(){
+  		var plateArray=localStorage.getItem('plateArray');
+  		if(typeof(initWithLocalStorage)=='undefined'&&plateArray!=null){
+  			return JSON.parse(plateArray);
+  		}else{
+  			localStorage.setItem('plateArray',JSON.stringify([]));
+  		}
+  		return []
   	}
+  	cachePlate('abc')
     var resubmit =0;
     function create(){
         if(resubmit==0){
