@@ -353,6 +353,13 @@ var currentUser={"depId":"${user.depId!}"
         });
   		return registerBills;
   	}
+  	function cachePlate(plate){
+  		//存：localStorage.setItem('weekDay',JSON.stringify(weekArray));
+  		//取： weekArray = JSON.parse(localStorage.getItem('weekDay'));
+  	}
+  	function getCachedPlate(){
+  		
+  	}
     var resubmit =0;
     function create(){
         if(resubmit==0){

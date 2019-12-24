@@ -49,7 +49,7 @@
                 <div class="form-group" <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
-                        <select  class="form-control input-sm editableSelect" id = "plate" name="plate"  value="${registerBill.plate!}"  required>
+                        <select  class="form-control input-sm editableSelect  isPlate" id = "plate" name="plate"  value="${registerBill.plate!}"  required>
 						         <% for(up in userPlateList){%>
 			                        <option value="${up.plate}">${up.plate}</option>
 			                    <%}%>     
