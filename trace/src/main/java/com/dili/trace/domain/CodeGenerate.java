@@ -42,14 +42,21 @@ public interface CodeGenerate extends IBaseDomain {
     void setSuffix(String suffix);
 
 
-    @Column(name = "`code`")
+    @Column(name = "`segment`")
+    @FieldDef(label="当前编号段", maxLength = 20)
+    @EditMode(editor = FieldEditor.Number, required = false)
+    String getSegment();
+
+    void setSegment(String segment);
+
+
+    @Column(name = "`seq`")
     @FieldDef(label="当前编号", maxLength = 20)
     @EditMode(editor = FieldEditor.Number, required = false)
-    Long getCode();
+    Long getSeq();
 
-    void setCode(Long code);
-
-
+    void setSeq(Long seq);
+    
     @Column(name = "`created`")
     @FieldDef(label="created")
     @EditMode(editor = FieldEditor.Datetime, required = true)

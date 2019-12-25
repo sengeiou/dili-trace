@@ -7,7 +7,8 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="code" jdbcType="BIGINT" property="code" />
+    <result column="segment" jdbcType="VARCHAR" property="segment" />
+    <result column="seq" jdbcType="BIGINT" property="seq" />
     <result column="suffix" jdbcType="VARCHAR" property="suffix" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
@@ -16,7 +17,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, type, code, suffix, created, modified
+    id, type, segment,seq, suffix, created, modified
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -36,8 +37,11 @@
       <if test="type != null">
         type = #{type,jdbcType=VARCHAR},
       </if>
-      <if test="code != null">
-        code = #{code,jdbcType=BIGINT},
+      <if test="segment != null">
+        segment = #{segment,jdbcType=VARCHAR},
+      </if>
+       <if test="seq != null">
+        seq = #{code,jdbcType=BIGINT},
       </if>
       <if test="suffix != null">
         suffix = #{suffix,jdbcType=VARCHAR},
@@ -51,14 +55,14 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <select id="selectByIdForUpdate" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByTypeForUpdate" parameterType="java.lang.String" resultMap="BaseResultMap">
     <!--
       WARNING - @mbg.generated
     -->
     select 
     <include refid="Base_Column_List" />
     from code_generate
-    where id = #{id,jdbcType=BIGINT}
+    where type = #{type,jdbcType=VARCHAR}
     for update
   </select>
 </mapper>

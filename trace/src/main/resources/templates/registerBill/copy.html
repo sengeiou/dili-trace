@@ -4,6 +4,35 @@
         .form-inline .table-showlist table .input-sm {
              width: 200px;
         }
+        /*a  upload */
+    .a-upload {
+        padding: 4px 28px;
+        position: relative;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+        color: #fff !important;
+        background-color: #3370ff;
+    }
+
+    .a-upload  input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        cursor: pointer
+    }
+
+    .a-upload:hover {
+        color: #444;
+        background: #eee;
+        border-color: #ccc;
+        text-decoration: none
+    }
     </style>
 <div class="main-container">
     <div class="topicTop">
@@ -154,37 +183,7 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 <!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
-<style>
-    /*a  upload */
-    .a-upload {
-        padding: 4px 28px;
-        position: relative;
-        cursor: pointer;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        overflow: hidden;
-        display: inline-block;
-        color: #fff !important;
-        background-color: #3370ff;
-    }
 
-    .a-upload  input {
-        position: absolute;
-        font-size: 100px;
-        right: 0;
-        top: 0;
-        opacity: 0;
-        filter: alpha(opacity=0);
-        cursor: pointer
-    }
-
-    .a-upload:hover {
-        color: #444;
-        background: #eee;
-        border-color: #ccc;
-        text-decoration: none
-    }
-</style>
 <script id="goodsItem" type="text/html">
     <tr>
         <td>
@@ -228,6 +227,10 @@ $(document).ready(function() {
     $('#plate').editableSelect({ 
         filter: false ,
     });
+    var userplateList=$.map($('#plate').siblings(".es-list" ).find('li'),function(v,i){
+   	 return $(v).text();
+    });
+    appendCachedPlate(userplateList,'#plate');
 })
 
 </script>

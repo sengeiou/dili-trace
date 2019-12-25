@@ -112,8 +112,31 @@ var currentUser={"depId":"${user.depId!}"
             tallyAreaNo();
         }
     }
-    function findUserPlateByUserId(userId){
+    function appendCachedPlate(userplateList,editableSelector){
     	
+    	   var cachedPlateArray=getCachedPlateArray()
+
+           var notInUserPlateList=$.grep(cachedPlateArray, function(v,i){
+           	return $.inArray(v,userplateList)==-1;
+           });
+           if(notInUserPlateList.length>0){
+           	$(editableSelector).editableSelect('add', function () {
+                   $(this).val('&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;');
+                   $(this).attr('disabled','disabled')
+                   $(this).text('---------------');
+               });//调用add方法 通过函数的方式绑定上val和txt
+               
+               $.each(notInUserPlateList, function (i, v) {
+               	$(editableSelector).editableSelect('add', function () {
+                       $(this).val(v);
+                       $(this).text(v);
+                   });//调用add方法 通过函数的方式绑定上val和txt
+              });
+           	
+           }
+    	
+    }
+    function findUserPlateByUserId(userId,editableSelector){
         $.ajax({
             type: 'post',
             url: '/trade/customer/findUserPlateByUserId',
@@ -123,27 +146,25 @@ var currentUser={"depId":"${user.depId!}"
             success: function (ret) {
                 if (ret.code == "200") {
                 	//$('#plate').empty();
-                	 var userplateList = ret.data;
-
-                	$('#plate').editableSelect('clear');//清空现有数据
-                    $.each(userplateList, function (i, t) {
-                    	$('#plate').editableSelect('add', function () {
-                            $(this).val(t.plate);
-                            $(this).text(t.plate);
+                	 var userplateList = $.map(ret.data,function(v,i){
+                		 return v.plate;
+                	 });
+                	$(editableSelector).editableSelect('clear');//清空现有数据
+                    $.each(userplateList, function (i, v) {
+                    	$(editableSelector).editableSelect('add', function () {
+                            $(this).val(v);
+                            $(this).text(v);
                         });//调用add方法 通过函数的方式绑定上val和txt
-
-   
-                   
-                    //$.each(userplateList,function(k,v){
-                    //	$('#plate').append('<option value="'+v.plate+'">'+v.plate+'</option>');
-                   })
+                   });
+                   appendCachedPlate(userplateList,editableSelector);
+                    
                   
                 } else {
-                	$('#plate').editableSelect('clear');
+                	$(editableSelector).editableSelect('clear');
                 }
             },
             error:function(){
-            	$('#plate').editableSelect('clear');
+            	$(editableSelector).editableSelect('clear');
             }
         });
     }
@@ -167,7 +188,7 @@ var currentUser={"depId":"${user.depId!}"
                         $("#userId").val(customer.id).valid();
                         $("#phone").val(customer.phone).valid();
                         $("#tallyAreaNo").val(tallyAreaNo);
-                        findUserPlateByUserId(customer.id);
+                        findUserPlateByUserId(customer.id,'#plate');
                     } else {
                         $("#idCardNo").val("");
                         $("#name").val("");
@@ -338,7 +359,6 @@ var currentUser={"depId":"${user.depId!}"
                 registerBill.tradeTypeId=$("#tradeTypeId").val();
             }
             registerBill.plate=$("input[name='plate']").val();
-            debugger
             registerBill.name=$("#name").val();
             registerBill.idCardNo=$("#idCardNo").val();
             registerBill.addr=$("#addr").val();
@@ -354,24 +374,44 @@ var currentUser={"depId":"${user.depId!}"
   		return registerBills;
   	}
   	function cachePlate(plate){
-  		var plateArray=getCachedPlateArray();
-  		if(jQuery.inArray(plate, plateArray )==-1){
-  	  		plateArray.push(plate);
-  	  		localStorage.setItem('plateArray',JSON.stringify(plateArray));
+  		if(jQuery.type(plate) === "string"&&plate.trim().length>0){
+  	  		var plateArray=getCachedPlateArray();
+  	  		if(jQuery.inArray(plate.trim(), plateArray )==-1){
+  	  	  		plateArray.push(plate.trim());
+  	  	  		localStorage.setItem('plateArray',JSON.stringify(plateArray));
+  	  		}
   		}
+
   	}
   	function getCachedPlateArray(){
   		var plateArray=localStorage.getItem('plateArray');
-  		if(typeof(initWithLocalStorage)=='undefined'&&plateArray!=null){
-  			return JSON.parse(plateArray);
+  		if(typeof(plateArray)!='undefined'&&plateArray!=null){
+  			return $.makeArray(JSON.parse(plateArray));
   		}else{
   			localStorage.setItem('plateArray',JSON.stringify([]));
   		}
   		return []
   	}
+  	function cacheInputtedPlate(editableSelector){
+  		var inList=false;
+  		var plate=$(editableSelector).val();
+  		
+  		$(editableSelector).siblings(".es-list" ).find('li').each(function(){
+  			if(plate==$(this).text()){
+  				inList=true;
+  				return false;
+  			}
+  		})
+  		
+  		if(inList==false){
+  			cachePlate(plate);
+  		}
+  		
+  	}
   	//cachePlate('abc')
-    var resubmit =0;
+    var resubmit = 0;
     function create(){
+    	
         if(resubmit==0){
             resubmit=1;
         }else{
@@ -387,36 +427,12 @@ var currentUser={"depId":"${user.depId!}"
             resubmit = 0;
             return;
         }
+        cacheInputtedPlate("#plate");
         //console.log("参数:"+$('#createRecordForm').serialize());
        
         var registerSource = $("#registerSource").val();
         var registerBills = buildTableData(registerSource);
-        /*let index = 0;
-        $("#goodsTable").find("tbody").find("tr").each(function(){
-            var registerBill = new Object();
-            registerBill.registerSource=registerSource;
-            if(registerBill.registerSource==1){
-                registerBill.tallyAreaNo=$("#tallyAreaNo").val();
-                registerBill.userId = $("#userId").val();
-            }else{
-                registerBill.tradeAccount=$("#tradeAccount").val();
-                registerBill.tradePrintingCard=$("#tradePrintingCard").val();
-               // registerBill.tradeTypeName=$("#tradeTypeName").val();
-                registerBill.tradeTypeId=$("#tradeTypeId").val();
-            }
-            registerBill.plate=$("#plate").val();
-            registerBill.name=$("#name").val();
-            registerBill.idCardNo=$("#idCardNo").val();
-            registerBill.addr=$("#addr").val();
-            registerBill.detectReportUrl = $("#detectReportUrl").val();
-            registerBill.phone = $("#phone").val();
 
-            $(this).find("input").each(function(t,el){
-                let fieldName = $(this).attr("name").split('_')[0];
-                registerBill[fieldName] = $(this).val();
-            });
-            registerBills.push(registerBill);
-        });*/
         $.ajax({
             type: "POST",
             url: "${contextPath}/registerBill/insert.action",
@@ -436,7 +452,6 @@ var currentUser={"depId":"${user.depId!}"
                       //}else{
                           localStorage.setItem('registerSource',$("#registerSource").val());
                           localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
-                          
                           layer.alert('登记成功',{
                            	 type:0,
                            	  time : 600,

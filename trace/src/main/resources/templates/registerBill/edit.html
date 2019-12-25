@@ -223,9 +223,13 @@ var currentUser={"depId":"${user.depId!}"
 	     buildEditFormData(editForm);
 
          //初始化控件
-         $('.editableSelect').editableSelect({ 
+         $('#plate').editableSelect({ 
              filter: false ,
          });
+         var userplateList=$.map($('#plate').siblings(".es-list" ).find('li'),function(v,i){
+        	 return $(v).text();
+         });
+         appendCachedPlate(userplateList,'#plate');
 
    });
    
@@ -233,6 +237,7 @@ var currentUser={"depId":"${user.depId!}"
        if($('#createRecordForm').validate().form() != true){
            return;
        }
+       cacheInputtedPlate("#plate");
 	   var registerSource = $("#registerSource").val();
        var registerBills = buildTableData(registerSource);
        if(registerBills.length!=1){
@@ -240,7 +245,7 @@ var currentUser={"depId":"${user.depId!}"
        }
        var formData=registerBills[0];
        formData['id']=$('form').find('input[name="id"]').val();
-       //console.info(formData)
+       cacheInputtedPlate("#plate");
         layer.confirm('确认修改数据?', {
                      type: 0,
                      title: '提示',
