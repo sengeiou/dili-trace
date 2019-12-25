@@ -9,7 +9,7 @@
 **/.project
 **/.settings
 **/.classpath
-
+**/rebel.xml
 */.idea/
 */target/
 */*.iml
