@@ -23,6 +23,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,9 +78,10 @@ public class UserController {
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(UserListDto user) throws Exception {
-
+		if(user!=null&&StringUtils.isNotBlank(user.getPlates())) {
+			user.mset(IDTO.AND_CONDITION_EXPR, " id in (select user_id from user_plate where plate like '"+user.getPlates().trim().toUpperCase()+"%')");
+		}
 		EasyuiPageOutput out=this.userService.listEasyuiPageByExample(user);
-		
 		return out.toString();
 	}
 

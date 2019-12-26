@@ -40,4 +40,5 @@ public interface UserListDto extends User {
     @Transient
     Boolean getHasBusinessLicense();
     void setHasBusinessLicense(Boolean hasBusinessLicense);
+
 }
