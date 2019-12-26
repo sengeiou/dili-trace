@@ -1,0 +1,113 @@
+ <#body head_title="用户列表">
+     <style>
+         .textbox-text[readonly] {
+             background: #ebebe4;
+         }
+     </style>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+            </div>
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="queryForm" class="easyui-form" method="post" fit="true">
+                    <div class="search-wrap">
+                         <div class="search-item">
+                            <input name="type" id="type" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="分类:" labelAlign="right"/>
+                            <#comboProvider _id="type" _provider='usualAddressTypeProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="mergedAddress" id="mergedAddress" style="width:100%" labelAlign="right" data-options="label:'地址:'" />
+                        </div>
+
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="客户列表" id="userGrid" fitColumns="true" noheader="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
+                   align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+                <thead>
+                    <tr>
+                        <th width="10%" data-options="field:'addressId',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            ID
+                        </th>
+                        <th width="25%" data-options="field:'type',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                          分类                  
+                        </th>
+                        <th width="30%" data-options="field:'address',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            地址
+                        </th>
+                        <th width="35%" data-options="field:'mergedAddress',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            全地址
+                        </th>
+
+                   </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="常用地址新增" style="padding:20px" modal="true" border="thin" closed="true"
+         data-options="
+				iconCls: 'icon-edit',
+				height: 350,
+				buttons: [{
+					text:'确认',
+					iconCls:'icon-ok',
+					handler:saveOrUpdate
+				},{
+					text:'取消',
+					iconCls:'icon-cancel',
+					handler:function(){
+						$('#dlg').dialog('close');
+					}
+				}]
+			">
+    <form id="_form" class="easyui-form" method="post" fit="true">
+        <input name="_addressId" id="_addressId" type="hidden">
+        <input name="_id" id="_id" type="hidden">
+        <table width="430px">
+            <tr>
+                <td style="padding:5px;">
+                    <input  name="_type" id="_type" style="width:100%" data-options="label:'分类*:', validType:'length[2,20]',required:true" />
+                    <#comboProvider _id="_type" _provider='usualAddressTypeProvider' _queryParams='{emptyText:""}' />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_mergedAddress" id="_mergedAddress" style="width:100%" data-options="label:'地址*:',required:true" />
+                </td>
+            </tr>
+        </table>
+        
+    </form>
+
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+     <#usualAddress_indexJs />
+</#body>
