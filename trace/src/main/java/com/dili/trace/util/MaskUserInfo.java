@@ -31,6 +31,17 @@ public class MaskUserInfo {
 		return addr;
 		
 	}
+	public static String maskPhone(String phone) {
+		if(StringUtils.isBlank(phone)) {
+			return phone;
+		}
+		phone=StringUtils.trim(phone);
+		if(phone.length()>0) {
+			return replace(phone, (phone.length()-1)/3,  (phone.length()-1)/2, "*");
+		}
+		return phone;
+		
+	}
 	private User maskUser(User user) {
 		if (SessionContext.hasAccess("post", "registerBill/create.html#user")) {
 			return user;

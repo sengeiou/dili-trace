@@ -1,0 +1,67 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="topicTop">
+        <div class="toppic-title">
+            <span class="topic-title-text maincolor">用户信息详情</span>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+        </div>
+    </div>
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>姓名</label>
+                    <input class="form-control input-sm" value="${user.name}" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>手机号</label>
+                    <input type="text" class="form-control input-sm"  value="${user.phone}"  readonly/>
+                </div>
+                 <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>身份证号</label>
+                    <input type="text" class="form-control input-sm"  value="${user.cardNo}"  readonly/>
+                </div>
+
+                <br/>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>理货区号</label>
+                    <input type="text" class="form-control input-sm" value="${user.tallyAreaNos}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>销地城市</label>
+                    <input type="text" class="form-control input-sm" value="${user.salesCityName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌</label>
+                    <input type="text" class="form-control input-sm"  value="${userPlates}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>营业执照</label>
+                        <img alt="" width="40" height="40" style="margin-right: 160px" src="https://cn.bing.com/th?id=OIP.4dvVx-1c4GBfQgygLwmxzgHaDt&pid=Api&rs=1">
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>状态</label>
+                    <input type="text" class="form-control input-sm"  value="${user.state==1?'启用':'禁用'}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>注册时间</label>
+                    <input type="text" class="form-control input-sm" value="${user.created,'yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                </div>
+                
+            </div>
+
+        </form>
+    </div>
+
+</div>
+</#bodyOrigin>
+
+

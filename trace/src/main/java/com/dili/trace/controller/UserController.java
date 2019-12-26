@@ -17,6 +17,8 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
+import com.dili.trace.util.MaskUserInfo;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -172,7 +175,22 @@ public class UserController {
 		}
 
 	}
-
+	@ApiOperation("跳转到User页面")
+	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
+	public String view(ModelMap modelMap,@PathVariable Long id) {
+		User user=this.userService.get(id);
+		String userPlateStr=this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate).collect(Collectors.joining(","));
+		if(user!=null) {
+			user.setAddr(MaskUserInfo.maskAddr(user.getAddr()));
+			user.setCardNo(MaskUserInfo.maskIdNo(user.getCardNo()));
+			user.setPhone(MaskUserInfo.maskPhone(user.getPhone()));
+		}
+		
+		modelMap.put("user", user);
+		modelMap.put("userPlates", userPlateStr);
+		
+		return "user/view";
+	}
 	private List<City> queryCitys() {
 		List<String> prirityCityNames = Arrays.asList("北京市", "哈尔滨市", "牡丹江市", "佳木斯市", "鹤岗市", "绥化市", "内蒙古自治区", "呼和浩特市",
 				"包头市", "呼伦贝尔市", "天津市", "沈阳市", "大连市", "河北省", "苏州市", "烟台市", "合肥市", "长春市", "四平市", "上海市");

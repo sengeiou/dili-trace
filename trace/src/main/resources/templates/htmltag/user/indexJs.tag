@@ -378,6 +378,14 @@
                 }
             },
             </#resource>
+            {
+                iconCls:'icon-detail',
+                id:'detail-btn',
+                text:'查看',
+                handler:function(){
+                    doDetail();
+                }
+            },
             <#resource method="post" url="user/index.html#export">
             {
                 iconCls:'icon-export',
@@ -399,6 +407,7 @@
         ]
         });
     }
+   
 
     /**
      * 禁启用操作
@@ -585,7 +594,8 @@
             });
             return;
         }
-        location.href ='/user/view/' + selected.id;
+        openWin('${contextPath}/user/view/' + selected.id)
     }
+    
 
 </script>
