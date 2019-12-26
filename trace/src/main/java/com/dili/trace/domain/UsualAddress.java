@@ -61,13 +61,7 @@ public interface UsualAddress extends IBaseDomain {
 
     void setAddressId(Long addressId);
 
-    @ApiModelProperty(value = "地址")
-    @Column(name = "`addr`")
-    @FieldDef(label="addr", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
-    String getAddr();
 
-    void setAddr(String addr);
 
 
     @ApiModelProperty(value = "创建时间")

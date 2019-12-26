@@ -80,18 +80,22 @@
 				}]
 			">
     <form id="_form" class="easyui-form" method="post" fit="true">
-        <input name="_addressId" id="_addressId" type="hidden">
         <input name="_id" id="_id" type="hidden">
         <table width="430px">
             <tr>
                 <td style="padding:5px;">
-                    <input  name="_type" id="_type" style="width:100%" data-options="label:'分类*:', validType:'length[2,20]',required:true" />
+                    <input  name="_type" id="_type" style="width:100%" data-options="label:'分类*:', validType:'length[2,20]',required:true,panelMaxHeight:'100'" />
                     <#comboProvider _id="_type" _provider='usualAddressTypeProvider' _queryParams='{emptyText:""}' />
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_mergedAddress" id="_mergedAddress" style="width:100%" data-options="label:'地址*:',required:true" />
+                       <select class="easyui-combobox" name="_addressId" id="_addressId" style="width:100%;" 
+                       data-options="label:'城市*:',loader:cityLoader,
+                       mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入',
+                        panelWidth:'auto',panelMinWidth:'340', panelHeight:'auto',panelMaxHeight:'400',  
+                       editable:true,validType:'comboBoxEditvalid[\'_addressId\']',required:true">
+                       </select>
                 </td>
             </tr>
         </table>

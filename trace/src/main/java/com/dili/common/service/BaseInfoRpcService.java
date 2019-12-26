@@ -70,11 +70,23 @@ public class BaseInfoRpcService {
 		return list;
 
 	}
-
 	public List<City> listCityByCondition(String keyword) {
 		CityListInput query = new CityListInput();
 		query.setKeyword(keyword);
-		BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
+		return this.listCityByInput(query);
+
+	}
+	public Optional<City> findCityById(Long id) {
+		if(id==null) {
+			return Optional.empty();
+		}
+		CityListInput query = new CityListInput();
+		query.setId(id);
+		return this.listCityByInput(query).stream().findFirst();
+
+	}
+	public List<City> listCityByInput(CityListInput cityListInput) {
+		BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(cityListInput);
 		if (result.isSuccess()) {
 			return result.getData();
 		}

@@ -90,7 +90,10 @@ public class UsualAddressController {
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Long> insert(@RequestBody UsualAddress usualAddress) {
 		try {
-			
+			if(usualAddress==null||StringUtils.isBlank(usualAddress.getType())||usualAddress.getAddressId()==null) {
+				return BaseOutput.failure("参数错误");
+			}
+			this.usualAddressService.insertUsualAddress(usualAddress);
 			return BaseOutput.success("新增成功").setData(null);
 		} catch (BusinessException e) {
 			LOGGER.error("register", e);

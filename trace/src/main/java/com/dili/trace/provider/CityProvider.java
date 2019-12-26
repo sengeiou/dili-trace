@@ -1,5 +1,7 @@
 package com.dili.trace.provider;
 
+import com.dili.common.service.BaseInfoRpcService;
+
 /**
  * <B>Description</B>
  * 本软件源代码版权归农丰时代及其团队所有,未经许可不得任意复制与传播
@@ -36,7 +38,7 @@ import java.util.Map;
 public class CityProvider implements ValueProvider {
 
     @Resource
-    BaseInfoRpc baseInfoRpc;
+    BaseInfoRpcService baseInfoRpcService;
 
     @Override
     public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) { CityListInput cityListInput = new CityListInput();
@@ -45,13 +47,11 @@ public class CityProvider implements ValueProvider {
         }else{
             cityListInput.setKeyword(val.toString());
         }
-        BaseOutput<List<City>> cityListOutput = baseInfoRpc.listCityByCondition(cityListInput);
         List<ValuePair<?>> buffer = new ArrayList<ValuePair<?>>();
-        if(cityListOutput.isSuccess()){
-            cityListOutput.getData().forEach(o->{
-                buffer.add(new ValuePairImpl(o.getMergerName(), o.getId()));
-            });
-        }
+        this.baseInfoRpcService.listCityByInput(cityListInput).forEach(o->{
+            buffer.add(new ValuePairImpl(o.getMergerName(), o.getId()));
+        });
+       
         return buffer;
     }
 
