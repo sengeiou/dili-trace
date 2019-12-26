@@ -245,7 +245,7 @@ var currentUser={"depId":"${user.depId!}"
        }
        var formData=registerBills[0];
        formData['id']=$('form').find('input[name="id"]').val();
-       cacheInputtedPlate("#plate");
+       
         layer.confirm('确认修改数据?', {
                      type: 0,
                      title: '提示',
@@ -260,6 +260,7 @@ var currentUser={"depId":"${user.depId!}"
                              async : true,
                              success: function (ret) {
                                  if(ret.success){
+                                	 cacheInputtedPlate("#plate");
                                 	 submitLog();
                                      layer.alert('操作成功',{
                   							title:'操作',

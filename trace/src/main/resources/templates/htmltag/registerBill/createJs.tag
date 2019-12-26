@@ -427,7 +427,7 @@ var currentUser={"depId":"${user.depId!}"
             resubmit = 0;
             return;
         }
-        cacheInputtedPlate("#plate");
+        
         //console.log("参数:"+$('#createRecordForm').serialize());
        
         var registerSource = $("#registerSource").val();
@@ -452,6 +452,7 @@ var currentUser={"depId":"${user.depId!}"
                       //}else{
                           localStorage.setItem('registerSource',$("#registerSource").val());
                           localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
+                          cacheInputtedPlate("#plate");
                           layer.alert('登记成功',{
                            	 type:0,
                            	  time : 600,
