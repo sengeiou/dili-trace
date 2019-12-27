@@ -40,4 +40,11 @@ public interface UserPlateService extends BaseService<UserPlate, Long> {
 	 * @return
 	 */
 	public Map<Long,List<UserPlate>> findUserPlateByUserIdList(List<Long>userIdList);
+	
+	/**
+	 * 根据tallyAreaNo查询UserPlate集合
+	 * @param userId
+	 * @return
+	 */
+	public List<UserPlate> findUserPlateByTallyAreaNo(String tallyAreaNo);
 }

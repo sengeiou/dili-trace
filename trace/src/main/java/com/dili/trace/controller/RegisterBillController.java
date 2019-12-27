@@ -95,13 +95,13 @@ public class RegisterBillController {
 			case "code":
 				registerBill.setCode(registerBill.getAttrValue());
 				break;
-			case "plate":
-				registerBill.setPlate(registerBill.getAttrValue());
-				break;
-			case "tallyAreaNo":
-//				registerBill.setTallyAreaNo(registerBill.getAttrValue());
-				registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
-				break;
+//			case "plate":
+//				registerBill.setPlate(registerBill.getAttrValue());
+//				break;
+//			case "tallyAreaNo":
+////				registerBill.setTallyAreaNo(registerBill.getAttrValue());
+//				registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
+//				break;
 			case "latestDetectOperator":
 				registerBill.setLatestDetectOperator(registerBill.getAttrValue());
 				break;

@@ -7,7 +7,8 @@ var currentUser={"depId":"${user.depId!}"
 	
 	
     //表格查询
-    function queryRegisterBillGrid() {
+
+    function queryRegisterBillGrid(queryPlate) {
         var opts = _registerBillGrid.datagrid("options");
         if (null == opts.url || "" == opts.url) {
             opts.url = "${contextPath}/registerBill/listPage.action";
@@ -16,15 +17,53 @@ var currentUser={"depId":"${user.depId!}"
         if(!$('#queryForm').form("validate")){
             return false;
         }
+        if(queryPlate&&queryPlate!=true){
+        	queryPlatesByTallyAreaNo();	
+        }
         _registerBillGrid.datagrid("load", bindGridMeta2Form("registerBillGrid", "queryForm"));
         initBtnStatus();
 
     }
-
-
+	function queryPlatesByTallyAreaNo(){
+		
+		var tallyAreaNo=$('#likeTallyAreaNo').textbox('getValue');
+		$('#plate').combobox('loadData',[])
+		if(tallyAreaNo&&tallyAreaNo!=''){
+			console.info(tallyAreaNo)
+			
+			 $.ajax({
+                 type: "POST",
+                 url: "${contextPath}/user/findPlatesByTallyAreaNo.action",
+                 processData:true,
+                 dataType: "json",
+                 data:{tallyAreaNo:tallyAreaNo},
+                 async : true,
+                 success: function (ret) {
+                     if(ret.success){
+                    	 $('#plate').combobox('loadData',ret.data)
+                     }else{
+                    	 //$('#plate').combobox('loadData',[])
+                     }
+                 },
+                 error: function(){
+                	// $('#plate').combobox('loadData',[])
+                 }
+             });
+			
+		}
+		
+		
+	}
+	function onPlateChange(v){
+		if(v&&v!='全部'){
+			queryRegisterBillGrid(false);
+		}
+		
+	}
     //清空表单
     function clearQueryForm() {
         $('#queryForm').form('clear');
+        $('#plate').combobox('loadData',[])
     }
 
     //表格表头右键菜单
