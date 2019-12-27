@@ -260,9 +260,9 @@ public class RegisterBillController {
 		return "registerBill/create";
 	}
 
-	private List<UsualAddress> queryCitys() {
-		return usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.REGISTER);
-		/*List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市", "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
+	private List<City> queryCitys() {
+//		return usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.REGISTER);
+		List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市", "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
 				"河北省", "吉林省", "内蒙古自治区",
 				"元谋县","保山市","茂名市","中山市","雷州市","湛江市","澄迈县",
 				"东方市",
@@ -289,7 +289,7 @@ public class RegisterBillController {
 			}
 
 		}
-		return cityList;*/
+		return cityList;
 
 	}
 
