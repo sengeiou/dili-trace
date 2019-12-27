@@ -1,30 +1,8 @@
 package com.dili.trace.controller;
 
-import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.exception.BusinessException;
-import com.dili.common.service.BaseInfoRpcService;
-import com.dili.common.util.MD5Util;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
-import com.dili.ss.util.DateUtils;
-import com.dili.trace.domain.City;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UsualAddress;
-import com.dili.trace.dto.CityListInput;
-import com.dili.trace.dto.UserListDto;
-import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.service.UsualAddressService;
-import com.dili.trace.util.MaskUserInfo;
+import java.util.Date;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,20 +10,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
+import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.exception.BusinessException;
+import com.dili.common.service.BaseInfoRpcService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.util.DateUtils;
+import com.dili.trace.domain.UsualAddress;
+import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UsualAddressService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -80,21 +63,22 @@ public class UsualAddressController {
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(UsualAddress usualAddress) throws Exception {
 
-		EasyuiPageOutput out=this.usualAddressService.listEasyuiPageByExample(usualAddress,true);
+		EasyuiPageOutput out = this.usualAddressService.listEasyuiPageByExample(usualAddress, true);
 		return out.toString();
 	}
 
-	@ApiOperation("新增User")
+	@ApiOperation("新增UsualAddress")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "UsualAddress", paramType = "form", value = "UsualAddress的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Long> insert(@RequestBody UsualAddress usualAddress) {
 		try {
-			if(usualAddress==null||StringUtils.isBlank(usualAddress.getType())||usualAddress.getAddressId()==null) {
+			if (usualAddress == null || StringUtils.isBlank(usualAddress.getType())
+					|| usualAddress.getAddressId() == null) {
 				return BaseOutput.failure("参数错误");
 			}
 			this.usualAddressService.insertUsualAddress(usualAddress);
-			return BaseOutput.success("新增成功").setData(null);
+			return BaseOutput.success("新增成功").setData(usualAddress.getId());
 		} catch (BusinessException e) {
 			LOGGER.error("register", e);
 			return BaseOutput.failure(e.getMessage());
@@ -104,12 +88,18 @@ public class UsualAddressController {
 		}
 	}
 
-	@ApiOperation("修改User")
+	@ApiOperation("修改UsualAddress")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
+			@ApiImplicitParam(name = "UsualAddress", paramType = "form", value = "UsualAddress的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput update(User user) {
+	public @ResponseBody BaseOutput update(UsualAddress usualAddress) {
 		try {
+			if (usualAddress == null || StringUtils.isBlank(usualAddress.getType())
+					|| usualAddress.getAddressId() == null||usualAddress.getId()==null) {
+				return BaseOutput.failure("参数错误");
+			}
+			
+			this.usualAddressService.updateUsualAddress(usualAddress);
 			return BaseOutput.success("修改成功");
 		} catch (BusinessException e) {
 			LOGGER.error("修改用户", e);
@@ -121,13 +111,13 @@ public class UsualAddressController {
 
 	}
 
-	@ApiOperation("删除User")
+	@ApiOperation("删除UsualAddress")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
+			@ApiImplicitParam(name = "id", paramType = "form", value = "UsualAddress的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
+		this.usualAddressService.deleteUsualAddress(id);
 		return BaseOutput.success("删除成功");
 	}
 
-	
 }

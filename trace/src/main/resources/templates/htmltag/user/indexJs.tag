@@ -378,6 +378,17 @@
                 }
             },
             </#resource>
+            <#resource method="post" url="user/index.html#delete">
+            {
+                  iconCls:'icon-undo',
+                  text:'删除',
+                  id:'undo-btn',
+                handler:function(){
+                	del();
+                }
+            },
+            </#resource>
+            
             {
                 iconCls:'icon-detail',
                 id:'detail-btn',

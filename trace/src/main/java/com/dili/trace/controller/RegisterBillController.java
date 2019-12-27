@@ -11,6 +11,7 @@ import com.dili.trace.dto.*;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
 import com.diligrp.manage.sdk.domain.UserTicket;
@@ -60,6 +61,8 @@ public class RegisterBillController {
 	QualityTraceTradeBillService qualityTraceTradeBillService;
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;
+	@Autowired
+	UsualAddressService usualAddressService;
 
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -257,8 +260,9 @@ public class RegisterBillController {
 		return "registerBill/create";
 	}
 
-	private List<City> queryCitys() {
-		List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市", "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
+	private List<UsualAddress> queryCitys() {
+		return usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.REGISTER);
+		/*List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市", "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
 				"河北省", "吉林省", "内蒙古自治区",
 				"元谋县","保山市","茂名市","中山市","雷州市","湛江市","澄迈县",
 				"东方市",
@@ -285,7 +289,7 @@ public class RegisterBillController {
 			}
 
 		}
-		return cityList;
+		return cityList;*/
 
 	}
 

@@ -20,7 +20,7 @@
                             <#comboProvider _id="type" _provider='usualAddressTypeProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="mergedAddress" id="mergedAddress" style="width:100%" labelAlign="right" data-options="label:'地址:'" />
+                            <input class="easyui-textbox" name="address" id="address" style="width:100%" labelAlign="right" data-options="label:'地址:'" />
                         </div>
 
                         <div class="search-wrap-btn">
@@ -47,7 +47,7 @@
                         <th width="10%" data-options="field:'addressId',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             ID
                         </th>
-                        <th width="25%" data-options="field:'type',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="25%" data-options="field:'type',  _provider:'usualAddressTypeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                           分类                  
                         </th>
                         <th width="30%" data-options="field:'address',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">

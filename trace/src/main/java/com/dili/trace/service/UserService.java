@@ -68,4 +68,11 @@ public interface UserService extends BaseService<User, Long> {
 	User findByTallyAreaNo(String tallyAreaNo);
 
 	public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception;
+	
+	/**
+	 * 删除用户信息
+	 * 
+	 * @param user
+	 */
+	void deleteUser(Long id);
 }

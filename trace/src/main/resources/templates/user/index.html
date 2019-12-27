@@ -164,9 +164,9 @@
             </tr>
                         <tr>
                 <td style="padding:5px;">
-                <label>常用销地城市:</label>
+                <label style="font-size: 14px">常用销地城市:</label>
                                      <% for(city in cities){%>
-                        <a href="javascript:void(0)" onclick="selectCity(this,${city.id},'${city.mergerName}')" title="${city.mergerName}">${city.name}</a>
+                        <a href="javascript:void(0)" onclick="selectCity(this,${city.addressId},'${city.address}')" title="${city.mergedAddress}">${city.address}</a>
                     <%}%>
                 </td>
             </tr>

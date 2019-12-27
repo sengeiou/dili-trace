@@ -1,6 +1,7 @@
 package com.dili.trace.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -42,24 +43,51 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 
 	@Override
 	public int updateUsualAddress(UsualAddress input) {
-		// TODO Auto-generated method stub
+		UsualAddress item=this.get(input.getId());
+		if(item==null) {
+			throw new AppException("参数错误");
+		}
+		
+		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
+		example.setAddressId(input.getAddressId());
+		example.setType(input.getType());
+		List<UsualAddress>list=this.listByExample(example);
+		if(list.size()>0) {
+			long count=list.stream().filter(add->{return !add.getAddressId().equals(input.getAddressId());}).count();
+			if(count>0) {
+				throw new AppException("城市已经存在");	
+			}
+		}
+		
+		City city=this.findCityOrException(input.getAddressId());
+		input.setAddressId(city.getId());
+		input.setAddress(city.getName());
+		input.setMergedAddress(city.getMergerName());
+		input.setCreated(new Date());
+		input.setModified(new Date());
+		this.delete(item.getId());
+		this.insertSelective(input);
+		
 		return 0;
 	}
 
 	@Override
 	public int deleteUsualAddress(Long id) {
-		// TODO Auto-generated method stub
+		if(id!=null) {
+			return this.delete(id);
+		}
 		return 0;
 	}
-	private boolean existed(Long addressId,UsualAddressTypeEnum type) {
-		
-		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
-		example.setAddressId(addressId);
-		example.setType(type.getType());
-		return this.listByExample(example).stream().count()>0;
-	}
+
 	private City findCityOrException(Long addressId) {
 		return this.baseInfoRpcService.findCityById(addressId).orElseThrow(()->new AppException("城市查询失败"));
+	}
+
+	@Override
+	public List<UsualAddress> findUsualAddressByType(UsualAddressTypeEnum usualAddressType) {
+		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
+		example.setType(usualAddressType.getType());
+		return this.listByExample(example);
 	}
 
 }

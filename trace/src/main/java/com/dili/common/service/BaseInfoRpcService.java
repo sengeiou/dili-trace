@@ -81,8 +81,9 @@ public class BaseInfoRpcService {
 			return Optional.empty();
 		}
 		CityListInput query = new CityListInput();
-		query.setId(id);
-		return this.listCityByInput(query).stream().findFirst();
+		return this.listCityByInput(query).stream().filter(c->{
+			return c.getId().equals(id);
+		}).findFirst();
 
 	}
 	public List<City> listCityByInput(CityListInput cityListInput) {

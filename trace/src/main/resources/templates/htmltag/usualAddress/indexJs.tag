@@ -24,7 +24,8 @@
         formFocus("_form", "_type");
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
-
+        $('#_form').form('load', formData);
+        $('#_addressId').combobox('setText',formData._mergedAddress);
         var formJsonData=$('#_form').serializeObject();
     }
 
@@ -233,7 +234,7 @@
                   text:'删除',
                   id:'undo-btn',
                 handler:function(){
-                  
+                	del();
                 }
             },
             </#resource>

@@ -371,4 +371,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 		return out;
 	}
+
+	@Override
+	public void deleteUser(Long id) {
+		User user=this.get(id);
+		if(user==null) {
+			return;
+		}
+		UserTallyArea example=DTOUtils.newDTO(UserTallyArea.class);
+		example.setUserId(user.getId());
+		this.userTallyAreaService.deleteByExample(example);
+		user.setTallyAreaNos(null);
+		user.setState(EnabledStateEnum.DISABLED.getCode());
+		this.updateExact(user);
+		
+	}
 }

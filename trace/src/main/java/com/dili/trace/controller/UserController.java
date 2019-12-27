@@ -15,8 +15,10 @@ import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.CityListInput;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
+import com.dili.trace.service.UsualAddressService;
 import com.dili.trace.util.MaskUserInfo;
 
 import io.swagger.annotations.Api;
@@ -62,6 +64,8 @@ public class UserController {
 	DefaultConfiguration defaultConfiguration;
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;
+	@Autowired
+	UsualAddressService usualAddressService;
 
 	@ApiOperation("跳转到User页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -69,7 +73,9 @@ public class UserController {
 		Date now = new Date();
 		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-		modelMap.put("cities", this.queryCitys());
+//		modelMap.put("cities", this.queryCitys());
+		modelMap.put("cities", usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.USER));
+		
 		return "user/index";
 	}
 
@@ -127,7 +133,7 @@ public class UserController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
-		userService.delete(id);
+		userService.deleteUser(id);
 		return BaseOutput.success("删除成功");
 	}
 
@@ -194,22 +200,22 @@ public class UserController {
 		
 		return "user/view";
 	}
-	private List<City> queryCitys() {
-		List<String> prirityCityNames = Arrays.asList("北京市", "哈尔滨市", "牡丹江市", "佳木斯市", "鹤岗市", "绥化市", "内蒙古自治区", "呼和浩特市",
-				"包头市", "呼伦贝尔市", "天津市", "沈阳市", "大连市", "河北省", "苏州市", "烟台市", "合肥市", "长春市", "四平市", "上海市");
-
-		List<City> cityList = new ArrayList<>();
-		for (String name : prirityCityNames) {
-			CityListInput query = new CityListInput();
-			query.setKeyword(name);
-			List<City> list = this.baseInfoRpcService.listCityByCondition(name);
-			City city = list.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
-			if (city != null) {
-				cityList.add(city);
-			}
-
-		}
-		return cityList;
-
-	}
+//	private List<City> queryCitys() {
+//		List<String> prirityCityNames = Arrays.asList("北京市", "哈尔滨市", "牡丹江市", "佳木斯市", "鹤岗市", "绥化市", "内蒙古自治区", "呼和浩特市",
+//				"包头市", "呼伦贝尔市", "天津市", "沈阳市", "大连市", "河北省", "苏州市", "烟台市", "合肥市", "长春市", "四平市", "上海市");
+//
+//		List<City> cityList = new ArrayList<>();
+//		for (String name : prirityCityNames) {
+//			CityListInput query = new CityListInput();
+//			query.setKeyword(name);
+//			List<City> list = this.baseInfoRpcService.listCityByCondition(name);
+//			City city = list.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+//			if (city != null) {
+//				cityList.add(city);
+//			}
+//
+//		}
+//		return cityList;
+//
+//	}
 }
