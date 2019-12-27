@@ -27,7 +27,7 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public String nextSampleCode() {
+	public String nextSampleCode() throws AppException {
 
 		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst()
 				.orElseThrow(() -> {
