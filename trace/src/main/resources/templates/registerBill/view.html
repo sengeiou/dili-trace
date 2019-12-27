@@ -317,12 +317,14 @@
 
 </div>
 </#bodyOrigin>
-
-
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
 <script>
-
+	function rotateImg(angle){
+		$('#showedImg').rotate($('#showedImg').getRotateAngle()[0]+angle);
+	}
     $('.imageUpload,.show-img').on('click', function () {
         var url = $(this).find("img").attr('src');
+        //url='${contextPath!}/resources/images/22.jpg'
         if(url){
             layer.open({
                 title:'图片',
@@ -330,7 +332,9 @@
                 skin: 'layui-layer-rim',
                 closeBtn: 2,
                 area: ['90%', '90%'], //宽高
-                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+                content: '<p style="text-align:center"><img id="showedImg" src="' + url + '" alt="" class="show-image-zoom"></p>'
+                +'<div  align="center"><a href="javascript:void(0);" onclick=rotateImg(90)>顺时针旋转</a>'
+                +' <span style="width: 10%;display:inline-block"></span><a  href="javascript:void(0);" onclick=rotateImg(-90)>逆时针旋转</a></div>'
             });
         }
     });

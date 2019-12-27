@@ -378,11 +378,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		if(user==null) {
 			return;
 		}
-		UserTallyArea example=DTOUtils.newDTO(UserTallyArea.class);
-		example.setUserId(user.getId());
-		this.userTallyAreaService.deleteByExample(example);
-		user.setTallyAreaNos(null);
-		user.setState(EnabledStateEnum.DISABLED.getCode());
+		this.updateEnable(id, false);
+//		UserTallyArea example=DTOUtils.newDTO(UserTallyArea.class);
+//		example.setUserId(user.getId());
+//		this.userTallyAreaService.deleteByExample(example);
+//		user.setTallyAreaNos(null);
+//		user.setState(EnabledStateEnum.DISABLED.getCode());
 		this.updateExact(user);
 		
 	}
