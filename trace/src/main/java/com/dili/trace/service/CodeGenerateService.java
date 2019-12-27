@@ -5,5 +5,5 @@ import com.dili.ss.exception.AppException;
 import com.dili.trace.domain.CodeGenerate;
 
 public interface CodeGenerateService extends BaseService<CodeGenerate, Long>{
-	public String nextSampleCode()throws AppException;
+	public String nextSampleCode();
 }

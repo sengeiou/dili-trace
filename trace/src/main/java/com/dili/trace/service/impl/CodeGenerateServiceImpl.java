@@ -27,12 +27,12 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public String nextSampleCode() throws AppException {
+	public String nextSampleCode() {
 
-		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst()
-				.orElseThrow(() -> {
+		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst().orElse(null);
+		if(codeGenerate==null) {
 					throw new AppException("生成采样单编号错误");
-		});
+		};
 		// 时间比较
 		LocalDateTime modified = codeGenerate.getModified().toInstant().atZone(ZoneId.systemDefault())
 				.toLocalDateTime();
