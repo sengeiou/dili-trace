@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -341,18 +342,29 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         userQuery.setState(EnabledStateEnum.ENABLED.getCode());
         return list(userQuery).stream().findFirst().orElse(null);
     }
-
+    private Optional<String> andCondition(UserListDto dto) {
+    	List<String>strList=new ArrayList<String>();
+    	if (dto != null && dto.getHasBusinessLicense() != null) {
+			if (dto.getHasBusinessLicense()) {
+				strList.add(" (business_license_url is not null and business_license_url<>'') ");
+			} else {
+				strList.add( " (business_license_url is null or business_license_url='') ");
+			}
+		}
+    	
+    	if(dto!=null&&StringUtils.isNotBlank(dto.getPlates())) {
+    		strList.add(" id in (select user_id from user_plate where plate like '"+dto.getPlates().trim().toUpperCase()+"%')");
+		}
+    	if(!strList.isEmpty()) {
+    		return Optional.of(String.join(" and ", strList));
+    	}
+    	return Optional.empty();
+    }
 	@Override
 	public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception {
-
-		if (dto != null && dto.getHasBusinessLicense() != null) {
-			if (dto.getHasBusinessLicense()) {
-				dto.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is not null and business_license_url<>'') ");
-			} else {
-				dto.mset(IDTO.AND_CONDITION_EXPR, " (business_license_url is null or business_license_url='') ");
-			}
-
-		}
+		this.andCondition(dto).ifPresent(str->{
+			dto.mset(IDTO.AND_CONDITION_EXPR, str);
+		});
 		EasyuiPageOutput out=this.listEasyuiPageByExample(dto, true);
 		List<DTO>users=out.getRows();
 		List<Long>userIdList=users.stream().map(o->{return (Long)o.get("id");}).collect(Collectors.toList());
