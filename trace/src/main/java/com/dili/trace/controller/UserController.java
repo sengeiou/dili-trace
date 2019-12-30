@@ -211,15 +211,15 @@ public class UserController {
 	@ApiOperation("跳转到User页面")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap,@PathVariable Long id) {
-		User user=this.userService.get(id);
+		User userItem=this.userService.get(id);
 		String userPlateStr=this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate).collect(Collectors.joining(","));
-		if(user!=null) {
-			user.setAddr(MaskUserInfo.maskAddr(user.getAddr()));
-			user.setCardNo(MaskUserInfo.maskIdNo(user.getCardNo()));
-			user.setPhone(MaskUserInfo.maskPhone(user.getPhone()));
+		if(userItem!=null) {
+			userItem.setAddr(MaskUserInfo.maskAddr(userItem.getAddr()));
+			userItem.setCardNo(MaskUserInfo.maskIdNo(userItem.getCardNo()));
+			userItem.setPhone(MaskUserInfo.maskPhone(userItem.getPhone()));
 		}
 		
-		modelMap.put("user", user);
+		modelMap.put("userItem", userItem);
 		modelMap.put("userPlates", userPlateStr);
 		
 		return "user/view";
