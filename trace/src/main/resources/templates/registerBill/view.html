@@ -317,6 +317,14 @@
 
 </div>
 </#bodyOrigin>
+<style>
+.layui-layer-btn0{
+border:1px solid #dedede!important;
+background-color:#f1f1f1!important;
+color:#333!important;
+}
+
+</style>
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
 <script>
 	function rotateImg(angle){
@@ -324,18 +332,24 @@
 	}
     $('.imageUpload,.show-img').on('click', function () {
         var url = $(this).find("img").attr('src');
-        //url='${contextPath!}/resources/images/22.jpg'
+        //url='http://gss0.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/241f95cad1c8a786d814d6eb6709c93d70cf501c.jpg'
         if(url){
             layer.open({
                 title:'图片',
                 type: 1,
                 skin: 'layui-layer-rim',
-                closeBtn: 2,
+               // closeBtn: 2,
+                btn:["顺时针旋转","逆时针旋转"],
+                btnAlign: 'c',
                 area: ['90%', '90%'], //宽高
-                content: '<p style="text-align:center"><img id="showedImg" width="100%" height="100%" src="' + url + '" alt="" class="show-image-zoom"></p>'
-                +'<div  align="center"><a href="javascript:void(0);" onclick=rotateImg(90)>顺时针旋转</a>'
-                +' <span style="width: 10%;display:inline-block"></span><a  href="javascript:void(0);" onclick=rotateImg(-90)>逆时针旋转</a></div>'
-            });
+                content: '<div id="cropContainer" style="text-align:center"><img id="showedImg" width="'+($(window).innerWidth()*0.87)+'px" height="'+($(window).innerHeight()*0.80)+'px"  src="' + url + '" alt="" class="show-image-zoom"></div>'
+            ,btn1:function(){
+            	rotateImg(90);
+            	return false;
+            },btn2:function(){
+            	rotateImg(-90);
+            	return false;
+            }});
         }
     });
 
