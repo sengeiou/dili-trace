@@ -8,7 +8,7 @@ var currentUser={"depId":"${user.depId!}"
 	
     //表格查询
 
-    function queryRegisterBillGrid(queryPlate) {
+    function queryRegisterBillGrid() {
         var opts = _registerBillGrid.datagrid("options");
         if (null == opts.url || "" == opts.url) {
             opts.url = "${contextPath}/registerBill/listPage.action";
@@ -17,19 +17,23 @@ var currentUser={"depId":"${user.depId!}"
         if(!$('#queryForm').form("validate")){
             return false;
         }
-        if(queryPlate&&queryPlate!=true){
-        	queryPlatesByTallyAreaNo();	
-        }
+
         _registerBillGrid.datagrid("load", bindGridMeta2Form("registerBillGrid", "queryForm"));
         initBtnStatus();
 
     }
+    $(function(){
+    	   $('#likeTallyAreaNo').textbox('textbox').bind('input', function() {
+    		   queryPlatesByTallyAreaNo();
+    	   });
+    	});
+    	
 	function queryPlatesByTallyAreaNo(){
-		
 		var tallyAreaNo=$('#likeTallyAreaNo').textbox('getValue');
+		//console.info(tallyAreaNo)
 		$('#plate').combobox('loadData',[])
 		if(tallyAreaNo&&tallyAreaNo!=''){
-			console.info(tallyAreaNo)
+			
 			
 			 $.ajax({
                  type: "POST",
@@ -51,12 +55,11 @@ var currentUser={"depId":"${user.depId!}"
              });
 			
 		}
-		
-		
 	}
+    
 	function onPlateChange(v){
 		if(v&&v!='全部'){
-			queryRegisterBillGrid(false);
+			queryRegisterBillGrid();
 		}
 		
 	}
