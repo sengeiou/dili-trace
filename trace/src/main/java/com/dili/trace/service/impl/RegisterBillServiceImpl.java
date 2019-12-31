@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -374,7 +375,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return BaseOutput.success().setData(dto);
 
 	}
-
+	private Optional<RegisterBill> auditRegisterBillWithOriginCertifiyUrl(RegisterBill registerBill,Boolean passWithOriginCertifiyUrl,Boolean pass){
+		if(passWithOriginCertifiyUrl!=null&&pass!=null&&passWithOriginCertifiyUrl&&pass) {
+			if(StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())) {
+				registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+				registerBill.setDetectState(null);
+				this.updateSelective(registerBill);
+				return Optional.of(registerBill);
+			}
+		}
+		return Optional.empty();
+		
+	}
 	@Override
 	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) {
 		BatchResultDto<String> dto = new BatchResultDto<>();
@@ -382,6 +394,20 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			RegisterBill registerBill = get(id);
 			if (registerBill == null) {
 				continue;
+			}
+			if(batchAuditDto.getPassWithOriginCertifiyUrl()!=null&&StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())&&StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+				
+				if(!batchAuditDto.getPassWithOriginCertifiyUrl()) {
+					continue;
+				}else {
+					if(batchAuditDto.getPass()!=null&&batchAuditDto.getPass()) {
+							registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+							registerBill.setDetectState(null);
+							this.updateSelective(registerBill);
+							dto.getSuccessList().add(registerBill.getCode());
+					}
+				}
+				
 			}
 			try {
 				this.auditRegisterBill(batchAuditDto.getPass(), registerBill);

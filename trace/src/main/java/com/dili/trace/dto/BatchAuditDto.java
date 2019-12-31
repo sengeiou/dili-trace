@@ -11,6 +11,12 @@ public class BatchAuditDto {
 	 * 审核是否通过状态值(true,false)
 	 */
 	private Boolean pass;
+	
+	/**
+	 * 审核是否通过状态值(true,false)
+	 */
+	private Boolean passWithOriginCertifiyUrl;
+	
 	public List<Long> getRegisterBillIdList() {
 		return registerBillIdList;
 	}
@@ -22,6 +28,12 @@ public class BatchAuditDto {
 	}
 	public void setPass(Boolean pass) {
 		this.pass = pass;
+	}
+	public Boolean getPassWithOriginCertifiyUrl() {
+		return passWithOriginCertifiyUrl;
+	}
+	public void setPassWithOriginCertifiyUrl(Boolean passWithOriginCertifiyUrl) {
+		this.passWithOriginCertifiyUrl = passWithOriginCertifiyUrl;
 	}
 	
 }

@@ -571,73 +571,99 @@ var currentUser={"depId":"${user.depId!}"
 	    	
 	    })
 	}
-    function batchAudit(){
-    	var rows=_registerBillGrid.datagrid("getSelections");
-    	if (rows.length==0) {
-            swal({
-                title: '警告',
-                text: '请选中一条数据',
-                type: 'warning',
-                width: 300
-            });
-            return;
-        }
-        
-
-          
-       	var codeList=[];
-        var batchIdList=[];
-       	for(var i=0;i<rows.length;i++){
-       		 if (rows[i].$_state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
-       			  batchIdList.push(rows[i].id);
-       			  codeList.push(rows[i].code)
-                }
-       	}
+	async function batchAudit(){
+	   	var rows=_registerBillGrid.datagrid("getSelections");
+	   	if (rows.length==0) {
+	           swal({
+	               title: '警告',
+	               text: '请选中一条数据',
+	               type: 'warning',
+	               width: 300
+	           });
+	           return;
+	       }
+		var codeList=[];
+		var batchIdList=[];
+		var onlyWithOriginCertifiyUrlIdList=[];
+		for(var i=0;i<rows.length;i++){
+				 if (rows[i].$_state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
+					  batchIdList.push(rows[i].id);
+					  codeList.push(rows[i].code)
+					  if(rows[i].originCertifiyUrl=='有'&&rows[i].detectReportUrl=='无'){
+						onlyWithOriginCertifiyUrlIdList.push(rows[i].code)
+					  };
+		         }
+		}
 		if(codeList.length==0){
-			layer.alert('所选登记单子不能审核')
+			layer.alert('所选登记单不能进行审核')
 			return;
 		}
-        layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量审核"}, function () {
-        	$.ajax({
-        		type: "POST",
-                url: "${contextPath}/registerBill/doBatchAudit",
-                processData:true,
-                contentType:'application/json;charset=utf-8',
-                data:JSON.stringify({registerBillIdList:batchIdList,pass:true}),
-                dataType: "json",
-                async : true,
-                success: function (ret) {
-                    if(ret.success){
-                   	 var failureList=ret.data.failureList;
-                	 if(failureList.length==0){
-                         _registerBillGrid.datagrid("reload");
-                         TLOG.component.operateLog('登记单管理',"批量审核","【编号】:"+codeList.join(','));
-                         layer.alert('操作成功',{title:'操作',time : 600});  
+		let promise = new Promise((resolve, reject) => {
+		  layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量审核", yes:function () {
+				setTimeout(() =>{ resolve("yes");}, 1)
+		  },cancel:async function(){
+				 setTimeout(() =>{ resolve("cancel");}, 1)
+		  }
+		  });
+		});
 
-                	 }else{
-                		 swal(
-                                 '操作',
-                                 '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
-                                 'info'
-                         );
-                	 }
-                    }else{
-                        swal(
-                                '错误',
-                                ret.result,
-                                'error'
-                        );
-                    }
-                },
-                error: function(){
-                    swal(
-                            '错误',
-                            '远程访问失败',
-                            'error'
-                    );
-                }
-            });
-        })
+	  let result = await promise; // wait until the promise resolves (*)
+	  if(result=='yes'){
+		  var passWithOriginCertifiyUrl=null;
+		  if(onlyWithOriginCertifiyUrlIdList.length>0){
+				let reconfirmPromise = new Promise((resolve, reject) => {
+					  layer.confirm(onlyWithOriginCertifiyUrlIdList.join("<br\>"), {btn: ['是', '否'], title: "是否对以下只有产地证明登记单,不再进行检测", yes:function () {
+							setTimeout(() =>{ resolve(true);}, 1)
+					  },cancel:async function(){
+							 setTimeout(() =>{ resolve(false);}, 1)
+					  }
+					  });
+					});
+				passWithOriginCertifiyUrl=await reconfirmPromise;
+		  }
+		  layer.closeAll();
+		  $.ajax({
+      		type: "POST",
+              url: "${contextPath}/registerBill/doBatchAudit",
+              processData:true,
+              contentType:'application/json;charset=utf-8',
+              data:JSON.stringify({registerBillIdList:batchIdList,pass:true,passWithOriginCertifiyUrl:passWithOriginCertifiyUrl}),
+              dataType: "json",
+              async : true,
+              success: function (ret) {
+                  if(ret.success){
+                 	 var failureList=ret.data.failureList;
+	              	 if(failureList.length==0){
+	                       _registerBillGrid.datagrid("reload");
+	                       TLOG.component.operateLog('登记单管理',"批量审核","【编号】:"+codeList.join(','));
+	                       layer.alert('操作成功：</br>'+ret.data.successList.join('</br>'),{title:'操作',time : 3000});  
+	
+	              	 }else{
+	              		 swal(
+	                               '操作',
+	                               '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
+	                               'info'
+	                       );
+	              	 }
+                  }else{
+                      swal(
+                              '错误',
+                              ret.result,
+                              'error'
+                      );
+                  }
+              },
+              error: function(){
+                  swal(
+                          '错误',
+                          '远程访问失败',
+                          'error'
+                  );
+              }
+          });
+		  
+	  }
+	  
 
     }
 
