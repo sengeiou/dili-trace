@@ -638,7 +638,7 @@ public class RegisterBillController {
 		if (null != registerBill) {
 			registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
 		}
-		modelMap.put("tradeBill", registerBill);
+		modelMap.put("registerBill", registerBill);
 		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
 		return "registerBill/tradeBillDetail";
 	}
