@@ -405,6 +405,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 							registerBill.setDetectState(null);
 							this.updateSelective(registerBill);
 							dto.getSuccessList().add(registerBill.getCode());
+							continue;
 					}
 				}
 				
