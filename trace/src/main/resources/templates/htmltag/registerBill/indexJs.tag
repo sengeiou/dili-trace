@@ -23,13 +23,13 @@ var currentUser={"depId":"${user.depId!}"
 
     }
     $(function(){
-    	   $('#likeTallyAreaNo').textbox('textbox').bind('input', function() {
-    		   queryPlatesByTallyAreaNo();
+    	   $('#likeTallyAreaNo').textbox('textbox').bind('input', function(n,o) {
+    		   queryPlatesByTallyAreaNo($(this).val());
     	   });
     	});
     	
-	function queryPlatesByTallyAreaNo(){
-		var tallyAreaNo=$('#likeTallyAreaNo').textbox('getValue');
+	function queryPlatesByTallyAreaNo(tallyAreaNo){
+		console.info(tallyAreaNo)
 		//console.info(tallyAreaNo)
 		$('#plate').combobox('loadData',[])
 		if(tallyAreaNo&&tallyAreaNo!=''){
