@@ -599,12 +599,12 @@ var currentUser={"depId":"${user.depId!}"
 			return;
 		}
 		let promise = new Promise((resolve, reject) => {
-		  layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量审核", yes:function () {
-				setTimeout(() =>{ resolve("yes");}, 1)
-		  },cancel:async function(){
-				 setTimeout(() =>{ resolve("cancel");}, 1)
+		  layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量审核"},function () {
+				resolve("yes");
+		  },function(){
+				resolve("cancel");
 		  }
-		  });
+		  );
 		});
 
 	  let result = await promise; // wait until the promise resolves (*)
@@ -612,11 +612,10 @@ var currentUser={"depId":"${user.depId!}"
 		  var passWithOriginCertifiyUrl=null;
 		  if(onlyWithOriginCertifiyUrlIdList.length>0){
 				let reconfirmPromise = new Promise((resolve, reject) => {
-					  layer.confirm(onlyWithOriginCertifiyUrlIdList.join("<br\>"), {btn: ['是', '否'], title: "是否对以下只有产地证明登记单,不再进行检测", yes:function () {
-							setTimeout(() =>{ resolve(true);}, 1)
-					  },cancel:async function(){
-							 setTimeout(() =>{ resolve(false);}, 1)
-					  }
+					  layer.confirm(onlyWithOriginCertifiyUrlIdList.join("<br\>"), {btn: ['是', '否'], title: "是否对以下只有产地证明登记单,不再进行检测"},function () {
+							resolve("yes");
+					  },function(){
+							resolve("cancel");
 					  });
 					});
 				passWithOriginCertifiyUrl=await reconfirmPromise;
