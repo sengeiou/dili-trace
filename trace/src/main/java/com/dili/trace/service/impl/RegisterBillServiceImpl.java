@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -390,33 +391,44 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) {
 		BatchResultDto<String> dto = new BatchResultDto<>();
-		for (Long id : batchAuditDto.getRegisterBillIdList()) {
+		
+		//id转换为RegisterBill,并通过条件判断partition(true:只有产地证明，且需要进行批量处理,false:其他)
+		Map<Boolean,List<RegisterBill>>partitionedMap=CollectionUtils.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream().filter(Objects::nonNull).map(id->{
 			RegisterBill registerBill = get(id);
-			if (registerBill == null) {
-				continue;
-			}
-			if(batchAuditDto.getPassWithOriginCertifiyUrl()!=null&&StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())&&StringUtils.isBlank(registerBill.getDetectReportUrl())) {
-				
-				if(!batchAuditDto.getPassWithOriginCertifiyUrl()) {
-					continue;
-				}else {
-					if(batchAuditDto.getPass()!=null&&batchAuditDto.getPass()) {
-							registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-							registerBill.setDetectState(null);
-							this.updateSelective(registerBill);
-							dto.getSuccessList().add(registerBill.getCode());
-							continue;
-					}
+			return registerBill;
+		}).filter(Objects::nonNull).collect(Collectors.partitioningBy((registerBill)->{
+			
+			if(Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
+				if(StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())&&StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+					return true;
 				}
-				
 			}
+			return false;
+		}));
+		
+		//只有产地证明，且需要进行批量处理
+		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.TRUE)).forEach(registerBill->{
+			if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+				registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+				registerBill.setDetectState(null);
+				this.updateSelective(registerBill);
+				dto.getSuccessList().add(registerBill.getCode());
+			}else {
+				dto.getFailureList().add(registerBill.getCode());
+			}
+			
+		});
+		//其他登记单
+		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.FALSE)).forEach(registerBill->{
 			try {
 				this.auditRegisterBill(batchAuditDto.getPass(), registerBill);
 				dto.getSuccessList().add(registerBill.getCode());
 			} catch (Exception e) {
 				dto.getFailureList().add(registerBill.getCode());
 			}
-		}
+			
+		});
+		
 		return BaseOutput.success().setData(dto);
 	}
 
