@@ -409,6 +409,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		//只有产地证明，且需要进行批量处理
 		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.TRUE)).forEach(registerBill->{
 			if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+				UserTicket userTicket = getOptUser();
+				registerBill.setOperatorName(userTicket.getRealName());
+				registerBill.setOperatorId(userTicket.getId());
 				registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
 				registerBill.setDetectState(null);
 				this.updateSelective(registerBill);
