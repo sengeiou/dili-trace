@@ -376,18 +376,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return BaseOutput.success().setData(dto);
 
 	}
-	private Optional<RegisterBill> auditRegisterBillWithOriginCertifiyUrl(RegisterBill registerBill,Boolean passWithOriginCertifiyUrl,Boolean pass){
-		if(passWithOriginCertifiyUrl!=null&&pass!=null&&passWithOriginCertifiyUrl&&pass) {
-			if(StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())) {
-				registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-				registerBill.setDetectState(null);
-				this.updateSelective(registerBill);
-				return Optional.of(registerBill);
-			}
-		}
-		return Optional.empty();
-		
-	}
+
 	@Override
 	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) {
 		BatchResultDto<String> dto = new BatchResultDto<>();
@@ -396,7 +385,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		Map<Boolean,List<RegisterBill>>partitionedMap=CollectionUtils.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream().filter(Objects::nonNull).map(id->{
 			RegisterBill registerBill = get(id);
 			return registerBill;
-		}).filter(Objects::nonNull).collect(Collectors.partitioningBy((registerBill)->{
+		}).filter(Objects::nonNull).filter(registerBill->{
+			if(Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
+				if(StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())&&StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+					return false;
+				}
+			}
+			return true;
+		}).collect(Collectors.partitioningBy((registerBill)->{
 			
 			if(Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
 				if(StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())&&StringUtils.isBlank(registerBill.getDetectReportUrl())) {
