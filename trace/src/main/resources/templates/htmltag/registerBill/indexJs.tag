@@ -615,7 +615,7 @@ var currentUser={"depId":"${user.depId!}"
 		  var passWithOriginCertifiyUrl=null;
 		  if(onlyWithOriginCertifiyUrlIdList.length>0){
 				let reconfirmPromise = new Promise((resolve, reject) => {
-					  layer.confirm('只有产地证明登记单列表:<br/>'+onlyWithOriginCertifiyUrlIdList.join("<br\>"), {btn: ['是', '否'], title: "是否不再进行检测"},function () {
+					  layer.confirm('只有产地证明登记单列表:<br/>'+onlyWithOriginCertifiyUrlIdList.join("<br\>"), {btn: ['不检测', '检测'], title: "是否不再进行检测"},function () {
 							resolve(true);
 					  },function(){
 							resolve(false);
