@@ -145,7 +145,7 @@
             <div class="form-group">
                 <div class="table-showlist" style="width: 1200px">
                  常用产地: <% for(city in citys){%>
-                                               <a href="javascript:void(0)" onclick="selectCity(this,${city.id},'${city.mergerName}')"  title="${city.mergerName}">${city.name}</a>
+                                               <a href="javascript:void(0)" onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"  title="${city.mergedAddress}">${city.address}</a>
                     <%}%>
                 </div>
             </div>
