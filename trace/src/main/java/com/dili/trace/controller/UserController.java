@@ -137,8 +137,7 @@ public class UserController {
 			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput delete(Long id) {
-		userService.deleteUser(id);
-		return BaseOutput.success("删除成功");
+		return userService.deleteUser(id);
 	}
 
 	/**

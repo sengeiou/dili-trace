@@ -74,5 +74,5 @@ public interface UserService extends BaseService<User, Long> {
 	 * 
 	 * @param user
 	 */
-	void deleteUser(Long id);
+	BaseOutput deleteUser(Long id);
 }
