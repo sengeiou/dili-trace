@@ -1263,14 +1263,14 @@ var currentUser={"depId":"${user.depId!}"
     	var imgBoxArr=td.find('.fileimg-box');
     	if(imgBoxArr.length==10){
     		var lastImgBox=$(imgBoxArr[imgBoxArr.length-1]);
-
     		if(lastImgBox.find("input:hidden").val()!=''){
-    			debugger
+
             	imgBox.find(".magnifying").attr('src', '').hide();
             	imgBox.find("input:hidden").val('');
             	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+            	
+            	imgBox.appendTo(td);
     		}else{
-    			debugger
     			imgBox.remove();
     		}
     	}else if(imgBoxArr.length>1){
