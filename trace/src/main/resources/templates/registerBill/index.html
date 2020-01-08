@@ -185,7 +185,7 @@
     <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增" style="padding:20px" modal="true" border="thin" closed="true"
          data-options="
 				iconCls: 'icon-edit',
-				height: 380,
+				height: 450,
 				buttons: [{
 					text:'确认',
 					iconCls:'icon-ok',
@@ -200,18 +200,19 @@
 			">
     <form id="_form" class="easyui-form" method="post" fit="true">
         <input name="_id" id="_id" type="hidden">
-        <table width="400px">
+        <table width="680px">
             <tr>
                 <td style="padding:10px;">
-                    <div class="fileimg-box" style="margin: 0 auto;">
+                    <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
                         <span class="fileimg-plus-icon">+</span>
                         <span class="fileimg-des">上传处理结果图片</span>
-                        <input type="file" name="file" id="_handleResultUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                        <input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
                         <img class="magnifying">
                         <input type="hidden" name="_handleResultUrl">
                         <div class="fileimg-cover" style="display: none;"></div>
                         <div class="fileimg-edit" style="display: none;">
                             <span class="fileimg-view">查看</span>
+                            <span class="fileimg-delete">删除</span>
                         </div>
                     </div>
                 </td>
@@ -220,7 +221,7 @@
         <table width="400px">
             <tr>
                 <td style="padding:10px;">
-                    <input class="easyui-textbox"  name="_handleResult" id="_handleResult" style="width:100%" data-options="labelWidth:100,label:'处理结果备注*:', validType:'length[2,50]',required:true,multiline:true,rows:5,height:80" />
+                    <input class="easyui-textbox"  name="_handleResult" id="_handleResult" style="width:100%" data-options="labelWidth:100,label:'处理结果备注*:', validType:'length[2,100000]',required:true,multiline:true,rows:5,height:80" />
                 </td>
             </tr>
         </table>

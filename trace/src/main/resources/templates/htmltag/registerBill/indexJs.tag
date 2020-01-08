@@ -29,7 +29,7 @@ var currentUser={"depId":"${user.depId!}"
     	});
     	
 	function queryPlatesByTallyAreaNo(tallyAreaNo){
-		console.info(tallyAreaNo)
+		//console.info(tallyAreaNo)
 		//console.info(tallyAreaNo)
 		$('#plate').combobox('loadData',[])
 		if(tallyAreaNo&&tallyAreaNo!=''){
@@ -1180,7 +1180,11 @@ var currentUser={"depId":"${user.depId!}"
             });
             return;
         }
-          
+    	$.each($(' .fileimg-box'),function(i,v){
+    		   if(i>0){
+    			   $(this).remove();
+    		   }
+    	   })
         $('#dlg').dialog("setTitle","上传处理结果");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
@@ -1200,12 +1204,17 @@ var currentUser={"depId":"${user.depId!}"
         if(!$('#_form').form("validate")){
             return;
         }
-        var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-       if(!_formData.handleResultUrl||_formData.handleResultUrl==''){
+       var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+       var  handleResultUrl=$.makeArray(_formData.handleResultUrl).filter(function(v,i){
+        	return v!='';
+        }).join(',');
+       
+       _formData.handleResultUrl=handleResultUrl;
+       if(handleResultUrl==''){
     	   layer.alert('请上传处理结果图片');
     	   return;
-    	   
        }
+    
         var _url = "${contextPath}/registerBill/saveHandleResult.action";
         $.ajax({
             type: "POST",
@@ -1247,17 +1256,57 @@ var currentUser={"depId":"${user.depId!}"
             });
         }
     });
+    $('.fileimg-delete').on('click', function () {
+    	
+    	var imgBox=$(this).parents('.fileimg-box:first');
+    	var td= imgBox.parent('td');
+    	var imgBoxArr=td.find('.fileimg-box');
+    	if(imgBoxArr.length==10){
+    		var lastImgBox=$(imgBoxArr[imgBoxArr.length-1]);
 
+    		if(lastImgBox.find("input:hidden").val()!=''){
+    			debugger
+            	imgBox.find(".magnifying").attr('src', '').hide();
+            	imgBox.find("input:hidden").val('');
+            	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+    		}else{
+    			debugger
+    			imgBox.remove();
+    		}
+    	}else if(imgBoxArr.length>1){
+    		imgBox.remove();
+    	}else{
+        	imgBox.find(".magnifying").attr('src', '').hide();
+        	imgBox.find("input:hidden").val('');
+        	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+    	}
+
+    });
     function initFileUpload(){
-        $(":file").fileupload({
+    	initFileInput($("input[type='file']"));
+    }
+    function initFileInput(jqueryObj){
+    	jqueryObj.fileupload({
             dataType : 'json',
             formData: {type:5,compress:true},
             done : function(e, res) {
                 if (res.result.code == 200) {
-                    var url = res.result.data;
-                    $(this).siblings(".magnifying").attr('src', url).show();
-                    $(this).siblings("input:hidden").val(url);
-                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                	var url = res.result.data;
+                	var fileInput=$(e.target);
+                	var imgBox=fileInput.parent();
+                	var td= imgBox.parent('td');
+                	 var newImgBox=imgBox.clone(true);
+                	 
+                    imgBox.find(".magnifying").attr('src', url).show();
+                    imgBox.find("input:hidden").val(url);
+                    imgBox.find('.fileimg-cover,.fileimg-edit').show();
+                    
+                    if(td.find('.fileimg-box').length<10){
+                    	newImgBox.find('input[type="file"]').remove();
+                    	$('<input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))
+                    	newImgBox.appendTo(td);
+                    	initFileInput(newImgBox.find('input[type="file"]'))
+                    }
                 }
             },
             add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
@@ -1278,7 +1327,9 @@ var currentUser={"depId":"${user.depId!}"
                 data.submit();
             }
         });
-    }
+ 	
+ 	
+ }
     
 
 </script>
