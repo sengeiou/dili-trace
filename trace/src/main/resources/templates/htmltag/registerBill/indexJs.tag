@@ -444,14 +444,13 @@ var currentUser={"depId":"${user.depId!}"
               }
            }
         }
-      
-        if(selected.handleResultUrl&&selected.handleResult&&selected.handleResultUrl!=null&&selected.handleResult!=null&&selected.handleResultUrl!=''&&selected.handleResult!=''){
+      //debugger
+        //if(selected.handleResultUrl&&selected.handleResult&&selected.handleResultUrl!=null&&selected.handleResult!=null&&selected.handleResultUrl!=''&&selected.handleResult!=''){
         	 //$('#handle-btn').linkbutton('disable');
-        }else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}&&selected.handleResultUrl==null&&selected.handleResult==null){
+        //}else if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}&&selected.handleResultUrl==null&&selected.handleResult==null){
+        if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}){
         	 $('#handle-btn').show();
         }
-       
-        //handle-btn
     }
 
     function blankFormatter(val,row){
@@ -1180,11 +1179,12 @@ var currentUser={"depId":"${user.depId!}"
             });
             return;
         }
-    	$.each($(' .fileimg-box'),function(i,v){
-    		   if(i>0){
-    			   $(this).remove();
-    		   }
-    	   })
+        $.each($(' .fileimg-box'),function(i,v){
+ 		   if(i>0){
+ 			   $(this).remove();
+ 		   }
+ 	   })
+    	
         $('#dlg').dialog("setTitle","上传处理结果");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
@@ -1195,7 +1195,12 @@ var currentUser={"depId":"${user.depId!}"
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
         $('#_form').form('load', formData);
-        
+        $.makeArray(selected.handleResultUrl.split(",")).filter(function(v,i){
+          	return v!='';
+          }).forEach (function(url,i){
+        	 var fileInputObj=$('.fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
+        	  afterUpload(url,fileInputObj);
+          });
         initFileUpload();
     }
 
@@ -1205,10 +1210,11 @@ var currentUser={"depId":"${user.depId!}"
             return;
         }
        var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-       var  handleResultUrl=$.makeArray(_formData.handleResultUrl).filter(function(v,i){
+       var  handleResultUrl=$.makeArray(_formData.resultUrl).filter(function(v,i){
         	return v!='';
         }).join(',');
        
+       delete _formData.resultUrl
        _formData.handleResultUrl=handleResultUrl;
        if(handleResultUrl==''){
     	   layer.alert('请上传处理结果图片');
@@ -1229,7 +1235,7 @@ var currentUser={"depId":"${user.depId!}"
                	 $('#dlg').dialog('close');	 
                     layer.alert('处理成功',function(){
                    	 layer.closeAll();
-                   	 $('#handle-btn').linkbutton('disable');
+                   	 $('#handle-btn').hide();
                    	 queryRegisterBillGrid();
                     })
                     
@@ -1285,6 +1291,24 @@ var currentUser={"depId":"${user.depId!}"
     function initFileUpload(){
     	initFileInput($("input[type='file']"));
     }
+    function afterUpload(url,fileInputObj){
+    	var imgBox=fileInputObj.parent();
+    	var td= imgBox.parent('td');
+    	 var newImgBox=imgBox.clone(true);
+    	 
+        imgBox.find(".magnifying").attr('src', url).show();
+        imgBox.find("input[type='hidden']").val(url);
+        imgBox.find('.fileimg-cover,.fileimg-edit').show();
+        console.info(url)
+        debugger
+        if(td.find('.fileimg-box').length<10){
+        	newImgBox.find('input[type="file"]').remove();
+        	$('<input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))
+        	newImgBox.appendTo(td);
+        	initFileInput(newImgBox.find('input[type="file"]'))
+        }
+    }
+    
     function initFileInput(jqueryObj){
     	jqueryObj.fileupload({
             dataType : 'json',
@@ -1292,8 +1316,9 @@ var currentUser={"depId":"${user.depId!}"
             done : function(e, res) {
                 if (res.result.code == 200) {
                 	var url = res.result.data;
-                	var fileInput=$(e.target);
-                	var imgBox=fileInput.parent();
+                	var fileInputObj=$(e.target);
+                	afterUpload(url,fileInputObj);
+                	/*var imgBox=fileInputObj.parent();
                 	var td= imgBox.parent('td');
                 	 var newImgBox=imgBox.clone(true);
                 	 
@@ -1306,7 +1331,7 @@ var currentUser={"depId":"${user.depId!}"
                     	$('<input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))
                     	newImgBox.appendTo(td);
                     	initFileInput(newImgBox.find('input[type="file"]'))
-                    }
+                    }*/
                 }
             },
             add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
