@@ -207,4 +207,12 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public  BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) ;
+	/**
+	 * 删除产地证明及检测报告
+	 * @param id
+	 * @param deleteType
+	 * @return
+	 */
+	
+	public BaseOutput doRemoveReportAndCertifiy(Long id,String deleteType);
 }

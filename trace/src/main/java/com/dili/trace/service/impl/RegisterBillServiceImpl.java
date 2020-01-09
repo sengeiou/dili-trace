@@ -737,5 +737,28 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		return example.getId();
 	}
+	@Override
+	public BaseOutput doRemoveReportAndCertifiy(Long id,String deleteType) {
+		RegisterBill item = this.get(id);
+		if (item == null) {
+			throw new AppException("数据错误");
+		}
+		if(!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
+			throw new AppException("状态错误,不能删除产地证明和检测报告");
+		}
+		if("all".equalsIgnoreCase(deleteType)) {
+			item.setOriginCertifiyUrl(null);
+			item.setDetectReportUrl(null);
+		}else if("originCertifiy".equalsIgnoreCase(deleteType)) {
+			item.setOriginCertifiyUrl(null);
+		}else if("detectReport".equalsIgnoreCase(deleteType)) {
+			item.setDetectReportUrl(null);
+		}else {
+			//do nothing
+			return BaseOutput.success();
+		}
+		this.update(item);
+		return BaseOutput.success();
+	}
 
 }

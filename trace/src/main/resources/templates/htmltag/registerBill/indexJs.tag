@@ -264,6 +264,19 @@ var currentUser={"depId":"${user.depId!}"
                 }
             },
         </#resource>
+            <#resource method="post" url="registerBill/index.html#removeReportAndCertifiy">
+            {
+                iconCls:'icon-remove',
+                text:'删除检测报告和产地证明',
+                id:'remove-reportAndcertifiy-btn',
+                disabled :true,
+                handler:doRemoveReportAndCertifiy,
+                handler:function(){
+                    doRemoveReportAndCertifiy();
+                }
+            },
+        </#resource>
+            
             <#resource method="post" url="registerBill/index.html#copy">
             {
                 iconCls:'icon-copy',
@@ -317,7 +330,7 @@ var currentUser={"depId":"${user.depId!}"
         $('#handle-btn').linkbutton('disable');*/
         
         var btnArray=['upload-detectreport-btn','upload-origincertifiy-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
-        	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn']
+        	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn','remove-reportAndcertifiy-btn']
 	    for (var i = 0; i < btnArray.length; i++) {
 	        var btnId = btnArray[i];
 	        $('#'+btnId).linkbutton('enable');
@@ -421,6 +434,10 @@ var currentUser={"depId":"${user.depId!}"
             $('#upload-detectreport-btn').show();
         	$('#upload-origincertifiy-btn').show();
         	
+            if(selected.originCertifiyUrl=='有'||selected.detectReportUrl=='有'){
+           	 $('#remove-reportAndcertifiy-btn').show();
+    	   }
+        	
             //$('#batch-audit-btn').show();
            if(selected.registerSource==${@com.dili.trace.glossary.RegisterSourceEnum.TALLY_AREA.getCode()}){
         	   if(selected.originCertifiyUrl&&selected.originCertifiyUrl!=null&&selected.originCertifiyUrl!=''&&selected.originCertifiyUrl!='无'){
@@ -454,6 +471,8 @@ var currentUser={"depId":"${user.depId!}"
         if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_NO_PASS.getCode()}){
         	 $('#handle-btn').show();
         }
+
+       
     }
 
     function blankFormatter(val,row){
@@ -1206,7 +1225,83 @@ var currentUser={"depId":"${user.depId!}"
           });
         initFileUpload();
     }
+    async function doRemoveReportAndCertifiy(){
+    	var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+		let promise = new Promise((resolve, reject) => {
+			  layer.confirm('请确认是否删除产地证明和报告？', {btn:['全部删除','删除产地证明','删除检测报告','取消'], title: "警告！！！",
+					btn1:function(){
+					  resolve("all");
+					  return false;
+					},
+					btn2:function(){
+						resolve("originCertifiy");
+						return false;
+					},
+					btn3:function(){
+						resolve("detectReport");
+						 return false;
+					},
+					btn4:function(){
+						resolve("cancel");
+						 return false;
+					}
+				  });
+			  $('.layui-layer').width('460px');
+			});
+		  let result = await promise; // wait until the promise resolves (*) 
+		
+		  if(result!='cancel'){
+			  var _url = "${contextPath}/registerBill/doRemoveReportAndCertifiy.action";
+		        $.ajax({
+		            type: "POST",
+		            url: _url,
+		            data: {id:selected.id,deleteType:result},
+		            processData:true,
+		            dataType: "json",
+		            async : true,
+		            success: function (data) {
+		                if(data.code=="200"){
+		                	TLOG.component.operateLog('登记单管理',"删除产地证明和报告",'【ID】:'+selected.id);
+		               	
+	                         layer.alert('操作成功',{
+	 								title:'操作',
+		                           	time : 600,
+		                           	end :function(){
+		                           		 layer.closeAll();
+		                           		queryRegisterBillGrid();
+		                           	}
+		                          },
+	                         	 function () {
+	                         	  layer.closeAll();
+	                         	 queryRegisterBillGrid();
+	                                 }
+	                         );
 
+		                }else{
+		                	  layer.closeAll();
+		                    swal('错误',data.result, 'error');
+		                }
+		            },
+		            error: function(){
+		            	  layer.closeAll();
+		                swal('错误', '远程访问失败', 'error');
+		            }
+		        });
+		  }else{
+			  layer.closeAll();
+		  }
+		 
+		 
+    }
 
     function saveOrUpdateHandleResult(){
         if(!$('#_form').form("validate")){
