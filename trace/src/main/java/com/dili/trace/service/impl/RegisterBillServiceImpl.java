@@ -605,27 +605,27 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	}
 
-	@Override
-	public Long doModifyRegisterBill(RegisterBill input) {
-		if (input == null || input.getId() == null) {
-			throw new AppException("参数错误");
-		}
-		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
-			throw new AppException("请上传报告");
-		}
-		RegisterBill item = this.get(input.getId());
-		if (item == null) {
-			throw new AppException("数据错误");
-		}
-
-		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
-		example.setId(item.getId());
-		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
-		this.updateSelective(example);
-
-		return example.getId();
-	}
+//	@Override
+//	public Long doModifyRegisterBill(RegisterBill input) {
+//		if (input == null || input.getId() == null) {
+//			throw new AppException("参数错误");
+//		}
+//		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+//			throw new AppException("请上传报告");
+//		}
+//		RegisterBill item = this.get(input.getId());
+//		if (item == null) {
+//			throw new AppException("数据错误");
+//		}
+//
+//		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
+//		example.setId(item.getId());
+//		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
+//		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
+//		this.updateSelective(example);
+//
+//		return example.getId();
+//	}
 
 	@Override
 	public Long doAuditWithoutDetect(RegisterBill input) {
@@ -687,6 +687,50 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 //		registerBill.setOriginCertifiyUrl(input.getOriginCertifiyUrl());
 		this.updateSelective(registerBill);
 		return registerBill.getId();
+	}
+
+	@Override
+	public Long doUploadDetectReport(RegisterBill input) {
+		if (input == null || input.getId() == null) {
+			throw new AppException("参数错误");
+		}
+		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+			throw new AppException("请上传报告");
+		}
+		RegisterBill item = this.get(input.getId());
+		if (item == null) {
+			throw new AppException("数据错误");
+		}
+
+		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
+		example.setId(item.getId());
+		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
+		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
+		this.updateSelective(example);
+
+		return example.getId();
+	}
+
+	@Override
+	public Long doUploadOrigincertifiy(RegisterBill input) {
+		if (input == null || input.getId() == null) {
+			throw new AppException("参数错误");
+		}
+		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+			throw new AppException("请上传报告");
+		}
+		RegisterBill item = this.get(input.getId());
+		if (item == null) {
+			throw new AppException("数据错误");
+		}
+
+		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
+		example.setId(item.getId());
+		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
+		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
+		this.updateSelective(example);
+
+		return example.getId();
 	}
 
 }

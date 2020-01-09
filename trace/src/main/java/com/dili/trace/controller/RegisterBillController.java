@@ -357,8 +357,8 @@ public class RegisterBillController {
 	 * @param modelMap
 	 * @return
 	 */
-	@RequestMapping(value = "/modify/{id}", method = RequestMethod.GET)
-	public String modify(ModelMap modelMap, @PathVariable Long id) {
+	@RequestMapping(value = "/uploadDetectReport/{id}", method = RequestMethod.GET)
+	public String uploadDetectReport(ModelMap modelMap, @PathVariable Long id) {
 		RegisterBill registerBill = registerBillService.get(id);
 		if (registerBill == null) {
 			return "";
@@ -382,7 +382,7 @@ public class RegisterBillController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
 		
-		return "registerBill/modify";
+		return "registerBill/uploadDetectReport.html";
 	}
 
 	/**
@@ -792,17 +792,60 @@ public class RegisterBillController {
 
 	}
 
+//	/**
+//	 * 保存处理结果
+//	 * 
+//	 * @param input
+//	 * @return
+//	 */
+//	@RequestMapping(value = "/doModifyRegisterBill.action", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public BaseOutput<?> doModifyRegisterBill(RegisterBill input) {
+//		try {
+//			Long id = this.registerBillService.doModifyRegisterBill(input);
+//			return BaseOutput.success().setData(id);
+//		} catch (AppException e) {
+//			LOGGER.error(e.getMessage(), e);
+//			return BaseOutput.failure(e.getMessage());
+//		} catch (Exception e) {
+//			LOGGER.error(e.getMessage(), e);
+//			return BaseOutput.failure("服务端出错");
+//		}
+//
+//	}
+	
 	/**
-	 * 保存处理结果
+	 * 上传产地报告
 	 * 
 	 * @param input
 	 * @return
 	 */
-	@RequestMapping(value = "/doModifyRegisterBill.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/doUploadOrigincertifiy.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public BaseOutput<?> doModifyRegisterBill(RegisterBill input) {
+	public BaseOutput<?> doUploadOrigincertifiy(RegisterBill input) {
 		try {
-			Long id = this.registerBillService.doModifyRegisterBill(input);
+			Long id = this.registerBillService.doUploadOrigincertifiy(input);
+			return BaseOutput.success().setData(id);
+		} catch (AppException e) {
+			LOGGER.error(e.getMessage(), e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+
+	}
+	/**
+	 * 上传检测报告
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/doUploadDetectReport.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> doUploadDetectReport(RegisterBill input) {
+		try {
+			Long id = this.registerBillService.doUploadDetectReport(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
 			LOGGER.error(e.getMessage(), e);

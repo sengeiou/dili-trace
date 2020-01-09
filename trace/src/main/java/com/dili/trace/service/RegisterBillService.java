@@ -158,7 +158,16 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param input
 	 * @return
 	 */
-	public Long doModifyRegisterBill(RegisterBill input);
+	public Long doUploadDetectReport(RegisterBill input);
+	/**
+	 * 保存修改数据
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public Long doUploadOrigincertifiy(RegisterBill input);
+	
+	
 	
 	/**
 	 * 直接审核通过不需要检测

@@ -258,9 +258,9 @@ var currentUser={"depId":"${user.depId!}"
                 text:'上传检测报告',
                 id:'modify-btn',
                 disabled :true,
-                handler:doModify,
+                handler:doUploadDetectReport,
                 handler:function(){
-                    doModify();
+                    doUploadDetectReport();
                 }
             },
         </#resource>
@@ -1062,7 +1062,7 @@ var currentUser={"depId":"${user.depId!}"
         }
         openWin('/registerBill/uploadOrigincertifiy/' + selected.id);
     }
-    function doModify(){
+    function doUploadDetectReport(){
     	
     	var selected = _registerBillGrid.datagrid("getSelected");
         if (null == selected) {
@@ -1074,7 +1074,7 @@ var currentUser={"depId":"${user.depId!}"
             });
             return;
         }
-        openWin('/registerBill/modify/' + selected.id);
+        openWin('/registerBill/uploadDetectReport/' + selected.id);
     }
     
     function doCopy(){

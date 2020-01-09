@@ -235,34 +235,37 @@
             </div>
             <%} } %>
 
-           <div class="form-item-group">
+           <div class="form-item-group" id="originCertifiyUrlDiv">
                 <h4 class="form-item-title">产地证明</h4>
-                <div class="fileimg-box" style="margin-left: 50px;">
+                <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
                     <span class="fileimg-plus-icon">+</span>
                     <span class="fileimg-des">点击上传</span>
-                    <input id="originCertifiyUrlFile" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                    <input type="hidden" name="originCertifiyUrl" id="originCertifiyUrl">
-                    <img class="magnifying" <% if(isNotEmpty(registerBill.originCertifiyUrl)){ %>src="http://trace.nong12.com${registerBill.originCertifiyUrl!}"<% } %> alt="产地证明">
-                    <div class="fileimg-cover" <% if(isEmpty(registerBill.originCertifiyUrl)){ %>style="display: none;"<% } %>></div>
-                    <div class="fileimg-edit" <% if(isEmpty(registerBill.originCertifiyUrl)){ %>style="display: none;"<% } %>>
+                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                    <input type="hidden" name="originCertifiy" id="originCertifiy">
+                    <img class="magnifying" >
+                    <div class="fileimg-cover" style="display: none;"></div>
+                    <div class="fileimg-edit"  style="display: none;">
                         <span class="fileimg-view">查看</span>
-                    </div>
-                </div>
-           
-                <h4 class="form-item-title">检测报告</h4>
-                <div class="fileimg-box" style="margin-left: 50px;">
-                    <span class="fileimg-plus-icon">+</span>
-                    <span class="fileimg-des">点击上传</span>
-                    <input id="detectReportUrlFile" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                    <input type="hidden" name="detectReportUrl" id="detectReportUrl">
-                    <img class="magnifying" <% if(isNotEmpty(registerBill.detectReportUrl)){ %>src="http://trace.nong12.com${registerBill.detectReportUrl!}"<% } %> alt="检测报告">
-                    <div class="fileimg-cover"  <% if(isEmpty(registerBill.detectReportUrl)){ %>style="display: none;"<% } %> ></div>
-                    <div class="fileimg-edit" <% if(isEmpty(registerBill.detectReportUrl)){ %>style="display: none;"<% } %>>
-                        <span class="fileimg-view">查看</span>
+                        <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
             </div>
             
+             <div class="form-item-group" id="detectReportUrlDiv">
+                <h4 class="form-item-title">检测报告</h4>
+                <div class="fileimg-box"   style="display:inline-block;margin: 5px;padding: 10px;">
+                    <span class="fileimg-plus-icon">+</span>
+                    <span class="fileimg-des">点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                    <input type="hidden" name="detectReport" id="detectReport">
+                    <img class="magnifying" >
+                    <div class="fileimg-cover" style="display: none;"></div>
+                    <div class="fileimg-edit"  style="display: none;">
+                        <span class="fileimg-view">查看</span>
+                        <span class="fileimg-delete">删除</span>
+                    </div>
+                </div>
+            </div>
             
             
  		<%if(registerBill.detectState == 4&&isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
@@ -296,27 +299,35 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
 
 <script>
 var currentUser={"depId":"${user.depId!}"
-		,"id":"${user.id!}"
-		,"realName":"${user.realName!}"
-		,"userName":"${user.userName!}"
-		,"departmentName":"${department.name!}"};
-		
+	,"id":"${user.id!}"
+	,"realName":"${user.realName!}"
+	,"userName":"${user.userName!}"
+	,"departmentName":"${department.name!}"};
 	function doModifyRegisterBill(){
 		if($('#modifyRegisterBillForm').validate().form() != true){
             return;
         }
-       var data={
-    		   id:$('input[name="id"]').val(),
-    		   originCertifiyUrl:$('input[name="originCertifiyUrl"]').val(),
-    		   detectReportUrl:$('input[name="detectReportUrl"]').val(),
-       }
+		var   formData=$('#modifyRegisterBillForm').serializeObject();
+	    var  originCertifiyUrl=$.makeArray(formData.originCertifiy).filter(function(v,i){
+	        	return v!='';
+	        }).join(',');
+	   var  detectReportUrl=$.makeArray(formData.detectReport).filter(function(v,i){
+	        	return v!='';
+	        }).join(',');
+	       
+	   delete formData.originCertifiy
+	   delete formData.detectReport
+	   formData.originCertifiyUrl=originCertifiyUrl;
+	   formData.detectReportUrl=detectReportUrl;
+
         $.ajax({
             type: "POST",
-            url: "${contextPath}/registerBill/doModifyRegisterBill.action",
-            data : JSON.stringify(data),
+            url: "${contextPath}/registerBill/doUploadDetectReport.action",
+            data : JSON.stringify(formData),
             dataType: "json",
             async : true,
             contentType: "application/json; charset=utf-8",
@@ -444,9 +455,105 @@ var currentUser={"depId":"${user.depId!}"
         });
     }
     
+    
+    
+    function afterUpload(url,fileInputObj){
+    	var imgBox=fileInputObj.parent();
+    	var parent= imgBox.parent('div');
+    	 var newImgBox=imgBox.clone(true);
+    	 
+        imgBox.find(".magnifying").attr('src', url).show();
+        imgBox.find("input[type='hidden']").val(url);
+        imgBox.find('.fileimg-cover,.fileimg-edit').show();
+        console.info(url)
+        debugger
+        if(parent.find('.fileimg-box').length<10){
+        	newImgBox.find('input[type="file"]').remove();
+        	$('<input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))
+        	newImgBox.appendTo(parent);
+        	initFileInput(newImgBox.find('input[type="file"]'))
+        }
+    }
+    
+    function initFileInput(jqueryObj){
+    	jqueryObj.fileupload({
+            dataType : 'json',
+            formData: {type:5,compress:true},
+            done : function(e, res) {
+                if (res.result.code == 200) {
+                	var url = res.result.data;
+                	var fileInputObj=$(e.target);
+                	afterUpload(url,fileInputObj);
+                }
+            },
+            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".")+1;
+                var fileType = name.substring(index,name.length);
+                if(!acceptFileTypes.test(fileType)){
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return ;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if(size > (1024*10*1024)){
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return ;
+                }
+                data.submit();
+            }
+        });
+ 	
+ 	
+ }
+    
+    $.makeArray('${registerBill.originCertifiyUrl}'.split(",")).filter(function(v,i){
+      	return v!='';
+      }).forEach (function(url,i){
+    	 var fileInputObj=$('#originCertifiyUrlDiv .fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
+    	  afterUpload(url,fileInputObj);
+      });
+    
+    $.makeArray('${registerBill.detectReportUrl}'.split(",")).filter(function(v,i){
+      	return v!='';
+      }).forEach (function(url,i){
+    	 var fileInputObj=$('#detectReportUrlDiv .fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
+    	  afterUpload(url,fileInputObj);
+      });
+    
+    
     $(function () {
-    	initFileUpload('#originCertifiyUrlFile');
-    	initFileUpload('#detectReportUrlFile');
+    	initFileInput($('input[type="file"]'));
+    	//initFileInput($('#detectReportUrlFile'));
+    	
+    	//删除图片
+        $('.fileimg-delete').on('click', function () {
+        	
+        	var imgBox=$(this).parents('.fileimg-box:first');
+        	var parent= imgBox.parent('div');
+        	var imgBoxArr=parent.find('.fileimg-box');
+        	if(imgBoxArr.length==10){
+        		var lastImgBox=$(imgBoxArr[imgBoxArr.length-1]);
+        		if(lastImgBox.find("input:hidden").val()!=''){
+
+                	imgBox.find(".magnifying").attr('src', '').hide();
+                	imgBox.find("input:hidden").val('');
+                	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+                	
+                	imgBox.appendTo(parent);
+        		}else{
+        			imgBox.remove();
+        		}
+        	}else if(imgBoxArr.length>1){
+        		imgBox.remove();
+        	}else{
+            	imgBox.find(".magnifying").attr('src', '').hide();
+            	imgBox.find("input:hidden").val('');
+            	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+        	}
+
+        });
     });
 
 </script>
