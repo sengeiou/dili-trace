@@ -256,7 +256,7 @@ var currentUser={"depId":"${user.depId!}"
             {
                 iconCls:'icon-edit',
                 text:'上传检测报告',
-                id:'modify-btn',
+                id:'upload-detectreport-btn',
                 disabled :true,
                 handler:doUploadDetectReport,
                 handler:function(){
@@ -316,7 +316,7 @@ var currentUser={"depId":"${user.depId!}"
         $('#review-btn').linkbutton('disable');
         $('#handle-btn').linkbutton('disable');*/
         
-        var btnArray=['modify-btn','upload-origincertifiy-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
+        var btnArray=['upload-detectreport-btn','upload-origincertifiy-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
         	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn']
 	    for (var i = 0; i < btnArray.length; i++) {
 	        var btnId = btnArray[i];
@@ -401,10 +401,10 @@ var currentUser={"depId":"${user.depId!}"
             return;
         }
 
-        $('#modify-btn').show();
+      
     	$('#copy-btn').show();
     	$('#detail-btn').show();
-    	$('#upload-origincertifiy-btn').show();
+
     	
     	
     	
@@ -418,6 +418,9 @@ var currentUser={"depId":"${user.depId!}"
             $('#undo-btn').show();
             $('#audit-btn').show();
             $('#edit-btn').show();
+            $('#upload-detectreport-btn').show();
+        	$('#upload-origincertifiy-btn').show();
+        	
             //$('#batch-audit-btn').show();
            if(selected.registerSource==${@com.dili.trace.glossary.RegisterSourceEnum.TALLY_AREA.getCode()}){
         	   if(selected.originCertifiyUrl&&selected.originCertifiyUrl!=null&&selected.originCertifiyUrl!=''&&selected.originCertifiyUrl!='无'){
