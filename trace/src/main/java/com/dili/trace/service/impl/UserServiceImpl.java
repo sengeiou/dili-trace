@@ -21,6 +21,7 @@ import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
+import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
@@ -56,7 +57,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Resource
     private UserTallyAreaService userTallyAreaService;
     @Resource
-    UserPlateService userPlateService;;
+    UserPlateService userPlateService;
+    @Resource
+    UserHistoryService userHistoryService;
 
     @Transactional(rollbackFor=Exception.class)
     @Override
@@ -96,6 +99,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         	}
         	this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
         }
+        this.userHistoryService.insertUserHistory(user.getId());
     }
 
     /**
@@ -119,6 +123,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         });
 
         userTallyAreaService.batchInsert(userTallyAreas);
+        this.userHistoryService.insertUserHistory(userId);
     }
 
 
@@ -158,6 +163,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         updateSelective(user);
+        this.userHistoryService.insertUserHistory(user.getId());
 
 
     }
@@ -324,7 +330,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             userTallyAreaService.deleteByExample(userTallyAreaQuery);
             redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
         }
-
+        this.userHistoryService.insertUserHistory(user.getId());
         return BaseOutput.success("操作成功");
     }
 
