@@ -123,7 +123,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         });
 
         userTallyAreaService.batchInsert(userTallyAreas);
-        this.userHistoryService.insertUserHistory(userId);
     }
 
 
