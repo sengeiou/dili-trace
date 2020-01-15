@@ -52,5 +52,10 @@ public interface UserHistoryListDto extends UserHistory {
     @Transient
     Boolean getHasBusinessLicense();
     void setHasBusinessLicense(Boolean hasBusinessLicense);
+    
+    @Column(name = "user_plates")
+    @Like
+    String getLikeUserPlates();
+    void setLikeUserPlates(String likeUserPlates);
 
 }

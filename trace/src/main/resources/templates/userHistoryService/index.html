@@ -40,7 +40,7 @@
                             </select>
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="userPlates" id="userPlates" style="width:100%" labelAlign="right" data-options="label:'车牌:'" />
+                            <input class="easyui-textbox" name="likeUserPlates" id="likeUserPlates" style="width:100%" labelAlign="right" data-options="label:'车牌:'" />
                         </div>
                         <div class="search-item">
                             <select class="easyui-combobox" name="hasBusinessLicense" id="hasBusinessLicense" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'营业执照'"  labelAlign="right">
@@ -57,6 +57,11 @@
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
                             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
+                        </div>
+                                                 <br/>
+                         
+                        <div class="search-item" style="width: 14%">
+                            <input class="easyui-textbox statics" id="plateAmount" style="width:100%" labelAlign="right" data-options="label:'车牌总数量:'" value="0" readonly="readonly" disabled="disabled" />
                         </div>
                     </div>
                 </form>
@@ -144,7 +149,27 @@
              }
          });
      }
+	function queryStatics(){
 
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        var data=$('#queryForm').serializeObject();
+        $.ajax({
+            type: "POST",
+            url: '${contextPath}/userHistory/queryStatics.action',
+            dataType: 'json',
+            data: data,
+            success: function(data){
+                //success(data);plateAmount
+            	$('#plateAmount').textbox('setValue',data.plateAmount);
+            },
+            error: function(){
+            	$('#plateAmount').textbox('setValue','0');
+            }
+        });
+		
+	}
      //表格查询
      function queryUserGrid() {
          var opts = _userGrid.datagrid("options");
@@ -156,6 +181,7 @@
              return false;
          }
          _userGrid.datagrid("load", bindGridMeta2Form("userGrid", "queryForm"));
+         queryStatics();
 
      }
 

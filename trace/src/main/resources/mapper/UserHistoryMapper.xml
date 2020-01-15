@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.UserHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.UserHistory">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <id column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="card_no" jdbcType="VARCHAR" property="cardNo" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="card_no_url" jdbcType="VARCHAR" property="cardNoUrl" />
+    <result column="business_license_url" jdbcType="VARCHAR" property="businessLicenseUrl" />
+    <result column="sales_city_id" jdbcType="BIGINT" property="salesCityId" />
+    <result column="sales_city_name" jdbcType="VARCHAR" property="salesCityName" />
+    <result column="state" jdbcType="BIT" property="state" />
+    <result column="pwd" jdbcType="VARCHAR" property="pwd" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="user_plates" jdbcType="VARCHAR" property="userPlates" />
+    <result column="plate_amount" jdbcType="INTEGER" property="plateAmount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id,user_id,user_name, phone, card_no, addr, card_no_url, tally_area_no, business_license_url,
+    sales_city_id, sales_city_name, state, pwd, created, modified,user_plates,plate_amount
+  </sql>
+
+  <select id="queryUserHistoryStatics" parameterType="com.dili.trace.dto.UserHistoryListDto" resultType="com.dili.trace.dto.UserHistoryStaticsDto">
+	SELECT sum(plate_amount) as plate_amount from user_history where id in (
+    SELECT max(id)    FROM user_history
+    where 1=1
+      <if test="name != null">
+       AND  name = #{name,jdbcType=VARCHAR}
+      </if>
+      <if test="userId != null">
+       AND  user_id = #{userId,jdbcType=BIGINT}
+      </if>
+      <if test="phone != null">
+         AND   phone = #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="cardNo != null">
+       AND    card_no = #{cardNo,jdbcType=VARCHAR}
+      </if>
+      <if test="addr != null">
+        AND   addr = #{addr,jdbcType=VARCHAR}
+      </if>
+
+      <if test="likeTallyAreaNos != null">
+        AND  tally_area_nos like '%${likeTallyAreaNos}%'  
+      </if>
+      <if test="businessLicenseUrl != null">
+       AND   business_license_url = #{businessLicenseUrl,jdbcType=VARCHAR}
+      </if>
+      <if test="salesCityId != null">
+        AND   sales_city_id = #{salesCityId,jdbcType=BIGINT}
+      </if>
+      <if test="salesCityName != null">
+        AND   sales_city_name = #{salesCityName,jdbcType=VARCHAR}
+      </if>
+      <if test="state != null">
+         AND  state = #{state,jdbcType=BIT}
+      </if>
+
+      <if test="created != null">
+       AND    created = #{created,jdbcType=TIMESTAMP}
+      </if>
+      <if test="modified != null">
+        AND   modified = #{modified,jdbcType=TIMESTAMP}
+      </if>
+      
+       <if test="createdStart != null">
+        AND   created >= #{createdStart,jdbcType=TIMESTAMP}
+      </if>
+            <if test="createdEnd != null">
+        AND   #{createdEnd,jdbcType=TIMESTAMP}>=created  
+      </if>
+           
+        <if test="modifiedStart != null">
+        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
+      </if>
+         <if test="modifiedEnd != null">
+        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
+      </if>
+		<if test="likeUserPlates != null">
+        AND  user_plates like '%${likeUserPlates}%'  
+		</if>
+      
+      
+      group by user_id
+      ) 
+  </select>
+</mapper>

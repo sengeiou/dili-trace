@@ -24,6 +24,7 @@ import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.UserHistory;
 import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.dto.UserHistoryListDto;
+import com.dili.trace.dto.UserHistoryStaticsDto;
 import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UsualAddressService;
@@ -65,6 +66,24 @@ public class UserHistoryController {
 
 		EasyuiPageOutput out = this.userHistoryService.listUserHistoryPageByExample(userHistory);
 		return out.toString();
+	}
+	/**
+	 * 查询统计信息
+	 * @param userHistory
+	 * @return
+	 * @throws Exception
+	 */
+	
+	@RequestMapping(value = "/queryStatics.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody Object queryStatics(UserHistoryListDto userHistory) throws Exception {
+try {
+		UserHistoryStaticsDto out = this.userHistoryService.queryStatics(userHistory);
+		return out;
+}catch (Exception e) {
+	// TODO: handle exception
+	e.printStackTrace();
+}
+return null;
 	}
 
 }

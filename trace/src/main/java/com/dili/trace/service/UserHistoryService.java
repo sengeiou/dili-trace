@@ -9,6 +9,7 @@ import com.dili.trace.domain.UserHistory;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserHistoryListDto;
+import com.dili.trace.dto.UserHistoryStaticsDto;
 
 public interface UserHistoryService extends BaseService<UserHistory, Long> {
 	/**
@@ -44,4 +45,11 @@ public interface UserHistoryService extends BaseService<UserHistory, Long> {
 	 * @throws Exception
 	 */
 	public EasyuiPageOutput listUserHistoryPageByExample(UserHistoryListDto dto) throws Exception ;
+	/**
+	 * 查询统计信息
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
+	public UserHistoryStaticsDto queryStatics(UserHistoryListDto dto) throws Exception ;
 }

@@ -15,11 +15,13 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.dao.UserHistoryMapper;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserHistory;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserHistoryListDto;
+import com.dili.trace.dto.UserHistoryStaticsDto;
 import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
@@ -103,13 +105,16 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 			}
 		}
     	
-    	if(dto!=null&&StringUtils.isNotBlank(dto.getUserPlates())) {
-    		strList.add(" (user_plates like '%"+dto.getUserPlates().trim().toUpperCase()+"%' ) ");
-    		dto.setUserPlates(null);
-		}
+
     	if(!strList.isEmpty()) {
     		return Optional.of(String.join(" and ", strList));
     	}
     	return Optional.empty();
     }
+
+	@Override
+	public UserHistoryStaticsDto queryStatics(UserHistoryListDto dto) throws Exception {
+
+		return ((UserHistoryMapper)super.getDao()).queryUserHistoryStatics(dto);
+	}
 }
