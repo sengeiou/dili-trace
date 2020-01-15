@@ -25,4 +25,6 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
 	List<Long> findIdsByExeMachineNo(int taskCount);
 
 	RegisterBillStaticsDto groupByState(RegisterBillDto dto);
+	
+	int doRemoveReportAndCertifiy(RegisterBill registerBill);
 }

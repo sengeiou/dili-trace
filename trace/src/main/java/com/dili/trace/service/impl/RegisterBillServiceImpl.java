@@ -757,7 +757,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			//do nothing
 			return BaseOutput.success();
 		}
-		this.update(item);
+		this.getActualDao().doRemoveReportAndCertifiy(item);
+		
 		return BaseOutput.success();
 	}
 

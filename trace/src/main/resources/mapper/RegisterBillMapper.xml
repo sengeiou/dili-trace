@@ -262,4 +262,20 @@
 	</if> 
 	
   </select>
+  
+  <update id="doRemoveReportAndCertifiy" parameterType="com.dili.trace.domain.RegisterBill">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update register_bill
+    <set>
+      <if test="originCertifiyUrl == null">
+        origin_certifiy_url = null,
+      </if>
+       <if test="detectReportUrl == null">
+        detect_report_url = null,
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 </mapper>
