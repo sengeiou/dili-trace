@@ -267,33 +267,28 @@
                         </div>
                             <%} }  %>
             <div class="form-item-group">
-                <div class="imageUploadWrap">
-                    <div class="form-group">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>产地证明</label>
-                        <div class="imageUpload rectangle">
-                            <img <% if(isNotEmpty(registerBill.originCertifiyUrl)){ %>src="http://trace.nong12.com${registerBill.originCertifiyUrl!}"<% } %> alt="产地证明" class="show-image">
-                        </div>
-                    </div>
-                    &nbsp;&nbsp;
-                    <div class="form-group">
-                        <label class="label-title text-right"><span class="red">&lowast;</span>检测报告</label>
-                        <div class="imageUpload rectangle">
-                            <img <% if(isNotEmpty(registerBill.detectReportUrl)){ %>src="http://trace.nong12.com${registerBill.detectReportUrl!}"<% } %> alt="检测报告" class="show-image">
-                        </div>
-                    </div>
-                </div>
+            		<h4 class="form-item-title">产地证明</h4>
+                          <%if(isNotEmpty(registerBill.originCertifiyUrl)){
+                        	for(originCertifiy in strutil.split (registerBill.originCertifiyUrl,",")){
+                        	%>
+                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
+                    				<img class="magnifying show-image"  src="http://trace.nong12.com${originCertifiy!}" >
+							</div>
+                        <%	}
+                        }%>
             </div>
-            <!--<div class="form-item-group">
-                <h4 class="form-item-title">检测报告</h4>
-                <div class="imageUploadWrap">
-                    <div class="form-group">
-                        <div class="imageUpload rectangle">
-                            <a href="javascript:;" class="edit-zoom">放大</a>
-                            <img src="${contextPath!}${registerBill.detectReportUrl!}" alt="" class="show-image">
-                        </div>
-                    </div>
-                </div>
-            </div>-->
+            <div class="form-item-group">
+            		<h4 class="form-item-title">检测报告</h4>
+                          <%if(isNotEmpty(registerBill.detectReportUrl)){
+                        	for(detectReport in strutil.split (registerBill.detectReportUrl,",")){
+                        	%>
+                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
+                    				<img class="magnifying show-image"  src="http://trace.nong12.com${detectReport!}" >
+							</div>
+                        <%	}
+                        }%>
+            </div>
+
  		<%if(registerBill.detectState == 4&&isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
                 <div class="form-item-group">
 					<div class="imageUploadWrap">
@@ -302,7 +297,7 @@
 	                        
 	                        <% if(isNotEmpty(registerBill.handleResultUrl)){ %>
 	                        		<%for (src in strutil.split (registerBill.handleResultUrl,",")){%>
-										<div class="imageUpload rectangle" style="display:inline-block;margin: 5px;padding: 10px;">
+										<div class="fileimg-box" style="display:inline-block;margin: 5px;padding: 10px;">
 		                                   <img  src="${contextPath!}${src}"   class="show-image">
 		                                </div>
 	                                <% } %>
@@ -335,7 +330,7 @@ color:#333!important;
 	function rotateImg(angle){
 		$('#showedImg').rotate($('#showedImg').getRotateAngle()[0]+angle);
 	}
-    $('.imageUpload,.show-img').on('click', function () {
+    $('.fileimg-box,.show-img').on('click', function () {
         var url = $(this).find("img").attr('src');
        // url='http://gss0.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/241f95cad1c8a786d814d6eb6709c93d70cf501c.jpg'
         if(url){
