@@ -51,6 +51,21 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 				codeGenerate.setSeq(Long.valueOf(maxSampleCode.substring(9, 14)));
 			}
 			this.insertSelective(codeGenerate);
+		}else {
+			if(StringUtils.isNotBlank(maxSampleCode)) {
+				String segment=maxSampleCode.substring(1, 9);
+				Long seq=Long.valueOf(maxSampleCode.substring(9, 14));
+				if(!segment.equals(codeGenerate.getSegment())||!seq.equals(codeGenerate.getSeq())) {
+					codeGenerate.setSegment(segment);
+					codeGenerate.setSeq(seq);
+					this.updateSelective(codeGenerate);
+				}
+				
+				
+			}
+			
+			
+			
 		}
 		
 	}
