@@ -1217,12 +1217,14 @@ var currentUser={"depId":"${user.depId!}"
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
         $('#_form').form('load', formData);
-        $.makeArray(selected.handleResultUrl.split(",")).filter(function(v,i){
-          	return v!='';
-          }).forEach (function(url,i){
-        	 var fileInputObj=$('.fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
-        	  afterUpload(url,fileInputObj);
-          });
+        if(selected.handleResultUrl){
+            $.makeArray(selected.handleResultUrl.split(",")).filter(function(v,i){
+              	return v!='';
+              }).forEach (function(url,i){
+            	 var fileInputObj=$('.fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
+            	  afterUpload(url,fileInputObj);
+              });
+        }
         initFileUpload();
     }
     async function doRemoveReportAndCertifiy(){
