@@ -21,6 +21,7 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.*;
+import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
@@ -61,6 +62,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	DetectRecordService detectRecordService;
 	@Autowired
 	UserPlateService userPlateService;
+	@Autowired
+	CodeGenerateService codeGenerateService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -290,8 +293,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					registerBill.setDetectState(null);
 				}
 				if (!RegisterBillStateEnum.ALREADY_AUDIT.getCode().equals(registerBill.getState())) {
-					registerBill.setSampleCode(
-							bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE));
+					registerBill.setSampleCode(this.getNextSampleCode());
 					registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
 				}
 
@@ -302,6 +304,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} else {
 			throw new AppException("操作失败，数据状态已改变");
 		}
+	}
+	private String getNextSampleCode() {
+		//String sampleCode=this.codeGenerateService.nextSampleCode();
+		String sampleCode=this.bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE);
+		return sampleCode;
 	}
 
 	@Override
