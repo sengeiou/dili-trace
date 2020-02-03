@@ -5,21 +5,55 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.CodeGenerateMapper;
 import com.dili.trace.domain.CodeGenerate;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.CodeGenerateService;
+import com.dili.trace.service.RegisterBillService;
 
 @Service
 public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long> implements CodeGenerateService {
 	private static final String SAMPLE_CODE_TYPE = "SAMPLE_CODE";
 
+	@Autowired
+	RegisterBillService registerBillService;
+	@PostConstruct
+	public void init() {
+		
+		RegisterBill domain=DTOUtils.newDTO(RegisterBill.class);
+		domain.setOrder("desc");
+		domain.setSort("sample_code");
+		domain.setPage(1);
+		domain.setRows(1);
+		RegisterBill registerBill=this.registerBillService.listByExample(domain).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
+		String maxSampleCode=registerBill.getSampleCode();
+		
+		
+		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst().orElse(DTOUtils.newDTO(CodeGenerate.class));
+		codeGenerate.setPattern("yyyyMMdd");
+		codeGenerate.setType(SAMPLE_CODE_TYPE);
+		codeGenerate.setPrefix("c");
+		
+		if(codeGenerate.getId()==null) {
+			if(StringUtils.isNotBlank(maxSampleCode)) {
+				codeGenerate.setSegment(maxSampleCode.substring(1, 9));
+				codeGenerate.setSeq(Long.valueOf(maxSampleCode.substring(9, 14)));
+			}
+			this.insertSelective(codeGenerate);
+		}
+		
+	}
 	private CodeGenerateMapper getMapper() {
 
 		return (CodeGenerateMapper) this.getDao();
@@ -34,27 +68,28 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 					throw new AppException("生成采样单编号错误");
 		};
 		// 时间比较
-		LocalDateTime modified = codeGenerate.getModified().toInstant().atZone(ZoneId.systemDefault())
-				.toLocalDateTime();
-
 		LocalDateTime now = LocalDateTime.now();
-
-		Long nextSeq=1L;
-		String nextSegment=codeGenerate.getSegment();
-		if (modified.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-				.equals(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
-			nextSeq=codeGenerate.getSeq() + 1;
-			nextSegment=now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		
+		String nextSegment=now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
+		if(!nextSegment.equals(codeGenerate.getSegment())) {
+			
+			codeGenerate.setSeq(1L);
+			codeGenerate.setSegment(nextSegment);
+			codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
+			
+		}else {
+			
+			codeGenerate.setSeq(codeGenerate.getSeq()+1);
+			codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
+			
 		}
-		codeGenerate.setSeq(nextSeq);
-		codeGenerate.setSegment(nextSegment);
-		codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
+		
 
 		this.updateSelective(codeGenerate);
 
-		return StringUtils.trimToEmpty(codeGenerate.getSuffix())
+		return StringUtils.trimToEmpty(codeGenerate.getPrefix())
 				.concat(nextSegment)
-				.concat(StringUtils.leftPad(String.valueOf(nextSeq), 5, "0"));
+				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), 5, "0"));
 	}
 	
 

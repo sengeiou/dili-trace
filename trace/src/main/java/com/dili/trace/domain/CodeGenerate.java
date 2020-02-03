@@ -34,17 +34,17 @@ public interface CodeGenerate extends IBaseDomain {
 
     void setType(String type);
     
-    @Column(name = "`suffix`")
+    @Column(name = "`prefix`")
     @FieldDef(label="编号前缀", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
-    String getSuffix();
+    String getPrefix();
 
-    void setSuffix(String suffix);
+    void setPrefix(String prefix);
 
 
     @Column(name = "`segment`")
     @FieldDef(label="当前编号段", maxLength = 20)
-    @EditMode(editor = FieldEditor.Number, required = false)
+    @EditMode(editor = FieldEditor.Text, required = false)
     String getSegment();
 
     void setSegment(String segment);
@@ -56,6 +56,13 @@ public interface CodeGenerate extends IBaseDomain {
     Long getSeq();
 
     void setSeq(Long seq);
+    
+    @Column(name = "`pattern`")
+    @FieldDef(label="模式", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getPattern();
+
+    void setPattern(String pattern);
     
     @Column(name = "`created`")
     @FieldDef(label="created")
