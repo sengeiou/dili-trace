@@ -306,8 +306,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 	}
 	private String getNextSampleCode() {
-		//String sampleCode=this.codeGenerateService.nextSampleCode();
-		String sampleCode=this.bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE);
+		String sampleCode=this.codeGenerateService.nextSampleCode();
+//		String sampleCode=this.bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE);
 		return sampleCode;
 	}
 
