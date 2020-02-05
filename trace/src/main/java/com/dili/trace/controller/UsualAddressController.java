@@ -1,6 +1,7 @@
 package com.dili.trace.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -20,6 +21,8 @@ import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.service.UserPlateService;
@@ -79,11 +82,11 @@ public class UsualAddressController {
 			}
 			this.usualAddressService.insertUsualAddress(usualAddress);
 			return BaseOutput.success("新增成功").setData(usualAddress.getId());
-		} catch (BusinessException e) {
-			LOGGER.error("register", e);
+		} catch (AppException e) {
+			LOGGER.error("增加常用地址错误", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error("register", e);
+			LOGGER.error("增加常用地址错误", e);
 			return BaseOutput.failure();
 		}
 	}
@@ -101,11 +104,11 @@ public class UsualAddressController {
 			
 			this.usualAddressService.updateUsualAddress(usualAddress);
 			return BaseOutput.success("修改成功");
-		} catch (BusinessException e) {
-			LOGGER.error("修改用户", e);
+		} catch (AppException e) {
+			LOGGER.error("修改常用地址错误", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error("修改用户", e);
+			LOGGER.error("修改常用地址错误", e);
 			return BaseOutput.failure(e.getMessage());
 		}
 
@@ -119,5 +122,15 @@ public class UsualAddressController {
 		this.usualAddressService.deleteUsualAddress(id);
 		return BaseOutput.success("删除成功");
 	}
+	
+	@ApiOperation("查询UsualAddress")
+	@RequestMapping(value = "/listUsualAddress.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput listUsualAddress(String type) {
+		UsualAddress domain=DTOUtils.newDTO(UsualAddress.class);
+		domain.setType(type);
+		List<UsualAddress>list=this.usualAddressService.listByExample(domain);
+		return BaseOutput.success().setData(list);
+	}
+
 
 }

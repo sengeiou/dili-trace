@@ -10,6 +10,9 @@ ALTER TABLE `code_generate` DROP COLUMN `code`  ;
 ALTER TABLE `code_generate` ADD COLUMN `pattern`  varchar(20) NULL COMMENT '模式';
 ALTER TABLE `code_generate` ADD COLUMN `prefix`  varchar(20) NULL COMMENT '前缀';
 
+ALTER TABLE trace.usual_address ADD CONSTRAINT usual_address_unique UNIQUE KEY (address_id,`type`);
+
+
 CREATE TABLE `user_history` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL COMMENT 'ID',  

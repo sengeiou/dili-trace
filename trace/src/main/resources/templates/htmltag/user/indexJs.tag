@@ -1,5 +1,33 @@
 <script type="text/javascript">
-
+//查询常用地址列表并填充到常用地址中
+	function listUsualAddress(jqEle){
+		
+		var result=[];
+        $.ajax({
+            type: "POST",
+            url: '/usualAddress/listUsualAddress.action',
+            data: JSON.stringify({type:'user'}),
+            processData:true,
+            dataType: "json",
+            async : false,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if(data.code=="200"){
+                	result=data.data;
+                }
+            },
+            error: function(){
+               
+            }
+        });
+        jqEle.empty();
+       return result.map(function(city,i){
+        	var link='<a href="javascript:void(0)" style="padding:2px;margin:2px;" onclick="selectCity(this,'+city.addressId+',\''+city.mergedAddress+'\')"  title="'+city.mergedAddress+'">'+city.address+'</a>&nbsp;&nbsp;';
+        	jqEle.append($(link));
+        	return $(link);
+        	
+        });
+	}
     //打开新增窗口
     function openInsert(){
         $('#dlg').dialog("setTitle","用户新增");
@@ -15,6 +43,9 @@
         $(":file").attr('disabled',false);
         $('#_tallyAreaNos').tagbox('enable');
         $('#_form').form('clear');
+        //cityList
+        listUsualAddress($('#cityList'));
+
         initFileUpload();
         formFocus("_form", "_name");
     }
@@ -58,6 +89,7 @@
         if(formData._state == 0){
             $('#_tallyAreaNos').tagbox('disable');
         }
+        listUsualAddress($('#cityList'));
         formOldData=$('#_form').serializeObject();
         /*$.ajax({
             type: "POST",
