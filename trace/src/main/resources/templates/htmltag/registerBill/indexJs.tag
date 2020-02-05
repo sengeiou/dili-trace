@@ -103,222 +103,227 @@ var currentUser={"depId":"${user.depId!}"
      */
     function initRegisterBillGrid() {
         var pager = _registerBillGrid.datagrid('getPager');
+        var toolbar=[
+            <#resource method="post" url="registerBill/index.html#add">
+                {
+                    iconCls:'icon-add',
+                    text:'新增',
+                    handler:function(){
+                        openInsert();
+                    }
+                },
+            </#resource>
+                <#resource method="post" url="registerBill/index.html#edit">
+                {
+                    iconCls:'icon-edit',
+                    text:'修改',
+                    id:'edit-btn',
+                    disabled :true,
+                    handler:function(){
+                        openEdit();
+                    }
+                },
+            </#resource>
+            <#resource method="post" url="registerBill/index.html#audit">
+                {
+                    iconCls:'icon-man',
+                    text:'进场审核',
+                    id:'audit-btn',
+                    disabled :true,
+                    handler:function(){
+                        audit();
+                    }
+                },
+        </#resource>
+        <#resource method="post" url="registerBill/index.html#batchAudit">
+                {
+                    iconCls:'icon-man',
+                    text:'批量审核',
+                    id:'batch-audit-btn',
+                    disabled :true,
+                    handler:function(){
+                        batchAudit();
+                    }
+                },
+                
+        </#resource>
+              <#resource method="post" url="registerBill/index.html#auditWithoutDetect">
+                {
+                    iconCls:'icon-man',
+                    text:'审核不检测',
+                    id:'audit-withoutDetect-btn',
+                    disabled :true,
+                    handler:function(){
+                    	auditWithoutDetect();
+                    }
+                },
+            </#resource>
+            <#resource method="post" url="registerBill/index.html#review">
+                {
+                    iconCls:'icon-man',
+                    text:'复检',
+                    id:'review-btn',
+                    disabled :true,
+                    handler:function(){
+                        reviewCheck();
+                    }
+                },
+        </#resource>
+         <#resource method="post" url="registerBill/index.html#auto">
+                {
+                    iconCls:'icon-man',
+                    text:'主动送检',
+                    id:'auto-btn',
+                    disabled :true,
+                    handler:function(){
+                        autoCheck();
+                    }
+                },
+        </#resource>
+                
+        <#resource method="post" url="registerBill/index.html#batchAuto">
+                {
+                    iconCls:'icon-man',
+                    text:'批量主动送检',
+                    id:'batch-auto-btn',
+                    disabled :true,
+                    handler:function(){
+                        batchAutoCheck();
+                    }
+                },
+        </#resource>
+        <#resource method="post" url="registerBill/index.html#sampling">
+                {
+                    iconCls:'icon-man',
+                    text:'采样检测',
+                    id:'sampling-btn',
+                    disabled :true,
+                    handler:function(){
+                        samplingCheck();
+                    }
+                },
+        </#resource>
+        <#resource method="post" url="registerBill/index.html#batchSampling">
+                {
+                    iconCls:'icon-man',
+                    text:'批量采样检测',
+                    id:'batch-sampling-btn',
+                    disabled :true,
+                    handler:function(){
+                        batchSamplingCheck();
+                    }
+                },
+        </#resource>
+            <#resource method="post" url="registerBill/index.html#undo">
+                {
+                    iconCls:'icon-undo',
+                    text:'撤销',
+                    id:'undo-btn',
+                    disabled :true,
+                    handler:undo,
+                    handler:function(){
+                        undo();
+                    }
+                },
+        </#resource>
+         <#resource method="post" url="registerBill/index.html#handle">
+                {
+                    iconCls:'icon-redo',
+                    text:'上传处理结果',
+                    id:'handle-btn',
+                    disabled :true,
+                    handler:doHandler,
+                    handler:function(){
+                        doHandler();
+                    }
+                },
+            </#resource>
+                <#resource method="post" url="registerBill/index.html#uploadOrigincertifiy">
+                {
+                    iconCls:'icon-edit',
+                    text:'上传产地证明',
+                    id:'upload-origincertifiy-btn',
+                    disabled :true,
+                    handler:doUploadOrigincertifiy,
+                    handler:function(){
+                    	doUploadOrigincertifiy();
+                    }
+                },
+            </#resource>
+            <#resource method="post" url="registerBill/index.html#modify">
+                {
+                    iconCls:'icon-edit',
+                    text:'上传检测报告',
+                    id:'upload-detectreport-btn',
+                    disabled :true,
+                    handler:doUploadDetectReport,
+                    handler:function(){
+                        doUploadDetectReport();
+                    }
+                },
+            </#resource>
+                <#resource method="post" url="registerBill/index.html#removeReportAndCertifiy">
+                {
+                    iconCls:'icon-remove',
+                    text:'删除检测报告和产地证明',
+                    id:'remove-reportAndcertifiy-btn',
+                    disabled :true,
+                    handler:doRemoveReportAndCertifiy,
+                    handler:function(){
+                        doRemoveReportAndCertifiy();
+                    }
+                },
+            </#resource>
+                
+                <#resource method="post" url="registerBill/index.html#copy">
+                {
+                    iconCls:'icon-copy',
+                    text:'补录',
+                    id:'copy-btn',
+                    disabled :true,
+                    handler:doCopy,
+                    handler:function(){
+                    	doCopy();
+                    }
+                },
+            </#resource>
+            <#resource method="post" url="registerBill/index.html#detail">
+                {
+                    iconCls:'icon-detail',
+                    id:'detail-btn',
+                    text:'查看',
+                    disabled :true,
+                    handler:function(){
+                        doDetail();
+                    }
+                },
+        </#resource>
+            <#resource method="post" url="registerBill/index.html#export">
+                {
+                    iconCls:'icon-export',
+                    text:'导出',
+                    handler:function(){
+                   	 layer.confirm('确认导出数据?', {
+                         type: 0,
+                         title: '提示',
+                         btn: ['确定','取消'],
+                         yes:function(){
+                        	 layer.closeAll();
+                        	 doExport('registerBillGrid');
+                         }
+                     });
+                       
+                    }
+                }
+            </#resource>
+            ]
+        /*_registerBillGrid.datagrid({
+            toolbar:toolbar
+        })*/
         pager.pagination({
             <#controls_paginationOpts/>,
-            buttons:[
-        <#resource method="post" url="registerBill/index.html#add">
-            {
-                iconCls:'icon-add',
-                text:'新增',
-                handler:function(){
-                    openInsert();
-                }
-            },
-        </#resource>
-            <#resource method="post" url="registerBill/index.html#edit">
-            {
-                iconCls:'icon-edit',
-                text:'修改',
-                id:'edit-btn',
-                disabled :true,
-                handler:function(){
-                    openEdit();
-                }
-            },
-        </#resource>
-        <#resource method="post" url="registerBill/index.html#audit">
-            {
-                iconCls:'icon-man',
-                text:'进场审核',
-                id:'audit-btn',
-                disabled :true,
-                handler:function(){
-                    audit();
-                }
-            },
-    </#resource>
-    <#resource method="post" url="registerBill/index.html#batchAudit">
-            {
-                iconCls:'icon-man',
-                text:'批量审核',
-                id:'batch-audit-btn',
-                disabled :true,
-                handler:function(){
-                    batchAudit();
-                }
-            },
-            
-    </#resource>
-          <#resource method="post" url="registerBill/index.html#auditWithoutDetect">
-            {
-                iconCls:'icon-man',
-                text:'审核不检测',
-                id:'audit-withoutDetect-btn',
-                disabled :true,
-                handler:function(){
-                	auditWithoutDetect();
-                }
-            },
-        </#resource>
-        <#resource method="post" url="registerBill/index.html#review">
-            {
-                iconCls:'icon-man',
-                text:'复检',
-                id:'review-btn',
-                disabled :true,
-                handler:function(){
-                    reviewCheck();
-                }
-            },
-    </#resource>
-     <#resource method="post" url="registerBill/index.html#auto">
-            {
-                iconCls:'icon-man',
-                text:'主动送检',
-                id:'auto-btn',
-                disabled :true,
-                handler:function(){
-                    autoCheck();
-                }
-            },
-    </#resource>
-            
-    <#resource method="post" url="registerBill/index.html#batchAuto">
-            {
-                iconCls:'icon-man',
-                text:'批量主动送检',
-                id:'batch-auto-btn',
-                disabled :true,
-                handler:function(){
-                    batchAutoCheck();
-                }
-            },
-    </#resource>
-    <#resource method="post" url="registerBill/index.html#sampling">
-            {
-                iconCls:'icon-man',
-                text:'采样检测',
-                id:'sampling-btn',
-                disabled :true,
-                handler:function(){
-                    samplingCheck();
-                }
-            },
-    </#resource>
-    <#resource method="post" url="registerBill/index.html#batchSampling">
-            {
-                iconCls:'icon-man',
-                text:'批量采样检测',
-                id:'batch-sampling-btn',
-                disabled :true,
-                handler:function(){
-                    batchSamplingCheck();
-                }
-            },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#undo">
-            {
-                iconCls:'icon-undo',
-                text:'撤销',
-                id:'undo-btn',
-                disabled :true,
-                handler:undo,
-                handler:function(){
-                    undo();
-                }
-            },
-    </#resource>
-     <#resource method="post" url="registerBill/index.html#handle">
-            {
-                iconCls:'icon-redo',
-                text:'上传处理结果',
-                id:'handle-btn',
-                disabled :true,
-                handler:doHandler,
-                handler:function(){
-                    doHandler();
-                }
-            },
-        </#resource>
-            <#resource method="post" url="registerBill/index.html#uploadOrigincertifiy">
-            {
-                iconCls:'icon-edit',
-                text:'上传产地证明',
-                id:'upload-origincertifiy-btn',
-                disabled :true,
-                handler:doUploadOrigincertifiy,
-                handler:function(){
-                	doUploadOrigincertifiy();
-                }
-            },
-        </#resource>
-        <#resource method="post" url="registerBill/index.html#modify">
-            {
-                iconCls:'icon-edit',
-                text:'上传检测报告',
-                id:'upload-detectreport-btn',
-                disabled :true,
-                handler:doUploadDetectReport,
-                handler:function(){
-                    doUploadDetectReport();
-                }
-            },
-        </#resource>
-            <#resource method="post" url="registerBill/index.html#removeReportAndCertifiy">
-            {
-                iconCls:'icon-remove',
-                text:'删除检测报告和产地证明',
-                id:'remove-reportAndcertifiy-btn',
-                disabled :true,
-                handler:doRemoveReportAndCertifiy,
-                handler:function(){
-                    doRemoveReportAndCertifiy();
-                }
-            },
-        </#resource>
-            
-            <#resource method="post" url="registerBill/index.html#copy">
-            {
-                iconCls:'icon-copy',
-                text:'补录',
-                id:'copy-btn',
-                disabled :true,
-                handler:doCopy,
-                handler:function(){
-                	doCopy();
-                }
-            },
-        </#resource>
-        <#resource method="post" url="registerBill/index.html#detail">
-            {
-                iconCls:'icon-detail',
-                id:'detail-btn',
-                text:'查看',
-                disabled :true,
-                handler:function(){
-                    doDetail();
-                }
-            },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#export">
-            {
-                iconCls:'icon-export',
-                text:'导出',
-                handler:function(){
-               	 layer.confirm('确认导出数据?', {
-                     type: 0,
-                     title: '提示',
-                     btn: ['确定','取消'],
-                     yes:function(){
-                    	 layer.closeAll();
-                    	 doExport('registerBillGrid');
-                     }
-                 });
-                   
-                }
-            }
-        </#resource>
-        ]
+            buttons:toolbar
+
         });
     }
 	function initBtnStatus(){
