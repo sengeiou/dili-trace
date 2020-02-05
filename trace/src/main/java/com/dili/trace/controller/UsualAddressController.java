@@ -85,6 +85,9 @@ public class UsualAddressController {
 		} catch (AppException e) {
 			LOGGER.error("增加常用地址错误", e);
 			return BaseOutput.failure(e.getMessage());
+		}catch(org.springframework.dao.DuplicateKeyException dke) {
+			return BaseOutput.failure("常用地址已经存在,请不要重复提交");
+			
 		} catch (Exception e) {
 			LOGGER.error("增加常用地址错误", e);
 			return BaseOutput.failure();
