@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.base.BaseServiceImpl;
@@ -41,6 +42,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		return 0;
 	}
 
+	@Transactional
 	@Override
 	public int updateUsualAddress(UsualAddress input) {
 		UsualAddress item=this.get(input.getId());
@@ -53,7 +55,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		example.setType(input.getType());
 		List<UsualAddress>list=this.listByExample(example);
 		if(list.size()>0) {
-			long count=list.stream().filter(add->{return !add.getAddressId().equals(input.getAddressId());}).count();
+			long count=list.stream().filter(add->{return !add.getId().equals(input.getId());}).count();
 			if(count>0) {
 				throw new AppException("城市已经存在");	
 			}
