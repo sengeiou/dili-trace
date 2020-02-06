@@ -128,9 +128,9 @@ public class UsualAddressController {
 	
 	@ApiOperation("查询UsualAddress")
 	@RequestMapping(value = "/listUsualAddress.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput listUsualAddress(String type) {
+	public @ResponseBody BaseOutput listUsualAddress(UsualAddress input) {
 		UsualAddress domain=DTOUtils.newDTO(UsualAddress.class);
-		domain.setType(type);
+		domain.setType(input.getType());
 		List<UsualAddress>list=this.usualAddressService.listByExample(domain);
 		return BaseOutput.success().setData(list);
 	}
