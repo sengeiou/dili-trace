@@ -371,41 +371,46 @@
      */
     function initRegisterBillGrid() {
         var pager = _registerBillGrid.datagrid('getPager');
+        var toolbar= [
+        	
+       	 <#resource method="post" url="registerBill/statics.html#detail">
+             {
+                    iconCls:'icon-detail',
+                    text:'查看',
+                    id:'detail',
+                    handler:function(){
+                        doDetail();
+                    }
+            },
+            </#resource>
+            <#resource method="post" url="registerBill/statics.html#export">
+            {
+                iconCls:'icon-export',
+                text:'导出',
+                handler:function(){
+               	 layer.confirm('确认导出数据?', {
+                        type: 0,
+                        title: '提示',
+                        btn: ['确定','取消'],
+                        yes:function(){
+                       	 layer.closeAll();
+                       	 doExport('registerBillGrid');
+                       	
+                        }
+                    });
+                }
+            },
+        </#resource>
+
+   ]
+
+        _registerBillGrid.datagrid({
+            toolbar:toolbar
+        });
+     
         pager.pagination({
             <#controls_paginationOpts/>,
-            buttons:[
-            	
-            	 <#resource method="post" url="registerBill/statics.html#detail">
-                  {
-                         iconCls:'icon-detail',
-                         text:'查看',
-                         id:'detail',
-                         handler:function(){
-                             doDetail();
-                         }
-                 },
-                 </#resource>
-                 <#resource method="post" url="registerBill/statics.html#export">
-                 {
-                     iconCls:'icon-export',
-                     text:'导出',
-                     handler:function(){
-                    	 layer.confirm('确认导出数据?', {
-                             type: 0,
-                             title: '提示',
-                             btn: ['确定','取消'],
-                             yes:function(){
-                            	 layer.closeAll();
-                            	 doExport('registerBillGrid');
-                            	
-                             }
-                         });
-                     }
-                 },
-             </#resource>
-
-        ]
-        });
+                   });
     }
 
     /**

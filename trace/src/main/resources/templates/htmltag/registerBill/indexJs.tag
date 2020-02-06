@@ -317,12 +317,12 @@ var currentUser={"depId":"${user.depId!}"
                 }
             </#resource>
             ]
-        /*_registerBillGrid.datagrid({
+        _registerBillGrid.datagrid({
             toolbar:toolbar
-        })*/
+        });
         pager.pagination({
             <#controls_paginationOpts/>,
-            buttons:toolbar
+            //buttons:toolbar
 
         });
     }

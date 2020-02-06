@@ -207,9 +207,7 @@
      */
     function initUserGrid() {
         var pager = _userGrid.datagrid('getPager');
-        pager.pagination({
-            <#controls_paginationOpts/>,
-            buttons:[
+        var toolbar=[
             <#resource method="post" url="usualAddress/index.html#add">
             {
                 iconCls:'icon-add',
@@ -259,7 +257,13 @@
             }
             </#resource>
         ]
+
+        _userGrid.datagrid({
+            toolbar:toolbar
         });
+        pager.pagination({
+            <#controls_paginationOpts/>,
+                    });
     }
    
 
