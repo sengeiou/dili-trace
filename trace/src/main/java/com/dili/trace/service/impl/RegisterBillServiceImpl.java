@@ -597,6 +597,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				|| StringUtils.isAnyBlank(input.getHandleResult(), input.getHandleResultUrl())) {
 			throw new AppException("参数错误");
 		}
+		if(input.getHandleResult().trim().length()>10000) {
+			throw new AppException("处理结果不能超过10000");
+		}
 		RegisterBill item = this.get(input.getId());
 		if (item == null) {
 			throw new AppException("数据错误");
