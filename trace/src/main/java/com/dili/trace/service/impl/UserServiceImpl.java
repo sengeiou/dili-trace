@@ -391,11 +391,31 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
 	@Override
 	public BaseOutput deleteUser(Long id) {
-		User user=this.get(id);
-		if(user==null) {
+		if(id==null) {
 			return BaseOutput.failure("参数错误");
 		}
-		return this.updateEnable(id, false);
+		User user=this.get(id);
+		if(user==null) {
+			return BaseOutput.failure("数据不存在");
+		}
+		
+		long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
+        List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
+       
+        user.setState(EnabledStateEnum.DISABLED.getCode());
+        user.setYn(-1);
+        this.updateSelective(user);
+
+        //删除用户理货区关系
+        UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
+        userTallyAreaQuery.setUserId(id);
+        userTallyAreaService.deleteByExample(userTallyAreaQuery);
+        redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
+      
+        this.userHistoryService.insertUserHistory(user.getId());
+        return BaseOutput.success("操作成功");
+        
+        
 //		UserTallyArea example=DTOUtils.newDTO(UserTallyArea.class);
 //		example.setUserId(user.getId());
 //		this.userTallyAreaService.deleteByExample(example);

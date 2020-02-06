@@ -90,7 +90,7 @@ public class UserController {
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(UserListDto user) throws Exception {
-
+		user.setYn(1);
 		EasyuiPageOutput out=this.userService.listEasyuiPageByExample(user);
 		return out.toString();
 	}
