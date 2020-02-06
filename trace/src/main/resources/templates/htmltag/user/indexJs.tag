@@ -217,6 +217,7 @@
                 async : true,
                 success : function(ret) {
                     if(ret.success){
+                    	TLOG.component.operateLog('用户管理',"用户删除","【ID】:"+selected.id);
                         _userGrid.datagrid("reload");
                     }else{
                         swal(
