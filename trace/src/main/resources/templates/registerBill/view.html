@@ -271,8 +271,8 @@
                           <%if(isNotEmpty(registerBill.originCertifiyUrl)){
                         	for(originCertifiy in strutil.split (registerBill.originCertifiyUrl,",")){
                         	%>
-                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
-                    				<img class="magnifying show-image"  src="http://trace.nong12.com${originCertifiy!}" >
+                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
+                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${originCertifiy!}" >
 							</div>
                         <%	}
                         }%>
@@ -282,8 +282,8 @@
                           <%if(isNotEmpty(registerBill.detectReportUrl)){
                         	for(detectReport in strutil.split (registerBill.detectReportUrl,",")){
                         	%>
-                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
-                    				<img class="magnifying show-image"  src="http://trace.nong12.com${detectReport!}" >
+                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
+                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${detectReport!}" >
 							</div>
                         <%	}
                         }%>
@@ -297,8 +297,8 @@
 	                        
 	                        <% if(isNotEmpty(registerBill.handleResultUrl)){ %>
 	                        		<%for (src in strutil.split (registerBill.handleResultUrl,",")){%>
-										<div class="fileimg-box" style="display:inline-block;margin: 5px;padding: 10px;">
-		                                   <img  src="${contextPath!}${src}"   class="show-image">
+										<div class="fileimg-box" style="display:inline-block;margin: 5px;width:8%;">
+		                                   <img  src="${contextPath!}${src}"   class="show-image" style="width: 100%">
 		                                </div>
 	                                <% } %>
 							<% } %>
