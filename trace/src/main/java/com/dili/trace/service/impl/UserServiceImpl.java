@@ -144,6 +144,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         User userPO = get(user.getId());
+        if(!YnEnum.YES.getCode().equals(userPO.getYn())) {
+        	  throw new BusinessException("数据已被删除");
+        }
+        
         if(EnabledStateEnum.ENABLED.getCode().equals(userPO.getState())){
             existsTallyAreaNo(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
             //更新用户理货区
@@ -303,6 +307,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public BaseOutput updateEnable(Long id, Boolean enable) {
         long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         User user = get(id);
+        if(user==null) {
+        	return BaseOutput.failure("数据不存在");
+        }
+        if(!YnEnum.YES.getCode().equals(user.getYn())) {
+        	return BaseOutput.failure("数据已被删除");
+        }
         List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
@@ -370,6 +380,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 		this.andCondition(dto).ifPresent(str->{
 			dto.mset(IDTO.AND_CONDITION_EXPR, str);
 		});
+		dto.setYn(1);
 		EasyuiPageOutput out=this.listEasyuiPageByExample(dto, true);
 		List<DTO>users=out.getRows();
 		List<Long>userIdList=users.stream().map(o->{return (Long)o.get("id");}).collect(Collectors.toList());
@@ -403,7 +414,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
        
         user.setState(EnabledStateEnum.DISABLED.getCode());
-        user.setYn(-1);
+        user.setYn(YnEnum.NO.getCode());
         this.updateSelective(user);
 
         //删除用户理货区关系
