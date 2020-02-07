@@ -36,4 +36,16 @@ CREATE TABLE `user_history` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+INSERT INTO user_history (user_id,name,phone,card_no,addr,card_no_front_url,card_no_back_url
+,tally_area_nos,business_license_url,sales_city_id,sales_city_name,state,`password`,user_type
+,yn,user_plates,plate_amount,`version`,created,modified)
+SELECT u2.id,u2.name,u2.phone,u2.card_no,u2.addr,u2.card_no_front_url,u2.card_no_back_url 
+,u2.tally_area_nos,u2.business_license_url,u2.sales_city_id,u2.sales_city_name,u2.state,u2.password,u2.user_type
+,u2.yn,up.plates,IFNULL(up.cnt,0),u2.version,u2.created,u2.modified FROM `user` u2 
+LEFT JOIN
+(SELECT GROUP_CONCAT(plate) AS plates,count(1) AS cnt,user_id FROM user_plate up GROUP BY user_id)
+ up ON u2.id=up.user_id;
+ 
