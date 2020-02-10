@@ -422,8 +422,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         userTallyAreaQuery.setUserId(id);
         userTallyAreaService.deleteByExample(userTallyAreaQuery);
         redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
-      
+        
         this.userHistoryService.insertUserHistory(user.getId());
+
+        //删除用户车牌信息
+        UserPlate up=DTOUtils.newDTO(UserPlate.class);
+        up.setUserId(user.getId());
+        this.userPlateService.deleteByExample(up);
+        
         return BaseOutput.success("操作成功");
         
         
