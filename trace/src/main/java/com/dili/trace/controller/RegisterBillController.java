@@ -382,7 +382,7 @@ public class RegisterBillController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
 		
-		return "registerBill/upload-detectReport.html";
+		return "registerBill/upload-detectReport";
 	}
 
 	/**
