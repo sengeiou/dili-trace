@@ -14,6 +14,7 @@
     <meta name="screen-orientation" content="portrait">
     <title>进场货物检测结果</title>
     <script src="/resources/assets/etrade/js/flexible.js" charset="utf-8"></script>
+    <script src="/resources/assets/dep/jquery/jquery-2.2.4.min.js" charset="utf-8"></script>
     <style>
         body {
             padding: 0;
@@ -162,20 +163,22 @@
         <div id="rotateImg" data-deg="0" style="background-image: url();"></div>
       </div>
       <div class="button-box">
+        <span id="prev">上一张</span>
         <span id="left">逆时针旋转90°</span>
         <span id="right">顺时针旋转90°</span>
+        <span id="next">下一张</span>
       </div>
     </div>
           <div align="center">
           
           
            <%if(isNotEmpty(registerBill.originCertifiyUrl)){%>
-              <a href="javascript:void(0);" onclick="openImage('${registerBill.originCertifiyUrl}')" title="查看产地证明" style="font-size: medium;">产地证明</a>
+              <a href="javascript:void(0);" onclick="initImageBox('${registerBill.originCertifiyUrl}')" title="查看产地证明" style="font-size: medium;">产地证明</a>
            <%}%>
              
           <%if(isNotEmpty(registerBill.detectReportUrl)){%>
            <span style="width: 10%;display:inline-block"></span>
-          <a href="javascript:void(0);" onclick="openImage('${registerBill.detectReportUrl}')" title="查看检测报告" style="font-size: medium;">检测报告</a>
+          <a href="javascript:void(0);" onclick="initImageBox('${registerBill.detectReportUrl}')" title="查看检测报告" style="font-size: medium;">检测报告</a>
           <%}%>
              
 	           
@@ -199,6 +202,20 @@
     imgCover.addEventListener('click', function() {
       imgBox.style.display = 'none'
     })
+    
+    
+     document.querySelector('#prev').onclick = function() {
+    	  if( openImage(parseInt(img.dataset['index'])-1)){
+    	    	 rotate(0) 
+    	     }
+    }
+    document.querySelector('#next').onclick = function() {
+      
+     if( openImage(parseInt(img.dataset['index'])+1)){
+    	 rotate(0) 
+     }
+    }
+    
     document.querySelector('#left').onclick = function() {
       var deg = (img.dataset['deg'] % 360) - 90
       rotate(deg)
@@ -218,12 +235,25 @@
 
     img.dataset['deg'] = deg
   }
-  
-  function openImage(url){
+  function openImage(i){
+	  var index=img.dataset['index'];
+	   var urls=img.dataset['urls'] ;
+	   var imageUrls=$.makeArray(urls.split(','));
+	   if(i>=0&&i<imageUrls.length){
+		   img.style.backgroundImage = 'url(' + imageUrls[i] + ')'
+		   img.dataset['index']=i;
+		   return true;
+	   }
+	   return false;
+  }
+  function initImageBox(urls){
 	  //url='/image/DETECT_REPORT/201911/0ec988688d4942e7ac7e161be957118a.jpg';
 	  //url= 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573105614637&di=fa3542c9402fab7c075ec13575a1b8c3&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201806%2F18%2F20180618112547_jv2xs.thumb.700_0.jpeg'
-	   imgBox.style.display = 'flex'
-	   img.style.backgroundImage = 'url(' + url + ')'
+	   imgBox.style.display = 'flex';
+	
+	   img.dataset['index'] =-1;
+	   img.dataset['urls'] = urls;
+	   openImage(0);
 	}
 </script>
 </html>
