@@ -155,6 +155,18 @@ public interface User extends IBaseDomain {
 
     void setModified(Date modified);
 
+    
+    /**
+     * 
+     * 0：未删除，非0:已经删除
+     */
+    @Column(name = "`is_delete`")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getIsDelete();
+
+    void setIsDelete(Long isDelete);
+    
+    
     @ApiModelProperty(value = "验证码")
     @Transient
     String getCheckCode();
