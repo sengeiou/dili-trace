@@ -133,6 +133,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if(StringUtils.isNotBlank(user.getPhone())){
             User condition = DTOUtils.newDTO(User.class);
             condition.setPhone(user.getPhone());
+            condition.setYn(YnEnum.YES.getCode());
             List<User> users = listByExample(condition);
             if(CollectionUtils.isNotEmpty(users)){
                 users.forEach(o->{
