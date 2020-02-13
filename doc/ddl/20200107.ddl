@@ -15,7 +15,10 @@ ALTER TABLE `user` ADD COLUMN `is_delete`  BIGINT default 0 COMMENT '是否删�
 
 ALTER TABLE usual_address ADD CONSTRAINT usual_address_unique UNIQUE KEY (address_id,`type`);
 DROP INDEX unique_phone on `user`;
-ALTER TABLE `user` ADD CONSTRAINT user_unique UNIQUE KEY (phone,`is_delete`);
+DROP INDEX unique_cardno on `user`;
+
+ALTER TABLE `user` ADD CONSTRAINT user_unique_phone UNIQUE KEY (phone,`is_delete`);
+ALTER TABLE `user` ADD CONSTRAINT user_unique_cardno UNIQUE KEY (card_no,`is_delete`);
 
 
 
