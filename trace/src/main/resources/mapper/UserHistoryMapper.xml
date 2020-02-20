@@ -89,7 +89,14 @@
 		<if test="likeUserPlates != null">
         AND  user_plates like '%${likeUserPlates}%'  
 		</if>
-      
+      <if test="hasBusinessLicense!=null">
+	      <if test="hasBusinessLicense==true">
+	        AND (business_license_url is not null and business_license_url &lt;&gt;'')
+			</if>
+			<if test="hasBusinessLicense==false">
+	        AND  (business_license_url is null or business_license_url='')
+			</if>
+      </if>
       
       group by user_id
       ) 
