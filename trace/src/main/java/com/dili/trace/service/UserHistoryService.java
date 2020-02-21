@@ -12,13 +12,8 @@ import com.dili.trace.dto.UserHistoryListDto;
 import com.dili.trace.dto.UserHistoryStaticsDto;
 
 public interface UserHistoryService extends BaseService<UserHistory, Long> {
-	/**
-	 * 保存用户历史数据
-	 * 
-	 * @param user
-	 * @return
-	 */
-	public int insertUserHistory(User user);
+
+
 
 	/**
 	 * 保存用户历史数据
@@ -27,17 +22,23 @@ public interface UserHistoryService extends BaseService<UserHistory, Long> {
 	 * @return
 	 */
 
-	public int insertUserHistory(Long userId);
-
+	public int insertUserHistoryForNewUser(Long userId);
 	/**
 	 * 保存用户历史数据
 	 * 
-	 * @param user
-	 * @param userPlateList
-	 * @param tallyAreaList
+	 * @param userId
 	 * @return
 	 */
-	public int insertUserHistory(User user, List<UserPlate> userPlateList, List<UserTallyArea> tallyAreaList);
+
+	public int insertUserHistoryForUpdateUser(Long userId);
+	/**
+	 * 保存用户历史数据
+	 * 
+	 * @param userId
+	 * @return
+	 */
+
+	public int insertUserHistoryForDeleteUser(Long userId);
 	/**
 	 * 分页查询
 	 * @param dto

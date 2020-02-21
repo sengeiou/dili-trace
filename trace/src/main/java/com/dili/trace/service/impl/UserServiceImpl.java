@@ -99,7 +99,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         	}
         	this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
         }
-        this.userHistoryService.insertUserHistory(user.getId());
+        this.userHistoryService.insertUserHistoryForNewUser(user.getId());
     }
 
     /**
@@ -167,7 +167,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         updateSelective(user);
-        this.userHistoryService.insertUserHistory(user.getId());
+        this.userHistoryService.insertUserHistoryForUpdateUser(user.getId());
 
 
     }
@@ -340,7 +340,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             userTallyAreaService.deleteByExample(userTallyAreaQuery);
             redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
         }
-        this.userHistoryService.insertUserHistory(user.getId());
+        this.userHistoryService.insertUserHistoryForUpdateUser(user.getId());
         return BaseOutput.success("操作成功");
     }
 
@@ -418,14 +418,16 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setYn(YnEnum.NO.getCode());
         user.setIsDelete(user.getId());
         this.updateSelective(user);
-
+        
+        this.userHistoryService.insertUserHistoryForDeleteUser(user.getId());
+        
         //删除用户理货区关系
         UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
         userTallyAreaQuery.setUserId(id);
         userTallyAreaService.deleteByExample(userTallyAreaQuery);
         redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
         
-        this.userHistoryService.insertUserHistory(user.getId());
+        
 
         //删除用户车牌信息
         UserPlate up=DTOUtils.newDTO(UserPlate.class);
