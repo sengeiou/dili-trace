@@ -16,6 +16,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.UserHistoryMapper;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserHistory;
@@ -27,6 +28,7 @@ import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
+import com.github.pagehelper.Page;
 
 @Transactional
 @Service
@@ -38,87 +40,99 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 	@Autowired
 	UserTallyAreaService tallyAreaService;
 
+	private UserHistoryMapper getActualDao() {
+
+		return (UserHistoryMapper) this.getDao();
+	}
+
 	@Override
 	public EasyuiPageOutput listUserHistoryPageByExample(UserHistoryListDto dto) throws Exception {
 		
-		this.andCondition(dto).ifPresent(str->{
-			dto.mset(IDTO.AND_CONDITION_EXPR, str);
-		});
-		EasyuiPageOutput out=this.listEasyuiPageByExample(dto, true);
-		return out;
+		if(dto.getPage()==null) {
+			dto.setPage(1);
+		}
+		if(dto.getRows()==null) {
+			dto.setRows(10);
+		}
+		dto.setOffSet( ((long)dto.getPage()-1)*dto.getRows());
+		long total = this.getActualDao().queryUserHistoryCount(dto);
+		List<UserHistory> list = this.getActualDao().queryUserHistory(dto);
+		List results = ValueProviderUtils.buildDataByProvider(dto, list);
+		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
 	}
+
 	private Optional<String> andCondition(UserHistoryListDto dto) {
-    	List<String>strList=new ArrayList<>();
-    	if (dto != null && dto.getHasBusinessLicense() != null) {
-			if (dto.getHasBusinessLicense()!=null&&dto.getHasBusinessLicense()) {
+		List<String> strList = new ArrayList<>();
+		if (dto != null && dto.getHasBusinessLicense() != null) {
+			if (dto.getHasBusinessLicense() != null && dto.getHasBusinessLicense()) {
 				strList.add(" (business_license_url is not null and business_license_url<>'') ");
 			} else {
-				strList.add( " (business_license_url is null or business_license_url='') ");
+				strList.add(" (business_license_url is null or business_license_url='') ");
 			}
 		}
-    	
 
-    	if(!strList.isEmpty()) {
-    		return Optional.of(String.join(" and ", strList));
-    	}
-    	return Optional.empty();
-    }
+		if (!strList.isEmpty()) {
+			return Optional.of(String.join(" and ", strList));
+		}
+		return Optional.empty();
+	}
 
 	@Override
 	public UserHistoryStaticsDto queryStatics(UserHistoryListDto dto) throws Exception {
 
-		return ((UserHistoryMapper)super.getDao()).queryUserHistoryStatics(dto);
+		return ((UserHistoryMapper) super.getDao()).queryUserHistoryStatics(dto);
 	}
 
 	@Override
 	public int insertUserHistoryForNewUser(Long userId) {
-		return this.buildUserHistory(userId).map(uh->{
+		return this.buildUserHistory(userId).map(uh -> {
 			return this.insertSelective(uh);
-			
-		}).orElseThrow(()->{
+
+		}).orElseThrow(() -> {
 			throw new AppException("查询用户相关数据错误");
 		});
 	}
 
 	@Override
 	public int insertUserHistoryForUpdateUser(Long userId) {
-		return this.buildUserHistory(userId).map(uh->{
+		return this.buildUserHistory(userId).map(uh -> {
 			return this.insertSelective(uh);
-			
-		}).orElseThrow(()->{
+
+		}).orElseThrow(() -> {
 			throw new AppException("查询用户相关数据错误");
 		});
 	}
 
 	@Override
 	public int insertUserHistoryForDeleteUser(Long userId) {
-		return this.buildUserHistory(userId).map(uh->{
+		return this.buildUserHistory(userId).map(uh -> {
 			uh.setPlateAmount(0);
 			return this.insertSelective(uh);
-			
-		}).orElseThrow(()->{
+
+		}).orElseThrow(() -> {
 			throw new AppException("查询用户相关数据错误");
 		});
 	}
+
 	private Optional<UserHistory> buildUserHistory(Long userId) {
 		if (userId == null) {
 			return Optional.empty();
 		}
 		User item = this.userService.get(userId);
 		if (item == null) {
-			return  Optional.empty();
+			return Optional.empty();
 		}
 		UserTallyArea condition = DTOUtils.newDTO(UserTallyArea.class);
 		condition.setUserId(userId);
 
 		List<UserTallyArea> tallyAreaList = this.tallyAreaService.listByExample(condition);
 		List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(userId);
-		return  Optional.of(this.buildUserHistory(item, userPlateList, tallyAreaList));
-		
-		
+		return Optional.of(this.buildUserHistory(item, userPlateList, tallyAreaList));
+
 	}
+
 	private UserHistory buildUserHistory(User user, List<UserPlate> userPlateList, List<UserTallyArea> tallyAreaList) {
-		UserHistory history=DTOUtils.newDTO(UserHistory.class);
+		UserHistory history = DTOUtils.newDTO(UserHistory.class);
 		history.setUserId(user.getId());
 		history.setAddr(user.getAddr());
 		history.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
@@ -135,8 +149,9 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 		history.setSalesCityName(user.getSalesCityName());
 		history.setState(user.getState());
 		history.setTallyAreaNos(user.getTallyAreaNos());
-		//history.setUserId(user.getId());
-		String userPlates=userPlateList.stream().map(UserPlate::getPlate).filter(StringUtils::isNotBlank).collect(Collectors.joining(","));
+		// history.setUserId(user.getId());
+		String userPlates = userPlateList.stream().map(UserPlate::getPlate).filter(StringUtils::isNotBlank)
+				.collect(Collectors.joining(","));
 		history.setUserPlates(userPlates);
 		history.setVersion(user.getVersion());
 		history.setYn(user.getYn());

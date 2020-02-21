@@ -57,5 +57,9 @@ public interface UserHistoryListDto extends UserHistory {
     @Like
     String getLikeUserPlates();
     void setLikeUserPlates(String likeUserPlates);
+    
+    @Transient
+    Long getOffSet();
+    void setOffSet(Long offSet);
 
 }

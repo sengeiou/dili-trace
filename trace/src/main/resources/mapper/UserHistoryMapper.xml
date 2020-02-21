@@ -29,12 +29,40 @@
     id,user_id,user_name, phone, card_no, addr, card_no_url, tally_area_no, business_license_url,
     sales_city_id, sales_city_name, state, pwd, created, modified,user_plates,plate_amount
   </sql>
-
-  <select id="queryUserHistoryStatics" parameterType="com.dili.trace.dto.UserHistoryListDto" resultType="com.dili.trace.dto.UserHistoryStaticsDto">
-	SELECT sum(plate_amount) as plate_amount from user_history where id in (
-    SELECT max(id)    FROM user_history
-    where 1=1
-      <if test="name != null">
+  <select id="queryUserHistory" resultMap="BaseResultMap">
+  	select * from (<include refid="allUserHistory" />)	t
+  	<if test="sort != null">
+			ORDER BY ${sort}
+			<choose>
+				<when test="order != null">
+					${order}
+				</when>
+				<otherwise>
+					desc
+				</otherwise>
+			</choose>
+		</if>
+			limit ${offSet},${rows}
+  </select>
+  
+  <select id="queryUserHistoryCount" resultType="java.lang.Long">
+  	select count(1) from (<include refid="allUserHistory" />)	t
+  </select>
+  <sql id="allUserHistory">
+	SELECT * FROM (
+	
+	  SELECT * from user_history where id in (
+    SELECT max(id)    FROM user_history   where  yn=1 group by user_id
+    )
+    <if test="modifiedStart != null">
+         union
+         select * from user_history
+        where   yn=-1
+        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
+    </if>
+	) temp
+	WHERE 1=1
+    <if test="name != null">
        AND  name = #{name,jdbcType=VARCHAR}
       </if>
       <if test="userId != null">
@@ -72,14 +100,12 @@
       <if test="modified != null">
         AND   modified = #{modified,jdbcType=TIMESTAMP}
       </if>
-      
        <if test="createdStart != null">
         AND   created >= #{createdStart,jdbcType=TIMESTAMP}
       </if>
-            <if test="createdEnd != null">
+       <if test="createdEnd != null">
         AND   #{createdEnd,jdbcType=TIMESTAMP}>=created  
       </if>
-           
         <if test="modifiedStart != null">
         AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
       </if>
@@ -97,8 +123,9 @@
 	        AND  (business_license_url is null or business_license_url='')
 			</if>
       </if>
-      
-      group by user_id
-      ) 
+  </sql>
+
+  <select id="queryUserHistoryStatics" parameterType="com.dili.trace.dto.UserHistoryListDto" resultType="com.dili.trace.dto.UserHistoryStaticsDto">
+  select  sum(plate_amount) as plate_amount  from (<include refid="allUserHistory" />)	t where yn=1
   </select>
 </mapper>

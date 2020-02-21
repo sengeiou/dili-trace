@@ -85,7 +85,7 @@
                         <th width="10%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             注册时间
                         </th>
-                        <th width="10%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="8%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             姓名
                         </th>
                         <th width="10%" data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -100,14 +100,17 @@
                         <th width="10%" data-options="field:'salesCityName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             销地城市
                         </th>
-                        <th width="10%" data-options="field:'userPlates',   sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="8%" data-options="field:'userPlates',   sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             车牌
                         </th>
                         <th width="8%" data-options="field:'businessLicenseUrl',formatter:function(val){return val?'有':'无'},   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             营业执照
                         </th>
-                        <th width="10%" data-options="field:'state',_provider:'enabledStateProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="8%" data-options="field:'state',_provider:'enabledStateProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             状态
+                        </th>
+                        <th width="6%" data-options="field:'yn',_provider:'ynEnumStateProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            是否删除
                         </th>
                    </tr>
                 </thead>
