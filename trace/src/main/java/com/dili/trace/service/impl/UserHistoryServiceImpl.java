@@ -85,42 +85,33 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 
 	@Override
 	public int insertUserHistoryForNewUser(Long userId) {
-		int rows= this.buildUserHistory(userId).map(uh -> {
+		return this.buildUserHistory(userId).map(uh -> {
 			return this.insertSelective(uh);
 
-		}).orElse(-1);
-		
-		if(rows==-1) {
-				throw new AppException("查询用户相关数据错误");
-		}
-		return rows;
+		}).orElseThrow(() -> {
+			return new AppException("查询用户相关数据错误");
+		});
 	}
 
 	@Override
 	public int insertUserHistoryForUpdateUser(Long userId) {
-		int rows= this.buildUserHistory(userId).map(uh -> {
+		return  this.buildUserHistory(userId).map(uh -> {
 			return this.insertSelective(uh);
 
-		}).orElse(-1);
-		
-		if(rows==-1) {
-				throw new AppException("查询用户相关数据错误");
-		}
-		return rows;
+		}).orElseThrow(() -> {
+			return new AppException("查询用户相关数据错误");
+		});
 	}
 
 	@Override
 	public int insertUserHistoryForDeleteUser(Long userId) {
-		int rows= this.buildUserHistory(userId).map(uh -> {
+		return this.buildUserHistory(userId).map(uh -> {
 			uh.setPlateAmount(0);
 			return this.insertSelective(uh);
 
-		}).orElse(-1);
-		
-		if(rows==-1) {
-				throw new AppException("查询用户相关数据错误");
-		}
-		return rows;
+		}).orElseThrow(() -> {
+			return new AppException("查询用户相关数据错误");
+		});
 	}
 
 	private Optional<UserHistory> buildUserHistory(Long userId) {
