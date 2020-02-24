@@ -59,7 +59,8 @@
    )temp
   </select>
   <sql id="allValidUserHistory">
-	  SELECT * FROM user_history WHERE id IN (
+	  SELECT * FROM user_history WHERE user_id  NOT IN(select user_id from user_history where yn=-1)
+	  	AND  id IN (
 		      SELECT max(id)    FROM user_history   WHERE  yn=1
 		     <if test="name != null">
 		       AND  name = #{name,jdbcType=VARCHAR}
