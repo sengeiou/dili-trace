@@ -30,7 +30,12 @@
     sales_city_id, sales_city_name, state, pwd, created, modified,user_plates,plate_amount
   </sql>
   <select id="queryUserHistory" resultMap="BaseResultMap">
-  	select * from (<include refid="allUserHistory" />)	t
+  	select * from  (<include refid="allValidUserHistory" />
+    <if test="modifiedStart != null">
+       union
+        <include refid="allDeletedUserHistory" />
+   </if>
+   )temp
   	<if test="sort != null">
 			ORDER BY ${sort}
 			<choose>
@@ -46,23 +51,83 @@
   </select>
   
   <select id="queryUserHistoryCount" resultType="java.lang.Long">
-  	select count(1) from (<include refid="allUserHistory" />)	t
-  </select>
-  <sql id="allUserHistory">
-	SELECT * FROM (
-	
-	  SELECT * from user_history where id in (
-    SELECT max(id)    FROM user_history   where  yn=1 group by user_id
-    )
+  	select count(1) from  (<include refid="allValidUserHistory" />
     <if test="modifiedStart != null">
-         union
-         select * from user_history
-        where   yn=-1
-        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
-    </if>
-	) temp
-	WHERE 1=1
-    <if test="name != null">
+       union
+        <include refid="allDeletedUserHistory" />
+   </if>
+   )temp
+  </select>
+  <sql id="allValidUserHistory">
+	  SELECT * FROM user_history WHERE id IN (
+		      SELECT max(id)    FROM user_history   WHERE  yn=1
+		     <if test="name != null">
+		       AND  name = #{name,jdbcType=VARCHAR}
+		      </if>
+		      <if test="userId != null">
+		       AND  user_id = #{userId,jdbcType=BIGINT}
+		      </if>
+		      <if test="phone != null">
+		         AND   phone = #{phone,jdbcType=VARCHAR}
+		      </if>
+		      <if test="cardNo != null">
+		       AND    card_no = #{cardNo,jdbcType=VARCHAR}
+		      </if>
+		      <if test="addr != null">
+		        AND   addr = #{addr,jdbcType=VARCHAR}
+		      </if>
+		      <if test="likeTallyAreaNos != null">
+		        AND  tally_area_nos like '%${likeTallyAreaNos}%'  
+		      </if>
+		      <if test="businessLicenseUrl != null">
+		       AND   business_license_url = #{businessLicenseUrl,jdbcType=VARCHAR}
+		      </if>
+		      <if test="salesCityId != null">
+		        AND   sales_city_id = #{salesCityId,jdbcType=BIGINT}
+		      </if>
+		      <if test="salesCityName != null">
+		        AND   sales_city_name = #{salesCityName,jdbcType=VARCHAR}
+		      </if>
+		      <if test="state != null">
+		         AND  state = #{state,jdbcType=BIT}
+		      </if>
+		      <if test="created != null">
+		       AND    created = #{created,jdbcType=TIMESTAMP}
+		      </if>
+		      <if test="modified != null">
+		        AND   modified = #{modified,jdbcType=TIMESTAMP}
+		      </if>
+		       <if test="createdStart != null">
+		        AND   created >= #{createdStart,jdbcType=TIMESTAMP}
+		      </if>
+		       <if test="createdEnd != null">
+		        AND   #{createdEnd,jdbcType=TIMESTAMP}>=created  
+		      </if>
+		        <!--if test="modifiedStart != null">
+		        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
+		      </if-->
+		         <if test="modifiedEnd != null">
+		        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
+		      </if>
+				<if test="likeUserPlates != null">
+		        AND  user_plates like '%${likeUserPlates}%'  
+				</if>
+		      <if test="hasBusinessLicense!=null">
+			      <if test="hasBusinessLicense==true">
+			        AND (business_license_url is not null and business_license_url &lt;&gt;'')
+					</if>
+					<if test="hasBusinessLicense==false">
+			        AND  (business_license_url is null or business_license_url='')
+					</if>
+		      </if>
+		     GROUP BY user_id
+         )
+  </sql>
+
+<sql id="allDeletedUserHistory">
+        SELECT * FROM user_history
+        WHERE   yn=-1
+        <if test="name != null">
        AND  name = #{name,jdbcType=VARCHAR}
       </if>
       <if test="userId != null">
@@ -77,7 +142,6 @@
       <if test="addr != null">
         AND   addr = #{addr,jdbcType=VARCHAR}
       </if>
-
       <if test="likeTallyAreaNos != null">
         AND  tally_area_nos like '%${likeTallyAreaNos}%'  
       </if>
@@ -93,7 +157,6 @@
       <if test="state != null">
          AND  state = #{state,jdbcType=BIT}
       </if>
-
       <if test="created != null">
        AND    created = #{created,jdbcType=TIMESTAMP}
       </if>
@@ -124,8 +187,7 @@
 			</if>
       </if>
   </sql>
-
   <select id="queryUserHistoryStatics" parameterType="com.dili.trace.dto.UserHistoryListDto" resultType="com.dili.trace.dto.UserHistoryStaticsDto">
-  select  sum(plate_amount) as plate_amount  from (<include refid="allUserHistory" />)	t where yn=1
+  SELECT  sum(plate_amount) as plate_amount  FROM (<include refid="allValidUserHistory" />)	temp
   </select>
 </mapper>
