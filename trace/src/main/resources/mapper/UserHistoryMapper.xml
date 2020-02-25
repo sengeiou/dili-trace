@@ -30,11 +30,10 @@
     sales_city_id, sales_city_name, state, pwd, created, modified,user_plates,plate_amount
   </sql>
   <select id="queryUserHistory" resultMap="BaseResultMap">
-  	select * from  (<include refid="allValidUserHistory" />
-    <if test="modifiedStart != null">
-       union
+  	select * from  (
+  	  	 <include refid="allValidUserHistory" />
+        union
         <include refid="allDeletedUserHistory" />
-   </if>
    )temp
   	<if test="sort != null">
 			ORDER BY ${sort}
