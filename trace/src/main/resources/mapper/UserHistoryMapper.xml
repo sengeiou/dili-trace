@@ -33,10 +33,7 @@
   	select * from  (
   	  	 <include refid="allValidUserHistory" />
         union
-        <include refid="allDeletedUserHistory" />
-         <if test="modifiedStart != null">
-        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
-      </if> 
+        <include refid="queryAllUserHistory" />
    )temp
   	<if test="sort != null">
 			ORDER BY ${sort}
@@ -56,80 +53,82 @@
   	select count(1) from  (
   	    <include refid="allValidUserHistory" />
         union
-        <include refid="allDeletedUserHistory" />
-        <if test="modifiedStart != null">
-        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
-      </if> 
+        <include refid="queryAllUserHistory" />
    )temp
   </select>
   <sql id="allValidUserHistory">
 	  SELECT * FROM user_history WHERE  id IN (
-		      SELECT max(id)    FROM user_history   WHERE  yn=1
-		      AND user_id NOT IN (SELECT user_id from  (<include refid="allDeletedUserHistory" />)deletedUsers where yn=-1 )
-		     <if test="name != null">
-		       AND  name = #{name,jdbcType=VARCHAR}
-		      </if>
-		      <if test="userId != null">
-		       AND  user_id = #{userId,jdbcType=BIGINT}
-		      </if>
-		      <if test="phone != null">
-		         AND   phone = #{phone,jdbcType=VARCHAR}
-		      </if>
-		      <if test="cardNo != null">
-		       AND    card_no = #{cardNo,jdbcType=VARCHAR}
-		      </if>
-		      <if test="addr != null">
-		        AND   addr = #{addr,jdbcType=VARCHAR}
-		      </if>
-		      <if test="likeTallyAreaNos != null">
-		        AND  tally_area_nos like '%${likeTallyAreaNos}%'  
-		      </if>
-		      <if test="businessLicenseUrl != null">
-		       AND   business_license_url = #{businessLicenseUrl,jdbcType=VARCHAR}
-		      </if>
-		      <if test="salesCityId != null">
-		        AND   sales_city_id = #{salesCityId,jdbcType=BIGINT}
-		      </if>
-		      <if test="salesCityName != null">
-		        AND   sales_city_name = #{salesCityName,jdbcType=VARCHAR}
-		      </if>
-		      <if test="state != null">
-		         AND  state = #{state,jdbcType=BIT}
-		      </if>
-		      <if test="created != null">
-		       AND    created = #{created,jdbcType=TIMESTAMP}
-		      </if>
-		      <if test="modified != null">
-		        AND   modified = #{modified,jdbcType=TIMESTAMP}
-		      </if>
-		       <if test="createdStart != null">
-		        AND   created >= #{createdStart,jdbcType=TIMESTAMP}
-		      </if>
-		       <if test="createdEnd != null">
-		        AND   #{createdEnd,jdbcType=TIMESTAMP}>=created  
-		      </if>
-		        <!--if test="modifiedStart != null">
-		        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
-		      </if-->
-		         <if test="modifiedEnd != null">
-		        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
-		      </if>
-				<if test="likeUserPlates != null">
-		        AND  user_plates like '%${likeUserPlates}%'  
-				</if>
-		      <if test="hasBusinessLicense!=null">
-			      <if test="hasBusinessLicense==true">
-			        AND (business_license_url is not null and business_license_url &lt;&gt;'')
-					</if>
-					<if test="hasBusinessLicense==false">
-			        AND  (business_license_url is null or business_license_url='')
-					</if>
-		      </if>
-		     GROUP BY user_id
+		      SELECT max(id)    FROM user_history   WHERE  user_id NOT IN (
+					SELECT user_id FROM user_history
+					        WHERE   yn=-1
+					         <if test="modifiedEnd != null">
+					        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
+					      </if>
+			 )    GROUP BY user_id
          )
+         <if test="name != null">
+	       AND  name = #{name,jdbcType=VARCHAR}
+	      </if>
+	      <if test="userId != null">
+	       AND  user_id = #{userId,jdbcType=BIGINT}
+	      </if>
+	      <if test="phone != null">
+	         AND   phone = #{phone,jdbcType=VARCHAR}
+	      </if>
+	      <if test="cardNo != null">
+	       AND    card_no = #{cardNo,jdbcType=VARCHAR}
+	      </if>
+	      <if test="addr != null">
+	        AND   addr = #{addr,jdbcType=VARCHAR}
+	      </if>
+	      <if test="likeTallyAreaNos != null">
+	        AND  tally_area_nos like '%${likeTallyAreaNos}%'  
+	      </if>
+	      <if test="businessLicenseUrl != null">
+	       AND   business_license_url = #{businessLicenseUrl,jdbcType=VARCHAR}
+	      </if>
+	      <if test="salesCityId != null">
+	        AND   sales_city_id = #{salesCityId,jdbcType=BIGINT}
+	      </if>
+	      <if test="salesCityName != null">
+	        AND   sales_city_name = #{salesCityName,jdbcType=VARCHAR}
+	      </if>
+	      <if test="state != null">
+	         AND  state = #{state,jdbcType=BIT}
+	      </if>
+	      <if test="created != null">
+	       AND    created = #{created,jdbcType=TIMESTAMP}
+	      </if>
+	      <if test="modified != null">
+	        AND   modified = #{modified,jdbcType=TIMESTAMP}
+	      </if>
+	       <if test="createdStart != null">
+	        AND   created >= #{createdStart,jdbcType=TIMESTAMP}
+	      </if>
+	       <if test="createdEnd != null">
+	        AND   #{createdEnd,jdbcType=TIMESTAMP}>=created  
+	      </if>
+	        <!--if test="modifiedStart != null">
+	        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
+	      </if-->
+	         <if test="modifiedEnd != null">
+	        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
+	      </if>
+			<if test="likeUserPlates != null">
+	        AND  user_plates like '%${likeUserPlates}%'  
+			</if>
+	      <if test="hasBusinessLicense!=null">
+		      <if test="hasBusinessLicense==true">
+		        AND (business_license_url is not null and business_license_url &lt;&gt;'')
+				</if>
+				<if test="hasBusinessLicense==false">
+		        AND  (business_license_url is null or business_license_url='')
+				</if>
+	      </if>
   </sql>
 
-<sql id="allDeletedUserHistory">
+  
+  <sql id="queryAllUserHistory">
         SELECT * FROM user_history
         WHERE   1=1
         <if test="name != null">
@@ -174,9 +173,9 @@
        <if test="createdEnd != null">
         AND   #{createdEnd,jdbcType=TIMESTAMP}>=created  
       </if>
-        <!--if test="modifiedStart != null">
+        <if test="modifiedStart != null">
         AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
-      </if-->
+      </if>
          <if test="modifiedEnd != null">
         AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
       </if>
