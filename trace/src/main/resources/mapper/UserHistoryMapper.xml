@@ -62,7 +62,7 @@
 					SELECT user_id FROM user_history
 					        WHERE   yn=-1
 					         <if test="modifiedEnd != null">
-					        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>modified  
+					        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
 					      </if>
 			 ) 
 			  <if test="modifiedEnd != null">
