@@ -64,7 +64,11 @@
 					         <if test="modifiedEnd != null">
 					        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
 					      </if>
-			 )    GROUP BY user_id
+			 ) 
+			  <if test="modifiedEnd != null">
+		        AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
+		      </if>
+			  GROUP BY user_id
          )
          <if test="name != null">
 	       AND  name = #{name,jdbcType=VARCHAR}
