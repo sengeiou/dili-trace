@@ -59,7 +59,7 @@
   <sql id="allValidUserHistory">
 	  SELECT * FROM user_history WHERE  id IN (
 		      SELECT max(id)    FROM user_history   WHERE  yn=1
-		      AND user_id NOT IN (SELECT user_id from  (<include refid="allDeletedUserHistory" />)deletedUsers )
+		      AND user_id NOT IN (SELECT user_id from  (<include refid="allDeletedUserHistory" />)deletedUsers where yn=-1 )
 		     <if test="name != null">
 		       AND  name = #{name,jdbcType=VARCHAR}
 		      </if>
@@ -125,7 +125,7 @@
 
 <sql id="allDeletedUserHistory">
         SELECT * FROM user_history
-        WHERE   yn=-1
+        WHERE   1=1
         <if test="name != null">
        AND  name = #{name,jdbcType=VARCHAR}
       </if>
