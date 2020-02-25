@@ -34,6 +34,9 @@
   	  	 <include refid="allValidUserHistory" />
         union
         <include refid="allDeletedUserHistory" />
+         <if test="modifiedStart != null">
+        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
+      </if> 
    )temp
   	<if test="sort != null">
 			ORDER BY ${sort}
@@ -54,6 +57,9 @@
   	    <include refid="allValidUserHistory" />
         union
         <include refid="allDeletedUserHistory" />
+        <if test="modifiedStart != null">
+        AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
+      </if> 
    )temp
   </select>
   <sql id="allValidUserHistory">
@@ -168,9 +174,9 @@
        <if test="createdEnd != null">
         AND   #{createdEnd,jdbcType=TIMESTAMP}>=created  
       </if>
-        <if test="modifiedStart != null">
+        <!--if test="modifiedStart != null">
         AND   modified >= #{modifiedStart,jdbcType=TIMESTAMP}
-      </if>
+      </if-->
          <if test="modifiedEnd != null">
         AND   #{modifiedEnd,jdbcType=TIMESTAMP}>=modified  
       </if>
