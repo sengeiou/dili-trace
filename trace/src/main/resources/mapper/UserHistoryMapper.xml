@@ -51,17 +51,16 @@
   </select>
   
   <select id="queryUserHistoryCount" resultType="java.lang.Long">
-  	select count(1) from  (<include refid="allValidUserHistory" />
-    <if test="modifiedStart != null">
-       union
+  	select count(1) from  (
+  	    <include refid="allValidUserHistory" />
+        union
         <include refid="allDeletedUserHistory" />
-   </if>
    )temp
   </select>
   <sql id="allValidUserHistory">
-	  SELECT * FROM user_history WHERE user_id  NOT IN(select user_id from user_history where yn=-1)
-	  	AND  id IN (
+	  SELECT * FROM user_history WHERE  id IN (
 		      SELECT max(id)    FROM user_history   WHERE  yn=1
+		      AND user_id NOT IN (SELECT user_id from  (<include refid="allDeletedUserHistory" />)deletedUsers )
 		     <if test="name != null">
 		       AND  name = #{name,jdbcType=VARCHAR}
 		      </if>
