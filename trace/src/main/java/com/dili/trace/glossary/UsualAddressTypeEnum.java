@@ -12,8 +12,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum UsualAddressTypeEnum {
 
-    REGISTER("register", "登记单地址"),
-    USER("user", "销售地址"),
+    REGISTER("register", "登记单产地"),
+    USER("user", "销地城市"),
     ;
 
     private String name;
