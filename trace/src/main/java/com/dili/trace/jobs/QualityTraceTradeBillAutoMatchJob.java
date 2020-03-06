@@ -55,10 +55,10 @@ public class QualityTraceTradeBillAutoMatchJob {
 
 	@PostConstruct
 	public void init() {
-//		if (scheduleEnable) {
-//			this.registeTrigger(this::executeMatch7daysRegisterBill, 60 * match7DaysDelay);
-//			this.registeTrigger(this::executeMatchTodayRegisterBill, 60 * matchTodaysDelay);
-//		}
+		if (scheduleEnable) {
+			this.registeTrigger(this::executeMatch7daysRegisterBill, 60 * match7DaysDelay);
+			this.registeTrigger(this::executeMatchTodayRegisterBill, 60 * matchTodaysDelay);
+		}
 
 	}
 

@@ -484,7 +484,7 @@ where
 			AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{momEnd}
 			</if>
 			<if test="momStart!=null  or momEnd!=null">
-						AND 1=0
+			AND 0>id
 			</if>
 group by
 	product_name
@@ -555,7 +555,7 @@ where
 						AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{yoyEnd}
 			</if>
 			<if test="yoyStart!=null  or yoyEnd!=null">
-						AND 1=0
+						AND 0>id
 			</if>
 group by
 	product_name
@@ -619,6 +619,11 @@ group by
  group by
 	product_name
  </sql>
+ <select id="listPageGroupByProductCount" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto"  resultType="java.lang.Long">
+	select 
+    count(1) as cnt
+	 from (<include refid="sumGroupByProduct" />) summedData
+  </select>
     <select id="listPageGroupByProduct" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto"  resultType="com.dili.trace.dto.GroupByProductReportDto">
 	select 
 	product_name as productName,/*商品名称*/
@@ -678,5 +683,18 @@ group by
 
 	0
 	 from (<include refid="sumGroupByProduct" />) summedData
+	 
+	 <if test="sort != null">
+			ORDER BY ${sort}
+			<choose>
+				<when test="order != null">
+					${order}
+				</when>
+				<otherwise>
+					desc
+				</otherwise>
+			</choose>
+		</if>
+			limit ${offSet},${rows}
   </select>
 </mapper>

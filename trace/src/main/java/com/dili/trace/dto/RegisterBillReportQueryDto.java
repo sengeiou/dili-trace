@@ -38,6 +38,15 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 
 	
 
+	
+	private Integer offSet;
+	
+	public Integer getOffSet() {
+		return offSet;
+	}
+	public void setOffSet(Integer offSet) {
+		this.offSet = offSet;
+	}
 
 
 	public LocalDate getCreatedStart() {

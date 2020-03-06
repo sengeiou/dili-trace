@@ -31,4 +31,6 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
 	int doRemoveReportAndCertifiy(RegisterBill registerBill);
 
 	List<GroupByProductReportDto> listPageGroupByProduct(RegisterBillReportQueryDto dto);
+
+	Long listPageGroupByProductCount(RegisterBillReportQueryDto dto);
 }
