@@ -1,0 +1,242 @@
+ <#body>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <!--<div id="nav" class="top-pos-box">
+                <span><img class="nav-pos-icon" src="${contextPath}/resources/images/pos-icon.png">当前位置:</span>
+                <span>登记单管理&nbsp&gt;</span>
+                <span><a class="link-text" href="">登记单列表</a></span>
+            </div>-->
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="queryForm" class="easyui-form" method="post" fit="true">
+                    <div class="search-wrap">
+                        <div class="search-item">
+                            <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        <div class="search-item">
+                            <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right" data-options="label:'商品:'" />
+                        </div>
+                        <div class="search-item">
+                            <input  name="tradeTypeId" id="tradeTypeId" style="width:100%" labelAlign="right" data-options="label:'交易区'"  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        <div class="search-item">
+                            <input type="hidden" name="_salesCityName" id="_salesCityName">
+                            <select class="easyui-combobox" name="originId" id="_salesCityId" style="width:100%;" labelAlign="right"
+                                    data-options="label:'产地',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,required:false,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
+                                $('#_salesCityName').val(record.text);
+                            }"></select>
+                        </div>
+                        <div class="search-item">
+                            <input  name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'"  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="detectState" _provider='billDetectStateProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="likeTallyAreaNo" id="likeTallyAreaNo" style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
+                        </div>
+                        <div class="search-item">
+                            <select class="easyui-combobox" name="plate" id="plate" style="width:100%;" editable="false" panelHeight="auto" 
+                            data-options="label:'车牌号',editable:true, valueField:'plate',textField:'plate',onChange:onPlateChange,prompt:'请选择或输入'"  labelAlign="right">
+                            </select>
+                        </div>
+                        
+                        <div class="search-item">
+                            <select class="easyui-combobox" name="hasDetectReport" id="hasDetectReport" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'检测报告'"  labelAlign="right">
+                        		<option value="">全部</option>
+                                <option value="true">有</option>
+                                <option value="false">无</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <select class="easyui-combobox" name="hasOriginCertifiy" id="hasOriginCertifiy" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'产地证明'"  labelAlign="right">
+                        		<option value="">全部</option>
+                                <option value="true">有</option>
+                                <option value="false">无</option>
+                            </select>
+                        </div>
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" style="width:58%" labelAlign="right" data-options="label:'检测时间'"/>
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="latestDetectTimeTimeEnd" id="latestDetectTimeTimeEnd" style="width:39%;"/>
+                        </div>
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'" value="${createdStart!}"/>
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;" value="${createdEnd!}"/>
+                        </div>
+                        <div class="search-item long-item">
+                            <select class="easyui-combobox" name="attr" id="attr" style="width:50%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'关键字'"  labelAlign="right">
+                                <option value="code">登记编号</option>
+                                <!--option value="plate">车牌号</option-->
+                                <!--option value="tallyAreaNo" selected="selected">理货区号</option-->
+                                <option value="name">业户姓名</option>
+                                <option value="latestDetectOperator">检测员</option>
+                                <option value="likeSampleCode">采样单编号</option>
+                                
+                            </select>
+                            <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">
+                        </div>
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="queryRegisterBillGrid()">查询</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="登记单列表" id="registerBillGrid" fitColumns="true" noheader="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
+                   loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false" sortName="sampleCode" sortOrder="desc"
+                   align="center" fit="true" idField="id" selectOnCheck="true" data-options="onClickRow:onClickRow,onSelect:onClickRow,onUnselect:onUnselect,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked,onSelectAll:onSelectAll,onUnselectAll:onUnselectAll ">
+                <thead>
+                    <tr>
+                    	<th field="ck" checkbox="true" data-options="field:'ck' "> </th>
+                        <th width="10%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            登记时间
+                        </th>
+                        <th width="8%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            编号
+                        </th>
+                        <th width="8%" data-options="field:'sampleCode',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            采样编号
+                        </th>
+                        <!--<th width="5%"  data-options="field:'registerSource',  _provider:'registerSourceProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                          登记来源
+                        </th>-->
+                        <th width="4%" data-options="field:'tallyAreaNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            理货区号
+                        </th>
+                        <th width="5%" data-options="field:'tradeTypeName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            交易区号
+                        </th>
+                        <th width="4%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            业户姓名
+                        </th>
+                        <th width="5%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            车牌
+                        </th>
+                        <!--<th width="8%" data-options="field:'sampleCode',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            采样编号
+                        </th>-->
+                        <th width="4%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            商品名称
+                        </th>
+                        <th width="4%" data-options="field:'weight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            重量/KG
+                        </th>
+                        <th width="4%" data-options="field:'originCertifiyUrl',  _provider:'originCertifiyStateProvider',  sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            产地证明
+                        </th>
+                        <th width="4%" data-options="field:'detectReportUrl', _provider:'detectReportStateProvider', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            检测报告
+                        </th>
+                        <th width="6%" data-options="field:'latestPdResult', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            检测值
+                        </th>
+                        <th width="10%" data-options="field:'originName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            产地
+                        </th>
+
+                        <th width="5%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            状态
+                        </th>
+
+
+                        <th width="10%" data-options="field:'latestDetectTime',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            检测时间
+                        </th>
+
+
+
+                        <th width="4%" data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           检测结果
+                        </th>
+                        <th width="4%" data-options="field:'latestDetectOperator',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            检测员
+                        </th>
+
+
+                        <!--<th width="5%" data-options="field:'exeMachineNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            exeMachineNo
+                        </th>-->
+
+
+                   </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+   <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增" style="padding:20px" modal="true" border="thin" closed="true"
+         data-options="
+				iconCls: 'icon-edit',
+				height: 450,
+				buttons: [{
+					text:'确认',
+					iconCls:'icon-ok',
+					handler:saveOrUpdateHandleResult
+				},{
+					text:'取消',
+					iconCls:'icon-cancel',
+					handler:function(){
+						$('#dlg').dialog('close');
+					}
+				}]
+			">
+    <form id="_form" class="easyui-form" method="post" fit="true">
+        <input name="_id" id="_id" type="hidden">
+        <table width="680px">
+            <tr>
+                <td style="padding:10px;">
+                    <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
+                        <span class="fileimg-plus-icon">+</span>
+                        <span class="fileimg-des">上传处理结果图片</span>
+                        <input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                        <img class="magnifying">
+                        <input type="hidden" name="_resultUrl">
+                        <div class="fileimg-cover" style="display: none;"></div>
+                        <div class="fileimg-edit" style="display: none;">
+                            <span class="fileimg-view">查看</span>
+                            <span class="fileimg-delete">删除</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table width="400px">
+            <tr>
+                <td style="padding:10px;">
+                    <input class="easyui-textbox"  name="_handleResult" id="_handleResult" style="width:100%" data-options="labelWidth:100,label:'处理结果备注*:', validType:'length[2,100000]',required:true,multiline:true,rows:5,height:80" />
+                </td>
+            </tr>
+        </table>
+        
+    </form>
+
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <#registerBill_indexJs />
+ </#body>

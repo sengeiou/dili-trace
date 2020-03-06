@@ -345,6 +345,16 @@ public interface RegisterBill extends IBaseDomain {
     String getHandleResult();
 
     void setHandleResult(String handleResult);
+    
+
+    
+    @ApiModelProperty(value = "数据创建来源")
+    @Column(name = "`creation_source`")
+    @FieldDef(label="creation_source")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getCreationSource();
+
+    void setCreationSource(Integer creationSource);
 
 
 

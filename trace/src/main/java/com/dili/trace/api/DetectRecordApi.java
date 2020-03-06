@@ -12,6 +12,7 @@ import com.dili.trace.dto.TaskGetParam;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
+import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.DetectRecordService;
@@ -143,6 +144,7 @@ public class DetectRecordApi {
 		registerBill.setLatestDetectTime(detectRecord.getDetectTime());
 		registerBill.setLatestPdResult(detectRecord.getPdResult());
 		registerBill.setLatestDetectOperator(detectRecord.getDetectOperator());
+		registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
 		registerBillService.updateSelective(registerBill);
 	}
 

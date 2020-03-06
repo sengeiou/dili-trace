@@ -8,6 +8,7 @@ import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
+import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
@@ -129,7 +130,17 @@ public class RegisterBillController {
 		if (sql.length() > 0) {
 			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
 		}
-
+		if(StringUtils.isBlank(registerBill.getSort())) {
+			registerBill.setSort("creation_source");
+		}else {
+			registerBill.setSort("creation_source,"+registerBill.getSort());
+		}
+		if(StringUtils.isBlank(registerBill.getOrder())) {
+			registerBill.setOrder("ASC");
+		}else {
+			registerBill.setOrder("ASC,"+registerBill.getOrder());
+		}
+		
 		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
 	}
 
@@ -216,6 +227,7 @@ public class RegisterBillController {
 			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 			registerBill.setDetectReportUrl(StringUtils.trimToNull(registerBill.getDetectReportUrl()));
 			registerBill.setOriginCertifiyUrl(StringUtils.trimToNull(registerBill.getOriginCertifiyUrl()));
+			registerBill.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
 			BaseOutput r = registerBillService.createRegisterBill(registerBill);
 			if (!r.isSuccess()) {
 				return r;
