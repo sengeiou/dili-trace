@@ -6,6 +6,7 @@ import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.MatchDetectParam;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillReportQueryDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 
 import org.apache.ibatis.annotations.Param;
@@ -29,5 +30,5 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
 
 	int doRemoveReportAndCertifiy(RegisterBill registerBill);
 
-	List<GroupByProductReportDto> listPageGroupByProduct(RegisterBillDto dto);
+	List<GroupByProductReportDto> listPageGroupByProduct(RegisterBillReportQueryDto dto);
 }

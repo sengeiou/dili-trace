@@ -31,6 +31,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,40 +74,53 @@ public class RegisterBillReportController {
 		Date now = new Date();
 		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-		
+
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
-		List<GroupByProductReportDto>list=registerBillReportService.listPageGroupByProduct();
-		return "registerBillReport/product-report.html";
+
+		return "registerBillReport/product-report";
 	}
-	
 
 	@ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPageGroupByProduct.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(RegisterBillDto registerBill) throws Exception {
-		if (StringUtils.isNotBlank(registerBill.getAttrValue())) {
-			switch (registerBill.getAttr()) {
-			case "code":
-				registerBill.setCode(registerBill.getAttrValue());
-				break;
-			case "latestDetectOperator":
-				registerBill.setLatestDetectOperator(registerBill.getAttrValue());
-				break;
-			case "name":
-				registerBill.setName(registerBill.getAttrValue());
-				break;
-			case "productName":
-				registerBill.setProductName(registerBill.getAttrValue());
-				break;
-			case "likeSampleCode":
-				registerBill.setLikeSampleCode(registerBill.getAttrValue());
-				break;
-			}
+	public @ResponseBody String listPage(RegisterBillReportQueryDto dto) throws Exception {
+		if(RegisterSourceEnum.TALLY_AREA.getCode().equals(dto.getRegisterSource())) {
+			dto.setTradeTypeId(null);
 		}
-
-		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
+		
+		LocalDate start=dto.getCreatedStart();
+		LocalDate end=dto.getCreatedEnd();
+		if(start!=null&&end!=null) {
+			if(start.isEqual(end)) {//整天
+				
+				dto.setMomStart(start.minusDays(1));
+				dto.setMomEnd(end.minusDays(1));
+				
+				dto.setYoyStart(start.minusYears(1));
+				dto.setYoyEnd(end.minusYears(1));
+				
+			}else if(start.getYear()==end.getYear()&&start.getMonth()==end.getMonth()&&start.getDayOfMonth()==1) {
+				
+				int lastDayOfMonth=end.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
+				if(end.getDayOfMonth()==lastDayOfMonth) {//整月
+				
+					
+					dto.setMomStart(start.minusMonths(1));
+					dto.setMomEnd(end.minusMonths(1));
+					
+					
+					dto.setYoyStart(start.minusYears(1));
+					dto.setYoyEnd(end.minusYears(1));					
+					
+				}
+				
+			}
+			
+			
+		}
+		return registerBillReportService.listPageGroupByProduct(dto).toString();
 	}
-	
+
 }

@@ -282,6 +282,15 @@
   
    <sql id="groupByProductCondition">
      	 1=1
+     	 <if test="productName!=''    and productName!=null">
+     		AND product_name=#{productName}
+     	 </if>
+     	  <if test="registerSource!=null">
+     		AND register_source=#{registerSource}
+     	 </if>
+     	 <if test="tradeTypeId!=null">
+     		AND trade_type_id=#{tradeTypeId}
+     	 </if>
   </sql>
   <sql id="groupByProduct">
     select
@@ -398,7 +407,13 @@
 from
 	register_bill
 where
-			<include refid="groupByProductCondition" />
+			<include refid="groupByProductCondition" /> 
+			<if test="createdStart!=null">
+			AND #{createdStart}&lt;=DATE_FORMAT(created,'%Y-%m-%d')
+			</if>
+			<if test="createdEnd!=null">
+			AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{createdEnd}
+			</if>
 group by
 	product_name
 union all
@@ -464,6 +479,13 @@ from
 	register_bill
 where
 			<include refid="groupByProductCondition" />
+			<if test="momStart!=null and momEnd!=null">
+			AND #{momStart}&lt;=DATE_FORMAT(created,'%Y-%m-%d')
+			AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{momEnd}
+			</if>
+			<if test="momStart!=null  or momEnd!=null">
+						AND 1=0
+			</if>
 group by
 	product_name
 	union all 
@@ -528,6 +550,13 @@ from
 	register_bill
 where
 			<include refid="groupByProductCondition" />
+			<if test="yoyStart!=null  and yoyEnd!=null">
+						AND #{yoyStart}&lt;=DATE_FORMAT(created,'%Y-%m-%d')
+						AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{yoyEnd}
+			</if>
+			<if test="yoyStart!=null  or yoyEnd!=null">
+						AND 1=0
+			</if>
 group by
 	product_name
   </sql>
@@ -590,7 +619,7 @@ group by
  group by
 	product_name
  </sql>
-    <select id="listPageGroupByProduct" parameterType="com.dili.trace.dto.RegisterBillDto"  resultType="com.dili.trace.dto.GroupByProductReportDto">
+    <select id="listPageGroupByProduct" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto"  resultType="com.dili.trace.dto.GroupByProductReportDto">
 	select 
 	product_name as productName,/*商品名称*/
 	

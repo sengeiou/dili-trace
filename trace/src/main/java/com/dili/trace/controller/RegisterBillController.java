@@ -130,6 +130,8 @@ public class RegisterBillController {
 		if (sql.length() > 0) {
 			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
 		}
+		
+		//case created when created=2 then 1 else 0 end
 		if(StringUtils.isBlank(registerBill.getSort())) {
 			registerBill.setSort("creation_source");
 		}else {
