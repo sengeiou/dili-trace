@@ -1,0 +1,75 @@
+<#echartJs></#echartJs>
+ <#body>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <!--<div id="nav" class="top-pos-box">
+                <span><img class="nav-pos-icon" src="${contextPath}/resources/images/pos-icon.png">当前位置:</span>
+                <span>登记单管理&nbsp&gt;</span>
+                <span><a class="link-text" href="">登记单列表</a></span>
+            </div>-->
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <div id="tt" class="easyui-tabs" style="width:100%;height:100%;">
+    <div title="运输重量图表" style="padding:20px;display:none;" id="totalWeight">
+		<div id="chart" style="width:98%; height:400px;"></div>
+<#echarts _id="chart" _title="设备信息" _type="Pie" _url="${contextPath}/registerBillReport/getProductChartsJson.action"
+_nameField="name" _valueField="id" _groupField="type" _queryParams=" {type:'totalWeight'} "></#echarts>
+
+		<div id="chart2" style="width:98%; height:400px;"></div>
+<#echarts _id="chart2" _title="设备信息" _type="Line" _url="${contextPath}/registerBillReport/getProductChartsJson.action"
+_nameField="name" _valueField="id" _groupField="type" _queryParams="{type:'totalWeight'} "></#echarts>
+
+    </div>
+    <div title="商品进场图表" data-options="closable:false" style="overflow:auto;padding:20px;display:none;" id="cnt">
+		tab2
+    </div>
+    <div title="商品采样图表" data-options="closable:false" style="padding:20px;display:none;">
+		tab3
+    </div>
+    <div title="检测数量图表" data-options="closable:false" style="padding:20px;display:none;">
+		tab3
+    </div>
+    <div title="复检数量图表" data-options="closable:false" style="padding:20px;display:none;">
+		tab3
+    </div>
+    <div title="初检合格图表" data-options="closable:false" style="padding:20px;display:none;">
+		tab3
+    </div>
+    <div title="复检合格图表" data-options="closable:false" style="padding:20px;display:none;">
+		tab3
+    </div>
+    <div title="产地证明图表" data-options="closable:false" style="padding:20px;display:none;">
+		tab3
+    </div>
+    <div title="检测报告图表" data-options="closable:false" style="padding:20px;display:none;">
+		tab3
+    </div>
+</div>
+        </div>
+    </div>
+      <!-- 隐藏编辑框 -->
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script type="text/javascript">
+        </script>
+
+ </#body>

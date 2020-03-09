@@ -70,7 +70,7 @@ public class RegisterBillReportController {
 
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/product-report.html", method = RequestMethod.GET)
-	public String index(ModelMap modelMap) {
+	public String productReport(ModelMap modelMap) {
 		Date now = new Date();
 		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
@@ -122,5 +122,29 @@ public class RegisterBillReportController {
 		}
 		return registerBillReportService.listPageGroupByProduct(dto).toString();
 	}
+	@ApiOperation("跳转到RegisterBill产品统计页面")
+	@RequestMapping(value = "/product-charts.html", method = RequestMethod.GET)
+	public String productCharts(ModelMap modelMap) {
+		Date now = new Date();
+		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
 
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+
+		return "registerBillReport/product-charts";
+	}
+
+	@RequestMapping(value = "/getProductChartsJson.action",method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public Object getProductChartsJson(String type) {
+		List<Map<String,Object>>list=new ArrayList<Map<String,Object>>();
+		
+		Map<String, Object>data=new HashMap<String, Object>();
+		data.put("id", "1");
+		data.put("name", "abc");
+		
+		list.add(data);
+		return list;
+	}
 }

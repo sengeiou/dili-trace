@@ -35,6 +35,15 @@
                                onclick="queryRegisterBillGrid()">查询</a>&nbsp;&nbsp;
                             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
                         </div>
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="showorhidecolumns()">列表字段配置</a>&nbsp;&nbsp;
+                        </div>
+                        
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="showcharts()">查看图表</a>&nbsp;&nbsp;
+                        </div>
                     </div>
                 </form>
             </div>
@@ -73,8 +82,6 @@
                         <th width="4%" data-options="field:'yoyCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             同比
                         </th>
-                        
-                        
                         <th width="4%" data-options="field:'totalCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             采样客户数量
                         </th>
@@ -84,8 +91,6 @@
                         <th width="4%" data-options="field:'yoyCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             同比
                         </th>
-                        
-                        
                         <th width="4%" data-options="field:'totalCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             检测数量
                         </th>
@@ -95,10 +100,7 @@
                         <th width="4%" data-options="field:'yoyCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             同比
                         </th>
-                        
-                        
-                        
-                             <th width="4%" data-options="field:'totalRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'totalRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             复检数量
                         </th>
                         <th width="4%" data-options="field:'momRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -107,25 +109,17 @@
                         <th width="4%" data-options="field:'yoyRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             同比
                         </th>
-                        
-
-                             <th width="4%" data-options="field:'successfulInitalCheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'successfulInitalCheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             初检合格率
                         </th>
                           <th width="4%" data-options="field:'successfulRecheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             复检合格率
                         </th>
-                        
-                        
-                        
-                        
-                        
-
-     <th width="4%" data-options="field:'totalHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            产地证明
-                        </th>
-     <th width="4%" data-options="field:'hascertifiyRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            产地占进场占比
+					     <th width="4%" data-options="field:'totalHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+	                           产地证明
+	                       </th>
+					     <th width="4%" data-options="field:'hascertifiyRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+					           产地占进场占比
                         </th>
                         <th width="4%" data-options="field:'momHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             环比
@@ -133,12 +127,11 @@
                         <th width="4%" data-options="field:'yoyHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             同比
                         </th>
-                        
 
-	     <th width="4%" data-options="field:'totalHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+	     				<th width="4%" data-options="field:'totalHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            检测报告
                         </th>
-     <th width="4%" data-options="field:'hasdetectreportRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+     					<th width="4%" data-options="field:'hasdetectreportRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             检测报告占进场占比 
                         </th>
                         <th width="4%" data-options="field:'momHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -148,7 +141,7 @@
                             同比
                         </th>
                         
-                        	     <th width="4%" data-options="field:'checkingOrRecheckingRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'checkingOrRecheckingRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            检测占进场占比
                         </th>
                    </tr>
@@ -156,10 +149,87 @@
             </table>
         </div>
     </div>
-   <!-- 隐藏编辑框 -->
-       <!-- ====================================================================================================================== -->
+      <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="列配置" style="padding:20px" modal="true" border="thin" closed="true"
+         data-options="">
+    <form id="_form" class="easyui-form" method="post" fit="true">
+        <input name="_id" id="_id" type="hidden">
+        <table width="400px">
+            <tr>
+                <td style="padding:5px;">
+                <input class="easyui-checkbox" type="checkbox" id="productName" value="productName" checked="checked" readonly="readonly" disabled="disabled"></input>商品名称
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalWeight" value="totalWeight" checked="checked" ></input>运输重量
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momWeight" value="momWeight"  checked="checked" ></input>环比
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyWeight" value="yoyWeight"  checked="checked" ></input>同比
+                </td>
+            </tr>
+             <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="cnt" value="cnt"  checked="checked" ></input>进场次数
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momCnt" value="momCnt"  checked="checked" ></input>环比
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyCnt" value="yoyCnt"  checked="checked" ></input>同比
+                </td>
+            </tr>
+             <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalCheckingOrRechecking" value="totalCheckingOrRechecking"  checked="checked" ></input>采样客户数量
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momCheckingOrRechecking" value="momCheckingOrRechecking"  checked="checked" ></input>环比
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyCheckingOrRechecking" value="yoyCheckingOrRechecking"  checked="checked" ></input>同比
+                </td>
+            </tr>
+             <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalCheckedOrRechecked" value="totalCheckedOrRechecked"  checked="checked" ></input>检测数量
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momCheckedOrRechecked" value="momCheckedOrRechecked"  checked="checked" ></input>环比
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyCheckedOrRechecked" value="yoyCheckedOrRechecked"  checked="checked" ></input>同比
+                </td>
+            </tr>
+             <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalRechecked" value="totalRechecked"  checked="checked" ></input>复检数量
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momRechecked" value="momRechecked"  checked="checked" ></input>环比
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyRechecked" value="yoyRechecked"  checked="checked" ></input>同比
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="successfulInitalCheckedRate" value="successfulInitalCheckedRate"  checked="checked" ></input>初检合格率
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="successfulRecheckedRate" value="successfulRecheckedRate"  checked="checked" ></input>复检合格率
+                </td>
+            </tr>
+               <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalHascertifiy" value="totalHascertifiy"  checked="checked" ></input>产地证明
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="hascertifiyRate" value="hascertifiyRate"  checked="checked" ></input>产地占进场占比
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalHasdetectreport" value="totalHasdetectreport"  checked="checked" ></input>检测报告 
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="hasdetectreportRate" value="hasdetectreportRate"  checked="checked" ></input>检测报告占进场占比
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="checkingOrRecheckingRate" value="checkingOrRecheckingRate"  checked="checked" ></input>检测占进场占比
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="all" value="all"  checked="checked" ></input>全选
+                </td>
+            </tr>
+                    </table>
+    </form>
+    </div>
+    <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
+
      <script src="http://base.nong12.com/static/log/log.build.js"></script>
      <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
      <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
@@ -250,7 +320,35 @@
 
         });
     }
-
+    function showorhidecolumns(){
+        $('#dlg').dialog("setTitle","列表字段配置");
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+      
+    }
+    function onChangeCk(v){
+    	var cthis=$(this);
+    	var colName=cthis.attr('value');
+    	if(colName=='all'){
+    	
+    	}else{
+    		if(v==false){
+        		_registerBillGrid.datagrid('hideColumn',colName);	
+        	}else{
+        		_registerBillGrid.datagrid('showColumn', colName);
+        	}
+    	}
+    }
+function showcharts(){
+	 openWin('/registerBillReport/product-charts.html?id=' );
+}
+function closeWin(id){
+    $('#'+id).remove();
+    $('#registerBillGrid').datagrid('reload');
+}
+function openWin(url){
+    $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
+}
     </script>
 
  </#body>
