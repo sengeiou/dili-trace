@@ -31,5 +31,10 @@ public class RegisterBillReportServiceImpl implements RegisterBillReportService{
 		List results = ValueProviderUtils.buildDataByProvider(dto, list);
 		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total==null?0:total)), results);
 	}
+	@Override
+	public List<GroupByProductReportDto> listGroupByProduct(RegisterBillReportQueryDto dto) throws Exception {
+		List<GroupByProductReportDto>list=this.mapper.listPageGroupByProduct(dto);
+		return list;
+	}
 
 }

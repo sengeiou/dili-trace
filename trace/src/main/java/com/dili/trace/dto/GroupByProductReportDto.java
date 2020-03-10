@@ -5,6 +5,14 @@ import java.math.BigDecimal;
 import com.dili.ss.domain.BaseDomain;
 
 public class GroupByProductReportDto extends BaseDomain{
+	
+	public GroupByProductReportDto() {
+		super();
+	}
+	public GroupByProductReportDto(String productName) {
+		super();
+		this.productName = productName;
+	}
 	/**
 	 * 
 	 */
@@ -12,29 +20,35 @@ public class GroupByProductReportDto extends BaseDomain{
 	/* 商品名称 */
 	private String productName;
 	/* 运输重量 */
-	private BigDecimal totalWeight;
+	private BigDecimal totalWeight=BigDecimal.ZERO;
 	private BigDecimal momWeight;
 	private BigDecimal yoyWeight;
 
 	/* 进场次数 */
-	private Long cnt;
+	private Long cnt=0L;
 	private BigDecimal momCnt;
 	private BigDecimal yoyCnt;
 
 	/* 采样客户数量 */
-	private Long totalCheckingOrRechecking;
+	private Long totalCheckingOrRechecking=0L;
 	private BigDecimal momCheckingOrRechecking;
 	private BigDecimal yoyCheckingOrRechecking;
 
 	/* 检测数量 */
-	private Long totalCheckedOrRechecked;
+	private Long totalCheckedOrRechecked=0L;
 	private BigDecimal momCheckedOrRechecked;
 	private BigDecimal yoyCheckedOrRechecked;
 
 	/* 复检数量 */
-	private Long totalRechecked;
+	private Long totalRechecked=0L;
 	private BigDecimal momRechecked;
 	private BigDecimal yoyRechecked;
+	
+	/*已经初检成功数量*/
+	
+	private Long totalSuccessfulInitalChecked=0L;
+	/*已经复检成功数量*/
+	private Long totalSuccessfulRechecked=0L;
 	/* 初检合格率 */
 	private BigDecimal successfulInitalCheckedRate;
 
@@ -42,7 +56,7 @@ public class GroupByProductReportDto extends BaseDomain{
 	private BigDecimal successfulRecheckedRate;
 
 	/* 产地证明 */
-	private Long totalHascertifiy;
+	private Long totalHascertifiy=0L;
 	/* 产地占进场占比 */
 	private BigDecimal hascertifiyRate;
 
@@ -50,7 +64,7 @@ public class GroupByProductReportDto extends BaseDomain{
 	private BigDecimal yoyHascertifiy;
 
 	/* 检测报告 */
-	private Long totalHasdetectreport;/* 有检测报告数量 */
+	private Long totalHasdetectreport=0L;/* 有检测报告数量 */
 
 	/* 检测报告占进场占比 */
 	private BigDecimal hasdetectreportRate;
@@ -58,6 +72,22 @@ public class GroupByProductReportDto extends BaseDomain{
 	private BigDecimal yoyHasdetectreport;
 	/* 检测占进场占比 */
 	private BigDecimal checkingOrRecheckingRate;
+	
+	
+	
+	
+	public Long getTotalSuccessfulInitalChecked() {
+		return totalSuccessfulInitalChecked;
+	}
+	public void setTotalSuccessfulInitalChecked(Long totalSuccessfulInitalChecked) {
+		this.totalSuccessfulInitalChecked = totalSuccessfulInitalChecked;
+	}
+	public Long getTotalSuccessfulRechecked() {
+		return totalSuccessfulRechecked;
+	}
+	public void setTotalSuccessfulRechecked(Long totalSuccessfulRechecked) {
+		this.totalSuccessfulRechecked = totalSuccessfulRechecked;
+	}
 	public String getProductName() {
 		return productName;
 	}

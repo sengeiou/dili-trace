@@ -695,6 +695,9 @@ group by
 				</otherwise>
 			</choose>
 		</if>
+		 <if test="offSet!= null and rows!=null">
+		
 			limit ${offSet},${rows}
+			</if>
   </select>
 </mapper>

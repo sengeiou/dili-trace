@@ -41,6 +41,14 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	
 	private Integer offSet;
 	
+	private Boolean sumOthers=Boolean.FALSE;
+	
+	public Boolean getSumOthers() {
+		return sumOthers;
+	}
+	public void setSumOthers(Boolean sumOthers) {
+		this.sumOthers = sumOthers;
+	}
 	public Integer getOffSet() {
 		return offSet;
 	}

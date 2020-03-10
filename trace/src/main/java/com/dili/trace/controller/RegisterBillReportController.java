@@ -22,6 +22,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,9 +33,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -137,14 +143,57 @@ public class RegisterBillReportController {
 
 	@RequestMapping(value = "/getProductChartsJson.action",method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
-	public Object getProductChartsJson(String type) {
-		List<Map<String,Object>>list=new ArrayList<Map<String,Object>>();
+	public Object getProductChartsJson(@RequestBody RegisterBillReportQueryDto dto) throws Exception {
+		try {
+			List<GroupByProductReportDto>list=this.registerBillReportService. listGroupByProduct(dto);
+			if(StringUtils.isNotBlank(dto.getSort())&&list.size()>20&&Boolean.TRUE.equals(dto.getSumOthers())) {
+				String sortField=dto.getSort();
+				
+				List<GroupByProductReportDto>otherList=list.subList(20, list.size());
+			
+				
+				GroupByProductReportDto otherSummary=new GroupByProductReportDto("其他总计");
+				otherList.stream().reduce(otherSummary,new BinaryOperator<GroupByProductReportDto>() {
+
+					@Override
+					public GroupByProductReportDto apply(GroupByProductReportDto t, GroupByProductReportDto u) {
+						try {
+							Object uValue=PropertyUtils.getProperty(u,sortField);
+							Object tValue=PropertyUtils.getProperty(t, sortField);
+							if(uValue!=null) {
+								if(uValue instanceof BigDecimal) {
+											Object summaryValue=((BigDecimal)tValue).add((BigDecimal)uValue);
+											BeanUtils.setProperty(t,sortField, summaryValue);
+									
+								}else if(uValue instanceof Long) {
+									Object summaryValue=((Long)tValue)+((Long)uValue);
+									BeanUtils.setProperty(t,sortField, summaryValue);
+							
+						}
+						
+								
+								
+							}
+						} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						return t;
+					}
+				
+				});
+				list.removeAll(otherList);
+				list.add(otherSummary);
+				
+			}
+			
+			
+			return BaseOutput.success().setData(list);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return BaseOutput.failure(e.getMessage());
+		}
 		
-		Map<String, Object>data=new HashMap<String, Object>();
-		data.put("id", "1");
-		data.put("name", "abc");
-		
-		list.add(data);
-		return list;
 	}
 }

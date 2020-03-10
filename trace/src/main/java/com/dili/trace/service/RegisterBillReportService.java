@@ -9,4 +9,6 @@ import com.dili.trace.dto.RegisterBillReportQueryDto;
 public interface RegisterBillReportService {
 
 	public EasyuiPageOutput listPageGroupByProduct(RegisterBillReportQueryDto dto) throws Exception;
+	
+	public List<GroupByProductReportDto> listGroupByProduct(RegisterBillReportQueryDto dto) throws Exception;
 }
