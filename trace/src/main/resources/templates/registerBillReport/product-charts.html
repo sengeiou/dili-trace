@@ -79,8 +79,8 @@
      function onSelectTab(title,index){
     	 var tab = $('#tt').tabs('getSelected');
     	 var id=tab.attr('id');
-    	  PieChart(id);
-    	  BarChart(id);
+    	  PieChart(id,title);
+    	  BarChart(id,title);
      }
      function queryData(url,data){
     	 var result=[];
@@ -140,18 +140,18 @@
   }
      
     
-     function PieChart(id){
+     function PieChart(id,title){
     	 var divid=id+'Pie';
     	 var pieChartDiv=$('#'+divid);
 //    	 console.info(pieChartDiv)
    // 	 debugger
     	 var data=buildPieChartData(pieChartDiv,'/registerBillReport/getProductChartsJson.action',{'sort':id,'order':'desc','sumOthers':true});
-    	// debugger
+    	 //debugger
     	 //var data = genData(21);
          var myChart4 = echarts.init(document.getElementById(divid));
          option = {
              title: {
-               //  text: '同名数量统计',
+                 text:title,
                 // subtext: '纯属虚构',
                  left: 'center'
              },
@@ -189,7 +189,7 @@
          myChart4.setOption(option);
      }
           
-     function BarChart(id){
+     function BarChart(id,title){
     	 var divid=id+'Bar';
     	 var barChartDiv=$('#'+divid);
     	 
@@ -198,7 +198,7 @@
     	 //debugger;
     	 var dataAxis =data.axisData;// ['点', '击', '柱', '子', '或', '者', '两', '指', '在', '触', '屏', '上', '滑', '动', '能', '够', '自', '动', '缩', '放'];
     	 var data =data.seriesData;// [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
-    	 var yMax = 500;
+    	 var yMax = 0;
     	 var dataShadow = [];
 
     	 for (var i = 0; i < data.length; i++) {
@@ -225,19 +225,19 @@
  	        		}
     	         },
     	         axisTick: {
-    	             show: false
+    	             show: true
     	         },
     	         axisLine: {
-    	             show: false
+    	             show: true
     	         },
-    	         z: 10
+    	         z: 100
     	     },
     	     yAxis: {
     	         axisLine: {
-    	             show: false
+    	             show: true
     	         },
     	         axisTick: {
-    	             show: false
+    	             show: true
     	         },
     	         axisLabel: {
     	             textStyle: {
