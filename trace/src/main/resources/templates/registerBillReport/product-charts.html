@@ -39,15 +39,15 @@
     </div>
     <div title="复检数量图表" data-options="closable:false" style="padding:20px;display:none;" id="totalRechecked">
 		<div id="totalRecheckedPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalRechecked"></div>
-		<div id="totalRechecked`Bar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalRechecked"></div>
+		<div id="totalRecheckedBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalRechecked"></div>
     </div>
     <div title="初检合格图表" data-options="closable:false" style="padding:20px;display:none;" id="totalSuccessfulInitalChecked">
 		<div id="totalSuccessfulInitalCheckedPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalSuccessfulInitalChecked"></div>
 		<div id="totalSuccessfulInitalCheckedBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalSuccessfulInitalChecked"></div>
     </div>
     <div title="复检合格图表" data-options="closable:false" style="padding:20px;display:none;" id="totalSuccessfulRechecked">
-				<div id="totalSuccessfulInitalCheckedPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalSuccessfulRechecked"></div>
-		<div id="totalSuccessfulInitalCheckedBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalSuccessfulRechecked"></div>
+				<div id="totalSuccessfulRecheckedPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalSuccessfulRechecked"></div>
+		<div id="totalSuccessfulRecheckedBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalSuccessfulRechecked"></div>
     </div>
     <div title="产地证明图表" data-options="closable:false" style="padding:20px;display:none;" id="totalHascertifiy">
 						<div id="totalHascertifiyPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalHascertifiy"></div>
@@ -132,7 +132,7 @@
 		  axisData.push(legend);
 		  seriesData.push(series);
 	  }); 
-	  debugger;
+	 // debugger;
 	  return {
 		  axisData:axisData,
 		  seriesData:seriesData,
@@ -195,7 +195,7 @@
     	 
     	 var myChart4 = echarts.init(document.getElementById(divid));
     	 var data=buildBarChartData(barChartDiv,'/registerBillReport/getProductChartsJson.action',{'sort':id,'order':'desc','sumOthers':false});
-    	 debugger;
+    	 //debugger;
     	 var dataAxis =data.axisData;// ['点', '击', '柱', '子', '或', '者', '两', '指', '在', '触', '屏', '上', '滑', '动', '能', '够', '自', '动', '缩', '放'];
     	 var data =data.seriesData;// [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
     	 var yMax = 500;
@@ -215,8 +215,14 @@
     	         axisLabel: {
     	             inside: true,
     	             textStyle: {
-    	                 color: '#fff'
-    	             }
+    	                 color: '#000'
+    	             },
+  	        		interval: 0,
+ 	        		formatter: function (value) {
+ 	        			//x轴的文字改为竖版显示
+ 	        			var str = value.split("");
+ 	        			return str.join("\n");
+ 	        		}
     	         },
     	         axisTick: {
     	             show: false
