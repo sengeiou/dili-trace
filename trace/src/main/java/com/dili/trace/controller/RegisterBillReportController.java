@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -50,7 +51,7 @@ import java.util.stream.Stream;
 @Controller
 @RequestMapping("/registerBillReport")
 public class RegisterBillReportController {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillReportController.class);
+	private static final Logger logger = LoggerFactory.getLogger(RegisterBillReportController.class);
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
@@ -130,14 +131,19 @@ public class RegisterBillReportController {
 	}
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/product-charts.html", method = RequestMethod.GET)
-	public String productCharts(ModelMap modelMap) {
+	public String productCharts(ModelMap modelMap,String params) {
 		Date now = new Date();
 		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
 
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
-
+		if(StringUtils.isBlank(params)) {
+			modelMap.put("params", "{}");
+		}else {
+			modelMap.put("params", params);	
+		}
+		
 		return "registerBillReport/product-charts";
 	}
 
@@ -175,8 +181,7 @@ public class RegisterBillReportController {
 								
 							}
 						} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							logger.error(e.getMessage(),e);
 						}
 						
 						return t;

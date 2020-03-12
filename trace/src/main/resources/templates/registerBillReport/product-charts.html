@@ -72,6 +72,8 @@
      <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <script type="text/javascript">
+     var params=${params};
+     
      $("#totalWeightPie").css('width',$("#tt").width());
      $("#totalWeightPie").css('height',$("#tt").height()/2);
      $("#totalWeightBar").css('width',$("#tt").width());
@@ -82,12 +84,12 @@
     	  PieChart(id,title);
     	  BarChart(id,title);
      }
-     function queryData(url,data){
+     function queryData(url,params){
     	 var result=[];
          $.ajax({
              type: "POST",
              url: url,
-             data: JSON.stringify(data),
+             data: JSON.stringify(params),
              processData:true,
              dataType: "json",
              async : false,
@@ -145,10 +147,10 @@
     	 var pieChartDiv=$('#'+divid);
 //    	 console.info(pieChartDiv)
    // 	 debugger
-    	 var data=buildPieChartData(pieChartDiv,'/registerBillReport/getProductChartsJson.action',{'sort':id,'order':'desc','sumOthers':true});
+    	 var data=buildPieChartData(pieChartDiv,'/registerBillReport/getProductChartsJson.action',$.extend(params,{'sort':id,'order':'desc','sumOthers':true}));
     	 //debugger
     	 //var data = genData(21);
-         var myChart4 = echarts.init(document.getElementById(divid));
+         var chartObj = echarts.init(document.getElementById(divid));
          option = {
              title: {
                  text:title,
@@ -186,15 +188,15 @@
                  }
              ]
          };
-         myChart4.setOption(option);
+         chartObj.setOption(option);
      }
           
      function BarChart(id,title){
     	 var divid=id+'Bar';
     	 var barChartDiv=$('#'+divid);
     	 
-    	 var myChart4 = echarts.init(document.getElementById(divid));
-    	 var data=buildBarChartData(barChartDiv,'/registerBillReport/getProductChartsJson.action',{'sort':id,'order':'desc','sumOthers':false});
+    	 var chartObj = echarts.init(document.getElementById(divid));
+    	 var data=buildBarChartData(barChartDiv,'/registerBillReport/getProductChartsJson.action',$.extend(params,{'sort':id,'order':'desc','sumOthers':false}));
     	 //debugger;
     	 var dataAxis =data.axisData;// ['点', '击', '柱', '子', '或', '者', '两', '指', '在', '触', '屏', '上', '滑', '动', '能', '够', '自', '动', '缩', '放'];
     	 var data =data.seriesData;// [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
@@ -289,12 +291,12 @@
     	         }
     	     ]
     	 };
-    	 myChart4.setOption(option);
+    	 chartObj.setOption(option);
     	 // Enable data zoom when user click bar.
     	 var zoomSize = 6;
-    	 myChart4.on('click', function (params) {
-    	     console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
-    	     myChart4.dispatchAction({
+    	 chartObj.on('click', function (params) {
+    	     //console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
+    	     chartObj.dispatchAction({
     	         type: 'dataZoom',
     	         startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
     	         endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]

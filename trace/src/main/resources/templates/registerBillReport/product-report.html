@@ -58,11 +58,17 @@
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
                    loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false" sortName="totalWeight" sortOrder="desc"
                    align="center" fit="true" idField="id" selectOnCheck="true" data-options="">
-                <thead>
+                       
+                <thead  frozen="true">
                     <tr>
                         <th width="4%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             商品名称
                         </th>
+                        </tr>
+                        </thead>
+                <thead>
+                    <tr>
+                     
                         <th width="4%" data-options="field:'totalWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             重量/KG
                         </th>
@@ -220,7 +226,9 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="all" value="all"  checked="checked" ></input>全选
+                    
+                    <input class="easyui-checkbox" data-options="onChange:selectAll" type="checkbox" id="selectAll"" value="all"  checked="checked"  disabled="disabled"></input>全选
+                    <input class="easyui-checkbox" data-options="onChange:unselectAll" type="checkbox" id="unselectAll" value="all"   ></input>全取消
                 </td>
             </tr>
                     </table>
@@ -236,6 +244,7 @@
      <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
      <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
      <script type="text/javascript">
     //表格查询
 
@@ -329,18 +338,72 @@
     function onChangeCk(v){
     	var cthis=$(this);
     	var colName=cthis.attr('value');
-    	if(colName=='all'){
+
+    	var columns=_registerBillGrid.datagrid('getColumnFields', false);
+		var checkedData={checked:[],unchecked:[]};
+		var unselAll=false;
+    	if(v==false){
+       		_registerBillGrid.datagrid('hideColumn',colName);	
+       	}else{
+       		_registerBillGrid.datagrid('showColumn', colName);
+       	}
     	
+    	$.each(columns,function(i,v){
+    		var cbox=$('#'+v);
+    	
+    		if(cbox.length>0){
+    			var ck=cbox.checkbox('options').checked;
+    			//console.info('checked:' +ck)
+    			if(ck==true){
+       				checkedData.checked.push(v)
+       			}else{
+       				checkedData.unchecked.push(v)
+       			}		
+    		}
+   		
+   			
+   		});
+    	
+    	if(checkedData.checked.length==0){
+    		$('#selectAll').checkbox('uncheck').checkbox('enable');
+    		$('#unselectAll').checkbox('check').checkbox('disable');
+    	}else if(checkedData.unchecked.length==0){
+    		$('#selectAll').checkbox('check').checkbox('disable');
+    		$('#unselectAll').checkbox('uncheck').checkbox('enable');
     	}else{
-    		if(v==false){
-        		_registerBillGrid.datagrid('hideColumn',colName);	
-        	}else{
-        		_registerBillGrid.datagrid('showColumn', colName);
-        	}
+    		$('#selectAll').checkbox('uncheck').checkbox('enable');
+    		$('#unselectAll').checkbox('uncheck').checkbox('enable');
     	}
     }
+    function selectAll(v){
+    	var cthis=$(this);
+    	if(v==true){
+    		var columns=_registerBillGrid.datagrid('getColumnFields', false);
+        	$.each(columns,function(i,v){
+        		_registerBillGrid.datagrid('showColumn', v);
+        		$('#'+v).checkbox('check');
+        	});
+        	$('#unselectAll').checkbox('uncheck').checkbox('enable');
+    	}
+    }
+    function unselectAll(v){
+    	var cthis=$(this);
+    	if(v==true){
+    		var columns=_registerBillGrid.datagrid('getColumnFields', false);
+        	$.each(columns,function(i,v){
+        		_registerBillGrid.datagrid('hideColumn', v);
+        		$('#'+v).checkbox('uncheck');
+        	});
+        	$('#selectAll').checkbox('uncheck').checkbox('enable');
+    	}
+    	
+    	
+    }
+    
 function showcharts(){
-	 openWin('/registerBillReport/product-charts.html?id=' );
+	var data=$('#queryForm').serializeObject();
+
+	 openWin('/registerBillReport/product-charts.html?params='+encodeURIComponent(JSON.stringify(data) ));
 }
 function closeWin(id){
     $('#'+id).remove();
