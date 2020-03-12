@@ -69,7 +69,7 @@
                 <thead>
                     <tr>
                      
-                        <th width="4%" data-options="field:'totalWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'totalWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
                             重量/KG
                         </th>
                         <th width="4%" data-options="field:'momWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -79,7 +79,7 @@
                             同比
                         </th>
                         
-                        <th width="4%" data-options="field:'cnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'cnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',chartable:true">
                             进场次数
                         </th>
                         <th width="4%" data-options="field:'momCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -88,7 +88,7 @@
                         <th width="4%" data-options="field:'yoyCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             同比
                         </th>
-                        <th width="4%" data-options="field:'totalCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'totalCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
                             采样客户数量
                         </th>
                         <th width="4%" data-options="field:'momCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -97,7 +97,7 @@
                         <th width="4%" data-options="field:'yoyCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             同比
                         </th>
-                        <th width="4%" data-options="field:'totalCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'totalCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
                             检测数量
                         </th>
                         <th width="4%" data-options="field:'momCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -106,7 +106,7 @@
                         <th width="4%" data-options="field:'yoyCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             同比
                         </th>
-                        <th width="4%" data-options="field:'totalRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'totalRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
                             复检数量
                         </th>
                         <th width="4%" data-options="field:'momRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -121,7 +121,7 @@
                           <th width="4%" data-options="field:'successfulRecheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             复检合格率
                         </th>
-					     <th width="4%" data-options="field:'totalHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+					     <th width="4%" data-options="field:'totalHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
 	                           产地证明
 	                       </th>
 					     <th width="4%" data-options="field:'hascertifiyRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -134,7 +134,7 @@
                             同比
                         </th>
 
-	     				<th width="4%" data-options="field:'totalHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+	     				<th width="4%" data-options="field:'totalHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
                            检测报告
                         </th>
      					<th width="4%" data-options="field:'hasdetectreportRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -402,7 +402,21 @@
     
 function showcharts(){
 	var data=$('#queryForm').serializeObject();
-
+	var columns=_registerBillGrid.datagrid('getColumnFields', false);
+	var chartId='';
+	$.each(columns,function(i,v){
+		var col=_registerBillGrid.datagrid('getColumnOption', v);
+		if(col.chartable&&col.chartable==true){
+			var td=$('td[field="'+v+'"]');
+			var visible=td.is(':visible');
+			if(visible==true){
+				chartId=v;
+				return false;
+			}
+		}
+	});
+	$.extend(data,{'chartId':chartId});
+	
 	 openWin('/registerBillReport/product-charts.html?params='+encodeURIComponent(JSON.stringify(data) ));
 }
 function closeWin(id){

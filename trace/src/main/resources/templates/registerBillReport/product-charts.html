@@ -21,39 +21,39 @@
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
             <div id="tt" class="easyui-tabs" style="width:100%;height:100%;" data-options="onSelect:onSelectTab">
-    <div title="运输重量图表" style="padding:20px;display:none;" id="totalWeight" >
+    <div title="运输重量图表" style="padding:20px;" id="totalWeight"  data-id="id:'sss'">
 		<div id="totalWeightPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalWeight"></div>
 		<div id="totalWeightBar" style="width:98%; height:50%;"  data-axis="productName" data-series="totalWeight"></div>
     </div>
-    <div title="商品进场图表" data-options="closable:false" style="overflow:auto;padding:20px;display:none;" id="cnt">
+    <div title="商品进场图表" data-options="closable:false" style="overflow:auto;padding:20px;" id="cnt">
 		<div id="cntPie" style="width:98%; height:50%;" data-legend="productName" data-series="cnt"></div>
 		<div id="cntBar" style="width:98%; height:50%;" data-axis="productName" data-series="cnt"></div>
     </div>
-    <div title="商品采样图表" data-options="closable:false" style="padding:20px;display:none;" id="totalCheckingOrRechecking">
+    <div title="商品采样图表" data-options="closable:false" style="padding:20px;" id="totalCheckingOrRechecking">
 		<div id="totalCheckingOrRecheckingPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalCheckingOrRechecking"></div>
 		<div id="totalCheckingOrRecheckingBar" style="width:98%; height:50%;"  data-axis="productName" data-series="totalCheckingOrRechecking"></div>
     </div>
-    <div title="检测数量图表" data-options="closable:false" style="padding:20px;display:none;" id="totalCheckedOrRechecked">
+    <div title="检测数量图表" data-options="closable:false" style="padding:20px;" id="totalCheckedOrRechecked">
 		<div id="totalCheckedOrRecheckedPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalCheckedOrRechecked"></div>
 		<div id="totalCheckedOrRecheckedBar" style="width:98%; height:50%;"  data-axis="productName" data-series="totalCheckedOrRechecked"></div>
     </div>
-    <div title="复检数量图表" data-options="closable:false" style="padding:20px;display:none;" id="totalRechecked">
+    <div title="复检数量图表" data-options="closable:false" style="padding:20px;" id="totalRechecked">
 		<div id="totalRecheckedPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalRechecked"></div>
 		<div id="totalRecheckedBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalRechecked"></div>
     </div>
-    <div title="初检合格图表" data-options="closable:false" style="padding:20px;display:none;" id="totalSuccessfulInitalChecked">
+    <div title="初检合格图表" data-options="closable:false" style="padding:20px;" id="totalSuccessfulInitalChecked">
 		<div id="totalSuccessfulInitalCheckedPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalSuccessfulInitalChecked"></div>
 		<div id="totalSuccessfulInitalCheckedBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalSuccessfulInitalChecked"></div>
     </div>
-    <div title="复检合格图表" data-options="closable:false" style="padding:20px;display:none;" id="totalSuccessfulRechecked">
+    <div title="复检合格图表" data-options="closable:false" style="padding:20px;" id="totalSuccessfulRechecked">
 				<div id="totalSuccessfulRecheckedPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalSuccessfulRechecked"></div>
 		<div id="totalSuccessfulRecheckedBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalSuccessfulRechecked"></div>
     </div>
-    <div title="产地证明图表" data-options="closable:false" style="padding:20px;display:none;" id="totalHascertifiy">
+    <div title="产地证明图表" data-options="closable:false" style="padding:20px;" id="totalHascertifiy">
 						<div id="totalHascertifiyPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalHascertifiy"></div>
 		<div id="totalHascertifiyBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalHascertifiy"></div>
     </div>
-    <div title="检测报告图表" data-options="closable:false" style="padding:20px;display:none;" id="totalHasdetectreport">
+    <div title="检测报告图表" data-options="closable:false" style="padding:20px;" id="totalHasdetectreport">
 							<div id="totalHasdetectreportPie" style="width:98%; height:50%;" data-legend="productName" data-series="totalHasdetectreport"></div>
 		<div id="totalHasdetectreportBar" style="width:98%; height:50%;"   data-axis="productName" data-series="totalHasdetectreport"></div>
     </div>
@@ -74,13 +74,53 @@
      <script type="text/javascript">
      var params=${params};
      
-     $("#totalWeightPie").css('width',$("#tt").width());
-     $("#totalWeightPie").css('height',$("#tt").height()/2);
-     $("#totalWeightBar").css('width',$("#tt").width());
-     $("#totalWeightBar").css('height',$("#tt").height()/2);
+
+     (function(){//扩展easyui中tabs的部分方法，实现根据唯一标识id的进行相应操作；技巧：使用一个自执行的函数，激发作用域，避免这里定义的变量与系统全局变量冲突
+     	var _methods = $.fn.tabs.methods;
+     	var _exists = _methods.exists;//保存原方法
+     	var _getTab = _methods.getTab;//<span style="font-family: Arial, Helvetica, sans-serif;">//保存原方法</span>
+     	$.extend($.fn.tabs.methods, {
+     		getTab : function(jq, which) {//重写getTab方法，增加根据id获取tab（注意：这里我们可以定义任意的获取方式，不必一定使用id）
+     			if(!which) return null;
+     			var tabs = jq.data('tabs').tabs;
+     			for (var i = 0; i < tabs.length; i++) {
+     				var tab = tabs[i];
+     				if (tab.panel("options").id==which) {
+     					return tab;
+     				}
+     			}
+     			return _getTab(jq, which);//如果根据id无法获取，则通过easyui默认的getTab进行获取
+     		},
+     		exists : function(jq, which) {//重写exists方法，增加id判断
+     			return this.getTab(jq,which)!=null;//调用重写后的getTab方法
+     		},
+     	});
+     })()
+
+     $(function(){
+    	 if(params.chartId&&params.chartId!='') {
+    		 var index =	 $('.tabs-panels .panel-htop').children('div').index ($ ( '#'+params.chartId ));
+    		 delete params.chartId
+			$('#tt').tabs('select', index);
+         }
+     });
+
+    
+     
+      
      function onSelectTab(title,index){
+    	 if(params.chartId&&params.chartId!='') {
+    		 return;
+    	 }
     	 var tab = $('#tt').tabs('getSelected');
     	 var id=tab.attr('id');
+    	 var pieChartId=id+"Pie";
+    	 var pieChartId=id+"Bar";
+         $("#"+pieChartId).css('width',$("#tt").width());
+         $("#"+pieChartId).css('height',$("#tt").height()/2);
+         $("#"+pieChartId).css('width',$("#tt").width());
+         $("#"+pieChartId).css('height',$("#tt").height()/2);
+    
     	  PieChart(id,title);
     	  BarChart(id,title);
      }

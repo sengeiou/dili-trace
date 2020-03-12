@@ -4,6 +4,7 @@
     <property name="worker_log_file_path" value="/diliapp/server/work/logs"/>
     <!-- 开发环境 -->
     <springProfile name="dev">
+    	<logger name="druid.sql.Statement" level="INFO"/>
         <!-- 控制台输出 -->
         <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -14,6 +15,7 @@
     </springProfile>
     <!-- 测试环境 -->
     <springProfile name="test">
+    	<logger name="druid.sql.Statement" level="INFO"/>
         <!-- 控制台输出 -->
         <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -94,6 +96,7 @@
     <logger name="java.sql.Connection" level="DEBUG"/>
     <logger name="java.sql.Statement" level="DEBUG"/>
     <logger name="java.sql.PreparedStatement" level="DEBUG"/>
+    
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="appender"/>
