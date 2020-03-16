@@ -307,25 +307,49 @@ var currentUser={"depId":"${user.depId!}"
      * 初始化自动完成框
      */
     function initAutoComplete(selector,url){
+    	$(selector).keydown(function (e){
+    	    if(e.keyCode == 13){
+    	    	//$(selector).data('keycode',e.keyCode);
+    	    	//console.info('1')
+    	    }
+    	});
+    	$(selector).data('oldvalue','');
+    	//$(selector).data('keycode','');
         $(selector).on('change',function () {
-            $(this).siblings('input').val('');
+        	var oldvalue=$(selector).data('oldvalue');
+        	var val=$(this).val();
+        	if(oldvalue!=val){
+        		$(this).siblings('input').val('');
+        	}
         });
         //产地联系输入
-        $(selector).autocomplete({
+        $(selector).devbridgeAutocomplete({
             noCache: 1,
             serviceUrl: url,  //数据地址
             //lookup: countries,    本地测试模拟数据使用结合上面的var countries
             dataType: 'json',
             onSearchComplete: function (query, suggestions) {
+            	//console.info(2)
             },
             showNoSuggestionNotice: true,
             noSuggestionNotice: "不存在，请重输！",
+//            autoSelectFirst:true,
+//            autoFocus: true,
             onSelect: function (suggestion) {
+            	
                 var self = this;
                 var idField = $(self).siblings('input');
                 idField.val(suggestion.id);
                 $(self).val(suggestion.value);
+                var keycode=$(selector).data('keycode');
+                //console.info(keycode)
+                //$(selector).data('keycode','');
+                $(selector).data('oldvalue',suggestion.value);
                 $(self).valid();
+               // if(keycode==13){
+                //	$(self).blur();
+
+                //}
             }
         });
     }

@@ -33,11 +33,7 @@
                         <span class="red">&lowast;</span>销地城市</label>
                     <input type="text" class="form-control input-sm" value="${userItem.salesCityName}" required readonly/>
                 </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>车牌</label>
-                    <input type="text" class="form-control input-sm"  value="${userPlates}" required readonly/>
-                </div>
+
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -49,9 +45,15 @@
                         <span class="red">&lowast;</span>注册时间</label>
                     <input type="text" class="form-control input-sm" value="${userItem.created,'yyyy-MM-dd HH:mm:ss'}" required readonly/>
                 </div>
-                
+                <br>
+               <div class="form-group" style="width: 100%">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌</label>
+                    <input type="text" class="form-control"   style="width: 55%" value="${userPlates}" required readonly/>
+                </div>
             </div>
-<table width="430px">
+            
+	<table width="430px">
             <tr>
                 <td style="padding:5px;">
                     <div class="fileimg-box" style="margin: 0 auto;">

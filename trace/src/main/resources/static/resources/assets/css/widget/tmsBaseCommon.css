@@ -477,5 +477,9 @@ body {
   line-height: 24px;
   text-indent: 10px;
   cursor: pointer; }
-
+  
+  .autocomplete-selected {
+         	background-color: #118bde;
+		    color:#fff;
+		  }
 /*# sourceMappingURL=../../../maps/static/css/widget/tmsBaseCommon.css.map */
