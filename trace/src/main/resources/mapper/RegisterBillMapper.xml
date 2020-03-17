@@ -283,7 +283,7 @@
    <sql id="groupByProductCondition">
      	 1=1
      	 <if test="productName!=''    and productName!=null">
-     		AND product_name=#{productName}
+     		AND product_name like '${productName}%'
      	 </if>
      	  <if test="registerSource!=null">
      		AND register_source=#{registerSource}
@@ -291,6 +291,13 @@
      	 <if test="tradeTypeId!=null">
      		AND trade_type_id=#{tradeTypeId}
      	 </if>
+			<if test="productIdList != null and productIdList.size()>0">
+					AND product_id IN
+					<foreach collection="productIdList" open="(" separator=","
+						close=")" item="productId">
+						#{productId}
+					</foreach>
+			</if>
   </sql>
   <sql id="groupByProduct">
     select

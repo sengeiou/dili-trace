@@ -3,6 +3,8 @@ package com.dili.trace.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -16,10 +18,10 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	 */
 	private static final long serialVersionUID = 1L;
 	// 登记时间开始
-	@DateTimeFormat(iso = ISO.DATE,pattern = "yyyy-MM-dd")
+	@DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
 	private LocalDate createdStart;
 	// 登记时间结束
-	@DateTimeFormat(iso = ISO.DATE,pattern = "yyyy-MM-dd")
+	@DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
 	private LocalDate createdEnd;
 
 	// 登记来源(交易区、理货区)
@@ -28,34 +30,42 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	private Long tradeTypeId;
 	// 商品名称
 	private String productName;
-	
-	
+	// 商品id集合
+	private List<Long> productIdList = new ArrayList<>();
+
 	private LocalDate momStart;
 	private LocalDate momEnd;
 
 	private LocalDate yoyStart;
 	private LocalDate yoyEnd;
 
-	
-
-	
 	private Integer offSet;
-	
-	private Boolean sumOthers=Boolean.FALSE;
-	
+
+	public List<Long> getProductIdList() {
+		return productIdList;
+	}
+
+	public void setProductIdList(List<Long> productIdList) {
+		this.productIdList = productIdList;
+	}
+
+	private Boolean sumOthers = Boolean.FALSE;
+
 	public Boolean getSumOthers() {
 		return sumOthers;
 	}
+
 	public void setSumOthers(Boolean sumOthers) {
 		this.sumOthers = sumOthers;
 	}
+
 	public Integer getOffSet() {
 		return offSet;
 	}
+
 	public void setOffSet(Integer offSet) {
 		this.offSet = offSet;
 	}
-
 
 	public LocalDate getCreatedStart() {
 		return createdStart;

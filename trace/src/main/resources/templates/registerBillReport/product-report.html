@@ -27,14 +27,28 @@
                             <input  name="tradeTypeId" id="tradeTypeId" style="width:100%" labelAlign="right" data-options="label:'交易区'"  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right" data-options="label:'商品:'" />
-                        </div>
+                        
+                                                
+  						<div class="search-item">
+	                        <input class="easyui-combotree" name="productIdList" id="productIdList" style="width: 100%" 
+								data-options="
+								label:'商品:',
+								labelAlign:'right',
+								loadFilter:treeLoadFilter,
+								_idField:'id', 
+								_textField:'value', 
+								multiple: true,
+								_parentIdField:'parentId',
+								editable:true,panelHeight:'auto',panelMaxHeight:400,buttonText:'搜索 ' , onClickButton: queryProductSearchDlg" />
+								<input type="hidden" name="productName">
+						 </div>	
+					
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                onclick="queryRegisterBillGrid()">查询</a>&nbsp;&nbsp;
                             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
                         </div>
+                        	<br/>
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                onclick="showorhidecolumns()">列表字段配置</a>&nbsp;&nbsp;
@@ -246,6 +260,20 @@
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
      <script type="text/javascript">
+     function queryProductSearchDlg(){
+    	   var productName=$('#productIdList').combotree('getText');
+    		$.ajax({
+    			url:'${contextPath!}/toll/category?name='+productName,
+    			success:function(resp){
+    				var data=resp.suggestions.map(function(v,i){v['parentId']='';return v});
+    				//data.unshift({id:'',value:'全部'});
+    				$('#productIdList').combotree({data:data});
+    				$('#productIdList').combotree('showPanel');
+    				
+    			}
+    		})
+    	 
+     }
     //表格查询
 
     function queryRegisterBillGrid() {
@@ -257,8 +285,13 @@
         if(!$('#queryForm').form("validate")){
             return false;
         }
-
-        _registerBillGrid.datagrid("load", bindGridMeta2Form("registerBillGrid", "queryForm"));
+        
+        var productIdList=$('#productIdList').combotree('getValues');
+        var productName=$('#productIdList').combotree('getText');
+        var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
+        formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''});
+        formdata['productName']=productName;
+        _registerBillGrid.datagrid("load", formdata);
 
     }
         //清空表单
@@ -419,6 +452,8 @@ function showcharts(){
 	
 	 openWin('/registerBillReport/product-charts.html?params='+encodeURIComponent(JSON.stringify(data) ));
 }
+
+
 function closeWin(id){
     $('#'+id).remove();
     $('#registerBillGrid').datagrid('reload');

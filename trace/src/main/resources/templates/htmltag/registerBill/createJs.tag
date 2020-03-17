@@ -333,8 +333,8 @@ var currentUser={"depId":"${user.depId!}"
             },
             showNoSuggestionNotice: true,
             noSuggestionNotice: "不存在，请重输！",
-//            autoSelectFirst:true,
-//            autoFocus: true,
+            autoSelectFirst:true,
+            autoFocus: true,
             onSelect: function (suggestion) {
             	
                 var self = this;
