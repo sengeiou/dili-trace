@@ -1,7 +1,5 @@
 package com.dili.trace.jobs;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
@@ -23,13 +21,13 @@ public class UsualAddressCountClearJob {
 	private static final Logger logger = LoggerFactory.getLogger(UsualAddressCountClearJob.class);
 	@Autowired
 	UsualAddressMapper usualAddressMapper;
-
+	//应用启用时处理一次数据，防止上一次任务未执行
 	@PostConstruct
 	public void init() {
 		this.checkAndClearUsedCount();
 	}
 
-	// 间隔两分钟同步数据
+	//每天00:00:01的时候执行数据处理
 	@Scheduled(cron = "1 0 0 * * ?")
 	public void execute() {
 		this.checkAndClearUsedCount();
@@ -40,9 +38,8 @@ public class UsualAddressCountClearJob {
 		try {
 			UsualAddress input = DTOUtils.newDTO(UsualAddress.class);
 			input.setClearTime(new Date());
-
-			this.usualAddressMapper.checkAndResetOutOfDate(input);
-			this.usualAddressMapper.checkAndUpdateCountData(input);
+			Integer count = this.usualAddressMapper.checkAndUpdateCountData(input);
+			logger.info("共[{}]条常用地址统计数据被更新", count);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			return false;

@@ -40,11 +40,8 @@
 		order by (today_used_count+preday_used_count) desc
 		limit 30
 	</select>
-	<update id="checkAndResetOutOfDate"  parameterType="com.dili.trace.domain.UsualAddress" >
-		UPDATE usual_address set preday_used_count=0,today_used_count=0, clear_time=#{clearTime} WHERE DATEDIFF(now(),#{clearTime})>1;
-	</update>
 	<update id="checkAndUpdateCountData"  parameterType="com.dili.trace.domain.UsualAddress" >
-		UPDATE usual_address set preday_used_count=today_used_count,today_used_count=0, clear_time=#{clearTime}  WHERE DATEDIFF(now(),#{clearTime})=1;
+		UPDATE usual_address set preday_used_count=today_used_count,today_used_count=0, clear_time=#{clearTime}  WHERE DATEDIFF(#{clearTime},clear_time)>0;
 	</update>
 
 </mapper>

@@ -15,14 +15,6 @@ public interface UsualAddressMapper extends MyMapper<UsualAddress> {
 	 */
 	public List<UsualAddress> findUsualAddressByType(UsualAddress input);
 
-	/**
-	 * 清理并重置过期数据
-	 * 
-	 * @param now
-	 * @return
-	 */
-
-	public Integer checkAndResetOutOfDate(UsualAddress input);
 	
 	/**
 	 * 清理并更新统计数据
