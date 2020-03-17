@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.Customer;
@@ -783,6 +785,119 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.getActualDao().doRemoveReportAndCertifiy(item);
 
 		return BaseOutput.success();
+	}
+
+	@Override
+	public String listPage(RegisterBillDto dto) throws Exception {
+		if (StringUtils.isNotBlank(dto.getAttrValue())) {
+			switch (dto.getAttr()) {
+			case "code":
+				dto.setCode(dto.getAttrValue());
+				break;
+//			case "plate":
+//				registerBill.setPlate(registerBill.getAttrValue());
+//				break;
+//			case "tallyAreaNo":
+////				registerBill.setTallyAreaNo(registerBill.getAttrValue());
+//				registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
+//				break;
+			case "latestDetectOperator":
+				dto.setLatestDetectOperator(dto.getAttrValue());
+				break;
+			case "name":
+				dto.setName(dto.getAttrValue());
+				break;
+			case "productName":
+				dto.setProductName(dto.getAttrValue());
+				break;
+			case "likeSampleCode":
+				dto.setLikeSampleCode(dto.getAttrValue());
+				break;
+			}
+		}
+//		if (registerBill.getHasReport() != null) {
+//			if (registerBill.getHasReport()) {
+//				registerBill.mset(IDTO.AND_CONDITION_EXPR,
+//						"  (detect_report_url is not null AND detect_report_url<>'')");
+//			} else {
+//				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
+//			}
+//		}
+
+		StringBuilder sql = this.buildDynamicCondition(dto);
+		if (sql.length() > 0) {
+			dto.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
+		}
+		
+		//case created when created=2 then 1 else 0 end
+		if(StringUtils.isBlank(dto.getSort())) {
+			dto.setSort("creation_source");
+		}else {
+			dto.setSort("creation_source,"+dto.getSort());
+		}
+		if(StringUtils.isBlank(dto.getOrder())) {
+			dto.setOrder("ASC");
+		}else {
+			dto.setOrder("ASC,"+dto.getOrder());
+		}
+		
+		return this.listEasyuiPageByExample(dto, true).toString();
+	}
+	@Override
+	public String listStaticsPage(RegisterBillDto dto) throws Exception {
+		if (StringUtils.isNotBlank(dto.getAttrValue())) {
+			switch (dto.getAttr()) {
+			case "code":
+				dto.setCode(dto.getAttrValue());
+				break;
+			case "plate":
+				dto.setPlate(dto.getAttrValue());
+				break;
+			case "tallyAreaNo":
+//				registerBill.setTallyAreaNo(registerBill.getAttrValue());
+				dto.setLikeTallyAreaNo(dto.getAttrValue());
+				break;
+			case "latestDetectOperator":
+				dto.setLatestDetectOperator(dto.getAttrValue());
+				break;
+			case "name":
+				dto.setName(dto.getAttrValue());
+				break;
+			case "productName":
+				dto.setLikeProductName(dto.getAttrValue());
+				break;
+			case "likeSampleCode":
+				dto.setLikeSampleCode(dto.getAttrValue());
+				break;
+			}
+		}
+		StringBuilder sql = this.buildDynamicCondition(dto);
+		if (sql.length() > 0) {
+			dto.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
+		}
+		return listEasyuiPageByExample(dto, true).toString();
+	}
+	private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
+		StringBuilder sql = new StringBuilder();
+		if (registerBill.getHasDetectReport() != null) {
+			if (registerBill.getHasDetectReport()) {
+				sql.append("  (detect_report_url is not null AND detect_report_url<>'') ");
+			} else {
+				sql.append("  (detect_report_url is  null or detect_report_url='') ");
+			}
+		}
+
+		if (registerBill.getHasOriginCertifiy() != null) {
+			if (sql.length() > 0) {
+				sql.append(" AND ");
+			}
+			if (registerBill.getHasOriginCertifiy()) {
+				sql.append("  (origin_certifiy_url is not null AND origin_certifiy_url<>'') ");
+			} else {
+				sql.append("  (origin_certifiy_url is  null or origin_certifiy_url='') ");
+			}
+		}
+		return sql;
 	}
 
 }

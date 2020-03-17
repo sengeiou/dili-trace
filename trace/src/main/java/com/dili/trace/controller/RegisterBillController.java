@@ -91,83 +91,11 @@ public class RegisterBillController {
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(RegisterBillDto registerBill) throws Exception {
-		if (StringUtils.isNotBlank(registerBill.getAttrValue())) {
-			switch (registerBill.getAttr()) {
-			case "code":
-				registerBill.setCode(registerBill.getAttrValue());
-				break;
-//			case "plate":
-//				registerBill.setPlate(registerBill.getAttrValue());
-//				break;
-//			case "tallyAreaNo":
-////				registerBill.setTallyAreaNo(registerBill.getAttrValue());
-//				registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
-//				break;
-			case "latestDetectOperator":
-				registerBill.setLatestDetectOperator(registerBill.getAttrValue());
-				break;
-			case "name":
-				registerBill.setName(registerBill.getAttrValue());
-				break;
-			case "productName":
-				registerBill.setProductName(registerBill.getAttrValue());
-				break;
-			case "likeSampleCode":
-				registerBill.setLikeSampleCode(registerBill.getAttrValue());
-				break;
-			}
-		}
-//		if (registerBill.getHasReport() != null) {
-//			if (registerBill.getHasReport()) {
-//				registerBill.mset(IDTO.AND_CONDITION_EXPR,
-//						"  (detect_report_url is not null AND detect_report_url<>'')");
-//			} else {
-//				registerBill.mset(IDTO.AND_CONDITION_EXPR, "  (detect_report_url is  null or detect_report_url='')");
-//			}
-//		}
-
-		StringBuilder sql = this.buildDynamicCondition(registerBill);
-		if (sql.length() > 0) {
-			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
-		}
 		
-		//case created when created=2 then 1 else 0 end
-		if(StringUtils.isBlank(registerBill.getSort())) {
-			registerBill.setSort("creation_source");
-		}else {
-			registerBill.setSort("creation_source,"+registerBill.getSort());
-		}
-		if(StringUtils.isBlank(registerBill.getOrder())) {
-			registerBill.setOrder("ASC");
-		}else {
-			registerBill.setOrder("ASC,"+registerBill.getOrder());
-		}
-		
-		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
+		return registerBillService.listPage(registerBill);
 	}
 
-	private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
-		StringBuilder sql = new StringBuilder();
-		if (registerBill.getHasDetectReport() != null) {
-			if (registerBill.getHasDetectReport()) {
-				sql.append("  (detect_report_url is not null AND detect_report_url<>'') ");
-			} else {
-				sql.append("  (detect_report_url is  null or detect_report_url='') ");
-			}
-		}
-
-		if (registerBill.getHasOriginCertifiy() != null) {
-			if (sql.length() > 0) {
-				sql.append(" AND ");
-			}
-			if (registerBill.getHasOriginCertifiy()) {
-				sql.append("  (origin_certifiy_url is not null AND origin_certifiy_url<>'') ");
-			} else {
-				sql.append("  (origin_certifiy_url is  null or origin_certifiy_url='') ");
-			}
-		}
-		return sql;
-	}
+	
 
 	@ApiOperation("新增RegisterBill")
 	@RequestMapping(value = "/insert.action", method = RequestMethod.POST)
@@ -595,37 +523,7 @@ public class RegisterBillController {
 
 	@RequestMapping(value = "/listStaticsPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listStaticsPage(RegisterBillDto registerBill) throws Exception {
-		if (StringUtils.isNotBlank(registerBill.getAttrValue())) {
-			switch (registerBill.getAttr()) {
-			case "code":
-				registerBill.setCode(registerBill.getAttrValue());
-				break;
-			case "plate":
-				registerBill.setPlate(registerBill.getAttrValue());
-				break;
-			case "tallyAreaNo":
-//				registerBill.setTallyAreaNo(registerBill.getAttrValue());
-				registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
-				break;
-			case "latestDetectOperator":
-				registerBill.setLatestDetectOperator(registerBill.getAttrValue());
-				break;
-			case "name":
-				registerBill.setName(registerBill.getAttrValue());
-				break;
-			case "productName":
-				registerBill.setLikeProductName(registerBill.getAttrValue());
-				break;
-			case "likeSampleCode":
-				registerBill.setLikeSampleCode(registerBill.getAttrValue());
-				break;
-			}
-		}
-		StringBuilder sql = this.buildDynamicCondition(registerBill);
-		if (sql.length() > 0) {
-			registerBill.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
-		}
-		return registerBillService.listEasyuiPageByExample(registerBill, true).toString();
+		return this.registerBillService.listStaticsPage(registerBill);
 	}
 
 	@RequestMapping(value = "/listStaticsData.action", method = { RequestMethod.GET, RequestMethod.POST })
