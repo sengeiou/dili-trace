@@ -98,6 +98,23 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     List<String> getSampleCodeList();
     void setSampleCodeList(List<String> sampleCodeList);
     
+    
+    @ApiModelProperty(value = "IN商品ID")
+    @Column(name = "`product_id`")
+    @FieldDef(label="productId")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    List<Long> getProductIdList();
+
+    void setProductIdList(List<Long> productIdList);
+    
+    
+    @ApiModelProperty(value = "车牌LIKE")
+    @Column(name = "`plate`")
+    @Like(value="RIGHT")
+    String getLikePlate();
+
+    void setLikePlate(String likePlate);
+    
     @Transient
     String getTag();
     void setTag(String tag);

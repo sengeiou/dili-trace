@@ -17,10 +17,37 @@ var currentUser={"depId":"${user.depId!}"
         if(!$('#queryForm').form("validate")){
             return false;
         }
-
+        findFirstWaitAuditRegisterBillCreateByCurrentUser();
         _registerBillGrid.datagrid("load", bindGridMeta2Form("registerBillGrid", "queryForm"));
         initBtnStatus();
 
+    }
+    
+    var findFirstWaitAuditRegisterBill={};
+    function findFirstWaitAuditRegisterBillCreateByCurrentUser(){
+    	findFirstWaitAuditRegisterBill={};
+		 $.ajax({
+             type: "POST",
+             url: "${contextPath}/registerBill/findFirstWaitAuditRegisterBillCreateByCurrentUser.action",
+             processData:true,
+             dataType: "json",
+             data:bindGridMeta2Form("registerBillGrid", "queryForm"),
+             async : true,
+             success: function (ret) {
+            	 if(ret&&ret.code=='200'){
+            		 findFirstWaitAuditRegisterBill=ret.data;
+            	 }
+             },
+             error: function(){
+            	 findFirstWaitAuditRegisterBill={}
+             }
+         });
+    	
+    }
+    function coloredRowRender(index,row){
+    	if(findFirstWaitAuditRegisterBill&&findFirstWaitAuditRegisterBill.id&&row.id==findFirstWaitAuditRegisterBill.id){
+    		return {style:'background:#7dc57d'};	
+    	}
     }
     $(function(){
     	   $('#likeTallyAreaNo').textbox('textbox').bind('input', function(n,o) {
@@ -31,7 +58,7 @@ var currentUser={"depId":"${user.depId!}"
 	function queryPlatesByTallyAreaNo(tallyAreaNo){
 		//console.info(tallyAreaNo)
 		//console.info(tallyAreaNo)
-		$('#plate').combobox('loadData',[])
+		$('#likePlate').combobox('loadData',[])
 		if(tallyAreaNo&&tallyAreaNo!=''){
 			
 			
@@ -44,7 +71,7 @@ var currentUser={"depId":"${user.depId!}"
                  async : true,
                  success: function (ret) {
                      if(ret.success){
-                    	 $('#plate').combobox('loadData',ret.data)
+                    	 $('#likePlate').combobox('loadData',ret.data)
                      }else{
                     	 //$('#plate').combobox('loadData',[])
                      }
@@ -66,7 +93,7 @@ var currentUser={"depId":"${user.depId!}"
     //清空表单
     function clearQueryForm() {
         $('#queryForm').form('clear');
-        $('#plate').combobox('loadData',[])
+        $('#likePlate').combobox('loadData',[])
     }
 
     //表格表头右键菜单

@@ -14,15 +14,24 @@
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
                         <div class="search-item">
-                            <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto"/>
+                            <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto" "/>
                             <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
                         <div class="search-item">
-                            <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"/>
+                            <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"  value="${state}"/>
                             <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right" data-options="label:'商品:'" />
+								<div class="search-item">
+                            <input type="hidden" name="productName"  id="productName">
+                            <select class="easyui-combobox" name="productIdList" id="productIdList" style="width:100%;" labelAlign="right"
+                                    data-options="label:'商品',loader:queryProduct,mode: 'remote',valueField:'id' ,textField:'value',prompt:'请输入', panelMinWidth:'55', panelHeight:'auto',panelMaxHeight:'300', 
+                                    editable:true,required:false,onSelect:function(record){
+                                $('#productName').val(record.value);
+                            }"></select>
+                        </div>
+                
+                
                         </div>
                         <div class="search-item">
                             <input  name="tradeTypeId" id="tradeTypeId" style="width:100%" labelAlign="right" data-options="label:'交易区'"  panelWidth="auto" panelHeight="auto"/>
@@ -43,7 +52,7 @@
                             <input class="easyui-textbox" name="likeTallyAreaNo" id="likeTallyAreaNo" style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
                         </div>
                         <div class="search-item">
-                            <select class="easyui-combobox" name="plate" id="plate" style="width:100%;" editable="false" panelHeight="auto" 
+                            <select class="easyui-combobox" name="likePlate" id="likePlate" style="width:100%;" editable="false" panelHeight="auto" 
                             data-options="label:'车牌号',editable:true, valueField:'plate',textField:'plate',onChange:onPlateChange,prompt:'请选择或输入'"  labelAlign="right">
                             </select>
                         </div>
@@ -101,8 +110,8 @@
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="登记单列表" id="registerBillGrid" fitColumns="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
-                   loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false" sortName="sampleCode" sortOrder="desc"
-                   align="center" fit="true" idField="id" selectOnCheck="true" data-options="onClickRow:onClickRow,onSelect:onClickRow,onUnselect:onUnselect,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked,onSelectAll:onSelectAll,onUnselectAll:onUnselectAll ">
+                   loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false"  sortName="created" sortOrder="desc"
+                   align="center" fit="true" idField="id" selectOnCheck="true" data-options="rowStyler:coloredRowRender, onClickRow:onClickRow,onSelect:onClickRow,onUnselect:onUnselect,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked,onSelectAll:onSelectAll,onUnselectAll:onUnselectAll ">
                 <thead>
                     <tr>
                     	<th field="ck" checkbox="true" data-options="field:'ck' "> </th>
@@ -239,4 +248,28 @@
      <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <#registerBill_indexJs />
+     <script>
+     function queryProduct(param,success,error){
+  	   var productName=$('#productIdList').combotree('getText');
+  	   var data=[];
+  		$.ajax({
+  			url:'${contextPath!}/toll/category?name='+productName,
+  			success:function(resp){
+  				data=resp.suggestions.map(function(v,i){v['parentId']='';return v});
+  				//console.info(data)
+  	  			 success(data);
+  				//data.unshift({id:'',value:'全部'});
+  				//$('#productName').combobox({data:data});
+  			//	$('#productName').combobox('showPanel');
+  				//$('#productName').combotree('setText',productName);
+  			//	$('#productIdList').focus();
+  				//$('#productIdList').next().find('input').focus()
+  			}
+  		})
+  	
+  		
+  	// return data;
+   }
+     
+     </script>
  </#body>

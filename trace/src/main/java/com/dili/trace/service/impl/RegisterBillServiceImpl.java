@@ -786,9 +786,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		return BaseOutput.success();
 	}
-
-	@Override
-	public String listPage(RegisterBillDto dto) throws Exception {
+	private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
 		if (StringUtils.isNotBlank(dto.getAttrValue())) {
 			switch (dto.getAttr()) {
 			case "code":
@@ -829,17 +827,21 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			dto.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
 		}
 		
-		//case created when created=2 then 1 else 0 end
-		if(StringUtils.isBlank(dto.getSort())) {
-			dto.setSort("creation_source");
-		}else {
-			dto.setSort("creation_source,"+dto.getSort());
-		}
-		if(StringUtils.isBlank(dto.getOrder())) {
-			dto.setOrder("ASC");
-		}else {
-			dto.setOrder("ASC,"+dto.getOrder());
-		}
+		return dto;
+	}
+	@Override
+	public RegisterBill findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto input) throws Exception {
+		RegisterBillDto dto=this.preBuildDTO(input);
+		UserTicket userTicket = getOptUser();
+		dto.setOperatorId(userTicket.getId());
+		dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+		dto.setRows(1);
+		return this.listByExample(dto).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
+	}
+	
+	@Override
+	public String listPage(RegisterBillDto input) throws Exception {
+		RegisterBillDto dto=this.preBuildDTO(input);
 		
 		return this.listEasyuiPageByExample(dto, true).toString();
 	}

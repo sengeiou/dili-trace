@@ -71,7 +71,7 @@ public class RegisterBillController {
 		Date now = new Date();
 		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-		
+		modelMap.put("state", RegisterBillStateEnum.WAIT_AUDIT.getCode());
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
 		
@@ -84,6 +84,16 @@ public class RegisterBillController {
 	@RequestMapping(value = "/list.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody List<RegisterBill> list(RegisterBillDto registerBill) {
 		return registerBillService.list(registerBill);
+	}
+	
+	@ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/findFirstWaitAuditRegisterBillCreateByCurrentUser.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody Object findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto dto) throws Exception {
+		
+		RegisterBill registerBill= registerBillService.findFirstWaitAuditRegisterBillCreateByCurrentUser(dto);
+		return BaseOutput.success().setData(registerBill);
 	}
 
 	@ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
