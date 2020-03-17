@@ -41,6 +41,9 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		input.setMergedAddress(city.getMergerName());
 		input.setCreated(new Date());
 		input.setModified(new Date());
+		input.setTodayUsedCount(0);
+		input.setPreDayUsedCount(0);
+		input.setClearTime(new Date());
 		this.insertSelective(input);
 		return 0;
 	}
@@ -70,6 +73,9 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		input.setMergedAddress(city.getMergerName());
 		input.setCreated(new Date());
 		input.setModified(new Date());
+		input.setTodayUsedCount(0);
+		input.setPreDayUsedCount(0);
+		input.setClearTime(new Date());
 		this.delete(item.getId());
 		this.insertSelective(input);
 		
