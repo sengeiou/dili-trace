@@ -79,5 +79,30 @@ public interface UsualAddress extends IBaseDomain {
     Date getModified();
 
     void setModified(Date modified);
+    
+    
+    
+    @ApiModelProperty(value = "当天使用数量统计")
+    @Column(name = "`today_used_count`")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getTodayUsedCount();
+
+    void setTodayUsedCount(Integer todayUsedCount);
+    
+    @ApiModelProperty(value = "前一天使用数量统计")
+    @Column(name = "`preday_used_count`")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getPreDayUsedCount();
+
+    void setPreDayUsedCount(Integer preDayUsedCount);
+    
+    
+    @ApiModelProperty(value = "清理时间")
+    @Column(name = "`clear_time`")
+    @FieldDef(label="clear_time")
+    @EditMode(editor = FieldEditor.Datetime, required = true)
+    Date getClearTime();
+
+    void setClearTime(Date clearTime);
 
 }

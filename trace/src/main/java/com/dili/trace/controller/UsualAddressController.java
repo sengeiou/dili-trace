@@ -25,6 +25,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.UsualAddress;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UsualAddressService;
 
@@ -132,9 +133,8 @@ public class UsualAddressController {
 	@ApiOperation("查询UsualAddress")
 	@RequestMapping(value = "/listUsualAddress.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput listUsualAddress(UsualAddress input) {
-		UsualAddress domain=DTOUtils.newDTO(UsualAddress.class);
-		domain.setType(input.getType());
-		List<UsualAddress>list=this.usualAddressService.listByExample(domain);
+		UsualAddressTypeEnum addressType=	UsualAddressTypeEnum.getUsualAddressType(input.getType());
+		List<UsualAddress>list=this.usualAddressService.findUsualAddressByType(addressType);
 		return BaseOutput.success().setData(list);
 	}
 

@@ -12,6 +12,7 @@ import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
+import com.dili.trace.dao.UsualAddressMapper;
 import com.dili.trace.domain.City;
 import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
@@ -21,6 +22,8 @@ import com.dili.trace.service.UsualAddressService;
 public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long> implements UsualAddressService {
     @Resource
     BaseInfoRpcService baseInfoRpcService;
+    @Resource
+    UsualAddressMapper usualAddressMapper;
 	@Override
 	public int insertUsualAddress(UsualAddress input) {
 		
@@ -73,6 +76,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		return 0;
 	}
 
+
 	@Override
 	public int deleteUsualAddress(Long id) {
 		if(id!=null) {
@@ -89,7 +93,30 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 	public List<UsualAddress> findUsualAddressByType(UsualAddressTypeEnum usualAddressType) {
 		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
 		example.setType(usualAddressType.getType());
-		return this.listByExample(example);
+		return this.usualAddressMapper.findUsualAddressByType(example);
+	}
+
+	@Override
+	public int increaseUsualAddressTodayCount(Long id) {
+		
+		return this.increaseUsualAddressTodayCount(null, id);
+	}
+
+	@Override
+	public int increaseUsualAddressTodayCount(Long oldId, Long newId) {
+		if(newId==null||newId.equals(oldId)) {
+			return 0;
+		}
+		UsualAddress item=this.get(newId);
+		if(item==null) {
+			return 0;
+		}
+		UsualAddress domain=DTOUtils.newDTO(UsualAddress.class);
+		domain.setTodayUsedCount(item.getTodayUsedCount()+1);
+		domain.setId(newId);
+		this.updateSelective(domain);
+		
+		return 1;
 	}
 
 }

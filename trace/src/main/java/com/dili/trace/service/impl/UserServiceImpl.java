@@ -25,6 +25,8 @@ import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
+import com.dili.trace.service.UsualAddressService;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.server.PathContainer;
@@ -60,6 +62,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     UserPlateService userPlateService;
     @Resource
     UserHistoryService userHistoryService;
+    @Resource
+    UsualAddressService usualAddressService;
 
     @Transactional(rollbackFor=Exception.class)
     @Override
@@ -84,7 +88,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if(existsCardNo(user.getCardNo())){
             throw new BusinessException("身份证号已注册");
         }
-      
+        this.usualAddressService.increaseUsualAddressTodayCount(user.getSalesCityId());
         insertSelective(user);
         //更新用户理货区
         updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
@@ -167,6 +171,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         updateSelective(user);
+        this.usualAddressService.increaseUsualAddressTodayCount(userPO.getSalesCityId(),user.getSalesCityId());
         this.userHistoryService.insertUserHistoryForUpdateUser(user.getId());
 
 

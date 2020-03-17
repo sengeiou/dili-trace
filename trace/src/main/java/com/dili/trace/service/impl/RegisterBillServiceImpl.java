@@ -27,6 +27,7 @@ import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UsualAddressService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
@@ -65,6 +66,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	UserPlateService userPlateService;
 	@Autowired
 	CodeGenerateService codeGenerateService;
+	@Autowired
+	UsualAddressService usualAddressService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -96,19 +99,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
 		registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
-		if(!this.checkPlate(registerBill)) {
+		if (!this.checkPlate(registerBill)) {
 			return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
 		}
 
- /*else {
-			List<String> otherUserPlateList = this.userPlateService
-					.findUserPlateByPlates(Arrays.asList(registerBill.getPlate())).stream().map(UserPlate::getPlate)
-					.collect(Collectors.toList());
-			if (!otherUserPlateList.isEmpty()) {
-				return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
-			}
-		}*/
-
+		/*
+		 * else { List<String> otherUserPlateList = this.userPlateService
+		 * .findUserPlateByPlates(Arrays.asList(registerBill.getPlate())).stream().map(
+		 * UserPlate::getPlate) .collect(Collectors.toList()); if
+		 * (!otherUserPlateList.isEmpty()) { return
+		 * BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号"); } }
+		 */
+		this.usualAddressService.increaseUsualAddressTodayCount(registerBill.getOriginId());
 		int result = saveOrUpdate(registerBill);
 		if (result == 0) {
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
@@ -118,22 +120,25 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	private boolean checkPlate(RegisterBill registerBill) {
-		
+
 		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 
-			List<UserPlate> userPlateList = this.userPlateService.findUserPlateByPlates(Arrays.asList(registerBill.getPlate()));
-			
-			if(!userPlateList.isEmpty()) {
-				boolean noMatch=userPlateList.stream().noneMatch(up->up.getUserId().equals(registerBill.getUserId()));
-				if(noMatch) {
-					//throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
+			List<UserPlate> userPlateList = this.userPlateService
+					.findUserPlateByPlates(Arrays.asList(registerBill.getPlate()));
+
+			if (!userPlateList.isEmpty()) {
+				boolean noMatch = userPlateList.stream()
+						.noneMatch(up -> up.getUserId().equals(registerBill.getUserId()));
+				if (noMatch) {
+					// throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
 					return false;
 				}
 			}
 		}
 		return true;
-		
+
 	}
+
 	private BaseOutput checkBill(RegisterBill registerBill) {
 
 		if (registerBill.getRegisterSource() == null || registerBill.getRegisterSource().intValue() == 0) {
@@ -306,8 +311,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new AppException("操作失败，数据状态已改变");
 		}
 	}
+
 	private String getNextSampleCode() {
-		String sampleCode=this.codeGenerateService.nextSampleCode();
+		String sampleCode = this.codeGenerateService.nextSampleCode();
 //		String sampleCode=this.bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE);
 		return sampleCode;
 	}
@@ -384,34 +390,38 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return BaseOutput.success().setData(dto);
 
 	}
+
 	@Transactional
 	@Override
 	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) {
 		BatchResultDto<String> dto = new BatchResultDto<>();
-		
-		//id转换为RegisterBill,并通过条件判断partition(true:只有产地证明，且需要进行批量处理,false:其他)
-		Map<Boolean,List<RegisterBill>>partitionedMap=CollectionUtils.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream().filter(Objects::nonNull).map(id->{
-			RegisterBill registerBill = get(id);
-			return registerBill;
-		}).filter(Objects::nonNull).filter(registerBill->{
-			if(Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-				if(StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())&&StringUtils.isBlank(registerBill.getDetectReportUrl())) {
-					return false;
-				}
-			}
-			return true;
-		}).collect(Collectors.partitioningBy((registerBill)->{
-			
-			if(Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-				if(StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())&&StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+
+		// id转换为RegisterBill,并通过条件判断partition(true:只有产地证明，且需要进行批量处理,false:其他)
+		Map<Boolean, List<RegisterBill>> partitionedMap = CollectionUtils
+				.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream().filter(Objects::nonNull).map(id -> {
+					RegisterBill registerBill = get(id);
+					return registerBill;
+				}).filter(Objects::nonNull).filter(registerBill -> {
+					if (Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
+						if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
+								&& StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+							return false;
+						}
+					}
 					return true;
-				}
-			}
-			return false;
-		}));
-		
-		//只有产地证明，且需要进行批量处理
-		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.TRUE)).forEach(registerBill->{
+				}).collect(Collectors.partitioningBy((registerBill) -> {
+
+					if (Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
+						if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
+								&& StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+							return true;
+						}
+					}
+					return false;
+				}));
+
+		// 只有产地证明，且需要进行批量处理
+		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.TRUE)).forEach(registerBill -> {
 			if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
 				UserTicket userTicket = getOptUser();
 				registerBill.setOperatorName(userTicket.getRealName());
@@ -420,22 +430,22 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				registerBill.setDetectState(null);
 				this.updateSelective(registerBill);
 				dto.getSuccessList().add(registerBill.getCode());
-			}else {
+			} else {
 				dto.getFailureList().add(registerBill.getCode());
 			}
-			
+
 		});
-		//其他登记单
-		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.FALSE)).forEach(registerBill->{
+		// 其他登记单
+		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.FALSE)).forEach(registerBill -> {
 			try {
 				this.auditRegisterBill(batchAuditDto.getPass(), registerBill);
 				dto.getSuccessList().add(registerBill.getCode());
 			} catch (Exception e) {
 				dto.getFailureList().add(registerBill.getCode());
 			}
-			
+
 		});
-		
+
 		return BaseOutput.success().setData(dto);
 	}
 
@@ -598,7 +608,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				|| StringUtils.isAnyBlank(input.getHandleResult(), input.getHandleResultUrl())) {
 			throw new AppException("参数错误");
 		}
-		if(input.getHandleResult().trim().length()>10000) {
+		if (input.getHandleResult().trim().length() > 10000) {
 			throw new AppException("处理结果不能超过10000");
 		}
 		RegisterBill item = this.get(input.getId());
@@ -683,7 +693,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} else {
 
 		}
-		if(!this.checkPlate(registerBill)) {
+		if (!this.checkPlate(registerBill)) {
 			throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
 		}
 
@@ -694,6 +704,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setOriginName(input.getOriginName());
 
 		registerBill.setWeight(input.getWeight());
+		this.usualAddressService.increaseUsualAddressTodayCount(registerBill.getOriginId(), input.getOriginId());
 
 //		registerBill.setOriginCertifiyUrl(input.getOriginCertifiyUrl());
 		this.updateSelective(registerBill);
@@ -712,7 +723,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (item == null) {
 			throw new AppException("数据错误");
 		}
-		if(!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
+		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
 			throw new AppException("状态错误,不能上传检测报告");
 		}
 
@@ -737,7 +748,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (item == null) {
 			throw new AppException("数据错误");
 		}
-		if(!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
+		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
 			throw new AppException("状态错误,不能上传产地证明");
 		}
 		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
@@ -748,28 +759,29 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		return example.getId();
 	}
+
 	@Override
-	public BaseOutput doRemoveReportAndCertifiy(Long id,String deleteType) {
+	public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType) {
 		RegisterBill item = this.get(id);
 		if (item == null) {
 			throw new AppException("数据错误");
 		}
-		if(!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
+		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
 			throw new AppException("状态错误,不能删除产地证明和检测报告");
 		}
-		if("all".equalsIgnoreCase(deleteType)) {
+		if ("all".equalsIgnoreCase(deleteType)) {
 			item.setOriginCertifiyUrl(null);
 			item.setDetectReportUrl(null);
-		}else if("originCertifiy".equalsIgnoreCase(deleteType)) {
+		} else if ("originCertifiy".equalsIgnoreCase(deleteType)) {
 			item.setOriginCertifiyUrl(null);
-		}else if("detectReport".equalsIgnoreCase(deleteType)) {
+		} else if ("detectReport".equalsIgnoreCase(deleteType)) {
 			item.setDetectReportUrl(null);
-		}else {
-			//do nothing
+		} else {
+			// do nothing
 			return BaseOutput.success();
 		}
 		this.getActualDao().doRemoveReportAndCertifiy(item);
-		
+
 		return BaseOutput.success();
 	}
 

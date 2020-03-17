@@ -39,4 +39,23 @@ public interface UsualAddressService extends BaseService<UsualAddress, Long> {
 	 * @return
 	 */
 	public List<UsualAddress> findUsualAddressByType(UsualAddressTypeEnum usualAddressType);
+	
+
+	
+	/**
+	 * 增加地址当天使用统计
+	 * @param id
+	 * @return
+	 */
+	public int increaseUsualAddressTodayCount(Long id);
+	
+	
+	/**
+	 * 增加地址当天使用统计（若新地址id与原地址id不相同，则对新地址使用统计增加1）
+	 * @param oldId 原地址id
+	 * @param newId 新地址id
+	 * @return
+	 */
+
+	public int increaseUsualAddressTodayCount(Long oldId,Long newId);
 }
