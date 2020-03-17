@@ -23,11 +23,21 @@
                         </div>
                         <div class="search-item">
 								<div class="search-item">
-                            <input type="hidden" name="productName"  id="productName">
-                            <select class="easyui-combobox" name="productIdList" id="productIdList" style="width:100%;" labelAlign="right"
-                                    data-options="label:'商品',loader:queryProduct,mode: 'remote',valueField:'id' ,textField:'value',prompt:'请输入', panelMinWidth:'55', panelHeight:'auto',panelMaxHeight:'300', 
+                            <input type="hidden" name="likeProductName"  id="likeProductName">
+                            <input type="hidden" name="productId"  id="productId">
+                            <select class="easyui-combobox" name="productCombobox" id="productCombobox" style="width:100%;" labelAlign="right"
+                                    data-options="onChange:function(n,o){
+                                  	   var text=$('#productCombobox').combotree('getText');
+                                	  if(text!=$('#likeProductName').val()){
+                                       	$('#likeProductName').val(text);
+                                        $('#productId').val('');
+                                    }
+                                    return true;
+                                    },label:'商品',loader:queryProduct,mode: 'remote',valueField:'id' ,textField:'value',prompt:'请输入', panelMinWidth:'55', panelHeight:'auto',panelMaxHeight:'300', 
                                     editable:true,required:false,onSelect:function(record){
-                                $('#productName').val(record.value);
+                                       console.info('select')
+                                $('#likeProductName').val(record.value);
+                                $('#productId').val(record.id);
                             }"></select>
                         </div>
                 
@@ -250,7 +260,7 @@
      <#registerBill_indexJs />
      <script>
      function queryProduct(param,success,error){
-  	   var productName=$('#productIdList').combotree('getText');
+  	   var productName=$('#productCombobox').combotree('getText');
   	   var data=[];
   		$.ajax({
   			url:'${contextPath!}/toll/category?name='+productName,

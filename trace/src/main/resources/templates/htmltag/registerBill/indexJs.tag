@@ -18,11 +18,16 @@ var currentUser={"depId":"${user.depId!}"
             return false;
         }
         findFirstWaitAuditRegisterBillCreateByCurrentUser();
-        _registerBillGrid.datagrid("load", bindGridMeta2Form("registerBillGrid", "queryForm"));
+        _registerBillGrid.datagrid("load", buildGridQueryData());
         initBtnStatus();
 
     }
-    
+    function buildGridQueryData(){
+    	var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
+
+      delete  formdata['productCombobox'];
+    	return formdata;
+    }
     var findFirstWaitAuditRegisterBill={};
     function findFirstWaitAuditRegisterBillCreateByCurrentUser(){
     	findFirstWaitAuditRegisterBill={};
@@ -31,7 +36,7 @@ var currentUser={"depId":"${user.depId!}"
              url: "${contextPath}/registerBill/findFirstWaitAuditRegisterBillCreateByCurrentUser.action",
              processData:true,
              dataType: "json",
-             data:bindGridMeta2Form("registerBillGrid", "queryForm"),
+             data:buildGridQueryData(),
              async : true,
              success: function (ret) {
             	 if(ret&&ret.code=='200'){
