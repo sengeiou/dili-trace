@@ -37,7 +37,7 @@ var currentUser={"depId":"${user.depId!}"
     function returnBack(){
         history.go(-1);
     }
-    /*   登记来源     */
+    /* 登记来源 */
     $('[name="registerSource"]').on('change', function () {
         if ($(this).val() === '1') {
             $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').show();
@@ -54,7 +54,7 @@ var currentUser={"depId":"${user.depId!}"
         $("#phone").val("");
     })
 
-    /* 货品表格  */
+    /* 货品表格 */
     $('.main-container').on('click', '#addGoodsItem', function () {
         $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
         initFileUpload1('#originCertifiyUrl_'+goodsItemCount);
@@ -70,7 +70,7 @@ var currentUser={"depId":"${user.depId!}"
     })
 
 
-    /*  选择图片  */
+    /* 选择图片 */
     $('.main-container').on('change', '.choose-image', function () {
         $('.choose-image').val()
         let filePath = $(this).val()
@@ -90,7 +90,7 @@ var currentUser={"depId":"${user.depId!}"
                 type: 1,
                 skin: 'layui-layer-rim',
                 closeBtn: 2,
-                area: ['90%', '90%'], //宽高
+                area: ['90%', '90%'], // 宽高
                 content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
             });
         }
@@ -124,13 +124,13 @@ var currentUser={"depId":"${user.depId!}"
                    $(this).val('&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;');
                    $(this).attr('disabled','disabled')
                    $(this).text('---------------');
-               });//调用add方法 通过函数的方式绑定上val和txt
+               });// 调用add方法 通过函数的方式绑定上val和txt
                
                $.each(notInUserPlateList, function (i, v) {
                	$(editableSelector).editableSelect('add', function () {
                        $(this).val(v);
                        $(this).text(v);
-                   });//调用add方法 通过函数的方式绑定上val和txt
+                   });// 调用add方法 通过函数的方式绑定上val和txt
               });
            	
            }
@@ -145,16 +145,16 @@ var currentUser={"depId":"${user.depId!}"
             async: false,
             success: function (ret) {
                 if (ret.code == "200") {
-                	//$('#plate').empty();
+                	// $('#plate').empty();
                 	 var userplateList = $.map(ret.data,function(v,i){
                 		 return v.plate;
                 	 });
-                	$(editableSelector).editableSelect('clear');//清空现有数据
+                	$(editableSelector).editableSelect('clear');// 清空现有数据
                     $.each(userplateList, function (i, v) {
                     	$(editableSelector).editableSelect('add', function () {
                             $(this).val(v);
                             $(this).text(v);
-                        });//调用add方法 通过函数的方式绑定上val和txt
+                        });// 调用add方法 通过函数的方式绑定上val和txt
                    });
                    appendCachedPlate(userplateList,editableSelector);
                     
@@ -304,17 +304,17 @@ var currentUser={"depId":"${user.depId!}"
     }
 
     /**
-     * 初始化自动完成框
-     */
+	 * 初始化自动完成框
+	 */
     function initAutoComplete(selector,url){
     	$(selector).keydown(function (e){
     	    if(e.keyCode == 13){
-    	    	//$(selector).data('keycode',e.keyCode);
-    	    	//console.info('1')
+    	    	// $(selector).data('keycode',e.keyCode);
+    	    	// console.info('keydown')
     	    }
     	});
     	$(selector).data('oldvalue','');
-    	//$(selector).data('keycode','');
+    	// $(selector).data('keycode','');
         $(selector).on('change',function () {
         	var oldvalue=$(selector).data('oldvalue');
         	var val=$(this).val();
@@ -322,34 +322,29 @@ var currentUser={"depId":"${user.depId!}"
         		$(this).siblings('input').val('');
         	}
         });
-        //产地联系输入
+        // 产地联系输入
         $(selector).devbridgeAutocomplete({
             noCache: 1,
-            serviceUrl: url,  //数据地址
-            //lookup: countries,    本地测试模拟数据使用结合上面的var countries
+            serviceUrl: url,  // 数据地址
+            // lookup: countries, 本地测试模拟数据使用结合上面的var countries
             dataType: 'json',
             onSearchComplete: function (query, suggestions) {
-            	//console.info(2)
+            	// console.info(2)
             },
             showNoSuggestionNotice: true,
             noSuggestionNotice: "不存在，请重输！",
             autoSelectFirst:true,
             autoFocus: true,
             onSelect: function (suggestion) {
-            	
+            	console.info('onSelect')
                 var self = this;
                 var idField = $(self).siblings('input');
                 idField.val(suggestion.id);
-                $(self).val(suggestion.value);
-                var keycode=$(selector).data('keycode');
-                //console.info(keycode)
-                //$(selector).data('keycode','');
+                $(self).val(suggestion.value.trim());
+                // var keycode=$(selector).data('keycode');
+                // console.info(keycode)
                 $(selector).data('oldvalue',suggestion.value);
-                $(self).valid();
-               // if(keycode==13){
-                //	$(self).blur();
-
-                //}
+                var v=$(self).valid();
             }
         });
     }
@@ -432,7 +427,7 @@ var currentUser={"depId":"${user.depId!}"
   		}
   		
   	}
-  	//cachePlate('abc')
+  	// cachePlate('abc')
     var resubmit = 0;
     function create(){
     	
@@ -452,7 +447,7 @@ var currentUser={"depId":"${user.depId!}"
             return;
         }
         
-        //console.log("参数:"+$('#createRecordForm').serialize());
+        // console.log("参数:"+$('#createRecordForm').serialize());
        
         var registerSource = $("#registerSource").val();
         var registerBills = buildTableData(registerSource);
@@ -466,14 +461,15 @@ var currentUser={"depId":"${user.depId!}"
             contentType: "application/json; charset=utf-8",
             success: function (ret) {
                 if(ret.success){
-                    //TLOG.component.operateLog(TLOG.operates.add, "登记单管理", ret.data, ret.data);
-                    //location.href = '/registerBill/index.html';
+                    // TLOG.component.operateLog(TLOG.operates.add, "登记单管理",
+					// ret.data, ret.data);
+                    // location.href = '/registerBill/index.html';
                     var paramStr = JSON.stringify(ret.data);
                     var registerSource = $("#registerSource").val();
                      // if(registerSource == 1){
-                     //     console.log("打印信息:--:"+paramStr);
-                     //     printDirect(paramStr);
-                      //}else{
+                     // console.log("打印信息:--:"+paramStr);
+                     // printDirect(paramStr);
+                      // }else{
                           localStorage.setItem('registerSource',$("#registerSource").val());
                           localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
                           cacheInputtedPlate("#plate");
@@ -491,7 +487,7 @@ var currentUser={"depId":"${user.depId!}"
                                  }
                              );
                        
-                      //}
+                      // }
                     
 
                 }else{
@@ -519,7 +515,7 @@ var currentUser={"depId":"${user.depId!}"
         if(typeof callbackObj != 'undefined'){
             window.printFinish=function(){
                 layer.alert("登记成功", {type: 0}, function () {
-                    //history.go(-1);
+                    // history.go(-1);
                 	parent.closeWin('view_win');
                 });
             }
@@ -546,7 +542,7 @@ var currentUser={"depId":"${user.depId!}"
                 type: 1,
                 skin: 'layui-layer-rim',
                 closeBtn: 2,
-                area: ['90%', '90%'], //宽高
+                area: ['90%', '90%'], // 宽高
                 content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
             });
         }
@@ -560,13 +556,13 @@ var currentUser={"depId":"${user.depId!}"
                 type: 1,
                 skin: 'layui-layer-rim',
                 closeBtn: 2,
-                area: ['90%', '90%'], //宽高
+                area: ['90%', '90%'], // 宽高
                 content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
             });
         }
     });
 
-    //文件上传组件初始化
+    // 文件上传组件初始化
     function initFileUpload(selecter) {
         $(selecter).fileupload({
             dataType: 'json',
@@ -579,7 +575,8 @@ var currentUser={"depId":"${user.depId!}"
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
                 }
             },
-            add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+            add: function (e, data) {// 判断文件类型 var acceptFileTypes =
+										// /\/(pdf|xml)$/i;
                 var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
                 var name = data.originalFiles[0]["name"];
                 var index = name.lastIndexOf(".") + 1;
@@ -599,7 +596,7 @@ var currentUser={"depId":"${user.depId!}"
         });
     }
 
-    //文件上传组件初始化
+    // 文件上传组件初始化
     function initFileUpload1(selecter) {
         $(selecter).fileupload({
             dataType: 'json',
@@ -612,7 +609,8 @@ var currentUser={"depId":"${user.depId!}"
                     $(this).parent().parent().next().show();
                 }
             },
-            add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+            add: function (e, data) {// 判断文件类型 var acceptFileTypes =
+										// /\/(pdf|xml)$/i;
                 var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
                 var name = data.originalFiles[0]["name"];
                 var index = name.lastIndexOf(".") + 1;
@@ -633,10 +631,10 @@ var currentUser={"depId":"${user.depId!}"
     }
     function selectCity(cthis,id,mergeName){
     	$('.originaNameInput').each(function(k,v){
-    		//if($(this).val()==''){
+    		// if($(this).val()==''){
     			$(this).val(mergeName);
     			$(this).siblings('input:hidden').val(id)
-    		//}
+    		// }
     	});
     }
 </script>

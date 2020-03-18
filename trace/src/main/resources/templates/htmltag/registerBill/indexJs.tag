@@ -55,7 +55,7 @@ var currentUser={"depId":"${user.depId!}"
         delete  formdata['productCombobox'];
         var rows=_registerBillGrid.datagrid("getRows");
         var options=_registerBillGrid.datagrid("options");
-        debugger
+        //debugger
         
         formdata['rows']=options.pageSize;
         formdata['page']=options.pageNumber;
