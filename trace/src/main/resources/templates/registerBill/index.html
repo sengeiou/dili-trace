@@ -121,7 +121,7 @@
             <table class="easyui-datagrid" title="登记单列表" id="registerBillGrid" fitColumns="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
                    loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false"  sortName="created" sortOrder="desc"
-                   align="center" fit="true" idField="id" selectOnCheck="true" data-options="rowStyler:coloredRowRender, onClickRow:onClickRow,onSelect:onClickRow,onUnselect:onUnselect,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked,onSelectAll:onSelectAll,onUnselectAll:onUnselectAll ">
+                   align="center" fit="true" idField="id" selectOnCheck="true" data-options="onBeforeLoad:onBeforeLoad,loader: loadRegisterBillGridData,rowStyler:coloredRowRender, onClickRow:onClickRow,onSelect:onClickRow,onUnselect:onUnselect,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked,onSelectAll:onSelectAll,onUnselectAll:onUnselectAll ">
                 <thead>
                     <tr>
                     	<th field="ck" checkbox="true" data-options="field:'ck' "> </th>

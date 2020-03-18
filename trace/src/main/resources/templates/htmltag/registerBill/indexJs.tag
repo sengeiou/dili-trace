@@ -5,27 +5,64 @@ var currentUser={"depId":"${user.depId!}"
 	,"userName":"${user.userName!}"
 	,"depName":"${user.depName!}"};
 	
-	
+ function onBeforeLoad(param) {
+    var firstLoad = $(this).attr("firstLoad");
+    if (firstLoad == "false" || typeof (firstLoad) == "undefined")
+    {
+        $(this).attr("firstLoad","true");
+        return false;
+    }
+    return true;
+}
     //表格查询
-
+	function loadRegisterBillGridData(param,success,error){
+		console.info('loadRegisterBillGridData')
+    	var data={};
+    	 findFirstWaitAuditRegisterBillCreateByCurrentUser();
+		 $.ajax({
+             type: "POST",
+             url: "${contextPath}/registerBill/listPage.action",
+             processData:true,
+             dataType: "json",
+             data:buildGridQueryData(),
+             async : false,
+             success: function (ret) {
+            	 if(ret&&ret.rows){
+            		 data=ret;
+            	 }
+             },
+             error: function(){
+            	 data={}
+             }
+         });
+		 success(data);
+    }
     function queryRegisterBillGrid() {
         var opts = _registerBillGrid.datagrid("options");
         if (null == opts.url || "" == opts.url) {
             opts.url = "${contextPath}/registerBill/listPage.action";
         }
-
+    	console.info('queryRegisterBillGrid')
         if(!$('#queryForm').form("validate")){
             return false;
         }
-        findFirstWaitAuditRegisterBillCreateByCurrentUser();
-        _registerBillGrid.datagrid("load", buildGridQueryData());
+        _registerBillGrid.datagrid("reload", buildGridQueryData());
         initBtnStatus();
 
     }
     function buildGridQueryData(){
     	var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
-
-      delete  formdata['productCombobox'];
+        delete  formdata['productCombobox'];
+        var rows=_registerBillGrid.datagrid("getRows");
+        var options=_registerBillGrid.datagrid("options");
+        debugger
+        
+        formdata['rows']=options.pageSize;
+        formdata['page']=options.pageNumber;
+        
+        formdata['sort']=options.sortName;
+        formdata['order']=options.sortOrder;
+        
     	return formdata;
     }
     var findFirstWaitAuditRegisterBill={};
@@ -36,8 +73,8 @@ var currentUser={"depId":"${user.depId!}"
              url: "${contextPath}/registerBill/findFirstWaitAuditRegisterBillCreateByCurrentUser.action",
              processData:true,
              dataType: "json",
-             data:buildGridQueryData(),
-             async : true,
+             data:{},
+             async : false,
              success: function (ret) {
             	 if(ret&&ret.code=='200'){
             		 findFirstWaitAuditRegisterBill=ret.data;
@@ -47,19 +84,13 @@ var currentUser={"depId":"${user.depId!}"
             	 findFirstWaitAuditRegisterBill={}
              }
          });
-    	
     }
     function coloredRowRender(index,row){
     	if(findFirstWaitAuditRegisterBill&&findFirstWaitAuditRegisterBill.id&&row.id==findFirstWaitAuditRegisterBill.id){
     		return {style:'background:#7dc57d'};	
     	}
     }
-    $(function(){
-    	   $('#likeTallyAreaNo').textbox('textbox').bind('input', function(n,o) {
-    		   queryPlatesByTallyAreaNo($(this).val());
-    	   });
-    	});
-    	
+
 	function queryPlatesByTallyAreaNo(tallyAreaNo){
 		//console.info(tallyAreaNo)
 		//console.info(tallyAreaNo)
@@ -122,11 +153,17 @@ var currentUser={"depId":"${user.depId!}"
      * @submitFun
      *          表单提交需执行的任务
      */
+     window._registerBillGrid = $('#registerBillGrid');
     $(function () {
-        window._registerBillGrid = $('#registerBillGrid');
+ 	   $('#likeTallyAreaNo').textbox('textbox').bind('input', function(n,o) {
+		   queryPlatesByTallyAreaNo($(this).val());
+	   });
+ 	   
+ 	   
         bindFormEvent("queryForm", "registerSource", queryRegisterBillGrid);
         initRegisterBillGrid();
-        queryRegisterBillGrid();
+        //queryRegisterBillGrid();
+
     })
 
 

@@ -831,11 +831,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 	@Override
 	public RegisterBill findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto input) throws Exception {
-		RegisterBillDto dto=this.preBuildDTO(input);
+		RegisterBillDto dto=DTOUtils.newDTO(RegisterBillDto.class);
 		UserTicket userTicket = getOptUser();
 		dto.setOperatorId(userTicket.getId());
 		dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 		dto.setRows(1);
+		dto.setSort("created");
+		dto.setOrder("desc");
 		return this.listByExample(dto).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
 	}
 	
