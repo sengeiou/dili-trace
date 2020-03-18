@@ -610,8 +610,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				|| StringUtils.isAnyBlank(input.getHandleResult(), input.getHandleResultUrl())) {
 			throw new AppException("参数错误");
 		}
-		if (input.getHandleResult().trim().length() > 10000) {
-			throw new AppException("处理结果不能超过10000");
+		if (input.getHandleResult().trim().length() > 1000) {
+			throw new AppException("处理结果不能超过1000");
 		}
 		RegisterBill item = this.get(input.getId());
 		if (item == null) {
@@ -899,6 +899,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				sql.append("  (origin_certifiy_url is not null AND origin_certifiy_url<>'') ");
 			} else {
 				sql.append("  (origin_certifiy_url is  null or origin_certifiy_url='') ");
+			}
+		}
+		
+		if (registerBill.getHasHandleResult() != null) {
+			if (sql.length() > 0) {
+				sql.append(" AND ");
+			}
+			if (registerBill.getHasHandleResult()) {
+				sql.append("  (handle_result is not null AND handle_result<>'') ");
+			} else {
+				sql.append("  (handle_result is  null or handle_result='') ");
 			}
 		}
 		return sql;

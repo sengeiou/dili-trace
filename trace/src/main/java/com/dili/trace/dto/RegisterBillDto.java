@@ -63,6 +63,11 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     void setHasDetectReport(Boolean hasDetectReport);
     
     @Transient
+    Boolean getHasHandleResult();
+    void setHasHandleResult(Boolean hasHandleResult);
+    
+    
+    @Transient
     Boolean getHasOriginCertifiy();
     void setHasOriginCertifiy(Boolean hasOriginCertifiy);
 
