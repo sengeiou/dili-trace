@@ -92,7 +92,7 @@ public class RegisterBillReportController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPageGroupByProduct.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(RegisterBillReportQueryDto dto) throws Exception {
+	public @ResponseBody String listPageGroupByProduct(RegisterBillReportQueryDto dto) throws Exception {
 		if(RegisterSourceEnum.TALLY_AREA.getCode().equals(dto.getRegisterSource())) {
 			dto.setTradeTypeId(null);
 		}
@@ -158,7 +158,7 @@ public class RegisterBillReportController {
 				List<GroupByProductReportDto>otherList=list.subList(20, list.size());
 			
 				
-				GroupByProductReportDto otherSummary=new GroupByProductReportDto("其他总计");
+				GroupByProductReportDto otherSummary=new GroupByProductReportDto("其他+");
 				otherList.stream().reduce(otherSummary,new BinaryOperator<GroupByProductReportDto>() {
 
 					@Override
