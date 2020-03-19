@@ -291,6 +291,9 @@
      	 <if test="tradeTypeId!=null">
      		AND trade_type_id=#{tradeTypeId}
      	 </if>
+     	 <if test="plate!=null  and plate!=''">
+     		AND plate like '${plate}%'
+     	 </if>
 			<if test="productIdList != null and productIdList.size()>0">
 					AND product_id IN
 					<foreach collection="productIdList" open="(" separator=","
@@ -301,7 +304,7 @@
   </sql>
   <sql id="groupByProduct">
     select
-	product_name,
+	${groupByColumns},
 	0 cnt,
 	0.0 total_weight,
 
@@ -358,7 +361,7 @@
 	where 0=1
 	union all
 	select
-	product_name,
+	${groupByColumns},
 	count(1) ,
 	sum(IFNULL(weight, 0)) ,
 
@@ -422,11 +425,11 @@ where
 			AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{createdEnd}
 			</if>
 group by
-	product_name
+	${groupByColumns}
 union all
 
 select
-	product_name,
+	${groupByColumns},
 	0 cnt,
 	0.00  ,
 	0 ,
@@ -494,10 +497,10 @@ where
 			AND 0>id
 			</if>
 group by
-	product_name
+	${groupByColumns}
 	union all 
 select
-	product_name,
+	${groupByColumns},
 	0 cnt,
 	0.00  ,
 	0 ,
@@ -565,12 +568,12 @@ where
 						AND 0>id
 			</if>
 group by
-	product_name
+	${groupByColumns}
   </sql>
  <sql id="sumGroupByProduct">
  
  select 
-	product_name,
+	${groupByColumns},
 	sum(cnt)  cnt,
 	sum(total_weight)  total_weight,
 
@@ -624,7 +627,7 @@ group by
 
  from (<include refid="groupByProduct" />)t 
  group by
-	product_name
+	${groupByColumns}
  </sql>
  <select id="listPageGroupByProductCount" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto"  resultType="java.lang.Long">
 	select 
@@ -633,7 +636,7 @@ group by
   </select>
     <select id="listPageGroupByProduct" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto"  resultType="com.dili.trace.dto.GroupByProductReportDto">
 	select 
-	product_name as productName,/*商品名称*/
+	${groupByColumns},/*商品名称*/
 	
 	total_weight as totalWeight, /*运输重量*/
 	case when mom_total_weight=0.0 then null else (total_weight-mom_total_weight)*100/mom_total_weight end momWeight,

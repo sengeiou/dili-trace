@@ -1,20 +1,45 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Date;
+import java.util.List;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.domain.*;
-import com.dili.trace.dto.*;
-import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.dto.GroupByProductReportDto;
+import com.dili.trace.dto.RegisterBillReportQueryDto;
 import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.glossary.SalesTypeEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.*;
-import com.dili.trace.util.MaskUserInfo;
+import com.dili.trace.service.CustomerService;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.QualityTraceTradeBillService;
+import com.dili.trace.service.RegisterBillReportService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.TradeTypeService;
+import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserService;
+import com.dili.trace.service.UsualAddressService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
@@ -22,41 +47,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.bind.annotation.*;
-
-import java.beans.PropertyDescriptor;
-import java.beans.PropertyEditorSupport;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -88,40 +78,6 @@ public class RegisterBillReportController {
 	BaseInfoRpcService baseInfoRpcService;
 	@Autowired
 	UsualAddressService usualAddressService;
-
-//	@InitBinder
-//    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-//		PropertyEditorSupport editor=new PropertyEditorSupport() {
-//			@Override
-//			public void setAsText(@Nullable String text) throws IllegalArgumentException {
-//				if (StringUtils.isBlank(text)) {
-//					// Treat empty String as null value.
-//					setValue(null);
-//				}
-//				
-//				else {
-//					try {
-//						setValue(LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-//					}
-//					catch (Exception ex) {
-//						logger.error(ex.getMessage(),ex);
-//					}
-//				}
-//			}
-//
-//			/**
-//			 * Format the Date as String, using the specified DateFormat.
-//			 */
-//			@Override
-//			public String getAsText() {
-//				LocalDate value = (LocalDate) getValue();
-//				return (value != null ? value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "");
-//			}
-//
-//		};
-//        binder.registerCustomEditor(LocalDate.class, editor);
-//    }
-
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/product-report.html", method = RequestMethod.GET)
 	public String productReport(ModelMap modelMap) {
@@ -140,41 +96,46 @@ public class RegisterBillReportController {
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPageGroupByProduct.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPageGroupByProduct(RegisterBillReportQueryDto dto) throws Exception {
+		RegisterBillReportQueryDto queryDto=this.calAndSetDates(dto);
+		return registerBillReportService.listPageGroupByProduct(queryDto).toString();
+	}
+	private RegisterBillReportQueryDto calAndSetDates(RegisterBillReportQueryDto dto) {
+		
 		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(dto.getRegisterSource())) {
 			dto.setTradeTypeId(null);
 		}
-
+	
 		LocalDate start = dto.getCreatedStart();
 		LocalDate end = dto.getCreatedEnd();
 		if (start != null && end != null) {
 			if (start.isEqual(end)) {// 整天
-
+	
 				dto.setMomStart(start.minusDays(1));
 				dto.setMomEnd(end.minusDays(1));
-
+	
 				dto.setYoyStart(start.minusYears(1));
 				dto.setYoyEnd(end.minusYears(1));
-
+	
 			} else if (start.getYear() == end.getYear() && start.getMonth() == end.getMonth()
 					&& start.getDayOfMonth() == 1) {
-
+	
 				int lastDayOfMonth = end.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
 				if (end.getDayOfMonth() == lastDayOfMonth) {// 整月
-
+	
 					dto.setMomStart(start.minusMonths(1));
 					dto.setMomEnd(end.minusMonths(1));
-
+	
 					dto.setYoyStart(start.minusYears(1));
 					dto.setYoyEnd(end.minusYears(1));
-
+	
 				}
-
+	
 			}
-
+	
 		}
-		return registerBillReportService.listPageGroupByProduct(dto).toString();
+		return dto;
+		
 	}
-
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/product-charts.html", method = RequestMethod.GET)
 	public String productCharts(ModelMap modelMap, String params) {
@@ -210,6 +171,126 @@ public class RegisterBillReportController {
 
 	}
 
+	
+	@ApiOperation("跳转到RegisterBill产品统计页面")
+	@RequestMapping(value = "/plate-report.html", method = RequestMethod.GET)
+	public String plateReport(ModelMap modelMap) {
+		Date now = new Date();
+		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+		modelMap.put("registerSource", RegisterSourceEnum.TALLY_AREA.getCode());
+
+		return "registerBillReport/plate-report";
+	}
+
+	@ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/listPageGroupByPlate.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody String listPageGroupByPlate(RegisterBillReportQueryDto dto) throws Exception {
+		RegisterBillReportQueryDto queryDto=this.calAndSetDates(dto);
+		return registerBillReportService.listPageGroupByNameAndPlate(queryDto).toString();
+	}
+
+	@ApiOperation("跳转到RegisterBill产品统计页面")
+	@RequestMapping(value = "/plate-charts.html", method = RequestMethod.GET)
+	public String plateCharts(ModelMap modelMap, String params) {
+		Date now = new Date();
+		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+		if (StringUtils.isBlank(params)) {
+			modelMap.put("params", "{}");
+		} else {
+			modelMap.put("params", params);
+		}
+
+		return "registerBillReport/plate-charts";
+	}
+
+	@RequestMapping(value = "/getPlteChartsJson.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public Object getPlteChartsJson(@RequestBody RegisterBillReportQueryDto dto) throws Exception {
+		try {
+			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByNameAndPlate(dto);
+			if(Boolean.TRUE.equals(dto.getSumOthers())&&dto.getSumAsOthersMoreThan()!=null&&dto.getSumAsOthersMoreThan()>0) {
+				list=this.sumOthers(list, dto.getSumAsOthersMoreThan());
+			}
+
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			return BaseOutput.failure(e.getMessage());
+		}
+
+	}
+	
+	
+	
+	@ApiOperation("跳转到RegisterBill产品统计页面")
+	@RequestMapping(value = "/origin-report.html", method = RequestMethod.GET)
+	public String originReport(ModelMap modelMap) {
+		Date now = new Date();
+		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+		modelMap.put("registerSource", RegisterSourceEnum.TALLY_AREA.getCode());
+
+		return "registerBillReport/origin-report";
+	}
+
+	@ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
+	@RequestMapping(value = "/listPageGroupByOrigin.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody String listPageGroupByOrigin(RegisterBillReportQueryDto dto) throws Exception {
+		RegisterBillReportQueryDto queryDto=this.calAndSetDates(dto);
+		return registerBillReportService.listPageGroupByOrigin(queryDto).toString();
+	}
+
+	@ApiOperation("跳转到RegisterBill产品统计页面")
+	@RequestMapping(value = "/origin-charts.html", method = RequestMethod.GET)
+	public String originCharts(ModelMap modelMap, String params) {
+		Date now = new Date();
+		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+		if (StringUtils.isBlank(params)) {
+			modelMap.put("params", "{}");
+		} else {
+			modelMap.put("params", params);
+		}
+
+		return "registerBillReport/origin-charts";
+	}
+
+	@RequestMapping(value = "/getOriginChartsJson.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public Object getOriginChartsJson(@RequestBody RegisterBillReportQueryDto dto) throws Exception {
+		try {
+			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByOrigin(dto);
+			if(Boolean.TRUE.equals(dto.getSumOthers())&&dto.getSumAsOthersMoreThan()!=null&&dto.getSumAsOthersMoreThan()>0) {
+				list=this.sumOthers(list, dto.getSumAsOthersMoreThan());
+			}
+
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			return BaseOutput.failure(e.getMessage());
+		}
+
+	}
+	
+	
 	private List<GroupByProductReportDto> sumOthers(List<GroupByProductReportDto> list, Integer sumIndex) {
 		if (sumIndex != null && sumIndex > 0 && sumIndex < list.size()) {
 			List<GroupByProductReportDto> otherList = list.subList(sumIndex, list.size());

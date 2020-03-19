@@ -48,8 +48,7 @@ public class NullValueInReportProvider implements ValueProvider {
         }
         if(object instanceof BigDecimal) {
         	BigDecimal value=(BigDecimal) object;
-        	value.setScale(2, RoundingMode.HALF_UP);
-        	return value.toPlainString();
+        	return value.setScale(2, RoundingMode.HALF_UP).toPlainString();
         }
         
         return String.valueOf(object);

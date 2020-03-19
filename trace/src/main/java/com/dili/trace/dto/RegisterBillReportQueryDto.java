@@ -17,6 +17,7 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private String groupByColumns="id";
 	// 登记时间开始
 	@DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
 	private LocalDate createdStart;
@@ -30,6 +31,8 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	private Long tradeTypeId;
 	// 商品名称
 	private String productName;
+	
+	private String plate;
 	// 商品id集合
 	private List<Long> productIdList = new ArrayList<>();
 
@@ -43,6 +46,24 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	
 	private Boolean sumOthers = Boolean.FALSE;
 	private Integer sumAsOthersMoreThan=0;
+
+
+
+	public String getPlate() {
+		return plate;
+	}
+
+	public void setPlate(String plate) {
+		this.plate = plate;
+	}
+
+	public String getGroupByColumns() {
+		return groupByColumns;
+	}
+
+	public void setGroupByColumns(String groupByColumns) {
+		this.groupByColumns = groupByColumns;
+	}
 
 	public Integer getSumAsOthersMoreThan() {
 		return sumAsOthersMoreThan;

@@ -19,6 +19,14 @@ public class GroupByProductReportDto extends BaseDomain{
 	private static final long serialVersionUID = 1L;
 	/* 商品名称 */
 	private String productName;
+	/* 车牌	 */
+	private String plate;
+	
+	/* 姓名 */
+	private String name;
+	
+	private String originName;
+	
 	/* 运输重量 */
 	private BigDecimal totalWeight=BigDecimal.ZERO;
 	private BigDecimal momWeight;
@@ -76,6 +84,24 @@ public class GroupByProductReportDto extends BaseDomain{
 	
 	
 	
+	public String getOriginName() {
+		return originName;
+	}
+	public void setOriginName(String originName) {
+		this.originName = originName;
+	}
+	public String getPlate() {
+		return plate;
+	}
+	public void setPlate(String plate) {
+		this.plate = plate;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public Long getTotalSuccessfulInitalChecked() {
 		return totalSuccessfulInitalChecked;
 	}
