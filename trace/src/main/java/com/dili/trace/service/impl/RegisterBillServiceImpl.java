@@ -836,7 +836,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		dto.setOperatorId(userTicket.getId());
 		dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 		dto.setRows(1);
-		dto.setSort("created");
+		dto.setSort("code");
 		dto.setOrder("desc");
 		return this.listByExample(dto).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
 	}
