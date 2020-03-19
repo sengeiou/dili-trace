@@ -40,6 +40,17 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	private LocalDate yoyEnd;
 
 	private Integer offSet;
+	
+	private Boolean sumOthers = Boolean.FALSE;
+	private Integer sumAsOthersMoreThan=0;
+
+	public Integer getSumAsOthersMoreThan() {
+		return sumAsOthersMoreThan;
+	}
+
+	public void setSumAsOthersMoreThan(Integer sumAsOthersMoreThan) {
+		this.sumAsOthersMoreThan = sumAsOthersMoreThan;
+	}
 
 	public List<Long> getProductIdList() {
 		return productIdList;
@@ -49,7 +60,7 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 		this.productIdList = productIdList;
 	}
 
-	private Boolean sumOthers = Boolean.FALSE;
+
 
 	public Boolean getSumOthers() {
 		return sumOthers;
