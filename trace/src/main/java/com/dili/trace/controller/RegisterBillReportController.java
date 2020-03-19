@@ -168,7 +168,7 @@ public class RegisterBillReportController {
 	}
 
 	private List<GroupByProductReportDto> sumOthers(List<GroupByProductReportDto> list, Integer sumIndex) {
-		if (sumIndex != null && sumIndex > 0 && sumIndex > list.size()) {
+		if (sumIndex != null && sumIndex > 0 && sumIndex < list.size()) {
 			List<GroupByProductReportDto> otherList = list.subList(sumIndex, list.size());
 
 			GroupByProductReportDto otherSummary = new GroupByProductReportDto("其他+");
@@ -192,15 +192,15 @@ public class RegisterBillReportController {
 				public GroupByProductReportDto apply(GroupByProductReportDto t, GroupByProductReportDto u) {
 					methodPairs.stream().forEach(pair -> {
 						try {
-							Object tValue = PropertyUtils.getProperty(t, pair.getKey().getName());
-							Object uValue = PropertyUtils.getProperty(u, pair.getKey().getName());
+							Object tValue = pair.getKey().invoke(t, new Object[0]);
+							Object uValue = pair.getKey().invoke(u, new Object[0]);
 							if (uValue != null) {
 									Long summaryValue = ((Long) tValue) + ((Long) uValue);
 									pair.getRight().invoke(t, summaryValue);
 
 							}
 
-						} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						} catch (IllegalAccessException | InvocationTargetException  e) {
 							logger.error(e.getMessage(), e);
 						}
 
