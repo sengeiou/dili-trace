@@ -433,6 +433,10 @@
     }
     
 function showcharts(){
+
+    if(!$('#queryForm').form("validate")){
+        return false;
+    }
 	var data=$('#queryForm').serializeObject();
 	var columns=_registerBillGrid.datagrid('getColumnFields', false);
 	var chartId='';
