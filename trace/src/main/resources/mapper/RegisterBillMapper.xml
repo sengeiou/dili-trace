@@ -672,24 +672,24 @@ group by
 	total_successful_checked as totalSuccessfulChecked,/*已经检测成功(初检成功,复检成功)数量 */
 	total_successful_inital_checked as totalSuccessfulInitalChecked,/*已经初检成功数量 */
 	
-	case when total_inital_checked=0 then null else total_successful_inital_checked*100/total_inital_checked end  successfulInitalCheckedRate,
+	case when total_inital_checked=0 then null else total_successful_inital_checked*100/total_inital_checked end  successful_inital_checked_rate,
 	
 	
 	
 	total_successful_rechecked as totalSuccessfulRechecked,/*已经复检成功数量 */
-	case when total_rechecked=0 then null else total_successful_rechecked*100/total_rechecked end   successfulRecheckedRate,
+	case when total_rechecked=0 then null else total_successful_rechecked*100/total_rechecked end   successful_rechecked_rate,
 	total_hascertifiy as totalHascertifiy,/*有产地证明数量*/
-	case when cnt=0 then null else total_hascertifiy*100/cnt end  hascertifiyRate,
+	case when cnt=0 then null else total_hascertifiy*100/cnt end  hascertifiy_rate,
 	 
 	case when mom_total_hascertifiy=0 then null else (total_hascertifiy-mom_total_hascertifiy)*100/mom_total_hascertifiy end momHascertifiy,
 	case when yoy_total_hascertifiy=0 then null else (total_hascertifiy-yoy_total_hascertifiy)*100/yoy_total_hascertifiy end yoyHascertifiy,
 
 	total_hasdetectreport as totalHasdetectreport,/*有检测报告数量*/
-	case when cnt=0 then null else total_hasdetectreport*100/cnt end  hasdetectreportRate,
+	case when cnt=0 then null else total_hasdetectreport*100/cnt end  hasdetectreport_rate,
 	case when mom_total_hasdetectreport=0 then null else (total_hasdetectreport-mom_total_hasdetectreport)*100/mom_total_hasdetectreport end momHasdetectreport,
 	case when yoy_total_hasdetectreport=0 then null else (total_hasdetectreport-yoy_total_hasdetectreport)*100/yoy_total_hasdetectreport end yoyHasdetectreport,
 	
-    case when cnt=0 then null else total_checking_or_rechecking*100/cnt end checkingOrRecheckingRate,
+    case when cnt=0 then null else total_checking_or_rechecking*100/cnt end checking_or_rechecking_rate,
 
 	0
 	 from (<include refid="sumGroupByProduct" />) summedData
