@@ -698,7 +698,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!this.checkPlate(registerBill)) {
 			throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
 		}
-
+		this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,registerBill.getOriginId(), input.getOriginId());
 		registerBill.setProductId(input.getProductId());
 		registerBill.setProductName(input.getProductName());
 
@@ -706,7 +706,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setOriginName(input.getOriginName());
 
 		registerBill.setWeight(input.getWeight());
-		this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,registerBill.getOriginId(), input.getOriginId());
+	
 
 //		registerBill.setOriginCertifiyUrl(input.getOriginCertifiyUrl());
 		this.updateSelective(registerBill);
