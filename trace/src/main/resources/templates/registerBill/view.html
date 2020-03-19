@@ -289,29 +289,25 @@
                         }%>
             </div>
 
- 		<%if(isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
-                <div class="form-item-group">
-					<div class="imageUploadWrap">
-	                    <div class="form-group">
-	                        <label class="label-title text-right"><span class="red">&lowast;</span>处理结果图片</label><br/>
-	                        
-	                        <% if(isNotEmpty(registerBill.handleResultUrl)){ %>
-	                        		<%for (src in strutil.split (registerBill.handleResultUrl,",")){%>
-										<div class="fileimg-box" style="display:inline-block;margin: 5px;width:8%;">
-		                                   <img  src="${contextPath!}${src}"   class="show-image" style="width: 100%">
-		                                </div>
-	                                <% } %>
-							<% } %>
-	                    </div>
-	                    <br/>
-		                 <div class="form-group">
-		                    <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
-		                    <input type="text" class="form-control input-sm"   value="${registerBill.handleResult}" required readonly/>
-	                	 </div>
-	                </div>
-                </div>
+			<%if(isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
+				<div class="form-item-group">
+	            		<h4 class="form-item-title">处理结果图片</h4>
+	                          <%if(isNotEmpty(registerBill.handleResultUrl)){
+	                        	for(src in strutil.split (registerBill.handleResultUrl,",")){
+	                        	%>
+	                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
+	                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${src!}" >
+								</div>
+	                        <%	}
+	                        }%>
+	            </div>
+	             <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.handleResult}" required readonly/>
+               	 </div>
                
             <%}%>
+
         </form>
     </div>
 
