@@ -32,21 +32,31 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditorSupport;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -78,6 +88,39 @@ public class RegisterBillReportController {
 	BaseInfoRpcService baseInfoRpcService;
 	@Autowired
 	UsualAddressService usualAddressService;
+
+//	@InitBinder
+//    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+//		PropertyEditorSupport editor=new PropertyEditorSupport() {
+//			@Override
+//			public void setAsText(@Nullable String text) throws IllegalArgumentException {
+//				if (StringUtils.isBlank(text)) {
+//					// Treat empty String as null value.
+//					setValue(null);
+//				}
+//				
+//				else {
+//					try {
+//						setValue(LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+//					}
+//					catch (Exception ex) {
+//						logger.error(ex.getMessage(),ex);
+//					}
+//				}
+//			}
+//
+//			/**
+//			 * Format the Date as String, using the specified DateFormat.
+//			 */
+//			@Override
+//			public String getAsText() {
+//				LocalDate value = (LocalDate) getValue();
+//				return (value != null ? value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "");
+//			}
+//
+//		};
+//        binder.registerCustomEditor(LocalDate.class, editor);
+//    }
 
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/product-report.html", method = RequestMethod.GET)
