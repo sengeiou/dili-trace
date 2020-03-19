@@ -20,6 +20,7 @@ import com.dili.trace.domain.UserPlate;
 import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
@@ -88,7 +89,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if(existsCardNo(user.getCardNo())){
             throw new BusinessException("身份证号已注册");
         }
-        this.usualAddressService.increaseUsualAddressTodayCount(user.getSalesCityId());
+        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER,user.getSalesCityId());
         insertSelective(user);
         //更新用户理货区
         updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
@@ -171,7 +172,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         updateSelective(user);
-        this.usualAddressService.increaseUsualAddressTodayCount(userPO.getSalesCityId(),user.getSalesCityId());
+        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER,userPO.getSalesCityId(),user.getSalesCityId());
         this.userHistoryService.insertUserHistoryForUpdateUser(user.getId());
 
 

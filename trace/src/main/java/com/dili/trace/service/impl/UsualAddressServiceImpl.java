@@ -103,26 +103,33 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 	}
 
 	@Override
-	public int increaseUsualAddressTodayCount(Long id) {
+	public int increaseUsualAddressTodayCount(UsualAddressTypeEnum type,Long addressId) {
 		
-		return this.increaseUsualAddressTodayCount(null, id);
+		return this.increaseUsualAddressTodayCount(type, null,addressId);
 	}
 
 	@Override
-	public int increaseUsualAddressTodayCount(Long oldId, Long newId) {
-		if(newId==null||newId.equals(oldId)) {
+	public int increaseUsualAddressTodayCount(UsualAddressTypeEnum type,Long oldAddressId, Long newAddressId) {
+		if(newAddressId==null||newAddressId.equals(oldAddressId)) {
 			return 0;
 		}
-		UsualAddress item=this.get(newId);
+		UsualAddress item=this.findUsualAddressByTypeAndAddressId(newAddressId, type);
 		if(item==null) {
 			return 0;
 		}
 		UsualAddress domain=DTOUtils.newDTO(UsualAddress.class);
 		domain.setTodayUsedCount(item.getTodayUsedCount()+1);
-		domain.setId(newId);
+		domain.setId(item.getId());
 		this.updateSelective(domain);
 		
 		return 1;
+	}
+	private UsualAddress findUsualAddressByTypeAndAddressId(Long addressId,UsualAddressTypeEnum type) {
+		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
+		example.setAddressId(addressId);
+		example.setType(type.getType());
+		return this.listByExample(example).stream().findFirst().orElse(null);
+		
 	}
 
 }

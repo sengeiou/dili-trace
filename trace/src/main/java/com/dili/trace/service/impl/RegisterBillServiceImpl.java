@@ -112,7 +112,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		 * (!otherUserPlateList.isEmpty()) { return
 		 * BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号"); } }
 		 */
-		this.usualAddressService.increaseUsualAddressTodayCount(registerBill.getOriginId());
+		this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,registerBill.getOriginId());
 		int result = saveOrUpdate(registerBill);
 		if (result == 0) {
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
@@ -706,7 +706,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setOriginName(input.getOriginName());
 
 		registerBill.setWeight(input.getWeight());
-		this.usualAddressService.increaseUsualAddressTodayCount(registerBill.getOriginId(), input.getOriginId());
+		this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,registerBill.getOriginId(), input.getOriginId());
 
 //		registerBill.setOriginCertifiyUrl(input.getOriginCertifiyUrl());
 		this.updateSelective(registerBill);

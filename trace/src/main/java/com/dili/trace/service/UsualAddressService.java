@@ -47,7 +47,7 @@ public interface UsualAddressService extends BaseService<UsualAddress, Long> {
 	 * @param id
 	 * @return
 	 */
-	public int increaseUsualAddressTodayCount(Long id);
+	public int increaseUsualAddressTodayCount(UsualAddressTypeEnum type,Long id);
 	
 	
 	/**
@@ -57,5 +57,5 @@ public interface UsualAddressService extends BaseService<UsualAddress, Long> {
 	 * @return
 	 */
 
-	public int increaseUsualAddressTodayCount(Long oldId,Long newId);
+	public int increaseUsualAddressTodayCount(UsualAddressTypeEnum type,Long oldId,Long newId);
 }
