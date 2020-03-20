@@ -251,21 +251,7 @@
                 </div>
             </div>
             
-             <div class="form-item-group" id="detectReportUrlDiv">
-                <h4 class="form-item-title">检测报告</h4>
-                <div class="fileimg-box"   style="display:inline-block;margin: 5px;padding: 10px;">
-                    <span class="fileimg-plus-icon">+</span>
-                    <span class="fileimg-des">点击上传</span>
-                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                    <input type="hidden" name="detectReport" id="detectReport">
-                    <img class="magnifying" >
-                    <div class="fileimg-cover" style="display: none;"></div>
-                    <div class="fileimg-edit"  style="display: none;">
-                        <span class="fileimg-view">查看</span>
-                        <span class="fileimg-delete">删除</span>
-                    </div>
-                </div>
-            </div>
+
             
             
  		<%if(registerBill.detectState == 4&&isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
@@ -515,13 +501,7 @@ var currentUser={"depId":"${user.depId!}"
     	  afterUpload(url,fileInputObj);
       });
     
-    $.makeArray('${registerBill.detectReportUrl}'.split(",")).filter(function(v,i){
-      	return v!='';
-      }).forEach (function(url,i){
-    	 var fileInputObj=$('#detectReportUrlDiv .fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
-    	  afterUpload(url,fileInputObj);
-      });
-    
+  
     
     $(function () {
     	initFileInput($('input[type="file"]'));

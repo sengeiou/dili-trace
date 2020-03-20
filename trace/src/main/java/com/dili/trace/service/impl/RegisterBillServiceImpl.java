@@ -756,7 +756,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
 		example.setId(item.getId());
 		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
+		//example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
 		this.updateSelective(example);
 
 		return example.getId();
