@@ -161,13 +161,14 @@
 		  var series=v[opts.data('series')];
 	
 		  legendData.push(legend);
-		  seriesData.push({name:legend,value:series,item:v});
+		  seriesData.push({name:legend,value:series});
 		  selected[legend]=true;
 	  });
 	  return {
 	      legendData:legendData,
 	      seriesData:seriesData,
-	      selected:selected  
+	      selected:selected  ,
+	      raw:result
 	  }
   }
   
@@ -186,6 +187,7 @@
 	  return {
 		  axisData:axisData,
 		  seriesData:seriesData,
+		  raw:result
 	  }
   }
      

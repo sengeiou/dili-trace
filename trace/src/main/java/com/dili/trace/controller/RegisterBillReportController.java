@@ -358,7 +358,7 @@ public class RegisterBillReportController {
 			list.add(otherSummaryDto);
 		}
 		for( int i=0;i<list.size();i++) {
-			list.get(i).setRownum(i+1);
+			list.get(i).setRowIndex(i);
 		}
 		return list;
 

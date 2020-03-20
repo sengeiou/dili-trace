@@ -9,7 +9,7 @@ public class GroupByProductReportDto extends BaseDomain{
 	public GroupByProductReportDto() {
 		super();
 	}
-	private Integer rownum;
+	private Integer rowIndex;
 	/**
 	 * 
 	 */
@@ -81,11 +81,12 @@ public class GroupByProductReportDto extends BaseDomain{
 	
 	
 	
-	public Integer getRownum() {
-		return rownum;
+
+	public Integer getRowIndex() {
+		return rowIndex;
 	}
-	public void setRownum(Integer rownum) {
-		this.rownum = rownum;
+	public void setRowIndex(Integer rowIndex) {
+		this.rowIndex = rowIndex;
 	}
 	public String getOriginName() {
 		return originName;
