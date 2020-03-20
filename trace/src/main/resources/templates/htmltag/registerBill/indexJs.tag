@@ -509,14 +509,14 @@ var currentUser={"depId":"${user.depId!}"
         var state = selected.$_state;
         var detectState= selected.$_detectState;
         var handleResult= selected.handleResult;
-        
+    	$('#upload-origincertifiy-btn').show();
         if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
             $('#undo-btn').show();
             $('#audit-btn').show();
             $('#edit-btn').show();
             $('#upload-detectreport-btn').show();
-        	$('#upload-origincertifiy-btn').show();
+        
         	
             if(selected.originCertifiyUrl=='有'||selected.detectReportUrl=='有'){
            	 $('#remove-reportAndcertifiy-btn').show();

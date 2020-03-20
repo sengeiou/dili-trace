@@ -750,9 +750,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (item == null) {
 			throw new AppException("数据错误");
 		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
-			throw new AppException("状态错误,不能上传产地证明");
-		}
+		//if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
+		//	throw new AppException("状态错误,不能上传产地证明");
+		//}
 		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
 		example.setId(item.getId());
 		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
