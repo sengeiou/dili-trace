@@ -7,6 +7,8 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -160,7 +162,13 @@ public class RegisterBillReportController {
 		try {
 			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByProduct(dto);
 			if(Boolean.TRUE.equals(dto.getSumOthers())&&dto.getSumAsOthersMoreThan()!=null&&dto.getSumAsOthersMoreThan()>0) {
-				list=this.sumOthers(list, dto.getSumAsOthersMoreThan());
+				list=this.sumOthers(list, dto.getSumAsOthersMoreThan(),()->{
+					
+					GroupByProductReportDto otherSummaryDto =new GroupByProductReportDto();
+					otherSummaryDto.setProductName("其他+");
+					return otherSummaryDto;
+					
+				});
 			}
 
 			return BaseOutput.success().setData(list);
@@ -213,13 +221,20 @@ public class RegisterBillReportController {
 		return "registerBillReport/plate-charts";
 	}
 
-	@RequestMapping(value = "/getPlteChartsJson.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/getPlateChartsJson.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public Object getPlteChartsJson(@RequestBody RegisterBillReportQueryDto dto) throws Exception {
 		try {
 			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByNameAndPlate(dto);
 			if(Boolean.TRUE.equals(dto.getSumOthers())&&dto.getSumAsOthersMoreThan()!=null&&dto.getSumAsOthersMoreThan()>0) {
-				list=this.sumOthers(list, dto.getSumAsOthersMoreThan());
+				list=this.sumOthers(list, dto.getSumAsOthersMoreThan(),()->{
+					
+					GroupByProductReportDto otherSummaryDto =new GroupByProductReportDto();
+					otherSummaryDto.setPlate("");
+					otherSummaryDto.setName("其他+");
+					return otherSummaryDto;
+					
+				});
 			}
 
 			return BaseOutput.success().setData(list);
@@ -279,7 +294,13 @@ public class RegisterBillReportController {
 		try {
 			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByOrigin(dto);
 			if(Boolean.TRUE.equals(dto.getSumOthers())&&dto.getSumAsOthersMoreThan()!=null&&dto.getSumAsOthersMoreThan()>0) {
-				list=this.sumOthers(list, dto.getSumAsOthersMoreThan());
+				list=this.sumOthers(list, dto.getSumAsOthersMoreThan(),()->{
+					
+					GroupByProductReportDto otherSummaryDto =new GroupByProductReportDto();
+					otherSummaryDto.setOriginName("其他+");
+					return otherSummaryDto;
+					
+				});
 			}
 
 			return BaseOutput.success().setData(list);
@@ -291,11 +312,11 @@ public class RegisterBillReportController {
 	}
 	
 	
-	private List<GroupByProductReportDto> sumOthers(List<GroupByProductReportDto> list, Integer sumIndex) {
+	private List<GroupByProductReportDto> sumOthers(List<GroupByProductReportDto> list, Integer sumIndex,Supplier<GroupByProductReportDto>otherSummary) {
 		if (sumIndex != null && sumIndex > 0 && sumIndex < list.size()) {
 			List<GroupByProductReportDto> otherList = list.subList(sumIndex, list.size());
 
-			GroupByProductReportDto otherSummary = new GroupByProductReportDto("其他+");
+			GroupByProductReportDto otherSummaryDto = otherSummary.get();
 			List<String> methodNames = Stream.of(otherSummary.getClass().getDeclaredMethods()).map(Method::getName)
 					.collect(Collectors.toList());
 
@@ -310,7 +331,7 @@ public class RegisterBillReportController {
 
 					}).collect(Collectors.toList());
 
-			otherList.stream().reduce(otherSummary, new BinaryOperator<GroupByProductReportDto>() {
+			otherList.stream().reduce(otherSummaryDto, new BinaryOperator<GroupByProductReportDto>() {
 
 				@Override
 				public GroupByProductReportDto apply(GroupByProductReportDto t, GroupByProductReportDto u) {
@@ -334,7 +355,10 @@ public class RegisterBillReportController {
 
 			});
 			list.removeAll(otherList);
-			list.add(otherSummary);
+			list.add(otherSummaryDto);
+		}
+		for( int i=0;i<list.size();i++) {
+			list.get(i).setRownum(i+1);
 		}
 		return list;
 
