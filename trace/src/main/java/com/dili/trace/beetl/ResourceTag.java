@@ -3,7 +3,9 @@ package com.dili.trace.beetl;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
-import org.beetl.core.Tag;
+import org.beetl.core.tag.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -18,7 +20,7 @@ public class ResourceTag extends Tag {
 	//标签自定义属性
 	private static final String METHOD_FIELD = "method";
 	private static final String URL_FIELD = "url";
-
+	private static final Logger logger=LoggerFactory.getLogger(ResourceTag.class);
 	@Override
 	public void render() {
 		Map<String, Object> argsMap = (Map)this.args[1];
@@ -28,7 +30,7 @@ public class ResourceTag extends Tag {
 			try {
 				ctx.byteWriter.writeString("参数为空");
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 			}
 			return;
 		}
@@ -38,7 +40,7 @@ public class ResourceTag extends Tag {
 			try {
 				ctx.byteWriter.writeString("用户未登录");
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 			}
 			return;
 		}
@@ -46,7 +48,7 @@ public class ResourceTag extends Tag {
 			try {
 				ctx.byteWriter.write(getBodyContent());
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 			}
 		}
 	}

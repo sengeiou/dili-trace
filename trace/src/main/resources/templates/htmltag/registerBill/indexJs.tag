@@ -16,7 +16,12 @@ var currentUser={"depId":"${user.depId!}"
 }
     //表格查询
 	function loadRegisterBillGridData(param,success,error){
+    	
 		console.info('loadRegisterBillGridData')
+		debugger
+		$.extend(_registerBillGrid.datagrid("options").queryParams,buildGridQueryData());
+
+		
     	var data={};
     	 findFirstWaitAuditRegisterBillCreateByCurrentUser();
 		 $.ajax({
@@ -377,7 +382,12 @@ var currentUser={"depId":"${user.depId!}"
                          title: '提示',
                          btn: ['确定','取消'],
                          yes:function(){
-                        	 layer.closeAll();
+                        	    layer.closeAll();
+                        	   var opts = _registerBillGrid.datagrid("options");
+                               if (null == opts.url || "" == opts.url) {
+                                   opts.url = "${contextPath}/registerBill/listPage.action";
+                               }
+                       		$.extend(_registerBillGrid.datagrid("options").queryParams,buildGridQueryData());
                         	 doExport('registerBillGrid');
                          }
                      });
