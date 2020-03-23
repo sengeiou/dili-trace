@@ -80,6 +80,7 @@ public class RegisterBillReportController {
 	BaseInfoRpcService baseInfoRpcService;
 	@Autowired
 	UsualAddressService usualAddressService;
+
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/product-report.html", method = RequestMethod.GET)
 	public String productReport(ModelMap modelMap) {
@@ -98,46 +99,48 @@ public class RegisterBillReportController {
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPageGroupByProduct.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPageGroupByProduct(RegisterBillReportQueryDto dto) throws Exception {
-		RegisterBillReportQueryDto queryDto=this.calAndSetDates(dto);
+		RegisterBillReportQueryDto queryDto = this.calAndSetDates(dto);
 		return registerBillReportService.listPageGroupByProduct(queryDto).toString();
 	}
+
 	private RegisterBillReportQueryDto calAndSetDates(RegisterBillReportQueryDto dto) {
-		
+
 		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(dto.getRegisterSource())) {
 			dto.setTradeTypeId(null);
 		}
-	
+
 		LocalDate start = dto.getCreatedStart();
 		LocalDate end = dto.getCreatedEnd();
 		if (start != null && end != null) {
 			if (start.isEqual(end)) {// 整天
-	
+
 				dto.setMomStart(start.minusDays(1));
 				dto.setMomEnd(end.minusDays(1));
-	
+
 				dto.setYoyStart(start.minusYears(1));
 				dto.setYoyEnd(end.minusYears(1));
-	
+
 			} else if (start.getYear() == end.getYear() && start.getMonth() == end.getMonth()
 					&& start.getDayOfMonth() == 1) {
-	
+
 				int lastDayOfMonth = end.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
 				if (end.getDayOfMonth() == lastDayOfMonth) {// 整月
-	
+
 					dto.setMomStart(start.minusMonths(1));
 					dto.setMomEnd(end.minusMonths(1));
-	
+
 					dto.setYoyStart(start.minusYears(1));
 					dto.setYoyEnd(end.minusYears(1));
-	
+
 				}
-	
+
 			}
-	
+
 		}
 		return dto;
-		
+
 	}
+
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/product-charts.html", method = RequestMethod.GET)
 	public String productCharts(ModelMap modelMap, String params) {
@@ -161,25 +164,31 @@ public class RegisterBillReportController {
 	public Object getProductChartsJson(@RequestBody RegisterBillReportQueryDto dto) throws Exception {
 		try {
 			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByProduct(dto);
-			if(Boolean.TRUE.equals(dto.getSumOthers())&&dto.getSumAsOthersMoreThan()!=null&&dto.getSumAsOthersMoreThan()>0) {
-				list=this.sumOthers(list, dto.getSumAsOthersMoreThan(),()->{
-					
-					GroupByProductReportDto otherSummaryDto =new GroupByProductReportDto();
+			if (Boolean.TRUE.equals(dto.getSumOthers()) && dto.getSumAsOthersMoreThan() != null
+					&& dto.getSumAsOthersMoreThan() > 0) {
+				list = this.sumOthers(list, dto.getSumAsOthersMoreThan(), () -> {
+
+					GroupByProductReportDto otherSummaryDto = new GroupByProductReportDto();
 					otherSummaryDto.setProductName("其他+");
 					return otherSummaryDto;
+
+				},t -> {
+					StringBuilder label=new StringBuilder();
 					
+					label.append(t.getProductName());
+					 t.setLabel(label.toString());
+					 return t;
 				});
 			}
 
 			return BaseOutput.success().setData(list);
 		} catch (Exception e) {
-			logger.error(e.getMessage(),e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		}
 
 	}
 
-	
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/plate-report.html", method = RequestMethod.GET)
 	public String plateReport(ModelMap modelMap) {
@@ -199,7 +208,7 @@ public class RegisterBillReportController {
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPageGroupByPlate.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPageGroupByPlate(RegisterBillReportQueryDto dto) throws Exception {
-		RegisterBillReportQueryDto queryDto=this.calAndSetDates(dto);
+		RegisterBillReportQueryDto queryDto = this.calAndSetDates(dto);
 		return registerBillReportService.listPageGroupByNameAndPlate(queryDto).toString();
 	}
 
@@ -226,27 +235,36 @@ public class RegisterBillReportController {
 	public Object getPlteChartsJson(@RequestBody RegisterBillReportQueryDto dto) throws Exception {
 		try {
 			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByNameAndPlate(dto);
-			if(Boolean.TRUE.equals(dto.getSumOthers())&&dto.getSumAsOthersMoreThan()!=null&&dto.getSumAsOthersMoreThan()>0) {
-				list=this.sumOthers(list, dto.getSumAsOthersMoreThan(),()->{
-					
-					GroupByProductReportDto otherSummaryDto =new GroupByProductReportDto();
+			if (Boolean.TRUE.equals(dto.getSumOthers()) && dto.getSumAsOthersMoreThan() != null
+					&& dto.getSumAsOthersMoreThan() > 0) {
+				list = this.sumOthers(list, dto.getSumAsOthersMoreThan(), () -> {
+
+					GroupByProductReportDto otherSummaryDto = new GroupByProductReportDto();
 					otherSummaryDto.setPlate("");
 					otherSummaryDto.setName("其他+");
 					return otherSummaryDto;
+
+				},t -> {
+					StringBuilder label=new StringBuilder();
 					
+					label.append(t.getName());
+					if(StringUtils.isNotBlank(t.getPlate())) {
+						label.append(" ");
+						label.append(t.getPlate());
+					}
+					 t.setLabel(label.toString());
+					 return t;
 				});
 			}
 
 			return BaseOutput.success().setData(list);
 		} catch (Exception e) {
-			logger.error(e.getMessage(),e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		}
 
 	}
-	
-	
-	
+
 	@ApiOperation("跳转到RegisterBill产品统计页面")
 	@RequestMapping(value = "/origin-report.html", method = RequestMethod.GET)
 	public String originReport(ModelMap modelMap) {
@@ -266,7 +284,7 @@ public class RegisterBillReportController {
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPageGroupByOrigin.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPageGroupByOrigin(RegisterBillReportQueryDto dto) throws Exception {
-		RegisterBillReportQueryDto queryDto=this.calAndSetDates(dto);
+		RegisterBillReportQueryDto queryDto = this.calAndSetDates(dto);
 		return registerBillReportService.listPageGroupByOrigin(queryDto).toString();
 	}
 
@@ -300,6 +318,12 @@ public class RegisterBillReportController {
 					otherSummaryDto.setOriginName("其他+");
 					return otherSummaryDto;
 					
+				},t -> {
+					StringBuilder label=new StringBuilder();
+					
+					label.append(t.getOriginName());
+					 t.setLabel(label.toString());
+					 return t;
 				});
 			}
 
@@ -310,9 +334,10 @@ public class RegisterBillReportController {
 		}
 
 	}
-	
-	
-	private List<GroupByProductReportDto> sumOthers(List<GroupByProductReportDto> list, Integer sumIndex,Supplier<GroupByProductReportDto>otherSummary) {
+
+	private List<GroupByProductReportDto> sumOthers(List<GroupByProductReportDto> list, Integer sumIndex,
+			Supplier<GroupByProductReportDto> otherSummary,
+			Function<GroupByProductReportDto, GroupByProductReportDto> labelFun) {
 		if (sumIndex != null && sumIndex > 0 && sumIndex < list.size()) {
 			List<GroupByProductReportDto> otherList = list.subList(sumIndex, list.size());
 
@@ -340,12 +365,12 @@ public class RegisterBillReportController {
 							Object tValue = pair.getKey().invoke(t, new Object[0]);
 							Object uValue = pair.getKey().invoke(u, new Object[0]);
 							if (uValue != null) {
-									Long summaryValue = ((Long) tValue) + ((Long) uValue);
-									pair.getRight().invoke(t, summaryValue);
+								Long summaryValue = ((Long) tValue) + ((Long) uValue);
+								pair.getRight().invoke(t, summaryValue);
 
 							}
 
-						} catch (IllegalAccessException | InvocationTargetException  e) {
+						} catch (IllegalAccessException | InvocationTargetException e) {
 							logger.error(e.getMessage(), e);
 						}
 
@@ -357,10 +382,10 @@ public class RegisterBillReportController {
 			list.removeAll(otherList);
 			list.add(otherSummaryDto);
 		}
-		for( int i=0;i<list.size();i++) {
-			list.get(i).setRowIndex(i);
-		}
-		return list;
+		return list.stream().map(t->{
+			
+			return labelFun.apply(t);
+		}).collect(Collectors.toList());
 
 	}
 
