@@ -40,7 +40,7 @@
 								multiple: true,
 								_parentIdField:'parentId',
 								editable:true,panelHeight:'auto',panelMaxHeight:400,buttonText:'搜索 ' , onClickButton: queryProductSearchDlg" />
-								<input type="hidden" name="productName">
+								<input type="hidden" name="likeProductName">
 						 </div>	
 					
                         <div class="search-wrap-btn">
@@ -260,9 +260,9 @@
      <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
      <script type="text/javascript">
      function queryProductSearchDlg(){
-    	   var productName=$('#productIdList').combotree('getText');
+    	   var likeProductName=$('#productIdList').combotree('getText');
     		$.ajax({
-    			url:'${contextPath!}/toll/category?name='+productName,
+    			url:'${contextPath!}/toll/category?name='+likeProductName,
     			success:function(resp){
     				var data=resp.suggestions.map(function(v,i){v['parentId']='';return v});
     				//data.unshift({id:'',value:'全部'});
@@ -286,10 +286,10 @@
         }
         
         var productIdList=$('#productIdList').combotree('getValues');
-        var productName=$('#productIdList').combotree('getText');
+        var likeProductName=$('#productIdList').combotree('getText');
         var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
         formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''});
-        formdata['productName']=productName;
+        formdata['likeProductName']=likeProductName;
         _registerBillGrid.datagrid("load", formdata);
 
     }
@@ -323,6 +323,7 @@
     $(function () {
         window._registerBillGrid = $('#registerBillGrid');
         bindFormEvent("queryForm", "registerSource", queryRegisterBillGrid);
+        initRegisterBillGrid() 
         queryRegisterBillGrid();
     })
 
@@ -333,6 +334,26 @@
     function initRegisterBillGrid() {
         var pager = _registerBillGrid.datagrid('getPager');
         var toolbar=[
+            {
+                iconCls:'icon-detail',
+                text:'详情',
+                handler:function(){
+                    var selected = _registerBillGrid.datagrid("getSelected");
+                    if (null == selected) {
+                        swal({
+                            title: '警告',
+                            text: '请选中一条数据',
+                            type: 'warning',
+                            width: 300
+                        });
+                        return;
+                    }
+                	var data=$('#queryForm').serializeObject();
+                	data['productName']=selected.productName
+                	debugger
+               	    openWin('/registerBillReport/product-report-detail.html?'+$.param(data));                   
+                }
+            },
             <#resource method="post" url="registerBillReport/product-report.html#export">
                 {
                     iconCls:'icon-export',
@@ -352,12 +373,10 @@
                 }
             </#resource>
             ]
-        _registerBillGrid.datagrid({
-            toolbar:toolbar
-        });
+      
         pager.pagination({
             <#controls_paginationOpts/>,
-            //buttons:toolbar
+            buttons:toolbar
 
         });
     }

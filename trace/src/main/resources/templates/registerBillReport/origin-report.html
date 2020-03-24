@@ -35,7 +35,7 @@
 								multiple: true,
 								_parentIdField:'parentId',
 								editable:true,panelHeight:'auto',panelMaxHeight:400,buttonText:'搜索 ' , onClickButton: queryProductSearchDlg" />
-								<input type="hidden" name="productName">
+								<input type="hidden" name="likeProductName">
 						 </div>
 						 
                          <div class="search-item">
@@ -261,9 +261,9 @@
      <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
      <script type="text/javascript">
      function queryProductSearchDlg(){
-    	   var productName=$('#productIdList').combotree('getText');
+    	   var likeProductName=$('#productIdList').combotree('getText');
     		$.ajax({
-    			url:'${contextPath!}/toll/category?name='+productName,
+    			url:'${contextPath!}/toll/category?name='+likeProductName,
     			success:function(resp){
     				var data=resp.suggestions.map(function(v,i){v['parentId']='';return v});
     				//data.unshift({id:'',value:'全部'});
@@ -287,10 +287,10 @@
         }
         
         var productIdList=$('#productIdList').combotree('getValues');
-        var productName=$('#productIdList').combotree('getText');
+        var likeProductName=$('#productIdList').combotree('getText');
         var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
         formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''});
-        formdata['productName']=productName;
+        formdata['likeProductName']=likeProductName;
         _registerBillGrid.datagrid("load", formdata);
 
     }

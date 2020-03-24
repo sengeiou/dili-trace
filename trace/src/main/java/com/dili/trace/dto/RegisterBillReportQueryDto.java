@@ -32,6 +32,9 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	// 商品名称
 	private String productName;
 	
+	// 商品名称
+	private String likeProductName;
+	
 	private String plate;
 	// 商品id集合
 	private List<Long> productIdList = new ArrayList<>();
@@ -48,6 +51,14 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	private Integer sumAsOthersMoreThan=0;
 
 
+
+	public String getLikeProductName() {
+		return likeProductName;
+	}
+
+	public void setLikeProductName(String likeProductName) {
+		this.likeProductName = likeProductName;
+	}
 
 	public String getPlate() {
 		return plate;

@@ -67,6 +67,10 @@ public class RegisterBillReportServiceImpl implements RegisterBillReportService{
 		List<GroupByProductReportDto>list=this.mapper.listPageGroupByProduct(dto);
 		return list;
 	}
+	@Override
+	public GroupByProductReportDto summaryGroup(RegisterBillReportQueryDto dto) {
+		return this.mapper.summaryGroup(dto);
+	}
 	private RegisterBillReportQueryDto checkAndSetPageParams(RegisterBillReportQueryDto dto) {
 		
 		if(dto.getPage()==null||dto.getPage()<=0) {

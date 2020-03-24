@@ -283,8 +283,13 @@
    <sql id="groupByProductCondition">
      	 1=1
      	 <if test="productName!=''    and productName!=null">
-     		AND product_name like '${productName}%'
+     		AND product_name =#{productName}
      	 </if>
+     	    <if test="likeProductName!=''    and likeProductName!=null">
+     		AND product_name like '${likeProductName}%'
+     	 </if>
+     	 
+     	 
      	  <if test="registerSource!=null">
      		AND register_source=#{registerSource}
      	 </if>
@@ -710,4 +715,40 @@ group by
 			limit ${offSet},${rows}
 			</if>
   </select>
+  
+  
+  <select id="summaryGroup" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto"  resultType="com.dili.trace.dto.GroupByProductReportDto">
+	select 
+	sum(total_weight) as totalWeight, /*运输重量*/
+	
+	sum(cnt) as cnt,/*进场次数*/
+	
+	sum(total_wait_audit) as totalWaitAudit,/*待审核*/
+	sum(total_already_audit) as totalAlreadyAudit,/*已审核*/
+	sum(total_checking_or_rechecking) as totalCheckingOrRechecking,/*采样客户数量*/
+	
+	
+	
+	sum(total_inital_checking) totalInitalChecking,/*初检中数量*/
+	sum(total_rechecking) as totalRechecking,/*复检中数量*/
+	sum(total_checked_or_rechecked) as totalCheckedOrRechecked,/*已经检测数量*/
+	
+	
+	sum(total_inital_checked) as totalInitalChecked,/*已经初检结束的数量 */
+	sum(total_rechecked) as totalRechecked,/*已经复检结束的数量 */
+	
+	sum(total_successful_checked) as totalSuccessfulChecked,/*已经检测成功(初检成功,复检成功)数量 */
+	sum(total_successful_inital_checked) as totalSuccessfulInitalChecked,/*已经初检成功数量 */
+	
+	sum(total_successful_rechecked) as totalSuccessfulRechecked,/*已经复检成功数量 */
+	sum(total_hascertifiy) as totalHascertifiy,/*有产地证明数量*/
+
+	sum(total_hasdetectreport) as totalHasdetectreport,/*有检测报告数量*/
+
+	0
+	 from (<include refid="sumGroupByProduct" />) summedData
+  </select>
+  
+  
+  
 </mapper>

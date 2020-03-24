@@ -23,4 +23,6 @@ public interface RegisterBillReportService {
 
 	public List<GroupByProductReportDto> listGroupByOrigin(RegisterBillReportQueryDto dto)
 			throws Exception;
+	
+	public GroupByProductReportDto summaryGroup(RegisterBillReportQueryDto dto) ;
 }

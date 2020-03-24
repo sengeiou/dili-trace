@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.RegisterBillReportQueryDto;
@@ -92,6 +93,34 @@ public class RegisterBillReportController {
 		modelMap.put("user", user);
 
 		return "registerBillReport/product-report";
+	}
+	@ApiOperation("跳转到RegisterBill产品统计页面")
+	@RequestMapping(value = "/product-report-detail.html", method = RequestMethod.GET)
+	public String productReportDetail(ModelMap modelMap,RegisterBillReportQueryDto dto) {
+		Date now = new Date();
+		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+
+		UserTicket user = SessionContext.getSessionContext().getUserTicket();
+		modelMap.put("user", user);
+
+		RegisterBillReportQueryDto queryDto = this.calAndSetDates(dto);
+		try {
+			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByProduct(queryDto);
+			modelMap.put("item", list.stream().findFirst().orElseGet(()->{return new GroupByProductReportDto();}));
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			modelMap.put("item",  new GroupByProductReportDto());
+		}
+		try {
+			queryDto.setProductName(null);
+			GroupByProductReportDto summaryItem= this.registerBillReportService.summaryGroup(queryDto);
+			modelMap.put("summaryItem", summaryItem!=null?summaryItem: new GroupByProductReportDto());
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			modelMap.put("summaryItem",  new GroupByProductReportDto());
+		}
+		return "registerBillReport/product-report-detail";
 	}
 
 	@ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
@@ -338,7 +367,7 @@ public class RegisterBillReportController {
 	private List<GroupByProductReportDto> sumOthers(List<GroupByProductReportDto> list, Integer sumIndex,
 			Supplier<GroupByProductReportDto> otherSummary,
 			Function<GroupByProductReportDto, GroupByProductReportDto> labelFun) {
-		if (sumIndex != null && sumIndex > 0 && sumIndex < list.size()) {
+		if (sumIndex != null && sumIndex >= 0 && sumIndex < list.size()) {
 			List<GroupByProductReportDto> otherList = list.subList(sumIndex, list.size());
 
 			GroupByProductReportDto otherSummaryDto = otherSummary.get();
