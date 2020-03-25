@@ -73,7 +73,7 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="登记单列表" id="registerBillGrid" fitColumns="true"  fit="true" noheader="true"
+            <table class="easyui-datagrid" title="商品报表" id="registerBillGrid" fitColumns="true"  fit="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
                    loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false" sortName="totalWeight" sortOrder="desc"
                    align="center" fit="true" idField="id" selectOnCheck="true" data-options="">
@@ -227,12 +227,18 @@
                 <td style="padding:5px;">
                     <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalHascertifiy" value="totalHascertifiy"  checked="checked" ></input>产地证明
 					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="hascertifiyRate" value="hascertifiyRate"  checked="checked" ></input>产地占进场占比
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momHascertifiy" value="momHascertifiy"  checked="checked" ></input>环比
+					
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyHascertifiy" value="yoyHascertifiy"  checked="checked" ></input> 同比
+                        
                 </td>
             </tr>
             <tr>
                 <td style="padding:5px;">
                     <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalHasdetectreport" value="totalHasdetectreport"  checked="checked" ></input>检测报告 
                     <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="hasdetectreportRate" value="hasdetectreportRate"  checked="checked" ></input>检测报告占进场占比
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momHasdetectreport" value="momHasdetectreport"  checked="checked" ></input> 环比
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyHasdetectreport" value="yoyHasdetectreport"  checked="checked" ></input> 同比
                 </td>
             </tr>
             <tr>
@@ -418,18 +424,20 @@
         $('#dlg').dialog('center');
       
     }
+    function getColumnFields(){
+    	
+    	var columns=_registerBillGrid.datagrid('getColumnFields', false).filter(function(v,i){return v!='productName';});
+    	return columns;
+    	
+    }
     function onChangeCk(v){
     	var cthis=$(this);
     	var colName=cthis.attr('value');
 
-    	var columns=_registerBillGrid.datagrid('getColumnFields', false);
+    	var columns=getColumnFields();
 		var checkedData={checked:[],unchecked:[]};
 		var unselAll=false;
-    	if(v==false){
-       		_registerBillGrid.datagrid('hideColumn',colName);	
-       	}else{
-       		_registerBillGrid.datagrid('showColumn', colName);
-       	}
+
     	
     	$.each(columns,function(i,v){
     		var cbox=$('#'+v);
@@ -443,10 +451,17 @@
        				checkedData.unchecked.push(v)
        			}		
     		}
-   		
    			
    		});
+    	$.each(checkedData.checked,function(i,colName){
+    		_registerBillGrid.datagrid('showColumn', colName);
+    	});
+    	$.each(checkedData.unchecked,function(i,colName){
+    		_registerBillGrid.datagrid('hideColumn', colName);
+    	});
     	
+    	
+    	console.info(checkedData)
     	if(checkedData.checked.length==0){
     		$('#selectAll').checkbox('uncheck').checkbox('enable');
     		$('#unselectAll').checkbox('check').checkbox('disable');
@@ -461,7 +476,7 @@
     function selectAll(v){
     	var cthis=$(this);
     	if(v==true){
-    		var columns=_registerBillGrid.datagrid('getColumnFields', false);
+    		var columns=getColumnFields();
         	$.each(columns,function(i,v){
         		_registerBillGrid.datagrid('showColumn', v);
         		$('#'+v).checkbox('check');
@@ -472,7 +487,7 @@
     function unselectAll(v){
     	var cthis=$(this);
     	if(v==true){
-    		var columns=_registerBillGrid.datagrid('getColumnFields', false);
+    		var columns=getColumnFields();
         	$.each(columns,function(i,v){
         		_registerBillGrid.datagrid('hideColumn', v);
         		$('#'+v).checkbox('uncheck');
