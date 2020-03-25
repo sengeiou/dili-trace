@@ -320,6 +320,7 @@
 	0 total_inital_checking,
 	0 total_rechecking,
 	0 total_checked_or_rechecked,
+	0 total_checked_and_rechecking,
 
 	0 total_inital_checked,
 	0 total_rechecked,
@@ -372,11 +373,12 @@
 
 	sum(case when state in(1) then 1 else 0 end) ,
 	sum(case when state in(7) then 1 else 0 end) ,
-	sum(case when state in(4, 5, 6) then 1 else 0 end) ,
+	sum(case when state in(4, 5, 6) then 1 else 0 end)  as total_checking_or_rechecking,
 	
 	sum(case when detect_state is null and state in(2, 4, 5) then 1 else 0 end) ,
 	sum(case when detect_state in(1, 2) and state in(2, 4, 5) then 1 else 0 end) ,
 	sum(case when detect_state IN (1,2,3,4) then 1 else 0 end) ,
+	sum(case when (detect_state IN (3,4))   or (detect_state in (2) and state in (4,5)) then 1 else 0 end) as total_checked_and_rechecking,
 
 	sum(case when detect_state in(1, 2) then 1 else 0 end) ,
 	sum(case when detect_state in(3, 4) then 1 else 0 end) ,
@@ -443,6 +445,7 @@ select
 	0 ,
 	0 ,
 	0 ,
+	0 as total_checked_and_rechecking,
 	0 ,
 	0 ,
 	0 ,
@@ -515,6 +518,7 @@ select
 	0 ,
 	0 ,
 	0 ,
+	0 as total_checked_and_rechecking,
 	0 ,
 	0 ,
 	0 ,
@@ -589,7 +593,7 @@ group by
 	sum(total_inital_checking)  total_inital_checking,
 	sum(total_rechecking)  total_rechecking,
 	sum(total_checked_or_rechecked)  total_checked_or_rechecked,
-
+	sum(total_checked_and_rechecking) total_checked_and_rechecking,
 	sum(total_inital_checked)  total_inital_checked,
 	sum(total_rechecked)  total_rechecked,
 	sum(total_successful_checked)  total_successful_checked,
@@ -682,7 +686,7 @@ group by
 	
 	
 	total_successful_rechecked as totalSuccessfulRechecked,/*已经复检成功数量 */
-	case when total_rechecked=0 then null else total_successful_rechecked*100/total_rechecked end   successful_rechecked_rate,
+	case when total_checked_and_rechecking=0 then null else total_successful_rechecked*100/total_checked_and_rechecking end   successful_rechecked_rate,
 	total_hascertifiy as totalHascertifiy,/*有产地证明数量*/
 	case when cnt=0 then null else total_hascertifiy*100/cnt end  hascertifiy_rate,
 	 
