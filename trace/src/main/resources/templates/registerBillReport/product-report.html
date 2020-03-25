@@ -39,8 +39,14 @@
 								_textField:'value', 
 								multiple: true,
 								_parentIdField:'parentId',
-								editable:true,panelHeight:'auto',panelMaxHeight:400,buttonText:'搜索 ' , onClickButton: queryProductSearchDlg" />
-								<input type="hidden" name="likeProductName">
+								editable:true,panelHeight:'auto',panelMaxHeight:400, onChange:function(newValue, oldValue){
+									if(newValue.length==0){
+									$('#productIdList').combotree('readonly', false);
+									}else{
+									$('#productIdList').combotree('readonly', true);
+									}
+										
+								}" />
 						 </div>	
 					
                         <div class="search-wrap-btn">
@@ -259,18 +265,27 @@
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
      <script type="text/javascript">
+     var productInfoList=[];
      function queryProductSearchDlg(){
     	   var likeProductName=$('#productIdList').combotree('getText');
     		$.ajax({
     			url:'${contextPath!}/toll/category?name='+likeProductName,
+    			async:false,
     			success:function(resp){
-    				var data=resp.suggestions.map(function(v,i){v['parentId']='';return v});
+    				productInfoList=resp.suggestions.map(function(v,i){v['parentId']='';return v});
     				//data.unshift({id:'',value:'全部'});
-    				$('#productIdList').combotree({data:data});
-    				$('#productIdList').combotree('showPanel');
-    				
+    				$('#productIdList').combotree({data:productInfoList});
+    				//$('#productIdList').combotree('showPanel');
+    				//$('#productIdList').combotree('setText',likeProductName);
     			}
-    		})
+    		});
+    	     var productInput=$('#'+$('#productIdList').siblings('label').attr('for'));
+    	        productInput.on('input',function(){
+
+    	        });
+    	        productInput.focus(function(){
+    	        	$('#productIdList').combotree('showPanel');
+    	        });
     	 
      }
     //表格查询
@@ -287,9 +302,13 @@
         
         var productIdList=$('#productIdList').combotree('getValues');
         var likeProductName=$('#productIdList').combotree('getText');
+        
         var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
-        formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''});
-        formdata['likeProductName']=likeProductName;
+        if(productIdList.length>0){
+        	formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''}).join(',');	
+        }else{
+        	formdata['likeProductName']=likeProductName;	
+        }
         _registerBillGrid.datagrid("load", formdata);
 
     }
@@ -323,6 +342,8 @@
     $(function () {
         window._registerBillGrid = $('#registerBillGrid');
         bindFormEvent("queryForm", "registerSource", queryRegisterBillGrid);
+       
+        queryProductSearchDlg();
         initRegisterBillGrid() 
         queryRegisterBillGrid();
     })
