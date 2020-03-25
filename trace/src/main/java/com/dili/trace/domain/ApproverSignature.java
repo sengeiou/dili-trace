@@ -35,6 +35,11 @@ public interface ApproverSignature extends IBaseDomain {
     public String getUserName();
 	public void setUserName(String userName);
 	
+    @Column(name = "`phone`")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getPhone();
+	public void setPhone(String phone);
+	
     @Column(name = "`user_id`")
     @FieldDef(label="user_id")
     @EditMode(editor = FieldEditor.Number, required = true)

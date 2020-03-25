@@ -30,24 +30,18 @@
 	}
     //打开新增窗口
     function openInsert(){
-        $('#dlg').dialog("setTitle","用户新增");
+        $('#dlg').dialog("setTitle","签名新增");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
-        $('#_name').textbox({readonly:false});
+        $('#_userName').textbox({readonly:false});
         $('#_phone').textbox({readonly:false});
-        $('#_cardNo').textbox({readonly:false});
-        $('#_addr').textbox({readonly:false});
-        $('#_tallyAreaNo').textbox({readonly:false});
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
         $(":file").attr('disabled',false);
-        $('#_tallyAreaNos').tagbox('enable');
-        $('#_form').form('clear');
-        //cityList
-        listUsualAddress($('#cityList'));
+
 
         initFileUpload();
-        formFocus("_form", "_name");
+        formFocus("_form", "_userName");
     }
 
     //打开修改窗口
@@ -58,10 +52,10 @@
             swal('警告','请选中一条数据', 'warning');
             return;
         }
-        $('#dlg').dialog("setTitle","用户修改");
+        $('#dlg').dialog("setTitle","签名修改");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
-        $('#_name').textbox({readonly:true});
+        $('#_userName').textbox({readonly:true});
         $('#_cardNo').textbox({readonly:true});
         $('#_addr').textbox({readonly:true});
         $('#_tallyAreaNos').tagbox('enable');
@@ -76,64 +70,25 @@
             $('#_cardNoFrontUrl').siblings('.fileimg-cover,.fileimg-edit').show();
             $('#_cardNoFrontUrl').siblings(".magnifying").attr('src',formData._cardNoFrontUrl).show();
         }
-        if(formData._cardNoBackUrl){
-            $('#_cardNoBackUrl').siblings('.fileimg-cover,.fileimg-edit').show();
-            $('#_cardNoBackUrl').siblings(".magnifying").attr('src',formData._cardNoBackUrl).show();
-        }
-        if(formData._businessLicenseUrl){
-            $('#_businessLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
-            $('#_businessLicenseUrl').siblings(".magnifying").attr('src',formData._businessLicenseUrl).show();
-        }
+
         $('#_form').form('load', formData);
-        $('#_salesCityId').combobox('setText',formData._salesCityName);
-        if(formData._state == 0){
-            $('#_tallyAreaNos').tagbox('disable');
-        }
-        listUsualAddress($('#cityList'));
+
         formOldData=$('#_form').serializeObject();
-        /*$.ajax({
-            type: "POST",
-            url: "${contextPath}/user/findPlates.action?userId="+selected.id,
-            
-            processData:true,
-            dataType: "json",
-            async : false,
-            success: function (data) {
-                if(data.code=="200"){
-                	$('#_plates').tagbox('setValues',data.data);
-                	//$('#_plates').tagbox('setText',data.data);
-                }else{
-                    swal('错误',data.result, 'error');
-                }
-            },
-            error: function(){
-                swal('错误', '远程访问失败', 'error');
-            }
-        });*/
-        
+      
         
     }
 
     function saveOrUpdate(){
-        $('#_tallyAreaNos').tagbox('textbox').trigger($.Event("keydown", {keyCode: 13}));
-        if(!$('#_form').form("validate")){
-            return;
-        }
+
         var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
-        if(_formData.tallyAreaNos instanceof Array){
-            if(_formData.tallyAreaNos.length>15){
-                swal('错误','理货区数量最多15个', 'error');
-                return;
-            }
-            _formData.tallyAreaNos = _formData.tallyAreaNos.join(',');
-        }
+
         var _url = null;
         var isNewData=false;
         //没有id就新增
         if(_formData.id == null || _formData.id==""){
-            _url = "${contextPath}/user/insert.action";
+            _url = "${contextPath}/approverSignature/insert.action";
         }else{//有id就修改
-            _url = "${contextPath}/user/update.action";
+            _url = "${contextPath}/approverSignature/update.action";
             isNewData=true;
         }
         $.ajax({
@@ -146,7 +101,6 @@
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if(data.code=="200"){
-                	 submitLog(isNewData);
                     _userGrid.datagrid("reload");
                     $('#dlg').dialog('close');
                 }else{
@@ -158,34 +112,7 @@
             }
         });
     }
-	function submitLog(isNewData){
-		if(isNewData==true){
-			 var formNewData=$('#_form').serializeObject(); 
-			 console.info(formOldData);
-			 console.info(formNewData);
-			var content="【ID】："+formOldData._id;
-			if(formOldData._phone!=formNewData._phone){
-				//手机号	 
-				content=content+'<br/>【手机号】:从'+formOldData._phone+'"改为"'+formNewData._phone+'"';
-			}
-			if(JSON.stringify(formOldData._tallyAreaNos)!=JSON.stringify(formNewData._tallyAreaNos)){
-				 //理货区号
-				content=content+'<br/>【理货区号】:从'+$.makeArray(formOldData._tallyAreaNos).join(',')+'"改为"'+$.makeArray(formNewData._tallyAreaNos).join(',')+'"';
-			}
-			if(JSON.stringify(formOldData._plates)!=JSON.stringify(formNewData._plates)){
-				 //车牌号
-				content=content+'<br/>【车牌号】:从'+$.makeArray(formOldData._plates).join(',')+'"改为"'+$.makeArray(formNewData._plates).join(',')+'"';
-			}
-			
-			if(formOldData._salesCityName!=formNewData._salesCityName){
-				 //销地城市
-				content=content+'<br/>【销地城市】:从'+formOldData._salesCityName+'"改为"'+formNewData._salesCityName+'"';
-			}
-			TLOG.component.operateLog('用户管理',"用户修改",content);
-		}
-		
-		
-	}
+
     //根据主键删除
     function del() {
         var selected = _userGrid.datagrid("getSelected");
@@ -410,128 +337,6 @@
             
         });
     }
-   
-
-    /**
-     * 禁启用操作
-     * @param enable 是否启用:true-启用
-     */
-    function doResetPassword() {
-        var selected = _userGrid.datagrid("getSelected");
-        if (null == selected) {
-            swal({
-                title: '警告',
-                text: '请选中一条数据',
-                type: 'warning',
-                width: 300,
-            });
-            return;
-        }
-
-        swal({
-            title : '确定要重置密码吗？',
-            type : 'question',
-            showCancelButton : true,
-            confirmButtonColor : '#3085d6',
-            cancelButtonColor : '#d33',
-            confirmButtonText : '确定',
-            cancelButtonText : '取消',
-            confirmButtonClass : 'btn btn-success',
-            cancelButtonClass : 'btn btn-danger'
-        }).then(function(flag) {
-            if (flag.dismiss == 'cancel' || flag.dismiss == 'overlay' || flag.dismiss == "esc" || flag.dismiss == "close"){
-                return;
-            }
-            $.ajax({
-                type: "POST",
-                url: "${contextPath}/user/resetPassword.action",
-                data: {id: selected.id},
-                processData:true,
-                dataType: "json",
-                async : true,
-                success : function(ret) {
-                    if(ret.success){
-                        _userGrid.datagrid("reload");
-                    }else{
-                        swal(
-                            '错误',
-                            ret.result,
-                            'error'
-                        );
-                    }
-                },
-                error : function() {
-                    swal(
-                        '错误',
-                        '远程访问失败',
-                        'error'
-                    );
-                }
-            });
-        });
-    }
-
-    /**
-     * 禁启用操作
-     * @param enable 是否启用:true-启用
-     */
-    function doEnable(enable) {
-        var selected = _userGrid.datagrid("getSelected");
-        if (null == selected) {
-            swal({
-                title: '警告',
-                text: '请选中一条数据',
-                type: 'warning',
-                width: 300,
-            });
-            return;
-        }
-        var msg = (enable || 'true' == enable) ? '确定要启用该用户吗？' : '确定要禁用该用户吗？';
-
-        swal({
-            title : msg,
-            type : 'question',
-            showCancelButton : true,
-            confirmButtonColor : '#3085d6',
-            cancelButtonColor : '#d33',
-            confirmButtonText : '确定',
-            cancelButtonText : '取消',
-            confirmButtonClass : 'btn btn-success',
-            cancelButtonClass : 'btn btn-danger'
-        }).then(function(flag) {
-            if (flag.dismiss == 'cancel' || flag.dismiss == 'overlay' || flag.dismiss == "esc" || flag.dismiss == "close"){
-                return;
-            }
-            $.ajax({
-                type: "POST",
-                url: "${contextPath}/user/doEnable.action",
-                data: {id: selected.id, enable: enable},
-                processData:true,
-                dataType: "json",
-                async : true,
-                success : function(ret) {
-                    if(ret.success){
-                        _userGrid.datagrid("reload");
-                        $('#stop_btn').linkbutton('disable');
-                        $('#play_btn').linkbutton('disable');
-                    }else{
-                        swal(
-                            '错误',
-                            ret.result,
-                            'error'
-                        );
-                    }
-                },
-                error : function() {
-                    swal(
-                        '错误',
-                        '远程访问失败',
-                        'error'
-                    );
-                }
-            });
-        });
-    }
 
     /**
      * datagrid行点击事件
@@ -539,27 +344,10 @@
      */
     function onClickRow(index,row) {
         var state = row.$_state;
-        if (state == ${@com.dili.trace.glossary.EnabledStateEnum.DISABLED.getCode()}){
-            //当用户状态为 禁用，可操作 启用
-            $('#play_btn').linkbutton('enable');
-            $('#stop_btn').linkbutton('disable');
-        }else if(state == ${@com.dili.trace.glossary.EnabledStateEnum.ENABLED.getCode()}){
-            //当用户状态为正常时，则只能操作 禁用
-            $('#stop_btn').linkbutton('enable');
-            $('#play_btn').linkbutton('disable');
-        } else{
-            //其它情况，按钮不可用
-            $('#stop_btn').linkbutton('disable');
-            $('#play_btn').linkbutton('disable');
-        }
+
     }
 
-    function blankFormatter(val,row){
-        if(!val){
-            return "-";
-        }
-        return val;
-    }
+
 
     function phoneFormatter(val,row){
         if(val){
@@ -568,12 +356,7 @@
         return val;
     }
 
-    function cardNoFormatter(val,row){
-        if(val){
-            var val = val.substr(0,4)+'**************';
-        }
-        return val;
-    }
+
 
     function closeLastWin(id){
         $('#'+id).last().remove();

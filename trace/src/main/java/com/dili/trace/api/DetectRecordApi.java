@@ -64,7 +64,7 @@ public class DetectRecordApi {
 	 */
 	@ApiOperation("上传检测记录")
 	@RequestMapping(value = "/saveRecord", method = RequestMethod.POST)
-	public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecordParam detectRecord,HttpServletRequest req) {
+	public BaseOutput<Boolean> saveDetectRecord(DetectRecordParam detectRecord,HttpServletRequest req) {
 		LOGGER.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecord));
 //		try {
 //			List<String>list=IOUtils.readLines(req.getInputStream());

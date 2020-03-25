@@ -55,6 +55,9 @@ public class ApproverSignatureController {
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Long> insert(@RequestBody ApproverSignature approverSignature) {
 		try {
+			approverSignature.setUserId(0L);
+			approverSignature.setSignBase64("aaa");
+			this.approverSignatureService.insertSelective(approverSignature);
 			return BaseOutput.success("新增成功").setData(approverSignature.getId());
 		} catch (BusinessException e) {
 			LOGGER.error("register", e);
