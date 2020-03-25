@@ -15,6 +15,6 @@
     <setting name="defaultExecutorType" value="REUSE" />
   </settings>
 
-  <objectFactory type="com.dili.ss.dao.DtoInstObjectFactory">
+  <objectFactory type="com.dili.ss.dao.DtoObjectFactory">
   </objectFactory>
 </configuration>

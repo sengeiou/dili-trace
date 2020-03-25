@@ -136,9 +136,14 @@ public interface RegisterBill extends IBaseDomain {
     Integer getState();
 
     void setState(Integer state);
+
     @Transient
     default String getStateName(){
-        if(getState()==null){
+        try {
+            if (getState() == null) {
+                return "";
+            }
+        }catch (Exception e){
             return "";
         }
         return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
@@ -217,9 +222,14 @@ public interface RegisterBill extends IBaseDomain {
     Integer getDetectState();
 
     void setDetectState(Integer detectState);
+
     @Transient
     default String getDetectStateName(){
-        if(getDetectState()==null){
+        try {
+            if (getDetectState() == null) {
+                return "";
+            }
+        }catch (Exception e){
             return "";
         }
         BillDetectStateEnum state=BillDetectStateEnum.getBillDetectStateEnum(getDetectState());

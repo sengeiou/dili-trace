@@ -1,5 +1,7 @@
 package com.dili;
 
+import com.dili.ss.datasource.aop.DynamicRoutingDataSourceRegister;
+import com.dili.ss.retrofitful.annotation.RestfulScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -8,11 +10,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
-import com.dili.ss.datasource.aop.DynamicRoutingDataSourceRegister;
-import com.dili.ss.dto.DTOScan;
-import com.dili.ss.retrofitful.annotation.RestfulScan;
-
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
@@ -24,7 +21,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 @MapperScan(basePackages = {"com.dili.trace.dao","com.dili.trace.etrade.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
 @ComponentScan(basePackages={"com.dili.ss","com.dili.trace","com.dili.trace.etrade","com.diligrp","com.dili.common","com.dili.commons"})
 @RestfulScan({"com.dili.trace.rpc"})
-@DTOScan({"com.dili.trace","com.dili.ss"})
+//@DTOScan({"com.dili.trace","com.dili.ss"})
 @Import(DynamicRoutingDataSourceRegister.class)
 @EnableScheduling
 @EnableAsync

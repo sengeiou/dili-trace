@@ -1,18 +1,5 @@
 package com.dili.trace.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
@@ -21,25 +8,38 @@ import com.dili.trace.domain.CodeGenerate;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.RegisterBillService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Service
-public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long> implements CodeGenerateService {
+public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long> implements CodeGenerateService, ApplicationContextAware {
 	private static final String SAMPLE_CODE_TYPE = "SAMPLE_CODE";
 
 	@Autowired
 	RegisterBillService registerBillService;
-	@PostConstruct
-	public void init() {
-		
+
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		RegisterBill domain=DTOUtils.newDTO(RegisterBill.class);
 		domain.setOrder("desc");
 		domain.setSort("sample_code");
 		domain.setPage(1);
 		domain.setRows(1);
-		RegisterBill registerBill=this.registerBillService.listByExample(domain).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
+		RegisterBill registerBill=this.registerBillService.listByExample(domain).stream().findFirst()
+				.orElse(DTOUtils.newDTO(RegisterBill.class));
 		String maxSampleCode=registerBill.getSampleCode();
-		
-		
 		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst().orElse(DTOUtils.newDTO(CodeGenerate.class));
 		codeGenerate.setPattern("yyyyMMdd");
 		codeGenerate.setType(SAMPLE_CODE_TYPE);
@@ -106,6 +106,5 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 				.concat(nextSegment)
 				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), 5, "0"));
 	}
-	
 
 }
