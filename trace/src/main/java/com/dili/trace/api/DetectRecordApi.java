@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +32,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by laikui on 2019/7/26.
@@ -60,9 +64,15 @@ public class DetectRecordApi {
 	 */
 	@ApiOperation("上传检测记录")
 	@RequestMapping(value = "/saveRecord", method = RequestMethod.POST)
-	public BaseOutput<Boolean> saveDetectRecord(DetectRecordParam detectRecord) {
+	public BaseOutput<Boolean> saveDetectRecord(@RequestBody DetectRecordParam detectRecord,HttpServletRequest req) {
 		LOGGER.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecord));
-
+//		try {
+//			List<String>list=IOUtils.readLines(req.getInputStream());
+//			System.out.println(list);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		if (!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecord.getTag())) {
 			LOGGER.error("上传检测任务结果失败:签名出错");
 			return BaseOutput.failure("签名出错");

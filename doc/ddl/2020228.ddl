@@ -7,6 +7,56 @@ ALTER TABLE `usual_address` ADD COLUMN `preday_used_count`  int default 0 COMMEN
 ALTER TABLE `usual_address` ADD COLUMN `clear_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '清理当天使用数量时间';
 
 
+
+ALTER TABLE `register_bill` ADD COLUMN `check_sheet_id`  bigint(20) default null COMMENT '检测报告单ID';
+
+
+
+CREATE TABLE `signature` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(20) NOT NULL COMMENT '审核人名字',  
+  `user_id` bigint(20) NOT NULL COMMENT '审核人ID',  
+  `phone` varchar(20) NOT NULL COMMENT '审核人电话', 
+  `sign_base64` varchar(1000) NOT NULL COMMENT '审核人签名Base64图片',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `check_sheet` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) NOT NULL COMMENT '编号',
+  `submitter_id` bigint(20) NOT NULL COMMENT '提交人ID',
+  `submitter_name`varchar(20) NOT NULL COMMENT '提交人姓名',
+  `valid_period` int NOT NULL COMMENT '有效天数',
+  `checker_id` bigint(20) NOT NULL COMMENT '检测人ID',
+  `checker_name`varchar(20) NOT NULL COMMENT '检测人姓名',
+  `signature_id`bigint(20) NOT NULL COMMENT '审核人签字ID',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `check_sheet_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `check_sheet_id` bigint(20) NOT NULL COMMENT '检测报告单ID',
+  `register_bill_id` bigint(20) NOT NULL COMMENT '登记单ID',
+  
+  `product_id` bigint(20) NOT NULL COMMENT '商品ID',
+  `product_name`varchar(20) NOT NULL COMMENT '商品名称',
+  `product_alias_name`varchar(20) NULL COMMENT '商品别名',
+  
+  `origin_id` bigint(20) NOT NULL COMMENT '产地ID',
+  `origin_name` varchar(20) NOT NULL COMMENT '产地',
+  
+  `detect_state` int NOT NULL COMMENT '检测结果',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 update
 	usual_address
 inner join (
