@@ -501,7 +501,7 @@ where
 			AND #{momStart}&lt;=DATE_FORMAT(created,'%Y-%m-%d')
 			AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{momEnd}
 			</if>
-			<if test="momStart!=null  or momEnd!=null">
+			<if test="momStart==null  or momEnd==null">
 			AND 0>id
 			</if>
 group by
@@ -573,7 +573,7 @@ where
 						AND #{yoyStart}&lt;=DATE_FORMAT(created,'%Y-%m-%d')
 						AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{yoyEnd}
 			</if>
-			<if test="yoyStart!=null  or yoyEnd!=null">
+			<if test="yoyStart==null  or yoyEnd==null">
 						AND 0>id
 			</if>
 group by
