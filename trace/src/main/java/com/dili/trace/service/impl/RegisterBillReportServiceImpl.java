@@ -24,7 +24,7 @@ public class RegisterBillReportServiceImpl implements RegisterBillReportService{
 	@Autowired RegisterBillMapper mapper;
 	public EasyuiPageOutput listPageGroupByProduct(RegisterBillReportQueryDto dto) throws Exception {
 		dto=this.checkAndSetPageParams(dto);
-		dto.setGroupByColumns(String.join(",",Arrays.asList("product_name")));
+		dto.setGroupByColumns(String.join(",",Arrays.asList("product_id,product_name")));
 		Long total = this.mapper.listPageGroupByProductCount(dto);
 		List<GroupByProductReportDto>list=this.mapper.listPageGroupByProduct(dto);
 		List results = ValueProviderUtils.buildDataByProvider(dto, list);
@@ -32,7 +32,7 @@ public class RegisterBillReportServiceImpl implements RegisterBillReportService{
 	}
 	@Override
 	public List<GroupByProductReportDto> listGroupByProduct(RegisterBillReportQueryDto dto) throws Exception {
-		dto.setGroupByColumns(String.join(",",Arrays.asList("product_name")));
+		dto.setGroupByColumns(String.join(",",Arrays.asList("product_id,product_name")));
 		List<GroupByProductReportDto>list=this.mapper.listPageGroupByProduct(dto);
 		return list;
 	}

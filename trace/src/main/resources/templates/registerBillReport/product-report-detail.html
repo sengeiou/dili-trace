@@ -9,8 +9,9 @@
     <div class="form-box border">
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
+<% for(item in items){%>
 
-                <div class="form-group">
+				<div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>商品名称</label>
                     <input class="form-control input-sm " value="${item.productName}" readonly/>
                 </div>
@@ -65,6 +66,9 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测报告占比</label>
                     <input type="text" class="form-control input-sm  percentage"  data-itemvalue="${item.totalHasdetectreport}"   data-total="${summaryItem.totalHasdetectreport}"  readonly/>
                 </div>
+			<br>
+<%}%>
+                
 
             </div>
 

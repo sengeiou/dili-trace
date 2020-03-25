@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BinaryOperator;
@@ -107,13 +108,14 @@ public class RegisterBillReportController {
 		RegisterBillReportQueryDto queryDto = this.calAndSetDates(dto);
 		try {
 			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByProduct(queryDto);
-			modelMap.put("item", list.stream().findFirst().orElseGet(()->{return new GroupByProductReportDto();}));
+			modelMap.put("items", list);
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			modelMap.put("item",  new GroupByProductReportDto());
 		}
 		try {
-			queryDto.setProductName(null);
+//			queryDto.setProductName(null);
+			queryDto.setProductIdList(Arrays.asList());
 			GroupByProductReportDto summaryItem= this.registerBillReportService.summaryGroup(queryDto);
 			modelMap.put("summaryItem", summaryItem!=null?summaryItem: new GroupByProductReportDto());
 		} catch (Exception e) {

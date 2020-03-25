@@ -75,11 +75,14 @@
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="登记单列表" id="registerBillGrid" fitColumns="true"  fit="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="totalWeight" sortOrder="desc"
+                   loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false" sortName="totalWeight" sortOrder="desc"
                    align="center" fit="true" idField="id" selectOnCheck="true" data-options="">
                        
                 <thead  frozen="true">
+                                       
+                
                     <tr>
+                       <th field="ck" checkbox="true" data-options="field:'ck' "> </th>
                         <th  data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             商品名称
                         </th>
@@ -359,8 +362,9 @@
                 iconCls:'icon-detail',
                 text:'详情',
                 handler:function(){
-                    var selected = _registerBillGrid.datagrid("getSelected");
-                    if (null == selected) {
+                    var selected = _registerBillGrid.datagrid("getSelections");
+                    debugger
+                    if (selected.length==0) {
                         swal({
                             title: '警告',
                             text: '请选中一条数据',
@@ -370,8 +374,21 @@
                         return;
                     }
                 	var data=$('#queryForm').serializeObject();
-                	data['productName']=selected.productName
-                	debugger
+                	/*
+                	[1,2,3,2,1].reduce(function(accumulator, currentValue, index, array ){
+                		if($.inArray(currentValue,array,index+1)==-1){
+                			accumulator.push(currentValue);
+                		}
+                		return accumulator;
+                	},[] ).join(',');*/
+                	
+                	data['productIdList']=selected.map(function(v,i){return v.productId;}).reduce(function(accumulator, currentValue, index, array ){
+                		if($.inArray(currentValue,array,index+1)==-1){
+                			accumulator.push(currentValue);
+                		}
+                		return accumulator;
+                	},[] ).join(',');
+
                	    openWin('/registerBillReport/product-report-detail.html?'+$.param(data));                   
                 }
             },

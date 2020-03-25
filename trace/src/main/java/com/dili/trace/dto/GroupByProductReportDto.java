@@ -15,6 +15,8 @@ public class GroupByProductReportDto extends BaseDomain{
 	private static final long serialVersionUID = 1L;
 	/* 商品名称 */
 	private String productName;
+	/* 商品ID */
+	private Long productId;
 	/* 车牌	 */
 	private String plate;
 	
@@ -82,6 +84,12 @@ public class GroupByProductReportDto extends BaseDomain{
 	
 	private String label;
 	
+	public Long getProductId() {
+		return productId;
+	}
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
 	public String getLabel() {
 		return label;
 	}
