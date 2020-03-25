@@ -279,7 +279,12 @@
 			<artifactId>ss-redis</artifactId>
 			<version>${sharp-sword.version}</version>
 		</dependency>
-
+		<!-- jedis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.9.0</version>
+		</dependency>
 		<dependency>
 			<groupId>com.dili.manage</groupId>
 			<artifactId>diligrp-manage-sdk</artifactId>
