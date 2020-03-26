@@ -1,4 +1,23 @@
  <#body>
+ <style>
+ 	.icon-red{
+		 	display: inline-block;
+		 	width: 22px;
+		 	height: 24px;
+         background: url(${contextPath}/resources/images/gb.png) no-repeat 0 -535px; 
+         }
+         .icon-green {
+		 	display: inline-block;
+		 	width: 15px;
+		 	height: 23px;
+         background: url(${contextPath}/resources/images/gb.png) no-repeat 0 -559px; 
+         }
+ </style>
+ 
+ 
+
+ 
+ 
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
@@ -59,10 +78,16 @@
                                onclick="showorhidecolumns()">列表字段配置</a>&nbsp;&nbsp;
                         </div>
                         
+                        
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-sum" 
                                onclick="showcharts()">查看图表</a>&nbsp;&nbsp;
                         </div>
+                        
+                        
+                 
+                        
+                        
                     </div>
                 </form>
             </div>
@@ -88,82 +113,82 @@
                         <th  data-options="field:'totalWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
                             重量/KG
                         </th>
-                        <th  data-options="field:'momWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'momWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider',	formatter:percentageFormatter">
                             环比
                         </th>
-                        <th  data-options="field:'yoyWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'yoyWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider',	formatter:percentageFormatter">
                             同比
                         </th>
                         
                         <th  data-options="field:'cnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',chartable:true">
                             进场次数
                         </th>
-                        <th  data-options="field:'momCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'momCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'   ,	formatter:percentageFormatter ">
                             环比
                         </th>
-                        <th  data-options="field:'yoyCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'yoyCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             同比
                         </th>
                         <th  data-options="field:'totalCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
                             采样客户数量
                         </th>
-                        <th  data-options="field:'momCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'momCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             环比
                         </th>
-                        <th  data-options="field:'yoyCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'yoyCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             同比
                         </th>
                         <th  data-options="field:'totalCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
                             检测数量
                         </th>
-                        <th  data-options="field:'momCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'momCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             环比
                         </th>
-                        <th  data-options="field:'yoyCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'yoyCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             同比
                         </th>
                         <th  data-options="field:'totalRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
                             复检数量
                         </th>
-                        <th  data-options="field:'momRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'momRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             环比
                         </th>
-                        <th  data-options="field:'yoyRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'yoyRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             同比
                         </th>
-                        <th  data-options="field:'successfulInitalCheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'successfulInitalCheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             初检合格率
                         </th>
-                          <th  data-options="field:'successfulRecheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                          <th  data-options="field:'successfulRecheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             复检合格率
                         </th>
 					     <th  data-options="field:'totalHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
 	                           产地证明
 	                       </th>
-					     <th  data-options="field:'hascertifiyRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+					     <th  data-options="field:'hascertifiyRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
 					           产地占进场占比
                         </th>
-                        <th  data-options="field:'momHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'momHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             环比
                         </th>
-                        <th  data-options="field:'yoyHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'yoyHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             同比
                         </th>
 
 	     				<th  data-options="field:'totalHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
                            检测报告
                         </th>
-     					<th  data-options="field:'hasdetectreportRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+     					<th  data-options="field:'hasdetectreportRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             检测报告占进场占比 
                         </th>
-                        <th  data-options="field:'momHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'momHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             环比
                         </th>
-                        <th  data-options="field:'yoyHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'yoyHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                             同比
                         </th>
                         
-                        <th  data-options="field:'checkingOrRecheckingRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                        <th  data-options="field:'checkingOrRecheckingRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'  ,	formatter:percentageFormatter">
                            检测占进场占比
                         </th>
                    </tr>
@@ -521,7 +546,20 @@ function showcharts(){
 	
 	 openWin('/registerBillReport/product-charts.html?params='+encodeURIComponent(JSON.stringify(data) ));
 }
+function percentageFormatter(val,row){
+//<span style="url(../img/gb.png) no-repeat 0 -559px"
+console.info(val)
+if(val=='-'||val=='0.00'){
+	return '<span style="">'+val+'</span>';
+}
 
+if(val>0){
+	return '<span style="color:red;">'+val+'</span>';
+}else{
+	return '<span style="color:green;">'+val+'</span>';
+}
+
+}
 
 function closeWin(id){
     $('#'+id).remove();
