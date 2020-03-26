@@ -113,6 +113,14 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     void setProductIdList(List<Long> productIdList);
     
     
+    @ApiModelProperty(value = "IN ID")
+    @Column(name = "`id`")
+    @FieldDef(label="id")
+    List<Long> getIdList();
+
+    void setIdList(List<Long> idList);
+    
+    
     @ApiModelProperty(value = "车牌LIKE")
     @Column(name = "`plate`")
     @Like(value="RIGHT")
@@ -123,6 +131,11 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     @Transient
     String getTag();
     void setTag(String tag);
+    
+    
+    @Transient
+    String getAliasName();
+    void setAliasName(String aliasName);
 
     
 }

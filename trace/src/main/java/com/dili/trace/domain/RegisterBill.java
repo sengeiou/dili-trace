@@ -367,5 +367,15 @@ public interface RegisterBill extends IBaseDomain {
     void setCreationSource(Integer creationSource);
 
 
+    
+    
+    @ApiModelProperty(value = "检测报告单ID")
+    @Column(name = "`check_sheet_id`")
+    @FieldDef(label="check_sheet_id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getCheckSheetId();
+
+    void setCheckSheetId(Long checkSheetId);
+    
 
 }

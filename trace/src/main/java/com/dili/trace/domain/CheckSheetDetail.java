@@ -74,6 +74,7 @@ public interface CheckSheetDetail extends IBaseDomain {
 	@FieldDef(label = "originName", maxLength = 20)
 	@EditMode(editor = FieldEditor.Text, required = false)
 	String getOriginName();
+	void setOriginName(String originName);
 
 	@ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
 	@Column(name = "`detect_state`")
