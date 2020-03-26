@@ -681,7 +681,7 @@ group by
 	total_successful_checked as totalSuccessfulChecked,/*已经检测成功(初检成功,复检成功)数量 */
 	total_successful_inital_checked as totalSuccessfulInitalChecked,/*已经初检成功数量 */
 	
-	case when total_inital_checked=0 then null else total_successful_inital_checked*100/total_inital_checked end  successful_inital_checked_rate,
+	case when total_checking_or_rechecking=0 then null else total_successful_inital_checked*100/total_checking_or_rechecking end  successful_inital_checked_rate,
 	
 	
 	

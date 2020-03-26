@@ -549,14 +549,16 @@ function showcharts(){
 function percentageFormatter(val,row){
 //<span style="url(../img/gb.png) no-repeat 0 -559px"
 console.info(val)
-if(val=='-'||val=='0.00'){
+if(val=='-'){
 	return '<span style="">'+val+'</span>';
 }
-
+if(val=='0.00'){
+	return '<span style="">'+val+'%</span>';
+}
 if(val>0){
-	return '<span style="color:red;">'+val+'</span>';
+	return '<span style="color:red;">'+val+'%</span>';
 }else{
-	return '<span style="color:green;">'+val+'</span>';
+	return '<span style="color:green;">'+val+'%</span>';
 }
 
 }
