@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,14 +66,14 @@ public class DetectRecordApi {
 	@ApiOperation("上传检测记录")
 	@RequestMapping(value = "/saveRecord", method = RequestMethod.POST)
 	public BaseOutput<Boolean> saveDetectRecord(DetectRecordParam detectRecord,HttpServletRequest req) {
+		try {
+			String content=IOUtils.readLines(req.getInputStream(), StandardCharsets.UTF_8).stream().collect(Collectors.joining());
+			detectRecord=DTOUtils.as(JSON.parseObject(content), DetectRecordParam.class);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure("服务器出错");
+		}
 		LOGGER.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecord));
-//		try {
-//			List<String>list=IOUtils.readLines(req.getInputStream());
-//			System.out.println(list);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		if (!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecord.getTag())) {
 			LOGGER.error("上传检测任务结果失败:签名出错");
 			return BaseOutput.failure("签名出错");
