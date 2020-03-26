@@ -18,8 +18,8 @@ import javax.persistence.Id;
  * 
  * This file was generated on 2019-07-26 09:20:35.
  */
-@Table(name = "`approver_signature`")
-public interface ApproverSignature extends IBaseDomain {
+@Table(name = "`approver_info`")
+public interface ApproverInfo extends IBaseDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +48,7 @@ public interface ApproverSignature extends IBaseDomain {
 	public void setUserId(Long userId);
 	
 
-    @Column(name = "`sign_base64`")
+    @Transient
     @EditMode(editor = FieldEditor.Text, required = false)
 	public String getSignBase64();
 	public void setSignBase64(String signBase64);

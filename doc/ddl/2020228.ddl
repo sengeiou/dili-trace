@@ -12,12 +12,21 @@ ALTER TABLE `register_bill` ADD COLUMN `check_sheet_id`  bigint(20) default null
 
 
 
-CREATE TABLE `signature` (
+CREATE TABLE `approver_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(20) NOT NULL COMMENT '审核人名字',  
   `user_id` bigint(20) NOT NULL COMMENT '审核人ID',  
   `phone` varchar(20) NOT NULL COMMENT '审核人电话', 
-  `sign_base64` varchar(1000) NOT NULL COMMENT '审核人签名Base64图片',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `base64_signature` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `approver_info_id` bigint(20) NOT NULL COMMENT '审核人ID',  
+  `base64` varchar(1000) NOT NULL COMMENT '审核人签名Base64图片',
+  `order_num` int NOT NULL COMMENT '顺序',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -32,7 +41,7 @@ CREATE TABLE `check_sheet` (
   `valid_period` int NOT NULL COMMENT '有效天数',
   `checker_id` bigint(20) NOT NULL COMMENT '检测人ID',
   `checker_name`varchar(20) NOT NULL COMMENT '检测人姓名',
-  `signature_id`bigint(20) NOT NULL COMMENT '审核人签字ID',
+  `approver_info_id`bigint(20) NOT NULL COMMENT '审核人ID',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

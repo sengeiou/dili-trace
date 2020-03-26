@@ -1,32 +1,7 @@
 <script type="text/javascript">
 //查询常用地址列表并填充到常用地址中
 	function listUsualAddress(jqEle){
-		
-		var result=[];
-        $.ajax({
-            type: "POST",
-            url: '/usualAddress/listUsualAddress.action',
-            data: JSON.stringify({type:'user'}),
-            processData:true,
-            dataType: "json",
-            async : false,
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                if(data.code=="200"){
-                	result=data.data;
-                }
-            },
-            error: function(){
-               
-            }
-        });
-        jqEle.empty();
-       return result.map(function(city,i){
-        	var link='<a href="javascript:void(0)" style="padding:2px;margin:2px;" onclick="selectCity(this,'+city.addressId+',\''+city.mergedAddress+'\')"  title="'+city.mergedAddress+'">'+city.address+'</a>&nbsp;&nbsp;';
-        	jqEle.append($(link));
-        	return $(link);
-        	
-        });
+
 	}
     //打开新增窗口
     function openInsert(){
@@ -38,8 +13,6 @@
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
         $(":file").attr('disabled',false);
-
-
         initFileUpload();
         formFocus("_form", "_userName");
     }
@@ -47,7 +20,7 @@
     //打开修改窗口
     var formOldData={};
     function openUpdate(){
-        var selected = $("#approverSignatureGrid").datagrid("getSelected");
+        var selected = $("#approverInfoGrid").datagrid("getSelected");
         if (null == selected) {
             swal('警告','请选中一条数据', 'warning');
             return;
@@ -55,21 +28,18 @@
         $('#dlg').dialog("setTitle","签名修改");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
-        $('#_userName').textbox({readonly:true});
-        $('#_cardNo').textbox({readonly:true});
-        $('#_addr').textbox({readonly:true});
-        $('#_tallyAreaNos').tagbox('enable');
+        //$('#_userName').textbox({readonly:true});
         $('#_form').form('clear');
         initFileUpload();
-        formFocus("_form", "_name");
+        formFocus("_form", "_userName");
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
-        if(formData._cardNoFrontUrl){
+        /*if(formData._cardNoFrontUrl){
             $('#_cardNoFrontUrl').siblings('.fileimg-cover,.fileimg-edit').show();
             $('#_cardNoFrontUrl').siblings(".magnifying").attr('src',formData._cardNoFrontUrl).show();
-        }
+        }*/
 
         $('#_form').form('load', formData);
 
@@ -86,9 +56,9 @@
         var isNewData=false;
         //没有id就新增
         if(_formData.id == null || _formData.id==""){
-            _url = "${contextPath}/approverSignature/insert.action";
+            _url = "${contextPath}/approverInfo/insert.action";
         }else{//有id就修改
-            _url = "${contextPath}/approverSignature/update.action";
+            _url = "${contextPath}/approverInfo/update.action";
             isNewData=true;
         }
         $.ajax({
@@ -122,7 +92,7 @@
         }
 
         swal({
-            title : '确定要删除该用户吗？',
+            title : '确定要删除该签名吗？',
             type : 'question',
             showCancelButton : true,
             confirmButtonColor : '#3085d6',
@@ -137,14 +107,14 @@
             }
             $.ajax({
                 type: "POST",
-                url: "${contextPath}/user/delete.action",
+                url: "${contextPath}/approverInfo/delete.action",
                 data: {id: selected.id},
                 processData:true,
                 dataType: "json",
                 async : true,
                 success : function(ret) {
                     if(ret.success){
-                    	TLOG.component.operateLog('用户管理',"用户删除","【ID】:"+selected.id);
+                    	TLOG.component.operateLog('签名管理',"签名删除","【ID】:"+selected.id);
                         _userGrid.datagrid("reload");
                     }else{
                         swal(
@@ -170,13 +140,13 @@
     function queryUserGrid() {
         var opts = _userGrid.datagrid("options");
         if (null == opts.url || "" == opts.url) {
-            opts.url = "${contextPath}/approverSignature/listPage.action";
+            opts.url = "${contextPath}/approverInfo/listPage.action";
         }
 
         if(!$('#queryForm').form("validate")){
             return false;
         }
-        _userGrid.datagrid("load", bindGridMeta2Form("approverSignatureGrid", "queryForm"));
+        _userGrid.datagrid("load", bindGridMeta2Form("approverInfoGrid", "queryForm"));
 
     }
 
@@ -190,7 +160,7 @@
     function headerContextMenu(e, field){
         e.preventDefault();
         if (!cmenu){
-            createColumnMenu("approverSignatureGrid");
+            createColumnMenu("approverInfoGrid");
         }
         cmenu.menu('show', {
             left:e.pageX,
@@ -208,7 +178,7 @@
      *          表单提交需执行的任务
      */
     $(function () {
-        window._userGrid = $('#approverSignatureGrid');
+        window._userGrid = $('#approverInfoGrid');
         bindFormEvent("queryForm", "createdStart", queryUserGrid);
         initUserGrid();
         queryUserGrid();
@@ -227,20 +197,32 @@
             });
         }
     });
-
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
         function initFileUpload(){
+            /*$(":file").base64({
+          	  "onSuccess":function(inst,base64Str){
+          	    alert(base64Str);
+          	  }
+          	});*/
+            
         $(":file").fileupload({
             dataType : 'json',
             formData: {type:4,compress:true},
             done : function(e, res) {
-                if (res.result.code == 200) {
+            	
+               /* if (res.result.code == 200) {
                     var url = res.result.data;
                     $(this).siblings(".magnifying").attr('src', url).show();
                     $(this).siblings("input:hidden").val(url);
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
-                }
+                }*/
             },
-            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+            add: function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
                 var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
                 var name = data.originalFiles[0]["name"];
                 var index = name.lastIndexOf(".")+1;
@@ -255,7 +237,14 @@
                     swal('错误', '上传文件超过最大限制!', 'error');
                     return ;
                 }
-                data.submit();
+                debugger
+                toBase64(data.originalFiles[0]).then((base64) => {
+                      $(this).siblings(".magnifying").attr('src', base64).show();
+                      $(this).siblings("input:hidden").val(base64);
+                      $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                	});
+              //  console.log(await toBase64(data.originalFiles[0]));
+                //data.submit();
             }
         });
     }
@@ -266,7 +255,7 @@
     function initUserGrid() {
         var pager = _userGrid.datagrid('getPager');
         var toolbar=[
-            <#resource method="post" url="approverSignature/index.html#add">
+            <#resource method="post" url="approverInfo/index.html#add">
             {
                 iconCls:'icon-add',
                 text:'新增',
@@ -275,7 +264,7 @@
                 }
             },
             </#resource>
-            <#resource method="post" url="approverSignature/index.html#update">
+            <#resource method="post" url="approverInfo/index.html#update">
             {
                 iconCls:'icon-edit',
                 text:'修改',
@@ -286,7 +275,7 @@
             </#resource>
          
             
-            <#resource method="post" url="approverSignature/index.html#delete">
+            <#resource method="post" url="approverInfo/index.html#delete">
             {
                   iconCls:'icon-undo',
                   text:'删除',
@@ -305,24 +294,7 @@
                     doDetail();
                 }
             },
-            <#resource method="post" url="approverSignature/index.html#export">
-            {
-                iconCls:'icon-export',
-                text:'导出',
-                id:'stop_btn',
-                handler:function(){
-                    layer.confirm('确认导出数据?', {
-                        type: 0,
-                        title: '提示',
-                        btn: ['确定','取消'],
-                        yes:function(){
-                            layer.closeAll();
-                            doExport('approverSignatureGrid');
-                        }
-                    });
-                }
-            }
-            </#resource>
+
         ];
         	_userGrid.datagrid({
             toolbar:toolbar
@@ -380,7 +352,7 @@
             });
             return;
         }
-        openWin('${contextPath}/user/view/' + selected.id)
+        openWin('${contextPath}/approverInfo/view/' + selected.id)
     }
     
 
