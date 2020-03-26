@@ -66,13 +66,13 @@ public class DetectRecordApi {
 	@ApiOperation("上传检测记录")
 	@RequestMapping(value = "/saveRecord", method = RequestMethod.POST)
 	public BaseOutput<Boolean> saveDetectRecord(DetectRecordParam detectRecord,HttpServletRequest req) {
-		try {
-			String content=IOUtils.readLines(req.getInputStream(), StandardCharsets.UTF_8).stream().collect(Collectors.joining());
-			detectRecord=DTOUtils.as(JSON.parseObject(content), DetectRecordParam.class);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(),e);
-			return BaseOutput.failure("服务器出错");
-		}
+//		try {
+//			String content=IOUtils.readLines(req.getInputStream(), StandardCharsets.UTF_8).stream().collect(Collectors.joining());
+//			detectRecord=DTOUtils.as(JSON.parseObject(content), DetectRecordParam.class);
+//		} catch (IOException e) {
+//			LOGGER.error(e.getMessage(),e);
+//			return BaseOutput.failure("服务器出错");
+//		}
 		LOGGER.info(defaultConfiguration.getEnTag() + "=sys.en.tag]保存检查单:" + JSON.toJSONString(detectRecord));
 		if (!StringUtils.trimToEmpty(defaultConfiguration.getEnTag()).equals(detectRecord.getTag())) {
 			LOGGER.error("上传检测任务结果失败:签名出错");
