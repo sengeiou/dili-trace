@@ -17,8 +17,8 @@ var currentUser={"depId":"${user.depId!}"
     //表格查询
 	function loadRegisterBillGridData(param,success,error){
     	
-		console.info('loadRegisterBillGridData')
-		debugger
+		//console.info('loadRegisterBillGridData')
+		//debugger
 		$.extend(_registerBillGrid.datagrid("options").queryParams,buildGridQueryData());
 
 		
@@ -300,6 +300,18 @@ var currentUser={"depId":"${user.depId!}"
                     }
                 },
         </#resource>
+                <#resource method="post" url="registerBill/index.html#createCheckSheet">
+                {
+                    iconCls:'icon-add',
+                    text:'创建检验单',
+                    id:'createsheet-btn',
+                  //  disabled :true,
+                    handler:doCreateCheckSheet,
+                    handler:function(){
+                    	doCreateCheckSheet();
+                    }
+                },
+            </#resource>
          <#resource method="post" url="registerBill/index.html#handle">
                 {
                     iconCls:'icon-redo',
@@ -1182,7 +1194,22 @@ var currentUser={"depId":"${user.depId!}"
         }
         openWin('/registerBill/uploadDetectReport/' + selected.id);
     }
-    
+    function doCreateCheckSheet(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        
+        var rows=_registerBillGrid.datagrid("getSelections");
+        var registerBillIdList=rows.filter(function(v,i){return true;}).map(function(v,i){return v.id});
+        openWin('/checkSheet/edit.html?' +$.param({registerBillIdList:registerBillIdList},true));
+    }
     function doCopy(){
         var selected = _registerBillGrid.datagrid("getSelected");
         if (null == selected) {
@@ -1483,8 +1510,8 @@ var currentUser={"depId":"${user.depId!}"
         imgBox.find(".magnifying").attr('src', url).show();
         imgBox.find("input[type='hidden']").val(url);
         imgBox.find('.fileimg-cover,.fileimg-edit').show();
-        console.info(url)
-        debugger
+        //console.info(url)
+        //debugger
         if(td.find('.fileimg-box').length<10){
         	newImgBox.find('input[type="file"]').remove();
         	$('<input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))

@@ -33,27 +33,27 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 
 	@Transactional
 	@Override
-	public int createCheckSheet(CheckSheetInputDto input) {
+	public CheckSheet createCheckSheet(CheckSheetInputDto input) {
 
-		
-		Map<Long,String>idAndAliasNameMap=CollectionUtils.emptyIfNull(input.getRegisterBillList()).stream().filter(Objects::nonNull).filter(item->{
-			
-			return item.getId()!=null;
-			
-		}).collect(Collectors.toMap(RegisterBill::getId,item->item.getAliasName()));
-				
+		Map<Long, String> idAndAliasNameMap = CollectionUtils.emptyIfNull(input.getRegisterBillList()).stream()
+				.filter(Objects::nonNull).filter(item -> {
+
+					return item.getId() != null;
+
+				}).collect(Collectors.toMap(RegisterBill::getId, item -> item.getAliasName()));
+
 		if (idAndAliasNameMap.isEmpty()) {
-			return 0;
+			throw new BusinessException("提交的数据错误");
 		}
-		
-		List<Long> idList =new ArrayList<>(idAndAliasNameMap.keySet());
+
+		List<Long> idList = new ArrayList<>(idAndAliasNameMap.keySet());
 
 		RegisterBillDto queryCondition = DTOUtils.newDTO(RegisterBillDto.class);
 		queryCondition.setIdList(idList);
 		List<RegisterBill> registerBillList = registerBillService.listByExample(queryCondition);
 
 		if (registerBillList.isEmpty()) {
-			return 0;
+			throw new BusinessException("提交的数据错误");
 		}
 
 		boolean withoutCheckSheet = registerBillList.stream().allMatch(bill -> bill.getCheckSheetId() == null);
@@ -64,7 +64,15 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		if (!allBelongSamePerson) {
 			throw new BusinessException("登记单不属于同一个业户");
 		}
-
+		
+		boolean allChecked = registerBillList.stream().allMatch(bill -> bill.getDetectState() != null);
+		if (!allChecked) {
+			throw new BusinessException("登记单状态错误");
+		}
+		input.setCode("mycode");
+		input.setValidPeriod(0);
+		input.setDetectOperatorId(0L);
+		input.setApproverInfoId(0L);
 		this.insertExact(input);
 		List<CheckSheetDetail> checkSheetDetailList = registerBillList.stream().map(bill -> {
 
@@ -78,7 +86,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 			detail.setProductName(bill.getProductName());
 			detail.setProductAliasName(idAndAliasNameMap.get(bill.getId()));
 			detail.setRegisterBillId(bill.getId());
-			
+			detail.setDetectState(bill.getDetectState());
 			bill.setCheckSheetId(input.getId());
 			return detail;
 		}).collect(Collectors.toList());
@@ -93,7 +101,8 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		}).collect(Collectors.toList());
 		this.registerBillService.batchUpdateSelective(updateRegisterBillList);
 
-		return this.checkSheetDetailService.batchInsert(checkSheetDetailList);
+		this.checkSheetDetailService.batchInsert(checkSheetDetailList);
+		return input;
 	}
 
 }

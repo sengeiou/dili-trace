@@ -45,20 +45,20 @@ public interface CheckSheet extends IBaseDomain {
 
 	public void setCode(String code);
 
-	@Column(name = "`submitter_id`")
-	@FieldDef(label = "submitter_id")
+	@Column(name = "`id_card_no`")
+	@FieldDef(label = "id_card_no")
 	@EditMode(editor = FieldEditor.Number, required = true)
 
-	public Long getSubmitterId();
+	public String getIdCardNo();
 
-	public void setSubmitterId(Long submitterId);
+	public void setIdCardNo(String submitterId);
 
-	@Column(name = "`submitter_name`")
-	@FieldDef(label = "submitter_name")
+	@Column(name = "`user_name`")
+	@FieldDef(label = "user_name")
 	@EditMode(editor = FieldEditor.Text, required = false)
-	public String getSubmitterName();
+	public String getUserName();
 
-	public void setSubmitterName(String submitterName);
+	public void setUserName(String userName);
 
 	@Column(name = "`valid_period`")
 	@FieldDef(label = "valid_period")
@@ -68,35 +68,29 @@ public interface CheckSheet extends IBaseDomain {
 
 	public void setValidPeriod(Integer validPeriod);
 
-	@Column(name = "`checker_id`")
-	@FieldDef(label = "checker_id")
+	@Column(name = "`detect_operator_id`")
+	@FieldDef(label = "detect_operator_id")
 	@EditMode(editor = FieldEditor.Number, required = true)
 
-	public Long getCheckerId();
+	public Long getDetectOperatorId();
 
-	public void setCheckerId(Long checkerId);
+	public void setDetectOperatorId(Long detectOperatorId);
 
-	@Column(name = "`checker_name`")
-	@FieldDef(label = "checker_name")
+	@Column(name = "`detect_operator_name`")
+	@FieldDef(label = "detect_operator_name")
 	@EditMode(editor = FieldEditor.Text, required = false)
-	public String getCheckerName();
+	public String getDetectOperatorName();
 
-	public void setCheckerName(String checkerName);
+	public void setDetectOperatorName(String detectOperatorName);
 
-	@Column(name = "`order_num`")
-	@FieldDef(label = "order_num")
-	@EditMode(editor = FieldEditor.Number, required = true)
 
-	public Integer getOrderNum();
 
-	public void setOrderNum(Integer orderNum);
-
-	@Column(name = "`base64`")
-	@FieldDef(label = "base64")
+	@Column(name = "`remark`")
+	@FieldDef(label = "remark")
 	@EditMode(editor = FieldEditor.Text, required = false)
-	public String getBase64();
+	public String getRemark();
 
-	public void setBase64(String base64);
+	public void setRemark(String remark);
 
 	@ApiModelProperty(value = "创建时间")
 	@Column(name = "`created`")

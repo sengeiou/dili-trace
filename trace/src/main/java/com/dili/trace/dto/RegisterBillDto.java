@@ -116,6 +116,7 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     @ApiModelProperty(value = "IN ID")
     @Column(name = "`id`")
     @FieldDef(label="id")
+    @Operator(Operator.IN)
     List<Long> getIdList();
 
     void setIdList(List<Long> idList);
