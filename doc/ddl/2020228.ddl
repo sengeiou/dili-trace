@@ -44,6 +44,8 @@ CREATE TABLE `check_sheet` (
   `qrcode_url`varchar(150) NOT NULL COMMENT '二维码url',
   `approver_info_id`bigint(20) NOT NULL COMMENT '审核人ID',
   `remark`varchar(500) NULL COMMENT '备注',
+  `operator_id` bigint(20) NOT NULL COMMENT '操作人ID',
+  `operator_name`varchar(20) NOT NULL COMMENT '操作人姓名',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

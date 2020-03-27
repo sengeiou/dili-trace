@@ -25,6 +25,8 @@ import com.dili.trace.service.CheckSheetDetailService;
 import com.dili.trace.service.CheckSheetService;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.RegisterBillService;
+import com.diligrp.manage.sdk.domain.UserTicket;
+import com.diligrp.manage.sdk.session.SessionContext;
 
 @Service
 public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> implements CheckSheetService {
@@ -79,6 +81,10 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		String checkSheetCode = this.codeGenerateService.nextCheckSheetCode();
 		input.setCode(checkSheetCode);
 		input.setDetectOperatorId(0L);
+		UserTicket ut=this.getOptUser();
+		input.setOperatorId(ut.getId());
+		input.setOperatorName(ut.getRealName());
+		
 		this.insertExact(input);
 		
 		//生成详情并插入数据库
@@ -113,6 +119,9 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		this.registerBillService.batchUpdateSelective(updateRegisterBillList);
 
 		return input;
+	}
+	private UserTicket getOptUser() {
+		return SessionContext.getSessionContext().getUserTicket();
 	}
 
 }

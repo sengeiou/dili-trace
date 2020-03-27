@@ -100,6 +100,21 @@ public interface CheckSheet extends IBaseDomain {
 	public void setQrcodeUrl(String qrcodeUrl);
 	
 
+	
+    @Column(name = "`operator_name`")
+    @FieldDef(label="operatorName")
+    @EditMode(editor = FieldEditor.Text, required = false)
+    String getOperatorName();
+
+    void setOperatorName(String operatorName);
+    @ApiModelProperty(value = "操作人ID")
+    @Column(name = "`operator_id`")
+    @FieldDef(label="operatorId")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getOperatorId();
+
+    void setOperatorId(Long operatorId);
+    
 	@ApiModelProperty(value = "创建时间")
 	@Column(name = "`created`")
 	@FieldDef(label = "created")
