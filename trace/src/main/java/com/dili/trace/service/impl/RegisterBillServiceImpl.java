@@ -912,6 +912,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				sql.append("  (handle_result is  null or handle_result='') ");
 			}
 		}
+		if (registerBill.getHasCheckSheet() != null) {
+			if (sql.length() > 0) {
+				sql.append(" AND ");
+			}
+			if (registerBill.getHasCheckSheet()) {
+				sql.append("  (check_sheet_id is not null ) ");
+			} else {
+				sql.append("  (check_sheet_id is  null) ");
+			}
+		}
 		return sql;
 	}
 

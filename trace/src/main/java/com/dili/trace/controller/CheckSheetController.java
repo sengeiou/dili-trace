@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -32,12 +33,15 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.ApproverInfo;
 import com.dili.trace.domain.CheckSheet;
+import com.dili.trace.domain.CheckSheetDetail;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.CheckSheetInputDto;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.service.ApproverInfoService;
+import com.dili.trace.service.CheckSheetDetailService;
 import com.dili.trace.service.CheckSheetService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserPlateService;
@@ -59,19 +63,13 @@ public class CheckSheetController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CheckSheetController.class);
 
 	@Autowired
-	UserService userService;
-	@Autowired
-	UserPlateService userPlateService;
-	@Resource
-	DefaultConfiguration defaultConfiguration;
-	@Autowired
-	BaseInfoRpcService baseInfoRpcService;
-	@Autowired
 	CheckSheetService checkSheetService;
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
 	ApproverInfoService approverInfoService;
+	@Autowired
+	CheckSheetDetailService checkSheetDetailService;
 
 	@ApiOperation("跳转到CheckSheet页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -89,7 +87,8 @@ public class CheckSheetController {
 		if(registerBillIdList!=null&&!registerBillIdList.isEmpty()) {
 			RegisterBillDto queryDto=DTOUtils.newDTO(RegisterBillDto.class);
 			queryDto.setIdList(registerBillIdList);
-			List<RegisterBill>itemList=this.registerBillService.listByExample(queryDto);
+			List<RegisterBill>itemList=this.registerBillService.listByExample(queryDto).stream().filter(item->item.getCheckSheetId()==null).filter(bill -> BillDetectStateEnum.PASS.getCode().equals(bill.getDetectState())
+					|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(bill.getDetectState())).collect(Collectors.toList());
 			
 			List<String>detectOperatorNameList=itemList.stream().map(RegisterBill::getLatestDetectOperator).filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
 			
@@ -147,17 +146,30 @@ public class CheckSheetController {
 	@ApiOperation("跳转到CheckSheet页面")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap, @PathVariable Long id) {
-		User userItem = this.userService.get(id);
-		String userPlateStr = this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate)
-				.collect(Collectors.joining(","));
-		if (userItem != null) {
-			userItem.setAddr(MaskUserInfo.maskAddr(userItem.getAddr()));
-			userItem.setCardNo(MaskUserInfo.maskIdNo(userItem.getCardNo()));
-			userItem.setPhone(MaskUserInfo.maskPhone(userItem.getPhone()));
+		modelMap.put("item", null);
+		modelMap.put("checkSheetDetailList", Collections.emptyList());
+		modelMap.put("registerBillIdMap", Collections.emptyMap());
+		if(id!=null) {
+			CheckSheet checkSheet=this.checkSheetService.get(id);	
+			modelMap.put("item", checkSheet);
+			if(checkSheet!=null) {
+				ApproverInfo approverInfo=this.approverInfoService.get(checkSheet.getApproverInfoId());
+				modelMap.put("approverInfo", approverInfo);
+				CheckSheetDetail detailQuery=DTOUtils.newDTO(CheckSheetDetail.class);
+				detailQuery.setCheckSheetId(checkSheet.getId());
+				List<CheckSheetDetail>checkSheetDetailList=this.checkSheetDetailService.listByExample(detailQuery);
+				modelMap.put("checkSheetDetailList", checkSheetDetailList);
+				List<Long>registerBillIdList=checkSheetDetailList.stream().map(CheckSheetDetail::getRegisterBillId).collect(Collectors.toList());
+				if(!registerBillIdList.isEmpty()) {
+					RegisterBillDto registerBillQuery=DTOUtils.newDTO(RegisterBillDto.class);
+					registerBillQuery.setIdList(registerBillIdList);
+					Map<Long,RegisterBill>registerBillIdMap=this.registerBillService.listByExample(registerBillQuery).stream().collect(Collectors.toMap(RegisterBill::getId, Function.identity()));
+					modelMap.put("registerBillIdMap", registerBillIdMap);
+				}
+				
+			}
 		}
-
-		modelMap.put("userItem", userItem);
-		modelMap.put("userPlates", userPlateStr);
+		
 
 		return "checkSheet/view";
 	}

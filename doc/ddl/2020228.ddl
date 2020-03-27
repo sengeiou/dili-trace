@@ -35,12 +35,13 @@ CREATE TABLE `base64_signature` (
 
 CREATE TABLE `check_sheet` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `code` varchar(20) NOT NULL COMMENT '编号',
+  `code` varchar(30) NOT NULL COMMENT '编号',
   `id_card_no`varchar(20) NOT NULL COMMENT '提交人身份证号',
   `user_name`varchar(20) NOT NULL COMMENT '提交人姓名',
   `valid_period` int NOT NULL COMMENT '有效天数',
   `detect_operator_id` bigint(20) NOT NULL COMMENT '检测人ID',
   `detect_operator_name`varchar(20) NOT NULL COMMENT '检测人姓名',
+  `qrcode_url`varchar(150) NOT NULL COMMENT '二维码url',
   `approver_info_id`bigint(20) NOT NULL COMMENT '审核人ID',
   `remark`varchar(500) NULL COMMENT '备注',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

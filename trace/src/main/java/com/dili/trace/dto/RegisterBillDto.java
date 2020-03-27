@@ -72,6 +72,11 @@ public interface RegisterBillDto extends RegisterBill, IMybatisForceParams {
     void setHasOriginCertifiy(Boolean hasOriginCertifiy);
 
     
+    @Transient
+    Boolean getHasCheckSheet();
+    void setHasCheckSheet(Boolean hasCheckSheet);
+    
+    
     @Column(name = "`state`")
     @Operator(Operator.IN)
     List<Integer> getStateList();

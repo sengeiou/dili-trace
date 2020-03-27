@@ -20,8 +20,10 @@ import com.dili.trace.domain.CheckSheetDetail;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.CheckSheetInputDto;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.service.CheckSheetDetailService;
 import com.dili.trace.service.CheckSheetService;
+import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.RegisterBillService;
 
 @Service
@@ -30,6 +32,8 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 	RegisterBillService registerBillService;
 	@Autowired
 	CheckSheetDetailService checkSheetDetailService;
+	@Autowired
+	CodeGenerateService codeGenerateService;
 
 	@Transactional
 	@Override
@@ -60,20 +64,24 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		if (!withoutCheckSheet) {
 			throw new BusinessException("已经有登记单创建了检验单");
 		}
-		boolean allBelongSamePerson = registerBillList.stream().allMatch(bill -> bill.getCheckSheetId() == null);
+		boolean allBelongSamePerson = registerBillList.stream().map(RegisterBill::getIdCardNo).distinct().count() == 1;
 		if (!allBelongSamePerson) {
 			throw new BusinessException("登记单不属于同一个业户");
 		}
-		
-		boolean allChecked = registerBillList.stream().allMatch(bill -> bill.getDetectState() != null);
+
+		boolean allChecked = registerBillList.stream()
+				.allMatch(bill -> BillDetectStateEnum.PASS.getCode().equals(bill.getDetectState())
+						|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(bill.getDetectState()));
 		if (!allChecked) {
 			throw new BusinessException("登记单状态错误");
 		}
-		input.setCode("mycode");
-		input.setValidPeriod(0);
+		//生成编号，插入数据库
+		String checkSheetCode = this.codeGenerateService.nextCheckSheetCode();
+		input.setCode(checkSheetCode);
 		input.setDetectOperatorId(0L);
-		input.setApproverInfoId(0L);
 		this.insertExact(input);
+		
+		//生成详情并插入数据库
 		List<CheckSheetDetail> checkSheetDetailList = registerBillList.stream().map(bill -> {
 
 			CheckSheetDetail detail = DTOUtils.newDTO(CheckSheetDetail.class);
@@ -99,9 +107,11 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 			item.setCheckSheetId(bill.getCheckSheetId());
 			return item;
 		}).collect(Collectors.toList());
-		this.registerBillService.batchUpdateSelective(updateRegisterBillList);
 
 		this.checkSheetDetailService.batchInsert(checkSheetDetailList);
+		//更新登记单信息
+		this.registerBillService.batchUpdateSelective(updateRegisterBillList);
+
 		return input;
 	}
 

@@ -91,6 +91,14 @@ public interface CheckSheet extends IBaseDomain {
 	public String getRemark();
 
 	public void setRemark(String remark);
+	
+	@Column(name = "`qrcode_url`")
+	@FieldDef(label = "qrcode_url")
+	@EditMode(editor = FieldEditor.Text, required = false)
+	public String getQrcodeUrl();
+
+	public void setQrcodeUrl(String qrcodeUrl);
+	
 
 	@ApiModelProperty(value = "创建时间")
 	@Column(name = "`created`")

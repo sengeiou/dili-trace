@@ -23,88 +23,146 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Service
-public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long> implements CodeGenerateService, ApplicationContextAware {
+public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
+		implements CodeGenerateService, ApplicationContextAware {
 	private static final String SAMPLE_CODE_TYPE = "SAMPLE_CODE";
+	private static final String CHECKSHEET_CODE_TYPE = "CHECKSHEET_CODE";
 
 	@Autowired
 	RegisterBillService registerBillService;
 
-
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		RegisterBill domain=DTOUtils.newDTO(RegisterBill.class);
+
+		this.checkAndInitSampleCode();
+		this.checkAndInitCheckSheetCode();
+	}
+
+	private boolean checkAndInitSampleCode() {
+		RegisterBill domain = DTOUtils.newDTO(RegisterBill.class);
 		domain.setOrder("desc");
 		domain.setSort("sample_code");
 		domain.setPage(1);
 		domain.setRows(1);
-		RegisterBill registerBill=this.registerBillService.listByExample(domain).stream().findFirst()
+		RegisterBill registerBill = this.registerBillService.listByExample(domain).stream().findFirst()
 				.orElse(DTOUtils.newDTO(RegisterBill.class));
-		String maxSampleCode=registerBill.getSampleCode();
-		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst().orElse(DTOUtils.newDTO(CodeGenerate.class));
+		String maxSampleCode = registerBill.getSampleCode();
+		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst()
+				.orElse(DTOUtils.newDTO(CodeGenerate.class));
 		codeGenerate.setPattern("yyyyMMdd");
 		codeGenerate.setType(SAMPLE_CODE_TYPE);
 		codeGenerate.setPrefix("c");
-		
-		if(codeGenerate.getId()==null) {
-			if(StringUtils.isNotBlank(maxSampleCode)) {
+
+		if (codeGenerate.getId() == null) {
+			if (StringUtils.isNotBlank(maxSampleCode)) {
 				codeGenerate.setSegment(maxSampleCode.substring(1, 9));
 				codeGenerate.setSeq(Long.valueOf(maxSampleCode.substring(9, 14)));
 			}
 			this.insertSelective(codeGenerate);
-		}else {
-			if(StringUtils.isNotBlank(maxSampleCode)) {
-				String segment=maxSampleCode.substring(1, 9);
-				Long seq=Long.valueOf(maxSampleCode.substring(9, 14));
-				if(!segment.equals(codeGenerate.getSegment())||!seq.equals(codeGenerate.getSeq())) {
+		} else {
+			if (StringUtils.isNotBlank(maxSampleCode)) {
+				String segment = maxSampleCode.substring(1, 9);
+				Long seq = Long.valueOf(maxSampleCode.substring(9, 14));
+				if (!segment.equals(codeGenerate.getSegment()) || !seq.equals(codeGenerate.getSeq())) {
 					codeGenerate.setSegment(segment);
 					codeGenerate.setSeq(seq);
 					this.updateSelective(codeGenerate);
 				}
-				
-				
+
 			}
-			
-			
-			
+
 		}
-		
+		return true;
 	}
+
+	private boolean checkAndInitCheckSheetCode() {
+
+		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(CHECKSHEET_CODE_TYPE).stream().findFirst()
+				.orElse(DTOUtils.newDTO(CodeGenerate.class));
+		codeGenerate.setPattern("yyyyMMdd");
+		codeGenerate.setType(CHECKSHEET_CODE_TYPE);
+		codeGenerate.setPrefix("SGJC");
+
+		if (codeGenerate.getId() == null) {
+			LocalDateTime now = LocalDateTime.now();
+
+			String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
+			codeGenerate.setSegment(nextSegment);
+			codeGenerate.setSeq(0L);
+			this.insertSelective(codeGenerate);
+		}
+
+		return true;
+
+	}
+
 	private CodeGenerateMapper getMapper() {
 
 		return (CodeGenerateMapper) this.getDao();
 	}
 
-
 	@Transactional(propagation = Propagation.REQUIRED)
 	public String nextSampleCode() {
 
-		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst().orElse(null);
-		if(codeGenerate==null) {
-					throw new AppException("生成采样单编号错误");
-		};
+		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst()
+				.orElse(null);
+		if (codeGenerate == null) {
+			throw new AppException("生成采样单编号错误");
+		}
+		;
 		// 时间比较
 		LocalDateTime now = LocalDateTime.now();
-		
-		String nextSegment=now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
-		if(!nextSegment.equals(codeGenerate.getSegment())) {
-			
+
+		String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
+		if (!nextSegment.equals(codeGenerate.getSegment())) {
+
 			codeGenerate.setSeq(1L);
 			codeGenerate.setSegment(nextSegment);
 			codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
-			
-		}else {
-			
-			codeGenerate.setSeq(codeGenerate.getSeq()+1);
+
+		} else {
+
+			codeGenerate.setSeq(codeGenerate.getSeq() + 1);
 			codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
-			
+
 		}
-		
 
 		this.updateSelective(codeGenerate);
 
-		return StringUtils.trimToEmpty(codeGenerate.getPrefix())
-				.concat(nextSegment)
+		return StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
 				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), 5, "0"));
 	}
+	@Transactional(propagation = Propagation.REQUIRED)
+	public String nextCheckSheetCode() {
+
+		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(CHECKSHEET_CODE_TYPE).stream().findFirst()
+				.orElse(null);
+		if (codeGenerate == null) {
+			throw new AppException("生成检验单编号错误");
+		}
+		
+		// 时间比较
+		LocalDateTime now = LocalDateTime.now();
+
+		String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
+		if (!nextSegment.equals(codeGenerate.getSegment())) {
+
+			codeGenerate.setSeq(1L);
+			codeGenerate.setSegment(nextSegment);
+			codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
+
+		} else {
+
+			codeGenerate.setSeq(codeGenerate.getSeq() + 1);
+			codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
+
+		}
+
+		this.updateSelective(codeGenerate);
+
+		return StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
+				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), 6, "0"));
+	}
+
 
 }

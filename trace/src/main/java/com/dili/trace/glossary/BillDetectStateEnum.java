@@ -11,9 +11,21 @@ package com.dili.trace.glossary;
  */
 public enum BillDetectStateEnum {
 
+	/**
+	 * 初检合格
+	 */
     PASS(1, "初检合格"),
+    /**
+     * 初检不合格
+     */
     NO_PASS(2, "初检不合格"),
+    /**
+     * 复检合格
+     */
     REVIEW_PASS(3, "复检合格"),
+    /**
+     * 复检不合格
+     */
     REVIEW_NO_PASS(4, "复检不合格"),
     ;
 

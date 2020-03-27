@@ -9,6 +9,11 @@
     <div class="form-box border">
         <form id="createCheckSheetForm" class="form-inline" role="form">
             <div class="form-item-group">
+            <%if(itemList.~size==0){%>
+	            <div class="form-group" >
+	                   <label class="label-title text-right"  style="width: 300px;"><font style="font-size: 20px">没有有效的登记单</font></label>
+	             </div>
+            <%}%>
             <%for (item in itemList){%>
 				<input type="hidden" value="${item.id}"  name="registerBillList[${itemLP.index-1}][id]"/>
  				<div class="form-group">
@@ -37,13 +42,13 @@
 			
 			     <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>有效天数</label>
-                    <input type="text" class="form-control input-sm"  name="validPeriod" value=""  />
+                    <input type="text" class="form-control input-sm  isNaturalNum"  name="validPeriod" value=""  min="1"  required="required"/>
                 </div>
                  <div class="form-group">
                       <label class="label-title text-right"><span class="red">&lowast;</span>提交人</label>
                       <input type="hidden" name="userName"/>
-                    	<select name="idCardNo"  class="form-control input-sm"  >
-                    	<option value="">请选择</option>
+                    	<select name="idCardNo"  class="form-control input-sm"   required="required">
+                    			<option value="">请选择</option>
 						         <%for(registerUser in registerUserList){%>
                                   <option value="${registerUser.idCardNo}">${registerUser.name}</option>
                                <%}%>
@@ -52,7 +57,8 @@
                  
                  <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测人</label>
-                               <select name="detectOperatorName"  class="form-control input-sm"  >
+                               <select name="detectOperatorName"  class="form-control input-sm"   required="required">
+                               <option value="">请选择</option>
                                <%for(detectOperatorName in detectOperatorNameList){%>
                                   <option value="${detectOperatorName}">${detectOperatorName}</option>
                                <%}%>
@@ -61,25 +67,24 @@
                 </div>
                 <div class="form-group">
                                   <label class="label-title text-right"><span class="red">&lowast;</span>审核人</label>
-                                    <select id="approverInfoId"  class="form-control input-sm"  >
+                                    <select name="approverInfoId"  class="form-control input-sm"   required="required">
+                                    		<option value="">请选择</option>
 								            <%for(approverInfo in approverInfoList){%>
-                               
-                                  <option value="${approverInfo.id}">${approverInfo.userName}</option>
-                               <%}%>
+                                  			<option value="${approverInfo.id}">${approverInfo.userName}</option>
+                               				<%}%>
 								</select>
 
                 </div>
-               <div class="form-group" style="width: 100%">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>备注</label>
-                        <textarea  class="form-control" name="remark" style="width: 55%"  rows="5" cols="10"></textarea>
+               <div class="form-group" style="width: 100%;padding-top: 20px">
+                    <label class="label-title text-right">备注</label>
+                    <textarea  class="form-control" name="remark" style="width: 55%"  rows="5" cols="10"></textarea>
                 </div>
             </div>
         </form>
         
     </div>
-    <div class="text-center mt30">
-        <button class="btn-main2 btn-sm" onclick="createCheckSheet()">提交</button>&nbsp;&nbsp;
+    <div class="text-center mt30" style="width: 60%">
+	    <button class="btn-main2 btn-sm"  style="display: none;" onclick="createCheckSheet()">提交</button>&nbsp;&nbsp;
         <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
     </div>
 </div>
@@ -87,14 +92,26 @@
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
 <script src="${contextPath!}/resources/js/jquery-serializeForm.min.js"></script>
 <script type="text/javascript">
-///checkSheet/insert.action
+
 <!--
+var itemSize=${itemList.~size};
+//如果没有登记单，隐藏提交并禁用所有输入和选择框
+if(itemSize>0){
+	$('.btn-main2').show();
+}else{
+	$('input,select,textarea').attr('readonly',true).attr('disabled',true);
+}
+//选择名称的同时提交身份证号码
 $('select[name="idCardNo"]').on('change',function(){
 	var userName=$(this).find( "option:selected" ).text()
 	$('input[name="userName"]').val(userName)
 });
 
 function createCheckSheet(){
+	
+		if($('#createCheckSheetForm').validate().form()==false){
+			return;
+		}
 		var formData=$('#createCheckSheetForm').serializeForm();
 		$.ajax({
 		    type: "POST",
@@ -117,7 +134,7 @@ function createCheckSheet(){
 		        }else{
 		             swal(
 	                         '错误',
-	                         ret.result,
+	                         data.result,
 	                         'error'
 	                 );
 		        }
