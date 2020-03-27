@@ -305,7 +305,7 @@ var currentUser={"depId":"${user.depId!}"
                     iconCls:'icon-add',
                     text:'创建检验单',
                     id:'createsheet-btn',
-                  //  disabled :true,
+                    disabled :true,
                     handler:doCreateCheckSheet,
                     handler:function(){
                     	doCreateCheckSheet();
@@ -426,7 +426,7 @@ var currentUser={"depId":"${user.depId!}"
         $('#handle-btn').linkbutton('disable');*/
         
         var btnArray=['upload-detectreport-btn','upload-origincertifiy-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
-        	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn','remove-reportAndcertifiy-btn']
+        	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn','remove-reportAndcertifiy-btn','createsheet-btn']
 	    for (var i = 0; i < btnArray.length; i++) {
 	        var btnId = btnArray[i];
 	        $('#'+btnId).linkbutton('enable');
@@ -496,6 +496,24 @@ var currentUser={"depId":"${user.depId!}"
         if(rows.length==0){
         	return;
         }
+        
+	    var rows=_registerBillGrid.datagrid("getSelections");
+		var btnStatus={'createsheet-btn':false};
+		$.each(rows,function(i,rows){
+	        if(rows.$_detectState==${@com.dili.trace.glossary.BillDetectStateEnum.PASS.getCode()} || rows.$_detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_PASS.getCode()}){
+	        	if(row.checkSheetId&&row.checkSheetId!=null&&row.checkSheetId!=''){
+	        		btnStatus['createsheet-btn']=false;
+	        	}else{
+	        		btnStatus['createsheet-btn']=true;
+	        	}
+	        	return;
+	         }
+		});
+		
+		if(btnStatus['createsheet-btn']==true){
+			 $('#createsheet-btn').show();
+		}
+		
         if(rows.length>1){
         	//batch
             if(isOnlyBatchAudit()){
@@ -560,6 +578,13 @@ var currentUser={"depId":"${user.depId!}"
               }
            }
         }
+
+			
+		
+
+        
+        
+       
       //debugger
         //if(selected.handleResultUrl&&selected.handleResult&&selected.handleResultUrl!=null&&selected.handleResult!=null&&selected.handleResultUrl!=''&&selected.handleResult!=''){
         	 //$('#handle-btn').linkbutton('disable');

@@ -15,6 +15,9 @@ public class Base64SignatureServiceImpl extends BaseServiceImpl<Base64Signature,
 
 	@Override
 	public String findBase64SignatureByApproverInfoId(Long approverInfoId) {
+		if(approverInfoId==null) {
+			return "";
+		}
 		Base64Signature condition = DTOUtils.newDTO(Base64Signature.class);
 		condition.setApproverInfoId(approverInfoId);
 		condition.setSort("order_num");

@@ -58,6 +58,15 @@ public class ApproverInfoController {
 		return out.toString();
 	}
 
+	@ApiOperation("查询ApproverInfo签名")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", paramType = "form", value = "ApproverInfo的主键", required = true, dataType = "long") })
+	@RequestMapping(value = "/findBase64Sign.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput findBase64Sign(ApproverInfo input) {
+		 String base64Image=this.base64SignatureService.findBase64SignatureByApproverInfoId(input.getId());
+		 return BaseOutput.success().setData(base64Image);
+	}
+	
 	@ApiOperation("新增ApproverInfo")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = true, dataType = "string") })

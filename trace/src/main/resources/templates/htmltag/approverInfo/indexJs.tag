@@ -8,6 +8,7 @@
         $('#dlg').dialog("setTitle","签名新增");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
+        $('#_form').form('clear');
         $('#_userName').textbox({readonly:false});
         $('#_phone').textbox({readonly:false});
         $(".magnifying").hide();
@@ -36,12 +37,29 @@
         formData = addKeyStartWith(getOriginalData(formData),"_");
         $(".magnifying").hide();
         $(".fileimg-cover,.fileimg-edit").hide();
-        /*if(formData._cardNoFrontUrl){
-            $('#_cardNoFrontUrl').siblings('.fileimg-cover,.fileimg-edit').show();
-            $('#_cardNoFrontUrl').siblings(".magnifying").attr('src',formData._cardNoFrontUrl).show();
-        }*/
-
         $('#_form').form('load', formData);
+        
+        $.ajax({
+            type: "POST",
+            url: " ${contextPath}/approverInfo/findBase64Sign.action",
+            data: {id:selected.id},
+            processData:true,
+            dataType: "json",
+            async : true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if(ret.code=="200"){
+                	   $('#_signBase64').siblings('.fileimg-cover,.fileimg-edit').show();
+                       $('#_signBase64').siblings(".magnifying").attr('src',ret.data).show();
+                       $('input[name="_signBase64"]').val(ret.data);
+                }else{
+                   
+                }
+            },
+            error: function(){
+                
+            }
+        });
 
         formOldData=$('#_form').serializeObject();
       
@@ -61,6 +79,9 @@
             _url = "${contextPath}/approverInfo/update.action";
             isNewData=true;
         }
+        
+        var signBase64=encodeURIComponent(_formData['signBase64'])
+        _formData['signBase64']=signBase64;
         $.ajax({
             type: "POST",
             url: _url,
@@ -237,8 +258,9 @@
                     swal('错误', '上传文件超过最大限制!', 'error');
                     return ;
                 }
-                debugger
+                
                 toBase64(data.originalFiles[0]).then((base64) => {
+                	 
                       $(this).siblings(".magnifying").attr('src', base64).show();
                       $(this).siblings("input:hidden").val(base64);
                       $(this).siblings('.fileimg-cover,.fileimg-edit').show();

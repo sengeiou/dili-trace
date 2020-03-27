@@ -16,7 +16,7 @@ CREATE TABLE `approver_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(20) NOT NULL COMMENT '审核人名字',  
   `user_id` bigint(20) NOT NULL COMMENT '审核人ID',  
-  `phone` varchar(20) NOT NULL COMMENT '审核人电话', 
+  `phone` varchar(20) NULL COMMENT '审核人电话', 
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
