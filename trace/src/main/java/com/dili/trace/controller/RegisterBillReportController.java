@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
@@ -405,11 +406,11 @@ public class RegisterBillReportController {
 			List<GroupByProductReportDto> otherList = list.subList(sumIndex, list.size());
 
 			GroupByProductReportDto otherSummaryDto = otherSummary.get();
-			List<String> methodNames = Stream.of(otherSummary.getClass().getDeclaredMethods()).map(Method::getName)
+			List<String> methodNames = Stream.of(otherSummaryDto.getClass().getDeclaredMethods()).map(Method::getName)
 					.collect(Collectors.toList());
 
-			List<Pair<Method, Method>> methodPairs = Stream.of(PropertyUtils.getPropertyDescriptors(otherSummary))
-					.filter(p -> p.getReadMethod().getReturnType() == Long.class)
+			List<Pair<Method, Method>> methodPairs = Stream.of(PropertyUtils.getPropertyDescriptors(otherSummaryDto))
+					.filter(p -> p.getReadMethod().getReturnType() == Long.class||p.getReadMethod().getName().equals("getTotalWeight"))
 					.filter(p -> p.getWriteMethod().getParameterCount() == 1)
 					.filter(p -> p.getWriteMethod().getParameterTypes()[0] == p.getReadMethod().getReturnType())
 					.filter(p -> methodNames.contains(p.getReadMethod().getName()))
@@ -427,10 +428,19 @@ public class RegisterBillReportController {
 						try {
 							Object tValue = pair.getKey().invoke(t, new Object[0]);
 							Object uValue = pair.getKey().invoke(u, new Object[0]);
-							if (uValue != null) {
-								Long summaryValue = ((Long) tValue) + ((Long) uValue);
-								pair.getRight().invoke(t, summaryValue);
-
+							if(tValue!=null||uValue!=null) {
+								Class<?>type=(tValue!=null?tValue.getClass():uValue.getClass());
+								if(type==Long.class) {
+									
+									Long summaryValue = (tValue==null?0L:(Long)tValue) + (uValue==null?0L:(Long)uValue);
+									pair.getRight().invoke(t, summaryValue);
+									
+								}else if(type==BigDecimal.class) {
+									
+									BigDecimal summaryValue = ((tValue==null?BigDecimal.ZERO:(BigDecimal)tValue)).add((uValue==null?BigDecimal.ZERO:(BigDecimal)uValue));
+									pair.getRight().invoke(t, summaryValue);
+								}
+								
 							}
 
 						} catch (IllegalAccessException | InvocationTargetException e) {

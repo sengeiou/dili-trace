@@ -124,8 +124,18 @@ function prePrint(){
 	        if(ret.code=="200"){
 	        	console.info(ret);
 	        	debugger
-	        	callbackObj.printDirect(JSON.stringify(ret),"TestReport");
-	        	$('.btn-main2').hide();
+	        	if(callbackObj&&callbackObj.printDirect){
+	        		callbackObj.printDirect(JSON.stringify(ret),"TestReport");
+	        		$('.btn-main2').hide();
+	        	}else{
+	        		 swal(
+	                         '错误',
+	                         '请升级客户端或者在客户端环境运行当前程序',
+	                         'error'
+	                 );
+	        	}
+	        	
+	        	
 	        }else{
 	             swal(
                          '错误',

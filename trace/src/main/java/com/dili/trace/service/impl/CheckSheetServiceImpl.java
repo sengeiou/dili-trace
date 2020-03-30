@@ -133,7 +133,8 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 			// 转换成png格式的IO流
 			ImageIO.write(image, "jpeg", byteArrayOutputStream);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(),e);
+			throw new RuntimeException(e);
 		}
 		byte[] bytes = byteArrayOutputStream.toByteArray();
 		String base64 = Base64.getEncoder().encodeToString(bytes).trim();
