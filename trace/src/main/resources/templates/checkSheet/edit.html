@@ -145,13 +145,13 @@ function prePrint(){
 	});
 }
 
-
+//客户端错误回调方法
 function handleError(ret){
 	
 	
 }
+//客户端提交数据并同步获得提交后的数据
 function createCheckSheet(){
-	
 		if($('#createCheckSheetForm').validate().form()==false){
 			return;
 		}
@@ -174,8 +174,9 @@ function createCheckSheet(){
 
 		    }
 		});
+		debugger
 		console.info(result);
-		return result;
+		return JSON.stringify(result)
 }
 $('.fileimg-view').on('click', function () {
     var url = $(this).parent().siblings(".magnifying").attr('src');
