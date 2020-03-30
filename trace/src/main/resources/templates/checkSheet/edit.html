@@ -154,7 +154,7 @@ function prePrint(){
 }
 
 function createBase64QrCode(qrcodeurl){
-	var qr = new QRious({ value: qrcodeurl});
+	var qr = new QRious({ value: qrcodeurl,level:'M'});
 	/*
 	qr.toDataURL();
 	//=> "data:image/png;base64,iVBOR...AIpqDnseH86KAAAAAElFTkSuQmCC"
