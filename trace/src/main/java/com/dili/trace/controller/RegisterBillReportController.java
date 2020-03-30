@@ -182,7 +182,11 @@ public class RegisterBillReportController {
 			}
 			
 			
-			
+		}else {
+			dto.setMomStart(null);
+			dto.setMomEnd(null);
+			dto.setYoyStart(null);
+			dto.setYoyEnd(null);
 		}
 		
 		return dto;
