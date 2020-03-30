@@ -307,7 +307,12 @@
                	 </div>
                
             <%}%>
-
+            
+            <%if(isNotEmpty(registerBill.checkSheetId)){%>
+				<div class="form-item-group">
+	            		<h4 class="form-item-title" ><a href="javascript:void(0);" onclick="showCheckSheet(${registerBill.checkSheetId})">点击此处查看检测报告</a></h4>
+	            </div>
+            <%}%>
         </form>
     </div>
 
@@ -323,6 +328,10 @@ color:#333!important;
 </style>
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
 <script>
+	function showCheckSheet(checkSheetId){
+		var url="${contextPath}/checkSheet/view/"+checkSheetId;
+		$(window.parent.document.body).append('<iframe id="checksheet_view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0;z-index:99999"></iframe>');
+	}
 	function rotateImg(angle){
 		$('#showedImg').rotate($('#showedImg').getRotateAngle()[0]+angle);
 	}
