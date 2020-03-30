@@ -28,7 +28,7 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	// 登记来源(交易区、理货区)
 	private Integer registerSource;
 	// 交易区编号
-	private Long tradeTypeId;
+	private String tradeTypeId;
 	// 商品名称
 	private String productName;
 	
@@ -174,11 +174,11 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 		this.registerSource = registerSource;
 	}
 
-	public Long getTradeTypeId() {
+	public String getTradeTypeId() {
 		return tradeTypeId;
 	}
 
-	public void setTradeTypeId(Long tradeTypeId) {
+	public void setTradeTypeId(String tradeTypeId) {
 		this.tradeTypeId = tradeTypeId;
 	}
 

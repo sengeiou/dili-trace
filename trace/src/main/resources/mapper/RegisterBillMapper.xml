@@ -293,14 +293,14 @@
      	  <if test="registerSource!=null">
      		AND register_source=#{registerSource}
      	 </if>
-     	 <if test="tradeTypeId!=null">
+     	 <if test="tradeTypeId!=''">
      		AND trade_type_id=#{tradeTypeId}
      	 </if>
      	 <if test="plate!=null  and plate!=''">
      		AND plate like '${plate}%'
      	 </if>
-     	 <if test="hasCheckSheet!=null ">
-	     	  <if test="hasCheckSheet==true ''">
+     	 <if test="hasCheckSheet !=null ">
+	     	  <if test="hasCheckSheet==true">
 	     		AND check_sheet_id  IS NOT NULL
 	     	 </if>
 	     	 <if test="hasCheckSheet==false">
