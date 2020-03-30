@@ -106,5 +106,14 @@ public interface CheckSheetDetail extends IBaseDomain {
 	Date getModified();
 
 	void setModified(Date modified);
+	
+	@Transient
+    Integer getOrderNumber();
+    void setOrderNumber(Integer orderNumber);
+    
+	
+	@Transient
+    String getDetectStateView();
+    void setDetectStateView(String detectStateView);
 
 }

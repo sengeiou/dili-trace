@@ -1,6 +1,7 @@
 package com.dili.trace.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.MutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.ApproverInfo;
 import com.dili.trace.domain.CheckSheet;
 import com.dili.trace.domain.CheckSheetDetail;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.CheckSheetInputDto;
+import com.dili.trace.dto.CheckSheetPrintDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.BillDetectStateEnum;
+import com.dili.trace.service.ApproverInfoService;
+import com.dili.trace.service.Base64SignatureService;
 import com.dili.trace.service.CheckSheetDetailService;
 import com.dili.trace.service.CheckSheetService;
 import com.dili.trace.service.CodeGenerateService;
@@ -36,11 +45,111 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 	CheckSheetDetailService checkSheetDetailService;
 	@Autowired
 	CodeGenerateService codeGenerateService;
+	@Autowired ApproverInfoService approverInfoService;
+	@Autowired Base64SignatureService base64SignatureService;
 
 	@Transactional
 	@Override
 	public CheckSheet createCheckSheet(CheckSheetInputDto input) {
 
+		Triple<CheckSheet, List<CheckSheetDetail>, List<RegisterBill>> triple = this.buildCheckSheet(input);
+		CheckSheet checkSheet = triple.getLeft();
+
+		// 生成编号，插入数据库
+		String checkSheetCode = this.codeGenerateService.nextCheckSheetCode();
+		checkSheet.setCode(checkSheetCode);
+
+		this.insertExact(checkSheet);
+
+		// 生成详情并插入数据库
+		List<CheckSheetDetail> checkSheetDetailList = triple.getMiddle().stream().map(bill -> {
+
+			CheckSheetDetail detail = DTOUtils.newDTO(CheckSheetDetail.class);
+			detail.setCheckSheetId(checkSheet.getId());
+
+			bill.setCheckSheetId(checkSheet.getId());
+			return detail;
+		}).collect(Collectors.toList());
+
+		List<RegisterBill> updateRegisterBillList = triple.getRight().stream().map(bill -> {
+
+			RegisterBill item = DTOUtils.newDTO(RegisterBill.class);
+
+			item.setId(bill.getId());
+			item.setCheckSheetId(bill.getCheckSheetId());
+			return item;
+		}).collect(Collectors.toList());
+
+		this.checkSheetDetailService.batchInsert(checkSheetDetailList);
+		// 更新登记单信息
+		this.registerBillService.batchUpdateSelective(updateRegisterBillList);
+
+		return checkSheet;
+	}
+
+	private UserTicket getOptUser() {
+		return SessionContext.getSessionContext().getUserTicket();
+	}
+
+	@Override
+	public CheckSheetPrintDto prePrint(CheckSheetInputDto input) {
+		Triple<CheckSheet, List<CheckSheetDetail>, List<RegisterBill>> triple = this.buildCheckSheet(input);
+		input.setRegisterBillList(Collections.emptyList());
+		CheckSheetPrintDto resultDto = new CheckSheetPrintDto();
+		resultDto.setCheckSheet(triple.getLeft());
+		
+		List<CheckSheetDetail>checkSheetDetailList=triple.getMiddle();
+
+		resultDto.setCheckSheetDetailList(checkSheetDetailList);
+		return resultDto;
+	}
+
+	private Triple<CheckSheet, List<CheckSheetDetail>, List<RegisterBill>> buildCheckSheet(CheckSheetInputDto input) {
+		Pair<List<RegisterBill>, Map<Long, String>> pair = this.checkInputDto(input);
+		Map<Long, String> idAndAliasNameMap = pair.getValue();
+
+		List<RegisterBill> registerBillList = pair.getKey();
+		// 生成编号，插入数据库
+		input.setDetectOperatorId(0L);
+		UserTicket ut = this.getOptUser();
+		input.setOperatorId(ut.getId());
+		input.setOperatorName(ut.getRealName());
+
+		// 生成详情并插入数据库
+		List<CheckSheetDetail> checkSheetDetailList = registerBillList.stream().map(bill -> {
+
+			CheckSheetDetail detail = DTOUtils.newDTO(CheckSheetDetail.class);
+			detail.setCheckSheetId(input.getId());
+			detail.setCreated(new Date());
+			detail.setModified(new Date());
+			detail.setOriginId(bill.getOriginId());
+			detail.setOriginName(bill.getOriginName());
+			detail.setProductId(bill.getProductId());
+			detail.setProductName(bill.getProductName());
+			detail.setProductAliasName(idAndAliasNameMap.get(bill.getId()));
+			detail.setRegisterBillId(bill.getId());
+			detail.setDetectState(bill.getDetectState());
+			return detail;
+		}).collect(Collectors.toList());
+
+		List<RegisterBill> updateRegisterBillList = registerBillList.stream().map(bill -> {
+
+			RegisterBill item = DTOUtils.newDTO(RegisterBill.class);
+			item.setId(bill.getId());
+			item.setCheckSheetId(bill.getCheckSheetId());
+			return item;
+		}).collect(Collectors.toList());
+		return MutableTriple.of(input, checkSheetDetailList, updateRegisterBillList);
+
+	}
+
+	/**
+	 * 检查输入的数据及状态
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private Pair<List<RegisterBill>, Map<Long, String>> checkInputDto(CheckSheetInputDto input) {
 		Map<Long, String> idAndAliasNameMap = CollectionUtils.emptyIfNull(input.getRegisterBillList()).stream()
 				.filter(Objects::nonNull).filter(item -> {
 
@@ -51,7 +160,12 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		if (idAndAliasNameMap.isEmpty()) {
 			throw new BusinessException("提交的数据错误");
 		}
-
+		ApproverInfo approverInfo=this.approverInfoService.get(input.getApproverInfoId());
+		if (approverInfo==null) {
+			throw new BusinessException("提交的数据错误");
+		}
+		String base64Sign=this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
+		input.setApproverBase64Sign(base64Sign);
 		List<Long> idList = new ArrayList<>(idAndAliasNameMap.keySet());
 
 		RegisterBillDto queryCondition = DTOUtils.newDTO(RegisterBillDto.class);
@@ -77,51 +191,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		if (!allChecked) {
 			throw new BusinessException("登记单状态错误");
 		}
-		//生成编号，插入数据库
-		String checkSheetCode = this.codeGenerateService.nextCheckSheetCode();
-		input.setCode(checkSheetCode);
-		input.setDetectOperatorId(0L);
-		UserTicket ut=this.getOptUser();
-		input.setOperatorId(ut.getId());
-		input.setOperatorName(ut.getRealName());
-		
-		this.insertExact(input);
-		
-		//生成详情并插入数据库
-		List<CheckSheetDetail> checkSheetDetailList = registerBillList.stream().map(bill -> {
-
-			CheckSheetDetail detail = DTOUtils.newDTO(CheckSheetDetail.class);
-			detail.setCheckSheetId(input.getId());
-			detail.setCreated(new Date());
-			detail.setModified(new Date());
-			detail.setOriginId(bill.getOriginId());
-			detail.setOriginName(bill.getOriginName());
-			detail.setProductId(bill.getProductId());
-			detail.setProductName(bill.getProductName());
-			detail.setProductAliasName(idAndAliasNameMap.get(bill.getId()));
-			detail.setRegisterBillId(bill.getId());
-			detail.setDetectState(bill.getDetectState());
-			bill.setCheckSheetId(input.getId());
-			return detail;
-		}).collect(Collectors.toList());
-
-		List<RegisterBill> updateRegisterBillList = registerBillList.stream().map(bill -> {
-
-			RegisterBill item = DTOUtils.newDTO(RegisterBill.class);
-
-			item.setId(bill.getId());
-			item.setCheckSheetId(bill.getCheckSheetId());
-			return item;
-		}).collect(Collectors.toList());
-
-		this.checkSheetDetailService.batchInsert(checkSheetDetailList);
-		//更新登记单信息
-		this.registerBillService.batchUpdateSelective(updateRegisterBillList);
-
-		return input;
-	}
-	private UserTicket getOptUser() {
-		return SessionContext.getSessionContext().getUserTicket();
+		return MutablePair.of(registerBillList, idAndAliasNameMap);
 	}
 
 }

@@ -84,7 +84,7 @@
         
     </div>
     <div class="text-center mt30" style="width: 60%">
-	    <button class="btn-main2 btn-sm"  style="display: none;" onclick="createCheckSheet()">提交</button>&nbsp;&nbsp;
+	    <button class="btn-main2 btn-sm"  style="display: none;" onclick="prePrint()">预览</button>&nbsp;&nbsp;
         <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
     </div>
 </div>
@@ -107,6 +107,51 @@ $('select[name="idCardNo"]').on('change',function(){
 	$('input[name="userName"]').val(userName)
 });
 
+function prePrint(){
+	if($('#createCheckSheetForm').validate().form()==false){
+		return null;
+	}
+	var formData=$('#createCheckSheetForm').serializeForm();
+	$.ajax({
+	    type: "POST",
+	    url: '${contextPath!}/checkSheet/prePrint.action',
+	    data: JSON.stringify(formData),
+	    processData:true,
+	    dataType: "json",
+	    async : false,
+	    contentType: "application/json; charset=utf-8",
+	    success: function (data) {
+	        if(data.code=="200"){
+                layer.alert('创建成功',{
+                  	 type:0,
+                  	  time : 600,
+                  	  end :function(){
+                  		parent.closeWin('view_win');
+                  		
+                  	}
+                 });
+	        }else{
+	             swal(
+                         '错误',
+                         data.result,
+                         'error'
+                 );
+	        }
+	    },
+	    error: function(){
+            swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+            );
+
+	    }
+	});
+}
+function handleError(ret){
+	
+	
+}
 function createCheckSheet(){
 	
 		if($('#createCheckSheetForm').validate().form()==false){

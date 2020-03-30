@@ -38,6 +38,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.CheckSheetInputDto;
+import com.dili.trace.dto.CheckSheetPrintDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.service.ApproverInfoService;
@@ -83,37 +84,42 @@ public class CheckSheetController {
 	}
 
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
-	public String edit(ModelMap modelMap,@RequestParam("registerBillIdList") List<Long>registerBillIdList) {
-		if(registerBillIdList!=null&&!registerBillIdList.isEmpty()) {
-			RegisterBillDto queryDto=DTOUtils.newDTO(RegisterBillDto.class);
+	public String edit(ModelMap modelMap, @RequestParam("registerBillIdList") List<Long> registerBillIdList) {
+		if (registerBillIdList != null && !registerBillIdList.isEmpty()) {
+			RegisterBillDto queryDto = DTOUtils.newDTO(RegisterBillDto.class);
 			queryDto.setIdList(registerBillIdList);
-			List<RegisterBill>itemList=this.registerBillService.listByExample(queryDto).stream().filter(item->item.getCheckSheetId()==null).filter(bill -> BillDetectStateEnum.PASS.getCode().equals(bill.getDetectState())
-					|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(bill.getDetectState())).collect(Collectors.toList());
-			
-			List<String>detectOperatorNameList=itemList.stream().map(RegisterBill::getLatestDetectOperator).filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
-			
-			
-			List<RegisterBill>registerUserList=itemList.stream().collect(Collectors.groupingBy(RegisterBill::getIdCardNo)).entrySet().stream().map((entry)->{
-				
-				if(!entry.getValue().isEmpty()) {
-					
-					return entry.getValue().get(0);
-				}
-				return null;
-				
-			}).filter(Objects::nonNull).collect(Collectors.toList());
-			
-			modelMap.put("itemList",itemList);
-			modelMap.put("registerUserList",registerUserList);
-			modelMap.put("detectOperatorNameList",detectOperatorNameList);
-		}else {
-			modelMap.put("itemList",Collections.emptyList());
-			modelMap.put("registerUserList",Collections.emptyList());
-			modelMap.put("detectOperatorNameList",Collections.emptyList());
+			List<RegisterBill> itemList = this.registerBillService.listByExample(queryDto).stream()
+					.filter(item -> item.getCheckSheetId() == null)
+					.filter(bill -> BillDetectStateEnum.PASS.getCode().equals(bill.getDetectState())
+							|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(bill.getDetectState()))
+					.collect(Collectors.toList());
+
+			List<String> detectOperatorNameList = itemList.stream().map(RegisterBill::getLatestDetectOperator)
+					.filter(StringUtils::isNotBlank).distinct().collect(Collectors.toList());
+
+			List<RegisterBill> registerUserList = itemList.stream()
+					.collect(Collectors.groupingBy(RegisterBill::getIdCardNo)).entrySet().stream().map((entry) -> {
+
+						if (!entry.getValue().isEmpty()) {
+
+							return entry.getValue().get(0);
+						}
+						return null;
+
+					}).filter(Objects::nonNull).collect(Collectors.toList());
+
+			modelMap.put("itemList", itemList);
+			modelMap.put("registerUserList", registerUserList);
+			modelMap.put("detectOperatorNameList", detectOperatorNameList);
+		} else {
+			modelMap.put("itemList", Collections.emptyList());
+			modelMap.put("registerUserList", Collections.emptyList());
+			modelMap.put("detectOperatorNameList", Collections.emptyList());
 		}
-		List<ApproverInfo>approverInfoList=this.approverInfoService.listByExample(DTOUtils.newDTO(ApproverInfo.class));
-		modelMap.put("approverInfoList",approverInfoList);
-		
+		List<ApproverInfo> approverInfoList = this.approverInfoService
+				.listByExample(DTOUtils.newDTO(ApproverInfo.class));
+		modelMap.put("approverInfoList", approverInfoList);
+
 		return "checkSheet/edit";
 	}
 
@@ -132,8 +138,25 @@ public class CheckSheetController {
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Long> insert(@RequestBody CheckSheetInputDto input) {
 		try {
-			CheckSheet item=this.checkSheetService.createCheckSheet(input);
+			CheckSheet item = this.checkSheetService.createCheckSheet(input);
 			return BaseOutput.success("新增成功").setData(item.getId());
+		} catch (BusinessException e) {
+			LOGGER.error("checksheet", e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return BaseOutput.failure();
+		}
+	}
+
+	@ApiOperation("预览CheckSheet")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "CheckSheet", paramType = "form", value = "CheckSheet的form信息", required = true, dataType = "string") })
+	@RequestMapping(value = "/prePrint.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput<Long> prePrint(@RequestBody CheckSheetInputDto input) {
+		try {
+			CheckSheetPrintDto resultDto = this.checkSheetService.prePrint(input);
+			return BaseOutput.success().setData(resultDto);
 		} catch (BusinessException e) {
 			LOGGER.error("checksheet", e);
 			return BaseOutput.failure(e.getMessage());
@@ -149,27 +172,29 @@ public class CheckSheetController {
 		modelMap.put("item", null);
 		modelMap.put("checkSheetDetailList", Collections.emptyList());
 		modelMap.put("registerBillIdMap", Collections.emptyMap());
-		if(id!=null) {
-			CheckSheet checkSheet=this.checkSheetService.get(id);	
+		if (id != null) {
+			CheckSheet checkSheet = this.checkSheetService.get(id);
 			modelMap.put("item", checkSheet);
-			if(checkSheet!=null) {
-				ApproverInfo approverInfo=this.approverInfoService.get(checkSheet.getApproverInfoId());
+			if (checkSheet != null) {
+				ApproverInfo approverInfo = this.approverInfoService.get(checkSheet.getApproverInfoId());
 				modelMap.put("approverInfo", approverInfo);
-				CheckSheetDetail detailQuery=DTOUtils.newDTO(CheckSheetDetail.class);
+				CheckSheetDetail detailQuery = DTOUtils.newDTO(CheckSheetDetail.class);
 				detailQuery.setCheckSheetId(checkSheet.getId());
-				List<CheckSheetDetail>checkSheetDetailList=this.checkSheetDetailService.listByExample(detailQuery);
+				List<CheckSheetDetail> checkSheetDetailList = this.checkSheetDetailService.listByExample(detailQuery);
 				modelMap.put("checkSheetDetailList", checkSheetDetailList);
-				List<Long>registerBillIdList=checkSheetDetailList.stream().map(CheckSheetDetail::getRegisterBillId).collect(Collectors.toList());
-				if(!registerBillIdList.isEmpty()) {
-					RegisterBillDto registerBillQuery=DTOUtils.newDTO(RegisterBillDto.class);
+				List<Long> registerBillIdList = checkSheetDetailList.stream().map(CheckSheetDetail::getRegisterBillId)
+						.collect(Collectors.toList());
+				if (!registerBillIdList.isEmpty()) {
+					RegisterBillDto registerBillQuery = DTOUtils.newDTO(RegisterBillDto.class);
 					registerBillQuery.setIdList(registerBillIdList);
-					Map<Long,RegisterBill>registerBillIdMap=this.registerBillService.listByExample(registerBillQuery).stream().collect(Collectors.toMap(RegisterBill::getId, Function.identity()));
+					Map<Long, RegisterBill> registerBillIdMap = this.registerBillService
+							.listByExample(registerBillQuery).stream()
+							.collect(Collectors.toMap(RegisterBill::getId, Function.identity()));
 					modelMap.put("registerBillIdMap", registerBillIdMap);
 				}
-				
+
 			}
 		}
-		
 
 		return "checkSheet/view";
 	}

@@ -8,10 +8,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 import javax.persistence.*;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -130,5 +126,9 @@ public interface CheckSheet extends IBaseDomain {
 	Date getModified();
 
 	void setModified(Date modified);
+	
+    @Transient
+    String getApproverBase64Sign();
+    void setApproverBase64Sign(String approverBase64Sign);
 
 }

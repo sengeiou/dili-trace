@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.RegisterBillReportQueryDto;
@@ -142,34 +143,61 @@ public class RegisterBillReportController {
 
 		LocalDate start = dto.getCreatedStart();
 		LocalDate end = dto.getCreatedEnd();
-		if (start != null && end != null) {
-			if (start.isEqual(end)) {// 整天
-
+		if(start!=null&&end!=null){
+			boolean wholeDay=start.isEqual(end);
+			boolean wholeMonth=(start.getYear()==end.getYear()&&start.getMonthValue()==end.getMonthValue()&&(start.getDayOfMonth()==start.with(TemporalAdjusters.firstDayOfMonth()).getDayOfMonth()&&end.getDayOfMonth()==end.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()));
+			boolean wholeYear=(start.getYear()==end.getYear()&&start.getMonthValue()==1&&end.getMonthValue()==12&&(start.getDayOfMonth()==start.with(TemporalAdjusters.firstDayOfMonth()).getDayOfMonth()&&end.getDayOfMonth()==end.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()));
+			
+			if(wholeDay) {
+				
 				dto.setMomStart(start.minusDays(1));
 				dto.setMomEnd(end.minusDays(1));
-
-				dto.setYoyStart(start.minusYears(1));
-				dto.setYoyEnd(end.minusYears(1));
-
-			} else if (start.getYear() == end.getYear() && start.getMonth() == end.getMonth()
-					&& start.getDayOfMonth() == 1) {
-
-				int lastDayOfMonth = end.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
-				if (end.getDayOfMonth() == lastDayOfMonth) {// 整月
-
-					dto.setMomStart(start.minusMonths(1));
-					dto.setMomEnd(end.minusMonths(1));
-
+				
+				
+				//如果上一年当月没有今天，就不计算同比数据
+				if(start.getDayOfMonth()>start.withDayOfMonth(1).minusYears(1).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()) {
+					dto.setYoyStart(null);
+					dto.setYoyEnd(null);
+				}else {
 					dto.setYoyStart(start.minusYears(1));
 					dto.setYoyEnd(end.minusYears(1));
-
 				}
-
+				
+				
 			}
-
+			if(wholeMonth) {
+				//整月的时候，把天先设置为1，防止出错
+				dto.setMomStart(start.withDayOfMonth(1).minusMonths(1));
+				dto.setMomEnd(end.withDayOfMonth(1).minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()));
+				
+				dto.setYoyStart(start.withDayOfMonth(1).minusYears(1));
+				dto.setYoyEnd(end.withDayOfMonth(1).minusYears(1).with(TemporalAdjusters.lastDayOfMonth()));
+			}
+			if(wholeYear) {
+				dto.setMomStart(start.withDayOfYear(1).minusYears(1).with(TemporalAdjusters.firstDayOfYear()));
+				dto.setMomEnd(end.withDayOfYear(1).minusYears(1).with(TemporalAdjusters.lastDayOfYear()));
+				//整年的时候，没有同比
+				dto.setYoyStart(null);
+				dto.setYoyEnd(null);
+			}
+			
+			
+			
 		}
+		
 		return dto;
 
+	}
+	public static void main(String[] args) {
+		RegisterBillReportQueryDto dto=new RegisterBillReportQueryDto();
+		LocalDate now=LocalDate.now();
+		dto.setCreatedStart(now.withMonth(3).withDayOfMonth(1));
+		dto.setCreatedEnd(now.withMonth(3).withDayOfMonth(31));
+		
+		RegisterBillReportController c=new RegisterBillReportController();
+		c.calAndSetDates(dto);
+		System.out.println(dto.getMomStart());
+		System.out.println(dto.getMomEnd());
 	}
 
 	@ApiOperation("跳转到RegisterBill产品统计页面")
