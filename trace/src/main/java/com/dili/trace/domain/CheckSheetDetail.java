@@ -107,7 +107,9 @@ public interface CheckSheetDetail extends IBaseDomain {
 
 	void setModified(Date modified);
 	
-	@Transient
+	@ApiModelProperty(value = "修改时间")
+	@Column(name = "`order_number`")
+	@FieldDef(label = "order_number")
     Integer getOrderNumber();
     void setOrderNumber(Integer orderNumber);
     
@@ -115,5 +117,13 @@ public interface CheckSheetDetail extends IBaseDomain {
 	@Transient
     String getDetectStateView();
     void setDetectStateView(String detectStateView);
+    
+    
+	@ApiModelProperty(value = "检测结果")
+	@Column(name = "`latest_pd_result`")
+	@FieldDef(label = "latest_pd_result")
+    String getLatestPdResult();
+    void setLatestPdResult(String latestPdResult);
+    
 
 }

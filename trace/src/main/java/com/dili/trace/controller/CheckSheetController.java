@@ -3,14 +3,11 @@ package com.dili.trace.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.BusinessException;
-import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -35,19 +30,13 @@ import com.dili.trace.domain.ApproverInfo;
 import com.dili.trace.domain.CheckSheet;
 import com.dili.trace.domain.CheckSheetDetail;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.CheckSheetInputDto;
-import com.dili.trace.dto.CheckSheetPrintDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.service.ApproverInfoService;
 import com.dili.trace.service.CheckSheetDetailService;
 import com.dili.trace.service.CheckSheetService;
 import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.util.MaskUserInfo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -138,8 +127,8 @@ public class CheckSheetController {
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Long> insert(@RequestBody CheckSheetInputDto input) {
 		try {
-			CheckSheet item = this.checkSheetService.createCheckSheet(input);
-			return BaseOutput.success("新增成功").setData(item.getId());
+			Map resultMapDto = this.checkSheetService.createCheckSheet(input);
+			return BaseOutput.success("新增成功").setData(resultMapDto);
 		} catch (BusinessException e) {
 			LOGGER.error("checksheet", e);
 			return BaseOutput.failure(e.getMessage());
@@ -153,10 +142,10 @@ public class CheckSheetController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "CheckSheet", paramType = "form", value = "CheckSheet的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/prePrint.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput<Long> prePrint(@RequestBody CheckSheetInputDto input) {
+	public @ResponseBody BaseOutput<Object> prePrint(@RequestBody CheckSheetInputDto input) {
 		try {
-			CheckSheetPrintDto resultDto = this.checkSheetService.prePrint(input);
-			return BaseOutput.success().setData(resultDto);
+			Map resultMapDto = this.checkSheetService.prePrint(input);
+			return BaseOutput.success().setData(resultMapDto);
 		} catch (BusinessException e) {
 			LOGGER.error("checksheet", e);
 			return BaseOutput.failure(e.getMessage());
@@ -180,15 +169,25 @@ public class CheckSheetController {
 				modelMap.put("approverInfo", approverInfo);
 				CheckSheetDetail detailQuery = DTOUtils.newDTO(CheckSheetDetail.class);
 				detailQuery.setCheckSheetId(checkSheet.getId());
-				List<CheckSheetDetail> checkSheetDetailList = this.checkSheetDetailService.listByExample(detailQuery);
+				List<CheckSheetDetail> checkSheetDetailList = this.checkSheetDetailService.listByExample(detailQuery).stream().map(detail->{
+					Integer detectState=detail.getDetectState();
+					if(BillDetectStateEnum.PASS.getCode().equals(detectState)||BillDetectStateEnum.REVIEW_PASS.getCode().equals(detectState)) {
+						detail.setDetectStateView("合格");	
+					}else {
+						detail.setDetectStateView("未知");
+					}
+					return detail;
+					
+				}).collect(Collectors.toList());
 				modelMap.put("checkSheetDetailList", checkSheetDetailList);
+
 				List<Long> registerBillIdList = checkSheetDetailList.stream().map(CheckSheetDetail::getRegisterBillId)
 						.collect(Collectors.toList());
 				if (!registerBillIdList.isEmpty()) {
 					RegisterBillDto registerBillQuery = DTOUtils.newDTO(RegisterBillDto.class);
 					registerBillQuery.setIdList(registerBillIdList);
-					Map<Long, RegisterBill> registerBillIdMap = this.registerBillService
-							.listByExample(registerBillQuery).stream()
+					List<RegisterBill>registerBillList=this.registerBillService.listByExample(registerBillQuery);
+					Map<Long, RegisterBill> registerBillIdMap = registerBillList.stream()
 							.collect(Collectors.toMap(RegisterBill::getId, Function.identity()));
 					modelMap.put("registerBillIdMap", registerBillIdMap);
 				}
@@ -204,6 +203,7 @@ public class CheckSheetController {
 		modelMap.put("item", null);
 		modelMap.put("checkSheetDetailList", Collections.emptyList());
 		modelMap.put("registerBillIdMap", Collections.emptyMap());
+		modelMap.put("showProductAlias", false);
 		if (StringUtils.isNotBlank(checkSheetCode)) {
 			this.checkSheetService.findCheckSheetByCode(checkSheetCode).ifPresent(checkSheet->{
 				modelMap.put("item", checkSheet);
@@ -212,8 +212,23 @@ public class CheckSheetController {
 					modelMap.put("approverInfo", approverInfo);
 					CheckSheetDetail detailQuery = DTOUtils.newDTO(CheckSheetDetail.class);
 					detailQuery.setCheckSheetId(checkSheet.getId());
-					List<CheckSheetDetail> checkSheetDetailList = this.checkSheetDetailService.listByExample(detailQuery);
+					
+					List<CheckSheetDetail> checkSheetDetailList = this.checkSheetDetailService.listByExample(detailQuery).stream().map(detail->{
+						Integer detectState=detail.getDetectState();
+						if(BillDetectStateEnum.PASS.getCode().equals(detectState)||BillDetectStateEnum.REVIEW_PASS.getCode().equals(detectState)) {
+							detail.setDetectStateView("合格");	
+						}else {
+							detail.setDetectStateView("未知");
+						}
+						return detail;
+						
+					}).collect(Collectors.toList());
+					
 					modelMap.put("checkSheetDetailList", checkSheetDetailList);
+					
+					boolean showProductAlias=checkSheetDetailList.stream().anyMatch(item->{return StringUtils.isNotBlank(item.getProductAliasName());});
+					modelMap.put("showProductAlias", showProductAlias);
+					
 					List<Long> registerBillIdList = checkSheetDetailList.stream().map(CheckSheetDetail::getRegisterBillId)
 							.collect(Collectors.toList());
 					if (!registerBillIdList.isEmpty()) {

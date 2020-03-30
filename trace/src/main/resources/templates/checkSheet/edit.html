@@ -91,7 +91,6 @@
 </#bodyOrigin>
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
 <script src="${contextPath!}/resources/js/jquery-serializeForm.min.js"></script>
-<script src="${contextPath!}/resources/js/qrious.js"></script>
 <script type="text/javascript">
 
 <!--
@@ -118,22 +117,15 @@ function prePrint(){
 	    url: '${contextPath!}/checkSheet/prePrint.action',
 	    data: JSON.stringify(formData),
 	    processData:true,
-	    dataType: "json",
-	    async : false,
+	    dataType:  "json",
+	    async : true,
 	    contentType: "application/json; charset=utf-8",
 	    success: function (ret) {
 	        if(ret.code=="200"){
-	        	var base64QrCode=createBase64QrCode(ret.data.checkSheet.qrcodeUrl);
-	        	ret.data.checkSheet.base64Qrcode=base64QrCode;
-	        	console.info(ret)
-               /* layer.alert('创建成功',{
-                  	 type:0,
-                  	  time : 600,
-                  	  end :function(){
-                  		parent.closeWin('view_win');
-                  		
-                  	}
-                 });*/
+	        	console.info(ret);
+	        	debugger
+	        	callbackObj.printDirect(JSON.stringify(ret),"TestReport");
+	        	$('.btn-main2').hide();
 	        }else{
 	             swal(
                          '错误',
@@ -153,16 +145,7 @@ function prePrint(){
 	});
 }
 
-function createBase64QrCode(qrcodeurl){
-	var qr = new QRious({ value: qrcodeurl,level:'M'});
-	/*
-	qr.toDataURL();
-	//=> "data:image/png;base64,iVBOR...AIpqDnseH86KAAAAAElFTkSuQmCC"
-	qr.toDataURL('image/jpeg');
-	//=> "data:image/jpeg;base64,/9j/...xqAqIqgKFAAAAAq3RRQAUUUUAf/Z"
-	*/
-	return qr.toDataURL('image/jpeg');
-}
+
 function handleError(ret){
 	
 	
@@ -173,6 +156,8 @@ function createCheckSheet(){
 			return;
 		}
 		var formData=$('#createCheckSheetForm').serializeForm();
+		
+		var result={};
 		$.ajax({
 		    type: "POST",
 		    url: '${contextPath!}/checkSheet/insert.action',
@@ -181,33 +166,16 @@ function createCheckSheet(){
 		    dataType: "json",
 		    async : false,
 		    contentType: "application/json; charset=utf-8",
-		    success: function (data) {
-		        if(data.code=="200"){
-                    layer.alert('创建成功',{
-                      	 type:0,
-                      	  time : 600,
-                      	end :function(){
-                      		parent.closeWin('view_win');
-                      		
-                      	}
-                     });
-		        }else{
-		             swal(
-	                         '错误',
-	                         data.result,
-	                         'error'
-	                 );
-		        }
+		    success: function (ret) {
+		    	result=ret;
 		    },
 		    error: function(){
-                swal(
-                        '错误',
-                        '远程访问失败',
-                        'error'
-                );
+		    	result={"code":"5000",result:"远程访问失败"}
 
 		    }
 		});
+		console.info(result);
+		return result;
 }
 $('.fileimg-view').on('click', function () {
     var url = $(this).parent().siblings(".magnifying").attr('src');

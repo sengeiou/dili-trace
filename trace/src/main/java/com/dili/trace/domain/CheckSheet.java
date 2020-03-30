@@ -130,5 +130,9 @@ public interface CheckSheet extends IBaseDomain {
     @Transient
     String getApproverBase64Sign();
     void setApproverBase64Sign(String approverBase64Sign);
+    
+    @Transient
+    String getBase64Qrcode();
+    void setBase64Qrcode(String base64Qrcode);
 
 }

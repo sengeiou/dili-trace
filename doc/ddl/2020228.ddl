@@ -63,8 +63,10 @@ CREATE TABLE `check_sheet_detail` (
   
   `origin_id` bigint(20) NOT NULL COMMENT '产地ID',
   `origin_name` varchar(20) NOT NULL COMMENT '产地',
+  `order_number` int NOT NULL COMMENT '序号',
   
-  `detect_state` int NOT NULL COMMENT '检测结果',
+  `detect_state` int NOT NULL COMMENT '检测状态',
+  `latest_pd_result` varchar(100) NULL COMMENT '检测结果',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
