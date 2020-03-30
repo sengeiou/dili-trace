@@ -42,6 +42,14 @@
                             <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
+                         <div class="search-item">
+                            <select class="easyui-combobox" name="hasCheckSheet" id="hasCheckSheet" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'检验报告'"  labelAlign="right">
+                        		<option value="">全部</option>
+                                <option value="true">有</option>
+                                <option value="false">无</option>
+                            </select>
+                        </div>
+                        
                         <div class="search-item">
                             <input  name="tradeTypeId" id="tradeTypeId" style="width:100%" labelAlign="right" data-options="label:'交易区'"  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />

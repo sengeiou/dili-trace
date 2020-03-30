@@ -49,8 +49,16 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	
 	private Boolean sumOthers = Boolean.FALSE;
 	private Integer sumAsOthersMoreThan=0;
+	private Boolean hasCheckSheet;
 
 
+	public Boolean getHasCheckSheet() {
+		return hasCheckSheet;
+	}
+
+	public void setHasCheckSheet(Boolean hasCheckSheet) {
+		this.hasCheckSheet = hasCheckSheet;
+	}
 
 	public String getLikeProductName() {
 		return likeProductName;

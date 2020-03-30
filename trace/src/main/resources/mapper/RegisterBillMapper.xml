@@ -299,6 +299,19 @@
      	 <if test="plate!=null  and plate!=''">
      		AND plate like '${plate}%'
      	 </if>
+     	 <if test="hasCheckSheet!=null ">
+	     	  <if test="hasCheckSheet==true ''">
+	     		AND check_sheet_id  IS NOT NULL
+	     	 </if>
+	     	 <if test="hasCheckSheet==false">
+	     		AND check_sheet_id  IS NULL
+	     	 </if>
+     	 </if>
+     	  
+     	 
+     	 
+     	 
+     	 
 			<if test="productIdList != null and productIdList.size()>0">
 					AND product_id IN
 					<foreach collection="productIdList" open="(" separator=","
