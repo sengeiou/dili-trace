@@ -91,6 +91,7 @@
 </#bodyOrigin>
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
 <script src="${contextPath!}/resources/js/jquery-serializeForm.min.js"></script>
+<script src="${contextPath!}/resources/js/qrious.js"></script>
 <script type="text/javascript">
 
 <!--
@@ -120,20 +121,23 @@ function prePrint(){
 	    dataType: "json",
 	    async : false,
 	    contentType: "application/json; charset=utf-8",
-	    success: function (data) {
-	        if(data.code=="200"){
-                layer.alert('创建成功',{
+	    success: function (ret) {
+	        if(ret.code=="200"){
+	        	var base64QrCode=createBase64QrCode(ret.data.checkSheet.qrcodeUrl);
+	        	ret.data.checkSheet.base64Qrcode=base64QrCode;
+	        	console.info(ret)
+               /* layer.alert('创建成功',{
                   	 type:0,
                   	  time : 600,
                   	  end :function(){
                   		parent.closeWin('view_win');
                   		
                   	}
-                 });
+                 });*/
 	        }else{
 	             swal(
                          '错误',
-                         data.result,
+                         ret.result,
                          'error'
                  );
 	        }
@@ -147,6 +151,17 @@ function prePrint(){
 
 	    }
 	});
+}
+
+function createBase64QrCode(qrcodeurl){
+	var qr = new QRious({ value: qrcodeurl});
+	/*
+	qr.toDataURL();
+	//=> "data:image/png;base64,iVBOR...AIpqDnseH86KAAAAAElFTkSuQmCC"
+	qr.toDataURL('image/jpeg');
+	//=> "data:image/jpeg;base64,/9j/...xqAqIqgKFAAAAAq3RRQAUUUUAf/Z"
+	*/
+	return qr.toDataURL('image/jpeg');
 }
 function handleError(ret){
 	

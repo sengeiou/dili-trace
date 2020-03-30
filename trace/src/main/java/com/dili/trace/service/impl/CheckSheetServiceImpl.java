@@ -6,14 +6,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.MutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +50,8 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 	CodeGenerateService codeGenerateService;
 	@Autowired ApproverInfoService approverInfoService;
 	@Autowired Base64SignatureService base64SignatureService;
+	@Value("${current.baseWebPath}")
+	private String baseWebPath;
 
 	@Transactional
 	@Override
@@ -58,9 +63,10 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		// 生成编号，插入数据库
 		String checkSheetCode = this.codeGenerateService.nextCheckSheetCode();
 		checkSheet.setCode(checkSheetCode);
-
+		checkSheet.setQrcodeUrl(this.baseWebPath+"/checkSheet/detail/"+checkSheetCode);
 		this.insertExact(checkSheet);
-
+		
+		
 		// 生成详情并插入数据库
 		List<CheckSheetDetail> checkSheetDetailList = triple.getMiddle().stream().map(bill -> {
 
@@ -83,6 +89,8 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		this.checkSheetDetailService.batchInsert(checkSheetDetailList);
 		// 更新登记单信息
 		this.registerBillService.batchUpdateSelective(updateRegisterBillList);
+		
+
 
 		return checkSheet;
 	}
@@ -95,12 +103,15 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 	public CheckSheetPrintDto prePrint(CheckSheetInputDto input) {
 		Triple<CheckSheet, List<CheckSheetDetail>, List<RegisterBill>> triple = this.buildCheckSheet(input);
 		input.setRegisterBillList(Collections.emptyList());
-		CheckSheetPrintDto resultDto = new CheckSheetPrintDto();
-		resultDto.setCheckSheet(triple.getLeft());
-		
+		CheckSheet checkSheet=triple.getLeft();
 		List<CheckSheetDetail>checkSheetDetailList=triple.getMiddle();
-
+		checkSheet.setQrcodeUrl(this.baseWebPath+"/checkSheet/detail/0");//空请求路径
+		
+		
+		CheckSheetPrintDto resultDto = new CheckSheetPrintDto();
+		resultDto.setCheckSheet(checkSheet);
 		resultDto.setCheckSheetDetailList(checkSheetDetailList);
+		
 		return resultDto;
 	}
 
@@ -192,6 +203,16 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 			throw new BusinessException("登记单状态错误");
 		}
 		return MutablePair.of(registerBillList, idAndAliasNameMap);
+	}
+
+	@Override
+	public Optional<CheckSheet> findCheckSheetByCode(String code) {
+		if(StringUtils.isBlank(code)) {
+			return Optional.empty();
+		}
+		CheckSheet query=DTOUtils.newDTO(CheckSheet.class);
+		query.setCode(code.trim());
+		return this.listByExample(query).stream().findFirst();
 	}
 
 }

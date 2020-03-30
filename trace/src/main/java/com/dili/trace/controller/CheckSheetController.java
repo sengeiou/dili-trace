@@ -198,4 +198,38 @@ public class CheckSheetController {
 
 		return "checkSheet/view";
 	}
+	@ApiOperation("跳转到CheckSheet二维码请求页面")
+	@RequestMapping(value = "/detail/{checkSheetCode}", method = RequestMethod.GET)
+	public String detail(ModelMap modelMap, @PathVariable(required = false) String checkSheetCode) {
+		modelMap.put("item", null);
+		modelMap.put("checkSheetDetailList", Collections.emptyList());
+		modelMap.put("registerBillIdMap", Collections.emptyMap());
+		if (StringUtils.isNotBlank(checkSheetCode)) {
+			this.checkSheetService.findCheckSheetByCode(checkSheetCode).ifPresent(checkSheet->{
+				modelMap.put("item", checkSheet);
+				if (checkSheet != null) {
+					ApproverInfo approverInfo = this.approverInfoService.get(checkSheet.getApproverInfoId());
+					modelMap.put("approverInfo", approverInfo);
+					CheckSheetDetail detailQuery = DTOUtils.newDTO(CheckSheetDetail.class);
+					detailQuery.setCheckSheetId(checkSheet.getId());
+					List<CheckSheetDetail> checkSheetDetailList = this.checkSheetDetailService.listByExample(detailQuery);
+					modelMap.put("checkSheetDetailList", checkSheetDetailList);
+					List<Long> registerBillIdList = checkSheetDetailList.stream().map(CheckSheetDetail::getRegisterBillId)
+							.collect(Collectors.toList());
+					if (!registerBillIdList.isEmpty()) {
+						RegisterBillDto registerBillQuery = DTOUtils.newDTO(RegisterBillDto.class);
+						registerBillQuery.setIdList(registerBillIdList);
+						Map<Long, RegisterBill> registerBillIdMap = this.registerBillService
+								.listByExample(registerBillQuery).stream()
+								.collect(Collectors.toMap(RegisterBill::getId, Function.identity()));
+						modelMap.put("registerBillIdMap", registerBillIdMap);
+					}
+
+				}
+			});
+	
+		}
+
+		return "checkSheet/detail";
+	}
 }
