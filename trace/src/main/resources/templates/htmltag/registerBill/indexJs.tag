@@ -68,6 +68,12 @@ var currentUser={"depId":"${user.depId!}"
         formdata['sort']=options.sortName;
         formdata['order']=options.sortOrder;
         
+        var hasDetectReport=$('#hasDetectReport').combobox('getValue');
+        if(hasDetectReport=='hasCheckSheet'){
+        	  formdata['hasCheckSheet']=false;
+        	  formdata['hasDetectReport']="";
+        }
+        
     	return formdata;
     }
     var findFirstWaitAuditRegisterBill={};
