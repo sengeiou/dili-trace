@@ -406,7 +406,16 @@
                         });
                         return;
                     }
-                	var data=$('#queryForm').serializeObject();
+                	var formdata=$('#queryForm').serializeObject();
+                    var productIdList=$('#productIdList').combotree('getValues');
+                    var likeProductName=$('#productIdList').combotree('getText');
+                    
+                    var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
+                    if(productIdList.length>0){
+                    	formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''}).join(',');	
+                    }else{
+                    	formdata['likeProductName']=likeProductName;	
+                    }
                 	/*
                 	[1,2,3,2,1].reduce(function(accumulator, currentValue, index, array ){
                 		if($.inArray(currentValue,array,index+1)==-1){
@@ -414,15 +423,15 @@
                 		}
                 		return accumulator;
                 	},[] ).join(',');*/
-                	
-                	data['productIdList']=selected.map(function(v,i){return v.productId;}).reduce(function(accumulator, currentValue, index, array ){
+                	debugger
+                	formdata['detailedProductIdList']=selected.map(function(v,i){return v.productId;}).reduce(function(accumulator, currentValue, index, array ){
                 		if($.inArray(currentValue,array,index+1)==-1){
                 			accumulator.push(currentValue);
                 		}
                 		return accumulator;
                 	},[] ).join(',');
 
-               	    openWin('/registerBillReport/product-report-detail.html?'+$.param(data));                   
+               	    openWin('/registerBillReport/product-report-detail.html?'+$.param(formdata));                   
                 }
             },
             <#resource method="post" url="registerBillReport/product-report.html#export">

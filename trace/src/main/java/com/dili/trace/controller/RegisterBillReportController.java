@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BinaryOperator;
@@ -108,7 +109,15 @@ public class RegisterBillReportController {
 		modelMap.put("user", user);
 
 		RegisterBillReportQueryDto queryDto = this.calAndSetDates(dto);
+		
+		
+		List<Long>detailedProductIdList=dto.getDetailedProductIdList();
+		List<Long>productIdList=dto.getProductIdList();
+		dto.setDetailedProductIdList(Collections.emptyList());
+		dto.setProductIdList(Collections.emptyList());
 		try {
+			
+			dto.setProductIdList(detailedProductIdList);
 			List<GroupByProductReportDto> list = this.registerBillReportService.listGroupByProduct(queryDto);
 			modelMap.put("items", list);
 		} catch (Exception e) {
@@ -116,8 +125,7 @@ public class RegisterBillReportController {
 			modelMap.put("item",  new GroupByProductReportDto());
 		}
 		try {
-//			queryDto.setProductName(null);
-			queryDto.setProductIdList(Arrays.asList());
+			dto.setProductIdList(productIdList);
 			GroupByProductReportDto summaryItem= this.registerBillReportService.summaryGroup(queryDto);
 			modelMap.put("summaryItem", summaryItem!=null?summaryItem: new GroupByProductReportDto());
 		} catch (Exception e) {

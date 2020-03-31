@@ -38,6 +38,9 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	private String plate;
 	// 商品id集合
 	private List<Long> productIdList = new ArrayList<>();
+	
+	//详情商品id集合
+	private List<Long> detailedProductIdList = new ArrayList<>();
 
 	private LocalDate momStart;
 	private LocalDate momEnd;
@@ -189,5 +192,15 @@ public class RegisterBillReportQueryDto extends BaseDomain {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
+
+	public List<Long> getDetailedProductIdList() {
+		return detailedProductIdList;
+	}
+
+	public void setDetailedProductIdList(List<Long> detailedProductIdList) {
+		this.detailedProductIdList = detailedProductIdList;
+	}
+
+	
 
 }
