@@ -2,7 +2,7 @@
 <style>
 fieldset {
     display: inline-block;
-    width: 200px;
+    width: 180px;
     margin: 2px;
     padding: 5px;
     border: 1px dotted #ddd;
@@ -16,10 +16,7 @@ fieldset {
 	border-radius: 0;
 	box-shadow: none;
 }
-	.form-inline .input-sm {
-		width: 60px;
-		    height: 22px;
-	}
+
 	.form-inline .label-title  {
 		width: auto;
 	}
@@ -46,98 +43,70 @@ fieldset {
 <% for(item in items){%>
 
 				<div class="form-group">
-                    <label class="label-title text-right">商品名称</label>
-                    <input class="form-control input-sm  productname" value="${item.productName}" readonly/>
+                    <label class="label-title text-right" style="white-space: nowrap;">商品名称: ${item.productName}</label>
                 </div>
                 <br>
-                <fieldset>
+                <fieldset style="width: 200px">
                 <div class="form-group">
-                    <label class="label-title text-right">运输重量(KG)</label>
-                    <input type="text" class="form-control input-sm"  value="${item.totalWeight}"  readonly/>
-                </div>
-                 <div class="form-group">
-                    <label class="label-title text-right">占比</label>
-                    <input type="text" class="form-control input-sm percentage"   data-itemvalue="${item.totalWeight}"   data-total="${summaryItem.totalWeight}"  readonly/>
+                    <label class="label-title text-right" style="white-space: nowrap;">运输重量(KG): ${item.totalWeight}</label>
+                    <br/>
+                    <label class="label-title text-right percentage"  data-itemvalue="${item.totalWeight}"   data-total="${summaryItem.totalWeight}"  >占比</label>
                 </div>
                 </fieldset>
                 <fieldset>
                 <div class="form-group">
-                    <label class="label-title text-right">进场次数</label>
-                    <input type="text" class="form-control input-sm"  value="${item.cnt}"  readonly/>
-                </div>
-                 <div class="form-group">
-                    <label class="label-title text-right">进场次数占比</label>
-                    <input type="text" class="form-control input-sm percentage"   data-itemvalue="${item.cnt}"   data-total="${summaryItem.cnt}"  readonly/>
+                    <label class="label-title text-right">进场次数: ${item.cnt}</label>
+                    <br/>
+                    <label class="label-title text-right percentage"  data-itemvalue="${item.cnt}"   data-total="${summaryItem.cnt}" >占比:</label>
                 </div>
                 </fieldset>
                 <fieldset>
                  <div class="form-group">
-                    <label class="label-title text-right">采样客户数量</label>
-                    <input type="text" class="form-control input-sm"  value="${item.totalCheckingOrRechecking}" readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">采样客户占比</label>
-                    <input type="text" class="form-control input-sm  percentage"     data-itemvalue="${item.totalCheckingOrRechecking}"   data-total="${summaryItem.totalCheckingOrRechecking}"   readonly/>
+                    <label class="label-title text-right">采样客户数量: ${item.totalCheckingOrRechecking}</label>
+                    <br/>
+                    <label class="label-title text-right  percentage"  data-itemvalue="${item.totalCheckingOrRechecking}"   data-total="${summaryItem.totalCheckingOrRechecking}" >占比</label>
                 </div>
                  </fieldset>
                 <fieldset>
                 <div class="form-group">
-                    <label class="label-title text-right">检测数量</label>
-                    <input type="text" class="form-control input-sm"  value="${item.totalCheckedOrRechecked}"  readonly/>
-                </div>
-                 <div class="form-group">
-                    <label class="label-title text-right">检测数量占比</label>
-                    <input type="text" class="form-control input-sm  percentage"  data-itemvalue="${item.totalCheckedOrRechecked}"   data-total="${summaryItem.totalCheckedOrRechecked}"  readonly/>
+                    <label class="label-title text-right">检测数量: ${item.totalCheckedOrRechecked}</label>
+                    <br/>
+                    <label class="label-title text-right  percentage"   data-itemvalue="${item.totalCheckedOrRechecked}"   data-total="${summaryItem.totalCheckedOrRechecked}"  >占比</label>
                 </div>
                  </fieldset>
                 <fieldset>
                  <div class="form-group">
-                    <label class="label-title text-right">复检数量</label>
-                    <input type="text" class="form-control input-sm"  value="${item.totalRechecked}" readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">复检数量占比</label>
-                    <input type="text" class="form-control input-sm  percentage"  data-itemvalue="${item.totalRechecked}"   data-total="${summaryItem.totalRechecked}"   readonly/>
+                    <label class="label-title text-right">复检数量: ${item.totalRechecked}</label>
+                    <br/>
+                    <label class="label-title text-right  percentage"  data-itemvalue="${item.totalRechecked}"   data-total="${summaryItem.totalRechecked}"  >占比:</label>
                 </div>
                  </fieldset>
                 <fieldset>
                 <div class="form-group">
-                    <label class="label-title text-right">初检合格</label>
-                    <input type="text" class="form-control input-sm"  value="${item.totalSuccessfulInitalChecked}"  readonly/>
-                </div>
-                 <div class="form-group">
-                    <label class="label-title text-right">初检合格占比</label>
-                    <input type="text" class="form-control input-sm percentage"   data-itemvalue="${item.totalSuccessfulInitalChecked}"   data-total="${summaryItem.totalSuccessfulInitalChecked}"  readonly/>
+                    <label class="label-title text-right">初检合格: ${item.totalSuccessfulInitalChecked}</label>
+                    <br/>
+                    <label class="label-title text-right  percentage"  data-itemvalue="${item.totalSuccessfulInitalChecked}"   data-total="${summaryItem.totalSuccessfulInitalChecked}" >占比:</label>
                 </div>
                  </fieldset>
                 <fieldset>
                  <div class="form-group">
-                    <label class="label-title text-right">复检合格</label>
-                    <input type="text" class="form-control input-sm"  value="${item.totalSuccessfulRechecked}"  readonly/>
-                </div>
-                 <div class="form-group">
-                    <label class="label-title text-right">复检合格占比</label>
-                    <input type="text" class="form-control input-sm percentage"   data-itemvalue="${item.totalSuccessfulRechecked}"   data-total="${summaryItem.totalSuccessfulRechecked}"  readonly/>
+                    <label class="label-title text-right">复检合格: ${item.totalSuccessfulRechecked}</label>
+                    <br/>
+                    <label class="label-title text-right  percentage"   data-itemvalue="${item.totalSuccessfulRechecked}"   data-total="${summaryItem.totalSuccessfulRechecked}"  >占比:</label>
                 </div>
                  </fieldset>
                 <fieldset>
                 <div class="form-group">
-                    <label class="label-title text-right">产地证明</label>
-                    <input type="text" class="form-control input-sm"  value="${item.totalHascertifiy}"  readonly/>
-                </div>
-                 <div class="form-group">
-                    <label class="label-title text-right">产地证明占比</label>
-                    <input type="text" class="form-control input-sm  percentage"   data-itemvalue="${item.totalHascertifiy}"   data-total="${summaryItem.totalHascertifiy}"  readonly/>
+                    <label class="label-title text-right">产地证明: ${item.totalHascertifiy}</label>
+                    <br/>
+                    <label class="label-title text-right  percentage"   data-itemvalue="${item.totalHascertifiy}"   data-total="${summaryItem.totalHascertifiy}"  >占比:</label>
                 </div>
                  </fieldset>
                <fieldset>
                  <div class="form-group">
-                    <label class="label-title text-right">检测报告</label>
-                    <input type="text" class="form-control input-sm"  value="${item.totalHasdetectreport}" readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">检测报告占比</label>
-                    <input type="text" class="form-control input-sm  percentage"  data-itemvalue="${item.totalHasdetectreport}"   data-total="${summaryItem.totalHasdetectreport}"  readonly/>
+                    <label class="label-title text-right">检测报告: ${item.totalHasdetectreport}</label>
+                    <br/>
+                    <label class="label-title text-right  percentage"  data-itemvalue="${item.totalHasdetectreport}"   data-total="${summaryItem.totalHasdetectreport}" >占比:</label>
                 </div>
                  </fieldset>
                 <hr>
@@ -160,10 +129,10 @@ $(function(){
 		var value=$(this).data('itemvalue');
 		var total=$(this).data('total');
 		if(total==''||total==0){
-			$(this).val('-')
+			$(this).text("占比: "+'-')
 		}else{
 			var pert=Math.round((value*10000)/total)/100;
-			$(this).val(pert+"%")
+			$(this).text("占比: "+pert+"%")
 		}
 		console.info(value)
 		console.info(total)
