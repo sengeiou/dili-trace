@@ -29,5 +29,14 @@ public interface CheckSheetService extends BaseService<CheckSheet, Long> {
 	 * @return
 	 */
 	public Map prePrint(CheckSheetInputDto input);
+	
+	/**
+	 * 生成base64二维码
+	 * @param content
+	 * @param qrWidth
+	 * @param qrHeight
+	 * @return
+	 */
+	public  String getBase64(String content, int qrWidth, int qrHeight);
 
 }

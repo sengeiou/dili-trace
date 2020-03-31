@@ -1,22 +1,63 @@
 <#bodyOrigin>
+<style	>
+html {
+    height: 100%;
+}
+/* html::before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: '';
+	background: url(/resources/images/sy_logo.png) repeat 0 0;
+	background-size: 25%;
+	opacity: 0.5;
+} */
+	.contenttable  th, .contenttable  td {
+		white-space: nowrap;
+	}
+	.logobox  img {
+		vertical-align: middle;
+	}
+	.sg_qrcode {
+		width: 8rem;;
+		height: auto;
+		padding-left: 15px;
+	}
+	.sg_Logo {
+	    width: 15rem;
+	    height: auto;
+	    margin-top: 1rem;
+	    padding-right: 0px;
+	}
+</style>
 <div class="main-container">
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">检验单信息</span>
         </div>
     </div>
+    <div class=" logobox  clearfix">
+        <img class="sg_qrcode  fl" alt="" src="${base64Qrcode}">
+    	<img class="sg_Logo fr" alt="" src="/resources/images/sg_Logo.png">
+    </div>
     <div class="form-box border">
         <form id="createCheckSheetForm" class="form-inline" role="form">
             <div class="form-item-group">
                <%if(checkSheetDetailList.~size==0){%>
-	            <div class="form-group" >
+	            <div class="form-group " >
 	                   <label class="label-title text-right"  style="width: 300px;"><font style="font-size: 20px">没有有效的检验单</font></label>
 	             </div>
             <%}%>
-            <table>
-            <tr><td>送检人:${item.userName!}</td><td>编号:${item.code!}<td></tr>
-			</table>
-            <table>
+            
+			<div class="clearfix">
+				<span class="fl">送检人:${item.userName!}</span>
+				<span class="fr">编号:${item.code!}</span>
+			</div>
+			<hr>
+            <table class="contenttable">
 	            <thead>
 		             <tr>
 		              <th>序号</th> 
@@ -39,9 +80,11 @@
 		            </td>
 				</tr>
 				<%}%>
-				<tr>
-					<td colspan="<%if(showProductAlias==true){%> 5<%}else{%>4<%}%>">
-					备注：
+            </tbody>
+			</table>
+			<hr>
+			<div>
+			备注：
 						<br/> 
 						1、检测依据：根据国标GB/T5009.199-2003，检测果蔬中的有机磷和氨基甲酸酯类农药，凡酶抑制率小于50%，则视为合格。
 						<br/>
@@ -50,18 +93,16 @@
 						3、有效期为${item.validPeriod!}天。（有效期天数通过设置）
 						<br/>
 						4、本报告单盖章有效，复印无效
-					</td>
-				</tr>
-            </tbody>
-			</table>
-				<table>
-				<tr>
-					<td>检测人:${item.detectOperatorName!}</td><td>审核人:${approverInfo.userName!}<td>
-				</tr>
-				<tr>
-					<td>${item.created,dateFormat='yyyy年MM月dd日'}</td>
-				</tr>
-			</table>
+			</div>
+			<hr>
+			<div class="clearfix">
+				<span class="fl">检测人:${item.detectOperatorName!}</span>
+				<span class="fr">审核人:${approverInfo.userName!}</span>
+			</div>
+			<div class="clearfix">
+				<span class="fr">${item.created,dateFormat='yyyy年MM月dd日'}</span>
+			</div>
+			
             </div>
         </form>
         

@@ -204,10 +204,12 @@ public class CheckSheetController {
 		modelMap.put("checkSheetDetailList", Collections.emptyList());
 		modelMap.put("registerBillIdMap", Collections.emptyMap());
 		modelMap.put("showProductAlias", false);
+		modelMap.put("base64Qrcode", "");
 		if (StringUtils.isNotBlank(checkSheetCode)) {
 			this.checkSheetService.findCheckSheetByCode(checkSheetCode).ifPresent(checkSheet->{
 				modelMap.put("item", checkSheet);
 				if (checkSheet != null) {
+					modelMap.put("base64Qrcode", this.checkSheetService.getBase64(checkSheet.getQrcodeUrl(), 100, 100));
 					ApproverInfo approverInfo = this.approverInfoService.get(checkSheet.getApproverInfoId());
 					modelMap.put("approverInfo", approverInfo);
 					CheckSheetDetail detailQuery = DTOUtils.newDTO(CheckSheetDetail.class);
