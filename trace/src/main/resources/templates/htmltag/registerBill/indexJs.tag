@@ -69,10 +69,13 @@ var currentUser={"depId":"${user.depId!}"
         formdata['order']=options.sortOrder;
         
         var hasDetectReport=$('#hasDetectReport').combobox('getValue');
-        if(hasDetectReport=='hasCheckSheet'){
-        	  formdata['hasCheckSheet']=true;
+        if(hasDetectReport=='hasCheckSheet=false'){
+        	  formdata['hasCheckSheet']=false;
         	  formdata['hasDetectReport']="";
-        }
+        }else if(hasDetectReport=='hasCheckSheet=true'){
+      	  formdata['hasCheckSheet']=true;
+    	  formdata['hasDetectReport']="";
+    }{}
         
     	return formdata;
     }
