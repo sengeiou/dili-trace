@@ -125,8 +125,8 @@ function prePrint(){
 	        	console.info(ret);
 	        	//debugger
 	        	if(callbackObj&&callbackObj.printDirect){
-	        		callbackObj.printDirect(JSON.stringify(ret),"TestReport");
 	        		$('.btn-main2').hide();
+	        		callbackObj.printDirect(JSON.stringify(ret),"TestReport");
 	        	}else{
 	        		 swal(
 	                         '错误',
@@ -167,6 +167,11 @@ function handleError(ret){
  	 		 //window.location.reload()
          }
  	);
+}
+//取消打印结束后调用
+function cancelPrint(){
+	console.info('cancelPrint')
+	$('.btn-main2').show();
 }
 //打印结束后调用
 function printFinish(){
