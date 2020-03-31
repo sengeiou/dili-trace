@@ -692,8 +692,8 @@ group by
 	total_inital_checking totalInitalChecking,/*初检中数量*/
 	total_rechecking as totalRechecking,/*复检中数量*/
 	total_checked_or_rechecked as totalCheckedOrRechecked,/*已经检测数量*/
-	case when mom_total_checked_or_rechecked=0 then null else (total_checked_or_rechecked-mom_total_checked_or_rechecked)*100/mom_total_checking_or_rechecking end momCheckedOrRechecked,
-	case when yoy_total_checked_or_rechecked=0 then null else (total_checked_or_rechecked-yoy_total_checked_or_rechecked)*100/yoy_total_checking_or_rechecking end yoyCheckedOrRechecked,
+	case when mom_total_checked_or_rechecked=0 then null else (total_checked_or_rechecked-mom_total_checked_or_rechecked)*100/mom_total_checked_or_rechecked end momCheckedOrRechecked,
+	case when yoy_total_checked_or_rechecked=0 then null else (total_checked_or_rechecked-yoy_total_checked_or_rechecked)*100/yoy_total_checked_or_rechecked end yoyCheckedOrRechecked,
 	
 	
 	
