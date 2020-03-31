@@ -70,7 +70,7 @@ var currentUser={"depId":"${user.depId!}"
         
         var hasDetectReport=$('#hasDetectReport').combobox('getValue');
         if(hasDetectReport=='hasCheckSheet'){
-        	  formdata['hasCheckSheet']=false;
+        	  formdata['hasCheckSheet']=true;
         	  formdata['hasDetectReport']="";
         }
         
