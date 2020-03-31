@@ -26,11 +26,13 @@ import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.ApproverInfo;
 import com.dili.trace.domain.CheckSheet;
 import com.dili.trace.domain.CheckSheetDetail;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.CheckSheetInputDto;
+import com.dili.trace.dto.CheckSheetQueryDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.service.ApproverInfoService;
@@ -116,7 +118,10 @@ public class CheckSheetController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "CheckSheet", paramType = "form", value = "CheckSheet的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(CheckSheet checkSheet) throws Exception {
+	public @ResponseBody String listPage(CheckSheetQueryDto checkSheet) throws Exception {
+		if(StringUtils.isNotBlank(checkSheet.getLikeApproverUserName())) {
+			checkSheet.mset(IDTO.AND_CONDITION_EXPR, "  (approver_info_id in (select id from approver_info where user_name='"+checkSheet.getLikeApproverUserName().trim()+"')) ");
+		}
 		EasyuiPageOutput out = this.checkSheetService.listEasyuiPageByExample(checkSheet, true);
 		return out.toString();
 	}
