@@ -293,7 +293,7 @@
      	  <if test="registerSource!=null">
      		AND register_source=#{registerSource}
      	 </if>
-     	 <if test="tradeTypeId!=''">
+     	 <if test="tradeTypeId!=null   and tradeTypeId!='' ">
      		AND trade_type_id=#{tradeTypeId}
      	 </if>
      	 <if test="plate!=null  and plate!=''">

@@ -147,7 +147,7 @@ public class RegisterBillReportController {
 	private RegisterBillReportQueryDto calAndSetDates(RegisterBillReportQueryDto dto) {
 
 		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(dto.getRegisterSource())) {
-			dto.setTradeTypeId(null);
+			//dto.setTradeTypeId(null);
 		}
 
 		LocalDate start = dto.getCreatedStart();
