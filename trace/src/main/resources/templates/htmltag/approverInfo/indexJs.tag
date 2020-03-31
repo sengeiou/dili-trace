@@ -12,6 +12,7 @@
         $('#_userName').textbox({readonly:false});
         $('#_phone').textbox({readonly:false});
         $(".magnifying").hide();
+        $('#_signBase64').siblings(".magnifying").attr('src','');
         $(".fileimg-cover,.fileimg-edit").hide();
         $(":file").attr('disabled',false);
         initFileUpload();
@@ -36,6 +37,7 @@
         var formData = $.extend({},selected);
         formData = addKeyStartWith(getOriginalData(formData),"_");
         $(".magnifying").hide();
+        $('#_signBase64').siblings(".magnifying").attr('src','');
         $(".fileimg-cover,.fileimg-edit").hide();
         $('#_form').form('load', formData);
         
@@ -80,12 +82,12 @@
             isNewData=true;
         }
         
-        var signBase64=encodeURIComponent(_formData['signBase64'])
-        _formData['signBase64']=signBase64;
+        //var signBase64=encodeURIComponent(_formData['signBase64'])
+        //_formData['signBase64']=signBase64;
         $.ajax({
             type: "POST",
             url: _url,
-            data: JSON.stringify(_formData),
+            data: _formData,
             processData:true,
             dataType: "json",
             async : true,
