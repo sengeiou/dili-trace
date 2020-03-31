@@ -19,6 +19,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.ApproverInfo;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
+import com.dili.trace.dto.ApproverInfoQueryDto;
 import com.dili.trace.service.ApproverInfoService;
 import com.dili.trace.service.Base64SignatureService;
 import com.dili.trace.util.MaskUserInfo;
@@ -53,7 +54,7 @@ public class ApproverInfoController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(ApproverInfo approverInfo) throws Exception {
+	public @ResponseBody String listPage(ApproverInfoQueryDto approverInfo) throws Exception {
 		EasyuiPageOutput out=this.approverInfoService.listEasyuiPageByExample(approverInfo,true);
 		return out.toString();
 	}
