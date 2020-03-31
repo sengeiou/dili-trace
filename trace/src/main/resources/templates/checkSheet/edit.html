@@ -157,16 +157,21 @@ function prePrint(){
 
 //客户端错误回调方法
 function handleError(ret){
-	swal(
-            '错误',
-            ret.result,
-            'error'
-    );
+    layer.alert(ret.result,{
+			title:'错误',
+	       	end :function(){
+	       		//window.location.reload()
+	       	}
+      },
+ 	 function () {
+ 	 		 //window.location.reload()
+         }
+ 	);
 }
 //打印结束后调用
 function printFinish(){
 	console.info('printFinish')
-	
+	parent.closeWin('view_win');
 }
 //客户端提交数据并同步获得提交后的数据
 function createCheckSheet(){
