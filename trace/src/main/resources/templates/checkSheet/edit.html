@@ -124,7 +124,7 @@ function prePrint(){
 	        if(ret.code=="200"){
 	        	console.info(ret);
 	        	//debugger
-	        	if(callbackObj&&callbackObj.printDirect){
+	        	if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
 	        		$('.btn-main2').hide();
 	        		callbackObj.printDirect(JSON.stringify(ret),"TestReport");
 	        	}else{

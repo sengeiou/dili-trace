@@ -289,8 +289,7 @@
 	         if(ret.code=="200"){
 	        	//console.info(ret);
 	        	//debugger
-	        	if(callbackObj&&callbackObj.printDirect){
-	        		$('.btn-main2').hide();
+	        	if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
 	        		callbackObj.printDirect(JSON.stringify(ret),"TestReport");
 	        	}else{
 	        		 swal(
