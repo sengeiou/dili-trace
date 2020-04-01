@@ -3,6 +3,7 @@ package com.dili.trace.dto;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.CheckSheet;
 
@@ -26,5 +27,14 @@ public interface CheckSheetQueryDto extends CheckSheet {
     @Operator(Operator.LITTLE_EQUAL_THAN)
     String getCreatedEnd();
     void setCreatedEnd(String createdEnd);
+    
+    
+    @Column(name = "`operator_name`")
+    @Like(Like.RIGHT)
+	public String getLikeOperatorName();
+
+	public void setLikeOperatorName(String likeOperatorName);
+    
+    
 
 }

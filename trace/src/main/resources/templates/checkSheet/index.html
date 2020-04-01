@@ -29,7 +29,9 @@
                         <div class="search-item">
                             <input class="easyui-textbox" name="likeApproverUserName" id="likeApproverUserName" style="width:100%" labelAlign="right" data-options="label:'审核人:'" />
                         </div>
-
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="likeOperatorName" id="likeOperatorName" style="width:100%" labelAlign="right" data-options="label:'操作人:'" />
+                        </div>
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
@@ -63,11 +65,14 @@
                         <th width="15%" data-options="field:'userName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             提交人
                         </th>
-                        <th width="20%" data-options="field:'detectOperatorName',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="15%" data-options="field:'detectOperatorName',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             检测人
                         </th>
-                        <th width="20%" data-options="field:'approverInfoId', _provider:'approverInfoProvider',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="15%" data-options="field:'approverInfoId', _provider:'approverInfoProvider',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             审核人
+                        </th>
+                         <th width="10%" data-options="field:'operator_name', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            操作人
                         </th>
                    </tr>
                 </thead>

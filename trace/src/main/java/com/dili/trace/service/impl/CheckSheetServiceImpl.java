@@ -75,12 +75,13 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 
 		Triple<CheckSheet, List<CheckSheetDetail>, List<RegisterBill>> triple = this.buildCheckSheet(input);
 		CheckSheet checkSheet = triple.getLeft();
-
+		UserTicket userTicket = getOptUser();
 		// 生成编号，插入数据库
 		String checkSheetCode = this.codeGenerateService.nextCheckSheetCode();
 		checkSheet.setCode(checkSheetCode);
 		checkSheet.setQrcodeUrl(this.baseWebPath + "/checkSheet/detail/" + checkSheetCode);
-
+		checkSheet.setOperatorId(userTicket.getId());
+		checkSheet.setOperatorName(userTicket.getRealName());
 		this.insertExact(checkSheet);
 
 		// 生成详情并插入数据库
