@@ -68,9 +68,10 @@
 								_parentIdField:'parentId',
 								editable:true,panelHeight:'auto',panelMaxHeight:400, onChange:function(newValue, oldValue){
 									if(newValue.length==0){
-									$('#productIdList').combotree('readonly', false);
+									console.info( $('#productIdList').combotree('getText'))
+									   $('#productIdList').combotree('readonly', false);
 									}else{
-									$('#productIdList').combotree('readonly', true);
+									   $('#productIdList').combotree('readonly', true);
 									}
 										
 								}" />
@@ -106,7 +107,7 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="商品报表" id="registerBillGrid" fitColumns="true"  fit="true" noheader="true"
+            <table class="easyui-datagrid" title="商品报表" id="reportGrid" fitColumns="true"  fit="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
                    loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false" sortName="totalWeight" sortOrder="desc"
                    align="center" fit="true" idField="productName" selectOnCheck="true" data-options="">
@@ -317,7 +318,6 @@
     		});
     	     var productInput=$('#'+$('#productIdList').siblings('label').attr('for'));
     	        productInput.on('input',function(){
-
     	        });
     	        productInput.focus(function(){
     	        	$('#productIdList').combotree('showPanel');
@@ -327,7 +327,7 @@
     //表格查询
 
     function queryRegisterBillGrid() {
-        var opts = _registerBillGrid.datagrid("options");
+        var opts = _reportGrid.datagrid("options");
         if (null == opts.url || "" == opts.url) {
             opts.url = "${contextPath}/registerBillReport/listPageGroupByProduct.action";
         }
@@ -337,15 +337,15 @@
         }
         
         var productIdList=$('#productIdList').combotree('getValues');
-        var likeProductName=$('#productIdList').combotree('getText');
+        var likeProductName=$('#'+$('#productIdList').siblings('label').attr('for')).val();
         
-        var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
+        var formdata=bindGridMeta2Form("reportGrid", "queryForm");
         if(productIdList.length>0){
         	formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''}).join(',');	
         }else{
         	formdata['likeProductName']=likeProductName;	
         }
-        _registerBillGrid.datagrid("load", formdata);
+        _reportGrid.datagrid("load", formdata);
 
     }
         //清空表单
@@ -358,7 +358,7 @@
     function headerContextMenu(e, field){
         e.preventDefault();
         if (!cmenu){
-            createColumnMenu("registerBillGrid");
+            createColumnMenu("reportGrid");
         }
         cmenu.menu('show', {
             left:e.pageX,
@@ -376,7 +376,7 @@
      *          表单提交需执行的任务
      */
     $(function () {
-        window._registerBillGrid = $('#registerBillGrid');
+        window._reportGrid = $('#reportGrid');
         bindFormEvent("queryForm", "registerSource", queryRegisterBillGrid);
        
         queryProductSearchDlg();
@@ -389,13 +389,13 @@
      * 初始化用户列表组件
      */
     function initRegisterBillGrid() {
-        var pager = _registerBillGrid.datagrid('getPager');
+        var pager = _reportGrid.datagrid('getPager');
         var toolbar=[
             {
                 iconCls:'icon-detail',
                 text:'详情',
                 handler:function(){
-                    var selected = _registerBillGrid.datagrid("getSelections");
+                    var selected = _reportGrid.datagrid("getSelections");
                     debugger
                     if (selected.length==0) {
                         swal({
@@ -410,7 +410,7 @@
                     var productIdList=$('#productIdList').combotree('getValues');
                     var likeProductName=$('#productIdList').combotree('getText');
                     
-                    var formdata=bindGridMeta2Form("registerBillGrid", "queryForm");
+                    var formdata=bindGridMeta2Form("reportGrid", "queryForm");
                     if(productIdList.length>0){
                     	formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''}).join(',');	
                     }else{
@@ -445,7 +445,7 @@
                          btn: ['确定','取消'],
                          yes:function(){
                         	 layer.closeAll();
-                        	 doExport('registerBillGrid');
+                        	 doExport('reportGrid');
                          }
                      });
                        
@@ -468,7 +468,7 @@
     }
     function getColumnFields(){
     	
-    	var columns=_registerBillGrid.datagrid('getColumnFields', false).filter(function(v,i){return v!='productName';});
+    	var columns=_reportGrid.datagrid('getColumnFields', false).filter(function(v,i){return v!='productName';});
     	return columns;
     	
     }
@@ -496,10 +496,10 @@
    			
    		});
     	$.each(checkedData.checked,function(i,colName){
-    		_registerBillGrid.datagrid('showColumn', colName);
+    		_reportGrid.datagrid('showColumn', colName);
     	});
     	$.each(checkedData.unchecked,function(i,colName){
-    		_registerBillGrid.datagrid('hideColumn', colName);
+    		_reportGrid.datagrid('hideColumn', colName);
     	});
     	
     	
@@ -520,7 +520,7 @@
     	if(v==true){
     		var columns=getColumnFields();
         	$.each(columns,function(i,v){
-        		_registerBillGrid.datagrid('showColumn', v);
+        		_reportGrid.datagrid('showColumn', v);
         		$('#'+v).checkbox('check');
         	});
         	$('#unselectAll').checkbox('uncheck').checkbox('enable');
@@ -531,7 +531,7 @@
     	if(v==true){
     		var columns=getColumnFields();
         	$.each(columns,function(i,v){
-        		_registerBillGrid.datagrid('hideColumn', v);
+        		_reportGrid.datagrid('hideColumn', v);
         		$('#'+v).checkbox('uncheck');
         	});
         	$('#selectAll').checkbox('uncheck').checkbox('enable');
@@ -546,10 +546,10 @@ function showcharts(){
         return false;
     }
 	var data=$('#queryForm').serializeObject();
-	var columns=_registerBillGrid.datagrid('getColumnFields', false);
+	var columns=_reportGrid.datagrid('getColumnFields', false);
 	var chartId='';
 	$.each(columns,function(i,v){
-		var col=_registerBillGrid.datagrid('getColumnOption', v);
+		var col=_reportGrid.datagrid('getColumnOption', v);
 		if(col.chartable&&col.chartable==true){
 			var td=$('td[field="'+v+'"]');
 			var visible=td.is(':visible');
@@ -564,25 +564,24 @@ function showcharts(){
 	 openWin('/registerBillReport/product-charts.html?params='+encodeURIComponent(JSON.stringify(data) ));
 }
 function percentageFormatter(val,row){
-//<span style="url(../img/gb.png) no-repeat 0 -559px"
-console.info(val)
-if(val=='-'){
-	return '<span style="">'+val+'</span>';
-}
-if(val=='0.00'){
-	return '<span style="">'+val+'%</span>';
-}
-if(val>0){
-	return '<span style="color:red;">'+val+'%</span>';
-}else{
-	return '<span style="color:green;">'+val+'%</span>';
-}
-
+		//<span style="url(../img/gb.png) no-repeat 0 -559px"
+		//console.info(val)
+		if(val=='-'){
+			return '<span style="">'+val+'</span>';
+		}
+		if(val=='0.00'){
+			return '<span style="">'+val+'%</span>';
+		}
+		if(val>0){
+			return '<span style="color:red;">'+val+'%</span>';
+		}else{
+			return '<span style="color:green;">'+val+'%</span>';
+		}
 }
 
 function closeWin(id){
     $('#'+id).remove();
-    $('#registerBillGrid').datagrid('reload');
+    $('#reportGrid').datagrid('reload');
 }
 function openWin(url){
     $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
