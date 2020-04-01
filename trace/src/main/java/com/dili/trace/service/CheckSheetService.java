@@ -38,5 +38,12 @@ public interface CheckSheetService extends BaseService<CheckSheet, Long> {
 	 * @return
 	 */
 	public  String getBase64(String content, int qrWidth, int qrHeight);
+	
+	/**
+	 * 通过ID查询可调用打印接口的数据结构
+	 * @param id
+	 * @return
+	 */
+	public Map findPrintableCheckSheet(Long id);
 
 }

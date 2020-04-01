@@ -159,6 +159,22 @@ public class CheckSheetController {
 			return BaseOutput.failure();
 		}
 	}
+	@ApiOperation("预览CheckSheet")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "CheckSheet", paramType = "form", value = "CheckSheet的form信息", required = true, dataType = "string") })
+	@RequestMapping(value = "/findPrintableCheckSheet.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput<Object> findPrintableCheckSheet(CheckSheetInputDto input) {
+		try {
+			Map resultMapDto = this.checkSheetService.findPrintableCheckSheet(input.getId());
+			return BaseOutput.success().setData(resultMapDto);
+		} catch (BusinessException e) {
+			LOGGER.error("checksheet", e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return BaseOutput.failure();
+		}
+	}
 
 	@ApiOperation("跳转到CheckSheet页面")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)

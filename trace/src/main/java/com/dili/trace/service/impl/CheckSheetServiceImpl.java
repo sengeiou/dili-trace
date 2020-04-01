@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -142,14 +143,41 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		base64 = "data:image/jpeg;base64," + base64;
 		return base64;
 	}
-
+	@Override
+	public Map findPrintableCheckSheet(Long id) {
+		if(id==null) {
+			throw new BusinessException("参数错误");
+		}
+		CheckSheet checkSheet=this.get(id);
+		if(checkSheet==null) {
+			throw new BusinessException("数据不存在");
+		}
+		CheckSheetDetail queryDomain=DTOUtils.newDTO(CheckSheetDetail.class);
+		queryDomain.setCheckSheetId(checkSheet.getId());
+		List<CheckSheetDetail> checkSheetDetailList=this.checkSheetDetailService.listByExample(queryDomain);
+		
+		return this.buildPrintDTOMap(checkSheet, checkSheetDetailList);
+		
+	}
 	private Map buildPrintDTOMap(CheckSheet checkSheet, List<CheckSheetDetail> checkSheetDetailList) {
 		checkSheet.setQrcodeUrl(this.baseWebPath + "/checkSheet/detail/" + checkSheet.getCode());// 空请求路径
 
 		checkSheet.setBase64Qrcode(this.getBase64(checkSheet.getQrcodeUrl(), 200, 200));
 		Date created=checkSheet.getCreated();
+		ApproverInfo approverInfo = this.approverInfoService.get(checkSheet.getApproverInfoId());
+		if (approverInfo == null) {
+			throw new BusinessException("提交的数据错误");
+		}
+		String base64Sign = this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
+		checkSheet.setApproverBase64Sign(base64Sign);
+		
+		Map checkSheetMap = null;
+		if(checkSheet instanceof JSONObject) {
+			 checkSheetMap = JSONObject.parseObject(checkSheet.toString());	
+		}else{
+			 checkSheetMap = DTOUtils.go(checkSheet);
+		}
 
-		Map checkSheetMap = JSONObject.parseObject(checkSheet.toString());
 		checkSheetMap.put("qrcodeUrl", "sss");
 
 		checkSheetMap.put("showProductAlias", false);
@@ -260,8 +288,8 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		if (approverInfo == null) {
 			throw new BusinessException("提交的数据错误");
 		}
-		String base64Sign = this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
-		input.setApproverBase64Sign(base64Sign);
+//		String base64Sign = this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
+//		input.setApproverBase64Sign(base64Sign);
 		List<Long> idList = new ArrayList<>(idAndAliasNameMap.keySet());
 
 		RegisterBillDto queryCondition = DTOUtils.newDTO(RegisterBillDto.class);

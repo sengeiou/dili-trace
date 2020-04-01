@@ -198,6 +198,14 @@
                        doDetail();
                    }
                },
+               {
+                   iconCls:'icon-print',
+                   id:'print-btn',
+                   text:'补打',
+                   handler:function(){
+                       doPrint();
+                   }
+               },
                <#resource method="post" url="checkSheet/index.html#export">
                {
                    iconCls:'icon-export',
@@ -266,7 +274,91 @@
            }
            openWin('${contextPath}/checkSheet/view/' + selected.id)
        }
-       
+       function doPrint(){
+	           var selected = _checkSheetGrid.datagrid("getSelected");
+	           if (null == selected) {
+	               swal({
+	                   title: '警告',
+	                   text: '请选中一条数据',
+	                   type: 'warning',
+	                   width: 300,
+	               });
+	               return;
+	           }
+             var ret=findPrintableCheckSheet(selected.id);
+	         if(ret.code=="200"){
+	        	//console.info(ret);
+	        	//debugger
+	        	if(callbackObj&&callbackObj.printDirect){
+	        		$('.btn-main2').hide();
+	        		callbackObj.printDirect(JSON.stringify(ret),"TestReport");
+	        	}else{
+	        		 swal(
+	                         '错误',
+	                         '请升级客户端或者在客户端环境运行当前程序',
+	                         'error'
+	                 );
+	        	}
+	        	
+	        	
+	        }else{
+	             swal(
+                         '错误',
+                         ret.result,
+                         'error'
+                 );
+	        }
+       }
+	function findPrintableCheckSheet(id){
+   		var result={};
+		$.ajax({
+		    type: "POST",
+		    url: '${contextPath!}/checkSheet/findPrintableCheckSheet.action',
+		    data: {id:id},
+		    processData:true,
+		    dataType: "json",
+		    async : false,
+		    contentType: "application/json; charset=utf-8",
+		    success: function (ret) {
+		    	result=ret;
+		    },
+		    error: function(){
+		    	result={"code":"5000",result:"远程访问失败"}
+
+		    }
+		});
+		return result;
+	}       
+
+	function createCheckSheet(){
+      var selected = _checkSheetGrid.datagrid("getSelected");
+      var result=findPrintableCheckSheet(selected.id);
+      return JSON.stringify(result);
+    }
+//客户端错误回调方法
+function handleError(ret){
+		layer.alert(ret.result,{
+			title:'错误',
+		   	end :function(){
+			   		//window.location.reload()
+			   	}
+			},
+			function () {
+					 //window.location.reload()
+			 }
+		);
+}
+//取消打印结束后调用
+function cancelPrint(){
+	console.info('cancelPrint')
+	//$('.btn-main2').show();
+}
+//打印结束后调用
+function printFinish(){
+	console.info('printFinish')
+	//parent.closeWin('view_win');
+}
+
 
    </script>
 
