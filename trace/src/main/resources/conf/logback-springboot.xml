@@ -89,8 +89,7 @@
     <logger name="org.hibernate.engine.QueryParameters" level="DEBUG" />
     <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" />
 
-    <!--myibatis log configure-->
-    <logger name="com.apache.ibatis" level="TRACE"/>
+   <!-- SQL输出 -->
 	<logger name="p6spy" level="debug"/>
     
     <!-- 日志输出级别 -->
