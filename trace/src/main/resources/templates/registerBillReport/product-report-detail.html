@@ -2,9 +2,9 @@
 <style>
 fieldset {
     display: inline-block;
-    width: 180px;
-    margin: 2px;
-    padding: 5px;
+    width: 10.5%;
+    margin: 0px;
+    padding: 0px;
     border: 1px dotted #ddd;
     text-align: right;
 }
@@ -23,21 +23,17 @@ fieldset {
 	.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
 	background: #fff;
 }
-	.form-inline .input-sm.productname {
-		width: 200px;
-		font-weight: 700;
-		
-	}
+
 
 </style>
-<div class="main-container">
+<div class="main-container" style="width: 100%">	
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">商品详情</span>
             <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
         </div>
     </div>
-    <div class="form-box border">
+    <div class="form-box border" style="width: 100%">
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
 <% for(item in items){%>
@@ -46,7 +42,7 @@ fieldset {
                     <label class="label-title text-right" style="white-space: nowrap;">商品名称: ${item.productName}</label>
                 </div>
                 <br>
-                <fieldset style="width: 200px">
+                <fieldset style="width: 14%">
                 <div class="form-group">
                     <label class="label-title text-right" style="white-space: nowrap;">运输重量(KG): ${item.totalWeight}</label>
                     <br/>
