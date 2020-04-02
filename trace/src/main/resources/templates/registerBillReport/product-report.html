@@ -86,17 +86,10 @@
                             <a href="#" class="easyui-linkbutton" iconCls="icon-edit" 
                                onclick="showorhidecolumns()">列表字段配置</a>&nbsp;&nbsp;
                         </div>
-                        
-                        
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-sum" 
                                onclick="showcharts()">查看图表</a>&nbsp;&nbsp;
                         </div>
-                        
-                        
-                 
-                        
-                        
                     </div>
                 </form>
             </div>
@@ -110,7 +103,7 @@
             <table class="easyui-datagrid" title="商品报表" id="reportGrid" fitColumns="true"  fit="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
                    loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false" sortName="totalWeight" sortOrder="desc"
-                   align="center" fit="true" idField="productName" selectOnCheck="true" data-options="">
+                   align="center" fit="true" idField="productName" selectOnCheck="true" data-options="onLoadSuccess:onLoadSuccess">
                        
             
                 <thead>
@@ -325,7 +318,6 @@
     	 
      }
     //表格查询
-
     function queryRegisterBillGrid() {
         var opts = _reportGrid.datagrid("options");
         if (null == opts.url || "" == opts.url) {
@@ -348,6 +340,9 @@
         _reportGrid.datagrid("load", formdata);
 
     }
+    function onLoadSuccess(data){
+    	_reportGrid.datagrid("clearSelections");
+	}
         //清空表单
     function clearQueryForm() {
         $('#queryForm').form('clear');
@@ -396,7 +391,6 @@
                 text:'详情',
                 handler:function(){
                     var selected = _reportGrid.datagrid("getSelections");
-                    debugger
                     if (selected.length==0) {
                         swal({
                             title: '警告',
@@ -409,7 +403,7 @@
                 	var formdata=$('#queryForm').serializeObject();
                     var productIdList=$('#productIdList').combotree('getValues');
                     var likeProductName=$('#productIdList').combotree('getText');
-                    
+                    //debugger
                     var formdata=bindGridMeta2Form("reportGrid", "queryForm");
                     if(productIdList.length>0){
                     	formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''}).join(',');	
@@ -423,7 +417,7 @@
                 		}
                 		return accumulator;
                 	},[] ).join(',');*/
-                	debugger
+                	//debugger
                 	formdata['detailedProductIdList']=selected.map(function(v,i){return v.productId;}).reduce(function(accumulator, currentValue, index, array ){
                 		if($.inArray(currentValue,array,index+1)==-1){
                 			accumulator.push(currentValue);
