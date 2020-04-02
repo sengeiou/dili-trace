@@ -259,7 +259,17 @@
 		<if test="hasOriginCertifiy ==false">
 			AND (origin_certifiy_url is  null or origin_certifiy_url='') 
 		</if> 
-	</if> 
+	</if>
+    <if test="hasCheckSheet != null">
+		<if test="hasCheckSheet ==true">
+		   AND (check_sheet_id is not null)
+		</if>
+		<if test="hasCheckSheet ==false">
+			AND (check_sheet_id is  null) 
+		</if> 
+	</if>
+	
+	
 	
   </select>
   

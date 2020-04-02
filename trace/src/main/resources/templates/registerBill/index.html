@@ -68,13 +68,16 @@
                         </div>
                         
                         <div class="search-item">
-                            <select class="easyui-combobox" name="hasDetectReport" id="hasDetectReport" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'检测报告' "  labelAlign="right">
+                            <select class="easyui-combobox" name="multipleSelect" id="multipleSelect" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'检测报告' ,onChange:multipleSelectOnChange"  labelAlign="right">
                         		<option value="">全部</option>
-                                <option value="true">有</option>
-                                <option value="false">无</option>
-                                <option value="hasCheckSheet=false">未打印</option>
+                                <option value="hasDetectReport=true">有</option>
+                                <option value="hasDetectReport=false">无</option>
+                               <option value="hasCheckSheet=false">未打印</option>
                                 <option value="hasCheckSheet=true">已打印</option>
                             </select>
+                            <!-- 请不要删除下面这个隐藏控件 -->
+                            <input  type="hidden"  name="hasCheckSheet">
+                            <input  type="hidden"  name="hasDetectReport">
                         </div>
                         <div class="search-item">
                             <select class="easyui-combobox" name="hasOriginCertifiy" id="hasOriginCertifiy" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'产地证明'"  labelAlign="right">
@@ -275,6 +278,26 @@
      <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
      <#registerBill_indexJs />
      <script>
+     
+     function multipleSelectOnChange(n,o){
+    	 
+		$('input[name="hasDetectReport"]').val('')
+  		$('input[name="hasCheckSheet"]').val('')
+  		   
+    	if(n=='hasDetectReport=true'){
+  		   $('input[name="hasDetectReport"]').val('true')
+  	   }else if(n=='hasDetectReport=false'){
+  		   $('input[name="hasDetectReport"]').val('false')
+  	   }else if(n=='hasCheckSheet=true'){
+  		   $('input[name="hasCheckSheet"]').val('true')
+  	   }else if(n=='hasCheckSheet=false'){
+  		   $('input[name="hasCheckSheet"]').val('false')
+  	   }else{
+  		   $('input[name="hasDetectReport"]').val('')
+  		   $('input[name="hasCheckSheet"]').val('')
+  	   }
+     }
+     
      function queryProduct(param,success,error){
   	   var productName=$('#productCombobox').combotree('getText');
   	   var data=[];
