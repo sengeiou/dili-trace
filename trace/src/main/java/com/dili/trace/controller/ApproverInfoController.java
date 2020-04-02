@@ -72,7 +72,7 @@ public class ApproverInfoController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput<Long> insert(@RequestBody ApproverInfo approverInfo) {
+	public @ResponseBody BaseOutput<Long> insert(ApproverInfo approverInfo) {
 		try {
 			approverInfo.setUserId(0L);
 			this.approverInfoService.insertApproverInfo(approverInfo);
