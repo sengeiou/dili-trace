@@ -138,7 +138,7 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(CHECKSHEET_CODE_TYPE).stream().findFirst()
 				.orElse(null);
 		if (codeGenerate == null) {
-			throw new AppException("生成检验单编号错误");
+			throw new AppException("生成打印报告编号错误");
 		}
 		
 		// 时间比较

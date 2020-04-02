@@ -12,7 +12,7 @@ public interface CodeGenerateService extends BaseService<CodeGenerate, Long> {
 	public String nextSampleCode();
 
 	/**
-	 * 生成检验单编号
+	 * 生成打印报告编号
 	 * 
 	 * @return
 	 */

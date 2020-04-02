@@ -304,7 +304,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 
 		boolean withoutCheckSheet = registerBillList.stream().allMatch(bill -> bill.getCheckSheetId() == null);
 		if (!withoutCheckSheet) {
-			throw new BusinessException("已经有登记单创建了检验单");
+			throw new BusinessException("已经有登记单创建了打印报告");
 		}
 		boolean allBelongSamePerson = registerBillList.stream().map(RegisterBill::getIdCardNo).distinct().count() == 1;
 		if (!allBelongSamePerson) {

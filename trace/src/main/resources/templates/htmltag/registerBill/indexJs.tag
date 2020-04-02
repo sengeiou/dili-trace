@@ -312,7 +312,7 @@ var currentUser={"depId":"${user.depId!}"
                 <#resource method="post" url="registerBill/index.html#createCheckSheet">
                 {
                     iconCls:'icon-add',
-                    text:'创建检验单',
+                    text:'创建打印报告',
                     id:'createsheet-btn',
                     disabled :true,
                     handler:doCreateCheckSheet,
