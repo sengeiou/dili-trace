@@ -92,27 +92,33 @@
                          <br/>
                          
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="hasOriginCertifiyNum" style="width:100%" labelAlign="right" data-options="label:'有产地证明:'" value="0条" readonly="readonly" disabled="disabled" />
+                            <input class="easyui-textbox statics" id="hasOriginCertifiyNum" style="width:60%" labelAlign="right" data-options="label:'有产地证明:'" value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="hasDetectReportNum" style="width:100%" labelAlign="right" data-options="label:'有检测报告:'" value="0条" readonly="readonly" disabled="disabled" />
+                            <input class="easyui-textbox statics" id="hasDetectReportNum" style="width:60%" labelAlign="right" data-options="label:'有检测报告:'" value="0条" readonly="readonly" disabled="disabled" />
                         </div>
 
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="passNum" style="width:100%" labelAlign="right" data-options="label:'合格:'" value="0条" readonly="readonly" disabled="disabled" />
+                            <input class="easyui-textbox statics" id="passNum" style="width:60%" labelAlign="right" data-options="label:'合格:'" value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="nopassNum" style="width:100%" labelAlign="right" data-options="label:'不合格:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                            <input class="easyui-textbox statics" id="nopassNum" style="width:60%" labelAlign="right" data-options="label:'不合格:'"  value="0条" readonly="readonly" disabled="disabled"/>
                         </div>
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="sampleCheckNum" style="width:100%" labelAlign="right" data-options="label:'采样检测:'"  value="0条" readonly="readonly" disabled="disabled" />
+                            <input class="easyui-textbox statics" id="sampleCheckNum" style="width:60%" labelAlign="right" data-options="label:'采样检测:'"  value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                         
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="recheckNum" style="width:100%" labelAlign="right" data-options="label:'复检:'"  value="0条" readonly="readonly" disabled="disabled"/>
+                            <input class="easyui-textbox statics" id="recheckNum" style="width:60%" labelAlign="right" data-options="label:'复检:'"  value="0条"  readonly="readonly" disabled="disabled"/>
                         </div>
                         <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="autoCheckNum" style="width:100%" labelAlign="right" data-options="label:'主动送检:'" value="0条" readonly="readonly" disabled="disabled" />
+                            <input class="easyui-textbox statics" id="autoCheckNum" style="width:60%" labelAlign="right" data-options="label:'主动送检:'" value="0条" readonly="readonly" disabled="disabled" />
+                        </div>
+                        <div class="search-item" style="width: 14%">
+                            <input class="easyui-textbox statics" id="diffCheckSheetNum" style="width:60%" labelAlign="right" data-options="label:'打印报告:'" value="0份"  data-unit="份" readonly="readonly" disabled="disabled" />
+                        </div>
+                        <div class="search-item" style="width: 14%">
+                            <input class="easyui-textbox statics" id="hasCheckSheetNum" style="width:60%" labelAlign="right" data-options="label:'已打印登记单:'" value="0条" readonly="readonly" disabled="disabled" />
                         </div>
                     </div>
                 </form>
@@ -130,7 +136,7 @@
                    align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
                 <thead>
                     <tr>
-                        <th width="9%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="8%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             登记时间
                         </th>
                         <th width="9%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -151,7 +157,7 @@
                         <th width="6%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             业户姓名
                         </th>
-                        <th width="7%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="5%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             车牌
                         </th>
                         <!--<th width="8%" data-options="field:'idCardNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -172,7 +178,9 @@
                         <th width="6%" data-options="field:'originName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             产地
                         </th>
-
+                        <th width="4%" data-options="field:'checkSheetId', _provider:'hasOrNoneProvider', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            打印报告
+                        </th>
                         <th width="4%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             状态
                         </th>
@@ -187,7 +195,7 @@
                         <th width="5%" data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            检测结果
                         </th>
-                        <th width="6%" data-options="field:'latestPdResult' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="5%" data-options="field:'latestPdResult' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            检测值
                         </th>
                         <th width="5%" data-options="field:'latestDetectOperator',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -341,11 +349,15 @@
                     var data = ret.data;
                     $.each($('.statics'),function(){
                     	var staticsId=$(this).attr('id');
-                    	var defaultValue='0条';
+                    	var unit=$(this).data('unit');
+                    	if(typeof(unit)=='undefined'){
+                    		unit='条';
+                    	}
+                    	var value='0';
                     	if(data&&data[staticsId]){
-                 			defaultValue=data[staticsId]+"条";
+                    		value=data[staticsId];
                  		}
-                    	$(this).textbox('setValue',defaultValue);
+                    	$(this).textbox('setValue',value+unit);
                     })
 
                 } else {

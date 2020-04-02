@@ -22,6 +22,31 @@ public class RegisterBillStaticsDto {
     private Integer sampleCheckNum=0;
     //主动送检
     private Integer autoCheckNum=0;
+    
+    
+    /**
+     * 有打印报告(check_sheet_id的登记单的数量)
+     */
+	private Integer hasCheckSheetNum;
+    /**
+     * 不同的打印报告的数量(登记单的check_sheet_id不相同的数量)
+     */
+	private Integer  diffCheckSheetNum;
+	
+	
+	
+	public Integer getHasCheckSheetNum() {
+		return hasCheckSheetNum;
+	}
+	public void setHasCheckSheetNum(Integer hasCheckSheetNum) {
+		this.hasCheckSheetNum = hasCheckSheetNum;
+	}
+	public Integer getDiffCheckSheetNum() {
+		return diffCheckSheetNum;
+	}
+	public void setDiffCheckSheetNum(Integer diffCheckSheetNum) {
+		this.diffCheckSheetNum = diffCheckSheetNum;
+	}
 	public Integer getHasOriginCertifiyNum() {
 		return hasOriginCertifiyNum;
 	}

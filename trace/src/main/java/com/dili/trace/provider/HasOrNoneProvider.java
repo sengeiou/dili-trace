@@ -11,7 +11,7 @@ import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValueProvider;
 
 @Component
-public class DetectReportStateProvider  implements ValueProvider {
+public class HasOrNoneProvider  implements ValueProvider {
 
 	@Override
 	public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) {
