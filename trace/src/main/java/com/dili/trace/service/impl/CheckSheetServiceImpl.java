@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
@@ -170,16 +171,11 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		}
 		String base64Sign = this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
 		checkSheet.setApproverBase64Sign(base64Sign);
-		
-		Map checkSheetMap = null;
-		//坑爹的类型转换(从页面提交上来的CheckSheet实际是JsonObject类型，从数据库直接查询出来的是个代理对象，只能用所谓的工具类来处理)
-		if(checkSheet instanceof JSONObject) {
-			 checkSheetMap = JSONObject.parseObject(checkSheet.toString());	
-		}else{
-			 checkSheetMap = DTOUtils.go(checkSheet);
-		}
 		//清理数据或者设置默认值
 		checkSheet.setQrcodeUrl("");
+		
+		Map checkSheetMap = JSONObject.parseObject(JSON.toJSONString(checkSheet));	
+
 
 		checkSheetMap.put("showProductAlias", false);
 		if (checkSheetDetailList != null && !checkSheetDetailList.isEmpty()) {

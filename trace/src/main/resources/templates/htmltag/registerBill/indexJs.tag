@@ -501,7 +501,7 @@ var currentUser={"depId":"${user.depId!}"
 		var btnStatus={'createsheet-btn':false};
 		$.each(rows,function(i,rows){
 	        if(rows.$_detectState==${@com.dili.trace.glossary.BillDetectStateEnum.PASS.getCode()} || rows.$_detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_PASS.getCode()}){
-	        	if(row.checkSheetId&&row.checkSheetId!=null&&row.checkSheetId!=''){
+	        	if(row.$_checkSheetId&&row.$_checkSheetId!=null&&row.$_checkSheetId!=''){
 	        		btnStatus['createsheet-btn']=false;
 	        	}else{
 	        		btnStatus['createsheet-btn']=true;
