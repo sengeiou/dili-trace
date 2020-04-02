@@ -172,13 +172,14 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		checkSheet.setApproverBase64Sign(base64Sign);
 		
 		Map checkSheetMap = null;
+		//坑爹的类型转换(从页面提交上来的CheckSheet实际是JsonObject类型，从数据库直接查询出来的是个代理对象，只能用所谓的工具类来处理)
 		if(checkSheet instanceof JSONObject) {
 			 checkSheetMap = JSONObject.parseObject(checkSheet.toString());	
 		}else{
 			 checkSheetMap = DTOUtils.go(checkSheet);
 		}
-
-		checkSheetMap.put("qrcodeUrl", "sss");
+		//清理数据或者设置默认值
+		checkSheet.setQrcodeUrl("");
 
 		checkSheetMap.put("showProductAlias", false);
 		if (checkSheetDetailList != null && !checkSheetDetailList.isEmpty()) {
