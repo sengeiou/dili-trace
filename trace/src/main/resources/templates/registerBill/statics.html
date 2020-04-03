@@ -1,4 +1,21 @@
  <#body>
+ <style>
+ .search-wrap  .staticsDiv  .textbox-label {
+ 	 width: auto;
+ }
+
+ .staticsDiv .search-item{
+ width: auto;
+ margin-right: 10px;
+ 
+}
+ .staticsDiv .textbox .textbox-text,
+  .staticsDiv  .textbox.textbox-disabled.textbox-readonly {
+ 	width: 50px!important;
+ 	text-align: right;
+ }
+ 
+ </style>
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
@@ -15,7 +32,7 @@
                     <div class="search-wrap">
                         <div class="search-item  long-item">
                             <input  name="registerSource" id="registerSource" style="width:50%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto"/>
-                            <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
+                             <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
                             
                             <input  name="tradeTypeId" id="tradeTypeId" style="width:33%" labelAlign="right" data-options=""  panelWidth="auto" panelHeight="auto" disabled="disabled"/>
                             <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
@@ -83,43 +100,44 @@
                             <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">
                         </div>
 
-                     
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
                                onclick="queryRegisterBillGrid()">统计</a>&nbsp;&nbsp;
                             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
                         </div>
                          <br/>
-                         
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="hasOriginCertifiyNum" style="width:60%" labelAlign="right" data-options="label:'有产地证明:'" value="0条" readonly="readonly" disabled="disabled" />
-                        </div>
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="hasDetectReportNum" style="width:60%" labelAlign="right" data-options="label:'有检测报告:'" value="0条" readonly="readonly" disabled="disabled" />
-                        </div>
-
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="passNum" style="width:60%" labelAlign="right" data-options="label:'合格:'" value="0条" readonly="readonly" disabled="disabled" />
-                        </div>
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="nopassNum" style="width:60%" labelAlign="right" data-options="label:'不合格:'"  value="0条" readonly="readonly" disabled="disabled"/>
-                        </div>
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="sampleCheckNum" style="width:60%" labelAlign="right" data-options="label:'采样检测:'"  value="0条" readonly="readonly" disabled="disabled" />
-                        </div>
+                         <div class="staticsDiv">
+		                         <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="hasOriginCertifiyNum"  labelAlign="right" data-options="label:'有产地证明:'" value="0" readonly="readonly" disabled="disabled" />条
+		                        </div>
+		                        <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="hasDetectReportNum"  labelAlign="right" data-options="label:'有检测报告:'" value="0" readonly="readonly" disabled="disabled" />条
+		                        </div>
+		
+		                        <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="passNum"   labelAlign="right" data-options="label:'合格:'" value="0" readonly="readonly" disabled="disabled" />条
+		                        </div>
+		                        <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="nopassNum"  labelAlign="right" data-options="label:'不合格:'"  value="0" readonly="readonly" disabled="disabled"/>条
+		                        </div>
+		                        <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="sampleCheckNum"  labelAlign="right" data-options="label:'采样检测:'"  value="0" readonly="readonly" disabled="disabled" />条
+		                        </div>
+		                        
+		                        <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="recheckNum"  labelAlign="right" data-options="label:'复检:'"  value="0"  readonly="readonly" disabled="disabled"/>条
+		                        </div>
+		                        <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="autoCheckNum"  labelAlign="right" data-options="label:'主动送检:'" value="0" readonly="readonly" disabled="disabled" />条
+		                        </div>
+		                        <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="diffCheckSheetNum"  labelAlign="right" data-options="label:'打印报告:'" value="0"  readonly="readonly" disabled="disabled" />份
+		                        </div>
+		                        <div class="search-item" >
+		                            <input class="easyui-textbox statics" id="hasCheckSheetNum"  labelAlign="right" data-options="label:'已打印登记单:'" value="0" readonly="readonly" disabled="disabled" />条
+		                        </div>
+                         </div>
                         
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="recheckNum" style="width:60%" labelAlign="right" data-options="label:'复检:'"  value="0条"  readonly="readonly" disabled="disabled"/>
-                        </div>
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="autoCheckNum" style="width:60%" labelAlign="right" data-options="label:'主动送检:'" value="0条" readonly="readonly" disabled="disabled" />
-                        </div>
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="diffCheckSheetNum" style="width:60%" labelAlign="right" data-options="label:'打印报告:'" value="0份"  data-unit="份" readonly="readonly" disabled="disabled" />
-                        </div>
-                        <div class="search-item" style="width: 14%">
-                            <input class="easyui-textbox statics" id="hasCheckSheetNum" style="width:60%" labelAlign="right" data-options="label:'已打印登记单:'" value="0条" readonly="readonly" disabled="disabled" />
-                        </div>
                     </div>
                 </form>
             </div>
@@ -349,15 +367,11 @@
                     var data = ret.data;
                     $.each($('.statics'),function(){
                     	var staticsId=$(this).attr('id');
-                    	var unit=$(this).data('unit');
-                    	if(typeof(unit)=='undefined'){
-                    		unit='条';
-                    	}
                     	var value='0';
                     	if(data&&data[staticsId]){
                     		value=data[staticsId];
                  		}
-                    	$(this).textbox('setValue',value+unit);
+                    	$(this).textbox('setValue',value);
                     })
 
                 } else {
