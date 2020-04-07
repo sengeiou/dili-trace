@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -221,52 +222,11 @@ public class CheckSheetController {
 	@ApiOperation("跳转到CheckSheet二维码请求页面")
 	@RequestMapping(value = "/detail/{checkSheetCode}", method = RequestMethod.GET)
 	public String detail(ModelMap modelMap, @PathVariable(required = false) String checkSheetCode) {
-		modelMap.put("item", null);
-		modelMap.put("checkSheetDetailList", Collections.emptyList());
-		modelMap.put("registerBillIdMap", Collections.emptyMap());
-		modelMap.put("showProductAlias", false);
-		modelMap.put("base64Qrcode", "");
-		if (StringUtils.isNotBlank(checkSheetCode)) {
-			this.checkSheetService.findCheckSheetByCode(checkSheetCode).ifPresent(checkSheet->{
-				modelMap.put("item", checkSheet);
-				if (checkSheet != null) {
-					modelMap.put("base64Qrcode", this.checkSheetService.getBase64(checkSheet.getQrcodeUrl(), 100, 100));
-					ApproverInfo approverInfo = this.approverInfoService.get(checkSheet.getApproverInfoId());
-					modelMap.put("approverInfo", approverInfo);
-					CheckSheetDetail detailQuery = DTOUtils.newDTO(CheckSheetDetail.class);
-					detailQuery.setCheckSheetId(checkSheet.getId());
-					
-					List<CheckSheetDetail> checkSheetDetailList = this.checkSheetDetailService.listByExample(detailQuery).stream().map(detail->{
-						Integer detectState=detail.getDetectState();
-						if(BillDetectStateEnum.PASS.getCode().equals(detectState)||BillDetectStateEnum.REVIEW_PASS.getCode().equals(detectState)) {
-							detail.setDetectStateView("合格");	
-						}else {
-							detail.setDetectStateView("未知");
-						}
-						return detail;
-						
-					}).collect(Collectors.toList());
-					
-					modelMap.put("checkSheetDetailList", checkSheetDetailList);
-					
-					boolean showProductAlias=checkSheetDetailList.stream().anyMatch(item->{return StringUtils.isNotBlank(item.getProductAliasName());});
-					modelMap.put("showProductAlias", showProductAlias);
-					
-					List<Long> registerBillIdList = checkSheetDetailList.stream().map(CheckSheetDetail::getRegisterBillId)
-							.collect(Collectors.toList());
-					if (!registerBillIdList.isEmpty()) {
-						RegisterBillDto registerBillQuery = DTOUtils.newDTO(RegisterBillDto.class);
-						registerBillQuery.setIdList(registerBillIdList);
-						Map<Long, RegisterBill> registerBillIdMap = this.registerBillService
-								.listByExample(registerBillQuery).stream()
-								.collect(Collectors.toMap(RegisterBill::getId, Function.identity()));
-						modelMap.put("registerBillIdMap", registerBillIdMap);
-					}
-
-				}
-			});
-	
-		}
+		modelMap.put("item", new HashMap<String,Object>());
+		this.checkSheetService.findCheckSheetByCode(checkSheetCode).ifPresent(checkSheet->{
+			Map resultMap = this.checkSheetService.findPrintableCheckSheet(checkSheet.getId());
+			modelMap.put("item", resultMap);
+		});
 
 		return "checkSheet/detail";
 	}

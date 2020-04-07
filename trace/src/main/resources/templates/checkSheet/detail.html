@@ -1,20 +1,20 @@
 <#bodyOrigin>
 <style	>
-html {
-    height: 100%;
-}
-html::before {
-	position: absolute;
-	top: 0;
-	left: 0;
-	display: block;
-	width: 100%;
-	height: 100%;
-	content: '';
-	background: url(/resources/images/sy_logo.png) repeat 0 0;
-	background-size: 25%;
-	opacity: 0.5;
-} 
+	html {
+	    height: 100%;
+	}
+	html::before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+		content: '';
+		background: url(/resources/images/sy_logo.png) repeat 0 0;
+		background-size: 25%;
+		opacity: 0.5;
+	} 
 	.contenttable  th, .contenttable  td {
 		white-space: nowrap;
         border: 1px solid;
@@ -36,18 +36,19 @@ html::before {
 </style>
 <div class="main-container">
     <div class="topicTop">
-        <div class="toppic-title">
-            <span class="topic-title-text maincolor">打印报告信息</span>
+        <div class=" text-center">
+            <h4 class=" ">寿光地利农产品物流园</h4>
+	     	<h4 class=" "> 检验检测中心检测报告单</h4>
         </div>
     </div>
     <div class=" logobox  clearfix">
-        <img class="sg_qrcode  fl" alt="" src="${base64Qrcode}">
+        <img class="sg_qrcode  fl" alt="" src="${ item.base64Qrcode}">
     	<img class="sg_Logo fr" alt="" src="/resources/images/sg_Logo.png">
     </div>
     <div class="form-box border">
         <form id="createCheckSheetForm" class="form-inline" role="form">
-            <div class="form-item-group">
-               <%if(checkSheetDetailList.~size==0){%>
+            <div class="mt10">
+               <%if(item.checkSheetDetailList.~size==0){%>
 	            <div class="form-group " >
 	                   <label class="label-title text-right"  style="width: 300px;"><font style="font-size: 20px">没有有效的打印报告</font></label>
 	             </div>
@@ -62,19 +63,19 @@ html::before {
 		             <tr>
 		              <th>序号</th> 
 		              <th>品名</th>
-		              <%if(showProductAlias==true){%> <th>别名</th> <%}%>
+		              <%if(item.showProductAlias==true){%> <th>别名</th> <%}%>
 		              <th>产地</th>
 		              <th>抑制率(%)</th>
 		              <th>结果</th>
 		              </tr>
 	            </thead>
             <tbody>
-	            <%for (checkSheetDetail in checkSheetDetailList){%>
+	            <%for (checkSheetDetail in item.checkSheetDetailList){%>
 	            <tr>
 		            <td>${checkSheetDetail.orderNumber}</td>
 		            <td>${checkSheetDetail.productName}</td>
-		             <%if(showProductAlias==true){%>       <td>${checkSheetDetail.productAliasName}</td>      <%}%>
-		             <td>${checkSheetDetail.originName}</td>
+		            <%if(item.showProductAlias==true){%>       <td>${checkSheetDetail.productAliasName}</td>      <%}%>
+		            <td>${checkSheetDetail.originName}</td>
 		            <td>${checkSheetDetail.latestPdResult}</td>
 		            <td>${checkSheetDetail.detectStateView}</td>
 		            </td>
@@ -95,10 +96,8 @@ html::before {
 			</div>
 			<div class="clearfix">
 				<span class="fl">检测人:${item.detectOperatorName!}</span>
-				<span class="fr">审核人:${approverInfo.userName!}</span>
-			</div>
-			<div class="clearfix">
-				<span class="fr">${item.created,dateFormat='yyyy年MM月dd日'}</span>
+				<span class="fl"  style="padding-left: 10px;padding-right: 10px;"><span class="fl" >审核人:</span><img src="${item.approverBase64Sign!}"   style="width: 60px;height: 60px;"/></span>
+			    <span class="fl" >${item.created}</span>
 			</div>
 			
             </div>
