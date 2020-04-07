@@ -33,6 +33,9 @@ public class ApproverInfoServiceImpl extends BaseServiceImpl<ApproverInfo, Long>
 		if (StringUtils.isBlank(signBase64)) {
 			throw new BusinessException("签名不能为空");
 		}
+		if (StringUtils.isBlank(input.getUserName())) {
+			throw new BusinessException("用户名不能为空");
+		}
 		boolean existSameUserName=this.findByUserName(input.getUserName()).map((item)->{return true;}).orElse(false);
 		if(existSameUserName) {
 			throw new BusinessException("用户名已存在");
@@ -52,6 +55,9 @@ public class ApproverInfoServiceImpl extends BaseServiceImpl<ApproverInfo, Long>
 		String signBase64 = input.getSignBase64();
 		if (StringUtils.isBlank(signBase64)) {
 			throw new BusinessException("签名不能为空");
+		}
+		if (StringUtils.isBlank(input.getUserName())) {
+			throw new BusinessException("用户名不能为空");
 		}
 		ApproverInfo approverInfo = this.get(input.getId());
 		boolean existSameUserName=this.findByUserName(input.getUserName()).map((item)->{return (item.getUserName().equals(input.getUserName())&&!item.getId().equals(input.getId()));}).orElse(false);
