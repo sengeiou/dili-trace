@@ -228,7 +228,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		UserTicket ut = this.getOptUser();
 		input.setOperatorId(ut.getId());
 		input.setOperatorName(ut.getRealName());
-		input.setCode("SGJC000000");
+		input.setCode("SGJC******");
 		input.setCreated(new Date());
 		input.setModified(new Date());
 		

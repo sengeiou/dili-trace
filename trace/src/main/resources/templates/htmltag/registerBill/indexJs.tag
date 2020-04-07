@@ -47,7 +47,7 @@ var currentUser={"depId":"${user.depId!}"
         if (null == opts.url || "" == opts.url) {
             opts.url = "${contextPath}/registerBill/listPage.action";
         }
-    	console.info('queryRegisterBillGrid')
+    	//console.info('queryRegisterBillGrid')
         if(!$('#queryForm').form("validate")){
             return false;
         }
@@ -489,8 +489,6 @@ var currentUser={"depId":"${user.depId!}"
      */
     function onClickRow(index,row) {
 
-        //console.info(handleResult)
-
         initBtnStatus();
         var rows=_registerBillGrid.datagrid("getSelections");
         if(rows.length==0){
@@ -498,20 +496,24 @@ var currentUser={"depId":"${user.depId!}"
         }
         
 	    var rows=_registerBillGrid.datagrid("getSelections");
-		var btnStatus={'createsheet-btn':false};
-		$.each(rows,function(i,rows){
-	        if(rows.$_detectState==${@com.dili.trace.glossary.BillDetectStateEnum.PASS.getCode()} || rows.$_detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_PASS.getCode()}){
-	        	if(row.$_checkSheetId&&row.$_checkSheetId!=null&&row.$_checkSheetId!=''){
-	        		btnStatus['createsheet-btn']=false;
-	        	}else{
-	        		btnStatus['createsheet-btn']=true;
-	        	}
-	        	return;
-	         }
+	    
+		var arr=$.makeArray(rows).filter(function(v,i){
+			var detectState=v.$_detectState;
+			   if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.PASS.getCode()} || detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_PASS.getCode()}){
+				   return true;
+			   }
+			   return false;
+		}).filter(function(v,i){
+			if(v.$_checkSheetId&&v.$_checkSheetId!=null&&v.$_checkSheetId!=''){
+        		return false;
+        	}else{
+        		return true;
+        	}
 		});
-		
-		if(btnStatus['createsheet-btn']==true){
+		if(arr.length>0){
 			 $('#createsheet-btn').show();
+		}else{
+			 $('#createsheet-btn').hide();
 		}
 		
         if(rows.length>1){
