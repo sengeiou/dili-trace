@@ -53,7 +53,7 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/checkSheet")
 public class CheckSheetController {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CheckSheetController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UpStreamController.class);
 
 	@Autowired
 	CheckSheetService checkSheetService;
