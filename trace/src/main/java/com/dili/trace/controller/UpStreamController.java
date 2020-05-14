@@ -19,6 +19,7 @@ import com.dili.trace.domain.ApproverInfo;
 import com.dili.trace.domain.CheckSheet;
 import com.dili.trace.domain.CheckSheetDetail;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.CheckSheetInputDto;
 import com.dili.trace.dto.CheckSheetQueryDto;
 import com.dili.trace.dto.RegisterBillDto;
@@ -27,6 +28,7 @@ import com.dili.trace.service.ApproverInfoService;
 import com.dili.trace.service.CheckSheetDetailService;
 import com.dili.trace.service.CheckSheetService;
 import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.UpStreamService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -63,6 +65,8 @@ public class UpStreamController {
 	ApproverInfoService approverInfoService;
 	@Autowired
 	CheckSheetDetailService checkSheetDetailService;
+	@Autowired
+	UpStreamService upStreamService;
 
 	@ApiOperation("跳转到CheckSheet页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -75,20 +79,23 @@ public class UpStreamController {
 		return "upStream/index";
 	}
 
+	@RequestMapping(value = "/insert.html", method = RequestMethod.GET)
+	public String edit(ModelMap modelMap) {
+		return "upStream/insert";
+	}
+	
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
-	public String edit(ModelMap modelMap, @RequestParam("registerBillIdList") List<Long> registerBillIdList) {
+	public String edit(ModelMap modelMap, @RequestParam("id") Long id) {
 		return "upStream/edit";
 	}
+
 
 	@ApiOperation(value = "分页查询CheckSheet", notes = "分页查询CheckSheet，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "UpStream", paramType = "form", value = "UpStream的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(CheckSheetQueryDto checkSheet) throws Exception {
-		if(StringUtils.isNotBlank(checkSheet.getLikeApproverUserName())) {
-			checkSheet.mset(IDTO.AND_CONDITION_EXPR, "  (approver_info_id in (select id from approver_info where user_name='"+checkSheet.getLikeApproverUserName().trim()+"')) ");
-		}
-		EasyuiPageOutput out = this.checkSheetService.listEasyuiPageByExample(checkSheet, true);
+	public @ResponseBody String listPage(UpStream upStream) throws Exception {
+		EasyuiPageOutput out = this.upStreamService.listEasyuiPageByExample(upStream, true);
 		return out.toString();
 	}
 
@@ -96,10 +103,10 @@ public class UpStreamController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "UpStream", paramType = "form", value = "UpStream的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput<Long> insert(@RequestBody CheckSheetInputDto input) {
+	public @ResponseBody BaseOutput<Long> insert(@RequestBody UpStream input) {
 		try {
-			Map resultMapDto = this.checkSheetService.createCheckSheet(input);
-			return BaseOutput.success("新增成功").setData(resultMapDto);
+			this.upStreamService.createUpstream(input);
+			return BaseOutput.success("新增成功");
 		} catch (BusinessException e) {
 			LOGGER.error("checksheet", e);
 			return BaseOutput.failure(e.getMessage());
@@ -109,10 +116,9 @@ public class UpStreamController {
 		}
 	}
 
-
 	@ApiOperation("跳转到UpStream页面")
-	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
-	public String view(ModelMap modelMap, @PathVariable Long id) {
+	@RequestMapping(value = "/view.html", method = RequestMethod.GET)
+	public String view(ModelMap modelMap,  @RequestParam("id") Long id) {
 		modelMap.put("item", null);
 		return "upStream/view";
 	}

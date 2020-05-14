@@ -1,0 +1,224 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="topicTop">
+        <div class="toppic-title">
+            <span class="topic-title-text maincolor">创建打印报告</span>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('upstream_win')">返回</button>
+        </div>
+    </div>
+    <div class="form-box border">
+        <form id="createCheckSheetForm" class="form-inline" role="form">
+            <div class="form-item-group">
+            <%if(itemList.~size==0){%>
+	            <div class="form-group" >
+	                   <label class="label-title text-right"  style="width: 300px;"><font style="font-size: 20px">没有有效的登记单</font></label>
+	             </div>
+            <%}%>
+            <%for (item in itemList){%>
+				<input type="hidden" value="${item.id}"  name="registerBillList[${itemLP.index-1}][id]"/>
+ 				<div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>编号</label>
+                    <input class="form-control input-sm" value="${item.code}" readonly="readonly"  disabled="disabled"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>商品</label>
+                    <input type="text" class="form-control input-sm"  value="${item.productName}"  readonly="readonly" disabled="disabled"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>重量(KG)</label>
+                    <input type="text" class="form-control input-sm"  value="${item.weight}"  readonly="readonly" disabled="disabled"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">别名</label>
+                    <input type="text" class="form-control input-sm"  name="registerBillList[${itemLP.index-1}][aliasName]" value=""   maxlength="5" />
+                </div>
+                 <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>产地</label>
+                    <input type="text" class="form-control input-sm"  value="${item.originName}"   readonly="readonly"  disabled="disabled"/>
+                </div>
+				<br/>
+			<%}%>
+			<br/>
+			
+			     <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>有效天数</label>
+                    <input type="text" class="form-control input-sm  isNaturalNum"  name="validPeriod" value=""  min="1" max="365"  required="required"/>
+                </div>
+                 <div class="form-group">
+                      <label class="label-title text-right"><span class="red">&lowast;</span>提交人</label>
+                      <input type="hidden" name="userName"/>
+                    	<select name="idCardNo"  class="form-control input-sm"   required="required">
+                    			<option value="">请选择</option>
+						         <%for(registerUser in registerUserList){%>
+                                  <option value="${registerUser.idCardNo}">${registerUser.name}</option>
+                               <%}%>
+						</select>
+                </div>
+                 
+                 <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测人</label>
+                               <select name="detectOperatorName"  class="form-control input-sm"   required="required">
+                               <option value="">请选择</option>
+                               <%for(detectOperatorName in detectOperatorNameList){%>
+                                  <option value="${detectOperatorName}">${detectOperatorName}</option>
+                               <%}%>
+						        </select>
+
+                </div>
+                <div class="form-group">
+                                  <label class="label-title text-right"><span class="red">&lowast;</span>审核人</label>
+                                    <select name="approverInfoId"  class="form-control input-sm"   required="required">
+                                    		<option value="">请选择</option>
+								            <%for(approverInfo in approverInfoList){%>
+                                  			<option value="${approverInfo.id}">${approverInfo.userName}</option>
+                               				<%}%>
+								</select>
+
+                </div>
+               <div class="form-group" style="width: 100%;padding-top: 20px">
+                    <label class="label-title text-right">备注</label>
+                    <textarea  class="form-control" name="remark" style="width: 55%"  rows="5" cols="10" maxlength="500"></textarea>
+                </div>
+            </div>
+        </form>
+        
+    </div>
+    <div class="text-center mt30" style="width: 60%">
+	    <button class="btn-main2 btn-sm"  style="display: none;" onclick="prePrint()">预览</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+    </div>
+</div>
+</#bodyOrigin>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script src="${contextPath!}/resources/js/jquery-serializeForm.min.js"></script>
+<script type="text/javascript">
+
+<!--
+var itemSize=${itemList.~size};
+//如果没有登记单，隐藏提交并禁用所有输入和选择框
+if(itemSize>0){
+	$('.btn-main2').show();
+}else{
+	$('input,select,textarea').attr('readonly',true).attr('disabled',true);
+}
+//选择名称的同时提交身份证号码
+$('select[name="idCardNo"]').on('change',function(){
+	var userName=$(this).find( "option:selected" ).text()
+	$('input[name="userName"]').val(userName)
+});
+
+function prePrint(){
+	if($('#createCheckSheetForm').validate().form()==false){
+		return null;
+	}
+	var formData=$('#createCheckSheetForm').serializeForm();
+	$.ajax({
+	    type: "POST",
+	    url: '${contextPath!}/checkSheet/prePrint.action',
+	    data: JSON.stringify(formData),
+	    processData:true,
+	    dataType:  "json",
+	    async : true,
+	    contentType: "application/json; charset=utf-8",
+	    success: function (ret) {
+	        if(ret.code=="200"){
+	        	console.info(ret);
+	        	//debugger
+	        	if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
+	        		$('.btn-main2').hide();
+	        		callbackObj.printDirect(JSON.stringify(ret),"TestReport");
+	        	}else{
+	        		 swal(
+	                         '错误',
+	                         '请升级客户端或者在客户端环境运行当前程序',
+	                         'error'
+	                 );
+	        	}
+	        	
+	        	
+	        }else{
+	             swal(
+                         '错误',
+                         ret.result,
+                         'error'
+                 );
+	        }
+	    },
+	    error: function(){
+            swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+            );
+
+	    }
+	});
+}
+
+//客户端错误回调方法
+function handleError(ret){
+    layer.alert(ret.result,{
+			title:'错误',
+	       	end :function(){
+	       		window.location.reload()
+	       	}
+      },
+ 	 function () {
+ 	 		 window.location.reload()
+         }
+ 	);
+}
+//取消打印结束后调用
+function cancelPrint(){
+	console.info('cancelPrint')
+	$('.btn-main2').show();
+}
+//打印结束后调用
+function printFinish(){
+	console.info('printFinish')
+	parent.closeWin('view_win');
+}
+//客户端提交数据并同步获得提交后的数据
+function createCheckSheet(){
+		if($('#createCheckSheetForm').validate().form()==false){
+			return;
+		}
+		var formData=$('#createCheckSheetForm').serializeForm();
+		
+		var result={};
+		$.ajax({
+		    type: "POST",
+		    url: '${contextPath!}/checkSheet/insert.action',
+		    data: JSON.stringify(formData),
+		    processData:true,
+		    dataType: "json",
+		    async : false,
+		    contentType: "application/json; charset=utf-8",
+		    success: function (ret) {
+		    	result=ret;
+		    },
+		    error: function(){
+		    	result={"code":"5000",result:"远程访问失败"}
+
+		    }
+		});
+		//debugger
+		console.info(result);
+		return JSON.stringify(result)
+}
+$('.fileimg-view').on('click', function () {
+    var url = $(this).parent().siblings(".magnifying").attr('src');
+    if(url){
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    }
+});
+//-->
+</script>
+

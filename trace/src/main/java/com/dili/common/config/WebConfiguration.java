@@ -31,7 +31,7 @@ public class WebConfiguration implements WebMvcConfigurer {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(sessionFilter());
         registration.addUrlPatterns("/*");
-        registration.addInitParameter("confPath", "conf/manage.properties");
+        // registration.addInitParameter("confPath", "conf/manage.properties");
         registration.setName("sessionFilter");
         registration.setOrder(1);
         return registration;

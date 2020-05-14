@@ -17,10 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Table(name = "`upstream`")
 public class UpStream extends BaseDomain {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
@@ -53,7 +50,7 @@ public class UpStream extends BaseDomain {
     /**
      * 法人
      */
-    @ApiModelProperty(value = " 法人")
+    @ApiModelProperty(value = "法人")
     @Column(name = "`legal_person`")
     private String legalPerson;
 
