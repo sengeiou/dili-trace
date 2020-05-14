@@ -23,13 +23,12 @@ public class UpStream extends BaseDomain {
     @Column(name = "`id`")
     private Long id;
     /**
-     * 类型
-     * {@link com.dili.trace.glossary.UpStreamTypeEnum}
+     * 类型 {@link com.dili.trace.glossary.UpStreamTypeEnum}
      */
     @ApiModelProperty(value = "类型")
     @Column(name = "`upstream_type`")
     private Integer upstreamType;
-        /**
+    /**
      * 身份证号
      */
     @ApiModelProperty(value = "身份证号")
@@ -62,7 +61,6 @@ public class UpStream extends BaseDomain {
     @Column(name = "`license`")
     private String license;
 
-
     /**
      * 企业营业执照
      */
@@ -70,7 +68,26 @@ public class UpStream extends BaseDomain {
     @Column(name = "`business_license_url`")
     private String businessLicenseUrl;
 
-    
+    /**
+     * 许可证
+     */
+    @ApiModelProperty(value = "许可证")
+    @Column(name = "`license_url`")
+    private String licenseUrl;
+
+
+
+    @ApiModelProperty(value = "身份证照正面URL")
+    @Column(name = "`card_no_front_url`")
+    private String cardNoFrontUrl;
+
+
+    @ApiModelProperty(value = "身份证照反面URL")
+    @Column(name = "`card_no_back_url`")
+    private String cardNoBackUrl;
+
+
+
     @ApiModelProperty(value = "操作人姓名")
     @Column(name = "`operator_name`")
     private String operatorName;
@@ -100,8 +117,6 @@ public class UpStream extends BaseDomain {
     public void setId(Long id) {
         this.id = id;
     }
-
-   
 
     /**
      * @return String return the telphone
@@ -229,7 +244,6 @@ public class UpStream extends BaseDomain {
         this.modified = modified;
     }
 
-
     /**
      * @return Integer return the upstreamType
      */
@@ -244,7 +258,6 @@ public class UpStream extends BaseDomain {
         this.upstreamType = upstreamType;
     }
 
-
     /**
      * @return String return the businessLicenseUrl
      */
@@ -257,6 +270,50 @@ public class UpStream extends BaseDomain {
      */
     public void setBusinessLicenseUrl(String businessLicenseUrl) {
         this.businessLicenseUrl = businessLicenseUrl;
+    }
+
+
+    /**
+     * @return String return the licenseUrl
+     */
+    public String getLicenseUrl() {
+        return licenseUrl;
+    }
+
+    /**
+     * @param licenseUrl the licenseUrl to set
+     */
+    public void setLicenseUrl(String licenseUrl) {
+        this.licenseUrl = licenseUrl;
+    }
+
+
+    /**
+     * @return String return the cardNoFrontUrl
+     */
+    public String getCardNoFrontUrl() {
+        return cardNoFrontUrl;
+    }
+
+    /**
+     * @param cardNoFrontUrl the cardNoFrontUrl to set
+     */
+    public void setCardNoFrontUrl(String cardNoFrontUrl) {
+        this.cardNoFrontUrl = cardNoFrontUrl;
+    }
+
+    /**
+     * @return String return the cardNoBackUrl
+     */
+    public String getCardNoBackUrl() {
+        return cardNoBackUrl;
+    }
+
+    /**
+     * @param cardNoBackUrl the cardNoBackUrl to set
+     */
+    public void setCardNoBackUrl(String cardNoBackUrl) {
+        this.cardNoBackUrl = cardNoBackUrl;
     }
 
 }
