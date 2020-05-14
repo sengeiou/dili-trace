@@ -40,7 +40,7 @@ CREATE TABLE `upstream` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `user_upstream` (
+CREATE TABLE `r_user_upstream` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL COMMENT '用户(商户)ID',
   `upstream_id` bigint(20) NOT NULL COMMENT '上游信息ID',
