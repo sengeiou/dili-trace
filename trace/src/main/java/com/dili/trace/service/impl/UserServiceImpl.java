@@ -24,6 +24,7 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserQrItemDetailService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
 import com.dili.trace.service.UsualAddressService;
@@ -45,14 +46,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 由MyBatis Generator工具自动生成
- * This file was generated on 2019-07-26 09:20:35.
+ * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
  */
 @Service
 public class UserServiceImpl extends BaseServiceImpl<User, Long> implements UserService {
 
     public UserMapper getActualDao() {
-        return (UserMapper)getDao();
+        return (UserMapper) getDao();
     }
 
     @Resource
@@ -65,62 +65,65 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     UserHistoryService userHistoryService;
     @Resource
     UsualAddressService usualAddressService;
+    @Resource
+    UserQrItemDetailService userQrItemDetailService;
 
-    @Transactional(rollbackFor=Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void register(User user,Boolean flag) {
-        //验证验证码是否正确
-        if(flag){
-            checkVerificationCode(user.getPhone(),user.getCheckCode());
+    public void register(User user, Boolean flag) {
+        // 验证验证码是否正确
+        if (flag) {
+            checkVerificationCode(user.getPhone(), user.getCheckCode());
         }
 
-        //验证手机号是否已注册
-        if(existsAccount(user.getPhone())){
+        // 验证手机号是否已注册
+        if (existsAccount(user.getPhone())) {
             throw new BusinessException("手机号已注册");
         }
-       
 
-        //验证理货区号是否已注册
-        if(StringUtils.isNotBlank(user.getTallyAreaNos()) ){
+        // 验证理货区号是否已注册
+        if (StringUtils.isNotBlank(user.getTallyAreaNos())) {
             existsTallyAreaNo(null, Arrays.asList(user.getTallyAreaNos().split(",")));
         }
 
-        //验证身份证号是否已注册
-        if(existsCardNo(user.getCardNo())){
+        // 验证身份证号是否已注册
+        if (existsCardNo(user.getCardNo())) {
             throw new BusinessException("身份证号已注册");
         }
-        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER,user.getSalesCityId());
+        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
         insertSelective(user);
-        //更新用户理货区
-        updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
-        //增加车牌信息
-//        LOGGER.info("输入车牌:{}",user.getPlates());
-        List<String>plateList=this.parsePlate(user.getPlates());
-//        LOGGER.info("解析车牌:{}",plateList.toString());
-        if(!plateList.isEmpty()) {
-        	UserPlate up=this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
-        	if(up!=null) {
-        		throw new BusinessException("车牌["+up.getPlate()+"]已被其他用户使用");
-        	}
-        	this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
+        // 更新用户理货区
+        updateUserTallyArea(user.getId(), Arrays.asList(user.getTallyAreaNos().split(",")));
+        // 增加车牌信息
+        // LOGGER.info("输入车牌:{}",user.getPlates());
+        List<String> plateList = this.parsePlate(user.getPlates());
+        // LOGGER.info("解析车牌:{}",plateList.toString());
+        if (!plateList.isEmpty()) {
+            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
+            if (up != null) {
+                throw new BusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
+            }
+            this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
         }
         this.userHistoryService.insertUserHistoryForNewUser(user.getId());
+        this.updateUserQrItem(user.getId());
     }
 
     /**
      * 更新用户理货区
+     * 
      * @param userId
      * @param tallyAreaNos
      */
-    private void updateUserTallyArea(Long userId,List<String> tallyAreaNos){
-        if(null != userId){
+    private void updateUserTallyArea(Long userId, List<String> tallyAreaNos) {
+        if (null != userId) {
             UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
             query.setUserId(userId);
             userTallyAreaService.deleteByExample(query);
         }
 
         List<UserTallyArea> userTallyAreas = new ArrayList<>();
-        tallyAreaNos.forEach(tallyAreaNo->{
+        tallyAreaNos.forEach(tallyAreaNo -> {
             UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
             userTallyArea.setUserId(userId);
             userTallyArea.setTallyAreaNo(tallyAreaNo);
@@ -128,21 +131,21 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         });
 
         userTallyAreaService.batchInsert(userTallyAreas);
+        this.updateUserQrItem(userId);
     }
-
 
     @Override
     public void updateUser(User user) {
 
-        //手机号验重
-        if(StringUtils.isNotBlank(user.getPhone())){
+        // 手机号验重
+        if (StringUtils.isNotBlank(user.getPhone())) {
             User condition = DTOUtils.newDTO(User.class);
             condition.setPhone(user.getPhone());
             condition.setYn(YnEnum.YES.getCode());
             List<User> users = listByExample(condition);
-            if(CollectionUtils.isNotEmpty(users)){
-                users.forEach(o->{
-                    if(!o.getId().equals(user.getId()) && o.getPhone().equals(user.getPhone())){
+            if (CollectionUtils.isNotEmpty(users)) {
+                users.forEach(o -> {
+                    if (!o.getId().equals(user.getId()) && o.getPhone().equals(user.getPhone())) {
                         throw new BusinessException("手机号已注册");
                     }
                 });
@@ -150,77 +153,78 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         User userPO = get(user.getId());
-        if(!YnEnum.YES.getCode().equals(userPO.getYn())) {
-        	  throw new BusinessException("数据已被删除");
+        if (!YnEnum.YES.getCode().equals(userPO.getYn())) {
+            throw new BusinessException("数据已被删除");
         }
-        
-        if(EnabledStateEnum.ENABLED.getCode().equals(userPO.getState())){
-            existsTallyAreaNo(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
-            //更新用户理货区
-            updateUserTallyArea(user.getId(),Arrays.asList(user.getTallyAreaNos().split(",")));
+
+        if (EnabledStateEnum.ENABLED.getCode().equals(userPO.getState())) {
+            existsTallyAreaNo(user.getId(), Arrays.asList(user.getTallyAreaNos().split(",")));
+            // 更新用户理货区
+            updateUserTallyArea(user.getId(), Arrays.asList(user.getTallyAreaNos().split(",")));
         }
-//        LOGGER.info("输入车牌:{}",user.getPlates());
-        List<String>plateList=this.parsePlate(user.getPlates());
-//        LOGGER.info("解析车牌:{}",plateList.toString());
-        if(!plateList.isEmpty()) {
-        	UserPlate up=this.userPlateService.findUserPlateByPlates(plateList).stream().filter(p->{
-        		return !p.getUserId().equals(userPO.getId());
-        	}).findFirst().orElse(null);
-        	if(up!=null) {
-        		throw new BusinessException("车牌["+up.getPlate()+"]已被其他用户使用");
-        	}
+        // LOGGER.info("输入车牌:{}",user.getPlates());
+        List<String> plateList = this.parsePlate(user.getPlates());
+        // LOGGER.info("解析车牌:{}",plateList.toString());
+        if (!plateList.isEmpty()) {
+            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().filter(p -> {
+                return !p.getUserId().equals(userPO.getId());
+            }).findFirst().orElse(null);
+            if (up != null) {
+                throw new BusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
+            }
         }
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         updateSelective(user);
-        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER,userPO.getSalesCityId(),user.getSalesCityId());
+        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
+                user.getSalesCityId());
         this.userHistoryService.insertUserHistoryForUpdateUser(user.getId());
-
+        this.updateUserQrItem(user.getId());
 
     }
-    private List<String>parsePlate(String plates){
-    	List<String>plateList=new ArrayList<>();
-    	if(StringUtils.isBlank(plates)) {
-    		return plateList;
-    	}
-    	if(JSON.isValid(plates)&&JSON.isValidArray(plates)) {
-    			JSON.parseArray(plates).stream().filter(Objects::nonNull).map(String::valueOf).collect(Collectors.toCollection(()->plateList));
-    	}else {
-    		plateList.add(plates);
-    	}
 
-    	
-        	return plateList.stream()
-        			.filter(StringUtils::isNotBlank)
-        			.map(String::trim)
-        			.collect(Collectors.toList());
-    	
+    private List<String> parsePlate(String plates) {
+        List<String> plateList = new ArrayList<>();
+        if (StringUtils.isBlank(plates)) {
+            return plateList;
+        }
+        if (JSON.isValid(plates) && JSON.isValidArray(plates)) {
+            JSON.parseArray(plates).stream().filter(Objects::nonNull).map(String::valueOf)
+                    .collect(Collectors.toCollection(() -> plateList));
+        } else {
+            plateList.add(plates);
+        }
+
+        return plateList.stream().filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toList());
+
     }
-    private Boolean checkVerificationCode(String phone, String verCode){
-        String verificationCodeTemp = String.valueOf(redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone));
+
+    private Boolean checkVerificationCode(String phone, String verCode) {
+        String verificationCodeTemp = String
+                .valueOf(redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone));
         if (StringUtils.isBlank(verificationCodeTemp)) {
             throw new BusinessException("验证码已过期");
         }
         if (verificationCodeTemp.equals(verCode)) {
             redisService.del(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone);
             return true;
-        }else{
+        } else {
             throw new BusinessException("验证码不正确");
         }
     }
 
     @Override
     public User login(String phone, String encryptedPassword) {
-        User query= DTOUtils.newDTO(User.class);
+        User query = DTOUtils.newDTO(User.class);
         query.setPhone(phone);
         query.setYn(YnEnum.YES.getCode());
-        User po=listByExample(query).stream().findFirst().orElse(null);
-        if(po == null){
+        User po = listByExample(query).stream().findFirst().orElse(null);
+        if (po == null) {
             throw new BusinessException("手机号未注册");
         }
-        if(EnabledStateEnum.DISABLED.getCode().equals(po.getState())){
+        if (EnabledStateEnum.DISABLED.getCode().equals(po.getState())) {
             throw new BusinessException("手机号已禁用");
         }
-        if(!po.getPassword().equals(encryptedPassword)){
+        if (!po.getPassword().equals(encryptedPassword)) {
             throw new BusinessException("密码错误");
         }
         return po;
@@ -232,17 +236,17 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(user.getPhone());
         query.setYn(YnEnum.YES.getCode());
-        User po=listByExample(query).stream().findFirst().orElse(null);
-        if(po==null){
+        User po = listByExample(query).stream().findFirst().orElse(null);
+        if (po == null) {
             throw new BusinessException("用户不存在");
         }
         User condition = DTOUtils.newDTO(User.class);
         condition.setId(po.getId());
         condition.setVersion(po.getVersion());
         po.setPassword(user.getPassword());
-        po.setVersion(po.getVersion()+1);
-        int i=updateSelectiveByExample(po,condition);
-        if(i != 1){
+        po.setVersion(po.getVersion() + 1);
+        int i = updateSelectiveByExample(po, condition);
+        if (i != 1) {
             throw new BusinessException("数据已变更,请稍后重试");
         }
     }
@@ -250,31 +254,32 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Transactional
     @Override
     public void changePassword(User user) {
-        User po=get(user.getId());
-        if(po==null){
+        User po = get(user.getId());
+        if (po == null) {
             throw new BusinessException("用户不存在");
         }
-        if(!po.getPassword().equals(user.getOldPassword())){
+        if (!po.getPassword().equals(user.getOldPassword())) {
             throw new BusinessException("原密码错误");
         }
         User condition = DTOUtils.newDTO(User.class);
         condition.setId(po.getId());
         condition.setVersion(po.getVersion());
         po.setPassword(user.getPassword());
-        po.setVersion(po.getVersion()+1);
-        int i=updateSelectiveByExample(po,condition);
-        if(i != 1){
+        po.setVersion(po.getVersion() + 1);
+        int i = updateSelectiveByExample(po, condition);
+        if (i != 1) {
             throw new BusinessException("数据已变更,请稍后重试");
         }
     }
 
     /**
      * 检测手机号是否存在
+     * 
      * @param phone
      * @return true 存在 false 不存在
      */
     @Override
-    public boolean existsAccount(String phone){
+    public boolean existsAccount(String phone) {
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(phone);
         query.setYn(YnEnum.YES.getCode());
@@ -283,26 +288,28 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     /**
      * 检测理货区号是否已注册
+     * 
      * @param userId
      * @param tallyAreaNos
      */
-    public void existsTallyAreaNo(Long userId,List<String> tallyAreaNos){
-        tallyAreaNos.forEach(tallyAreaNo->{
+    public void existsTallyAreaNo(Long userId, List<String> tallyAreaNos) {
+        tallyAreaNos.forEach(tallyAreaNo -> {
             UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
             query.setTallyAreaNo(tallyAreaNo);
             UserTallyArea userTallyArea = userTallyAreaService.listByExample(query).stream().findFirst().orElse(null);
             if (null != userTallyArea && !userTallyArea.getUserId().equals(userId)) {
-                throw new BusinessException("理货区号【"+tallyAreaNo+"】已被注册");
+                throw new BusinessException("理货区号【" + tallyAreaNo + "】已被注册");
             }
         });
     }
 
     /**
      * 检测身份证号是否存在
+     * 
      * @param cardNo
      * @return true 存在 false 不存在
      */
-    public boolean existsCardNo(String cardNo){
+    public boolean existsCardNo(String cardNo) {
         User query = DTOUtils.newDTO(User.class);
         query.setCardNo(cardNo);
         query.setYn(YnEnum.YES.getCode());
@@ -314,21 +321,21 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public BaseOutput updateEnable(Long id, Boolean enable) {
         long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         User user = get(id);
-        if(user==null) {
-        	return BaseOutput.failure("数据不存在");
+        if (user == null) {
+            return BaseOutput.failure("数据不存在");
         }
-        if(!YnEnum.YES.getCode().equals(user.getYn())) {
-        	return BaseOutput.failure("数据已被删除");
+        if (!YnEnum.YES.getCode().equals(user.getYn())) {
+            return BaseOutput.failure("数据已被删除");
         }
         List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
 
-            //验证理货区号是否已注册，未注册则添加用户理货区关系
-            existsTallyAreaNo(user.getId(),tallyAreaNos);
+            // 验证理货区号是否已注册，未注册则添加用户理货区关系
+            existsTallyAreaNo(user.getId(), tallyAreaNos);
             List<UserTallyArea> userTallyAreas = new ArrayList<>();
-            tallyAreaNos.forEach(tallyAreaNo->{
+            tallyAreaNos.forEach(tallyAreaNo -> {
                 UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
                 userTallyArea.setUserId(user.getId());
                 userTallyArea.setTallyAreaNo(tallyAreaNo);
@@ -340,11 +347,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             user.setState(EnabledStateEnum.DISABLED.getCode());
             this.updateSelective(user);
 
-            //删除用户理货区关系
+            // 删除用户理货区关系
             UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
             userTallyAreaQuery.setUserId(id);
             userTallyAreaService.deleteByExample(userTallyAreaQuery);
-            redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
+            redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         }
         this.userHistoryService.insertUserHistoryForUpdateUser(user.getId());
         return BaseOutput.success("操作成功");
@@ -355,7 +362,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
         query.setTallyAreaNo(tallyAreaNo);
         UserTallyArea userTallyArea = userTallyAreaService.list(query).stream().findFirst().orElse(null);
-        if (null == userTallyArea){
+        if (null == userTallyArea) {
             return null;
         }
 
@@ -364,91 +371,98 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         userQuery.setState(EnabledStateEnum.ENABLED.getCode());
         return list(userQuery).stream().findFirst().orElse(null);
     }
+
     private Optional<String> andCondition(UserListDto dto) {
-    	List<String>strList=new ArrayList<String>();
-    	if (dto != null && dto.getHasBusinessLicense() != null) {
-			if (dto.getHasBusinessLicense()) {
-				strList.add(" (business_license_url is not null and business_license_url<>'') ");
-			} else {
-				strList.add( " (business_license_url is null or business_license_url='') ");
-			}
-		}
-    	
-    	if(dto!=null&&StringUtils.isNotBlank(dto.getPlates())) {
-    		strList.add(" id in (select user_id from user_plate where plate like '"+dto.getPlates().trim().toUpperCase()+"%')");
-		}
-    	if(!strList.isEmpty()) {
-    		return Optional.of(String.join(" and ", strList));
-    	}
-    	return Optional.empty();
+        List<String> strList = new ArrayList<String>();
+        if (dto != null && dto.getHasBusinessLicense() != null) {
+            if (dto.getHasBusinessLicense()) {
+                strList.add(" (business_license_url is not null and business_license_url<>'') ");
+            } else {
+                strList.add(" (business_license_url is null or business_license_url='') ");
+            }
+        }
+
+        if (dto != null && StringUtils.isNotBlank(dto.getPlates())) {
+            strList.add(" id in (select user_id from user_plate where plate like '"
+                    + dto.getPlates().trim().toUpperCase() + "%')");
+        }
+        if (!strList.isEmpty()) {
+            return Optional.of(String.join(" and ", strList));
+        }
+        return Optional.empty();
     }
-	@Override
-	public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception {
-		this.andCondition(dto).ifPresent(str->{
-			dto.mset(IDTO.AND_CONDITION_EXPR, str);
-		});
-		dto.setYn(1);
-		EasyuiPageOutput out=this.listEasyuiPageByExample(dto, true);
-		List<DTO>users=out.getRows();
-		List<Long>userIdList=users.stream().map(o->{return (Long)o.get("id");}).collect(Collectors.toList());
-		Map<Long,List<UserPlate>> userPlateMap=this.userPlateService.findUserPlateByUserIdList(userIdList);
-		List<DTO>	userList=users.stream().map(u->{
-			Long userId=(Long)u.get("id");
-			if(userPlateMap.containsKey(userId)) {
-				String plates=userPlateMap.get(userId).stream().map(UserPlate::getPlate).collect(Collectors.joining(","));
-				u.put("plates",plates);
-			}else {
-				u.put("plates","");
-			}
-			return u;
-		}).collect(Collectors.toList());
-		out.setRows(userList);
 
-		return out;
-	}
+    @Override
+    public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception {
+        this.andCondition(dto).ifPresent(str -> {
+            dto.mset(IDTO.AND_CONDITION_EXPR, str);
+        });
+        dto.setYn(1);
+        EasyuiPageOutput out = this.listEasyuiPageByExample(dto, true);
+        List<DTO> users = out.getRows();
+        List<Long> userIdList = users.stream().map(o -> {
+            return (Long) o.get("id");
+        }).collect(Collectors.toList());
+        Map<Long, List<UserPlate>> userPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
+        List<DTO> userList = users.stream().map(u -> {
+            Long userId = (Long) u.get("id");
+            if (userPlateMap.containsKey(userId)) {
+                String plates = userPlateMap.get(userId).stream().map(UserPlate::getPlate)
+                        .collect(Collectors.joining(","));
+                u.put("plates", plates);
+            } else {
+                u.put("plates", "");
+            }
+            return u;
+        }).collect(Collectors.toList());
+        out.setRows(userList);
 
-	@Override
-	public BaseOutput deleteUser(Long id) {
-		if(id==null) {
-			return BaseOutput.failure("参数错误");
-		}
-		User user=this.get(id);
-		if(user==null) {
-			return BaseOutput.failure("数据不存在");
-		}
-		
-		long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
+        return out;
+    }
+
+    @Override
+    public BaseOutput deleteUser(Long id) {
+        if (id == null) {
+            return BaseOutput.failure("参数错误");
+        }
+        User user = this.get(id);
+        if (user == null) {
+            return BaseOutput.failure("数据不存在");
+        }
+
+        long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
-       
+
         user.setState(EnabledStateEnum.DISABLED.getCode());
         user.setYn(YnEnum.NO.getCode());
         user.setIsDelete(user.getId());
         this.updateSelective(user);
-        
+
         this.userHistoryService.insertUserHistoryForDeleteUser(user.getId());
-        
-        //删除用户理货区关系
+
+        // 删除用户理货区关系
         UserTallyArea userTallyAreaQuery = DTOUtils.newDTO(UserTallyArea.class);
         userTallyAreaQuery.setUserId(id);
         userTallyAreaService.deleteByExample(userTallyAreaQuery);
-        redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,id);
-        
-        
+        redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
 
-        //删除用户车牌信息
-        UserPlate up=DTOUtils.newDTO(UserPlate.class);
+        // 删除用户车牌信息
+        UserPlate up = DTOUtils.newDTO(UserPlate.class);
         up.setUserId(user.getId());
         this.userPlateService.deleteByExample(up);
-        
+
         return BaseOutput.success("操作成功");
-        
-        
-//		UserTallyArea example=DTOUtils.newDTO(UserTallyArea.class);
-//		example.setUserId(user.getId());
-//		this.userTallyAreaService.deleteByExample(example);
-//		user.setTallyAreaNos(null);
-//		user.setState(EnabledStateEnum.DISABLED.getCode());
-//		this.updateExact(user);
-		
-	}
+
+        // UserTallyArea example=DTOUtils.newDTO(UserTallyArea.class);
+        // example.setUserId(user.getId());
+        // this.userTallyAreaService.deleteByExample(example);
+        // user.setTallyAreaNos(null);
+        // user.setState(EnabledStateEnum.DISABLED.getCode());
+        // this.updateExact(user);
+
+    }
+
+    private void updateUserQrItem(Long userId) {
+        this.userQrItemDetailService.updateQrItemDetail(this.get(userId));
+    }
 }
