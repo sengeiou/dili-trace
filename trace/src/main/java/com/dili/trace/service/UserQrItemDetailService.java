@@ -9,9 +9,12 @@ import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserQrItem;
 import com.dili.trace.domain.UserQrItemDetail;
+import com.dili.trace.glossary.QrItemStatusEnum;
 import com.dili.trace.glossary.QrItemTypeEnum;
+import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,8 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
     UserService userService;
     @Autowired
     UserQrItemService userQrItemService;
+    @Autowired
+    UpStreamService upStreamService;
 
     /**
      * 通过登记单来更新二维码状态
@@ -35,6 +40,20 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
      * 通过上游信息来更新二维码状态
      */
     public void updateQrItemDetail(UpStream upStream, Long userId) {
+        User userItem = this.userService.get(userId);
+        if (userItem == null) {
+            throw new BusinessException("未能查询到用户信息");
+        }
+        UpStream upStreamItem = this.upStreamService.get(upStream.getId());
+        if (upStreamItem == null) {
+            throw new BusinessException("未能查询到上游信息");
+        }
+        QrItemStatusEnum itemStatus = QrItemStatusEnum.GREEN;
+        if (UpStreamTypeEnum.CORPORATE.getCode().equals(upStreamItem.getUpstreamType())) {
+
+        } else {
+
+        }
 
     }
 
@@ -47,10 +66,18 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         if (userItem == null) {
             throw new BusinessException("未能查询到用户信息");
         }
-        if(UserTypeEnum.UPSTREAM.getCode().equals(userItem.getUserType())){
-
-        }else{
-
+        QrItemStatusEnum itemStatus = QrItemStatusEnum.GREEN;
+        if (UserTypeEnum.CORPORATE.getCode().equals(userItem.getUserType())) {
+            if (StringUtils.isAnyBlank(userItem.getName(), userItem.getBusinessLicenseUrl(), userItem.getLicense(),
+                    userItem.getLicenseUrl(), userItem.getCardNo(), userItem.getLegalPerson(), userItem.getPhone())
+                    || userItem.getMarketId() == null) {
+                itemStatus = QrItemStatusEnum.YELLOW;
+            }
+        } else {
+            if (StringUtils.isAnyBlank(userItem.getName(), userItem.getCardNoFrontUrl(), userItem.getCardNoBackUrl(),
+                    userItem.getCardNo(), userItem.getPhone()) || userItem.getMarketId() == null) {
+                itemStatus = QrItemStatusEnum.YELLOW;
+            }
         }
         UserQrItem qrItem = new UserQrItem();
         qrItem.setUserId(userId);
@@ -61,10 +88,16 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         } else {
             qrItem = qrItemList.stream().findFirst().orElse(null);
         }
-
-    }
-
-    private void createAllUserQrItem() {
+        if (!itemStatus.getCode().equals(qrItem.getQrItemStatus())) {
+            qrItem.setQrItemStatus(itemStatus.getCode());
+            this.userQrItemService.updateSelective(qrItem);
+        }
+        UserQrItemDetail qrItemDetail = new UserQrItemDetail();
+        qrItemDetail.setObjectId(String.valueOf(userId));
+        qrItemDetail.setUserQrItemId(qrItem.getId());
+        if (this.listByExample(qrItemDetail).stream().count() == 0) {
+            this.insertSelective(qrItemDetail);
+        }
 
     }
 

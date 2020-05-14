@@ -33,12 +33,9 @@ public class UserQrItem extends BaseDomain {
      */
     @Column(name = "`qr_item_type`")
     private Integer qrItemType;
-
     /**
+     * 
      * 二维码条目状态
-     */
-       /**
-     * 二维码条目类型
      * {@link com.dili.trace.glossary.QrItemStatusEnum}
      */
     @Column(name = "`qr_item_status`")

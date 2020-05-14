@@ -199,6 +199,17 @@ public interface User extends IBaseDomain {
     public Long getMarketId() ;
     public void setMarketId(Long marketId);
 
+
+    
+    @ApiModelProperty(value = "许可证URL")
+    @Column(name = "`license_url`")
+    @FieldDef(label = "LicenseUrl", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text, required = false)
+
+    public String getLicenseUrl();
+    public void setLicenseUrl(String licenseUrl) ;
+
+
     @ApiModelProperty(value = "验证码")
     @Transient
     String getCheckCode();

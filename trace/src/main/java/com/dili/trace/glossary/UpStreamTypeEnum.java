@@ -1,6 +1,6 @@
 package com.dili.trace.glossary;
 
-public enum UserTypeEnum {
+public enum UpStreamTypeEnum {
     /**
      * 个人信息
      */
@@ -14,7 +14,7 @@ public enum UserTypeEnum {
     private Integer code;
     private String desc;
 
-    UserTypeEnum(Integer code, String desc) {
+    UpStreamTypeEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
     }

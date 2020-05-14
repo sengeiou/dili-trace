@@ -24,6 +24,7 @@ public class UpStream extends BaseDomain {
     private Long id;
     /**
      * 类型
+     * {@link com.dili.trace.glossary.UpStreamTypeEnum}
      */
     @ApiModelProperty(value = "类型")
     @Column(name = "`upstream_type`")

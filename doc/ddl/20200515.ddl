@@ -6,6 +6,7 @@ ALTER TABLE `user` ADD COLUMN `market_id`  bigint(20)  NULL COMMENT '所属市�
 
 ALTER TABLE `user` ADD COLUMN `license`  varchar(50)  NULL COMMENT '统一信用代码';
 ALTER TABLE `user` ADD COLUMN `legal_person`  varchar(50)  NULL COMMENT '法人姓名';
+ALTER TABLE `user` ADD COLUMN `license_url`  varchar(50)  NULL COMMENT '经营许可证或生产许可证';
 
 CREATE TABLE `market` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
