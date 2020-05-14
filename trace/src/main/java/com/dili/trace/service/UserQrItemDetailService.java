@@ -15,11 +15,14 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.QrItemStatusEnum;
 import com.dili.trace.glossary.QrItemTypeEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, Long> {
@@ -35,12 +38,14 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
     /**
      * 通过登记单来更新二维码状态
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateQrItemDetail(RegisterBill registerBill) {
 
         User userItem = this.userService.get(registerBill.getUserId());
         if (userItem == null) {
             throw new BusinessException("未能查询到用户信息");
         }
+        Long userId = userItem.getId();
         // 查询并添加UserQrItem
         UserQrItem qrItem = new UserQrItem();
         qrItem.setUserId(userItem.getId());
@@ -64,43 +69,47 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         query.setUserQrItemId(qrItem.getId());
         List<Long> idList = this.listByExample(query).stream().map(detail -> Long.parseLong(detail.getObjectId()))
                 .collect(Collectors.toList());
-        if (!idList.isEmpty()) {
-            RegisterBillDto dto = DTOUtils.newDTO(RegisterBillDto.class);
-            dto.setIdList(idList);
 
-            List<RegisterBill> billList = this.registerBillService.listByExample(dto);
-
-            // 删除有证明的登记单
-            Long userQrItemId = qrItem.getId();
-            billList.stream().filter(bill -> !StringUtils.isAllBlank(registerBill.getOriginCertifiyUrl(),
-                    registerBill.getDetectReportUrl())).forEach(bill -> {
-                        UserQrItemDetail deleteCondition = new UserQrItemDetail();
-                        qrItemDetail.setObjectId(String.valueOf(bill.getId()));
-                        qrItemDetail.setUserQrItemId(userQrItemId);
-                        this.deleteByExample(deleteCondition);
-                    });
-            //查询剩余的登记单信息
-            boolean withoutUrl = this.registerBillService.listByExample(dto).stream().anyMatch(bill -> {
-                return StringUtils.isAllBlank(registerBill.getOriginCertifiyUrl(), registerBill.getDetectReportUrl());
-            });
-            if (withoutUrl) {
-                qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
-                this.userQrItemService.updateSelective(qrItem);
-            }
-
-            // TODO 红码逻辑
-            // 30天内，累积检测不合格商品超50%以上，或检测不合格次数3次以上（待定）。*、
-            // dto.setCreatedStart(
-            // LocalDateTime.now().minusDays(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd
-            // HH:mm:ss")));
-            // List<RegisterBill> billList = this.registerBillService.listByExample(dto);
-
+        if (idList.isEmpty()) {
+            return;
         }
+        RegisterBillDto dto = DTOUtils.newDTO(RegisterBillDto.class);
+        dto.setIdList(idList);
+
+        List<RegisterBill> billList = this.registerBillService.listByExample(dto);
+
+        // 删除有证明的登记单
+        Long userQrItemId = qrItem.getId();
+        billList.stream().filter(
+                bill -> !StringUtils.isAllBlank(registerBill.getOriginCertifiyUrl(), registerBill.getDetectReportUrl()))
+                .forEach(bill -> {
+                    UserQrItemDetail deleteCondition = new UserQrItemDetail();
+                    qrItemDetail.setObjectId(String.valueOf(bill.getId()));
+                    qrItemDetail.setUserQrItemId(userQrItemId);
+                    this.deleteByExample(deleteCondition);
+                });
+        // 查询剩余的登记单信息
+        boolean withoutUrl = this.registerBillService.listByExample(dto).stream().anyMatch(bill -> {
+            return StringUtils.isAllBlank(registerBill.getOriginCertifiyUrl(), registerBill.getDetectReportUrl());
+        });
+        if (withoutUrl) {
+            qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
+            this.userQrItemService.updateSelective(qrItem);
+        }
+
+        // TODO 红码逻辑
+        // 30天内，累积检测不合格商品超50%以上，或检测不合格次数3次以上（待定）。*、
+        // dto.setCreatedStart(
+        // LocalDateTime.now().minusDays(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd
+        // HH:mm:ss")));
+        // List<RegisterBill> billList = this.registerBillService.listByExample(dto);
+        this.updateUserQrStatus(userId);
     }
 
     /*
      *** 通过上游信息来更新二维码状态
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateQrItemDetail(UpStream upStream, Long userId) {
         User userItem = this.userService.get(userId);
         if (userItem == null) {
@@ -146,12 +155,14 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
             qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
             this.userQrItemService.updateSelective(qrItem);
         }
+        this.updateUserQrStatus(userId);
 
     }
 
     /**
      * 通过用户信息来更新二维码状态
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateQrItemDetail(User user) {
         Long userId = user.getId();
         User userItem = this.userService.get(userId);
@@ -200,7 +211,35 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
             qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
             this.userQrItemService.updateSelective(qrItem);
         }
+        this.updateUserQrStatus(userId);
 
+    }
+
+    /**
+     * 更新用户二维码状态
+     */
+    private int updateUserQrStatus(Long userId) {
+        UserQrItem userQrItem = new UserQrItem();
+        userQrItem.setUserId(userId);
+        List<UserQrItem> qrItemList = this.userQrItemService.listByExample(userQrItem);
+        UserQrStatusEnum userQrStatus = qrItemList.stream()
+                .anyMatch(item -> QrItemStatusEnum.RED.getCode().equals(item.getQrItemStatus()))
+                        ? UserQrStatusEnum.RED
+                        : (qrItemList.stream()
+                                .anyMatch(item -> QrItemStatusEnum.YELLOW.getCode().equals(item.getQrItemStatus()))
+                                        ? UserQrStatusEnum.YELLOW
+                                        : (
+
+                                        qrItemList.stream().allMatch(
+                                                item -> QrItemStatusEnum.GREEN.getCode().equals(item.getQrItemStatus()))
+                                                        ? UserQrStatusEnum.GREEN
+                                                        : UserQrStatusEnum.BLACK
+
+                                        ));
+        User user = DTOUtils.newDTO(User.class);
+        user.setId(userId);
+        user.setQrStatus(userQrStatus.getCode());
+        return this.userService.updateSelective(user);
     }
 
 }

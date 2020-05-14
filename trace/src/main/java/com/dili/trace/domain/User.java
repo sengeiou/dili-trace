@@ -210,6 +210,16 @@ public interface User extends IBaseDomain {
     public void setLicenseUrl(String licenseUrl) ;
 
 
+    /**
+     * {@link  com.dili.trace.glossary.UserQrStatusEnum}
+     */
+    @ApiModelProperty(value = "二维码状态")
+    @Column(name = "`qr_status`")
+    Integer getQrStatus();
+
+    void setQrStatus(Integer qrStatus);
+
+
     @ApiModelProperty(value = "验证码")
     @Transient
     String getCheckCode();
