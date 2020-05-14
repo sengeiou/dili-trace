@@ -50,7 +50,11 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         }
         QrItemStatusEnum itemStatus = QrItemStatusEnum.GREEN;
         if (UpStreamTypeEnum.CORPORATE.getCode().equals(upStreamItem.getUpstreamType())) {
-
+            if (StringUtils.isAnyBlank(upStreamItem.getName(), upStreamItem.getLicense(), upStreamItem.getTelphone(),
+            upStreamItem.get.getLicenseUrl(), userItem.getCardNo(), userItem.getLegalPerson(), userItem.getPhone())
+            || userItem.getMarketId() == null) {
+        itemStatus = QrItemStatusEnum.YELLOW;
+    }
         } else {
 
         }

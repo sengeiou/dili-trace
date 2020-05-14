@@ -26,6 +26,7 @@ CREATE TABLE `upstream` (
   `name` varchar(20) NOT NULL COMMENT '企业(个人)名称',
   `legal_person` varchar(20) NOT NULL COMMENT '法人姓名',
   `license` varchar(20) NOT NULL COMMENT '统一信用代码',
+  `business_license_url` varchar(50)  NULL COMMENT '企业营业执照',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作人',
   `operator_name` varchar(20) DEFAULT NULL COMMENT '操作人ID',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

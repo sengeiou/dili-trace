@@ -63,6 +63,14 @@ public class UpStream extends BaseDomain {
     private String license;
 
 
+    /**
+     * 企业营业执照
+     */
+    @ApiModelProperty(value = " 企业营业执照")
+    @Column(name = "`business_license_url`")
+    private String businessLicenseUrl;
+
+    
     @ApiModelProperty(value = "操作人姓名")
     @Column(name = "`operator_name`")
     private String operatorName;
@@ -234,6 +242,21 @@ public class UpStream extends BaseDomain {
      */
     public void setUpstreamType(Integer upstreamType) {
         this.upstreamType = upstreamType;
+    }
+
+
+    /**
+     * @return String return the businessLicenseUrl
+     */
+    public String getBusinessLicenseUrl() {
+        return businessLicenseUrl;
+    }
+
+    /**
+     * @param businessLicenseUrl the businessLicenseUrl to set
+     */
+    public void setBusinessLicenseUrl(String businessLicenseUrl) {
+        this.businessLicenseUrl = businessLicenseUrl;
     }
 
 }
