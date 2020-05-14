@@ -50,7 +50,7 @@ public class UpStream extends BaseDomain {
     /**
      * 法人
      */
-    @ApiModelProperty(value = "法人")
+    @ApiModelProperty(value = "法人姓名")
     @Column(name = "`legal_person`")
     private String legalPerson;
 

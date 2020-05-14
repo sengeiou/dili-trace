@@ -23,7 +23,7 @@ public interface User extends IBaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
-    @FieldDef(label="id")
+    @FieldDef(label = "id")
     @EditMode(editor = FieldEditor.Number, required = true)
     Long getId();
 
@@ -31,7 +31,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "名称")
     @Column(name = "`name`")
-    @FieldDef(label="name", maxLength = 30)
+    @FieldDef(label = "name", maxLength = 30)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getName();
 
@@ -39,7 +39,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "手机号（帐号）")
     @Column(name = "`phone`")
-    @FieldDef(label="phone", maxLength = 15)
+    @FieldDef(label = "phone", maxLength = 15)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getPhone();
 
@@ -47,7 +47,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "理货区号")
     @Column(name = "`tally_area_nos`")
-    @FieldDef(label="tallyAreaNos", maxLength = 50)
+    @FieldDef(label = "tallyAreaNos", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getTallyAreaNos();
 
@@ -55,7 +55,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "身份证号")
     @Column(name = "`card_no`")
-    @FieldDef(label="cardNo", maxLength = 20)
+    @FieldDef(label = "cardNo", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getCardNo();
 
@@ -63,7 +63,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "地址")
     @Column(name = "`addr`")
-    @FieldDef(label="addr", maxLength = 50)
+    @FieldDef(label = "addr", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getAddr();
 
@@ -71,7 +71,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "身份证照正面URL")
     @Column(name = "`card_no_front_url`")
-    @FieldDef(label="cardNoFrontUrl", maxLength = 50)
+    @FieldDef(label = "cardNoFrontUrl", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getCardNoFrontUrl();
 
@@ -79,7 +79,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "身份证照反面URL")
     @Column(name = "`card_no_back_url`")
-    @FieldDef(label="cardNoBackUrl", maxLength = 50)
+    @FieldDef(label = "cardNoBackUrl", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getCardNoBackUrl();
 
@@ -87,7 +87,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "营业执照URL")
     @Column(name = "`business_license_url`")
-    @FieldDef(label="businessLicenseUrl", maxLength = 50)
+    @FieldDef(label = "businessLicenseUrl", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getBusinessLicenseUrl();
 
@@ -95,7 +95,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "销售城市ID")
     @Column(name = "`sales_city_id`")
-    @FieldDef(label="salesCityId")
+    @FieldDef(label = "salesCityId")
     @EditMode(editor = FieldEditor.Number, required = false)
     Long getSalesCityId();
 
@@ -103,7 +103,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "销售城市名称")
     @Column(name = "`sales_city_name`")
-    @FieldDef(label="salesCityName", maxLength = 20)
+    @FieldDef(label = "salesCityName", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getSalesCityName();
 
@@ -111,7 +111,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "状态")
     @Column(name = "`state`")
-    @FieldDef(label="1:启用 2：禁用")
+    @FieldDef(label = "1:启用 2：禁用")
     @EditMode(editor = FieldEditor.Number, required = false)
     Integer getState();
 
@@ -119,21 +119,21 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "密码")
     @Column(name = "`password`")
-    @FieldDef(label="password", maxLength = 50)
+    @FieldDef(label = "password", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     String getPassword();
 
     void setPassword(String password);
 
     @Column(name = "`yn`")
-    @FieldDef(label="1:正常 -1：删除")
+    @FieldDef(label = "1:正常 -1：删除")
     @EditMode(editor = FieldEditor.Number, required = false)
     Integer getYn();
 
     void setYn(Integer yn);
 
     @Column(name = "`version`")
-    @FieldDef(label="version")
+    @FieldDef(label = "version")
     @EditMode(editor = FieldEditor.Number)
     Integer getVersion();
 
@@ -141,7 +141,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`created`")
-    @FieldDef(label="created")
+    @FieldDef(label = "created")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getCreated();
 
@@ -149,13 +149,12 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "修改时间")
     @Column(name = "`modified`")
-    @FieldDef(label="modified")
+    @FieldDef(label = "modified")
     @EditMode(editor = FieldEditor.Datetime, required = true)
     Date getModified();
 
     void setModified(Date modified);
 
-    
     /**
      * 
      * 0：未删除，非0:已经删除
@@ -165,25 +164,64 @@ public interface User extends IBaseDomain {
     Long getIsDelete();
 
     void setIsDelete(Long isDelete);
-    
-    
+
+    /**
+     * 法人
+     */
+    @ApiModelProperty(value = "法人姓名")
+    @Column(name = "`legal_person`")
+   
+    public String getLegalPerson() ;
+    public void setLegalPerson(String legalPerson);
+
+    /**
+     * 统一信用代码
+     */
+    @ApiModelProperty(value = "统一信用代码")
+    @Column(name = "`license`")
+    public String getLicense() ;
+    public void setLicense(String license);
+
+    /**
+     * 用户类型
+     * {@link com.dili.trace.glossary.UserTypeEnum} 
+     */
+    @Column(name = "`user_type`")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Integer getUserType();
+    void setUserType(Integer userType);
+
+    /**
+     * 所属市场
+     */
+    @ApiModelProperty(value = "所属市场")
+    @Column(name = "`market_id`")
+    public Long getMarketId() ;
+    public void setMarketId(Long marketId);
+
     @ApiModelProperty(value = "验证码")
     @Transient
     String getCheckCode();
+
     void setCheckCode(String checkCode);
 
     @ApiModelProperty(value = "确认密码")
     @Transient
     String getAckPassword();
+
     void setAckPassword(String ackPassword);
 
     @ApiModelProperty(value = "旧密码")
     @Transient
     String getOldPassword();
+
     void setOldPassword(String oldPassword);
-    
+
     @Transient
     String getPlates();
+
     void setPlates(String plates);
+
+
 
 }
