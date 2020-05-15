@@ -29,8 +29,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value = "/api/SeparateSales")
-@Api(value = "/api/SeparateSales", description = "登记单相关接口")
+@RequestMapping(value = "/api/separateSales")
+@Api(value = "/api/separateSales", description = "登记单相关接口")
 @InterceptConfiguration
 public class SeparateSalesApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeparateSalesApi.class);
