@@ -6,6 +6,7 @@ import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 import javax.persistence.Column;
@@ -105,5 +106,38 @@ public interface SeparateSalesRecord extends IBaseDomain {
 
     void setModified(Date modified);
 
+
+    @ApiModelProperty(value = "分销自")
+    @Column(name = "`parent_id`")
+    @FieldDef(label="parent_id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getParentId();
+
+    void setParentId(Long parentId);
+
+   
+    @ApiModelProperty(value = "未分销重量")
+    @Column(name = "`store_weight`")
+    @FieldDef(label="store_weight")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    BigDecimal getStoreWeight();
+
+    void setStoreWeight(BigDecimal storeWeight);
+
+
+    @ApiModelProperty(value = "最初登记单ID")
+    @Column(name = "`bill_id`")
+    @FieldDef(label="bill_id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getBillId();
+
+    void setBillId(Long billId);
+
+
+    @Column(name = "`sales_type`")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getSalesType();
+
+    void setSalesType(Integer salesType);
 
 }

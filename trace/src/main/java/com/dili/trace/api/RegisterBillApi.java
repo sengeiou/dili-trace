@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,10 +90,10 @@ public class RegisterBillApi {
 				// 小程序默认理货区
 				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
 			}
-			if(registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
+			if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
 				registerBill.setTallyAreaNo(user.getTallyAreaNos());
 			}
-			
+
 			BaseOutput result = registerBillService.createRegisterBill(registerBill);
 			if (!result.isSuccess()) {
 				return result;
@@ -123,19 +125,19 @@ public class RegisterBillApi {
 	@ApiOperation("保存分销单&全销总量与登记单相等")
 	@ApiImplicitParam(paramType = "body", name = "SeparateSalesRecord", dataType = "SeparateSalesRecord", value = "分销单保存入参")
 	@RequestMapping(value = "/createSalesRecord", method = RequestMethod.POST)
-	public BaseOutput<Long> saveSeparateSalesRecord(SeparateSalesRecordDTO salesRecord) {
-		LOGGER.info("保存分销单:" + JSON.toJSONString(salesRecord));
+	public BaseOutput<Long> saveSeparateSalesRecord(SeparateSalesRecordDTO input) {
+		LOGGER.info("保存分销单:" + JSON.toJSONString(input));
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
 		LOGGER.info("保存分销单操作用户:" + JSON.toJSONString(user));
 
-		if (RegisterSourceEnum.TRADE_AREA.getCode() == salesRecord.getRegisterSource()) {
+		if (RegisterSourceEnum.TRADE_AREA.getCode() == input.getRegisterSource()) {
 			// 校验买家身份证
 			QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
-					.findByTradeNo(salesRecord.getTradeNo());
-			if(qualityTraceTradeBill==null) {
+					.findByTradeNo(input.getTradeNo());
+			if (qualityTraceTradeBill == null) {
 				return BaseOutput.failure("没有查找到交易单");
 			}
 			if (!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo())
@@ -144,35 +146,42 @@ public class RegisterBillApi {
 				return BaseOutput.failure("没有权限分销");
 			}
 			Integer alreadyWeight = separateSalesRecordService
-					.getAlreadySeparateSalesWeightByTradeNo(salesRecord.getTradeNo());
+					.getAlreadySeparateSalesWeightByTradeNo(input.getTradeNo());
 
-			if ((salesRecord.getSalesWeight().intValue() + alreadyWeight) > qualityTraceTradeBill.getNetWeight()) {
-				LOGGER.error("分销重量超过可分销重量SalesWeight：" + salesRecord.getSalesWeight() + ",alreadyWeight:"
-						+ alreadyWeight + ",BillWeight：" + qualityTraceTradeBill.getNetWeight());
+			if ((input.getSalesWeight().intValue() + alreadyWeight) > qualityTraceTradeBill.getNetWeight()) {
+				LOGGER.error("分销重量超过可分销重量SalesWeight：" + input.getSalesWeight() + ",alreadyWeight:" + alreadyWeight
+						+ ",BillWeight：" + qualityTraceTradeBill.getNetWeight());
 				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
 			}
-			if (qualityTraceTradeBill.getNetWeight().intValue() == salesRecord.getSalesWeight().intValue()) {
+			if (qualityTraceTradeBill.getNetWeight().intValue() == input.getSalesWeight().intValue()) {
 				if (alreadyWeight != 0) {// 未分销过
-					LOGGER.error("判断有问题？SalesWeight：" + salesRecord.getSalesWeight() + ",alreadyWeight:" + alreadyWeight
+					LOGGER.error("判断有问题？SalesWeight：" + input.getSalesWeight() + ",alreadyWeight:" + alreadyWeight
 							+ ",BillWeight：" + qualityTraceTradeBill.getNetWeight());
 					return BaseOutput.failure("已有分销，重量不能全销").setData(false);
 				}
 			}
 
-			separateSalesRecordService.saveOrUpdate(salesRecord);
+			separateSalesRecordService.saveOrUpdate(input);
 
 			qualityTraceTradeBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
 
-//            qualityTraceTradeBill.setOperatorName(user.getName());
-//            qualityTraceTradeBill.setOperatorId(user.getId());
+			// qualityTraceTradeBill.setOperatorName(user.getName());
+			// qualityTraceTradeBill.setOperatorId(user.getId());
 			this.qualityTraceTradeBillService.update(qualityTraceTradeBill);
-			return BaseOutput.success().setData(salesRecord.getId());
+			return BaseOutput.success().setData(input.getId());
 
-		} else {// 理货区分销校验
-			if (StringUtils.isBlank(salesRecord.getRegisterBillCode())) {
+		} else if (RegisterSourceEnum.TALLY_AREA.getCode() == input.getRegisterSource()) {// 理货区分销校验
+
+			if (input.getParentId() != null) {
 				return BaseOutput.failure("没有需要分销的登记单");
 			}
-			RegisterBill registerBill = registerBillService.findByCode(salesRecord.getRegisterBillCode());
+			SeparateSalesRecord parentSeparateSalesRecord = this.separateSalesRecordService.get(input.getParentId());
+			if (parentSeparateSalesRecord == null) {
+				return BaseOutput.failure("没有需要分销的数据");
+			}
+
+			RegisterBill registerBill = this.registerBillService.get(parentSeparateSalesRecord.getBillId());
+
 			if (registerBill == null) {
 				return BaseOutput.failure("没有查到需要分销的登记单");
 			}
@@ -185,73 +194,75 @@ public class RegisterBillApi {
 				return BaseOutput.failure("当前状态登记单不能分销");
 			}
 
-			if (registerBill.getUserId().longValue() != user.getId().longValue()) {
-				LOGGER.info("业户ID" + registerBill.getUserId() + "用户ID:" + user.getId());
+			if (parentSeparateSalesRecord.getSalesUserId().longValue() != user.getId().longValue()) {
+				LOGGER.info("业户ID" + parentSeparateSalesRecord.getSalesUserId() + "用户ID:" + user.getId());
 				return BaseOutput.failure("没有权限分销");
 			}
-			Integer alreadyWeight = separateSalesRecordService
-					.alreadySeparateSalesWeight(salesRecord.getRegisterBillCode());
+			BigDecimal salesWeight = BigDecimal.valueOf(input.getSalesWeight());
+			BigDecimal storeWeight = parentSeparateSalesRecord.getStoreWeight();
 
-			if ((salesRecord.getSalesWeight().intValue() + alreadyWeight) > registerBill.getWeight().intValue()) {
-				LOGGER.error("分销重量超过可分销重量SalesWeight：" + salesRecord.getSalesWeight() + ",alreadyWeight:"
-						+ alreadyWeight + ",BillWeight：" + registerBill.getWeight());
+			if (storeWeight.compareTo(salesWeight) < 0) {
 				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
 			}
-			if (registerBill.getWeight().intValue() == salesRecord.getSalesWeight().intValue()) {
-				if (alreadyWeight != 0) {// 未分销过
-					LOGGER.error("判断有问题？SalesWeight：" + salesRecord.getSalesWeight() + ",alreadyWeight:" + alreadyWeight
-							+ ",BillWeight：" + registerBill.getWeight());
-					return BaseOutput.failure("已有分销，重量不能全销").setData(false);
-				}
-			}
-
+			parentSeparateSalesRecord.setStoreWeight(storeWeight.subtract(salesWeight));
+			parentSeparateSalesRecord.setModified(new Date());
+			input.setBillId(registerBill.getId());
+			input.setCreated(new Date());
+			input.setModified(new Date());
 			registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
-			separateSalesRecordService.saveOrUpdate(salesRecord);
+			separateSalesRecordService.saveOrUpdate(input);
 			registerBill.setOperatorName(user.getName());
 			registerBill.setOperatorId(user.getId());
 			registerBillService.update(registerBill);
-			return BaseOutput.success().setData(salesRecord.getId());
+			return BaseOutput.success().setData(input.getId());
+		} else {
+			return BaseOutput.success().setData(0L);
 		}
 
-//        if(StringUtils.isBlank(salesRecord.getRegisterBillCode())){
-//            return BaseOutput.failure("没有需要分销的登记单");
-//        }
-//        RegisterBill registerBill =  registerBillService.findByCode(salesRecord.getRegisterBillCode());
-//        if(registerBill == null){
-//            return BaseOutput.failure("没有查到需要分销的登记单");
-//        }
-//        if(registerBill.getRegisterSource().intValue()== RegisterSourceEnum.TRADE_AREA.getCode()){//交易区分销校验
-//            //校验买家身份证
-//            QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
-//            if(!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo()).equals(StringUtils.lowerCase(user.getCardNo()))){
-//                LOGGER.info("买家身份证"+qualityTraceTradeBill.getBuyerIDNo()+"用户身份证:"+user.getCardNo());
-//                return BaseOutput.failure("没有权限分销");
-//            }
-//        }else {//理货区分销校验
-//            if(registerBill.getUserId().longValue()!=user.getId().longValue()){
-//                LOGGER.info("业户ID"+registerBill.getUserId()+"用户ID:"+user.getId());
-//                return BaseOutput.failure("没有权限分销");
-//            }
-//        }
-//        Integer alreadyWeight =separateSalesRecordService.alreadySeparateSalesWeight(salesRecord.getRegisterBillCode());
-//
-//        if((salesRecord.getSalesWeight().intValue()+alreadyWeight)>registerBill.getWeight().intValue()){
-//            LOGGER.error("分销重量超过可分销重量SalesWeight："+salesRecord.getSalesWeight()+",alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
-//            return BaseOutput.failure("分销重量超过可分销重量").setData(false);
-//        }
-//        if(registerBill.getWeight().intValue() == salesRecord.getSalesWeight().intValue()){
-//            if(alreadyWeight !=0){//未分销过
-//                LOGGER.error("判断有问题？SalesWeight："+salesRecord.getSalesWeight()+",alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
-//                return BaseOutput.failure("已有分销，重量不能全销").setData(false);
-//            }
-//        }
-//
-//        registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
-//        separateSalesRecordService.saveOrUpdate(salesRecord);
-//        registerBill.setOperatorName(user.getName());
-//        registerBill.setOperatorId(user.getId());
-//        registerBillService.update(registerBill);
-//        return BaseOutput.success().setData(salesRecord.getId());
+		// if(StringUtils.isBlank(salesRecord.getRegisterBillCode())){
+		// return BaseOutput.failure("没有需要分销的登记单");
+		// }
+		// RegisterBill registerBill =
+		// registerBillService.findByCode(salesRecord.getRegisterBillCode());
+		// if(registerBill == null){
+		// return BaseOutput.failure("没有查到需要分销的登记单");
+		// }
+		// if(registerBill.getRegisterSource().intValue()==
+		// RegisterSourceEnum.TRADE_AREA.getCode()){//交易区分销校验
+		// //校验买家身份证
+		// QualityTraceTradeBill qualityTraceTradeBill =
+		// qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
+		// if(!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo()).equals(StringUtils.lowerCase(user.getCardNo()))){
+		// LOGGER.info("买家身份证"+qualityTraceTradeBill.getBuyerIDNo()+"用户身份证:"+user.getCardNo());
+		// return BaseOutput.failure("没有权限分销");
+		// }
+		// }else {//理货区分销校验
+		// if(registerBill.getUserId().longValue()!=user.getId().longValue()){
+		// LOGGER.info("业户ID"+registerBill.getUserId()+"用户ID:"+user.getId());
+		// return BaseOutput.failure("没有权限分销");
+		// }
+		// }
+		// Integer alreadyWeight
+		// =separateSalesRecordService.alreadySeparateSalesWeight(salesRecord.getRegisterBillCode());
+		//
+		// if((salesRecord.getSalesWeight().intValue()+alreadyWeight)>registerBill.getWeight().intValue()){
+		// LOGGER.error("分销重量超过可分销重量SalesWeight："+salesRecord.getSalesWeight()+",alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
+		// return BaseOutput.failure("分销重量超过可分销重量").setData(false);
+		// }
+		// if(registerBill.getWeight().intValue() ==
+		// salesRecord.getSalesWeight().intValue()){
+		// if(alreadyWeight !=0){//未分销过
+		// LOGGER.error("判断有问题？SalesWeight："+salesRecord.getSalesWeight()+",alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
+		// return BaseOutput.failure("已有分销，重量不能全销").setData(false);
+		// }
+		// }
+		//
+		// registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
+		// separateSalesRecordService.saveOrUpdate(salesRecord);
+		// registerBill.setOperatorName(user.getName());
+		// registerBill.setOperatorId(user.getId());
+		// registerBillService.update(registerBill);
+		// return BaseOutput.success().setData(salesRecord.getId());
 	}
 
 	@ApiOperation("处理不分销单")
@@ -313,37 +324,40 @@ public class RegisterBillApi {
 			return BaseOutput.success();
 		}
 
-//        
-//        
-//        RegisterBill registerBill =  registerBillService.get(id);
-//        if(registerBill == null){
-//            return BaseOutput.failure("没有查到需要分销的登记单");
-//        }
-//
-//        if(registerBill.getRegisterSource().intValue()== RegisterSourceEnum.TRADE_AREA.getCode()){//交易区分销校验
-//            //校验买家身份证
-//            QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
-//
-//            if(!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo()).equals(StringUtils.lowerCase(user.getCardNo()))){
-//                LOGGER.info("买家身份证"+qualityTraceTradeBill.getBuyerIDNo()+"用户身份证:"+user.getCardNo());
-//                return BaseOutput.failure("没有权限处理");
-//            }
-//        }else {//理货区分销校验
-//            if(registerBill.getUserId().longValue()!=user.getId().longValue()){
-//                LOGGER.info("业户ID"+registerBill.getUserId()+"用户ID:"+user.getId());
-//                return BaseOutput.failure("没有权限处理");
-//            }
-//        }
-//        Integer alreadyWeight =separateSalesRecordService.alreadySeparateSalesWeight(registerBill.getCode());
-//
-//        if(alreadyWeight>0){
-//            LOGGER.error("已经有,alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
-//            return BaseOutput.failure("已经有分销记录,不能处理").setData(false);
-//        }
-//
-//        registerBill.setSalesType(SalesTypeEnum.ONE_SALES.getCode());
-//        registerBillService.update(registerBill);
-//        return BaseOutput.success();
+		//
+		//
+		// RegisterBill registerBill = registerBillService.get(id);
+		// if(registerBill == null){
+		// return BaseOutput.failure("没有查到需要分销的登记单");
+		// }
+		//
+		// if(registerBill.getRegisterSource().intValue()==
+		// RegisterSourceEnum.TRADE_AREA.getCode()){//交易区分销校验
+		// //校验买家身份证
+		// QualityTraceTradeBill qualityTraceTradeBill =
+		// qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
+		//
+		// if(!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo()).equals(StringUtils.lowerCase(user.getCardNo()))){
+		// LOGGER.info("买家身份证"+qualityTraceTradeBill.getBuyerIDNo()+"用户身份证:"+user.getCardNo());
+		// return BaseOutput.failure("没有权限处理");
+		// }
+		// }else {//理货区分销校验
+		// if(registerBill.getUserId().longValue()!=user.getId().longValue()){
+		// LOGGER.info("业户ID"+registerBill.getUserId()+"用户ID:"+user.getId());
+		// return BaseOutput.failure("没有权限处理");
+		// }
+		// }
+		// Integer alreadyWeight
+		// =separateSalesRecordService.alreadySeparateSalesWeight(registerBill.getCode());
+		//
+		// if(alreadyWeight>0){
+		// LOGGER.error("已经有,alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
+		// return BaseOutput.failure("已经有分销记录,不能处理").setData(false);
+		// }
+		//
+		// registerBill.setSalesType(SalesTypeEnum.ONE_SALES.getCode());
+		// registerBillService.update(registerBill);
+		// return BaseOutput.success();
 	}
 
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
@@ -380,16 +394,15 @@ public class RegisterBillApi {
 		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
 		return BaseOutput.success().setData(bill);
 	}
-	
 
 	@ApiOperation(value = "通过交易区的交易号获取登记单详细信息")
 	@RequestMapping(value = "/tradeNo/{tradeNo}", method = RequestMethod.GET)
 	public BaseOutput<QualityTraceTradeBillOutDto> getBillByTradeNo(@PathVariable String tradeNo) {
 		LOGGER.info("getBillByTradeNo获取登记单:" + tradeNo);
-//        User user=userService.get(sessionContext.getAccountId());
-//        if(user==null){
-//            return BaseOutput.failure("未登陆用户");
-//        }
+		// User user=userService.get(sessionContext.getAccountId());
+		// if(user==null){
+		// return BaseOutput.failure("未登陆用户");
+		// }
 		QualityTraceTradeBillOutDto bill = registerBillService.findQualityTraceTradeBill(tradeNo);
 		return BaseOutput.success().setData(bill);
 	}
@@ -437,6 +450,5 @@ public class RegisterBillApi {
 		return BaseOutput.success().setData(true);
 
 	}
-
 
 }

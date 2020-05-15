@@ -420,6 +420,16 @@
             },
             </#resource>
             
+            <#resource method="post" url="user/index.html#qrStatus">
+            {
+                iconCls:'icon-edit',
+                text:'查看二维码',
+                handler:function(){
+                    openQrStatus();
+                }
+            },
+            </#resource>
+
             {
                 iconCls:'icon-detail',
                 id:'detail-btn',
@@ -460,7 +470,19 @@
             
         });
     }
-   
+   function openQrStatus(){
+        var selected = _userGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300,
+            });
+            return;
+        }
+        openWin('${contextPath}/user/qrstatus.html?id=' + selected.id)
+   }
 
     /**
      * 禁启用操作

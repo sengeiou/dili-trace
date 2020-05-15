@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
@@ -47,16 +48,12 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         }
         Long userId = userItem.getId();
         // 查询并添加UserQrItem
-        UserQrItem qrItem = new UserQrItem();
-        qrItem.setUserId(userItem.getId());
-        qrItem.setQrItemType(QrItemTypeEnum.UPSTREAM.getCode());
-        List<UserQrItem> qrItemList = this.userQrItemService.listByExample(qrItem);
-        if (qrItemList.isEmpty()) {
-            qrItem.setQrItemStatus(QrItemStatusEnum.GREEN.getCode());
-            this.userQrItemService.insertSelective(qrItem);
-        } else {
-            qrItem = qrItemList.stream().findFirst().orElse(null);
-        }
+
+        UserQrItem qrItemCondition = new UserQrItem();
+        qrItemCondition.setUserId(userItem.getId());
+        qrItemCondition.setQrItemType(QrItemTypeEnum.BILL.getCode());
+        UserQrItem qrItem = this.userQrItemService.listByExample(qrItemCondition).stream().findFirst().orElse(null);
+
         // 查询并添加UserQrItemDetail
         UserQrItemDetail qrItemDetail = new UserQrItemDetail();
         qrItemDetail.setObjectId(String.valueOf(registerBill.getId()));
@@ -120,16 +117,10 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
             throw new BusinessException("未能查询到上游信息");
         }
 
-        UserQrItem qrItem = new UserQrItem();
-        qrItem.setUserId(userItem.getId());
-        qrItem.setQrItemType(QrItemTypeEnum.UPSTREAM.getCode());
-        List<UserQrItem> qrItemList = this.userQrItemService.listByExample(qrItem);
-        if (qrItemList.isEmpty()) {
-            qrItem.setQrItemStatus(QrItemStatusEnum.GREEN.getCode());
-            this.userQrItemService.insertSelective(qrItem);
-        } else {
-            qrItem = qrItemList.stream().findFirst().orElse(null);
-        }
+        UserQrItem qrItemCondition = new UserQrItem();
+        qrItemCondition.setUserId(userItem.getId());
+        qrItemCondition.setQrItemType(QrItemTypeEnum.UPSTREAM.getCode());
+        UserQrItem qrItem = this.userQrItemService.listByExample(qrItemCondition).stream().findFirst().orElse(null);
 
         // 查询所有UserQrItemDetail并进行状态判断
         UserQrItemDetail query = new UserQrItemDetail();
@@ -169,16 +160,11 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         if (userItem == null) {
             throw new BusinessException("未能查询到用户信息");
         }
-        UserQrItem qrItem = new UserQrItem();
-        qrItem.setUserId(userItem.getId());
-        qrItem.setQrItemType(QrItemTypeEnum.USER.getCode());
-        List<UserQrItem> qrItemList = this.userQrItemService.listByExample(qrItem);
-        if (qrItemList.isEmpty()) {
-            qrItem.setQrItemStatus(QrItemStatusEnum.GREEN.getCode());
-            this.userQrItemService.insertSelective(qrItem);
-        } else {
-            qrItem = qrItemList.stream().findFirst().orElse(null);
-        }
+        this.intUserQrItem(userId);
+        UserQrItem qrItemCondition = new UserQrItem();
+        qrItemCondition.setUserId(userItem.getId());
+        qrItemCondition.setQrItemType(QrItemTypeEnum.USER.getCode());
+        UserQrItem qrItem = this.userQrItemService.listByExample(qrItemCondition).stream().findFirst().orElse(null);
 
         UserQrItemDetail qrItemDetail = new UserQrItemDetail();
         qrItemDetail.setObjectId(String.valueOf(userId));
@@ -222,6 +208,10 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         UserQrItem userQrItem = new UserQrItem();
         userQrItem.setUserId(userId);
         List<UserQrItem> qrItemList = this.userQrItemService.listByExample(userQrItem);
+
+        User user = DTOUtils.newDTO(User.class);
+        user.setId(userId);
+
         UserQrStatusEnum userQrStatus = qrItemList.stream()
                 .anyMatch(item -> QrItemStatusEnum.RED.getCode().equals(item.getQrItemStatus()))
                         ? UserQrStatusEnum.RED
@@ -236,10 +226,23 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
                                                         : UserQrStatusEnum.BLACK
 
                                         ));
-        User user = DTOUtils.newDTO(User.class);
-        user.setId(userId);
         user.setQrStatus(userQrStatus.getCode());
+
         return this.userService.updateSelective(user);
+    }
+
+    private boolean intUserQrItem(Long userId) {
+
+        Stream.of(QrItemTypeEnum.BILL, QrItemTypeEnum.UPSTREAM, QrItemTypeEnum.USER).forEach(itemType -> {
+            UserQrItem qrItem = new UserQrItem();
+            qrItem.setUserId(userId);
+            qrItem.setQrItemType(itemType.getCode());
+            if (this.userQrItemService.listByExample(qrItem).isEmpty()) {
+                qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
+                this.userQrItemService.insertSelective(qrItem);
+            }
+        });
+        return true;
     }
 
 }

@@ -8,6 +8,7 @@ ALTER TABLE `user` ADD COLUMN `license`  varchar(50)  NULL COMMENT '统一信用
 ALTER TABLE `user` ADD COLUMN `legal_person`  varchar(50)  NULL COMMENT '法人姓名';
 ALTER TABLE `user` ADD COLUMN `license_url`  varchar(50)  NULL COMMENT '经营许可证或生产许可证';
 
+
 CREATE TABLE `market` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL COMMENT '市场名称',
@@ -69,3 +70,13 @@ CREATE TABLE `user_qr_item_detail` (
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `register_bill` ADD COLUMN  `separate_sales_record_id` bigint(20) NULL COMMENT '业户库存信息ID';
+
+ALTER TABLE `separate_sales_record` ADD COLUMN  `parent_id` bigint(20) NULL  COMMENT '分销自';
+ALTER TABLE `separate_sales_record` ADD COLUMN  `bill_id` bigint(20) NULL  COMMENT '最初登记单ID';
+ALTER TABLE `separate_sales_record` ADD COLUMN  `user_product_store_type`  int(11) NOT NULL COMMENT '库存来源类型';
+ALTER TABLE `separate_sales_record` ADD COLUMN  `store_weight`  DECIMAL(10,3)  NOT  NULL  default 0 COMMENT '未分销重量';
+ALTER TABLE `separate_sales_record` ADD COLUMN  `sales_type`  int(11)    NULL COMMENT '分销类型';
+

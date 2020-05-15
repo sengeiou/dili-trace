@@ -1,9 +1,9 @@
- <#body head_title="用户列表">
-     <style>
-         .textbox-text[readonly] {
-             background: #ebebe4;
-         }
-     </style>
+<#body head_title="用户列表">
+    <style>
+        .textbox-text[readonly] {
+            background: #ebebe4;
+        }
+    </style>
     <div class="easyui-layout" fit="true">
         <!-- ====================================================================================================================== -->
         <!-- 上方布局 -->
@@ -16,41 +16,54 @@
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
                         <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'注册时间:'" value="${createdStart}!"/>
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%"
+                                labelAlign="right" data-options="label:'注册时间:'" value="${createdStart}!" />
                             <span style="width: 2%;">-</span>
-                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;" value="${createdEnd}!"/>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"
+                                value="${createdEnd}!" />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right" data-options="label:'姓名:'" />
+                            <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right"
+                                data-options="label:'姓名:'" />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="phone" id="phone" style="width:100%" labelAlign="right" data-options="label:'手机号:'" />
+                            <input class="easyui-textbox" name="phone" id="phone" style="width:100%" labelAlign="right"
+                                data-options="label:'手机号:'" />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="likeTallyAreaNos" id="likeTallyAreaNos" style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
+                            <input class="easyui-textbox" name="likeTallyAreaNos" id="likeTallyAreaNos"
+                                style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
                         </div>
                         <div class="search-item">
-                            <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;" labelAlign="right" data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300',  editable:true,validType:'comboBoxEditvalid[\'salesCityId\']'">
+                            <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;"
+                                labelAlign="right"
+                                data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300',  editable:true,validType:'comboBoxEditvalid[\'salesCityId\']'">
                             </select>
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="plates" id="plates" style="width:100%" labelAlign="right" data-options="label:'车牌:'" />
+                            <input class="easyui-textbox" name="plates" id="plates" style="width:100%"
+                                labelAlign="right" data-options="label:'车牌:'" />
                         </div>
                         <div class="search-item">
-                            <select class="easyui-combobox" name="hasBusinessLicense" id="hasBusinessLicense" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'营业执照'"  labelAlign="right">
-                        		<option value="">全部</option>
+                            <select class="easyui-combobox" name="hasBusinessLicense" id="hasBusinessLicense"
+                                style="width:100%;" editable="false" panelHeight="auto" data-options="label:'营业执照'"
+                                labelAlign="right">
+                                <option value="">全部</option>
                                 <option value="true">有</option>
                                 <option value="false">无</option>
                             </select>
                         </div>
                         <div class="search-item">
-                            <input name="state" id="state" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="状态:" labelAlign="right"/>
-                            <#comboProvider _id="state" _provider='enabledStateProvider' _queryParams='{emptyText:"全部"}' />
+                            <input name="state" id="state" style="width:100%;" editable="false" panelWidth="auto"
+                                panelHeight="auto" label="状态:" labelAlign="right" />
+                            <#comboProvider _id="state" _provider='enabledStateProvider'
+                                _queryParams='{emptyText:"全部"}' />
                         </div>
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                               onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
+                                onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                                onclick="clearQueryForm()">清除</a>
                         </div>
                     </div>
                 </form>
@@ -63,49 +76,64 @@
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="客户列表" id="userGrid" fitColumns="true" noheader="true"
-                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
-                   align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+                pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+                singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
+                fit="true" idField="id"
+                data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
                 <thead>
                     <tr>
-                        <th width="12%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%"
+                            data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             注册时间
                         </th>
-                        <th width="5%" data-options="field:'id',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%"
+                            data-options="field:'id',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             ID
                         </th>
-                        <th width="10%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="6%"
+                            data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             姓名
                         </th>
-                        <th width="10%" data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%"
+                            data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             手机号
                         </th>
-                        <th width="12%" data-options="field:'cardNo',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%"
+                            data-options="field:'cardNo',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             身份证号
                         </th>
-                        <th width="10%" data-options="field:'tallyAreaNos',formatter:blankFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%"
+                            data-options="field:'tallyAreaNos',formatter:blankFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             理货区号
                         </th>
-                        <th width="10%" data-options="field:'salesCityName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%"
+                            data-options="field:'salesCityName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             销地城市
                         </th>
-                        <th width="10%" data-options="field:'plates',   sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%"
+                            data-options="field:'plates',   sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             车牌
                         </th>
-                        <th width="10%" data-options="field:'businessLicenseUrl',formatter:function(val){return val?'有':'无'},   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%"
+                            data-options="field:'businessLicenseUrl',formatter:function(val){return val?'有':'无'},   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             营业执照
                         </th>
-                        <th width="10%" data-options="field:'state',_provider:'enabledStateProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%"
+                            data-options="field:'state',_provider:'enabledStateProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             状态
                         </th>
-                   </tr>
+                        <th width="10%"
+                            data-options="field:'qrStatus',_provider:'userQrStatusEnumProvider', formatter:userQrStatusFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            二维码
+                        </th>
+                    </tr>
                 </thead>
             </table>
         </div>
     </div>
     <!-- 隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增" style="padding:20px" modal="true" border="thin" closed="true"
-         data-options="
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增"
+        style="padding:20px" modal="true" border="thin" closed="true" data-options="
 				iconCls: 'icon-edit',
 				height: 550,
 				buttons: [{
@@ -120,55 +148,64 @@
 					}
 				}]
 			">
-    <form id="_form" class="easyui-form" method="post" fit="true">
-        <input name="_id" id="_id" type="hidden">
-        <table width="430px">
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_name" id="_name" style="width:100%" data-options="label:'姓名*:', validType:'length[2,20]',required:true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_phone" id="_phone" style="width:100%" data-options="label:'手机号*:', validType:'phoneNum',required:true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_cardNo" id="_cardNo" style="width:100%" data-options="label:'身份证号*:', validType:'cardNo',required:true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-textbox" name="_addr" id="_addr" style="width:100%" data-options="label:'身份地址*:', validType:['isWord','length[0,40]'],required:true" />
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-tagbox" name="_tallyAreaNos" id="_tallyAreaNos" style="width:100%" required="true" data-options="label:'理货区号*:',prompt:'输入3位数字后敲回车',validType:['uniquetag','tagNum','tagLength[3]']"/>
-                </td>
-            </tr>
-                        <tr>
-                <td style="padding:5px;">
-                    <input class="easyui-tagbox" name="_plates" id="_plates" style="width:100%" data-options="label:'车牌号:',prompt:'输入车牌号后敲回车',validType:['uniquetag','isLicensePlate']"/>
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <input type="hidden" name="_salesCityName" id="_salesCityName">
-                    <select class="easyui-combobox" name="_salesCityId" id="_salesCityId" style="width:100%;"
+        <form id="_form" class="easyui-form" method="post" fit="true">
+            <input name="_id" id="_id" type="hidden">
+            <table width="430px">
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="_name" id="_name" style="width:100%"
+                            data-options="label:'姓名*:', validType:'length[2,20]',required:true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="_phone" id="_phone" style="width:100%"
+                            data-options="label:'手机号*:', validType:'phoneNum',required:true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="_cardNo" id="_cardNo" style="width:100%"
+                            data-options="label:'身份证号*:', validType:'cardNo',required:true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-textbox" name="_addr" id="_addr" style="width:100%"
+                            data-options="label:'身份地址*:', validType:['isWord','length[0,40]'],required:true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-tagbox" name="_tallyAreaNos" id="_tallyAreaNos" style="width:100%"
+                            required="true"
+                            data-options="label:'理货区号*:',prompt:'输入3位数字后敲回车',validType:['uniquetag','tagNum','tagLength[3]']" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input class="easyui-tagbox" name="_plates" id="_plates" style="width:100%"
+                            data-options="label:'车牌号:',prompt:'输入车牌号后敲回车',validType:['uniquetag','isLicensePlate']" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <input type="hidden" name="_salesCityName" id="_salesCityName">
+                        <select class="easyui-combobox" name="_salesCityId" id="_salesCityId" style="width:100%;"
                             data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
                                 $('#_salesCityName').val(record.text);
                             }">
-                </td>
-            </tr>
-                        <tr>
-                <td style="padding:5px;">
-                <label style="font-size: 14px" >常用销地城市:</label>
-                <div id="cityList">
-                                     <% for(city in cities){%>
-                                                <a href="javascript:void(0)" onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"  title="${city.mergedAddress}">${city.address}</a>
-                    <%}%>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:5px;">
+                        <label style="font-size: 14px">常用销地城市:</label>
+                        <div id="cityList">
+                            <% for(city in cities){%>
+                            <a href="javascript:void(0)"
+                                onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"
+                                title="${city.mergedAddress}">${city.address}</a>
+                            <%}%>
                     </div>
                 </td>
             </tr>
@@ -231,15 +268,30 @@
      <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
      <#user_indexJs />
      <script>
-     function selectCity(cthis,id,name){
-    	 
-    	 $('#_salesCityId').combobox('setValue',id);
-    	 $('#_salesCityId').combobox('setText',name);
-    	 $('#_salesCityName').val(name);
-    	 
-    	 
-     }
-     
-     
-     </script>
+        function selectCity(cthis, id, name) {
+
+            $('#_salesCityId').combobox('setValue', id);
+            $('#_salesCityId').combobox('setText', name);
+            $('#_salesCityName').val(name);
+
+
+        }
+        function userQrStatusFormatter(value, rowData, rowIndex) {
+            var qrStatus = rowData['$_qrStatus'];
+            var text=$('<span></span>');
+            if ($.type(qrStatus) == 'number') {
+                if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.BLACK.getCode()}') {
+                    text.css('color','black');
+                } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.GREEN.getCode()}') {
+                    text.css('color','green');
+                } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.YELLOW.getCode()}') {
+                    text.css('color','yellow');
+                } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.RED.getCode()}') {
+                    text.css('color','red');
+                }
+            }
+            return text.html(value)[0].outerHTML;
+        }
+
+    </script>
 </#body>

@@ -8,6 +8,7 @@ import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -376,6 +377,7 @@ public interface RegisterBill extends IBaseDomain {
     Long getCheckSheetId();
 
     void setCheckSheetId(Long checkSheetId);
-    
+
+
 
 }

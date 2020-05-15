@@ -1,0 +1,46 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="topicTop">
+        <div class="toppic-title">
+            <span class="topic-title-text maincolor">用户二维码详情</span>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+        </div>
+    </div>
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>姓名</label>
+                    <input class="form-control input-sm" value="" readonly/>
+                </div>
+                <br/>
+                <%for (userQrItem in userQrItemlist){%>
+                    ${qrItemTypeMap[userQrItem.qrItemType]} ${qrItemStatusMap[userQrItem.qrItemStatus]}
+                <%}%>
+            </div>
+            
+	
+        </form>
+        
+    </div>
+
+</div>
+</#bodyOrigin>
+<<script type="text/javascript">
+<!--
+$('.fileimg-view').on('click', function () {
+    var url = $(this).parent().siblings(".magnifying").attr('src');
+    if(url){
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    }
+});
+//-->
+</script>
+

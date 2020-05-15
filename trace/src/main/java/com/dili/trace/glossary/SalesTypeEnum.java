@@ -9,7 +9,7 @@ package com.dili.trace.glossary;
  * @createTime 2018/11/8 18:43
  */
 public enum SalesTypeEnum {
-
+    OWNED(0, "自有"),
     SEPARATE_SALES(1, "分销"),
     ONE_SALES(2, "一次全销"),
     ;

@@ -12,11 +12,15 @@ import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.City;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
+import com.dili.trace.domain.UserQrItem;
 import com.dili.trace.dto.CityListInput;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.QrItemStatusEnum;
+import com.dili.trace.glossary.QrItemTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserQrItemService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.dili.trace.util.MaskUserInfo;
@@ -26,6 +30,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +53,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -72,16 +80,17 @@ public class UserController {
 	@ApiOperation("跳转到User页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
-//		Date now = new Date();
-//		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-//		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-		LocalDateTime now=LocalDateTime.now();
-		modelMap.put("createdStart", now.withYear(2019).withMonth(1).withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
+		// Date now = new Date();
+		// modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		// modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+		LocalDateTime now = LocalDateTime.now();
+		modelMap.put("createdStart", now.withYear(2019).withMonth(1).withDayOfMonth(1)
+				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
 		modelMap.put("createdEnd", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
-		
-//		modelMap.put("cities", this.queryCitys());
+
+		// modelMap.put("cities", this.queryCitys());
 		modelMap.put("cities", usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.USER));
-		
+
 		return "user/index";
 	}
 
@@ -90,7 +99,7 @@ public class UserController {
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(UserListDto user) throws Exception {
-		EasyuiPageOutput out=this.userService.listEasyuiPageByExample(user);
+		EasyuiPageOutput out = this.userService.listEasyuiPageByExample(user);
 		return out.toString();
 	}
 
@@ -176,8 +185,8 @@ public class UserController {
 	@ResponseBody
 	public BaseOutput findPlates(Long userId) {
 		try {
-			List<String> plateList = this.userPlateService.findUserPlateByUserId(userId).stream().map(UserPlate::getPlate)
-					.collect(Collectors.toList());
+			List<String> plateList = this.userPlateService.findUserPlateByUserId(userId).stream()
+					.map(UserPlate::getPlate).collect(Collectors.toList());
 			return BaseOutput.success().setData(plateList);
 
 		} catch (Exception e) {
@@ -186,18 +195,20 @@ public class UserController {
 		}
 
 	}
+
 	@RequestMapping(value = "/findPlatesByTallyAreaNo.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput findPlatesByTallyAreaNo(String tallyAreaNo) {
 		try {
-			List<UserPlate>list=this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo);
-//			List<String> plateList = this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo).stream().map(UserPlate::getPlate)
-//					.collect(Collectors.toList());
-//			plateList.add("SSS");
-//			UserPlate item=DTOUtils.newDTO(UserPlate.class);
-//			item.setPlate("ABC");
-//			item.setId(1L);
-//			list.add(item);
+			List<UserPlate> list = this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo);
+			// List<String> plateList =
+			// this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo).stream().map(UserPlate::getPlate)
+			// .collect(Collectors.toList());
+			// plateList.add("SSS");
+			// UserPlate item=DTOUtils.newDTO(UserPlate.class);
+			// item.setPlate("ABC");
+			// item.setId(1L);
+			// list.add(item);
 			return BaseOutput.success().setData(list);
 
 		} catch (Exception e) {
@@ -206,38 +217,65 @@ public class UserController {
 		}
 
 	}
+
 	@ApiOperation("跳转到User页面")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
-	public String view(ModelMap modelMap,@PathVariable Long id) {
-		User userItem=this.userService.get(id);
-		String userPlateStr=this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate).collect(Collectors.joining(","));
-		if(userItem!=null) {
+	public String view(ModelMap modelMap, @PathVariable Long id) {
+		User userItem = this.userService.get(id);
+		String userPlateStr = this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate)
+				.collect(Collectors.joining(","));
+		if (userItem != null) {
 			userItem.setAddr(MaskUserInfo.maskAddr(userItem.getAddr()));
 			userItem.setCardNo(MaskUserInfo.maskIdNo(userItem.getCardNo()));
 			userItem.setPhone(MaskUserInfo.maskPhone(userItem.getPhone()));
 		}
-		
+
 		modelMap.put("userItem", userItem);
 		modelMap.put("userPlates", userPlateStr);
-		
+
 		return "user/view";
 	}
-//	private List<City> queryCitys() {
-//		List<String> prirityCityNames = Arrays.asList("北京市", "哈尔滨市", "牡丹江市", "佳木斯市", "鹤岗市", "绥化市", "内蒙古自治区", "呼和浩特市",
-//				"包头市", "呼伦贝尔市", "天津市", "沈阳市", "大连市", "河北省", "苏州市", "烟台市", "合肥市", "长春市", "四平市", "上海市");
-//
-//		List<City> cityList = new ArrayList<>();
-//		for (String name : prirityCityNames) {
-//			CityListInput query = new CityListInput();
-//			query.setKeyword(name);
-//			List<City> list = this.baseInfoRpcService.listCityByCondition(name);
-//			City city = list.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
-//			if (city != null) {
-//				cityList.add(city);
-//			}
-//
-//		}
-//		return cityList;
-//
-//	}
+
+	// private List<City> queryCitys() {
+	// List<String> prirityCityNames = Arrays.asList("北京市", "哈尔滨市", "牡丹江市", "佳木斯市",
+	// "鹤岗市", "绥化市", "内蒙古自治区", "呼和浩特市",
+	// "包头市", "呼伦贝尔市", "天津市", "沈阳市", "大连市", "河北省", "苏州市", "烟台市", "合肥市", "长春市",
+	// "四平市", "上海市");
+	//
+	// List<City> cityList = new ArrayList<>();
+	// for (String name : prirityCityNames) {
+	// CityListInput query = new CityListInput();
+	// query.setKeyword(name);
+	// List<City> list = this.baseInfoRpcService.listCityByCondition(name);
+	// City city = list.stream().filter(item ->
+	// item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+	// if (city != null) {
+	// cityList.add(city);
+	// }
+	//
+	// }
+	// return cityList;
+	//
+	// }
+	@Autowired
+	UserQrItemService userQrItemService;
+
+	@ApiOperation("跳转到qrstatus页面")
+	@RequestMapping(value = "/qrstatus.html", method = RequestMethod.GET)
+	public String qrstatus(ModelMap modelMap, Long id) {
+		modelMap.put("userQrItemlist", CollectionUtils.emptyCollection());
+		if (id != null) {
+			UserQrItem userQrIztem = new UserQrItem();
+			userQrIztem.setUserId(id);
+			List<UserQrItem> userQrItemlist = this.userQrItemService.listByExample(userQrIztem);
+			modelMap.put("userQrItemlist", userQrItemlist);
+		}
+		Map<Integer,String>qrItemTypeMap=Stream.of(QrItemTypeEnum.values()).collect(Collectors.toMap(QrItemTypeEnum::getCode, QrItemTypeEnum::getDesc));
+		modelMap.put("qrItemTypeMap", qrItemTypeMap);
+
+		Map<Integer,String>qrItemStatusMap=Stream.of(QrItemStatusEnum.values()).collect(Collectors.toMap(QrItemStatusEnum::getCode, QrItemStatusEnum::getDesc));
+		modelMap.put("qrItemStatusMap", qrItemStatusMap);
+
+		return "user/qrstatus";
+	}
 }

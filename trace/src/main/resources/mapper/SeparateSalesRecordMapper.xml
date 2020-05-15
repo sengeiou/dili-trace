@@ -67,4 +67,54 @@
     <select id="getAlreadySeparateSalesWeightByTradeNo" resultType="java.lang.Integer">
     SELECT  sum(sales_weight) FROM separate_sales_record WHERE trade_no = #{tradeNo}
   </select>
+
+  <select id="listSeparateSalesOutput"  parameterType="com.dili.trace.api.dto.SeparateSalesApiListQueryInput" resultType="com.dili.trace.api.dto.SeparateSalesApiListOutput">
+    select 
+    separate_sales_record.id,
+    separate_sales_record.sales_plate as plate,
+    separate_sales_record.sales_weight as weight,
+    separate_sales_record.store_weight as store_weight,
+
+    register_bill.latest_detect_operator,
+    register_bill.latest_detect_record_id,
+    register_bill.latest_detect_time,
+    register_bill.latest_pd_result
+    from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id
+    where separate_sales_record.bill_id is not null
+    <if test="id != null">
+      AND separate_sales_record.id = #{id}
+    </if>
+    <if test="createdStart != null  and createdStart != ''">
+      <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
+    </if>
+    <if test="createdEnd != null  and createdEnd != ''">
+      <![CDATA[AND separate_sales_record.id <=#{createdEnd}]]>
+    </if>
+    <if test="likeProductName != null and likeProductName != ''">
+      AND separate_sales_record.id = #{likeProductName}
+    </if>
+    <if test="userId != null">
+      AND separate_sales_record.sales_user_id = #{userId}
+    </if>
+
+  </select>
+  <select id="countSeparateSalesOutput"  parameterType="com.dili.trace.api.dto.SeparateSalesApiListQueryInput" resultType="java.lang.Long">
+    select   count(1) from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id
+    where separate_sales_record.bill_id is not null
+    <if test="id != null">
+      AND separate_sales_record.id = #{id}
+    </if>
+    <if test="createdStart != null  and createdStart != ''">
+      <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
+    </if>
+    <if test="createdEnd != null  and createdEnd != ''">
+      <![CDATA[AND separate_sales_record.id <=#{createdEnd}]]>
+    </if>
+    <if test="likeProductName != null and likeProductName != ''">
+      AND separate_sales_record.id = #{likeProductName}
+    </if>
+    <if test="userId != null">
+      AND separate_sales_record.sales_user_id = #{userId}
+    </if>
+  </select>
 </mapper>
