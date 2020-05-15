@@ -48,7 +48,7 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         }
         Long userId = userItem.getId();
         // 查询并添加UserQrItem
-
+        this.intUserQrItem(userId);
         UserQrItem qrItemCondition = new UserQrItem();
         qrItemCondition.setUserId(userItem.getId());
         qrItemCondition.setQrItemType(QrItemTypeEnum.BILL.getCode());

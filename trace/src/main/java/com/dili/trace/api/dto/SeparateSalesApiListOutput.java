@@ -18,6 +18,7 @@ public class SeparateSalesApiListOutput extends BaseDomain {
     private String latestPdResult;
     private String originName;
     private String plate;
+    private Date created;
 
     /**
      * @return Long return the id
@@ -172,6 +173,21 @@ public class SeparateSalesApiListOutput extends BaseDomain {
      */
     public void setStoreWeight(BigDecimal storeWeight) {
         this.storeWeight = storeWeight;
+    }
+
+
+    /**
+     * @return Date return the created
+     */
+    public Date getCreated() {
+        return created;
+    }
+
+    /**
+     * @param created the created to set
+     */
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
 }

@@ -74,7 +74,7 @@ public class RegisterBillController {
 		modelMap.put("state", RegisterBillStateEnum.WAIT_AUDIT.getCode());
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
-		
+
 		return "registerBill/index";
 	}
 
@@ -85,14 +85,16 @@ public class RegisterBillController {
 	public @ResponseBody List<RegisterBill> list(RegisterBillDto registerBill) {
 		return registerBillService.list(registerBill);
 	}
-	
+
 	@ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
-	@RequestMapping(value = "/findFirstWaitAuditRegisterBillCreateByCurrentUser.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody Object findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto dto) throws Exception {
-		
-		RegisterBill registerBill= registerBillService.findFirstWaitAuditRegisterBillCreateByCurrentUser(dto);
+	@RequestMapping(value = "/findFirstWaitAuditRegisterBillCreateByCurrentUser.action", method = { RequestMethod.GET,
+			RequestMethod.POST })
+	public @ResponseBody Object findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto dto)
+			throws Exception {
+
+		RegisterBill registerBill = registerBillService.findFirstWaitAuditRegisterBillCreateByCurrentUser(dto);
 		return BaseOutput.success().setData(registerBill);
 	}
 
@@ -101,11 +103,9 @@ public class RegisterBillController {
 			@ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(RegisterBillDto registerBill) throws Exception {
-		
+
 		return registerBillService.listPage(registerBill);
 	}
-
-	
 
 	@ApiOperation("新增RegisterBill")
 	@RequestMapping(value = "/insert.action", method = RequestMethod.POST)
@@ -151,26 +151,33 @@ public class RegisterBillController {
 
 				}
 
-//				if (StringUtils.isNotBlank(registerBill.getTradeAccount())) {
-//					Customer customer = customerService.findByCustomerId(registerBill.getTradeAccount());
-//					if (customer == null) {
-//						LOGGER.error("新增登记单失败交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
-//						return BaseOutput.failure("交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
-//					}
-//					registerBill.setName(customer.getName());
-//					registerBill.setIdCardNo(customer.getIdNo());
-//					registerBill.setAddr(customer.getAddress());
-//					registerBill.setTradePrintingCard(customer.getPrintingCard());
-//					registerBill.setPhone(customer.getPhone());
-//				}
+				// if (StringUtils.isNotBlank(registerBill.getTradeAccount())) {
+				// Customer customer =
+				// customerService.findByCustomerId(registerBill.getTradeAccount());
+				// if (customer == null) {
+				// LOGGER.error("新增登记单失败交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
+				// return BaseOutput.failure("交易账号[" + registerBill.getTradeAccount() +
+				// "]对应用户不存在");
+				// }
+				// registerBill.setName(customer.getName());
+				// registerBill.setIdCardNo(customer.getIdNo());
+				// registerBill.setAddr(customer.getAddress());
+				// registerBill.setTradePrintingCard(customer.getPrintingCard());
+				// registerBill.setPhone(customer.getPhone());
+				// }
 			}
 			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 			registerBill.setDetectReportUrl(StringUtils.trimToNull(registerBill.getDetectReportUrl()));
 			registerBill.setOriginCertifiyUrl(StringUtils.trimToNull(registerBill.getOriginCertifiyUrl()));
 			registerBill.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
-			BaseOutput r = registerBillService.createRegisterBill(registerBill);
-			if (!r.isSuccess()) {
-				return r;
+			try {
+				BaseOutput r = registerBillService.createRegisterBill(registerBill);
+				if (!r.isSuccess()) {
+					return r;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+
 			}
 		}
 		return BaseOutput.success("新增成功").setData(registerBills);
@@ -203,8 +210,8 @@ public class RegisterBillController {
 	@RequestMapping(value = "/create.html")
 	public String create(ModelMap modelMap) {
 		try {
-		modelMap.put("tradeTypes", tradeTypeService.findAll());
-		}catch (Exception e) {
+			modelMap.put("tradeTypes", tradeTypeService.findAll());
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		modelMap.put("citys", this.queryCitys());
@@ -214,34 +221,36 @@ public class RegisterBillController {
 
 	private List<UsualAddress> queryCitys() {
 		return usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.REGISTER);
-//		List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市", "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
-//				"河北省", "吉林省", "内蒙古自治区",
-//				"元谋县","保山市","茂名市","中山市","雷州市","湛江市","澄迈县",
-//				"东方市",
-//				"海口市",
-//				"漳州市",
-//				"崇明县",
-//				"临海市",
-//				"慈溪市",
-//				"宁波市",
-//				"南通市"
-//				
-//				
-//				
-//				);
-//
-//		List<City> cityList = new ArrayList<>();
-//		for (String name : prirityCityNames) {
-//			CityListInput query = new CityListInput();
-//			query.setKeyword(name);
-//			List<City> list = this.baseInfoRpcService.listCityByCondition(name);
-//			City city = list.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
-//			if (city != null) {
-//				cityList.add(city);
-//			}
-//
-//		}
-//		return cityList;
+		// List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市",
+		// "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
+		// "河北省", "吉林省", "内蒙古自治区",
+		// "元谋县","保山市","茂名市","中山市","雷州市","湛江市","澄迈县",
+		// "东方市",
+		// "海口市",
+		// "漳州市",
+		// "崇明县",
+		// "临海市",
+		// "慈溪市",
+		// "宁波市",
+		// "南通市"
+		//
+		//
+		//
+		// );
+		//
+		// List<City> cityList = new ArrayList<>();
+		// for (String name : prirityCityNames) {
+		// CityListInput query = new CityListInput();
+		// query.setKeyword(name);
+		// List<City> list = this.baseInfoRpcService.listCityByCondition(name);
+		// City city = list.stream().filter(item ->
+		// item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+		// if (city != null) {
+		// cityList.add(city);
+		// }
+		//
+		// }
+		// return cityList;
 
 	}
 
@@ -252,13 +261,14 @@ public class RegisterBillController {
 	 * @return
 	 */
 	@RequestMapping(value = "/view/{id}/{displayWeight}", method = RequestMethod.GET)
-	public String view(ModelMap modelMap, @PathVariable Long id,@PathVariable(required = false) Boolean displayWeight) {
+	public String view(ModelMap modelMap, @PathVariable Long id,
+			@PathVariable(required = false) Boolean displayWeight) {
 		RegisterBill registerBill = registerBillService.get(id);
 		if (registerBill == null) {
 			return "";
 		}
-		if(displayWeight==null) {
-			displayWeight=false;
+		if (displayWeight == null) {
+			displayWeight = false;
 		}
 		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
 			// 分销信息
@@ -275,10 +285,10 @@ public class RegisterBillController {
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
 
-//		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
-//		conditon.setRegisterBillCode(registerBill.getCode());
-//		conditon.setSort("id");
-//		conditon.setOrder("desc");
+		// DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
+		// conditon.setRegisterBillCode(registerBill.getCode());
+		// conditon.setSort("id");
+		// conditon.setOrder("desc");
 		List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(registerBill.getCode());
 		modelMap.put("detectRecordList", detectRecordList);
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
@@ -330,10 +340,10 @@ public class RegisterBillController {
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
-		
+
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
-		
+
 		return "registerBill/upload-detectReport";
 	}
 
@@ -364,10 +374,10 @@ public class RegisterBillController {
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
-		
+
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
-		
+
 		return "registerBill/upload-origincertifiy";
 	}
 
@@ -410,7 +420,7 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/doBatchAutoCheck", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput doBatchAutoCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
-//		modelMap.put("registerBill", registerBillService.get(id));
+		// modelMap.put("registerBill", registerBillService.get(id));
 		idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(idList)) {
 			return BaseOutput.failure("参数错误");
@@ -427,7 +437,7 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/doBatchSamplingCheck", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput doBatchSamplingCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
-//		modelMap.put("registerBill", registerBillService.get(id));
+		// modelMap.put("registerBill", registerBillService.get(id));
 		idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(idList)) {
 			return BaseOutput.failure("参数错误");
@@ -444,10 +454,10 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/doBatchAudit", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput doBatchAudit(ModelMap modelMap, @RequestBody BatchAuditDto batchAuditDto) {
-//		modelMap.put("registerBill", registerBillService.get(id));
-//		if (batchAuditDto.getPass() == null) {
-//			return BaseOutput.failure("参数错误");
-//		}
+		// modelMap.put("registerBill", registerBillService.get(id));
+		// if (batchAuditDto.getPass() == null) {
+		// return BaseOutput.failure("参数错误");
+		// }
 		List<Long> idList = CollectionUtils.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream()
 				.filter(Objects::nonNull).collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(idList)) {
@@ -650,14 +660,14 @@ public class RegisterBillController {
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
 		modelMap.put("citys", this.queryCitys());
-		
-		if(registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-			List<UserPlate>userPlateList=this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
+
+		if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
+			List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
 			modelMap.put("userPlateList", userPlateList);
-		}else {
+		} else {
 			modelMap.put("userPlateList", new ArrayList<>(0));
 		}
-	
+
 		return "registerBill/copy";
 	}
 
@@ -714,28 +724,29 @@ public class RegisterBillController {
 
 	}
 
-//	/**
-//	 * 保存处理结果
-//	 * 
-//	 * @param input
-//	 * @return
-//	 */
-//	@RequestMapping(value = "/doModifyRegisterBill.action", method = { RequestMethod.GET, RequestMethod.POST })
-//	@ResponseBody
-//	public BaseOutput<?> doModifyRegisterBill(RegisterBill input) {
-//		try {
-//			Long id = this.registerBillService.doModifyRegisterBill(input);
-//			return BaseOutput.success().setData(id);
-//		} catch (AppException e) {
-//			LOGGER.error(e.getMessage(), e);
-//			return BaseOutput.failure(e.getMessage());
-//		} catch (Exception e) {
-//			LOGGER.error(e.getMessage(), e);
-//			return BaseOutput.failure("服务端出错");
-//		}
-//
-//	}
-	
+	// /**
+	// * 保存处理结果
+	// *
+	// * @param input
+	// * @return
+	// */
+	// @RequestMapping(value = "/doModifyRegisterBill.action", method = {
+	// RequestMethod.GET, RequestMethod.POST })
+	// @ResponseBody
+	// public BaseOutput<?> doModifyRegisterBill(RegisterBill input) {
+	// try {
+	// Long id = this.registerBillService.doModifyRegisterBill(input);
+	// return BaseOutput.success().setData(id);
+	// } catch (AppException e) {
+	// LOGGER.error(e.getMessage(), e);
+	// return BaseOutput.failure(e.getMessage());
+	// } catch (Exception e) {
+	// LOGGER.error(e.getMessage(), e);
+	// return BaseOutput.failure("服务端出错");
+	// }
+	//
+	// }
+
 	/**
 	 * 上传产地报告
 	 * 
@@ -757,6 +768,7 @@ public class RegisterBillController {
 		}
 
 	}
+
 	/**
 	 * 上传检测报告
 	 * 
@@ -778,6 +790,7 @@ public class RegisterBillController {
 		}
 
 	}
+
 	/**
 	 * 删除检测报告及产地证明
 	 * 
@@ -786,9 +799,9 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/doRemoveReportAndCertifiy.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public BaseOutput<?> doRemoveReportAndCertifiy(Long id,String deleteType) {
+	public BaseOutput<?> doRemoveReportAndCertifiy(Long id, String deleteType) {
 		try {
-//			Long id = this.registerBillService.doUploadDetectReport(input);
+			// Long id = this.registerBillService.doUploadDetectReport(input);
 			return this.registerBillService.doRemoveReportAndCertifiy(id, deleteType);
 		} catch (AppException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -799,6 +812,7 @@ public class RegisterBillController {
 		}
 
 	}
+
 	/**
 	 * 保存处理结果
 	 * 
@@ -841,14 +855,14 @@ public class RegisterBillController {
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
 		modelMap.put("citys", this.queryCitys());
-		
+
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
-		
-		if(registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-			List<UserPlate>userPlateList=this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
+
+		if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
+			List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
 			modelMap.put("userPlateList", userPlateList);
-		}else {
+		} else {
 			modelMap.put("userPlateList", new ArrayList<>(0));
 		}
 		return "registerBill/edit";

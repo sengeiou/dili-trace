@@ -74,11 +74,14 @@
     separate_sales_record.sales_plate as plate,
     separate_sales_record.sales_weight as weight,
     separate_sales_record.store_weight as store_weight,
-
+    register_bill.product_name as product_name,
     register_bill.latest_detect_operator,
     register_bill.latest_detect_record_id,
     register_bill.latest_detect_time,
-    register_bill.latest_pd_result
+    register_bill.latest_pd_result,
+    register_bill.created as created,
+    register_bill.state as state,
+    register_bill.origin_name as origin_name
     from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id
     where separate_sales_record.bill_id is not null
     <if test="id != null">

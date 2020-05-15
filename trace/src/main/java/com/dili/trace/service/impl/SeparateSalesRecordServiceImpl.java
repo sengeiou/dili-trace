@@ -93,7 +93,8 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
             item.setCreated(new Date());
             item.setModified(new Date());
             item.setSalesType(SalesTypeEnum.OWNED.getCode());
-
+            item.setSalesCityId(0L);
+            item.setSalesCityName("");
             this.insertSelective(item);
         } else {
             item.setSalesWeight(registerBill.getWeight());

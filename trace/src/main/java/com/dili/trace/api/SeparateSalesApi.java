@@ -1,6 +1,5 @@
 package com.dili.trace.api;
 
-
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
@@ -20,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,7 +48,7 @@ public class SeparateSalesApi {
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     // @InterceptConfiguration(loginRequired=false)
-    public BaseOutput<EasyuiPageOutput> list(SeparateSalesApiListQueryInput input) throws Exception {
+    public BaseOutput<EasyuiPageOutput> list(@RequestBody SeparateSalesApiListQueryInput input) throws Exception {
         LOGGER.info("获取登记单列表:" + JSON.toJSON(input).toString());
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
