@@ -90,8 +90,17 @@
         $('#_form').form('load', formData);
         $.ajax({
             url:'/upStream/listUserByUpstreamId.action',
-            data : {upstreamId : formData.upstreamId}
-
+            data : {upstreamId : formData.$_upstreamId},
+            success:function (result) {
+                if(result.success){
+                    $.each(result.data, function(index,item){
+                        selectedTags[item.id] = item.name+" "+item.cardNo;
+                    });
+                    $('#userName').tagbox('setValues',Object.keys(selectedTags));
+                }else{
+                    swal('错误',ret.result,'error');
+                }
+            }
         });
         initFileUpload();
     }
