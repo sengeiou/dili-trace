@@ -5,9 +5,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
@@ -36,6 +39,25 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
     UpStreamService upStreamService;
     @Autowired
     RegisterBillService registerBillService;
+
+    @PostConstruct
+    public void init(){
+        while(true){
+            User userQuery=DTOUtils.newDTO(User.class);
+            userQuery.mset(IDTO.AND_CONDITION_EXPR, "id not in(select user_id from user_qr_item)");
+            userQuery.setPage(1);
+            userQuery.setRows(50);
+            List<User>userList=this.userService.listByExample(userQuery);
+            if(userList.isEmpty()){
+                break;
+            }
+            userList.stream().forEach(u->this.intUserQrItem(u.getId()));
+        }
+
+
+
+
+    }
 
     /**
      * 通过登记单来更新二维码状态

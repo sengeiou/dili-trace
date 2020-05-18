@@ -1,6 +1,6 @@
 
 
-ALTER TABLE `user` ADD COLUMN `qr_status`  int(11)  NULL default 0 COMMENT '二维码状态';
+ALTER TABLE `user` ADD COLUMN `qr_status`  int(11)  NULL default 30 COMMENT '二维码状态(默认红色)';
 ALTER TABLE `user` ADD COLUMN `user_type`  int(11)  NULL default 10 COMMENT '用户类型';
 ALTER TABLE `user` ADD COLUMN `market_id`  bigint(20)  NULL COMMENT '所属市场';
 

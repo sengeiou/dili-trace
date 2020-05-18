@@ -41,7 +41,7 @@ public class UserQrStatusEnumProvider implements ValueProvider {
     @Override
     public String getDisplayText(Object object, Map map, FieldMeta fieldMeta) {
         if (null == object) {
-            return UserQrStatusEnum.BLACK.getDesc();
+            return "";
         }
         ValuePair<?> valuePair = BUFFER.stream().filter(val -> object.toString().equals(val.getValue())).findFirst().orElseGet(null);
         if (null != valuePair) {
