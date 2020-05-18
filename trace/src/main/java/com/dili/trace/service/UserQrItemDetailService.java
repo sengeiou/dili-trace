@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,8 +92,11 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         });
         if (withoutUrl) {
             qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
-            this.userQrItemService.updateSelective(qrItem);
+
+        } else {
+            qrItem.setQrItemStatus(QrItemStatusEnum.GREEN.getCode());
         }
+        this.userQrItemService.updateSelective(qrItem);
 
         // TODO 红码逻辑
         // 30天内，累积检测不合格商品超50%以上，或检测不合格次数3次以上（待定）。*、
@@ -144,8 +148,10 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         });
         if (withoutAllNessaryInfo) {
             qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
-            this.userQrItemService.updateSelective(qrItem);
+        } else {
+            qrItem.setQrItemStatus(QrItemStatusEnum.GREEN.getCode());
         }
+        this.userQrItemService.updateSelective(qrItem);
         this.updateUserQrStatus(userId);
 
     }
@@ -195,50 +201,58 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         });
         if (withoutAllNessaryInfo) {
             qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
-            this.userQrItemService.updateSelective(qrItem);
+        } else {
+            qrItem.setQrItemStatus(QrItemStatusEnum.GREEN.getCode());
         }
+        this.userQrItemService.updateSelective(qrItem);
         this.updateUserQrStatus(userId);
 
     }
 
     /**
-     * 更新用户二维码状态
+     * 通过当前条目判断并更新用户二维码状态
      */
     private int updateUserQrStatus(Long userId) {
         UserQrItem userQrItem = new UserQrItem();
         userQrItem.setUserId(userId);
         List<UserQrItem> qrItemList = this.userQrItemService.listByExample(userQrItem);
+        Map<QrItemTypeEnum, List<UserQrItem>> typeItemMap = qrItemList.stream()
+                .collect(Collectors.groupingBy(item -> QrItemTypeEnum.fromCode(item.getQrItemType())));
 
         User user = DTOUtils.newDTO(User.class);
         user.setId(userId);
 
-        UserQrStatusEnum userQrStatus = qrItemList.stream()
-                .anyMatch(item -> QrItemStatusEnum.RED.getCode().equals(item.getQrItemStatus()))
-                        ? UserQrStatusEnum.RED
-                        : (qrItemList.stream()
-                                .anyMatch(item -> QrItemStatusEnum.YELLOW.getCode().equals(item.getQrItemStatus()))
-                                        ? UserQrStatusEnum.YELLOW
-                                        : (
-
-                                        qrItemList.stream().allMatch(
-                                                item -> QrItemStatusEnum.GREEN.getCode().equals(item.getQrItemStatus()))
-                                                        ? UserQrStatusEnum.GREEN
-                                                        : UserQrStatusEnum.BLACK
-
-                                        ));
-        user.setQrStatus(userQrStatus.getCode());
+        if (QrItemStatusEnum
+                .fromCode(typeItemMap.get(QrItemTypeEnum.UPSTREAM).get(0).getQrItemStatus()) == QrItemStatusEnum.RED
+                && QrItemStatusEnum.fromCode(
+                        typeItemMap.get(QrItemTypeEnum.BILL).get(0).getQrItemStatus()) == QrItemStatusEnum.RED) {
+            user.setQrStatus(UserQrStatusEnum.RED.getCode());
+        } else if (QrItemStatusEnum
+                .fromCode(typeItemMap.get(QrItemTypeEnum.USER).get(0).getQrItemStatus()) == QrItemStatusEnum.GREEN
+                || QrItemStatusEnum.fromCode(
+                        typeItemMap.get(QrItemTypeEnum.BILL).get(0).getQrItemStatus()) == QrItemStatusEnum.GREEN
+                || QrItemStatusEnum.fromCode(
+                        typeItemMap.get(QrItemTypeEnum.UPSTREAM).get(0).getQrItemStatus()) == QrItemStatusEnum.GREEN) {
+            user.setQrStatus(UserQrStatusEnum.GREEN.getCode());
+        } else {
+            user.setQrStatus(UserQrStatusEnum.GREEN.getCode());
+        }
 
         return this.userService.updateSelective(user);
     }
 
+    /**
+     * 初始化用户二维码
+     */
     private boolean intUserQrItem(Long userId) {
 
         Stream.of(QrItemTypeEnum.BILL, QrItemTypeEnum.UPSTREAM, QrItemTypeEnum.USER).forEach(itemType -> {
             UserQrItem qrItem = new UserQrItem();
             qrItem.setUserId(userId);
             qrItem.setQrItemType(itemType.getCode());
+            // 默认为红色(RED)状态
             if (this.userQrItemService.listByExample(qrItem).isEmpty()) {
-                qrItem.setQrItemStatus(QrItemStatusEnum.YELLOW.getCode());
+                qrItem.setQrItemStatus(QrItemStatusEnum.RED.getCode());
                 this.userQrItemService.insertSelective(qrItem);
             }
         });

@@ -73,6 +73,8 @@ CREATE TABLE `user_qr_item_detail` (
 
 
 ALTER TABLE `register_bill` ADD COLUMN  `separate_sales_record_id` bigint(20) NULL COMMENT '业户库存信息ID';
+ALTER TABLE `register_bill` ADD COLUMN  `upstream_id` bigint(20) NULL COMMENT '上游信息ID';
+
 
 ALTER TABLE `separate_sales_record` ADD COLUMN  `parent_id` bigint(20) NULL  COMMENT '分销自';
 ALTER TABLE `separate_sales_record` ADD COLUMN  `bill_id` bigint(20) NULL  COMMENT '最初登记单ID';

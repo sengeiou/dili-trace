@@ -380,4 +380,15 @@ public interface RegisterBill extends IBaseDomain {
 
 
 
+        
+    @ApiModelProperty(value = "上游信息ID")
+    @Column(name = "`upstream_id`")
+    @FieldDef(label="upstream_id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getUpStreamId();
+
+    void setUpStreamId(Long upStreamId);
+
+
+
 }

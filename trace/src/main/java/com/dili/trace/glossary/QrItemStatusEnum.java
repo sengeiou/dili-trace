@@ -1,5 +1,7 @@
 package com.dili.trace.glossary;
 
+import java.util.stream.Stream;
+
 public enum QrItemStatusEnum {
     /**
      * 绿色
@@ -8,7 +10,7 @@ public enum QrItemStatusEnum {
     /**
      * 黄色
      */
-    YELLOW(20, "黄色"), 
+    YELLOW(20, "黄色"),
     /**
      * 红色
      */
@@ -20,6 +22,10 @@ public enum QrItemStatusEnum {
     QrItemStatusEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
+    }
+
+    public static QrItemStatusEnum fromCode(Integer code) {
+        return Stream.of(QrItemStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
     }
 
     public Integer getCode() {

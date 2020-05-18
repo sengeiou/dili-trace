@@ -1,5 +1,7 @@
 package com.dili.trace.glossary;
 
+import java.util.stream.Stream;
+
 public enum QrItemTypeEnum {
     /**
      * 个人信息
@@ -24,6 +26,10 @@ public enum QrItemTypeEnum {
     QrItemTypeEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
+    }
+
+    public static QrItemTypeEnum fromCode(Integer code) {
+        return Stream.of(QrItemTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
     }
 
     public Integer getCode() {
