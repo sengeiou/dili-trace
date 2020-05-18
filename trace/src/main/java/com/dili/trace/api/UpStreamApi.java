@@ -6,6 +6,7 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.SessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.service.UpStreamService;
@@ -40,14 +41,15 @@ public class UpStreamApi {
     /**
      * 分页查询上游信息
      */
-    @RequestMapping(value = "/listPagedUpStream.api", method = RequestMethod.POST)
-    public BaseOutput<UpStream> listPagedUpStream(@RequestBody UpStream input) {
+    @RequestMapping(value = "/listPagedUpStream.api", method = { RequestMethod.POST, RequestMethod.GET })
+    public BaseOutput<BasePage<UpStream>> listPagedUpStream(@RequestBody UpStream input) {
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
         try {
-            return BaseOutput.success();
+            BasePage<UpStream> data = this.upStreamService.listPageUpStream(user.getId());
+            return BaseOutput.success().setData(data);
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

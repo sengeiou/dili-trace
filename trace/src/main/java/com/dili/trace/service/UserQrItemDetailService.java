@@ -41,21 +41,18 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
     RegisterBillService registerBillService;
 
     @PostConstruct
-    public void init(){
-        while(true){
-            User userQuery=DTOUtils.newDTO(User.class);
+    public void init() {
+        while (true) {
+            User userQuery = DTOUtils.newDTO(User.class);
             userQuery.mset(IDTO.AND_CONDITION_EXPR, "id not in(select user_id from user_qr_item)");
             userQuery.setPage(1);
             userQuery.setRows(50);
-            List<User>userList=this.userService.listByExample(userQuery);
-            if(userList.isEmpty()){
+            List<User> userList = this.userService.listByExample(userQuery);
+            if (userList.isEmpty()) {
                 break;
             }
-            userList.stream().forEach(u->this.intUserQrItem(u.getId()));
+            userList.stream().forEach(u -> this.intUserQrItem(u.getId()));
         }
-
-
-
 
     }
 
@@ -244,20 +241,16 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         User user = DTOUtils.newDTO(User.class);
         user.setId(userId);
 
-        if (QrItemStatusEnum
-                .fromCode(typeItemMap.get(QrItemTypeEnum.UPSTREAM).get(0).getQrItemStatus()) == QrItemStatusEnum.RED
-                && QrItemStatusEnum.fromCode(
-                        typeItemMap.get(QrItemTypeEnum.BILL).get(0).getQrItemStatus()) == QrItemStatusEnum.RED) {
+        if (QrItemStatusEnum.RED.equalsCode(typeItemMap.get(QrItemTypeEnum.UPSTREAM).get(0).getQrItemStatus())
+                && QrItemStatusEnum.RED.equalsCode(typeItemMap.get(QrItemTypeEnum.BILL).get(0).getQrItemStatus())) {
             user.setQrStatus(UserQrStatusEnum.RED.getCode());
-        } else if (QrItemStatusEnum
-                .fromCode(typeItemMap.get(QrItemTypeEnum.USER).get(0).getQrItemStatus()) == QrItemStatusEnum.GREEN
-                || QrItemStatusEnum.fromCode(
-                        typeItemMap.get(QrItemTypeEnum.BILL).get(0).getQrItemStatus()) == QrItemStatusEnum.GREEN
-                || QrItemStatusEnum.fromCode(
-                        typeItemMap.get(QrItemTypeEnum.UPSTREAM).get(0).getQrItemStatus()) == QrItemStatusEnum.GREEN) {
+        } else if (QrItemStatusEnum.GREEN.equalsCode(typeItemMap.get(QrItemTypeEnum.USER).get(0).getQrItemStatus())
+                && QrItemStatusEnum.GREEN.equalsCode(typeItemMap.get(QrItemTypeEnum.BILL).get(0).getQrItemStatus())
+                && QrItemStatusEnum.GREEN
+                        .equalsCode(typeItemMap.get(QrItemTypeEnum.UPSTREAM).get(0).getQrItemStatus())) {
             user.setQrStatus(UserQrStatusEnum.GREEN.getCode());
         } else {
-            user.setQrStatus(UserQrStatusEnum.GREEN.getCode());
+            user.setQrStatus(UserQrStatusEnum.YELLOW.getCode());
         }
 
         return this.userService.updateSelective(user);

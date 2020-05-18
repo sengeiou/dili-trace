@@ -2,6 +2,8 @@ package com.dili.trace.service;
 
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.glossary.UpStreamTypeEnum;
@@ -14,6 +16,27 @@ import org.springframework.stereotype.Service;
 public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
     @Autowired
     RUserUpStreamService rUserUpStreamService;
+
+    /**
+     * 分页查询上游信息
+     */
+    public BasePage<UpStream> listPageUpStream(Long userId) {
+        if (userId == null) {
+            BasePage<UpStream> result = new BasePage<>();
+
+            result.setPage(1);
+            result.setRows(0);
+            result.setTotalItem(0);
+            result.setTotalPage(1);
+            result.setStartIndex(1);
+            return result;
+        }
+        UpStream query = new UpStream();
+        query.mset(IDTO.AND_CONDITION_EXPR,
+                "id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
+        BasePage<UpStream> page = this.listPageByExample(null);
+        return page;
+    }
 
     /**
      * 创建上游信息

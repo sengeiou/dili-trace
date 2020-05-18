@@ -2,8 +2,8 @@ package com.dili.trace.glossary;
 
 public enum UserQrStatusEnum {
     // /**
-    //  * 黑色
-    //  */
+    // * 黑色
+    // */
     // BLACK(0, "黑色"),
     /**
      * 绿色
@@ -12,7 +12,7 @@ public enum UserQrStatusEnum {
     /**
      * 黄色
      */
-    YELLOW(20, "黄色"), 
+    YELLOW(20, "黄色"),
     /**
      * 红色
      */
@@ -24,6 +24,11 @@ public enum UserQrStatusEnum {
     UserQrStatusEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
+    }
+
+    public boolean equalsCode(Integer code) {
+        return this.getCode().equals(code);
+
     }
 
     public Integer getCode() {

@@ -28,6 +28,11 @@ public enum QrItemStatusEnum {
         return Stream.of(QrItemStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
     }
 
+    public boolean equalsCode(Integer code) {
+        return this.getCode().equals(code);
+
+    }
+
     public Integer getCode() {
         return code;
     }

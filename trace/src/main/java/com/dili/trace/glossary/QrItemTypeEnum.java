@@ -32,6 +32,11 @@ public enum QrItemTypeEnum {
         return Stream.of(QrItemTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
     }
 
+    public boolean equalsCode(Integer code) {
+        return this.getCode().equals(code);
+
+    }
+
     public Integer getCode() {
         return code;
     }
