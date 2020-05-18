@@ -12,11 +12,11 @@ public enum UpStreamTypeEnum {
     ;
 
     private Integer code;
-    private String desc;
+    private String name;
 
-    UpStreamTypeEnum(Integer code, String desc) {
+    UpStreamTypeEnum(Integer code, String name) {
         this.code = code;
-        this.desc = desc;
+        this.name = name;
     }
 
     public Integer getCode() {
@@ -27,11 +27,11 @@ public enum UpStreamTypeEnum {
         this.code = code;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getName() {
+        return name;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setName(String name) {
+        this.name = name;
     }
 }

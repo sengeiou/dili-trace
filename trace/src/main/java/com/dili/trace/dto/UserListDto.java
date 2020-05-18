@@ -7,6 +7,7 @@ import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
 import com.dili.trace.domain.User;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -40,5 +41,16 @@ public interface UserListDto extends User {
     @Transient
     Boolean getHasBusinessLicense();
     void setHasBusinessLicense(Boolean hasBusinessLicense);
+
+    @Column(name = "name")
+    @Like
+    String getLikeName();
+    void setLikeName(String likeName);
+
+    @Column(name = "`id`")
+    @Operator(Operator.IN)
+    List<Long> getIds();
+
+    void setIds(List<Long> ids);
 
 }

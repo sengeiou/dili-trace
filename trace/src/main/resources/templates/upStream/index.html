@@ -1,7 +1,18 @@
- <#body head_title="打印报告列表">
+ <#body head_title="上游与用户关系">
      <style>
          .textbox-text[readonly] {
              background: #ebebe4;
+         }
+
+         fieldset {
+             color:#aaa;
+             border:#aaa dashed 1px;
+             text-align:left;
+             padding:5px;
+         }
+         legend {
+             font-weight:800;
+             background:#fff;
          }
      </style>
     <div class="easyui-layout" fit="true">
@@ -15,26 +26,15 @@
             <div class="easyui-panel" style="width:100%;" align="left">
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
-                        <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'创建时间:'" value=""/>
-                            <span style="width: 2%;">-</span>
-                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;" value=""/>
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="likeUpstreamName" id="likeUpstreamName" style="width:100%" labelAlign="right" data-options="label:'上游名称:'" />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="userName" id="userName" style="width:100%" labelAlign="right" data-options="label:'提交人:'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="detectOperatorName" id="detectOperatorName" style="width:100%" labelAlign="right" data-options="label:'检测人:'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="likeApproverUserName" id="likeApproverUserName" style="width:100%" labelAlign="right" data-options="label:'审核人:'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="likeOperatorName" id="likeOperatorName" style="width:100%" labelAlign="right" data-options="label:'操作人:'" />
+                            <input class="easyui-textbox" name="likeUserName" id="likeUserName" style="width:100%" labelAlign="right" data-options="label:'业户名称:'" />
                         </div>
                         <div class="search-wrap-btn">
                             <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                               onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
+                               onclick="queryUpStreamGrid()">查询</a>&nbsp;&nbsp;
                             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
                         </div>
                     </div>
@@ -47,40 +47,34 @@
         <!-- 表格 -->
         <div region="center" style="width:100%;" height="auto">
             <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="打印报告列表" id="upStreamGrid" fitColumns="true" noheader="true"
+            <table class="easyui-datagrid" title="打印报告列表" id="grid" fitColumns="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
                    loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
-                   align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+                   align="center" fit="true" idField="id" data-options="onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
                 <thead>
                     <tr>
-                        <th width="10%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            市场名称
+                        <th width="10%" data-options="field:'upstreamId', _provider:'simpleBatchDisplayTextProvider',_escapeFileds:{'upstreamId':'name','upstreamName':'name','idCard':'id_card', 'telphone':'telphone', 'license':'license','upstreamType':'upstream_type','legalPerson':'legal_person','cardNoFrontUrl':'card_no_front_url','cardNoBackUrl':'card_no_back_url','businessLicenseUrl':'business_license_url','licenseUrl':'license_url'},_fkField:'upstreamId',_relationTable:'upstream',_relationTablePkField:'id',     sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           名称
                         </th>
-                        <th width="10%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'upstreamType', _provider:'upStreamTypeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             类型
                         </th>
-                        <th width="10%" data-options="field:'validPeriod',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                           商户名称
+                        <th width="10%" data-options="field:'legalPerson', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            法人
                         </th>
-                        <th width="10%" data-options="field:'userName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            上游联系方式
-                        </th>
-                        <th width="10%" data-options="field:'detectOperatorName',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            摊位号
-                        </th>
-                        <th width="10%" data-options="field:'approverInfoId', _provider:'approverInfoProvider',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            上游企业/个人名称
-                        </th>
-                         <th width="10%" data-options="field:'operatorName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            上游法人
-                        </th>
-                        <th width="10%" data-options="field:'operatorName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="15%" data-options="field:'license', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             统一信用代码
                         </th>
-                        <th width="10%" data-options="field:'operatorName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="15%" data-options="field:'telphone',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            联系方式
+                        </th>
+                        <th width="15%" data-options="field:'idCard',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             身份证号
                         </th>
-                        <th width="10%" data-options="field:'operatorName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'userId', _provider:'simpleBatchDisplayTextProvider',  _escapeFileds:{'userId':'name','userName':'name'},_fkField:'userId',_relationTable:'user',_relationTablePkField:'id',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            业户名称
+                        </th>
+                        <th width="15%" data-options="field:'created', _provider:'datetimeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             创建时间
                         </th>
                    </tr>
@@ -89,248 +83,127 @@
         </div>
     </div>
     <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="上游个人/企业编辑" style="padding:20px" modal="true" border="thin" closed="true"
+      data-options="
+				iconCls: 'icon-edit',
+				height: 680,
+				width:500,
+				buttons: [{
+					text:'确认',
+					iconCls:'icon-ok',
+					handler:saveOrUpdate
+				},{
+					text:'取消',
+					iconCls:'icon-cancel',
+					handler:function(){
+						$('#dlg').dialog('close');
+					}
+				}]
+			">
+     <form id="_form" class="easyui-form" method="post">
+         <fieldset style="width: 460px;">
+             <legend><i>基础信息</i></legend>
+             <div class="easyui-panel">
+                 <div style="margin-bottom:5px">
+                     <input class="easyui-textbox" name="upstreamName" id="upstreamName" style="width:100%" data-options="label:'名称:',validType:'length[2,20]',required:true" />
+                 </div>
+                 <div style="margin-bottom:5px">
+                     <input name="upstreamType" id="upstreamType" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="类型:"/>
+                     <#comboProvider _id="upstreamType" _provider='upStreamTypeProvider'  _queryParams='{required:true}'/>
+                 </div>
+                 <div style="margin-bottom:5px;" id="corporateInfo">
+                     <div style="margin-bottom:5px;" >
+                         <input class="easyui-textbox" name="_legalPerson" id="_legalPerson" style="width:100%" data-options="label:'法人:', validType:['isWord','length[0,20]']" />
+                     </div>
+                     <div>
+                         <input class="easyui-textbox" name="license" id="license" style="width:100%" data-options="label:'信用代码:', validType:['isWord','length[0,20]']" />
+                     </div>
+                 </div>
+                 <div style="margin-bottom:5px">
+                     <input class="easyui-textbox" name="telphone" id="telphone" style="width:100%" data-options="label:'联系方式:'" />
+                 </div>
+                 <div style="margin-bottom:5px">
+                     <input class="easyui-textbox" name="idCard" id="idCard" style="width:100%" data-options="label:'身份证号:', validType:'cardNo'" />
+                 </div>
+                 <div style="margin-bottom:5px">
+                     <input class="easyui-tagbox" name="userName" id="userName" style="width:100%" required="true" data-options="label:'业户名称*:',prompt:'请输入业户名检索',limitToList: true,loader:userLoader,mode: 'remote',valueField:'id',textField:'text',tagFormatter: userFormatter"/>
+                 </div>
+             </div>
+         </fieldset>
+         <fieldset style="width: 460px;">
+             <legend><i>证件上传</i></legend>
+             <div id="p" class="easyui-panel">
+                 <div style="text-align: center">
+                     <div style="margin-bottom:5px;display: inline-block;">
+                         <div class="fileimg-box" style="margin: 0 auto;">
+                             <span class="fileimg-plus-icon">+</span>
+                             <span class="fileimg-des">上传身份证正面照</span>
+                             <input type="file" name="file" id="cardNoFrontUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                             <img class="magnifying">
+                             <input type="hidden" name="cardNoFrontUrl">
+                             <div class="fileimg-cover" style="display: none;"></div>
+                             <div class="fileimg-edit" style="display: none;">
+                                 <span class="fileimg-view">查看</span>
+                             </div>
+                         </div>
+                     </div>
+                     <div style="margin-bottom:5px;display: inline-block;">
+                         <div class="fileimg-box" style="margin: 0 auto;">
+                             <span class="fileimg-plus-icon">+</span>
+                             <span class="fileimg-des">上传身份证反面照</span>
+                             <input type="file" name="file" id="cardNoBackUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                             <img class="magnifying">
+                             <input type="hidden" name="cardNoBackUrl">
+                             <div class="fileimg-cover" style="display: none;"></div>
+                             <div class="fileimg-edit" style="display: none;">
+                                 <span class="fileimg-view">查看</span>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 <div style="text-align: center">
+                     <div style="margin-bottom:5px;display: inline-block;">
+                         <div class="fileimg-box" style="margin: 0 auto;">
+                             <span class="fileimg-plus-icon">+</span>
+                             <span class="fileimg-des">上传营业执照</span>
+                             <input type="file" name="file" id="businessLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                             <input type="hidden" name="businessLicenseUrl">
+                             <img class="magnifying">
+                             <div class="fileimg-cover" style="display: none;"></div>
+                             <div class="fileimg-edit" style="display: none;">
+                                 <span class="fileimg-view">查看</span>
+                             </div>
+                         </div>
+                     </div>
+                     <div style="margin-bottom:5px;display: inline-block;">
+                         <div class="fileimg-box" style="margin: 0 auto;">
+                             <span class="fileimg-plus-icon">+</span>
+                             <span class="fileimg-des">上传经营许可证</span>
+                             <input type="file" name="file" id="licenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                             <input type="hidden" name="licenseUrl">
+                             <img class="magnifying">
+                             <div class="fileimg-cover" style="display: none;"></div>
+                             <div class="fileimg-edit" style="display: none;">
+                                 <span class="fileimg-view">查看</span>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+
+             </div>
+         </fieldset>
+     </form>
+
+ </div>
     <!-- ====================================================================================================================== -->
     <!-- style & script 分隔线 -->
     <!-- ====================================================================================================================== -->
-     <script src="http://base.nong12.com/static/log/log.build.js"></script>
-     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
-     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
-     
-
-     <script type="text/javascript">
-       //表格查询
-       function queryUserGrid() {
-           var opts = _checkSheetGrid.datagrid("options");
-           if (null == opts.url || "" == opts.url) {
-               opts.url = "${contextPath}/upStream/listPage.action";
-           }
-
-           if(!$('#queryForm').form("validate")){
-               return false;
-           }
-           _checkSheetGrid.datagrid("load", bindGridMeta2Form("upStreamGrid", "queryForm"));
-
-       }
-
-
-       //清空表单
-       function clearQueryForm() {
-           $('#queryForm').form('clear');
-       }
-
-       //表格表头右键菜单
-       function headerContextMenu(e, field){
-           e.preventDefault();
-           if (!cmenu){
-               createColumnMenu("upStreamGrid");
-           }
-           cmenu.menu('show', {
-               left:e.pageX,
-               top:e.pageY
-           });
-       }
-
-       /**
-        * 绑定页面回车事件，以及初始化页面时的光标定位
-        * @formId
-        *          表单ID
-        * @elementName
-        *          光标定位在指点表单元素的name属性的值
-        * @submitFun
-        *          表单提交需执行的任务
-        */
-       $(function () {
-           window._checkSheetGrid = $('#upStreamGrid');
-           bindFormEvent("queryForm", "createdStart", queryUserGrid);
-           initUserGrid();
-           queryUserGrid();
-       })
-
-       $('.fileimg-view').on('click', function () {
-           var url = $(this).parent().siblings(".magnifying").attr('src');
-           if(url){
-               layer.open({
-                   title:'图片',
-                   type: 1,
-                   skin: 'layui-layer-rim',
-                   closeBtn: 2,
-                   area: ['90%', '90%'], //宽高
-                   content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-               });
-           }
-       });
-
-           function initFileUpload(){
-           $(":file").fileupload({
-               dataType : 'json',
-               formData: {type:4,compress:true},
-               done : function(e, res) {
-                   if (res.result.code == 200) {
-                       var url = res.result.data;
-                       $(this).siblings(".magnifying").attr('src', url).show();
-                       $(this).siblings("input:hidden").val(url);
-                       $(this).siblings('.fileimg-cover,.fileimg-edit').show();
-                   }
-               },
-               add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
-                   var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
-                   var name = data.originalFiles[0]["name"];
-                   var index = name.lastIndexOf(".")+1;
-                   var fileType = name.substring(index,name.length);
-                   if(!acceptFileTypes.test(fileType)){
-                       swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
-                       return ;
-                   }
-                   var size = data.originalFiles[0]["size"];
-                   // 10M
-                   if(size > (1024*10*1024)){
-                       swal('错误', '上传文件超过最大限制!', 'error');
-                       return ;
-                   }
-                   data.submit();
-               }
-           });
-       }
-
-       /**
-        * 初始化用户列表组件
-        */
-       function initUserGrid() {
-           var pager = _checkSheetGrid.datagrid('getPager');
-           var toolbar=[
-               {
-                   iconCls:'icon-add',
-                   id:'insert-btn',
-                   text:'新增',
-                   handler:function(){
-                    openInsert();
-                   }
-               },
-               {
-                   iconCls:'icon-edit',
-                   id:'edit-btn',
-                   text:'编辑',
-                   handler:function(){
-                    openEdit();
-                   }
-               },
-               {
-                   iconCls:'icon-detail',
-                   id:'print-btn',
-                   text:'查看',
-                   handler:function(){
-                    openDetail();
-                   }
-               },
-               <#resource method="post" url="upStream/index.html#export">
-               {
-                   iconCls:'icon-export',
-                   text:'导出',
-                   id:'stop_btn',
-                   handler:function(){
-                       layer.confirm('确认导出数据?', {
-                           type: 0,
-                           title: '提示',
-                           btn: ['确定','取消'],
-                           yes:function(){
-                               layer.closeAll();
-                               doExport('upStreamGrid');
-                           }
-                       });
-                   }
-               }
-               </#resource>
-           ];
-           	_checkSheetGrid.datagrid({
-               toolbar:toolbar
-           });
-           pager.pagination({
-               <#controls_paginationOpts/>,
-               //buttons:toolbar
-
-           });
-           pager.pagination({
-               <#controls_paginationOpts/>,
-               
-           });
-       }
-        function openInsert(){
-            openWin('${contextPath}/upStream/insert.html')
-        }
-       function openEdit(){
-        var selected = _checkSheetGrid.datagrid("getSelected");
-           if (null == selected) {
-               swal({
-                   title: '警告',
-                   text: '请选中一条数据',
-                   type: 'warning',
-                   width: 300,
-               });
-               return;
-           }
-           openWin('${contextPath}/upStream/edit.html?id=' + selected.id)
-
-       }
-
-       function openDetail(){
-           var selected = _checkSheetGrid.datagrid("getSelected");
-           if (null == selected) {
-               swal({
-                   title: '警告',
-                   text: '请选中一条数据',
-                   type: 'warning',
-                   width: 300,
-               });
-               return;
-           }
-           openWin('${contextPath}/upStream/view.html?id=' + selected.id)
-       }
-
-       /**
-        * datagrid行点击事件
-        * 目前用于来判断 启禁用是否可点
-        */
-       function onClickRow(index,row) {
-           var state = row.$_state;
-
-       }
-
-       function closeLastWin(id){
-           $('#'+id).last().remove();
-       }
-       function closeWin(id){
-           $('#'+id).remove();
-           $('#grid').datagrid('reload');
-       }
-       function openWin(url){
-           $('body').append('<iframe id="upstream_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
-       }
-//客户端错误回调方法
-function handleError(ret){
-		layer.alert(ret.result,{
-			title:'错误',
-		   	end :function(){
-			   		//window.location.reload()
-			   	}
-			},
-			function () {
-					 //window.location.reload()
-			 }
-		);
-}
-//取消打印结束后调用
-function cancelPrint(){
-	console.info('cancelPrint')
-	//$('.btn-main2').show();
-}
-//打印结束后调用
-function printFinish(){
-	console.info('printFinish')
-	//parent.closeWin('view_win');
-}
-
-
-   </script>
-
+ <script src="http://base.nong12.com/static/log/log.build.js"></script>
+ <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+ <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+ <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+ <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+ <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+ <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+    <#upStream_indexJs />
 </#body>

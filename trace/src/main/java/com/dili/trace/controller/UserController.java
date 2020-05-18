@@ -149,6 +149,16 @@ public class UserController {
 	}
 
 	/**
+	 * 业户条件查询
+	 * @param userListDto
+	 * @return
+	 */
+	@RequestMapping(value = "/listByCondition.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput listByCondition(UserListDto userListDto) {
+		return BaseOutput.success().setData(userService.listByExample(userListDto));
+	}
+
+	/**
 	 *
 	 * @param id
 	 * @param enable 是否启用
