@@ -43,7 +43,28 @@
     }
 
     function saveOrUpdate() {
-
+        if(!$('#_form').form("validate")){
+            return;
+        }
+        var formData = $("#_form").serializeObject();
+        $.ajax({
+            type: "POST",
+            url: "/upStream/save.action",
+            data: JSON.stringify(formData),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success:function (result) {
+                if(result.success){
+                    _grid.datagrid("reload");
+                    $('#dlg').dialog('close');
+                }else{
+                    swal('错误',result.result, 'error');
+                }
+            },
+            error: function(){
+                swal('错误', '远程访问失败', 'error');
+            }
+        });
     }
 
     //打开新增窗口
@@ -54,6 +75,7 @@
         $(".magnifying,.fileimg-cover,.fileimg-edit").hide();//隐藏图片img
         $('#_form').form('clear');
         $('#upstreamType').combobox('setValue',10);
+        selectedTags = {};
         initFileUpload();
     }
 
@@ -70,7 +92,6 @@
         $('#_form').form('clear');
 
         var formData = $.extend({},selected);
-        $('#upstreamType').combobox('setValue',formData.$_upstreamType);
         if(formData.cardNoFrontUrl){
             $('#cardNoFrontUrl').siblings('.fileimg-cover,.fileimg-edit').show();
             $('#cardNoFrontUrl').siblings(".magnifying").attr('src',formData.cardNoFrontUrl).show();
@@ -88,6 +109,10 @@
             $('#licenseUrl').siblings(".magnifying").attr('src',formData.licenseUrl).show();
         }
         $('#_form').form('load', formData);
+        $('#upstreamType').combobox('setValue',formData.$_upstreamType);
+        $('#id').val(formData.$_upstreamId);
+        $('#name').textbox('setValue',formData.upstreamName);
+        selectedTags = {};
         $.ajax({
             url:'/upStream/listUserByUpstreamId.action',
             data : {upstreamId : formData.$_upstreamId},
@@ -96,7 +121,7 @@
                     $.each(result.data, function(index,item){
                         selectedTags[item.id] = item.name+" "+item.cardNo;
                     });
-                    $('#userName').tagbox('setValues',Object.keys(selectedTags));
+                    $('#userIds').tagbox('setValues',Object.keys(selectedTags));
                 }else{
                     swal('错误',ret.result,'error');
                 }
