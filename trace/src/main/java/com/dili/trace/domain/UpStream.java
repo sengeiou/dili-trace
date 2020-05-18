@@ -97,11 +97,11 @@ public class UpStream extends BaseDomain {
     private Long operatorId;
 
     @ApiModelProperty(value = "创建时间")
-    @Column(name = "`operator_id`")
+    @Column(name = "`created`")
     private Date created;
 
     @ApiModelProperty(value = "更新时间")
-    @Column(name = "`operator_id`")
+    @Column(name = "`modified`")
     private Date modified;
 
     /**

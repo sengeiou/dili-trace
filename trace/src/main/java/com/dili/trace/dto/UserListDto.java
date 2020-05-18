@@ -41,4 +41,9 @@ public interface UserListDto extends User {
     Boolean getHasBusinessLicense();
     void setHasBusinessLicense(Boolean hasBusinessLicense);
 
+    @Column(name = "name")
+    @Like
+    String getLikeName();
+    void setLikeName(String likeName);
+
 }
