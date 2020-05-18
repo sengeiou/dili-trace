@@ -21,14 +21,14 @@ public class RUserUpstream extends BaseDomain {
      */
     @ApiModelProperty(value = "用户(商户)ID")
     @Column(name = "`user_id`")
-    private Integer userId;
+    private Long userId;
 
     /**
      * 上游信息ID
      */
     @ApiModelProperty(value = "上游信息ID")
     @Column(name = "`upstream_id`")
-    private Integer upstreamId;
+    private Long upstreamId;
 
     @ApiModelProperty(value = "操作人姓名")
     @Column(name = "`operator_name`")
@@ -56,19 +56,19 @@ public class RUserUpstream extends BaseDomain {
         this.id = id;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public Integer getUpstreamId() {
+    public Long getUpstreamId() {
         return upstreamId;
     }
 
-    public void setUpstreamId(Integer upstreamId) {
+    public void setUpstreamId(Long upstreamId) {
         this.upstreamId = upstreamId;
     }
 

@@ -50,21 +50,50 @@
     function openInsert(){
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
+
+        $(".magnifying,.fileimg-cover,.fileimg-edit").hide();//隐藏图片img
+        $('#_form').form('clear');
+        $('#upstreamType').combobox('setValue',10);
+        initFileUpload();
     }
 
     //打开修改窗口
     function openUpdate(){
         var selected = _grid.datagrid("getSelected");
         if (null == selected) {
-            swal({
-                title: '警告',
-                text: '请选中一条数据',
-                type: 'warning',
-                width: 300,
-            });
+            swal('警告','请选中一条数据', 'warning');
             return;
         }
-        window.location.href="${contextPath}/upStream/edit.html?id="+selected["id"];
+
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+        $('#_form').form('clear');
+
+        var formData = $.extend({},selected);
+        $('#upstreamType').combobox('setValue',formData.$_upstreamType);
+        if(formData.cardNoFrontUrl){
+            $('#cardNoFrontUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#cardNoFrontUrl').siblings(".magnifying").attr('src',formData.cardNoFrontUrl).show();
+        }
+        if(formData.cardNoBackUrl){
+            $('#cardNoBackUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#cardNoBackUrl').siblings(".magnifying").attr('src',formData.cardNoBackUrl).show();
+        }
+        if(formData.businessLicenseUrl){
+            $('#businessLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#businessLicenseUrl').siblings(".magnifying").attr('src',formData.businessLicenseUrl).show();
+        }
+        if(formData.licenseUrl){
+            $('#licenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#licenseUrl').siblings(".magnifying").attr('src',formData.licenseUrl).show();
+        }
+        $('#_form').form('load', formData);
+        $.ajax({
+            url:'/upStream/listUserByUpstreamId.action',
+            data : {upstreamId : formData.upstreamId}
+
+        });
+        initFileUpload();
     }
 
     //表格查询
@@ -131,8 +160,12 @@
         initUpStreamGrid();
         queryUpStreamGrid();
         $('#upstreamType').combobox({
-            onChange : function () {
-                $('#corporateInfo').toggle();
+            onChange : function (newValue,oldValue) {
+                if(newValue == 10){
+                    $('#corporateInfo').hide();
+                }else{
+                    $('#corporateInfo').show();
+                }
             }
         });
     })
@@ -168,16 +201,52 @@
         _grid.datagrid('getPanel').removeClass('lines-both lines-no lines-right lines-bottom').addClass("lines-bottom");
     }
 
-    /**
-     * datagrid行点击事件
-     * 目前用于来判断 启禁用是否可点
-     */
-    function onClickRow(index,row) {
+    $('.fileimg-view').on('click', function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+
+    function initFileUpload(){
+        $(":file").fileupload({
+            dataType : 'json',
+            formData: {type:4,compress:true},
+            done : function(e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    $(this).siblings(".magnifying").attr('src', url).show();
+                    $(this).siblings("input:hidden").val(url);
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".")+1;
+                var fileType = name.substring(index,name.length);
+                if(!acceptFileTypes.test(fileType)){
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return ;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if(size > (1024*10*1024)){
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return ;
+                }
+                data.submit();
+            }
+        });
     }
 
-    function iconFormatter(value, row, index) {
-        return '<img height="80" src="'+value+'" />';
-    }
 
 
 </script>

@@ -2,12 +2,16 @@ package com.dili.trace.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.RUserUpstream;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.*;
 import com.dili.trace.service.*;
 
@@ -68,5 +72,24 @@ public class UpStreamController {
 
 		return rUserUpStreamService.listEasyuiPageByExample(rUserUpstreamDto,true).toString();
 	}
+
+    /**
+     * 根据上游用户ID查询其绑定的所有业户
+     * @param upstreamId
+     * @return
+     */
+    @RequestMapping(value = "/listUserByUpstreamId.action", method = { RequestMethod.GET, RequestMethod.POST })
+    public @ResponseBody
+    BaseOutput<List<User>> listUserByUpstreamId(Long upstreamId) {
+        RUserUpstream rUserUpstream = new RUserUpstream();
+        rUserUpstream.setUpstreamId(upstreamId);
+        List<Long> userIds = rUserUpStreamService.list(rUserUpstream).stream().map(o->o.getUserId()).collect(Collectors.toList());
+        if(!userIds.isEmpty()){
+            UserListDto userListDto = DTOUtils.newInstance(UserListDto.class);
+            userListDto.setIds(userIds);
+            return BaseOutput.success().setData(userService.listByExample(userListDto));
+        }
+        return BaseOutput.success().setData(new ArrayList<>());
+    }
 
 }
