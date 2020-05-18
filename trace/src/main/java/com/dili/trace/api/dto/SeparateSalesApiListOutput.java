@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.glossary.RegisterBillStateEnum;
 
 public class SeparateSalesApiListOutput extends BaseDomain {
     private Long id;
@@ -19,6 +20,17 @@ public class SeparateSalesApiListOutput extends BaseDomain {
     private String originName;
     private String plate;
     private Date created;
+    
+    public String getStateName(){
+        try {
+            if (getState() == null) {
+                return "";
+            }
+        }catch (Exception e){
+            return "";
+        }
+        return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
+    }
 
     /**
      * @return Long return the id
