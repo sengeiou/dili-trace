@@ -1,5 +1,7 @@
 package com.dili.trace.glossary;
 
+import java.util.stream.Stream;
+
 public enum UserQrStatusEnum {
     // /**
     // * 黑色
@@ -24,6 +26,9 @@ public enum UserQrStatusEnum {
     UserQrStatusEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
+    }
+    public static UserQrStatusEnum fromCode(Integer code) {
+        return Stream.of(UserQrStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
     }
 
     public boolean equalsCode(Integer code) {

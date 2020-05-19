@@ -25,7 +25,7 @@ public enum QrItemStatusEnum {
     }
 
     public static QrItemStatusEnum fromCode(Integer code) {
-        return Stream.of(QrItemStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
+        return Stream.of(QrItemStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
     }
 
     public boolean equalsCode(Integer code) {

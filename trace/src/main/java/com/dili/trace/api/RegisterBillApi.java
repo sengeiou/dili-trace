@@ -172,7 +172,7 @@ public class RegisterBillApi {
 
 		} else if (RegisterSourceEnum.TALLY_AREA.getCode() == input.getRegisterSource()) {// 理货区分销校验
 
-			if (input.getParentId() != null) {
+			if (input.getParentId() == null) {
 				return BaseOutput.failure("没有需要分销的登记单");
 			}
 			SeparateSalesRecord parentSeparateSalesRecord = this.separateSalesRecordService.get(input.getParentId());
@@ -209,6 +209,9 @@ public class RegisterBillApi {
 			input.setBillId(registerBill.getId());
 			input.setCreated(new Date());
 			input.setModified(new Date());
+			input.setSalesCityId(user.getSalesCityId());
+			input.setSalesCityName(user.getSalesCityName());
+			input.setStoreWeight(salesWeight);
 			registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
 			separateSalesRecordService.saveOrUpdate(input);
 			registerBill.setOperatorName(user.getName());

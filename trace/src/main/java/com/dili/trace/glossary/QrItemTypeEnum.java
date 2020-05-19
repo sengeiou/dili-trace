@@ -29,7 +29,7 @@ public enum QrItemTypeEnum {
     }
 
     public static QrItemTypeEnum fromCode(Integer code) {
-        return Stream.of(QrItemTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
+        return Stream.of(QrItemTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
     }
 
     public boolean equalsCode(Integer code) {

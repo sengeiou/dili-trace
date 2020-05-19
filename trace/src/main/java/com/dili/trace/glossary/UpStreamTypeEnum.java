@@ -21,7 +21,7 @@ public enum UpStreamTypeEnum {
     }
 
     public static UpStreamTypeEnum fromCode(Integer code) {
-        return Stream.of(UpStreamTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
+        return Stream.of(UpStreamTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
     }
 
     public boolean equalsCode(Integer code) {

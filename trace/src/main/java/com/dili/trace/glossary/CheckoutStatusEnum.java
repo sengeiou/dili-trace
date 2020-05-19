@@ -20,7 +20,7 @@ public enum CheckoutStatusEnum {
         this.desc = desc;
     }
     public static CheckoutStatusEnum fromCode(Integer code) {
-        return Stream.of(CheckoutStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
+        return Stream.of(CheckoutStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
     }
     public boolean equalsCode(Integer code) {
         return this.getCode().equals(code);

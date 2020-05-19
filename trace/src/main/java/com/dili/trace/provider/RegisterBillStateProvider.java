@@ -64,7 +64,7 @@ public class RegisterBillStateProvider implements ValueProvider {
 			return null;
 		}
 		ValuePair<?> valuePair = BUFFER.stream().filter(val -> object.toString().equals(val.getValue())).findFirst()
-				.orElseGet(null);
+				.orElse(null);
 		if (null != valuePair) {
 			return valuePair.getText();
 		}

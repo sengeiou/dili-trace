@@ -18,6 +18,7 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.QrItemStatusEnum;
 import com.dili.trace.glossary.QrItemTypeEnum;
+import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserQrItemService;
@@ -291,11 +292,12 @@ public class UserController {
 	@ApiOperation("跳转到qrstatus页面")
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap, Long id) {
-		modelMap.put("user", DTOUtils.newDTO(User.class));
+		modelMap.put("item", DTOUtils.newDTO(User.class));
 		if (id != null) {
 			User user = this.userService.get(id);
-			modelMap.put("user", user);
+			modelMap.put("item", user);
 		}
+		modelMap.put("userTypeMap", Stream.of(UserTypeEnum.values()).collect(Collectors.toMap(UserTypeEnum::getCode, UserTypeEnum::getDesc)));
 
 		String userPlateStr = this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate)
 				.collect(Collectors.joining(","));
