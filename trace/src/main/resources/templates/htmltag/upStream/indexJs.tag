@@ -58,7 +58,7 @@
                     _grid.datagrid("reload");
                     $('#dlg').dialog('close');
                 }else{
-                    swal('错误',result.result, 'error');
+                    swal('错误',result.message, 'error');
                 }
             },
             error: function(){
@@ -108,14 +108,16 @@
             $('#operationLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
             $('#operationLicenseUrl').siblings(".magnifying").attr('src',formData.operationLicenseUrl).show();
         }
+        if(formData.manufacturingLicenseUrl){
+            $('#manufacturingLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#manufacturingLicenseUrl').siblings(".magnifying").attr('src',formData.manufacturingLicenseUrl).show();
+        }
         $('#_form').form('load', formData);
         $('#upstreamType').combobox('setValue',formData.$_upstreamType);
-        $('#id').val(formData.$_upstreamId);
-        $('#name').textbox('setValue',formData.upstreamName);
         selectedTags = {};
         $.ajax({
             url:'/upStream/listUserByUpstreamId.action',
-            data : {upstreamId : formData.$_upstreamId},
+            data : {upstreamId : formData.id},
             success:function (result) {
                 if(result.success){
                     $.each(result.data, function(index,item){
@@ -123,7 +125,7 @@
                     });
                     $('#userIds').tagbox('setValues',Object.keys(selectedTags));
                 }else{
-                    swal('错误',ret.result,'error');
+                    swal('错误',result.message,'error');
                 }
             }
         });

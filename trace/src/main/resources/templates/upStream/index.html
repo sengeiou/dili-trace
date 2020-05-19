@@ -26,6 +26,13 @@
             <div class="easyui-panel" style="width:100%;" align="left">
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%"
+                                   labelAlign="right" data-options="label:'注册时间:'" value="${createdStart}!" />
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"
+                                   value="${createdEnd}!" />
+                        </div>
                         <div class="search-item">
                             <input class="easyui-textbox" name="likeUpstreamName" id="likeUpstreamName" style="width:100%" labelAlign="right" data-options="label:'上游名称:'" />
                         </div>
@@ -53,7 +60,7 @@
                    align="center" fit="true" idField="id" data-options="onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
                 <thead>
                     <tr>
-                        <th width="10%" data-options="field:'upstreamId', _provider:'simpleBatchDisplayTextProvider',_escapeFileds:{'upstreamId':'name','upstreamName':'name','idCard':'id_card', 'telphone':'telphone', 'license':'license','upstreamType':'upstream_type','legalPerson':'legal_person','cardNoFrontUrl':'card_no_front_url','cardNoBackUrl':'card_no_back_url','businessLicenseUrl':'business_license_url','operationLicenseUrl':'operation_license_url'},_fkField:'upstreamId',_relationTable:'upstream',_relationTablePkField:'id',     sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'name',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            名称
                         </th>
                         <th width="10%" data-options="field:'upstreamType', _provider:'upStreamTypeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -71,7 +78,7 @@
                         <th width="15%" data-options="field:'idCard',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             身份证号
                         </th>
-                        <th width="10%" data-options="field:'userId', _provider:'simpleBatchDisplayTextProvider',  _escapeFileds:{'userId':'name','userName':'name'},_fkField:'userId',_relationTable:'user',_relationTablePkField:'id',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'userNames',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             业户名称
                         </th>
                         <th width="15%" data-options="field:'created', _provider:'datetimeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -127,7 +134,7 @@
                      <input class="easyui-textbox" name="idCard" id="idCard" style="width:100%" data-options="label:'身份证号:', validType:'cardNo'" />
                  </div>
                  <div style="margin-bottom:5px">
-                     <input class="easyui-tagbox" name="userIds" id="userIds" style="width:100%" required="true" data-options="label:'业户名称*:',prompt:'请输入业户名检索',limitToList: true,loader:userLoader,mode: 'remote',valueField:'id',textField:'text',tagFormatter: userFormatter,multiple:true"/>
+                     <input class="easyui-tagbox" name="userIds" id="userIds" style="width:100%" data-options="label:'业户名称:',prompt:'请输入业户名检索',limitToList: true,loader:userLoader,mode: 'remote',valueField:'id',textField:'text',tagFormatter: userFormatter"/>
                  </div>
              </div>
          </fieldset>
@@ -182,6 +189,19 @@
                              <span class="fileimg-des">上传经营许可证</span>
                              <input type="file" name="file" id="operationLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
                              <input type="hidden" name="operationLicenseUrl">
+                             <img class="magnifying">
+                             <div class="fileimg-cover" style="display: none;"></div>
+                             <div class="fileimg-edit" style="display: none;">
+                                 <span class="fileimg-view">查看</span>
+                             </div>
+                         </div>
+                     </div>
+                     <div style="margin-bottom:5px;display: inline-block;">
+                         <div class="fileimg-box" style="margin: 0 auto;">
+                             <span class="fileimg-plus-icon">+</span>
+                             <span class="fileimg-des">上传生产许可证</span>
+                             <input type="file" name="file" id="manufacturingLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                             <input type="hidden" name="manufacturingLicenseUrl">
                              <img class="magnifying">
                              <div class="fileimg-cover" style="display: none;"></div>
                              <div class="fileimg-edit" style="display: none;">

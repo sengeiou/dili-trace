@@ -42,17 +42,17 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
 
     @PostConstruct
     public void init() {
-        while (true) {
-            User userQuery = DTOUtils.newDTO(User.class);
-            userQuery.mset(IDTO.AND_CONDITION_EXPR, "id not in(select user_id from user_qr_item)");
-            userQuery.setPage(1);
-            userQuery.setRows(50);
-            List<User> userList = this.userService.listByExample(userQuery);
-            if (userList.isEmpty()) {
-                break;
-            }
-            userList.stream().forEach(u -> this.intUserQrItem(u.getId()));
-        }
+//        while (true) {
+//            User userQuery = DTOUtils.newDTO(User.class);
+//            userQuery.mset(IDTO.AND_CONDITION_EXPR, "id not in(select user_id from user_qr_item)");
+//            userQuery.setPage(1);
+//            userQuery.setRows(50);
+//            List<User> userList = this.userService.listByExample(userQuery);
+//            if (userList.isEmpty()) {
+//                break;
+//            }
+//            userList.stream().forEach(u -> this.intUserQrItem(u.getId()));
+//        }
 
     }
 
