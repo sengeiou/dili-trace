@@ -42,13 +42,13 @@ public class UpStreamApi {
      * 分页查询上游信息
      */
     @RequestMapping(value = "/listPagedUpStream.api", method = { RequestMethod.POST, RequestMethod.GET })
-    public BaseOutput<BasePage<UpStream>> listPagedUpStream(@RequestBody UpStream input) {
+    public BaseOutput<BasePage<UpStream>> listPagedUpStream(@RequestBody UpStream query) {
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
         try {
-            BasePage<UpStream> data = this.upStreamService.listPageUpStream(user.getId());
+            BasePage<UpStream> data = this.upStreamService.listPageUpStream(user.getId(),query);
             return BaseOutput.success().setData(data);
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getMessage());
