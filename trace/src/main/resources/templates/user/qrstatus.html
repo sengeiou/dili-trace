@@ -1,21 +1,38 @@
 <#bodyOrigin>
+<style>
+    .form-control {
+        display: inline-block;
+    }
+    .form-inline .label-title {
+        width: auto;
+    }
+</style>
 <div class="main-container">
-    <div class="topicTop">
-        <div class="toppic-title">
-            <span class="topic-title-text maincolor">用户二维码详情</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
-        </div>
-    </div>
-    <div class="form-box border">
+    <div class="form-box border"  style="width: 100%;">
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>姓名</label>
-                    <input class="form-control input-sm" value="" readonly/>
+                    <label class="label-title text-left"><span class="red">&lowast;</span>姓名</label>
+                    <input class="form-control input-sm" value="ss" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-left"><span class="red">&lowast;</span>姓名</label>
+                    <input class="form-control input-sm" value="ss" readonly/>
                 </div>
                 <br/>
                 <%for (userQrItem in userQrItemlist){%>
-                    ${qrItemTypeMap[userQrItem.qrItemType]} ${qrItemStatusMap[userQrItem.qrItemStatus]}
+                    <div class="form-group">
+                        <label class="label-title text-left">${qrItemTypeMap[userQrItem.qrItemType]}</label>
+                        <%if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.RED.getCode()){
+                            %><a href="" onclick="add('userQrItem.qrItemType')"></a><span style="color: red;">补充</span></a><%
+                        }else if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.YELLOW.getCode()){
+                            %><a href="" onclick="edit('userQrItem.qrItemType',1)"></a><span style="color: yellow;" >审核<</span></a><%                        
+                        }else if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.GREEN.getCode()){
+                            %><a href="" onclick="view('userQrItem.qrItemType','2')"></a><span style="color: green;" >查看</span></a><%
+                        }%>
+                        <br/>
+                    </div>
+                     
                 <%}%>
             </div>
             
@@ -26,8 +43,7 @@
 
 </div>
 </#bodyOrigin>
-<<script type="text/javascript">
-<!--
+<script type="text/javascript">
 $('.fileimg-view').on('click', function () {
     var url = $(this).parent().siblings(".magnifying").attr('src');
     if(url){
@@ -41,6 +57,14 @@ $('.fileimg-view').on('click', function () {
         });
     }
 });
-//-->
+function add(qrItemType){
+
+}
+function edit(qrItemType,id){
+
+}
+function view(qrItemType,id){
+
+}
 </script>
 

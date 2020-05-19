@@ -259,7 +259,7 @@
             <#resource method="post" url="user/index.html#qrStatus">
             {
                 iconCls:'icon-edit',
-                text:'查看二维码',
+                text:'审核二维码',
                 handler:function(){
                     openQrStatus();
                 }
@@ -320,7 +320,7 @@
 
             var index = layer.open({
             type : 2,
-            title : '二维码状态列表',
+            title : '二维码状态信息',
             content : '${contextPath}/user/qrstatus.html?id=' + selected.id,
             area : ['650px', '600px'],
             shadeClose : false,

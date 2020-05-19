@@ -158,13 +158,16 @@
             if ($.type(qrStatus) == 'number') {
                 if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.GREEN.getCode()}') {
                     text.css('color','green');
+                   // text.html('查看');
                 } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.YELLOW.getCode()}') {
                     text.css('color','yellow');
+                   // text.html('审核');
                 } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.RED.getCode()}') {
                     text.css('color','red');
+                   // text.html('审核');
                 }
             }
-            return text.html(value)[0].outerHTML;
+            return   text.html(value)[0].outerHTML;
         }
 
     </script>
