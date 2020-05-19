@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.BusinessException;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.*;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -90,6 +93,19 @@ public class UpStreamController {
             return BaseOutput.success().setData(userService.listByExample(userListDto));
         }
         return BaseOutput.success().setData(new ArrayList<>());
+    }
+
+    @RequestMapping(value="/save.action", method = {RequestMethod.POST})
+    public @ResponseBody BaseOutput saveLeaseOrder(@RequestBody UpStreamDto upStreamDto){
+        try{
+            return null == upStreamDto.getId() ? upStreamService.addUpstream(upStreamDto) : upStreamService.updateUpstream(upStreamDto);
+        }catch (BusinessException e){
+            LOGGER.info("上游用户信息及业务绑定保存异常！", e);
+            return BaseOutput.failure(e.getErrorMsg());
+        }catch (Exception e){
+            LOGGER.error("上游用户信息及业务绑定保存异常！", e);
+            return BaseOutput.failure(e.getMessage());
+        }
     }
 
 }

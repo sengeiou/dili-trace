@@ -101,11 +101,12 @@
 				}]
 			">
      <form id="_form" class="easyui-form" method="post">
-         <fieldset style="width: 460px;">
+         <input type="hidden" name="id" id="id">
+         <fieldset style="width: 460px;margin-bottom: 5px;">
              <legend><i>基础信息</i></legend>
              <div class="easyui-panel">
                  <div style="margin-bottom:5px">
-                     <input class="easyui-textbox" name="upstreamName" id="upstreamName" style="width:100%" data-options="label:'名称:',validType:'length[2,20]',required:true" />
+                     <input class="easyui-textbox" name="name" id="name" style="width:100%" data-options="label:'名称:',validType:'length[2,20]',required:true" />
                  </div>
                  <div style="margin-bottom:5px">
                      <input name="upstreamType" id="upstreamType" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="类型:"/>
@@ -113,7 +114,7 @@
                  </div>
                  <div style="margin-bottom:5px;" id="corporateInfo">
                      <div style="margin-bottom:5px;" >
-                         <input class="easyui-textbox" name="_legalPerson" id="_legalPerson" style="width:100%" data-options="label:'法人:', validType:['isWord','length[0,20]']" />
+                         <input class="easyui-textbox" name="legalPerson" id="legalPerson" style="width:100%" data-options="label:'法人:', validType:['isWord','length[0,20]']" />
                      </div>
                      <div>
                          <input class="easyui-textbox" name="license" id="license" style="width:100%" data-options="label:'信用代码:', validType:['isWord','length[0,20]']" />
@@ -126,7 +127,7 @@
                      <input class="easyui-textbox" name="idCard" id="idCard" style="width:100%" data-options="label:'身份证号:', validType:'cardNo'" />
                  </div>
                  <div style="margin-bottom:5px">
-                     <input class="easyui-tagbox" name="userName" id="userName" style="width:100%" required="true" data-options="label:'业户名称*:',prompt:'请输入业户名检索',limitToList: true,loader:userLoader,mode: 'remote',valueField:'id',textField:'text',tagFormatter: userFormatter"/>
+                     <input class="easyui-tagbox" name="userIds" id="userIds" style="width:100%" required="true" data-options="label:'业户名称*:',prompt:'请输入业户名检索',limitToList: true,loader:userLoader,mode: 'remote',valueField:'id',textField:'text',tagFormatter: userFormatter,multiple:true"/>
                  </div>
              </div>
          </fieldset>
