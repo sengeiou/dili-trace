@@ -21,6 +21,7 @@ import com.dili.trace.service.*;
 
 import com.dili.trace.util.BeanMapUtil;
 import com.github.pagehelper.Page;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -57,6 +58,20 @@ public class UpStreamController {
 		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
 		return "upStream/index";
+	}
+
+	/**
+	 *
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/edit.html", method = RequestMethod.GET)
+	public String edit(ModelMap modelMap,Long id) {
+		if(null != id){
+			modelMap.put("upstream",upStreamService.get(id));
+		}
+		return "upStream/edit";
 	}
 
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })

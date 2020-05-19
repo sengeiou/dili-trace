@@ -1,0 +1,133 @@
+<#body head_title="用户列表">
+    <style>
+        fieldset {
+            color:#aaa;
+            border:#aaa dashed 1px;
+            text-align:left;
+            padding:5px;
+        }
+        legend {
+            font-weight:800;
+            background:#fff;
+        }
+    </style>
+    <form id="_form" class="easyui-form" method="post">
+        <input type="hidden" name="id" id="id" value="${upstream.id!}">
+        <fieldset style="margin-bottom: 5px;">
+            <legend><i>基础信息</i></legend>
+            <div class="easyui-panel">
+                <div style="margin-bottom:5px">
+                    <input class="easyui-textbox" name="name" id="name" value="${upstream.name!}" style="width:100%" data-options="label:'名称:',validType:'length[2,20]',required:true" />
+                </div>
+                <div style="margin-bottom:5px">
+                    <input name="upstreamType" id="upstreamType" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="类型:"/>
+                    <#comboProvider _id="upstreamType" _provider='upStreamTypeProvider'  _queryParams='{required:true}' _value='${upstream.upstreamType!10}'/>
+                </div>
+                <div style="margin-bottom:5px;" id="corporateInfo">
+                    <div style="margin-bottom:5px;" >
+                        <input class="easyui-textbox" name="legalPerson" id="legalPerson" style="width:100%" value="${upstream.legalPerson!}" data-options="label:'法人:', validType:['isWord','length[0,20]']" />
+                    </div>
+                    <div>
+                        <input class="easyui-textbox" name="license" id="license" style="width:100%" value="${upstream.license!}" data-options="label:'信用代码:', validType:['isWord','length[0,20]']" />
+                    </div>
+                </div>
+                <div style="margin-bottom:5px">
+                    <input class="easyui-textbox" name="telphone" id="telphone" style="width:100%" value="${upstream.telphone!}" data-options="label:'联系方式:'" />
+                </div>
+                <div style="margin-bottom:5px">
+                    <input class="easyui-textbox" name="idCard" id="idCard" style="width:100%" value="${upstream.idCard!}" data-options="label:'身份证号:', validType:'cardNo'" />
+                </div>
+                <div style="margin-bottom:5px">
+                    <input class="easyui-tagbox" name="userIds" id="userIds" style="width:100%" data-options="label:'业户名称:',prompt:'请输入业户名检索',limitToList: true,loader:userLoader,mode: 'remote',valueField:'id',textField:'text',tagFormatter: userFormatter"/>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend><i>证件上传</i></legend>
+            <div id="p" class="easyui-panel">
+                <div style="text-align: center">
+                    <div style="margin-bottom:5px;display: inline-block;">
+                        <div class="fileimg-box" style="margin: 0 auto;">
+                            <span class="fileimg-plus-icon">+</span>
+                            <span class="fileimg-des">上传身份证正面照</span>
+                            <input type="file" name="file" id="cardNoFrontUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                            <img class="magnifying">
+                            <input type="hidden" name="cardNoFrontUrl" value="${upstream.cardNoFrontUrl!}">
+                            <div class="fileimg-cover" style="display: none;"></div>
+                            <div class="fileimg-edit" style="display: none;">
+                                <span class="fileimg-view">查看</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:5px;display: inline-block;">
+                        <div class="fileimg-box" style="margin: 0 auto;">
+                            <span class="fileimg-plus-icon">+</span>
+                            <span class="fileimg-des">上传身份证反面照</span>
+                            <input type="file" name="file" id="cardNoBackUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                            <img class="magnifying">
+                            <input type="hidden" name="cardNoBackUrl">
+                            <div class="fileimg-cover" style="display: none;"></div>
+                            <div class="fileimg-edit" style="display: none;">
+                                <span class="fileimg-view">查看</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center">
+                    <div style="margin-bottom:5px;display: inline-block;">
+                        <div class="fileimg-box" style="margin: 0 auto;">
+                            <span class="fileimg-plus-icon">+</span>
+                            <span class="fileimg-des">上传营业执照</span>
+                            <input type="file" name="file" id="businessLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                            <input type="hidden" name="businessLicenseUrl">
+                            <img class="magnifying">
+                            <div class="fileimg-cover" style="display: none;"></div>
+                            <div class="fileimg-edit" style="display: none;">
+                                <span class="fileimg-view">查看</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:5px;display: inline-block;">
+                        <div class="fileimg-box" style="margin: 0 auto;">
+                            <span class="fileimg-plus-icon">+</span>
+                            <span class="fileimg-des">上传经营许可证</span>
+                            <input type="file" name="file" id="operationLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                            <input type="hidden" name="operationLicenseUrl">
+                            <img class="magnifying">
+                            <div class="fileimg-cover" style="display: none;"></div>
+                            <div class="fileimg-edit" style="display: none;">
+                                <span class="fileimg-view">查看</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:5px;display: inline-block;">
+                        <div class="fileimg-box" style="margin: 0 auto;">
+                            <span class="fileimg-plus-icon">+</span>
+                            <span class="fileimg-des">上传生产许可证</span>
+                            <input type="file" name="file" id="manufacturingLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                            <input type="hidden" name="manufacturingLicenseUrl">
+                            <img class="magnifying">
+                            <div class="fileimg-cover" style="display: none;"></div>
+                            <div class="fileimg-edit" style="display: none;">
+                                <span class="fileimg-view">查看</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </fieldset>
+    </form>
+
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<#upStream_editJs />
+</#body>
