@@ -1,31 +1,25 @@
 package com.dili.trace.service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
-<<<<<<< HEAD
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
-import com.dili.trace.glossary.UpStreamTypeEnum;
-
-import org.apache.commons.lang3.StringUtils;
-=======
-
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.RUserUpstream;
-import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
->>>>>>> d0534524e209851226e5439a3b928639d216dd1d
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
