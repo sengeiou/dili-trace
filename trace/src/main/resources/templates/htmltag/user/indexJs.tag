@@ -317,7 +317,29 @@
             });
             return;
         }
-        openWin('${contextPath}/user/qrstatus.html?id=' + selected.id)
+
+            var index = layer.open({
+            type : 2,
+            title : '二维码状态列表',
+            content : '${contextPath}/user/qrstatus.html?id=' + selected.id,
+            area : ['650px', '600px'],
+            shadeClose : false,
+            shade : 0.5,
+            btn: ['确认', '取消']
+            ,yes: function(index, layero){
+                  //按钮【按钮一】的回调
+                //var body = layer.getChildFrame('body', index);
+				//body.find("#submitFormBtn").trigger('click')
+            }
+            ,btn2: function(index, layero){
+                //按钮【按钮二】的回调
+                
+                //return false 开启该代码可禁止点击该按钮关闭
+            },
+            cancel : function() {
+
+            }
+          });
    }
 
     /**
