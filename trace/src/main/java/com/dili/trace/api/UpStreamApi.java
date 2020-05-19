@@ -112,6 +112,7 @@ public class UpStreamApi {
             return BaseOutput.failure("未登陆用户");
         }
         try {
+            input.setUserIds(Arrays.asList(user.getId()));
             return this.upStreamService.updateUpstream(input,new OperatorUser(user.getId(),user.getName()));
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getMessage());

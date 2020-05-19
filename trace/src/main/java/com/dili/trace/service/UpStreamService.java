@@ -39,9 +39,10 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
             result.setStartIndex(1);
             return result;
         }
-        query.mset(IDTO.AND_CONDITION_EXPR,
-                "id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
-        BasePage<UpStream> page = this.listPageByExample(null);
+
+        query.setMetadata(IDTO.AND_CONDITION_EXPR,
+        "id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
+        BasePage<UpStream> page = this.listPageByExample(query);
         return page;
     }
 

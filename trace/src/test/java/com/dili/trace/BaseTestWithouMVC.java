@@ -44,7 +44,7 @@ import mockit.MockUp;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @WebAppConfiguration("src/main/resources")
 //@TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, inheritListeners = true, value = {
 //		MockitoDependencyInjectionTestExecutionListener.class }) // ,

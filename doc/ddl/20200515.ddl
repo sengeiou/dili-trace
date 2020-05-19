@@ -6,8 +6,8 @@ ALTER TABLE `user` ADD COLUMN `market_id`  bigint(20)  NULL COMMENT '所属市�
 
 ALTER TABLE `user` ADD COLUMN `license`  varchar(50)  NULL COMMENT '统一信用代码';
 ALTER TABLE `user` ADD COLUMN `legal_person`  varchar(50)  NULL COMMENT '法人姓名';
-ALTER TABLE `user` ADD COLUMN `manufacturing_license_url`  varchar(50)  NULL COMMENT '生产许可证';
-ALTER TABLE `user` ADD COLUMN `operation_license_url`  varchar(50)  NULL COMMENT '经营许可证';
+ALTER TABLE `user` ADD COLUMN `manufacturing_license_url`  varchar(100)  NULL COMMENT '生产许可证';
+ALTER TABLE `user` ADD COLUMN `operation_license_url`  varchar(100)  NULL COMMENT '经营许可证';
 
 
 CREATE TABLE `market` (
@@ -28,12 +28,12 @@ CREATE TABLE `upstream` (
   `name` varchar(20) NOT NULL COMMENT '企业(个人)名称',
   `legal_person` varchar(20)  NULL COMMENT '法人姓名',
   `license` varchar(20)  NULL COMMENT '统一信用代码',
-  `business_license_url` varchar(50)  NULL COMMENT '企业营业执照',
-  `manufacturing_license_url`  varchar(50)  NULL COMMENT '生产许可证',
-  `operation_license_url`  varchar(50)  NULL COMMENT '经营许可证',
+  `business_license_url` varchar(100)  NULL COMMENT '企业营业执照',
+  `manufacturing_license_url`  varchar(100)  NULL COMMENT '生产许可证',
+  `operation_license_url`  varchar(100)  NULL COMMENT '经营许可证',
 
-  `card_no_front_url`  varchar(50)  NULL COMMENT '身份证照正面',
-  `card_no_back_url`  varchar(50)  NULL COMMENT '身份证照反面URL',
+  `card_no_front_url`  varchar(100)  NULL COMMENT '身份证照正面',
+  `card_no_back_url`  varchar(100)  NULL COMMENT '身份证照反面URL',
 
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作人',
   `operator_name` varchar(20) DEFAULT NULL COMMENT '操作人ID',
