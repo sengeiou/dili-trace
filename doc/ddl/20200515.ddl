@@ -85,6 +85,9 @@ ALTER TABLE `separate_sales_record` ADD COLUMN  `store_weight`  DECIMAL(10,3)  N
 ALTER TABLE `separate_sales_record` ADD COLUMN  `sales_type`  int(11)    NULL COMMENT '分销类型';
 ALTER TABLE `separate_sales_record` ADD COLUMN  `checkin_record_id`  bigint(20)    NULL COMMENT '进门ID';
 ALTER TABLE `separate_sales_record` ADD COLUMN  `checkout_record_id`  bigint(20)    NULL COMMENT '出门ID';
+ALTER TABLE `separate_sales_record` MODIFY COLUMN sales_city_id bigint(20) NULL COMMENT '分销城市';
+ALTER TABLE `separate_sales_record` MODIFY COLUMN sales_city_name varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '分销城市';
+
 
 /*进出门记录*/
 CREATE TABLE `checkin_record` (

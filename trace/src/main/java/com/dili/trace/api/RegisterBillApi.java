@@ -211,6 +211,7 @@ public class RegisterBillApi {
 			input.setModified(new Date());
 			input.setSalesCityId(user.getSalesCityId());
 			input.setSalesCityName(user.getSalesCityName());
+			input.setStoreWeight(salesWeight);
 			registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
 			separateSalesRecordService.saveOrUpdate(input);
 			registerBill.setOperatorName(user.getName());
