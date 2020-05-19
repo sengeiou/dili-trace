@@ -1,0 +1,182 @@
+<#body head_title="用户列表">
+    <style>
+        .textbox-text[readonly] {
+            background: #ebebe4;
+        }
+    </style>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+            </div>
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="_form" class="easyui-form" method="post" fit="true">
+                    <input name="_id" id="_id" type="hidden">
+                    <table width="430px">
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="name" id="name" style="width:100%"
+                                    value="${user.name}"
+                                    data-options="label:'姓名*:', validType:'length[2,20]',required:true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="phone" id="phone" style="width:100%"
+                                    value="${user.phone}"
+                                    data-options="label:'手机号*:', validType:'phoneNum',required:true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="cardNo" id="cardNo" style="width:100%"
+                                    value="${user.cardNo}"
+                                    data-options="label:'身份证号*:', validType:'cardNo',required:true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="addr" id="addr" style="width:100%"
+                                    value="${user.addr}"
+                                    data-options="label:'身份地址*:', validType:['isWord','length[0,40]'],required:true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-tagbox" name="tallyAreaNos" id="tallyAreaNos" style="width:100%"
+                                    value="${user.tallyAreaNos}" required="true"
+                                    data-options="label:'理货区号*:',prompt:'输入3位数字后敲回车',validType:['uniquetag','tagNum','tagLength[3]']" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-tagbox" name="plates" id="plates" style="width:100%"
+                                    value="${userPlates}"
+                                    data-options="label:'车牌号:',prompt:'输入车牌号后敲回车',validType:['uniquetag','isLicensePlate']" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input type="hidden" name="salesCityName" id="salesCityName"
+                                    value="${user.salesCityName}">
+                                <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;"
+                                    data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
+                                        $('#salesCityName').val(record.text);
+                                    }">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <label style="font-size: 14px">常用销地城市:</label>
+                                <div id="cityList">
+                                    <% for(city in cities){%>
+                                    <a href="javascript:void(0)"
+                                        onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"
+                                        title="${city.mergedAddress}">${city.address}</a>
+                                    <%}%>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <table width="430px">
+                    <tr>
+                        <td style="padding:5px;">
+                            <div class="fileimg-box" style="margin: 0 auto;">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传身份证正面照</span>
+                                <input type="file" name="file" id="_cardNoFrontUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                                <img class="magnifying">
+                                <input type="hidden" name="_cardNoFrontUrl">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding:5px;">
+                            <div class="fileimg-box" style="margin: 0 auto;">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传身份证反面照</span>
+                                <input type="file" name="file" id="_cardNoBackUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                                <img class="magnifying">
+                                <input type="hidden" name="_cardNoBackUrl">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding:5px;">
+                            <div class="fileimg-box" style="margin: 0 auto;">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传营业执照</span>
+                                <input type="file" name="file" id="_businessLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                                <input type="hidden" name="_businessLicenseUrl">
+                                <img class="magnifying">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        
+    </div>
+    
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+     <script>
+        /**
+    * 城市自动联想加载
+    * ***/
+        function cityLoader(param, success, error) {
+            var q = param.q || '';
+            if (q.length < 1) { return false }
+            $.ajax({
+                type: "POST",
+                url: '${contextPath}/provider/getLookupList.action',
+                dataType: 'json',
+                data: {
+                    provider: 'cityProvider',
+                    queryParams: '{required:true}',
+                    value: q
+                },
+                success: function (data) {
+                    success(data);
+                },
+                error: function () {
+                    error.apply(this, arguments);
+                }
+            });
+        }
+        $(document).ready(function () {
+            //  $('#salesCityId').combobox('select', '${user.salesCityId}');
+        });
+        function selectCity(cthis, id, name) {
+
+            $('#salesCityId').combobox('setValue', id);
+            $('#salesCityId').combobox('setText', name);
+            $('#salesCityName').val(name);
+
+        }
+    </script>
+</#body>

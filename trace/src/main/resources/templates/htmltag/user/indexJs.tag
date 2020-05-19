@@ -30,7 +30,7 @@
 	}
     //打开新增窗口
     function openInsert(){
-        $('#dlg').dialog("setTitle","用户新增");
+        /*$('#dlg').dialog("setTitle","用户新增");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
         $('#_name').textbox({readonly:false});
@@ -47,7 +47,29 @@
         listUsualAddress($('#cityList'));
 
         initFileUpload();
-        formFocus("_form", "_name");
+        formFocus("_form", "_name");*/
+         var index = layer.open({
+            type : 2,
+            title : '用户新增',
+            content : '${contextPath}/user/edit.html',
+            area : ['30%', '75%'],
+            shadeClose : false,
+            shade : 0.5,
+            btn: ['确认', '取消']
+            ,yes: function(index, layero){
+                //按钮【按钮一】的回调
+                saveOrUpdate();
+            }
+            ,btn2: function(index, layero){
+                //按钮【按钮二】的回调
+                
+                //return false 开启该代码可禁止点击该按钮关闭
+            },
+            cancel : function() {
+
+            }
+          });
+
     }
 
     //打开修改窗口
@@ -58,7 +80,7 @@
             swal('警告','请选中一条数据', 'warning');
             return;
         }
-        $('#dlg').dialog("setTitle","用户修改");
+        /*$('#dlg').dialog("setTitle","用户修改");
         $('#dlg').dialog('open');
         $('#dlg').dialog('center');
         $('#_name').textbox({readonly:true});
@@ -90,26 +112,28 @@
             $('#_tallyAreaNos').tagbox('disable');
         }
         listUsualAddress($('#cityList'));
-        formOldData=$('#_form').serializeObject();
-        /*$.ajax({
-            type: "POST",
-            url: "${contextPath}/user/findPlates.action?userId="+selected.id,
-            
-            processData:true,
-            dataType: "json",
-            async : false,
-            success: function (data) {
-                if(data.code=="200"){
-                	$('#_plates').tagbox('setValues',data.data);
-                	//$('#_plates').tagbox('setText',data.data);
-                }else{
-                    swal('错误',data.result, 'error');
-                }
-            },
-            error: function(){
-                swal('错误', '远程访问失败', 'error');
+        formOldData=$('#_form').serializeObject();*/
+        var index = layer.open({
+            type : 2,
+            title : '用户修改',
+            content : '${contextPath}/user/edit.html?id='+selected.id,
+            area : ['30%', '75%'],
+            shadeClose : false,
+            shade : 0.5,
+            btn: ['确认', '取消']
+            ,yes: function(index, layero){
+                //按钮【按钮一】的回调
+                saveOrUpdate();
             }
-        });*/
+            ,btn2: function(index, layero){
+                //按钮【按钮二】的回调
+                
+                //return false 开启该代码可禁止点击该按钮关闭
+            },
+            cancel : function() {
+
+            }
+          });
         
         
     }

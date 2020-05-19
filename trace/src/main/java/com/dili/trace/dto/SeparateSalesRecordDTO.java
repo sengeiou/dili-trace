@@ -22,5 +22,9 @@ public interface SeparateSalesRecordDTO extends SeparateSalesRecord {
 
     void setRegisterSource(Integer registerSource);
 
+    Integer getSeprateType();
+
+    void setSeprateType(Integer seprateType);
+
 
 }

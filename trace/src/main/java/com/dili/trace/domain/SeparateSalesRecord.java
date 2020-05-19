@@ -140,4 +140,23 @@ public interface SeparateSalesRecord extends IBaseDomain {
 
     void setSalesType(Integer salesType);
 
+
+    
+
+    @ApiModelProperty(value = "进场审核ID")
+    @Column(name = "`checkin_record_id`")
+    @FieldDef(label="checkin_record_id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getCheckinRecordId();
+
+    void setCheckinRecordId(Long checkinRecordId);
+    
+    @ApiModelProperty(value = "出场审核ID")
+    @Column(name = "`checkout_record_id`")
+    @FieldDef(label="checkout_record_id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    Long getCheckoutRecordId();
+
+    void setCheckoutRecordId(Long checkoutRecordId);
+
 }
