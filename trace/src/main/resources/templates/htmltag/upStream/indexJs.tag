@@ -215,6 +215,7 @@
             pager.pagination({
                 <#controls_paginationOpts/>,
                 buttons:[
+                <#resource method="post" url="upStream/index.html#add">
                 {
                     iconCls:'icon-add',
                     text:'新增',
@@ -222,6 +223,8 @@
                         openInsert();
                     }
                 },
+                </#resource>
+                <#resource method="post" url="upStream/index.html#update">
                  {
                      iconCls:'icon-edit',
                      text:'修改',
@@ -229,6 +232,7 @@
                          openUpdate();
                      }
                  }
+                </#resource>
         ]
         });
         //表格仅显示下边框
