@@ -9,6 +9,10 @@ public enum UserTypeEnum {
      * 企业
      */
     CORPORATE(20, "企业"),
+    /**
+     * 查验员
+     */
+    CHECKER(30, "查验员"),
     ;
 
     private Integer code;

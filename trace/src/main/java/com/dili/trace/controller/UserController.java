@@ -288,4 +288,21 @@ public class UserController {
 
 		return "user/qrstatus";
 	}
+	@ApiOperation("跳转到qrstatus页面")
+	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
+	public String edit(ModelMap modelMap, Long id) {
+		modelMap.put("user", DTOUtils.newDTO(User.class));
+		if (id != null) {
+			User user = this.userService.get(id);
+			modelMap.put("user", user);
+		}
+
+		String userPlateStr = this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate)
+				.collect(Collectors.joining(","));
+
+		modelMap.put("userPlates", userPlateStr);
+
+		modelMap.put("cities", usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.USER));
+		return "user/edit";
+	}
 }

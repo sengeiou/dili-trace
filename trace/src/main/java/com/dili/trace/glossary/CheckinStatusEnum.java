@@ -1,31 +1,27 @@
 package com.dili.trace.glossary;
 
-public enum UserQrStatusEnum {
-    // /**
-    // * 黑色
-    // */
-    // BLACK(0, "黑色"),
+import java.util.stream.Stream;
+
+public enum CheckinStatusEnum {
     /**
-     * 绿色
+     * 通过
      */
-    GREEN(10, "绿色"),
+    ALLOWED(10, "通过"),
     /**
-     * 黄色
+     * 不通过
      */
-    YELLOW(20, "黄色"),
-    /**
-     * 红色
-     */
-    RED(30, "红色"),;
+    NOTALLOWED(20, "不通过"),;
 
     private Integer code;
     private String desc;
 
-    UserQrStatusEnum(Integer code, String desc) {
+    CheckinStatusEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
     }
-
+    public static CheckinStatusEnum fromCode(Integer code) {
+        return Stream.of(CheckinStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElseGet(null);
+    }
     public boolean equalsCode(Integer code) {
         return this.getCode().equals(code);
 

@@ -73,7 +73,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
     }
 
     @Override
-    public void createOwnedSeparateSales(RegisterBill registerBill) {
+    public void createOwnedSeparateSales(Long checkinRecordId,RegisterBill registerBill) {
         SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
         queryCondition.setBillId(registerBill.getId());
         queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
@@ -81,6 +81,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
         SeparateSalesRecord item = this.listByExample(queryCondition).stream().findFirst()
                 .orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
         if (item.getId() == null) {
+            item.setCheckinRecordId(checkinRecordId);
             item.setBillId(registerBill.getId());
             item.setRegisterBillCode(registerBill.getCode());
             item.setSalesWeight(registerBill.getWeight());

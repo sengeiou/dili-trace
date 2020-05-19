@@ -280,9 +280,7 @@
             var qrStatus = rowData['$_qrStatus'];
             var text=$('<span></span>');
             if ($.type(qrStatus) == 'number') {
-                if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.BLACK.getCode()}') {
-                    text.css('color','black');
-                } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.GREEN.getCode()}') {
+                if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.GREEN.getCode()}') {
                     text.css('color','green');
                 } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.YELLOW.getCode()}') {
                     text.css('color','yellow');

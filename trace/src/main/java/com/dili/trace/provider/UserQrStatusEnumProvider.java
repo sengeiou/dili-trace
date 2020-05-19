@@ -10,7 +10,7 @@ import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.glossary.UserQrStatusEnum;
+import com.dili.trace.glossary.CheckinStatusEnum;
 
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ public class UserQrStatusEnumProvider implements ValueProvider {
     private static final List<ValuePair<?>> BUFFER = new ArrayList<>();
 
     static {
-        BUFFER.addAll(Stream.of(UserQrStatusEnum.values())
+        BUFFER.addAll(Stream.of(CheckinStatusEnum.values())
                 .map(e -> new ValuePairImpl<>(e.getDesc(), e.getCode().toString()))
                 .collect(Collectors.toList()));
     }
@@ -41,7 +41,7 @@ public class UserQrStatusEnumProvider implements ValueProvider {
     @Override
     public String getDisplayText(Object object, Map map, FieldMeta fieldMeta) {
         if (null == object) {
-            return UserQrStatusEnum.BLACK.getDesc();
+            return "";
         }
         ValuePair<?> valuePair = BUFFER.stream().filter(val -> object.toString().equals(val.getValue())).findFirst().orElseGet(null);
         if (null != valuePair) {
