@@ -141,32 +141,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
     }
 
-    /***
-     * 修改上游信息
-     */
-    public UpStream modifyUpstream(Long userId, UpStream input) {
-        if (userId == null || input == null || input.getId() == null) {
-            throw new BusinessException("参数错误");
-        }
-        if (StringUtils.isBlank(input.getName())) {
-            throw new BusinessException("企业(个人)名称不能为空");
-        }
-        if (UpStreamTypeEnum.CORPORATE.equalsCode(input.getUpstreamType())) {
-
-        } else if (UpStreamTypeEnum.USER.equalsCode(input.getUpstreamType())) {
-
-        } else {
-            throw new BusinessException("参数错误");
-        }
-        RUserUpstream rUserUpstream = new RUserUpstream();
-        rUserUpstream.setUserId(userId);
-        rUserUpstream.setUpstreamId(input.getId());
-        RUserUpstream item = this.rUserUpStreamService.listByExample(rUserUpstream).stream().findFirst().orElse(null);
-        if (item == null) {
-            throw new BusinessException("数据错误");
-        }
-        this.updateSelective(input);
-        return input;
-    }
+    
 
 }
