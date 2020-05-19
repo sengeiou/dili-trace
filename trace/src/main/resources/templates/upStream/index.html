@@ -91,7 +91,7 @@
 				buttons: [{
 					text:'确认',
 					iconCls:'icon-ok',
-					handler:saveOrUpdate
+					handler:debounce(saveOrUpdate,1000,true)
 				},{
 					text:'取消',
 					iconCls:'icon-cancel',

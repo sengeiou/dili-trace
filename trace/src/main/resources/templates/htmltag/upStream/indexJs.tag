@@ -285,6 +285,35 @@
         });
     }
 
+    /**
+     * fn [function] 需要防抖的函数
+     * wait [number] 毫秒，防抖期限值
+     * immediate 是否立即执行
+     */
+    const debounce = (fn, wait, immediate = false) => {
+        let timer;
+
+        return function() {
+            if(timer) clearTimeout(timer);
+            if(immediate) {
+                let trigger = !timer;
+                timer = setTimeout(() => {
+                    timer = null;
+                }, wait);
+
+                if(trigger) {
+                    fn.apply(this, arguments);
+                }
+                return;
+            }
+
+            timer = setTimeout(() => {
+                fn.apply(this, arguments);
+            }, wait);
+            return;
+        }
+    };
+
 
 
 </script>
