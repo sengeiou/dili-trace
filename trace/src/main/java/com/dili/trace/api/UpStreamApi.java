@@ -11,6 +11,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
@@ -92,7 +93,7 @@ public class UpStreamApi {
         }
         try {
             input.setUserIds(Arrays.asList(user.getId()));
-            return this.upStreamService.addUpstream(input);
+            return this.upStreamService.addUpstream(input,new OperatorUser(user.getId(),user.getName()));
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -111,7 +112,7 @@ public class UpStreamApi {
             return BaseOutput.failure("未登陆用户");
         }
         try {
-            return this.upStreamService.updateUpstream(input);
+            return this.upStreamService.updateUpstream(input,new OperatorUser(user.getId(),user.getName()));
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

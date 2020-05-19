@@ -1,9 +1,6 @@
 package com.dili.trace.controller;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,8 +11,15 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.BusinessException;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.User;
-import com.dili.trace.dto.*;
-import com.dili.trace.service.*;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RUserUpstreamDto;
+import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.dto.UserListDto;
+import com.dili.trace.service.RUserUpStreamService;
+import com.dili.trace.service.UpStreamService;
+import com.dili.trace.service.UserService;
+import com.diligrp.manage.sdk.domain.UserTicket;
+import com.diligrp.manage.sdk.session.SessionContext;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +102,12 @@ public class UpStreamController {
     @RequestMapping(value="/save.action", method = {RequestMethod.POST})
     public @ResponseBody BaseOutput saveLeaseOrder(@RequestBody UpStreamDto upStreamDto){
         try{
-            return null == upStreamDto.getId() ? upStreamService.addUpstream(upStreamDto) : upStreamService.updateUpstream(upStreamDto);
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			if(null == userTicket){
+				return BaseOutput.failure("未登录或登录过期");
+			}
+			OperatorUser operatorUser=new OperatorUser(userTicket.getId(), userTicket.getRealName());
+            return null == upStreamDto.getId() ? upStreamService.addUpstream(upStreamDto,operatorUser) : upStreamService.updateUpstream(upStreamDto,operatorUser);
         }catch (BusinessException e){
             LOGGER.info("上游用户信息及业务绑定保存异常！", e);
             return BaseOutput.failure(e.getErrorMsg());

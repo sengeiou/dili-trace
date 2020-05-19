@@ -11,10 +11,9 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.glossary.UpStreamTypeEnum;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,9 +94,9 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
      * @return
      */
     @Transactional
-    public BaseOutput addUpstream(UpStreamDto upStreamDto){
+    public BaseOutput addUpstream(UpStreamDto upStreamDto,OperatorUser operatorUser){
         insertSelective(upStreamDto);
-        addUpstreamUsers(upStreamDto);
+        addUpstreamUsers(upStreamDto,operatorUser);
         return BaseOutput.success();
     }
 
@@ -105,18 +104,15 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
      * 添加上游的所有业户信息（绑定）
      * @param upStreamDto
      */
-    public void addUpstreamUsers(UpStreamDto upStreamDto) {
-        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-        if(null == userTicket){
-            throw new BusinessException("未登录或登录过期");
-        }
+    public void addUpstreamUsers(UpStreamDto upStreamDto,OperatorUser operatorUser) {
+
         List<RUserUpstream> rUserUpstreams = new ArrayList<>();
         upStreamDto.getUserIds().forEach(o->{
             RUserUpstream rUserUpstream = new RUserUpstream();
             rUserUpstream.setUpstreamId(upStreamDto.getId());
             rUserUpstream.setUserId(o);
-            rUserUpstream.setOperatorId(userTicket.getId());
-            rUserUpstream.setOperatorName(userTicket.getRealName());
+            rUserUpstream.setOperatorId(operatorUser.getId());
+            rUserUpstream.setOperatorName(operatorUser.getName());
             rUserUpstream.setCreated(new Date());
             rUserUpstream.setModified(new Date());
             rUserUpstreams.add(rUserUpstream);
@@ -130,13 +126,13 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
      * @return
      */
     @Transactional
-    public BaseOutput updateUpstream(UpStreamDto upStreamDto){
+    public BaseOutput updateUpstream(UpStreamDto upStreamDto,OperatorUser operatorUser){
         updateSelective(upStreamDto);
 
         RUserUpstream rUserUpstreamDelCondition = new RUserUpstream();
         rUserUpstreamDelCondition.setUpstreamId(upStreamDto.getId());
         rUserUpStreamService.deleteByExample(rUserUpstreamDelCondition);
-        addUpstreamUsers(upStreamDto);
+        addUpstreamUsers(upStreamDto,operatorUser);
         return BaseOutput.success();
 
     }
