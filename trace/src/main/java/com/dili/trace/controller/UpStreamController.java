@@ -2,25 +2,30 @@ package com.dili.trace.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.BusinessException;
+import com.dili.ss.metadata.ValuePair;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.RUserUpstream;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.*;
+import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.*;
 
+import com.dili.trace.util.BeanMapUtil;
+import com.github.pagehelper.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -48,32 +53,49 @@ public class UpStreamController {
 
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
+		Date now = new Date();
+		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
 		return "upStream/index";
 	}
 
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(RUserUpstreamDto rUserUpstreamDto) throws Exception {
-		if(StringUtils.isNotBlank(rUserUpstreamDto.getLikeUserName())){
+	public @ResponseBody String listPage(UpStreamDto upStreamDto) throws Exception {
+		//业户名称查询
+		if(StringUtils.isNotBlank(upStreamDto.getLikeUserName())){
 			UserListDto userListDto = DTOUtils.newInstance(UserListDto.class);
-			userListDto.setLikeName(rUserUpstreamDto.getLikeUserName());
+			userListDto.setLikeName(upStreamDto.getLikeUserName());
 			List<Long> userIds = userService.listByExample(userListDto).stream().map(o->o.getId()).collect(Collectors.toList());
-			rUserUpstreamDto.setUserIds(userIds);
 			if(CollectionUtils.isEmpty(userIds)){
 				return new EasyuiPageOutput(0, Collections.emptyList()).toString();
 			}
-		}
 
-		if(StringUtils.isNotBlank(rUserUpstreamDto.getLikeUpstreamName())){
-			UpStreamDto upStreamDto = new UpStreamDto();
-			upStreamDto.setLikeName(rUserUpstreamDto.getLikeUpstreamName());
-			List<Long> upstreamIds = upStreamService.listByExample(upStreamDto).stream().map(o->o.getId()).collect(Collectors.toList());
-			rUserUpstreamDto.setUpstreamIds(upstreamIds);
-			if(CollectionUtils.isEmpty(upstreamIds)){
+			RUserUpstreamDto rUserUpstream = new RUserUpstreamDto();
+			rUserUpstream.setUserIds(userIds);
+			Set<Long> upstreamIds = rUserUpStreamService.listByExample(rUserUpstream).stream().map(o->o.getUpstreamId()).collect(Collectors.toSet());
+			upStreamDto.setIds(new ArrayList<>(upstreamIds));
+			if(CollectionUtils.isEmpty(upStreamDto.getIds())){
 				return new EasyuiPageOutput(0, Collections.emptyList()).toString();
 			}
 		}
 
-		return rUserUpStreamService.listEasyuiPageByExample(rUserUpstreamDto,true).toString();
+		List<UpStream> upStreams = upStreamService.listByExample(upStreamDto);
+		List<UpStreamDto> upStreamDtos = new ArrayList<>();
+		if(!upStreams.isEmpty()){
+			List<Map<String,String>> upstreamUsers = upStreamService.queryUsersByUpstreamIds(upStreams.stream().map(o->o.getId()).collect(Collectors.toList()));
+			Map<String,String> userNamesMap = BeanMapUtil.listToMap(upstreamUsers,"upstreamIds","userNames");
+			upStreams.forEach(o->{
+				UpStreamDto usd = new UpStreamDto();
+				BeanUtils.copyProperties(o,usd);
+				usd.setUserNames(userNamesMap.get(o.getId()));
+				upStreamDtos.add(usd);
+			});
+		}else{
+			return new EasyuiPageOutput(0, Collections.emptyList()).toString();
+		}
+		List results = ValueProviderUtils.buildDataByProvider(upStreamDto, upStreamDtos);
+		long total = results instanceof Page ? ( (Page) results).getTotal() : results.size();
+		return  new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results).toString();
 	}
 
     /**
@@ -96,7 +118,7 @@ public class UpStreamController {
     }
 
     @RequestMapping(value="/save.action", method = {RequestMethod.POST})
-    public @ResponseBody BaseOutput saveLeaseOrder(@RequestBody UpStreamDto upStreamDto){
+    public @ResponseBody BaseOutput save(@RequestBody UpStreamDto upStreamDto){
         try{
             return null == upStreamDto.getId() ? upStreamService.addUpstream(upStreamDto) : upStreamService.updateUpstream(upStreamDto);
         }catch (BusinessException e){

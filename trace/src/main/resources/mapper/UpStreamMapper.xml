@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.UpStreamMapper">
+  <select id="queryUsersByUpstreamIds" parameterType="java.util.List" resultType="Map">
+    select ru.upstream_id as upstreamIds,GROUP_CONCAT(u.name) as userNames
+    from user u join r_user_upstream ru on u.id = ru.user_id
+    where ru.upstream_id in
+    <foreach collection="list" item="upstreamIds" open="(" close=")" separator=",">
+      #{upstreamIds}
+    </foreach>
+    GROUP BY ru.upstream_id;
+  </select>
+</mapper>

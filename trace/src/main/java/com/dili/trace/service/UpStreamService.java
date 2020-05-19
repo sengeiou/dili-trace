@@ -3,12 +3,15 @@ package com.dili.trace.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.dao.RUserUpStreamMapper;
+import com.dili.trace.dao.UpStreamMapper;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.UpStreamDto;
@@ -16,6 +19,7 @@ import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
+    public UpStreamMapper getActualDao() {
+        return (UpStreamMapper)getDao();
+    }
+
     @Autowired 
     RUserUpStreamService rUserUpStreamService;
 
@@ -110,18 +118,21 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
         if(null == userTicket){
             throw new BusinessException("未登录或登录过期");
         }
-        List<RUserUpstream> rUserUpstreams = new ArrayList<>();
-        upStreamDto.getUserIds().forEach(o->{
-            RUserUpstream rUserUpstream = new RUserUpstream();
-            rUserUpstream.setUpstreamId(upStreamDto.getId());
-            rUserUpstream.setUserId(o);
-            rUserUpstream.setOperatorId(userTicket.getId());
-            rUserUpstream.setOperatorName(userTicket.getRealName());
-            rUserUpstream.setCreated(new Date());
-            rUserUpstream.setModified(new Date());
-            rUserUpstreams.add(rUserUpstream);
-        });
-        rUserUpStreamService.batchInsert(rUserUpstreams);
+        if(CollectionUtils.isNotEmpty(upStreamDto.getUserIds())){
+            List<RUserUpstream> rUserUpstreams = new ArrayList<>();
+            upStreamDto.getUserIds().forEach(o->{
+                RUserUpstream rUserUpstream = new RUserUpstream();
+                rUserUpstream.setUpstreamId(upStreamDto.getId());
+                rUserUpstream.setUserId(o);
+                rUserUpstream.setOperatorId(userTicket.getId());
+                rUserUpstream.setOperatorName(userTicket.getRealName());
+                rUserUpstream.setCreated(new Date());
+                rUserUpstream.setModified(new Date());
+                rUserUpstreams.add(rUserUpstream);
+            });
+            rUserUpStreamService.batchInsert(rUserUpstreams);
+        }
+
     }
 
     /**
@@ -139,6 +150,15 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
         addUpstreamUsers(upStreamDto);
         return BaseOutput.success();
 
+    }
+
+    /**
+     * 批量查询上游对应的业户集合
+     * @param upstreamIds
+     * @return Map｛upstreamId，userNames｝
+     */
+    public List<Map<String,String>> queryUsersByUpstreamIds(List<Long> upstreamIds){
+        return getActualDao().queryUsersByUpstreamIds(upstreamIds);
     }
 
     
