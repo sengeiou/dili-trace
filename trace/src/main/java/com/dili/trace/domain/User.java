@@ -200,14 +200,22 @@ public interface User extends IBaseDomain {
     public void setMarketId(Long marketId);
 
 
-    
-    @ApiModelProperty(value = "许可证URL")
-    @Column(name = "`license_url`")
-    @FieldDef(label = "LicenseUrl", maxLength = 50)
-    @EditMode(editor = FieldEditor.Text, required = false)
 
-    public String getLicenseUrl();
-    public void setLicenseUrl(String licenseUrl) ;
+
+    @ApiModelProperty(value = "生产许可证URL")
+    @Column(name = "`manufacturing_license_url`")
+    @FieldDef(label = "manufacturing_license_url", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getManufacturingLicenseUrl();
+    public void setManufacturingLicenseUrl(String manufacturingLicenseUrl);
+
+
+    @ApiModelProperty(value = "经营许可证URL")
+    @Column(name = "`operation_license_url`")
+    @FieldDef(label = "operation_license_url", maxLength = 50)
+    @EditMode(editor = FieldEditor.Text, required = false)
+    public String getOperationLicenseUrl();
+    public void setOperationLicenseUrl(String operationLicenseUrl);
 
 
     /**

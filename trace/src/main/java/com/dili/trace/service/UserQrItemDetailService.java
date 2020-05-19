@@ -206,7 +206,7 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         boolean withoutAllNessaryInfo = upStreamList.stream().anyMatch(item -> {
             if (UserTypeEnum.CORPORATE.getCode().equals(item.getUserType())) {
                 if (StringUtils.isAnyBlank(item.getName(), item.getBusinessLicenseUrl(), item.getLicense(),
-                        item.getLicenseUrl(), item.getCardNo(), item.getLegalPerson(), item.getPhone())
+                        item.getManufacturingLicenseUrl(),item.getOperationLicenseUrl(), item.getCardNo(), item.getLegalPerson(), item.getPhone())
                         || item.getMarketId() == null) {
                     return true;
                 }
