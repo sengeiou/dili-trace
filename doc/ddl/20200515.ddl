@@ -87,7 +87,7 @@ ALTER TABLE `separate_sales_record` ADD COLUMN  `checkout_record_id`  bigint(20)
 /*进出门记录*/
 CREATE TABLE `checkin_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `status` int(11) NOT NULL COMMENT '进门状态',
+  `checkin_status` int(11) NOT NULL COMMENT '进门状态',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作人',
   `operator_name` varchar(20) DEFAULT NULL COMMENT '操作人ID',
@@ -98,7 +98,7 @@ CREATE TABLE `checkin_record` (
 /*进出门记录*/
 CREATE TABLE `checkout_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `status` int(11) NOT NULL COMMENT '出门状态',
+  `checkout_status` int(11) NOT NULL COMMENT '出门状态',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作人',
   `operator_name` varchar(20) DEFAULT NULL COMMENT '操作人ID',

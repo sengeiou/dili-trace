@@ -7,15 +7,15 @@ import com.dili.common.entity.SessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.dto.CheckInApiInput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
+import com.dili.trace.api.dto.CheckOutApiInput;
 import com.dili.trace.api.dto.CheckoutApiListQuery;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.UpStream;
+import com.dili.trace.domain.CheckoutRecord;
+import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.service.CheckinRecordService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.UpStreamService;
+import com.dili.trace.service.CheckoutRecordService;
+import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UserService;
 
 import org.slf4j.Logger;
@@ -39,9 +39,9 @@ public class CheckoutRecordApi {
     @Resource
     private SessionContext sessionContext;
     @Autowired
-    RegisterBillService registerBillService;
-
-    
+    SeparateSalesRecordService separateSalesRecordService;
+    @Autowired
+    CheckoutRecordService checkoutRecordService;
 
     /**
      * 分页查询需要出场查询的信息
@@ -56,6 +56,11 @@ public class CheckoutRecordApi {
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
+        SeparateSalesRecord separateSalesRecord=DTOUtils.newDTO(SeparateSalesRecord.class);
+        separateSalesRecord.setSalesUserId(query.getUserId());
+        
+        separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR, "checkout_record_id is null");
+        this.separateSalesRecordService.listPageByExample(null)
 
         return BaseOutput.success();
     }
@@ -64,13 +69,14 @@ public class CheckoutRecordApi {
      * 进场通过
      */
     @RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })
-    public BaseOutput<BasePage<UpStream>> doCheckin(@RequestBody CheckInApiInput input) {
+    public BaseOutput doCheckin(@RequestBody CheckOutApiInput input) {
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
         try {
-           
+            CheckoutRecord checkoutRecord = this.checkoutRecordService.doCheckout(user, input);
+            return BaseOutput.success().setData(checkoutRecord.getId());
         } catch (BusinessException e) {
 
             return BaseOutput.failure(e.getMessage());
@@ -79,6 +85,5 @@ public class CheckoutRecordApi {
             return BaseOutput.failure("服务端出错");
         }
 
-        return null;
     }
 }
