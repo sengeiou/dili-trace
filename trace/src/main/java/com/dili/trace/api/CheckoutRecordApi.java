@@ -60,9 +60,9 @@ public class CheckoutRecordApi {
         separateSalesRecord.setSalesUserId(query.getUserId());
         
         separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR, "checkout_record_id is null");
-        this.separateSalesRecordService.listPageByExample(null)
+        BasePage<SeparateSalesRecord>page=this.separateSalesRecordService.listPageByExample(separateSalesRecord);
 
-        return BaseOutput.success();
+        return BaseOutput.success().setData(page);
     }
 
     /**

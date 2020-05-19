@@ -104,9 +104,9 @@
             $('#businessLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
             $('#businessLicenseUrl').siblings(".magnifying").attr('src',formData.businessLicenseUrl).show();
         }
-        if(formData.licenseUrl){
-            $('#licenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
-            $('#licenseUrl').siblings(".magnifying").attr('src',formData.licenseUrl).show();
+        if(formData.operationLicenseUrl){
+            $('#operationLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#operationLicenseUrl').siblings(".magnifying").attr('src',formData.operationLicenseUrl).show();
         }
         $('#_form').form('load', formData);
         $('#upstreamType').combobox('setValue',formData.$_upstreamType);

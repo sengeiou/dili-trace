@@ -69,11 +69,18 @@ public class UpStream extends BaseDomain {
     private String businessLicenseUrl;
 
     /**
-     * 许可证
+     * 生產许可证
      */
-    @ApiModelProperty(value = "许可证")
-    @Column(name = "`license_url`")
-    private String licenseUrl;
+    @ApiModelProperty(value = "生產许可证")
+    @Column(name = "`manufacturing_license_url`")
+    private String manufacturingLicenseUrl;
+
+       /**
+     * 经营许可证
+     */
+    @ApiModelProperty(value = "经营许可证")
+    @Column(name = "`operation_license_url`")
+    private String operationLicenseUrl;
 
 
 
@@ -273,19 +280,6 @@ public class UpStream extends BaseDomain {
     }
 
 
-    /**
-     * @return String return the licenseUrl
-     */
-    public String getLicenseUrl() {
-        return licenseUrl;
-    }
-
-    /**
-     * @param licenseUrl the licenseUrl to set
-     */
-    public void setLicenseUrl(String licenseUrl) {
-        this.licenseUrl = licenseUrl;
-    }
 
 
     /**
@@ -314,6 +308,36 @@ public class UpStream extends BaseDomain {
      */
     public void setCardNoBackUrl(String cardNoBackUrl) {
         this.cardNoBackUrl = cardNoBackUrl;
+    }
+
+
+    /**
+     * @return String return the manufacturingLicenseUrl
+     */
+    public String getManufacturingLicenseUrl() {
+        return manufacturingLicenseUrl;
+    }
+
+    /**
+     * @param manufacturingLicenseUrl the manufacturingLicenseUrl to set
+     */
+    public void setManufacturingLicenseUrl(String manufacturingLicenseUrl) {
+        this.manufacturingLicenseUrl = manufacturingLicenseUrl;
+    }
+
+
+    /**
+     * @return String return the operationLicenseUrl
+     */
+    public String getOperationLicenseUrl() {
+        return operationLicenseUrl;
+    }
+
+    /**
+     * @param operationLicenseUrl the operationLicenseUrl to set
+     */
+    public void setOperationLicenseUrl(String operationLicenseUrl) {
+        this.operationLicenseUrl = operationLicenseUrl;
     }
 
 }

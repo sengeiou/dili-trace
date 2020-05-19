@@ -53,7 +53,7 @@
                    align="center" fit="true" idField="id" data-options="onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
                 <thead>
                     <tr>
-                        <th width="10%" data-options="field:'upstreamId', _provider:'simpleBatchDisplayTextProvider',_escapeFileds:{'upstreamId':'name','upstreamName':'name','idCard':'id_card', 'telphone':'telphone', 'license':'license','upstreamType':'upstream_type','legalPerson':'legal_person','cardNoFrontUrl':'card_no_front_url','cardNoBackUrl':'card_no_back_url','businessLicenseUrl':'business_license_url','licenseUrl':'license_url'},_fkField:'upstreamId',_relationTable:'upstream',_relationTablePkField:'id',     sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'upstreamId', _provider:'simpleBatchDisplayTextProvider',_escapeFileds:{'upstreamId':'name','upstreamName':'name','idCard':'id_card', 'telphone':'telphone', 'license':'license','upstreamType':'upstream_type','legalPerson':'legal_person','cardNoFrontUrl':'card_no_front_url','cardNoBackUrl':'card_no_back_url','businessLicenseUrl':'business_license_url','operationLicenseUrl':'operation_license_url'},_fkField:'upstreamId',_relationTable:'upstream',_relationTablePkField:'id',     sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            名称
                         </th>
                         <th width="10%" data-options="field:'upstreamType', _provider:'upStreamTypeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -180,8 +180,8 @@
                          <div class="fileimg-box" style="margin: 0 auto;">
                              <span class="fileimg-plus-icon">+</span>
                              <span class="fileimg-des">上传经营许可证</span>
-                             <input type="file" name="file" id="licenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                             <input type="hidden" name="licenseUrl">
+                             <input type="file" name="file" id="operationLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                             <input type="hidden" name="operationLicenseUrl">
                              <img class="magnifying">
                              <div class="fileimg-cover" style="display: none;"></div>
                              <div class="fileimg-edit" style="display: none;">
