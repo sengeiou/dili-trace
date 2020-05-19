@@ -87,11 +87,11 @@
       data-options="
 				iconCls: 'icon-edit',
 				height: 680,
-				width:500,
+				width:510,
 				buttons: [{
 					text:'确认',
 					iconCls:'icon-ok',
-					handler:saveOrUpdate
+					handler:debounce(saveOrUpdate,1000,true)
 				},{
 					text:'取消',
 					iconCls:'icon-cancel',
