@@ -1,5 +1,7 @@
 package com.dili.trace.api;
 
+import java.util.Arrays;
+
 import javax.annotation.Resource;
 
 import com.dili.common.annotation.InterceptConfiguration;
@@ -9,6 +11,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 
@@ -82,14 +85,14 @@ public class UpStreamApi {
      * 创建上游信息
      */
     @RequestMapping(value = "/doCreateUpStream.api", method = RequestMethod.POST)
-    public BaseOutput<Long> doCreateUpStream(@RequestBody UpStream input) {
+    public BaseOutput<Long> doCreateUpStream(@RequestBody UpStreamDto input) {
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
         try {
-            UpStream item = this.upStreamService.createUpstream(user.getId(), input);
-            return BaseOutput.success().setData(item.getId());
+            input.setUserIds(Arrays.asList(user.getId()));
+            return this.upStreamService.addUpstream(input);
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -102,14 +105,13 @@ public class UpStreamApi {
      * 修改上游信息
      */
     @RequestMapping(value = "/doModifyUpStream.api", method = RequestMethod.POST)
-    public BaseOutput<Long> doModifyUpStream(@RequestBody UpStream input) {
+    public BaseOutput doModifyUpStream(@RequestBody UpStreamDto input) {
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
         try {
-            UpStream item = this.upStreamService.modifyUpstream(user.getId(), input);
-            return BaseOutput.success().setData(item.getId());
+            return this.upStreamService.updateUpstream(input);
         } catch (BusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
