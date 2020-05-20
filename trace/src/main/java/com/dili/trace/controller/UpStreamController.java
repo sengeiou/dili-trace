@@ -160,6 +160,20 @@ public class UpStreamController {
             LOGGER.error("上游用户信息及业务绑定保存异常！", e);
             return BaseOutput.failure(e.getMessage());
         }
-    }
+	}
+	@RequestMapping(value = "/queryUpStream.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput queryUpStream(UpStream input) {
+		try {
+			input.setId(2L);
+			List<UpStream> list = this.upStreamService.listByExample(input);
+			return BaseOutput.success().setData(list);
+
+		} catch (Exception e) {
+			LOGGER.error("查询失败", e);
+			return BaseOutput.failure();
+		}
+
+	}
 
 }

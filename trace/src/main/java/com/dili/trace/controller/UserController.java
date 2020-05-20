@@ -305,4 +305,19 @@ public class UserController {
 		modelMap.put("cities", usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.USER));
 		return "user/edit";
 	}
+
+	@RequestMapping(value = "/queryUser.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput queryUser(User input) {
+		try {
+			input.setId(132L);
+			List<User> list = this.userService.listByExample(input);
+			return BaseOutput.success().setData(list);
+
+		} catch (Exception e) {
+			LOGGER.error("查询失败", e);
+			return BaseOutput.failure();
+		}
+
+	}
 }

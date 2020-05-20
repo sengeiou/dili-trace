@@ -11,14 +11,6 @@
     <div class="form-box border"  style="width: 100%;">
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
-                <div class="form-group">
-                    <label class="label-title text-left"><span class="red">&lowast;</span>姓名</label>
-                    <input class="form-control input-sm" value="ss" readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-left"><span class="red">&lowast;</span>姓名</label>
-                    <input class="form-control input-sm" value="${itemIdDetailListMap}" readonly/>
-                </div>
                 <br/>
                 <%for (userQrItem in userQrItemlist){%>
                     <div class="form-group">
@@ -55,10 +47,10 @@ $('.fileimg-view').on('click', function () {
     }
 });
 function add(qrItemType){
-    debugger
+    
     var layerOpt={type : 2, area : ['650px', '600px'],  shadeClose : false,
             shade : 0.5,
-            btn: ['确认', '取消']         ,yes: function(index, layero){
+            btn: ['确认', '取消'],yes: function(index, layero){
                   //按钮【按钮一】的回调
                 //var body = layer.getChildFrame('body', index);
 				//body.find("#submitFormBtn").trigger('click')
@@ -79,14 +71,19 @@ function add(qrItemType){
         layerOpt.content='${contextPath}/upStream/edit.html';
     }else if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.BILL.getCode()}'){
         layerOpt.title="登记单信息";
-        layerOpt.content='${contextPath}/registerBill/create.html';
+        layerOpt.content='${contextPath}/registerBillHZ/edit.html';
+        layerOpt.yes= function(index, layero){
+                  //按钮【按钮一】的回调
+               layer.getChildFrame('body', index).find("#submitFormBtn").trigger('click')
+            }
+
     }else{
         return;
     }
     var index = layer.open(layerOpt);
 }
 function edit(qrItemType,id){
-    debugger
+    
     var layerOpt={type : 2, area : ['650px', '600px'],  shadeClose : false,
             shade : 0.5,
             btn: ['确认', '取消']         ,yes: function(index, layero){
@@ -110,14 +107,14 @@ function edit(qrItemType,id){
         layerOpt.content='${contextPath}/upStream/edit.html?id='+id;
     }else if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.BILL.getCode()}'){
         layerOpt.title="修改登记单信息";
-        layerOpt.content='${contextPath}/registerBill/edit.html?id='+id;
+        layerOpt.content='${contextPath}/registerBillHZ/edit.html?id='+id;
     }else{
         return;
     }
     var index = layer.open(layerOpt);
 }
 function view(qrItemType,id){
-    debugger
+    
     var layerOpt={type : 2, area : ['650px', '600px'],  shadeClose : false,
             shade : 0.5,
             btn: ['确认', '取消']         ,yes: function(index, layero){
