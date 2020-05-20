@@ -73,7 +73,22 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
     }
 
     @Override
-    public void createOwnedSeparateSales(Long checkinRecordId,RegisterBill registerBill) {
+    public void checkInSeparateSalesRecord(Long checkinRecordId, Long billId) {
+        SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
+        queryCondition.setBillId(billId);
+        queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
+        SeparateSalesRecord item = this.listByExample(queryCondition).stream().findFirst()
+                .orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
+        if (item != null) {
+            SeparateSalesRecord updatable = DTOUtils.newDTO(SeparateSalesRecord.class);
+            updatable.setCheckinRecordId(checkinRecordId);
+            updatable.setId(item.getId());
+            this.updateSelective(updatable);
+        }
+    }
+
+    @Override
+    public void createOwnedSeparateSales(RegisterBill registerBill) {
         SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
         queryCondition.setBillId(registerBill.getId());
         queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
@@ -81,7 +96,6 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
         SeparateSalesRecord item = this.listByExample(queryCondition).stream().findFirst()
                 .orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
         if (item.getId() == null) {
-            item.setCheckinRecordId(checkinRecordId);
             item.setBillId(registerBill.getId());
             item.setRegisterBillCode(registerBill.getCode());
             item.setSalesWeight(registerBill.getWeight());

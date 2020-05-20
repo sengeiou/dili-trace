@@ -1,6 +1,7 @@
 package com.dili.trace.dto;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.dili.trace.domain.SeparateSalesRecord;
 
@@ -25,6 +26,11 @@ public interface SeparateSalesRecordDTO extends SeparateSalesRecord {
     Integer getSeprateType();
 
     void setSeprateType(Integer seprateType);
+
+    @Transient
+    Boolean getForceSeprate();
+
+    void setForceSeprate(Boolean forceSeprate);
 
 
 }

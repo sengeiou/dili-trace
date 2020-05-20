@@ -120,7 +120,7 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         } else {
             qrItem.setQrItemStatus(QrItemStatusEnum.GREEN.getCode());
         }
-        this.userQrItemService.updateSelective(qrItem);
+        this.userQrItemService.update(qrItem);
 
         // TODO 红码逻辑
         // 30天内，累积检测不合格商品超50%以上，或检测不合格次数3次以上（待定）。*、

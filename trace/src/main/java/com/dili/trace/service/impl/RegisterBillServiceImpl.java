@@ -122,7 +122,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
 			recheck = BaseOutput.failure("创建失败");
 		}
-		this.userQrItemDetailService.updateQrItemDetail(registerBill);
+		this.separateSalesRecordService.createOwnedSeparateSales(registerBill);
 		return recheck;
 	}
 

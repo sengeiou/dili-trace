@@ -70,7 +70,7 @@ public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
         checkinRecord.setModified(new Date());
         int returnValue=this.insertSelective(checkinRecord);
         billList.stream().forEach(bill -> {
-            this.separateSalesRecordService.createOwnedSeparateSales(checkinRecord.getId(), bill);
+            this.separateSalesRecordService.checkInSeparateSalesRecord(checkinRecord.getId(), bill.getId());
             RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
             updatable.setId(bill.getId());
             updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());

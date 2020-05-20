@@ -133,7 +133,7 @@ public class RegisterBillApi {
 		}
 		LOGGER.info("保存分销单操作用户:" + JSON.toJSONString(user));
 
-		if (RegisterSourceEnum.TRADE_AREA.getCode() == input.getRegisterSource()) {
+		if (RegisterSourceEnum.TRADE_AREA.getCode() == input.getRegisterSource()&&(input.getForceSeprate()==null||!input.getForceSeprate())) {
 			// 校验买家身份证
 			QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
 					.findByTradeNo(input.getTradeNo());

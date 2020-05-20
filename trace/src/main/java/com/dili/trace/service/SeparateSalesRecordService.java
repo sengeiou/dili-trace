@@ -23,5 +23,7 @@ public interface SeparateSalesRecordService extends BaseService<SeparateSalesRec
 
     public EasyuiPageOutput listPageByQueryInput(SeparateSalesApiListQueryInput queryInput) throws Exception;
 
-    public void createOwnedSeparateSales(Long checkinRecordId,RegisterBill registerBill);
+    public void createOwnedSeparateSales(RegisterBill registerBill);
+
+    public void checkInSeparateSalesRecord(Long checkinRecordId, Long billId);
 }
