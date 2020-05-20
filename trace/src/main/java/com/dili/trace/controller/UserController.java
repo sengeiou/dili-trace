@@ -1,5 +1,15 @@
 package com.dili.trace.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Resource;
+
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BaseInfoRpcService;
@@ -7,13 +17,10 @@ import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
-import com.dili.ss.util.DateUtils;
-import com.dili.trace.domain.City;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.domain.UserQrItem;
-import com.dili.trace.dto.CityListInput;
+import com.dili.trace.domain.UserQrItemDetail;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.QrItemStatusEnum;
@@ -21,19 +28,12 @@ import com.dili.trace.glossary.QrItemTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserQrItemDetailService;
 import com.dili.trace.service.UserQrItemService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.dili.trace.util.MaskUserInfo;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,18 +45,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -270,17 +262,23 @@ public class UserController {
 	// }
 	@Autowired
 	UserQrItemService userQrItemService;
-
+	@Autowired
+	UserQrItemDetailService userQrItemDetailService;
 	@ApiOperation("跳转到qrstatus页面")
 	@RequestMapping(value = "/qrstatus.html", method = RequestMethod.GET)
 	public String qrstatus(ModelMap modelMap, Long id) {
-		modelMap.put("userQrItemlist", CollectionUtils.emptyCollection());
+		List<UserQrItem> userQrItemlist = Collections.emptyList();
 		if (id != null) {
 			UserQrItem userQrIztem = new UserQrItem();
 			userQrIztem.setUserId(id);
-			List<UserQrItem> userQrItemlist = this.userQrItemService.listByExample(userQrIztem);
-			modelMap.put("userQrItemlist", userQrItemlist);
+			userQrItemlist = this.userQrItemService.listByExample(userQrIztem);
 		}
+
+		List<UserQrItemDetail>userQrItemDetailList= this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
+		Map<Long,List<UserQrItemDetail>>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId));
+		modelMap.put("userQrItemlist", userQrItemlist);
+		modelMap.put("itemIdDetailListMap", itemIdDetailListMap);
+		
 		Map<Integer,String>qrItemTypeMap=Stream.of(QrItemTypeEnum.values()).collect(Collectors.toMap(QrItemTypeEnum::getCode, QrItemTypeEnum::getDesc));
 		modelMap.put("qrItemTypeMap", qrItemTypeMap);
 

@@ -1,7 +1,9 @@
 package com.dili.trace.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,11 +25,14 @@ import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, Long> {
@@ -42,17 +47,17 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
 
     @PostConstruct
     public void init() {
-//        while (true) {
-//            User userQuery = DTOUtils.newDTO(User.class);
-//            userQuery.mset(IDTO.AND_CONDITION_EXPR, "id not in(select user_id from user_qr_item)");
-//            userQuery.setPage(1);
-//            userQuery.setRows(50);
-//            List<User> userList = this.userService.listByExample(userQuery);
-//            if (userList.isEmpty()) {
-//                break;
-//            }
-//            userList.stream().forEach(u -> this.intUserQrItem(u.getId()));
-//        }
+        while (true) {
+            User userQuery = DTOUtils.newDTO(User.class);
+            userQuery.mset(IDTO.AND_CONDITION_EXPR, "id not in(select user_id from user_qr_item)");
+            userQuery.setPage(1);
+            userQuery.setRows(50);
+            List<User> userList = this.userService.listByExample(userQuery);
+            if (userList.isEmpty()) {
+                break;
+            }
+            userList.stream().forEach(u -> this.intUserQrItem(u.getId()));
+        }
 
     }
 
@@ -154,7 +159,8 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         boolean withoutAllNessaryInfo = upStreamList.stream().anyMatch(item -> {
             if (UpStreamTypeEnum.CORPORATE.getCode().equals(item.getUpstreamType())) {
                 if (StringUtils.isAnyBlank(item.getName(), item.getBusinessLicenseUrl(), item.getLicense(),
-                        item.getManufacturingLicenseUrl(),item.getOperationLicenseUrl(), item.getIdCard(), item.getLegalPerson(), item.getTelphone())) {
+                        item.getManufacturingLicenseUrl(), item.getOperationLicenseUrl(), item.getIdCard(),
+                        item.getLegalPerson(), item.getTelphone())) {
                     return true;
                 }
             } else {
@@ -206,8 +212,8 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         boolean withoutAllNessaryInfo = upStreamList.stream().anyMatch(item -> {
             if (UserTypeEnum.CORPORATE.getCode().equals(item.getUserType())) {
                 if (StringUtils.isAnyBlank(item.getName(), item.getBusinessLicenseUrl(), item.getLicense(),
-                        item.getManufacturingLicenseUrl(),item.getOperationLicenseUrl(), item.getCardNo(), item.getLegalPerson(), item.getPhone())
-                        || item.getMarketId() == null) {
+                        item.getManufacturingLicenseUrl(), item.getOperationLicenseUrl(), item.getCardNo(),
+                        item.getLegalPerson(), item.getPhone()) || item.getMarketId() == null) {
                     return true;
                 }
             } else {
@@ -226,6 +232,17 @@ public class UserQrItemDetailService extends BaseServiceImpl<UserQrItemDetail, L
         this.userQrItemService.updateSelective(qrItem);
         this.updateUserQrStatus(userId);
 
+    }
+
+    public List<UserQrItemDetail> findByUserQrItemIdList(List<Long> qrItemIdList) {
+        List<Long> userQrItemIdList = CollectionUtils.emptyIfNull(qrItemIdList).stream().filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (userQrItemIdList.isEmpty()) {
+            return new ArrayList<>(0);
+        }
+        Example example = new Example(UserQrItemDetail.class);
+        example.and().andIn("userQrItemId", userQrItemIdList);
+        return super.getDao().selectByExample(example);
     }
 
     /**
