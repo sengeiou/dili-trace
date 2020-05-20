@@ -138,6 +138,8 @@ public class UserApi {
             sessionContext.setAccountId(po.getId());
             result.put("userId",po.getId());
             result.put("userName",po.getName());
+            result.put("qrStatus",po.getQrStatus());
+            result.put("userType",po.getUserType());
             result.put("sessionId",sessionContext.getSessionId());
             return BaseOutput.success().setData(result);
         }catch (BusinessException e){

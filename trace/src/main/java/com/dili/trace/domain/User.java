@@ -219,7 +219,7 @@ public interface User extends IBaseDomain {
 
 
     /**
-     * {@link  com.dili.trace.glossary.CheckinStatusEnum}
+     * {@link  com.dili.trace.glossary.UserQrStatusEnum}
      */
     @ApiModelProperty(value = "二维码状态")
     @Column(name = "`qr_status`")
