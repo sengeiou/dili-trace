@@ -23,6 +23,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 
@@ -84,7 +85,13 @@ public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
 			this.separateSalesRecordService.checkInSeparateSalesRecord(checkinRecord.getId(), bill.getId());
 			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
 			updatable.setId(bill.getId());
-			updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
+				updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+			} else {
+				updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+				updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
+			}
+
 			this.registerBillService.updateSelective(updatable);
 		});
 

@@ -252,7 +252,7 @@ public class RegisterBillHZController {
 			}
 			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
 			updatable.setId(bill.getId());
-			updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+			updatable.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
 			if (input.getPass()) {
 				if (bill.getDetectState() != null) {
 					updatable.setDetectState(BillDetectStateEnum.REVIEW_PASS.getCode());
