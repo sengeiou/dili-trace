@@ -275,7 +275,7 @@ public class UserController {
 		}
 
 		List<UserQrItemDetail>userQrItemDetailList= this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
-		Map<Long,List<UserQrItemDetail>>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId));
+		Map<Long,String>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId,Collectors.mapping(UserQrItemDetail::getObjectId,Collectors.joining(","))));
 		modelMap.put("userQrItemlist", userQrItemlist);
 		modelMap.put("itemIdDetailListMap", itemIdDetailListMap);
 		
@@ -284,6 +284,8 @@ public class UserController {
 
 		Map<Integer,String>qrItemStatusMap=Stream.of(QrItemStatusEnum.values()).collect(Collectors.toMap(QrItemStatusEnum::getCode, QrItemStatusEnum::getDesc));
 		modelMap.put("qrItemStatusMap", qrItemStatusMap);
+		
+		modelMap.put("userId", id);
 
 		return "user/qrstatus";
 	}

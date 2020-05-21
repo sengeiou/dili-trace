@@ -50,6 +50,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.swagger.annotations.Api;
@@ -95,7 +96,7 @@ public class RegisterBillHZController {
 		try {
 			if (idList.isEmpty()) {
 				// insert
-				List<RegisterBill> billList = this.buildRegisterBillList(input, new Long[] { 0L });
+				List<RegisterBill> billList = this.buildRegisterBillList(input, new Long[] { 0L },true);
 				for (RegisterBill bill : billList) {
 					BaseOutput out = this.registerBillService.createRegisterBill(bill);
 					if (!out.isSuccess()) {
@@ -105,7 +106,7 @@ public class RegisterBillHZController {
 
 			} else {
 				List<RegisterBill> billList = this.buildRegisterBillList(input,
-						idList.toArray(new Long[idList.size()]));
+						idList.toArray(new Long[idList.size()]),false);
 				try {
 					this.registerBillService.batchUpdateSelective(billList);
 				} catch (Exception e) {
@@ -120,25 +121,26 @@ public class RegisterBillHZController {
 		return BaseOutput.success("操作成功");
 	}
 
-	private List<RegisterBill> buildRegisterBillList(RegisterBillInputDto input, Long[] idList) {
+	private List<RegisterBill> buildRegisterBillList(RegisterBillInputDto input, Long[] idList,boolean insert) {
 		return IntStream.range(0, idList.length).boxed().collect(Collectors.toMap(i -> i, i -> idList[i])).entrySet()
 				.stream().map(e -> {
 					Integer index = e.getKey();
 					Long id = e.getValue();
 					Long userId = input.getUserId();
 					User user = this.userService.get(userId);
+					RegisterBill bill = DTOUtils.newDTO(RegisterBill.class);
+					bill.setRegisterSource(RegisterSourceEnum.TRADE_AREA.getCode());
+					bill.setId(id);
 
 					Long upStreamId = input.getUpStreamIdList().get(index);
 					Long productId = input.getProductIdList().get(index);
 					String productName = input.getProductNameList().get(index);
 					Integer weight = input.getWeightList().get(index);
 
-					RegisterBill bill = DTOUtils.newDTO(RegisterBill.class);
-					bill.setRegisterSource(RegisterSourceEnum.TRADE_AREA.getCode());
-					bill.setId(id > 0 ? id : null);
+
+				
 					bill.setUpStreamId(upStreamId);
-					bill.setProductId(productId);
-					bill.setProductName(productName);
+					
 					bill.setWeight(weight);
 					bill.setCreated(new Date());
 					bill.setModified(new Date());
@@ -162,17 +164,16 @@ public class RegisterBillHZController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
-	public String edit(ModelMap modelMap, RegisterBillDto input) {
-		List<Long> idList = CollectionUtils.emptyIfNull(input.getIdList()).stream().filter(Objects::nonNull)
+	public String edit(ModelMap modelMap,@RequestParam("idList")List<Long>idList,@RequestParam("userId")Long userId) {
+		List<Long> ids = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull)
 				.collect(Collectors.toList());
-		Long userId = input.getUserId();
-		User user = this.userService.get(userId);
-		modelMap.put("user", user);
+		User userItem = this.userService.get(userId);
+		modelMap.put("userItem", userItem);
 		List<RegisterBill> registerBillList = new ArrayList<>();
 
-		if (!idList.isEmpty()) {
+		if (!ids.isEmpty()) {
 			RegisterBillDto query = DTOUtils.newDTO(RegisterBillDto.class);
-			query.setIdList(idList);
+			query.setIdList(ids);
 			registerBillList.addAll(this.registerBillService.listByExample(query));
 		}
 		Map<Long, UpStream> idUpStreamMap = registerBillList.stream().map(bill -> {

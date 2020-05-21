@@ -24,15 +24,15 @@
                                     editable:true,required:false,onSelect:function(record){
                                 $('input[name=\'userId\']').val(record.id);
                                 $('#phoneCombobox').combotree('setText',record.phone);
-                            }"></select>
+                            },value:'${userItem.name}',  disabled:true,readonly:true"></select>
                         </td>
 
                         <td style="padding:5px;">
-                            <input class="easyui-combobox" name="phoneCombobox" id="phoneCombobox" style="width:100%" value="${user.phone!}"
+                            <input class="easyui-combobox" name="phoneCombobox" id="phoneCombobox" style="width:100%" value="${userItem.phone!}"
                                 data-options="label:'电话*:', loader:queryUserInfo,mode: 'remote',valueField:'id' ,textField:'phone',validType:'phoneNum',required:true,onSelect:function(record){
                                     $('input[name=\'userId\']').val(record.id);
                                     $('#nameCombobox').combotree('setText',record.name);
-                                }" />
+                                }, disabled:true,readonly:true" />
                         </td>
                     </tr>
                     
@@ -53,7 +53,7 @@
                                         $('input[name=\'upStreamIdList['+index+']\']').val(record.id);
                                         
                                         $('#upStreamTelphoneCombobox-'+index).combotree('setText',record.telphone);
-                            }"></select>
+                            },<%if (idUpStreamMap[bill.upStreamId]!=null){%> value:'${idUpStreamMap[bill.upStreamId].name}', disabled:true,readonly:true<%}%>"></select>
                         </td>
 
                         <td style="padding:5px;">
@@ -62,7 +62,7 @@
                                     var index=$(this).attr('index')
                                     $('input[name=\'upStreamIdList['+index+']\']').val(record.id);
                                     $('#upStreamNameCombobox-'+index).combotree('setText',record.name);
-                                }" />
+                                },<%if (idUpStreamMap[bill.upStreamId]!=null){%>  value:'${idUpStreamMap[bill.upStreamId].telphone}',disabled:true,readonly:true<%}%>" />
                         </td>
                     <tr>
                         <td style="padding:5px;">
@@ -72,12 +72,12 @@
                                 var index=$(this).attr('index')
                                 $('input[name=\'productIdList['+index+']\']').val(record.id);
                                 $('input[name=\'productNameList['+index+']\']').val(record.value);
-                            }" />
+                            },<%if (bill.id!=null){%> value:'${bill.productName}', disabled:true,readonly:true<%}%>" />
                         </td>
                         <td style="padding:5px;">
                             <input class="easyui-textbox" name="weightList[${billLP.index-1}]" id="weightList[${billLP.index-1}]" style="width:100%"
                                 value="${bill.weight}"
-                                data-options="label:'重量*:', validType:['isWord','length[0,40]'],required:true" />
+                                data-options="label:'重量*:', validType:['isWord','length[0,40]'],required:true,<%if (bill.id!=null){%>  disabled:true,readonly:true<%}%>" />
                         </td>
                     </tr>
                     <tr>
@@ -88,7 +88,7 @@
                                 var index=$(this).attr('index')
                                 $('input[name=\'originIdList['+index+']\']').val(record.id);
                                 $('input[name=\'originNameList['+index+']\']').val(record.value);
-                            }" />
+                            },<%if (bill.id!=null){%>  value:'${bill.originName}',disabled:true,readonly:true<%}%>" />
                         </td>
                         <td style="padding:5px;">
                         </td>

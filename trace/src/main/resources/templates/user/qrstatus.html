@@ -16,9 +16,9 @@
                     <div class="form-group">
                         <label class="label-title text-left">${qrItemTypeMap[userQrItem.qrItemType]}</label>
                         <%if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.RED.getCode()){
-                            %><a href="javascript:void(0)" onclick="add('${userQrItem.qrItemType}')"><span style="color: red;">补充</span></a><%
+                            %><a href="javascript:void(0)" onclick="add('${userQrItem.qrItemType}',${userId})"><span style="color: red;">补充</span></a><%
                         }else if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.YELLOW.getCode()){
-                            %><a href="javascript:void(0)" onclick="edit('${userQrItem.qrItemType}','${itemIdDetailListMap[userQrItem.id]}')"><span style="color: yellow;" >审核</span></a><%                        
+                            %><a href="javascript:void(0)" onclick="edit('${userQrItem.qrItemType}','${itemIdDetailListMap[userQrItem.id]}',${userId})"><span style="color: yellow;" >审核</span></a><%                        
                         }else if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.GREEN.getCode()){
                             %><a href="javascript:void(0)" onclick="view('${userQrItem.qrItemType}','${itemIdDetailListMap[userQrItem.id]}')"><span style="color: green;" >查看</span></a><%
                         }%>
@@ -46,7 +46,7 @@ $('.fileimg-view').on('click', function () {
         });
     }
 });
-function add(qrItemType){
+function add(qrItemType,userId){
     
     var layerOpt={type : 2, area : ['650px', '600px'],  shadeClose : false,
             shade : 0.5,
@@ -82,7 +82,7 @@ function add(qrItemType){
     }
     var index = layer.open(layerOpt);
 }
-function edit(qrItemType,id){
+function edit(qrItemType,ids,userId){
     
     var layerOpt={type : 2, area : ['650px', '600px'],  shadeClose : false,
             shade : 0.5,
@@ -101,13 +101,13 @@ function edit(qrItemType,id){
             }};
     if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.USER.getCode()}'){
         layerOpt.title="修改用户信息";
-        layerOpt.content='${contextPath}/user/edit.html?id='+id;
+        layerOpt.content='${contextPath}/user/edit.html?id='+ids;
     }else if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.UPSTREAM.getCode()}'){
         layerOpt.title="修改上游信息";
-        layerOpt.content='${contextPath}/upStream/edit.html?id='+id;
+        layerOpt.content='${contextPath}/upStream/edit.html?id='+ids;
     }else if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.BILL.getCode()}'){
         layerOpt.title="修改登记单信息";
-        layerOpt.content='${contextPath}/registerBillHZ/edit.html?id='+id;
+        layerOpt.content='${contextPath}/registerBillHZ/edit.html?'+  ids.split(",").map(function(v,u){return "idList="+v;}).join("&")+"&userId="+userId;
     }else{
         return;
     }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
@@ -18,6 +19,8 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 
+import tk.mybatis.mapper.entity.Example;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,136 +29,155 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
-    public UpStreamMapper getActualDao() {
-        return (UpStreamMapper)getDao();
-    }
+	public UpStreamMapper getActualDao() {
+		return (UpStreamMapper) getDao();
+	}
 
-    @Autowired 
-    RUserUpStreamService rUserUpStreamService;
+	@Autowired
+	RUserUpStreamService rUserUpStreamService;
 
-    /**
-     * 分页查询上游信息
-     */
-    public BasePage<UpStream> listPageUpStream(Long userId,UpStream query) {
-        if (userId == null) {
-            BasePage<UpStream> result = new BasePage<>();
+	/**
+	 * 分页查询上游信息
+	 */
+	public BasePage<UpStream> listPageUpStream(Long userId, UpStream query) {
+		if (userId == null) {
+			BasePage<UpStream> result = new BasePage<>();
 
-            result.setPage(1);
-            result.setRows(0);
-            result.setTotalItem(0);
-            result.setTotalPage(1);
-            result.setStartIndex(1);
-            return result;
-        }
+			result.setPage(1);
+			result.setRows(0);
+			result.setTotalItem(0);
+			result.setTotalPage(1);
+			result.setStartIndex(1);
+			return result;
+		}
 
-        query.setMetadata(IDTO.AND_CONDITION_EXPR,
-        "id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
-        BasePage<UpStream> page = this.listPageByExample(query);
-        return page;
-    }
+		query.setMetadata(IDTO.AND_CONDITION_EXPR,
+				"id in(select upstream_id from r_user_upstream where user_id=" + userId + ")");
+		BasePage<UpStream> page = this.listPageByExample(query);
+		return page;
+	}
 
-    /**
-     * 创建上游信息
-     */
-    public UpStream createUpstream(Long userId, UpStream input) {
-        if (userId == null || input == null) {
-            throw new BusinessException("参数错误");
-        }
-        if (StringUtils.isBlank(input.getName())) {
-            throw new BusinessException("企业(个人)名称不能为空");
-        }
-        if (UpStreamTypeEnum.CORPORATE.equalsCode(input.getUpstreamType())) {
+	/**
+	 * 创建上游信息
+	 */
+	public UpStream createUpstream(Long userId, UpStream input) {
+		if (userId == null || input == null) {
+			throw new BusinessException("参数错误");
+		}
+		if (StringUtils.isBlank(input.getName())) {
+			throw new BusinessException("企业(个人)名称不能为空");
+		}
+		if (UpStreamTypeEnum.CORPORATE.equalsCode(input.getUpstreamType())) {
 
-        } else if (UpStreamTypeEnum.USER.equalsCode(input.getUpstreamType())) {
+		} else if (UpStreamTypeEnum.USER.equalsCode(input.getUpstreamType())) {
 
-        } else {
-            throw new BusinessException("参数错误");
-        }
-        this.insertSelective(input);
-        return input;
-    }
+		} else {
+			throw new BusinessException("参数错误");
+		}
+		this.insertSelective(input);
+		return input;
+	}
 
-    /**
-     * 删除用户上游关系
-     * 
-     * @param userId
-     * @param upstreamId
-     * @return
-     */
-    public int deleteUpstream(Long userId, Long upstreamId) {
+	/**
+	 * 删除用户上游关系
+	 * 
+	 * @param userId
+	 * @param upstreamId
+	 * @return
+	 */
+	public int deleteUpstream(Long userId, Long upstreamId) {
 
-        if (userId == null || upstreamId == null) {
-            throw new BusinessException("参数错误");
-        }
-        RUserUpstream rUserUpstream = new RUserUpstream();
-        rUserUpstream.setUserId(userId);
-        rUserUpstream.setUpstreamId(upstreamId);
-        RUserUpstream item = this.rUserUpStreamService.listByExample(rUserUpstream).stream().findFirst().orElse(null);
-        if (item != null) {
-            return this.rUserUpStreamService.delete(item.getId());
-        }
-        return 0;
-    }
+		if (userId == null || upstreamId == null) {
+			throw new BusinessException("参数错误");
+		}
+		RUserUpstream rUserUpstream = new RUserUpstream();
+		rUserUpstream.setUserId(userId);
+		rUserUpstream.setUpstreamId(upstreamId);
+		RUserUpstream item = this.rUserUpStreamService.listByExample(rUserUpstream).stream().findFirst().orElse(null);
+		if (item != null) {
+			return this.rUserUpStreamService.delete(item.getId());
+		}
+		return 0;
+	}
 
-    /**
-     * 新增上游
-     * @param upStreamDto
-     * @return
-     */
-    @Transactional
-    public BaseOutput addUpstream(UpStreamDto upStreamDto,OperatorUser operatorUser){
-        insertSelective(upStreamDto);
-        addUpstreamUsers(upStreamDto,operatorUser);
-        return BaseOutput.success();
-    }
+	/**
+	 * 新增上游
+	 * 
+	 * @param upStreamDto
+	 * @return
+	 */
+	@Transactional
+	public BaseOutput addUpstream(UpStreamDto upStreamDto, OperatorUser operatorUser) {
+		insertSelective(upStreamDto);
+		addUpstreamUsers(upStreamDto, operatorUser);
+		return BaseOutput.success();
+	}
 
-    /**
-     * 添加上游的所有业户信息（绑定）
-     * @param upStreamDto
-     */
-    public void addUpstreamUsers(UpStreamDto upStreamDto,OperatorUser operatorUser) {
-        if(CollectionUtils.isNotEmpty(upStreamDto.getUserIds())){
-            List<RUserUpstream> rUserUpstreams = new ArrayList<>();
-            upStreamDto.getUserIds().forEach(o->{
-                RUserUpstream rUserUpstream = new RUserUpstream();
-                rUserUpstream.setUpstreamId(upStreamDto.getId());
-                rUserUpstream.setUserId(o);
-                rUserUpstream.setOperatorId(operatorUser.getId());
-                rUserUpstream.setOperatorName(operatorUser.getName());
-                rUserUpstream.setCreated(new Date());
-                rUserUpstream.setModified(new Date());
-                rUserUpstreams.add(rUserUpstream);
-            });
-            rUserUpStreamService.batchInsert(rUserUpstreams);
-        }
-    }
+	/**
+	 * 添加上游的所有业户信息（绑定）
+	 * 
+	 * @param upStreamDto
+	 */
+	public void addUpstreamUsers(UpStreamDto upStreamDto, OperatorUser operatorUser) {
+		if (CollectionUtils.isNotEmpty(upStreamDto.getUserIds())) {
+			List<RUserUpstream> rUserUpstreams = new ArrayList<>();
+			upStreamDto.getUserIds().forEach(o -> {
+				RUserUpstream rUserUpstream = new RUserUpstream();
+				rUserUpstream.setUpstreamId(upStreamDto.getId());
+				rUserUpstream.setUserId(o);
+				rUserUpstream.setOperatorId(operatorUser.getId());
+				rUserUpstream.setOperatorName(operatorUser.getName());
+				rUserUpstream.setCreated(new Date());
+				rUserUpstream.setModified(new Date());
+				rUserUpstreams.add(rUserUpstream);
+			});
+			rUserUpStreamService.batchInsert(rUserUpstreams);
+		}
+	}
 
-    /**
-     * 修改上游
-     * @param upStreamDto
-     * @return
-     */
-    @Transactional
-    public BaseOutput updateUpstream(UpStreamDto upStreamDto,OperatorUser operatorUser){
-        updateSelective(upStreamDto);
+	/**
+	 * 修改上游
+	 * 
+	 * @param upStreamDto
+	 * @return
+	 */
+	@Transactional
+	public BaseOutput updateUpstream(UpStreamDto upStreamDto, OperatorUser operatorUser) {
+		updateSelective(upStreamDto);
 
-        RUserUpstream rUserUpstreamDelCondition = new RUserUpstream();
-        rUserUpstreamDelCondition.setUpstreamId(upStreamDto.getId());
-        rUserUpStreamService.deleteByExample(rUserUpstreamDelCondition);
-        addUpstreamUsers(upStreamDto,operatorUser);
-        return BaseOutput.success();
+		RUserUpstream rUserUpstreamDelCondition = new RUserUpstream();
+		rUserUpstreamDelCondition.setUpstreamId(upStreamDto.getId());
+		rUserUpStreamService.deleteByExample(rUserUpstreamDelCondition);
+		addUpstreamUsers(upStreamDto, operatorUser);
+		return BaseOutput.success();
 
-    }
+	}
 
-    /**
-     * 批量查询上游对应的业户集合
-     * @param upstreamIds
-     * @return Map｛upstreamId，userNames｝
-     */
-    public List<Map<String,String>> queryUsersByUpstreamIds(List<Long> upstreamIds){
-        return getActualDao().queryUsersByUpstreamIds(upstreamIds);
-    }
+	/**
+	 * 批量查询上游对应的业户集合
+	 * 
+	 * @param upstreamIds
+	 * @return Map｛upstreamId，userNames｝
+	 */
+	public List<Map<String, String>> queryUsersByUpstreamIds(List<Long> upstreamIds) {
+		return getActualDao().queryUsersByUpstreamIds(upstreamIds);
+	}
 
-    
+	public List<UpStream> queryUpStreamByUserId(Long userId) {
+		if (userId == null) {
+			return new ArrayList<>();
+		}
+		RUserUpstream rUpstreamQuery = new RUserUpstream();
+		rUpstreamQuery.setUserId(userId);
+		List<Long> upStreamIdList = this.rUserUpStreamService.listByExample(rUpstreamQuery).stream()
+				.map(RUserUpstream::getUpstreamId).collect(Collectors.toList());
+		if (upStreamIdList.isEmpty()) {
+			return new ArrayList<>();
+		}
+		Example example = new Example(UpStream.class);
+		example.and().andIn("id", upStreamIdList);
+		return this.getActualDao().selectByExample(example);
+
+	}
 
 }
