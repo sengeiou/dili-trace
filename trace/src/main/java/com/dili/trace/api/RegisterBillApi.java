@@ -173,15 +173,18 @@ public class RegisterBillApi {
 
 		} else if (RegisterSourceEnum.TALLY_AREA.getCode() == input.getRegisterSource()) {// 理货区分销校验
 
-			if (input.getParentId() == null) {
+			Long separateSalesRecordId = input.getParentId();
+
+			if (separateSalesRecordId == null) {
 				return BaseOutput.failure("没有需要分销的登记单");
 			}
-			SeparateSalesRecord parentSeparateSalesRecord = this.separateSalesRecordService.get(input.getParentId());
-			if (parentSeparateSalesRecord == null) {
+
+			SeparateSalesRecord separateSalesRecord = this.separateSalesRecordService.get(separateSalesRecordId);
+			if (separateSalesRecord == null) {
 				return BaseOutput.failure("没有需要分销的数据");
 			}
 
-			RegisterBill registerBill = this.registerBillService.get(parentSeparateSalesRecord.getBillId());
+			RegisterBill registerBill = this.registerBillService.get(separateSalesRecord.getBillId());
 
 			if (registerBill == null) {
 				return BaseOutput.failure("没有查到需要分销的登记单");
@@ -195,23 +198,39 @@ public class RegisterBillApi {
 				return BaseOutput.failure("当前状态登记单不能分销");
 			}
 
-			if (parentSeparateSalesRecord.getSalesUserId().longValue() != user.getId().longValue()) {
-				LOGGER.info("业户ID" + parentSeparateSalesRecord.getSalesUserId() + "用户ID:" + user.getId());
+			if (separateSalesRecord.getSalesUserId().longValue() != user.getId().longValue()) {
+				LOGGER.info("业户ID" + separateSalesRecord.getSalesUserId() + "用户ID:" + user.getId());
 				return BaseOutput.failure("没有权限分销");
 			}
 			BigDecimal salesWeight = BigDecimal.valueOf(input.getSalesWeight());
-			BigDecimal storeWeight = parentSeparateSalesRecord.getStoreWeight();
+			BigDecimal storeWeight = separateSalesRecord.getStoreWeight();
 
+			if (separateSalesRecord.getParentId() == null
+					&& !registerBill.getWeight().equals(separateSalesRecord.getSalesWeight())) {
+				// 当前分销记录是初始用于分销的记录
+				// 更新重量(登记单重量可能被更新过)
+				SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
+				record.setStoreWeight(BigDecimal.valueOf(registerBill.getWeight()));
+				record.setSalesWeight(registerBill.getWeight());
+				record.setId(separateSalesRecord.getId());
+				this.separateSalesRecordService.updateSelective(record);
+				storeWeight = record.getStoreWeight();
+
+			}
+			
 			if (storeWeight.compareTo(salesWeight) < 0) {
 				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
 			}
+
 			// 更新被分销记录的剩余重量
-			SeparateSalesRecord parentRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
-			parentRecord.setStoreWeight(storeWeight.subtract(salesWeight));
-			parentRecord.setModified(new Date());
-			this.separateSalesRecordService.updateSelective(parentRecord);
+			SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
+			record.setStoreWeight(storeWeight.subtract(salesWeight));
+			record.setModified(new Date());
+			record.setId(separateSalesRecordId);
+			this.separateSalesRecordService.updateSelective(record);
 
 			input.setBillId(registerBill.getId());
+			input.setRegisterBillCode(registerBill.getCode());
 			input.setCreated(new Date());
 			input.setModified(new Date());
 			input.setSalesCityId(user.getSalesCityId());
