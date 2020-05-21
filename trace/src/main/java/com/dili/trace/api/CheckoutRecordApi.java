@@ -49,7 +49,7 @@ public class CheckoutRecordApi {
      * 分页查询需要出场查询的信息
      */
     @RequestMapping(value = "/listPagedAvailableCheckOutData.api", method = { RequestMethod.POST, RequestMethod.GET })
-    public BaseOutput<BasePage<Object>> listPagedAvailableCheckOutData(@RequestBody CheckoutApiListQuery query) {
+    public BaseOutput<BasePage<SeparateSalesRecord>> listPagedAvailableCheckOutData(@RequestBody CheckoutApiListQuery query) {
         if(query==null||query.getUserId()==null){
             return BaseOutput.failure("参数错误");
         }
@@ -68,7 +68,7 @@ public class CheckoutRecordApi {
     }
 
     /**
-     * 进场详情
+     * 出场详情
      */
     @RequestMapping(value = "/getCheckoutDataDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
     public BaseOutput getCheckoutDataDetail(@RequestBody CheckoutApiListQuery input) {
@@ -87,7 +87,7 @@ public class CheckoutRecordApi {
 
     }
     /**
-     * 进场通过
+     * 出场
      */
     @RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })
     public BaseOutput doCheckin(@RequestBody CheckOutApiInput input) {
