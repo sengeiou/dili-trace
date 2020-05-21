@@ -133,7 +133,8 @@ public class RegisterBillApi {
 		}
 		LOGGER.info("保存分销单操作用户:" + JSON.toJSONString(user));
 
-		if (RegisterSourceEnum.TRADE_AREA.getCode() == input.getRegisterSource()&&(input.getForceSeprate()==null||!input.getForceSeprate())) {
+		if (RegisterSourceEnum.TRADE_AREA.getCode() == input.getRegisterSource()
+				&& (input.getForceSeprate() == null || !input.getForceSeprate())) {
 			// 校验买家身份证
 			QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
 					.findByTradeNo(input.getTradeNo());
@@ -204,8 +205,12 @@ public class RegisterBillApi {
 			if (storeWeight.compareTo(salesWeight) < 0) {
 				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
 			}
-			parentSeparateSalesRecord.setStoreWeight(storeWeight.subtract(salesWeight));
-			parentSeparateSalesRecord.setModified(new Date());
+			// 更新被分销记录的剩余重量
+			SeparateSalesRecord parentRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
+			parentRecord.setStoreWeight(storeWeight.subtract(salesWeight));
+			parentRecord.setModified(new Date());
+			this.separateSalesRecordService.updateSelective(parentRecord);
+
 			input.setBillId(registerBill.getId());
 			input.setCreated(new Date());
 			input.setModified(new Date());
@@ -214,6 +219,7 @@ public class RegisterBillApi {
 			input.setStoreWeight(salesWeight);
 			registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
 			separateSalesRecordService.saveOrUpdate(input);
+
 			registerBill.setOperatorName(user.getName());
 			registerBill.setOperatorId(user.getId());
 			registerBillService.update(registerBill);

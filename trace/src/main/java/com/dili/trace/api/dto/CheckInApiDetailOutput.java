@@ -1,5 +1,7 @@
 package com.dili.trace.api.dto;
 
+import com.dili.trace.domain.UpStream;
+import com.dili.trace.domain.User;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 
 public class CheckInApiDetailOutput {
@@ -8,8 +10,25 @@ public class CheckInApiDetailOutput {
 	private String code;
 	private String name;
 	private String phone;
-	private String upstreamName;
-	private String upstreamTelphone;
+	private UpStream upStream;
+	private User user;
+
+ 
+	public UpStream getUpStream() {
+		return upStream;
+	}
+
+	public void setUpStream(UpStream upStream) {
+		this.upStream = upStream;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 
 	public String getStateName() {
 		try {
@@ -60,22 +79,6 @@ public class CheckInApiDetailOutput {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	public String getUpstreamName() {
-		return upstreamName;
-	}
-
-	public void setUpstreamName(String upstreamName) {
-		this.upstreamName = upstreamName;
-	}
-
-	public String getUpstreamTelphone() {
-		return upstreamTelphone;
-	}
-
-	public void setUpstreamTelphone(String upstreamTelphone) {
-		this.upstreamTelphone = upstreamTelphone;
 	}
 
 

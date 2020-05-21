@@ -107,15 +107,11 @@ public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
 			Long userId = registerBill.getUserId();
 			if (upstreamId != null) {
 				UpStream upStream = this.upStreamService.get(upstreamId);
-				if (upStream != null) {
-					output.setUpstreamName(upStream.getName());
-					output.setUpstreamTelphone(upStream.getTelphone());
-				}
+				output.setUpStream(upStream);
 			}
 			if (userId != null) {
 				User user = this.userService.get(userId);
-				if (user != null) {
-				}
+				output.setUser(user);
 			}
 			output.setId(registerBill.getId());
 			output.setCode(registerBill.getCode());
