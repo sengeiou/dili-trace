@@ -1,7 +1,6 @@
 package com.dili.trace.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +18,16 @@ import com.dili.ss.exception.AppException;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.CheckinRecordInputDto;
+import com.dili.trace.dto.ManullyCheckInputDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.dto.UserInfoDto;
+import com.dili.trace.glossary.BillDetectStateEnum;
+import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.QualityTraceTradeBillService;
@@ -81,6 +85,8 @@ public class RegisterBillHZController {
 	UsualAddressService usualAddressService;
 	@Autowired
 	UpStreamService upStreamService;
+	@Autowired
+	CodeGenerateService codeGenerateService;
 
 	@ApiOperation("新增RegisterBill")
 	@RequestMapping(value = "/update.action", method = RequestMethod.POST)
@@ -183,18 +189,90 @@ public class RegisterBillHZController {
 	}
 
 	/**
-	 * 保存处理结果
+	 * 进门审核
 	 * 
 	 * @param input
 	 * @return
 	 */
-	@RequestMapping(value = "/doEdit.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/doCheckIn.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public BaseOutput<?> doEdit(RegisterBill input) {
+	public BaseOutput<?> doCheckIn(@RequestBody CheckinRecordInputDto input) {
 		try {
+			if (input == null || input.getBillId() == null || input.getCheckinStatus() == null) {
+				return BaseOutput.failure("参数错误");
+			}
+			RegisterBill bill = this.registerBillService.get(input.getBillId());
+			if (bill == null) {
+				return BaseOutput.failure("数据错误");
+			}
+			if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(bill.getState())) {
+				return BaseOutput.failure("登记单状态错误");
+			}
+			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+			updatable.setId(bill.getId());
+			updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+			if (CheckinStatusEnum.ALLOWED.equalsCode(input.getCheckinStatus())) {
+				//updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
+			} else {
+				//updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
+			}
+			
+			updatable.setSampleCode(codeGenerateService.nextSampleCode());
+			this.registerBillService.updateSelective(updatable);
+			return BaseOutput.success();
+		} catch (AppException e) {
+			LOGGER.error(e.getMessage(), e);
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
 
-			Long id = this.registerBillService.doEdit(input);
-			return BaseOutput.success().setData(id);
+	}
+
+	/**
+	 * 进门审核
+	 * 
+	 * @param input
+	 * @return
+	 */
+	@RequestMapping(value = "/doManullyCheck.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput<?> doManullyCheck(@RequestBody ManullyCheckInputDto input) {
+		try {
+			if (input == null || input.getBillId() == null || input.getPass() == null) {
+				return BaseOutput.failure("参数错误");
+			}
+			RegisterBill bill = this.registerBillService.get(input.getBillId());
+			if (bill == null) {
+				return BaseOutput.failure("数据错误");
+			}
+			if (!RegisterBillStateEnum.WAIT_CHECK.getCode().equals(bill.getState())) {
+				return BaseOutput.failure("登记单状态错误");
+			}
+			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+			updatable.setId(bill.getId());
+			updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+			if (input.getPass()) {
+				if (bill.getDetectState() != null) {
+					updatable.setDetectState(BillDetectStateEnum.REVIEW_PASS.getCode());
+				} else {
+					updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
+				}
+				updatable.setLatestPdResult("合格");
+			} else {
+				if (bill.getDetectState() != null) {
+					updatable.setDetectState(BillDetectStateEnum.REVIEW_NO_PASS.getCode());
+				} else {
+					updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
+				}
+				updatable.setLatestPdResult("不合格");
+			}
+			updatable.setLatestDetectTime(new Date());
+			updatable.setLatestDetectOperator(SessionContext.getSessionContext().getUserTicket().getRealName());
+			
+			this.registerBillService.updateSelective(updatable);
+			return BaseOutput.success();
 		} catch (AppException e) {
 			LOGGER.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());

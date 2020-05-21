@@ -373,6 +373,30 @@ var currentUser={"depId":"${user.depId!}"
                     }
                 },
             </#resource>
+
+            <#resource method="post" url="registerBill/index.html#checkin">
+                {
+                    iconCls:'icon-man',
+                    text:'进门审核',
+                    id:'checkin-btn',
+                    disabled :true,
+                    handler:function(){
+                        openCheckin();
+                    }
+                },
+            </#resource>
+            <#resource method="post" url="registerBill/index.html#checkManully">
+                {
+                    iconCls:'icon-man',
+                    text:'人工检测',
+                    id:'check-manully-btn',
+                    disabled :true,
+                    handler:function(){
+                        openCheckManully();
+                    }
+                },
+            </#resource>
+
             <#resource method="post" url="registerBill/index.html#detail">
                 {
                     iconCls:'icon-detail',
@@ -425,7 +449,7 @@ var currentUser={"depId":"${user.depId!}"
         $('#review-btn').linkbutton('disable');
         $('#handle-btn').linkbutton('disable');*/
         
-        var btnArray=['upload-detectreport-btn','upload-origincertifiy-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
+        var btnArray=['check-manully-btn','checkin-btn','upload-detectreport-btn','upload-origincertifiy-btn','copy-btn','edit-btn','detail-btn','undo-btn','audit-btn','audit-withoutDetect-btn','auto-btn','sampling-btn','review-btn','handle-btn'
         	,'batch-audit-btn','batch-sampling-btn','batch-auto-btn','remove-reportAndcertifiy-btn','createsheet-btn']
 	    for (var i = 0; i < btnArray.length; i++) {
 	        var btnId = btnArray[i];
@@ -548,7 +572,7 @@ var currentUser={"depId":"${user.depId!}"
             $('#audit-btn').show();
             $('#edit-btn').show();
             $('#upload-detectreport-btn').show();
-        
+            $('#checkin-btn').show();
         	
             if(selected.originCertifiyUrl=='有'||selected.detectReportUrl=='有'){
            	 $('#remove-reportAndcertifiy-btn').show();
@@ -567,6 +591,7 @@ var currentUser={"depId":"${user.depId!}"
             $('#sampling-btn').show();
             //按钮不可用
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_CHECK.getCode()} ){
+            $('#check-manully-btn').show();
             //按钮不可用
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.CHECKING.getCode()} ){
             //按钮不可用
@@ -615,6 +640,146 @@ var currentUser={"depId":"${user.depId!}"
     function openWin(url){
         $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
     }
+
+    async function openCheckin(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+
+        let promise = new Promise((resolve, reject) => {
+            layer.confirm('是否允许进门？', {btn: ['通过', '不通过','取消'], title: "进门审核"
+                ,yes:function () {
+                    resolve(${@com.dili.trace.glossary.CheckinStatusEnum.ALLOWED.getCode()});
+                },btn2:function(){
+                    resolve(${@com.dili.trace.glossary.CheckinStatusEnum.NOTALLOWED.getCode()});
+                }
+            });
+		});
+
+	  let checkinStatus = await promise; // wait until the promise resolves (*)
+       $.ajax({
+                 type: "POST",
+                 url: "${contextPath}/registerBillHZ/doCheckIn.action",
+               data: JSON.stringify({billId:selected.id,checkinStatus:checkinStatus}),
+            processData:true,
+            dataType:  "json",
+            async : true,
+            contentType: "application/json; charset=utf-8",
+                 success: function (ret) {
+                     if(ret.success){
+                         _registerBillGrid.datagrid("reload");
+                         layer.alert('操作成功',{
+ 								title:'操作',
+	                           	time : 600,
+	                           	end :function(){
+	                           		 layer.closeAll();
+	                           	}
+	                          },
+                         	 function () {
+                         	  layer.closeAll();
+                             }
+                         );
+                         
+                     }else{
+                         swal(
+                                 '操作',
+                                 ret.result,
+                                 'info'
+                         );
+                         layer.closeAll();
+
+                     }
+                     
+                 },
+                 error: function(){
+
+                     swal(
+                             '错误',
+                             '远程访问失败',
+                             'error'
+                     );
+                     layer.closeAll();
+                 }
+             });
+         
+
+    }
+    async function openCheckManully(){
+        var selected = _registerBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+
+          let promise = new Promise((resolve, reject) => {
+            layer.confirm('是否检测合格？', {btn: ['合格', '不合格','取消'], title: "进门审核"
+                ,yes:function () {
+                    resolve(true);
+                },btn2:function(){
+                    resolve(false);
+                }
+            });
+		});
+
+	  let pass = await promise; // wait until the promise resolves (*)
+       $.ajax({
+                 type: "POST",
+                 url: "${contextPath}/registerBillHZ/doManullyCheck.action",
+               data: JSON.stringify({billId:selected.id,pass:pass}),
+            processData:true,
+            dataType:  "json",
+            async : true,
+            contentType: "application/json; charset=utf-8",
+                 success: function (ret) {
+                     if(ret.success){
+                         _registerBillGrid.datagrid("reload");
+                         layer.alert('操作成功',{
+ 								title:'操作',
+	                           	time : 600,
+	                           	end :function(){
+	                           		 layer.closeAll();
+	                           	}
+	                          },
+                         	 function () {
+                         	  layer.closeAll();
+                             }
+                         );
+                         
+                     }else{
+                         swal(
+                                 '操作',
+                                 ret.result,
+                                 'info'
+                         );
+                         layer.closeAll();
+
+                     }
+                     
+                 },
+                 error: function(){
+
+                     swal(
+                             '错误',
+                             '远程访问失败',
+                             'error'
+                     );
+                     layer.closeAll();
+                 }
+             });
+    }
+
     function openInsert(){
         openWin('/registerBill/create.html');
     }
