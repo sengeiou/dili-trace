@@ -131,6 +131,7 @@ public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
 		result.setPage(query.getPage());
 		result.setRows(query.getRows());
 		result.setTotalItem(total);
+		result.setDatas(list);
 
 		return result;
 
