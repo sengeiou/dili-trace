@@ -18,7 +18,7 @@ public class CheckinRecordApiTest extends BaseTestWithouMVC {
 	@Test
 	public void listPagedAvailableCheckInData() {
 		RegisterBillDto query = DTOUtils.newDTO(RegisterBillDto.class);
-		query.setUserId(26L);
+		query.setUserId(134L);
 		BaseOutput<BasePage<RegisterBill>> page = this.checkinRecordApi.listPagedAvailableCheckInData(query);
 		System.out.println(page);
 	}

@@ -124,7 +124,6 @@ public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
 	}
 
 	public BasePage<CheckInApiListOutput> listCheckInApiListOutputPage(RegisterBill query) {
-		query.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
 		Integer total = this.checkinRecordMapper.countlistCheckInRecord(query);
 		List<CheckInApiListOutput> list = this.checkinRecordMapper.listCheckInRecord(query);
 		BasePage<CheckInApiListOutput> result = new BasePage();

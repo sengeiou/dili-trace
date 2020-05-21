@@ -10,10 +10,12 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.dto.CheckOutApiInput;
+import com.dili.trace.api.dto.CheckoutApiDetailOutput;
 import com.dili.trace.api.dto.CheckoutApiListQuery;
 import com.dili.trace.domain.CheckoutRecord;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.CheckoutRecordService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UserService;
@@ -52,30 +54,46 @@ public class CheckoutRecordApi {
             return BaseOutput.failure("参数错误");
         }
         
-        User user = userService.get(sessionContext.getAccountId());
-        if (user == null) {
-            return BaseOutput.failure("未登陆用户");
-        }
+//        User user = userService.get(sessionContext.getAccountId());
+//        if (user == null) {
+//            return BaseOutput.failure("未登陆用户");
+//        }
         SeparateSalesRecord separateSalesRecord=DTOUtils.newDTO(SeparateSalesRecord.class);
         separateSalesRecord.setSalesUserId(query.getUserId());
         
-        separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR, "checkout_record_id is null");
+        separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR, "checkout_record_id is null or checkout_record_id in (select id from checkout_record where checkout_status=20)");
         BasePage<SeparateSalesRecord>page=this.separateSalesRecordService.listPageByExample(separateSalesRecord);
 
         return BaseOutput.success().setData(page);
     }
 
     /**
+     * 进场详情
+     */
+    @RequestMapping(value = "/getCheckoutDataDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
+    public BaseOutput getCheckoutDataDetail(@RequestBody CheckoutApiListQuery input) {
+    	if(input==null||input.getSeparateSalesId()==null) {
+    		   return BaseOutput.failure("参数错误");
+    	}
+        try {
+        	CheckoutApiDetailOutput detailOutput = this.checkoutRecordService.getCheckoutDataDetail(input.getSeparateSalesId());
+            return BaseOutput.success().setData(detailOutput);
+        } catch (BusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+
+    }
+    /**
      * 进场通过
      */
     @RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })
     public BaseOutput doCheckin(@RequestBody CheckOutApiInput input) {
-        User user = userService.get(sessionContext.getAccountId());
-        if (user == null) {
-            return BaseOutput.failure("未登陆用户");
-        }
+
         try {
-            CheckoutRecord checkoutRecord = this.checkoutRecordService.doCheckout(user, input);
+            CheckoutRecord checkoutRecord = this.checkoutRecordService.doCheckout(new OperatorUser(0L, "test"), input);
             return BaseOutput.success().setData(checkoutRecord.getId());
         } catch (BusinessException e) {
 
