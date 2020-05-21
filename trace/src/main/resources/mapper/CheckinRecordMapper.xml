@@ -8,11 +8,11 @@
 		register_bill.id,
 		register_bill.code,
 		register_bill.name,
-		register_bill.phone,
+		u.phone,
 		register_bill.state,
 		upstream.name as upstream_name,
 		upstream.telphone as upstream_telphone
-		from register_bill left join upstream on register_bill.upstream_id=upstream.id
+		from register_bill left join upstream on register_bill.upstream_id=upstream.id left join `user` u on register_bill.user_id=u.id
     	where 1=1
     <if test="userId != null">
         and register_bill.user_id = #{userId}

@@ -33,7 +33,7 @@ import io.swagger.annotations.Api;
 @Api(value = "/api/checkoutRecordApi")
 @RestController
 @InterceptConfiguration
-@RequestMapping(value = "/api/checkinRecordApi")
+@RequestMapping(value = "/api/checkoutRecordApi")
 public class CheckoutRecordApi {
     private static final Logger logger = LoggerFactory.getLogger(UserApi.class);
     @Resource
