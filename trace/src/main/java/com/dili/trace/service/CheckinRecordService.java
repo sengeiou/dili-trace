@@ -117,6 +117,11 @@ public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
 				if (user != null) {
 				}
 			}
+			output.setId(registerBill.getId());
+			output.setCode(registerBill.getCode());
+			output.setName(registerBill.getName());
+			output.setPhone(registerBill.getPhone());
+			output.setState(registerBill.getState());
 			return Optional.of(output);
 		}
 		return Optional.empty();
