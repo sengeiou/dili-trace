@@ -33,13 +33,35 @@ public class UserQrItem extends BaseDomain {
      */
     @Column(name = "`qr_item_type`")
     private Integer qrItemType;
+    
+    @Column(name = "`has_data`")
+    private Integer hasData;
+    
+    @Column(name = "`valid`")
+    private Integer valid;
+
+    /**
+     * 二维码条目参数值
+     */
+    @Column(name = "`objects`")
+    private String objects;
+    
     /**
      * 
      * 二维码条目状态
-     * {@link com.dili.trace.glossary.QrItemStatusEnum}
+     * {@link com.dili.trace.glossary.ColorEnum}
      */
-    @Column(name = "`qr_item_status`")
-    private Integer qrItemStatus;
+    @Column(name = "`color`")
+    private Integer color;
+    
+    /**
+     * 
+     * 二维码条目操作
+     * {@link com.dili.trace.glossary.QrItemActionEnum}
+     */
+    @Column(name = "`action`")
+    private Integer action;
+    
 
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`modified`")
@@ -91,21 +113,25 @@ public class UserQrItem extends BaseDomain {
         this.qrItemType = qrItemType;
     }
 
-    /**
-     * @return Integer return the qrItemStatus
-     */
-    public Integer getQrItemStatus() {
-        return qrItemStatus;
-    }
 
-    /**
-     * @param qrItemStatus the qrItemStatus to set
-     */
-    public void setQrItemStatus(Integer qrItemStatus) {
-        this.qrItemStatus = qrItemStatus;
-    }
 
-    /**
+    public Integer getColor() {
+		return color;
+	}
+
+	public void setColor(Integer color) {
+		this.color = color;
+	}
+
+	public Integer getAction() {
+		return action;
+	}
+
+	public void setAction(Integer action) {
+		this.action = action;
+	}
+
+	/**
      * @return Date return the created
      */
     public Date getCreated() {
@@ -132,5 +158,29 @@ public class UserQrItem extends BaseDomain {
     public void setModified(Date modified) {
         this.modified = modified;
     }
+
+	public String getObjects() {
+		return objects;
+	}
+
+	public void setObjects(String objects) {
+		this.objects = objects;
+	}
+
+	public Integer getHasData() {
+		return hasData;
+	}
+
+	public void setHasData(Integer hasData) {
+		this.hasData = hasData;
+	}
+
+	public Integer getValid() {
+		return valid;
+	}
+
+	public void setValid(Integer valid) {
+		this.valid = valid;
+	}
 
 }

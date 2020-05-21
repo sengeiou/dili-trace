@@ -1,38 +1,11 @@
 package com.dili.trace.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.dili.common.service.BizNumberFunction;
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
-import com.dili.ss.exception.AppException;
-import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.Customer;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.dto.BatchAuditDto;
-import com.dili.trace.dto.BatchResultDto;
-import com.dili.trace.dto.MatchDetectParam;
-import com.dili.trace.dto.QualityTraceTradeBillOutDto;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.dto.RegisterBillStaticsDto;
-import com.dili.trace.glossary.*;
-import com.dili.trace.service.CodeGenerateService;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.QualityTraceTradeBillService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserQrItemDetailService;
-import com.dili.trace.service.UsualAddressService;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,14 +15,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.alibaba.fastjson.JSON;
+import com.dili.common.service.BizNumberFunction;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
+import com.dili.ss.exception.AppException;
+import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.QualityTraceTradeBill;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.UserPlate;
+import com.dili.trace.dto.BatchAuditDto;
+import com.dili.trace.dto.BatchResultDto;
+import com.dili.trace.dto.MatchDetectParam;
+import com.dili.trace.dto.QualityTraceTradeBillOutDto;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.dto.RegisterBillStaticsDto;
+import com.dili.trace.glossary.BillDetectStateEnum;
+import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.SalesTypeEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.service.CodeGenerateService;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.QualityTraceTradeBillService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserQrItemService;
+import com.dili.trace.service.UsualAddressService;
+import com.diligrp.manage.sdk.domain.UserTicket;
+import com.diligrp.manage.sdk.session.SessionContext;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -72,7 +73,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Autowired
 	UsualAddressService usualAddressService;
 	@Autowired
-	UserQrItemDetailService userQrItemDetailService;
+	UserQrItemService userQrItemService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -1064,7 +1065,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBillId != null) {
 			RegisterBill bill = this.get(registerBillId);
 			if (bill != null) {
-				this.userQrItemDetailService.updateQrItemDetail(bill);
+				this.userQrItemService.updateQrItemDetail(bill);
 			}
 		}
 
@@ -1074,7 +1075,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	 */
 	private void updateUserQrItemDetailByCondition(RegisterBill condition) {
 		this.listByExample(condition).stream().forEach(bill->{
-			this.userQrItemDetailService.updateQrItemDetail(bill);
+			this.userQrItemService.updateQrItemDetail(bill);
 		});
 
 	}

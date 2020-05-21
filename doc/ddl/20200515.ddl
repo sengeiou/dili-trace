@@ -58,20 +58,17 @@ CREATE TABLE `user_qr_item` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL COMMENT '用户(商户)ID',
   `qr_item_type` int(11) NOT NULL COMMENT '二维码信息类型',
-  `qr_item_status` int(11) NOT NULL COMMENT '二维码信息状态',
+  `objects` varchar(500) DEFAULT NULL COMMENT '',
+  `color` int(11) NOT NULL COMMENT '',
+  `action` int(11) NOT NULL COMMENT '',
+   `has_data` int(11) NOT NULL COMMENT '',
+   `valid` int(11) NOT NULL COMMENT '',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `user_qr_item_detail` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_qr_item_id` bigint(20) NOT NULL COMMENT '用户二维码信息ID',
-  `object_id` varchar(15) NOT NULL COMMENT '数据ID',
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 ALTER TABLE `register_bill` ADD COLUMN  `separate_sales_record_id` bigint(20) NULL COMMENT '业户库存信息ID';

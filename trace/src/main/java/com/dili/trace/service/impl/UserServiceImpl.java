@@ -1,10 +1,21 @@
 package com.dili.trace.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.service.RedisService;
@@ -24,26 +35,12 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserQrItemDetailService;
+import com.dili.trace.service.UserQrItemService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
 import com.dili.trace.service.UsualAddressService;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.server.PathContainer;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import cn.hutool.core.collection.CollUtil;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -66,7 +63,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Resource
     UsualAddressService usualAddressService;
     @Resource
-    UserQrItemDetailService userQrItemDetailService;
+    UserQrItemService userQrItemService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -463,6 +460,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     private void updateUserQrItem(Long userId) {
-        this.userQrItemDetailService.updateQrItemDetail(this.get(userId));
+        this.userQrItemService.updateQrItemDetail(this.get(userId));
     }
 }

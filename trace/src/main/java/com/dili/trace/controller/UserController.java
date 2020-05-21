@@ -10,30 +10,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
-import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.exception.BusinessException;
-import com.dili.common.service.BaseInfoRpcService;
-import com.dili.common.util.MD5Util;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserQrItem;
-import com.dili.trace.domain.UserQrItemDetail;
-import com.dili.trace.dto.UserListDto;
-import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.QrItemStatusEnum;
-import com.dili.trace.glossary.QrItemTypeEnum;
-import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserQrItemDetailService;
-import com.dili.trace.service.UserQrItemService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.service.UsualAddressService;
-import com.dili.trace.util.MaskUserInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +20,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.exception.BusinessException;
+import com.dili.common.service.BaseInfoRpcService;
+import com.dili.common.util.MD5Util;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
+import com.dili.trace.domain.UserQrItem;
+import com.dili.trace.dto.UserListDto;
+import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.QrItemTypeEnum;
+import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserQrItemService;
+import com.dili.trace.service.UserService;
+import com.dili.trace.service.UsualAddressService;
+import com.dili.trace.util.MaskUserInfo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -262,8 +259,6 @@ public class UserController {
 	// }
 	@Autowired
 	UserQrItemService userQrItemService;
-	@Autowired
-	UserQrItemDetailService userQrItemDetailService;
 	@ApiOperation("跳转到qrstatus页面")
 	@RequestMapping(value = "/qrstatus.html", method = RequestMethod.GET)
 	public String qrstatus(ModelMap modelMap, Long id) {
@@ -274,17 +269,17 @@ public class UserController {
 			userQrItemlist = this.userQrItemService.listByExample(userQrIztem);
 		}
 
-		List<UserQrItemDetail>userQrItemDetailList= this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
-		Map<Long,String>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId,Collectors.mapping(UserQrItemDetail::getObjectId,Collectors.joining(","))));
+//		List<UserQrItemDetail>userQrItemDetailList= this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
+//		Map<Long,String>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId,Collectors.mapping(UserQrItemDetail::getObjectId,Collectors.joining(","))));
 		modelMap.put("userQrItemlist", userQrItemlist);
-		modelMap.put("itemIdDetailListMap", itemIdDetailListMap);
-		
+//		modelMap.put("itemIdDetailListMap", itemIdDetailListMap);
+//		
 		Map<Integer,String>qrItemTypeMap=Stream.of(QrItemTypeEnum.values()).collect(Collectors.toMap(QrItemTypeEnum::getCode, QrItemTypeEnum::getDesc));
 		modelMap.put("qrItemTypeMap", qrItemTypeMap);
-
-		Map<Integer,String>qrItemStatusMap=Stream.of(QrItemStatusEnum.values()).collect(Collectors.toMap(QrItemStatusEnum::getCode, QrItemStatusEnum::getDesc));
-		modelMap.put("qrItemStatusMap", qrItemStatusMap);
-		
+//
+//		Map<Integer,String>qrItemStatusMap=Stream.of(QrItemStatusEnum.values()).collect(Collectors.toMap(QrItemStatusEnum::getCode, QrItemStatusEnum::getDesc));
+//		modelMap.put("qrItemStatusMap", qrItemStatusMap);
+//		
 		modelMap.put("userId", id);
 
 		return "user/qrstatus";

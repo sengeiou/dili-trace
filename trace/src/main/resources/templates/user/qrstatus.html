@@ -15,12 +15,20 @@
                 <%for (userQrItem in userQrItemlist){%>
                     <div class="form-group">
                         <label class="label-title text-left">${qrItemTypeMap[userQrItem.qrItemType]}</label>
-                        <%if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.RED.getCode()){
-                            %><a href="javascript:void(0)" onclick="add('${userQrItem.qrItemType}',${userId})"><span style="color: red;">补充</span></a><%
-                        }else if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.YELLOW.getCode()){
-                            %><a href="javascript:void(0)" onclick="edit('${userQrItem.qrItemType}','${itemIdDetailListMap[userQrItem.id]}',${userId})"><span style="color: yellow;" >审核</span></a><%                        
-                        }else if(userQrItem.qrItemStatus==@com.dili.trace.glossary.QrItemStatusEnum.GREEN.getCode()){
-                            %><a href="javascript:void(0)" onclick="view('${userQrItem.qrItemType}','${itemIdDetailListMap[userQrItem.id]}')"><span style="color: green;" >查看</span></a><%
+                        <%if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.CREATE.getCode()){
+                            %><a href="javascript:void(0)" onclick="add('${userQrItem.qrItemType}',${userId})"><span style="color: red;">增加</span></a><%
+                        }else if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.APPROVE.getCode()){
+                        	if(userQrItem.objects==null){%>
+                             <a href="javascript:void(0)"  ><span style="color: yellow;" >无</span></a>
+                            <%}else{%>
+                            <a href="javascript:void(0)" onclick="edit('${userQrItem.qrItemType}','','${userQrItem.objects}')"><span style="color: yellow;" >审核</span></a>
+                            <%}                       
+                        }else if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.DONOTHING.getCode()){
+                            if(userQrItem.objects==null){%>
+                             <a href="javascript:void(0)"  ><span style="color: green;" >无</span></a>
+                            <%}else{%>
+                             <a href="javascript:void(0)" onclick="view('${userQrItem.qrItemType}','${userQrItem.objects}')"><span style="color: green;" >查看</span></a>
+                            <%}
                         }%>
                         <br/>
                     </div>
