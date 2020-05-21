@@ -5,19 +5,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.api.dto.CheckInApiDetailOutput;
 import com.dili.trace.api.dto.CheckInApiInput;
+import com.dili.trace.api.dto.CheckInApiListOutput;
+import com.dili.trace.dao.CheckinRecordMapper;
 import com.dili.trace.domain.CheckinRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
@@ -27,6 +31,8 @@ public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
     RegisterBillService registerBillService;
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
+    @Autowired
+    CheckinRecordMapper checkinRecordMapper;
 
     @Transactional
     public CheckinRecord doCheckin(User operateUser, CheckInApiInput checkInApiInput) {
@@ -79,6 +85,21 @@ public class CheckinRecordService extends BaseServiceImpl<CheckinRecord, Long> {
 
         return checkinRecord;
 
+    }
+    public CheckInApiDetailOutput getCheckInDetail(Long billId) {
+    	return null;
+    }
+    public BasePage<CheckInApiListOutput>listCheckInApiListOutputPage(RegisterBill query){
+    	Integer total=this.checkinRecordMapper.countlistCheckInRecord(query);
+    	List<CheckInApiListOutput> list = this.checkinRecordMapper.listCheckInRecord(query);
+		BasePage<CheckInApiListOutput> result = new BasePage();
+
+		result.setPage(query.getPage());
+		result.setRows(query.getRows());
+		result.setTotalItem(total);
+		
+		return result;
+    	
     }
 
 }

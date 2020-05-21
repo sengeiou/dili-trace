@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.CheckinRecordMapper">
+
+
+  <select id="listCheckInRecord"  parameterType="com.dili.trace.domain.RegisterBill" resultType="com.dili.trace.api.dto.CheckInApiListOutput">
+    	select 
+		id,
+		code,
+		name,
+		phone,
+		state,
+		upstream.name as upstream_name,
+		upstream.telphone as upstream_telphone
+		from register_bill left join upstream on register_bill.upstream_id=upstream.id
+    	where 1=1
+    <if test="customerId != null">
+        and register_bill.user_id = #{customerId}
+    </if>
+    <if test="customerId != null">
+        and register_bill.state = #{customerId}
+    </if>
+  </select>
+  
+  <select id="countlistCheckInRecord"   parameterType="com.dili.trace.domain.RegisterBill" resultType="java.lang.Long">
+    	select  count(1)
+		from register_bill left join upstream on register_bill.upstream_id=upstream.id
+    	where 1=1
+    <if test="userId != null">
+        and register_bill.user_id = #{userId}
+    </if>
+    <if test="state != null">
+        and register_bill.state = #{state}
+    </if>
+  </select>
+  
+</mapper>

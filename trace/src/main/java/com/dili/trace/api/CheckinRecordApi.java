@@ -2,20 +2,6 @@ package com.dili.trace.api;
 
 import javax.annotation.Resource;
 
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.SessionContext;
-import com.dili.common.exception.BusinessException;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.dto.CheckInApiInput;
-import com.dili.trace.domain.CheckinRecord;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.service.CheckinRecordService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.UserService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +9,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.SessionContext;
+import com.dili.common.exception.BusinessException;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.dto.CheckInApiDetailOutput;
+import com.dili.trace.api.dto.CheckInApiInput;
+import com.dili.trace.api.dto.CheckInApiListOutput;
+import com.dili.trace.domain.CheckinRecord;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.User;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.service.CheckinRecordService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.UserService;
 
 import io.swagger.annotations.Api;
 
@@ -50,11 +52,26 @@ public class CheckinRecordApi {
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
-        BasePage<RegisterBill> page = this.registerBillService.listPageByExample(query);
+        BasePage<CheckInApiListOutput> page = this.checkinRecordService.listCheckInApiListOutputPage(query);
 
         return BaseOutput.success().setData(page);
     }
-
+    /**
+     * 分页查询需要被进场查询的信息
+     */
+    @RequestMapping(value = "/getCheckInDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
+    public BaseOutput<Object> getCheckInDetail(@RequestBody RegisterBillDto query) {
+        User user = userService.get(sessionContext.getAccountId());
+        if (user == null) {
+            return BaseOutput.failure("未登陆用户");
+        }
+        if(query==null||query.getId()==null) {
+        	  return BaseOutput.failure("参数错误");
+        }
+        CheckInApiDetailOutput detail=this.checkinRecordService.getCheckInDetail(query.getId());
+        
+        return BaseOutput.success().setData(detail);
+    }
     /**
      * 进场
      */
