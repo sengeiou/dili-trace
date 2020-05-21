@@ -55,6 +55,11 @@ public class CheckinRecordApi {
 //        if (user == null) {
 //            return BaseOutput.failure("未登陆用户");
 //        }
+		logger.info(sessionContext.getSessionId());
+		logger.info("{?}",sessionContext.getAccountId());
+		logger.info("{?}",sessionContext.getMap());
+		logger.info("{?}",sessionContext.getUserType());
+		logger.info("{?}",sessionContext.getRelationId());
 		BasePage<CheckInApiListOutput> page = this.checkinRecordService.listCheckInApiListOutputPage(query);
 
 		return BaseOutput.success().setData(page);
