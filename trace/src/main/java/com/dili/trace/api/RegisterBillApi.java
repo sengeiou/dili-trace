@@ -11,6 +11,7 @@ import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.CreateListBillParam;
@@ -227,32 +228,41 @@ public class RegisterBillApi {
 			User salesUser = this.userService.get(salesUserId);
 			boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(salesUserId).stream()
 					.anyMatch(up ->user.getId().equals(up.getSourceUserId()));
-
+			
 			if (storeWeight.compareTo(salesWeight) < 0) {
 				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
 			}
 			if (!hasUpStream) {
+				UpStream upStream=this.upStreamService.queryUpStreamBySourceUserId(user.getId());
 				UpStreamDto upStreamDto = new UpStreamDto();
-				if(UserTypeEnum.USER.getCode().equals(user.getUserType())) {
-					upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());	
+				if(upStream==null) {
+					if(UserTypeEnum.USER.getCode().equals(user.getUserType())) {
+						upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());	
+					}else {
+						upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
+					}
+					
+					upStreamDto.setIdCard(user.getCardNo());
+					upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
+					upStreamDto.setOperationLicenseUrl(user.getOperationLicenseUrl());
+					upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
+					upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
+					upStreamDto.setName(user.getName());
+					upStreamDto.setSourceUserId(user.getId());
+					upStreamDto.setLicense(user.getLicense());
+					upStreamDto.setTelphone(user.getPhone());
+					upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
+					upStreamDto.setUserIds(Arrays.asList(input.getSalesUserId()));
+					upStreamDto.setCreated(new Date());
+					upStreamDto.setModified(new Date());
+					this.upStreamService.addUpstream(upStreamDto, new OperatorUser(user.getId(), user.getName()));
 				}else {
-					upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
+					upStreamDto.setUserIds(Arrays.asList(input.getSalesUserId()));
+					upStreamDto.setId(upStream.getId());
+					this.upStreamService.addUpstreamUsers(upStreamDto, new OperatorUser(user.getId(), user.getName()));
 				}
 				
-				upStreamDto.setIdCard(user.getCardNo());
-				upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
-				upStreamDto.setOperationLicenseUrl(user.getOperationLicenseUrl());
-				upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
-				upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
-				upStreamDto.setName(user.getName());
-				upStreamDto.setSourceUserId(user.getId());
-				upStreamDto.setLicense(user.getLicense());
-				upStreamDto.setTelphone(user.getPhone());
-				upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
-				
-				upStreamDto.setCreated(new Date());
-				upStreamDto.setModified(new Date());
-				this.upStreamService.addUpstream(upStreamDto, new OperatorUser(user.getId(), user.getName()));
+
 
 			}
 

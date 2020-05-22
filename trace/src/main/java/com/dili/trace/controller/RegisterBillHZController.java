@@ -1,6 +1,7 @@
 package com.dili.trace.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,7 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/registerBillHZ")
 public class RegisterBillHZController {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillHZController.class);
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
@@ -115,7 +116,8 @@ public class RegisterBillHZController {
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(),e);
+			return BaseOutput.failure("服务端失败");
 		}
 
 		return BaseOutput.success("操作成功");
@@ -164,9 +166,8 @@ public class RegisterBillHZController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
-	public String edit(ModelMap modelMap,@RequestParam("idList")List<Long>idList,@RequestParam("userId")Long userId) {
-		List<Long> ids = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull)
-				.collect(Collectors.toList());
+	public String edit(ModelMap modelMap,@RequestParam("id")Long id,@RequestParam("userId")Long userId) {
+		List<Long> ids =Arrays.asList(id);
 		User userItem = this.userService.get(userId);
 		modelMap.put("userItem", userItem);
 		List<RegisterBill> registerBillList = new ArrayList<>();

@@ -12,9 +12,13 @@ public enum QrItemActionEnum {
 	 */
 	CREATE(20, "增加"),
 	/**
-	 * 完整
+	 * 正常
 	 */
-	DONOTHING(30, "完整"),
+	DONOTHING(30, "正常"),
+	/**
+	 * 正常
+	 */
+	VIEW(40, "查看"),
 	/**
 	 * 其他
 	 */

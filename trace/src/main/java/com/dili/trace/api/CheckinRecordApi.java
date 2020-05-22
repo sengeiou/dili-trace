@@ -1,7 +1,5 @@
 package com.dili.trace.api;
 
-import java.util.Optional;
-
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -20,9 +18,10 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.dto.CheckInApiDetailOutput;
 import com.dili.trace.api.dto.CheckInApiInput;
 import com.dili.trace.api.dto.CheckInApiListOutput;
+import com.dili.trace.api.dto.ManullyCheckInput;
 import com.dili.trace.domain.CheckinRecord;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.service.CheckinRecordService;
@@ -97,6 +96,26 @@ public class CheckinRecordApi {
 		try {
 			CheckinRecord checkinRecord = this.checkinRecordService.doCheckin(new OperatorUser(0L, "test"), input);
 			return BaseOutput.success().setData(checkinRecord.getId());
+		} catch (BusinessException e) {
+
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+	}
+	/**
+	 * 合格/不合格
+	 */
+	@RequestMapping(value = "/doManullyCheck.api", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseOutput<Long> doManullyCheck(@RequestBody ManullyCheckInput input) {
+//		User user = userService.get(sessionContext.getAccountId());
+//		if (user == null) {
+//			return BaseOutput.failure("未登陆用户");
+//		}
+		try {
+			SeparateSalesRecord record = this.checkinRecordService.doManullyCheck(new OperatorUser(0L, "test"), input);
+			return BaseOutput.success();
 		} catch (BusinessException e) {
 
 			return BaseOutput.failure(e.getMessage());

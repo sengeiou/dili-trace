@@ -106,9 +106,7 @@ public class CheckoutRecordService extends BaseServiceImpl<CheckoutRecord, Long>
 		}else if(separateSalesRecord.getParentId()!=null) {
 			SeparateSalesRecord parentSalesRecord = this.separateSalesRecordService.get(separateSalesRecord.getParentId());
 			if(parentSalesRecord!=null&&parentSalesRecord.getSalesUserId()!=null) {
-				UpStream query=new UpStream();
-				query.setSourceUserId(parentSalesRecord.getSalesUserId());
-				UpStream upStream=this.upStreamService.listByExample(query).stream().findFirst().orElse(null);
+				UpStream upStream=this.upStreamService.queryUpStreamBySourceUserId(parentSalesRecord.getSalesUserId());
 				output.setUpStream(upStream);
 			}
 		

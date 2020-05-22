@@ -228,9 +228,9 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 				upStreamQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
 			}else {
 				upStreamQrItemItem.setValid(TFEnum.FALSE.getCode());
-				upStreamQrItemItem.setObjects(withoutAllNessaryInfo.stream().limit(5).map(String::valueOf).collect(Collectors.joining(",")));
+				upStreamQrItemItem.setObjects(withoutAllNessaryInfo.stream().limit(1).map(String::valueOf).collect(Collectors.joining(",")));
 				upStreamQrItemItem.setColor(ColorEnum.YELLOW.getCode());
-				upStreamQrItemItem.setAction(QrItemActionEnum.APPROVE.getCode());
+				upStreamQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
 			}
 		}
 		
@@ -265,9 +265,9 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 				billQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
 			}else {
 				billQrItemItem.setValid(TFEnum.FALSE.getCode());
-				billQrItemItem.setObjects(withoutUrl.stream().limit(5).map(String::valueOf).collect(Collectors.joining(",")));
+				billQrItemItem.setObjects(withoutUrl.stream().limit(1).map(String::valueOf).collect(Collectors.joining(",")));
 				billQrItemItem.setColor(ColorEnum.YELLOW.getCode());
-				billQrItemItem.setAction(QrItemActionEnum.APPROVE.getCode());
+				billQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
 			}
 		
 		}

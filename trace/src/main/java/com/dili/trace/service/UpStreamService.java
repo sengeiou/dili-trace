@@ -160,5 +160,20 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		return this.getActualDao().selectByExample(example);
 
 	}
+	
+	public UpStream queryUpStreamBySourceUserId(Long sourceUserId) {
+		if (sourceUserId == null) {
+			return null;
+		}
+		UpStream query=new UpStream();
+		query.setSourceUserId(sourceUserId);
+		UpStream upStream=this.listByExample(query).stream().findFirst().orElse(null);
+		 return upStream;
+
+	}
+	
+	
+	
+
 
 }

@@ -15,21 +15,13 @@
                 <%for (userQrItem in userQrItemlist){%>
                     <div class="form-group">
                         <label class="label-title text-left">${qrItemTypeMap[userQrItem.qrItemType]}</label>
-                        <%if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.CREATE.getCode()){
-                            %><a href="javascript:void(0)" onclick="add('${userQrItem.qrItemType}',${userId})"><span style="color: red;">增加</span></a><%
-                        }else if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.APPROVE.getCode()){
-                        	if(userQrItem.objects==null){%>
-                             <a href="javascript:void(0)"  ><span style="color: yellow;" >无</span></a>
-                            <%}else{%>
+                        <%if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.CREATE.getCode()){%>
+                             <a href="javascript:void(0)" onclick="add('${userQrItem.qrItemType}','${userId}')"><span style="color: red;">增加</span></a>
+                       <% }else if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.APPROVE.getCode()){%>
                             <a href="javascript:void(0)" onclick="edit('${userQrItem.qrItemType}','','${userQrItem.objects}')"><span style="color: yellow;" >审核</span></a>
-                            <%}                       
-                        }else if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.DONOTHING.getCode()){
-                            if(userQrItem.objects==null){%>
-                             <a href="javascript:void(0)"  ><span style="color: green;" >无</span></a>
-                            <%}else{%>
-                             <a href="javascript:void(0)" onclick="view('${userQrItem.qrItemType}','${userQrItem.objects}')"><span style="color: green;" >查看</span></a>
-                            <%}
-                        }%>
+                       <% }else if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.DONOTHING.getCode()){%>
+                             <a href="javascript:void(0)" onclick="view('${userQrItem.qrItemType}','${userQrItem.objects}')"><span style="color: green;" >正常</span></a>
+                       <% }%>
                         <br/>
                     </div>
                 <%}%>
@@ -74,12 +66,14 @@ function add(qrItemType,userId){
     if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.USER.getCode()}'){
         layerOpt.title="用户信息";
         layerOpt.content='${contextPath}/user/edit.html';
+
     }else if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.UPSTREAM.getCode()}'){
         layerOpt.title="上游信息";
         layerOpt.content='${contextPath}/upStream/edit.html';
+        layerOpt.area= ['680px', '500px'];
     }else if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.BILL.getCode()}'){
         layerOpt.title="登记单信息";
-        layerOpt.content='${contextPath}/registerBillHZ/edit.html';
+        layerOpt.content='${contextPath}/registerBillHZ/edit.html?userId='+userId;
         layerOpt.yes= function(index, layero){
                   //按钮【按钮一】的回调
                layer.getChildFrame('body', index).find("#submitFormBtn").trigger('click')
@@ -109,13 +103,15 @@ function edit(qrItemType,ids,userId){
             }};
     if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.USER.getCode()}'){
         layerOpt.title="修改用户信息";
-        layerOpt.content='${contextPath}/user/edit.html?id='+ids;
+        layerOpt.content='${contextPath}/user/edit.html?id='+id;
+
     }else if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.UPSTREAM.getCode()}'){
         layerOpt.title="修改上游信息";
-        layerOpt.content='${contextPath}/upStream/edit.html?id='+ids;
+        layerOpt.content='${contextPath}/upStream/edit.html?id='+id;
+        layerOpt.area= ['680px', '500px'];
     }else if(qrItemType=='${@com.dili.trace.glossary.QrItemTypeEnum.BILL.getCode()}'){
         layerOpt.title="修改登记单信息";
-        layerOpt.content='${contextPath}/registerBillHZ/edit.html?'+  ids.split(",").map(function(v,u){return "idList="+v;}).join("&")+"&userId="+userId;
+        layerOpt.content='${contextPath}/registerBillHZ/edit.html?id='+ id;
     }else{
         return;
     }
