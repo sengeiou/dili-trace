@@ -125,4 +125,103 @@
       AND separate_sales_record.sales_user_id = #{userId}
     </if>
   </select>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <select id="listCheckRecordOutput"  parameterType="com.dili.trace.api.dto.SeparateSalesApiListQueryInput" resultType="com.dili.trace.api.dto.SeparateSalesApiListOutput">
+    
+    select * from (
+      select 'checkin',checkin_record.checkin_status as status,register_bill.product_name 
+
+
+
+from checkin_record left join separate_sales_record 
+on checkin_record.id=separate_sales_record.checkin_record_id 
+left join register_bill on separate_sales_record.bill_id =register_bill.id 
+where checkin_record.operator_id =#{operator_id}
+<if test="createdStart != null  and createdStart != ''">
+      <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
+    </if>
+    <if test="createdEnd != null  and createdEnd != ''">
+      <![CDATA[AND separate_sales_record.id <=#{createdEnd}]]>
+    </if>
+        <if test="operatorId != null">
+      AND separate_sales_record.sales_user_id = #{operatorId}
+    </if>
+union 
+
+select 'checkout',checkout_record.checkout_status as status,register_bill.product_name 
+from checkout_record left join separate_sales_record 
+on checkout_record.id=separate_sales_record.checkout_record_id 
+left join register_bill on separate_sales_record.bill_id =register_bill.id 
+where checkin_record.operator_id =#{operator_id}
+<if test="createdStart != null  and createdStart != ''">
+      <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
+    </if>
+    <if test="createdEnd != null  and createdEnd != ''">
+      <![CDATA[AND separate_sales_record.id <=#{createdEnd}]]>
+    </if>
+
+    <if test="operatorId != null">
+      AND separate_sales_record.sales_user_id = #{operatorId}
+    </if>
+    
+    )t
+    
+  
+    
+
+  </select>
+  <select id="countlistCheckRecordOutput"  parameterType="com.dili.trace.api.dto.SeparateSalesApiListQueryInput" resultType="java.lang.Long">
+    select   count(1)  from (
+      select 'checkin',checkin_record.checkin_status as status,register_bill.product_name 
+		from checkin_record left join separate_sales_record 
+		on checkin_record.id=separate_sales_record.checkin_record_id 
+		left join register_bill on separate_sales_record.bill_id =register_bill.id 
+		where checkin_record.operator_id =#{operator_id}
+		<if test="createdStart != null  and createdStart != ''">
+		      <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
+		    </if>
+		    <if test="createdEnd != null  and createdEnd != ''">
+		      <![CDATA[AND separate_sales_record.id <=#{createdEnd}]]>
+		    </if>
+		        <if test="operatorId != null">
+		      AND separate_sales_record.sales_user_id = #{operatorId}
+		    </if>
+		union 
+		select 'checkout',checkout_record.checkout_status as status,register_bill.product_name 
+		from checkout_record left join separate_sales_record 
+		on checkout_record.id=separate_sales_record.checkout_record_id 
+		left join register_bill on separate_sales_record.bill_id =register_bill.id 
+		where checkin_record.operator_id =#{operator_id}
+		<if test="createdStart != null  and createdStart != ''">
+		      <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
+		    </if>
+		    <if test="createdEnd != null  and createdEnd != ''">
+		      <![CDATA[AND separate_sales_record.id <=#{createdEnd}]]>
+		    </if>
+		
+		    <if test="operatorId != null">
+		      AND separate_sales_record.sales_user_id = #{operatorId}
+		    </if>
+		    
+		    )t
+  </select>
 </mapper>

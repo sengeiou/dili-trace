@@ -78,25 +78,11 @@ CREATE TABLE `check_sheet_detail` (
 ) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=utf8;
 
 
--- trace.checkin_record definition
-
-CREATE TABLE `checkin_record` (
+/*进出门记录*/
+CREATE TABLE `checkinout_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `checkin_status` int(11) NOT NULL COMMENT '进门状态',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  `operator_id` bigint(20) DEFAULT NULL COMMENT '操作人',
-  `operator_name` varchar(20) DEFAULT NULL COMMENT '操作人ID',
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
--- trace.checkout_record definition
-
-CREATE TABLE `checkout_record` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `checkout_status` int(11) NOT NULL COMMENT '出门状态',
+  `status` int(11) NOT NULL COMMENT '进门状态',
+  `inout` int(11) NOT NULL COMMENT '进出门',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作人',
   `operator_name` varchar(20) DEFAULT NULL COMMENT '操作人ID',

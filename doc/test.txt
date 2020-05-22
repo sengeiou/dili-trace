@@ -6,3 +6,11 @@
 
 http://mgtest.nong12.com/loginControl/login.do
 
+
+/api/checkinRecordApi
+/api/checkoutRecordApi
+/api/checkRecordApi
+
+
+===
+/api/checkinRecordApi

@@ -79,7 +79,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
         queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
         SeparateSalesRecord item = this.listByExample(queryCondition).stream().findFirst()
                 .orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
-        if (item != null) {
+        if (item.getId() != null) {
             SeparateSalesRecord updatable = DTOUtils.newDTO(SeparateSalesRecord.class);
             updatable.setCheckinRecordId(checkinRecordId);
             updatable.setId(item.getId());
