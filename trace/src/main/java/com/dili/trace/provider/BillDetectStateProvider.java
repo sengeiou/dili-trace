@@ -24,17 +24,19 @@ import java.util.stream.Stream;
 @Component
 public class BillDetectStateProvider implements ValueProvider {
 
-    private static final List<ValuePair<?>> BUFFER = new ArrayList<>();
-
-    static {
-        BUFFER.addAll(Stream.of(BillDetectStateEnum.values())
+	private static final List<ValuePair<?>> BUFFER = buildValuePair();
+	private static List<ValuePair<?>> buildValuePair(){
+		
+		List<ValuePair<?>> list = new ArrayList<>();
+		list.addAll(Stream.of(BillDetectStateEnum.values())
                 .map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString()))
                 .collect(Collectors.toList()));
+		return list;
     }
 
     @Override
     public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
-        return BUFFER;
+        return buildValuePair();
     }
 
     @Override

@@ -27,15 +27,18 @@ import java.util.stream.Stream;
 @Component
 public class RegisterBillStateProvider implements ValueProvider {
 
-	private static final List<ValuePair<?>> BUFFER = new ArrayList<>();
-
-	static {
-		BUFFER.addAll(Stream.of(RegisterBillStateEnum.values())
+	private static final List<ValuePair<?>> BUFFER = buildValuePair();
+	private static List<ValuePair<?>> buildValuePair(){
+		
+		List<ValuePair<?>> list = new ArrayList<>();
+		list.addAll(Stream.of(RegisterBillStateEnum.values())
 				.map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString())).collect(Collectors.toList()));
+		return list;
+		
 	}
-
 	@Override
 	public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
+		List<ValuePair<?>> list=buildValuePair();
 		Object queryParamsObj = map.get(ValueProvider.QUERY_PARAMS_KEY);
 //		String emptyText = ValueProvider.EMPTY_ITEM_TEXT;
 //		List<ValuePair<?>> valuePairs =  providerObj == null ? Collections.EMPTY_LIST : providerObj.getLookupList(val, paramMap, null);
@@ -48,14 +51,14 @@ public class RegisterBillStateProvider implements ValueProvider {
 				if(excludes!=null&&!excludes.isEmpty()) {
 					List<String>excludeKeys=excludes.stream().filter(Objects::nonNull).map(Object::toString).collect(Collectors.toList());
 					
-					return BUFFER.stream()
+					return list.stream()
 							.filter(val -> !excludeKeys.contains(val.getValue()))
 							.collect(Collectors.toList());	
 				}
 				
 			}
 		}
-		return BUFFER;
+		return list;
 	}
 
 	@Override
