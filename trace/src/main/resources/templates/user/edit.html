@@ -15,7 +15,7 @@
             <div class="easyui-panel" style="width:100%;" align="left">
                 <form id="form" class="easyui-form" method="post" fit="true">
                     <input name="id" id="id" type="hidden" value="${item.id}">
-                    <table width="580px">
+                    <table width="670px">
                         <tr>
                             <td style="padding:5px;width:50%">
                                 <input class="easyui-textbox" name="name" id="name" style="width:100%"
@@ -31,7 +31,7 @@
                         </tr>
                         <tr>
                             <td style="padding:5px;">
-                                <input class="easyui-textbox" name="legalPerson" id="legalPerson" style="width:100%"
+                                <input class="easyui-textbox" name="cardNo" id="cardNo" style="width:100%"
                                     value="${item.cardNo}"
                                     data-options="label:'身份证号*:', validType:'cardNo',required:true" />
                             </td>
@@ -57,71 +57,7 @@
                                     data-options="label:'理货区号*:',prompt:'输入3位数字后回车',validType:['uniquetag','tagNum','tagLength[3]']" />
                             </td>
                         </tr>
-                </table>
-                <table width="580px" align="center"  name="typetable" >
-                    <tr>
-                        <td style="padding:5px;">
-                            <input class="easyui-tagbox" name="plates" id="plates" style="width:100%"
-                                value="${userPlates}"
-                                data-options="label:'车牌号:',prompt:'输入车牌号后回车',validType:['uniquetag','isLicensePlate']" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding:5px;">
-                            <input type="hidden" name="salesCityName" id="salesCityName" value="${item.salesCityName}">
-                            <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;"
-                                data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,validType:'comboBoxEditvalid[\'salesCityId\']',onSelect:function(record){
-                                    $('#salesCityName').val(record.text);
-                                }">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding:5px;">
-                            <label style="font-size: 14px">常用销地城市:</label>
-                            <div id="cityList">
-                                <% for(city in cities){%>
-                                <a href="javascript:void(0)"
-                                    onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"
-                                    title="${city.mergedAddress}">${city.address}</a>
-                                <%}%>
-                        </div>
-                    </td>
-                </tr>
-                    <tr>
-                        <td style="padding:5px;">
-                            <div class="fileimg-box" style="margin: 0 auto;">
-                                <span class="fileimg-plus-icon">+</span>
-                                <span class="fileimg-des">上传身份证正面照</span>
-                                <input type="file" name="file" id="cardNoFrontUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
-                                <img class="magnifying">
-                                <input type="hidden" name="cardNoFrontUrl" value="${item.cardNoFrontUrl}">
-                                <div class="fileimg-cover" style="display: none;"></div>
-                                <div class="fileimg-edit" style="display: none;">
-                                    <span class="fileimg-view">查看</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="padding:5px;">
-                            <div class="fileimg-box" style="margin: 0 auto;">
-                                <span class="fileimg-plus-icon">+</span>
-                                <span class="fileimg-des">上传身份证反面照</span>
-                                <input type="file" name="file" id="cardNoBackUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
-                                <img class="magnifying">
-                                <input type="hidden" name="cardNoBackUrl" value="${item.cardNoBackUrl}">
-                                <div class="fileimg-cover" style="display: none;"></div>
-                                <div class="fileimg-edit" style="display: none;">
-                                    <span class="fileimg-view">查看</span>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                
-                <input type="button" id="submitFormBtn" style="display: none;">
-            </form>
-            <div id="holdHiddenDiv"  style="display: none;">
-                <table width="580px" align="center" name="typetable">
-                    <tr>
+                        <tr>
                         <td style="padding:5px;">
                             <input class="easyui-textbox" name="legalPerson" id="legalPerson" style="width:100%" value="${item.legalPerson}"
                                 data-options="label:'法人*:',validType:'length[2,20]',required:true" />
@@ -133,7 +69,57 @@
                     </tr>
                     <tr>
                         <td style="padding:5px;">
-                            <div class="fileimg-box" style="margin: 0 auto;">
+                            <input class="easyui-tagbox" name="plates" id="plates" style="width:100%"
+                                value="${userPlates}"
+                                data-options="label:'车牌号:',prompt:'输入车牌号后回车',validType:['uniquetag','isLicensePlate']" />
+                        </td>
+                        <td style="padding:5px;">
+                            <input type="hidden" name="salesCityName" id="salesCityName" value="${item.salesCityName}">
+                            <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;"
+                                data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,validType:'comboBoxEditvalid[\'salesCityId\']',onSelect:function(record){
+                                    $('#salesCityName').val(record.text);
+                                }">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;" colspan="2">
+                            <label style="font-size: 14px">常用销地城市:</label>
+                            <div id="cityList">
+                                <% for(city in cities){%>
+                                <a href="javascript:void(0)"
+                                    onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"
+                                    title="${city.mergedAddress}">${city.address}</a>
+                                <%}%>
+                        </div>
+                    </td>
+                </tr>
+                    <tr>
+                        <td style="padding:5px; align-content: center;" colspan="2" align="center" >
+                            <div class="fileimg-box" style="margin: 0 auto;float:left" >
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传身份证正面照</span>
+                                <input type="file" name="file" id="cardNoFrontUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                                <img class="magnifying">
+                                <input type="hidden" name="cardNoFrontUrl" value="${item.cardNoFrontUrl}">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传身份证反面照</span>
+                                <input type="file" name="file" id="cardNoBackUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                                <img class="magnifying">
+                                <input type="hidden" name="cardNoBackUrl" value="${item.cardNoBackUrl}">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
                                 <span class="fileimg-plus-icon">+</span>
                                 <span class="fileimg-des">上传营业执照</span>
                                 <input type="file" name="file" id="businessLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
@@ -144,9 +130,7 @@
                                     <span class="fileimg-view">查看</span>
                                 </div>
                             </div>
-                        </td>
-                        <td style="padding:5px;">
-                            <div class="fileimg-box" style="margin: 0 auto;">
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
                                 <span class="fileimg-plus-icon">+</span>
                                 <span class="fileimg-des">上传生产许可证</span>
                                 <input type="file" name="file" id="manufacturingLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
@@ -157,9 +141,8 @@
                                     <span class="fileimg-view">查看</span>
                                 </div>
                             </div>
-                        </td>
-                        <td style="padding:5px;">
-                            <div class="fileimg-box" style="margin: 0 auto;">
+                       
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
                                 <span class="fileimg-plus-icon">+</span>
                                 <span class="fileimg-des">上传经营许可证</span>
                                 <input type="file" name="file" id="operationLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
@@ -172,10 +155,19 @@
                             </div>
                         </td>
                     </tr>
+                    
                 </table>
+                
+                <input type="button" id="submitFormBtn" style="display: none;">
+            </form>
+            <div  class="easyui-panel">
+<div id="holdHiddenDiv"  style="display: none;">
+
 
 
             </div>
+            </div>
+            
             </div>
         </div>
         <!-- ====================================================================================================================== -->
@@ -270,22 +262,22 @@
 			 //console.info(formOldData);
 			 //console.info(formNewData);
 			var content="【ID】："+formOldData.id;
-			if(formOldData._phone!=formNewData.phone){
+			if(formOldData.phone!=formNewData.phone){
 				//手机号	 
 				content=content+'<br/>【手机号】:从'+formOldData.phone+'"改为"'+formNewData.phone+'"';
 			}
-			if(JSON.stringify(formOldData._tallyAreaNos)!=JSON.stringify(formNewData._tallyAreaNos)){
+			if(JSON.stringify(formOldData.tallyAreaNos)!=JSON.stringify(formNewData.tallyAreaNos)){
 				 //理货区号
-				content=content+'<br/>【理货区号】:从'+$.makeArray(formOldData._tallyAreaNos).join(',')+'"改为"'+$.makeArray(formNewData._tallyAreaNos).join(',')+'"';
+				content=content+'<br/>【理货区号】:从'+$.makeArray(formOldData.tallyAreaNos).join(',')+'"改为"'+$.makeArray(formNewData.tallyAreaNos).join(',')+'"';
 			}
-			if(JSON.stringify(formOldData._plates)!=JSON.stringify(formNewData._plates)){
+			if(JSON.stringify(formOldData.plates)!=JSON.stringify(formNewData.plates)){
 				 //车牌号
-				content=content+'<br/>【车牌号】:从'+$.makeArray(formOldData._plates).join(',')+'"改为"'+$.makeArray(formNewData._plates).join(',')+'"';
+				content=content+'<br/>【车牌号】:从'+$.makeArray(formOldData.plates).join(',')+'"改为"'+$.makeArray(formNewData.plates).join(',')+'"';
 			}
 			
-			if(formOldData._salesCityName!=formNewData._salesCityName){
+			if(formOldData.salesCityName!=formNewData.salesCityName){
 				 //销地城市
-				content=content+'<br/>【销地城市】:从'+formOldData._salesCityName+'"改为"'+formNewData._salesCityName+'"';
+				content=content+'<br/>【销地城市】:从'+formOldData.salesCityName+'"改为"'+formNewData.salesCityName+'"';
 			}
 			TLOG.component.operateLog('用户管理',"用户修改",content);
 		}
@@ -327,37 +319,26 @@
             formOldData=$('#form').serializeObject();
         });
         function changUserType(newValue,oldValue){
-            var changeImageBoxVisible=false;
-            var form=$('#form');
-            if(oldValue==''||oldValue=='${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}'){
-                if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.CORPORATE.getCode()}') {
-                    changeImageBoxVisible=true;
-                }
-            }else if(oldValue=='${@com.dili.trace.glossary.UserTypeEnum.CORPORATE.getCode()}'){
-                if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}') {
-                    changeImageBoxVisible=true;
-                }
-            }
-            if(newValue=='${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}'){
-                $('#tallyAreaNos').removeAttr("readonly");
-                $('#tallyAreaNos').parent('td').show();
-            }else{
-
-                $('#tallyAreaNos').attr("readonly","readonly");
-                $('#tallyAreaNos').parent('td').hide();
-                
-            }
-            var holdHiddenDiv=$('#holdHiddenDiv');
-            if(changeImageBoxVisible==true){
-                var holdHiddenTable=holdHiddenDiv.html();
-                var tableInForm=form.find('table[name="typetable"]');
-                debugger
-                var html=tableInForm[0].outerHTML;
-                tableInForm.remove();
-                form.append(holdHiddenTable)
-                holdHiddenDiv.html(html)
-            }
-
+			var changeImageBoxVisible=false;
+			var form=$('#form');
+             if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.CORPORATE.getCode()}') {
+            	 $('#license').textbox('enableValidation')
+            	  $('#legalPerson').textbox('enableValidation')
+            	       $('#tallyAreaNos').tagbox('disableValidation');
+                $('#license').textbox('readonly',false);	// 禁用只读模式
+                $('#legalPerson').textbox('readonly',false);	// 禁用只读模式
+                $('#tallyAreaNos').tagbox('readonly',true);
+             }else  if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}') {
+            	 $('#license').textbox('disableValidation')
+            	 $('#legalPerson').textbox('disableValidation')
+            	    $('#tallyAreaNos').tagbox('enableValidation');
+            	 	$('#license').textbox('readonly',true);	// 启用只读模式
+            	 	  $('#legalPerson').textbox('readonly',true);	// 禁用只读模式
+            	 	 $('#tallyAreaNos').tagbox('readonly',false);
+                 
+             }
+            
+           
         }
         function initFileUpload(){
             $(":file").fileupload({

@@ -7,7 +7,7 @@
             type : 2,
             title : '用户新增',
             content : '${contextPath}/user/edit.html',
-            area : ['650px', '580px'],
+            area : ['670px', '550px'],
             shadeClose : false,
             shade : 0.5,
             btn: ['确认', '取消']
@@ -41,7 +41,7 @@
             type : 2,
             title : '用户修改',
             content : '${contextPath}/user/edit.html?id='+selected.id,
-            area : ['650px', '600px'],
+              area : ['670px', '550px'],
             shadeClose : false,
             shade : 0.5,
             btn: ['确认', '取消']
