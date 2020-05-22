@@ -106,7 +106,27 @@
                     <input type="text" class="form-control input-sm" value="${registerBill.phone!}" required readonly/>
                 </div>
                 <% } %>
+          		<br/>
+                <% if(upStream!=null){ %>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>上游</label>
+                    <input type="text" class="form-control input-sm" value="${upStream.name!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>上游类型</label>
+                    <input type="text" class="form-control input-sm" value="${upStreamTypeMap[upStream.upstreamType]!}" required readonly/>
+                </div>
+               
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>上游联系方式</label>
+                    <input type="text" class="form-control input-sm" value="${upStream.telphone!}" required readonly/>
+                </div>
+                <% } %>
             </div>
+            
 
             <div class="form-item-group">
                 <h4 class="form-item-title">检测信息</h4>

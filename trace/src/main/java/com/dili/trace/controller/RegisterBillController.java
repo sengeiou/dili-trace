@@ -12,6 +12,7 @@ import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
+import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
@@ -64,6 +65,8 @@ public class RegisterBillController {
 	BaseInfoRpcService baseInfoRpcService;
 	@Autowired
 	UsualAddressService usualAddressService;
+	@Autowired
+	UpStreamService upStreamService;
 
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -284,7 +287,12 @@ public class RegisterBillController {
 			condition.setRegisterBillCode(registerBill.getCode());
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
-
+		if(registerBill.getUpStreamId()!=null) {
+			UpStream upStream=this.upStreamService.get(registerBill.getUpStreamId());
+			modelMap.put("upStream", upStream);
+		}
+		Map<Integer,String>upStreamTypeMap=Stream.of(UpStreamTypeEnum.values()).collect(Collectors.toMap(UpStreamTypeEnum::getCode, UpStreamTypeEnum::getName));
+		modelMap.put("upStreamTypeMap", upStreamTypeMap);
 		// DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
 		// conditon.setRegisterBillCode(registerBill.getCode());
 		// conditon.setSort("id");

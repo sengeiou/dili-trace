@@ -57,26 +57,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		return page;
 	}
 
-	/**
-	 * 创建上游信息
-	 */
-	public UpStream createUpstream(Long userId, UpStream input) {
-		if (userId == null || input == null) {
-			throw new BusinessException("参数错误");
-		}
-		if (StringUtils.isBlank(input.getName())) {
-			throw new BusinessException("企业(个人)名称不能为空");
-		}
-		if (UpStreamTypeEnum.CORPORATE.equalsCode(input.getUpstreamType())) {
-
-		} else if (UpStreamTypeEnum.USER.equalsCode(input.getUpstreamType())) {
-
-		} else {
-			throw new BusinessException("参数错误");
-		}
-		this.insertSelective(input);
-		return input;
-	}
+	
 
 	/**
 	 * 删除用户上游关系

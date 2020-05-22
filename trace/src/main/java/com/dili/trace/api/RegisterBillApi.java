@@ -14,13 +14,16 @@ import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.CreateListBillParam;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.SeparateSalesRecordDTO;
+import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
+import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -64,6 +67,8 @@ public class RegisterBillApi {
 	UserTallyAreaService userTallyAreaService;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	UpStreamService upStreamService;
 
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createList", method = RequestMethod.POST)
@@ -217,9 +222,27 @@ public class RegisterBillApi {
 				storeWeight = record.getStoreWeight();
 
 			}
-			
+			Long salesUserId = input.getSalesUserId();
+			User salesUser = this.userService.get(salesUserId);
+			boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(salesUserId).stream()
+					.anyMatch(up -> up.getTelphone().equals(user.getPhone()));
+
 			if (storeWeight.compareTo(salesWeight) < 0) {
 				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
+			}
+			if (!hasUpStream) {
+				UpStreamDto upStreamDto = new UpStreamDto();
+				upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
+				upStreamDto.setIdCard(user.getCardNo());
+				upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
+				upStreamDto.setOperationLicenseUrl(user.getOperationLicenseUrl());
+				upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
+				upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
+				upStreamDto.setName(user.getName());
+				upStreamDto.setCreated(new Date());
+				upStreamDto.setModified(new Date());
+				this.upStreamService.addUpstream(upStreamDto, new OperatorUser(user.getId(), user.getName()));
+
 			}
 
 			// 更新被分销记录的剩余重量
