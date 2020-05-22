@@ -7,8 +7,10 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.SessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.dto.SeparateSalesApiListOutput;
 import com.dili.trace.api.dto.SeparateSalesApiListQueryInput;
+import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -65,7 +67,7 @@ public class SeparateSalesApi {
     }
 
     @ApiOperation(value = "通过ID获取详细信息")
-    @RequestMapping(value = "id/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
     public BaseOutput<SeparateSalesApiListOutput> getSeparateSalesRecord(@PathVariable Long id) {
         LOGGER.info("获取登记单:" + id);
         User user = userService.get(sessionContext.getAccountId());
@@ -79,5 +81,28 @@ public class SeparateSalesApi {
         SeparateSalesApiListOutput data = this.separateSalesRecordService.listByQueryInput(queryInput).stream()
                 .findFirst().orElse(null);
         return BaseOutput.success().setData(data);
+    }
+    @ApiOperation(value = "删除信息")
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    public BaseOutput<SeparateSalesApiListOutput> delete(@PathVariable Long id) {
+        LOGGER.info("获取登记单:" + id);
+        User user = userService.get(sessionContext.getAccountId());
+        if (user == null) {
+            return BaseOutput.failure("未登陆用户");
+        }
+        SeparateSalesRecord query=DTOUtils.newDTO(SeparateSalesRecord.class);
+        query.setSalesUserId(user.getId());
+        query.setId(id);
+        
+        SeparateSalesRecord item=   this.separateSalesRecordService.listByExample(query).stream().findFirst().orElse(null);
+        if(item==null) {
+        	 return BaseOutput.failure("数据不存在");
+        }
+        if(item.getParentId()==null) {
+        	this.separateSalesRecordService.delete(id);
+        	this.registerBillService.delete(item.getBillId());
+        }
+       
+        return BaseOutput.success();
     }
 }
