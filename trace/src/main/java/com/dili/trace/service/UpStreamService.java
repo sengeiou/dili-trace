@@ -140,7 +140,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	 * @param upstreamIds
 	 * @return Map｛upstreamId，userNames｝
 	 */
-	public List<Map<String, String>> queryUsersByUpstreamIds(List<Long> upstreamIds) {
+	public List<Map<String, Object>> queryUsersByUpstreamIds(List<Long> upstreamIds) {
 		return getActualDao().queryUsersByUpstreamIds(upstreamIds);
 	}
 

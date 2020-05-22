@@ -108,7 +108,7 @@ public class UpStreamController {
 		List<UpStream> upStreams = upStreamService.listByExample(upStreamDto);
 		List<UpStreamDto> upStreamDtos = new ArrayList<>();
 		if (!upStreams.isEmpty()) {
-			List<Map<String, String>> upstreamUsers = upStreamService
+			List<Map<String, Object>> upstreamUsers = upStreamService
 					.queryUsersByUpstreamIds(upStreams.stream().map(o -> o.getId()).collect(Collectors.toList()));
 
 			Map<Object, Object> idNameListMap = upstreamUsers.stream()

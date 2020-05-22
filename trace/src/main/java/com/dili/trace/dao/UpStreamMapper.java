@@ -12,5 +12,5 @@ public interface UpStreamMapper extends MyMapper<UpStream> {
      * @param upstreamIds
      * @return Map｛upstreamId，userNames｝
      */
-    List<Map<String,String>> queryUsersByUpstreamIds(List<Long> upstreamIds);
+    List<Map<String,Object>> queryUsersByUpstreamIds(List<Long> upstreamIds);
 }
