@@ -94,7 +94,11 @@ public class UpStream extends BaseDomain {
     private String cardNoBackUrl;
 
 
+    @ApiModelProperty(value = "复制来源userid")
+    @Column(name = "`source_user_id`")
+    private Long sourceUserId;
 
+    
     @ApiModelProperty(value = "操作人姓名")
     @Column(name = "`operator_name`")
     private String operatorName;
@@ -111,7 +115,15 @@ public class UpStream extends BaseDomain {
     @Column(name = "`modified`")
     private Date modified;
 
-    /**
+    public Long getSourceUserId() {
+		return sourceUserId;
+	}
+
+	public void setSourceUserId(Long sourceUserId) {
+		this.sourceUserId = sourceUserId;
+	}
+
+	/**
      * @return Long return the id
      */
     public Long getId() {

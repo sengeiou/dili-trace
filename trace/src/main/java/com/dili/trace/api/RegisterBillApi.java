@@ -225,7 +225,7 @@ public class RegisterBillApi {
 			Long salesUserId = input.getSalesUserId();
 			User salesUser = this.userService.get(salesUserId);
 			boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(salesUserId).stream()
-					.anyMatch(up -> up.getTelphone().equals(user.getPhone()));
+					.anyMatch(up ->user.getId().equals(up.getSourceUserId()));
 
 			if (storeWeight.compareTo(salesWeight) < 0) {
 				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
@@ -239,6 +239,7 @@ public class RegisterBillApi {
 				upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
 				upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
 				upStreamDto.setName(user.getName());
+				upStreamDto.setSourceUserId(user.getId());
 				upStreamDto.setCreated(new Date());
 				upStreamDto.setModified(new Date());
 				this.upStreamService.addUpstream(upStreamDto, new OperatorUser(user.getId(), user.getName()));

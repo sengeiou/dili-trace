@@ -15,7 +15,10 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.dto.CheckOutApiInput;
 import com.dili.trace.api.dto.CheckoutApiDetailOutput;
 import com.dili.trace.domain.CheckoutRecord;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.UpStream;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.glossary.CheckoutStatusEnum;
 
@@ -27,6 +30,8 @@ public class CheckoutRecordService extends BaseServiceImpl<CheckoutRecord, Long>
 	RegisterBillService registerBillService;
 	@Autowired
 	SeparateSalesRecordService separateSalesRecordService;
+	@Autowired
+	UpStreamService upStreamService;
 
 	@Transactional
 	public CheckoutRecord doCheckout(OperatorUser operateUser, CheckOutApiInput checkOutApiInput) {
@@ -89,7 +94,26 @@ public class CheckoutRecordService extends BaseServiceImpl<CheckoutRecord, Long>
 			throw new BusinessException("没有数据");
 		}
 		CheckoutApiDetailOutput output=new CheckoutApiDetailOutput();
-		output.setSeparateSalesRecord(separateSalesRecord);
+		
+		RegisterBill bill=this.registerBillService.get(separateSalesRecord.getBillId());
+		User user=this.userService.get(separateSalesRecord.getSalesUserId());
+		output.setId(separateSalesId);
+		output.setState(bill.getState());
+		output.setUser(user);
+		if(separateSalesRecord.getParentId()==null&&bill.getUpStreamId()!=null) {
+			UpStream upStream=this.upStreamService.get(bill.getUpStreamId());
+			output.setUpStream(upStream);
+		}else if(separateSalesRecord.getParentId()!=null) {
+			SeparateSalesRecord parentSalesRecord = this.separateSalesRecordService.get(separateSalesRecord.getParentId());
+			if(parentSalesRecord!=null&&parentSalesRecord.getSalesUserId()!=null) {
+				UpStream query=new UpStream();
+				query.setSourceUserId(parentSalesRecord.getSalesUserId());
+				UpStream upStream=this.upStreamService.listByExample(query).stream().findFirst().orElse(null);
+				output.setUpStream(upStream);
+			}
+		
+		}
+		
 		return output;
 
 	}

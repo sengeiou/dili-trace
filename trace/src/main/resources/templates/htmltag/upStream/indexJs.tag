@@ -6,9 +6,11 @@
             type : 2,
             title : '上游新增',
             content : '${contextPath}/upStream/edit.html',
-            area : ['30%', '620px'],
+            area : ['30%', '580px'],
             shadeClose : false,
             shade : 0.5,
+            scrollbar: true,
+            move: true,
             btn: ['确认', '取消']
             ,yes: function(index, layero){
                 //按钮【按钮一】的回调
@@ -45,9 +47,11 @@
             type : 2,
             title : '上游修改',
             content : '${contextPath}/upStream/edit.html?id='+selected.id,
-            area : ['30%', '620px'],
+            area : ['30%', '580px'],
             shadeClose : false,
             shade : 0.5,
+            scrollbar: true,
+            move: true,
             btn: ['确认', '取消']
             ,yes: function(index, layero){
                 //按钮【按钮一】的回调

@@ -34,7 +34,7 @@ CREATE TABLE `upstream` (
 
   `card_no_front_url`  varchar(100)  NULL COMMENT '身份证照正面',
   `card_no_back_url`  varchar(100)  NULL COMMENT '身份证照反面URL',
-
+  `source_user_id` bigint(20)  NULL COMMENT '复制来源userid',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作人',
   `operator_name` varchar(20) DEFAULT NULL COMMENT '操作人ID',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

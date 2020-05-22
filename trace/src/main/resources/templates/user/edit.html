@@ -329,12 +329,12 @@
         function changUserType(newValue,oldValue){
             var changeImageBoxVisible=false;
             var form=$('#form');
-            if(oldValue==''||oldValue=='${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}'||oldValue=='${@com.dili.trace.glossary.UserTypeEnum.CHECKER.getCode()}'){
+            if(oldValue==''||oldValue=='${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}'){
                 if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.CORPORATE.getCode()}') {
                     changeImageBoxVisible=true;
                 }
             }else if(oldValue=='${@com.dili.trace.glossary.UserTypeEnum.CORPORATE.getCode()}'){
-                if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}'||newValue == '${@com.dili.trace.glossary.UserTypeEnum.CHECKER.getCode()}') {
+                if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}') {
                     changeImageBoxVisible=true;
                 }
             }
