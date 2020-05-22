@@ -1,8 +1,5 @@
 package com.dili.trace.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -78,89 +75,99 @@ public class UpStreamController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value="/edit.html", method = RequestMethod.GET)
-	public String edit(ModelMap modelMap,Long id) {
-		if(null != id){
-			modelMap.put("upstream",upStreamService.get(id));
+	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
+	public String edit(ModelMap modelMap, Long id) {
+		if (null != id) {
+			modelMap.put("upstream", upStreamService.get(id));
 		}
 		return "upStream/edit";
 	}
 
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(UpStreamDto upStreamDto) throws Exception {
-		//业户名称查询
-		if(StringUtils.isNotBlank(upStreamDto.getLikeUserName())){
+		// 业户名称查询
+		if (StringUtils.isNotBlank(upStreamDto.getLikeUserName())) {
 			UserListDto userListDto = DTOUtils.newInstance(UserListDto.class);
 			userListDto.setLikeName(upStreamDto.getLikeUserName());
-			List<Long> userIds = userService.listByExample(userListDto).stream().map(o->o.getId()).collect(Collectors.toList());
-			if(CollectionUtils.isEmpty(userIds)){
+			List<Long> userIds = userService.listByExample(userListDto).stream().map(o -> o.getId())
+					.collect(Collectors.toList());
+			if (CollectionUtils.isEmpty(userIds)) {
 				return new EasyuiPageOutput(0, Collections.emptyList()).toString();
 			}
 
 			RUserUpstreamDto rUserUpstream = new RUserUpstreamDto();
 			rUserUpstream.setUserIds(userIds);
-			Set<Long> upstreamIds = rUserUpStreamService.listByExample(rUserUpstream).stream().map(o->o.getUpstreamId()).collect(Collectors.toSet());
+			Set<Long> upstreamIds = rUserUpStreamService.listByExample(rUserUpstream).stream()
+					.map(o -> o.getUpstreamId()).collect(Collectors.toSet());
 			upStreamDto.setIds(new ArrayList<>(upstreamIds));
-			if(CollectionUtils.isEmpty(upStreamDto.getIds())){
+			if (CollectionUtils.isEmpty(upStreamDto.getIds())) {
 				return new EasyuiPageOutput(0, Collections.emptyList()).toString();
 			}
 		}
 
 		List<UpStream> upStreams = upStreamService.listByExample(upStreamDto);
 		List<UpStreamDto> upStreamDtos = new ArrayList<>();
-		if(!upStreams.isEmpty()){
-			List<Map<String,String>> upstreamUsers = upStreamService.queryUsersByUpstreamIds(upStreams.stream().map(o->o.getId()).collect(Collectors.toList()));
-			Map<String,String> userNamesMap = BeanMapUtil.listToMap(upstreamUsers,"upstreamIds","userNames");
-			upStreams.forEach(o->{
+		if (!upStreams.isEmpty()) {
+			List<Map<String, String>> upstreamUsers = upStreamService
+					.queryUsersByUpstreamIds(upStreams.stream().map(o -> o.getId()).collect(Collectors.toList()));
+
+			Map<Object, Object> idNameListMap = upstreamUsers.stream()
+					.collect(Collectors.toMap(m -> m.get("upstreamIds"), m -> m.get("userNames")));
+//		{userNames=杭州用户,杨茂旭, upstreamIds=42}
+			upStreams.forEach(o -> {
 				UpStreamDto usd = new UpStreamDto();
-				BeanUtils.copyProperties(o,usd);
-				usd.setUserNames(userNamesMap.get(o.getId()));
+				BeanUtils.copyProperties(o, usd);
+				usd.setUserNames(String.valueOf(idNameListMap.get(o.getId())));
 				upStreamDtos.add(usd);
 			});
-		}else{
+		} else {
 			return new EasyuiPageOutput(0, Collections.emptyList()).toString();
 		}
 		List results = ValueProviderUtils.buildDataByProvider(upStreamDto, upStreamDtos);
-		long total = results instanceof Page ? ( (Page) results).getTotal() : results.size();
-		return  new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results).toString();
+		long total = results instanceof Page ? ((Page) results).getTotal() : results.size();
+		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results).toString();
+
 	}
 
-    /**
-     * 根据上游用户ID查询其绑定的所有业户
-     * @param upstreamId
-     * @return
-     */
-    @RequestMapping(value = "/listUserByUpstreamId.action", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody
-    BaseOutput<List<User>> listUserByUpstreamId(Long upstreamId) {
-        RUserUpstream rUserUpstream = new RUserUpstream();
-        rUserUpstream.setUpstreamId(upstreamId);
-        List<Long> userIds = rUserUpStreamService.list(rUserUpstream).stream().map(o->o.getUserId()).collect(Collectors.toList());
-        if(!userIds.isEmpty()){
-            UserListDto userListDto = DTOUtils.newInstance(UserListDto.class);
-            userListDto.setIds(userIds);
-            return BaseOutput.success().setData(userService.listByExample(userListDto));
-        }
-        return BaseOutput.success().setData(new ArrayList<>());
-    }
+	/**
+	 * 根据上游用户ID查询其绑定的所有业户
+	 * 
+	 * @param upstreamId
+	 * @return
+	 */
+	@RequestMapping(value = "/listUserByUpstreamId.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput<List<User>> listUserByUpstreamId(Long upstreamId) {
+		RUserUpstream rUserUpstream = new RUserUpstream();
+		rUserUpstream.setUpstreamId(upstreamId);
+		List<Long> userIds = rUserUpStreamService.list(rUserUpstream).stream().map(o -> o.getUserId())
+				.collect(Collectors.toList());
+		if (!userIds.isEmpty()) {
+			UserListDto userListDto = DTOUtils.newInstance(UserListDto.class);
+			userListDto.setIds(userIds);
+			return BaseOutput.success().setData(userService.listByExample(userListDto));
+		}
+		return BaseOutput.success().setData(new ArrayList<>());
+	}
 
-    @RequestMapping(value="/save.action", method = {RequestMethod.POST})
-    public @ResponseBody BaseOutput save(@RequestBody UpStreamDto upStreamDto){
-        try{
+	@RequestMapping(value = "/save.action", method = { RequestMethod.POST })
+	public @ResponseBody BaseOutput save(@RequestBody UpStreamDto upStreamDto) {
+		try {
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-			if(null == userTicket){
+			if (null == userTicket) {
 				return BaseOutput.failure("未登录或登录过期");
 			}
-			OperatorUser operatorUser=new OperatorUser(userTicket.getId(), userTicket.getRealName());
-            return null == upStreamDto.getId() ? upStreamService.addUpstream(upStreamDto,operatorUser) : upStreamService.updateUpstream(upStreamDto,operatorUser);
-        }catch (BusinessException e){
-            LOGGER.info("上游用户信息及业务绑定保存异常！", e);
-            return BaseOutput.failure(e.getErrorMsg());
-        }catch (Exception e){
-            LOGGER.error("上游用户信息及业务绑定保存异常！", e);
-            return BaseOutput.failure(e.getMessage());
-        }
+			OperatorUser operatorUser = new OperatorUser(userTicket.getId(), userTicket.getRealName());
+			return null == upStreamDto.getId() ? upStreamService.addUpstream(upStreamDto, operatorUser)
+					: upStreamService.updateUpstream(upStreamDto, operatorUser);
+		} catch (BusinessException e) {
+			LOGGER.info("上游用户信息及业务绑定保存异常！", e);
+			return BaseOutput.failure(e.getErrorMsg());
+		} catch (Exception e) {
+			LOGGER.error("上游用户信息及业务绑定保存异常！", e);
+			return BaseOutput.failure(e.getMessage());
+		}
 	}
+
 	@RequestMapping(value = "/queryUpStream.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput queryUpStream(UpStream input) {

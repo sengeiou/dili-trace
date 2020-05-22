@@ -24,6 +24,7 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -232,7 +233,12 @@ public class RegisterBillApi {
 			}
 			if (!hasUpStream) {
 				UpStreamDto upStreamDto = new UpStreamDto();
-				upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
+				if(UserTypeEnum.USER.getCode().equals(user.getUserType())) {
+					upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());	
+				}else {
+					upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
+				}
+				
 				upStreamDto.setIdCard(user.getCardNo());
 				upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
 				upStreamDto.setOperationLicenseUrl(user.getOperationLicenseUrl());
@@ -240,6 +246,9 @@ public class RegisterBillApi {
 				upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
 				upStreamDto.setName(user.getName());
 				upStreamDto.setSourceUserId(user.getId());
+				upStreamDto.setLicense(user.getLicense());
+				upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
+				
 				upStreamDto.setCreated(new Date());
 				upStreamDto.setModified(new Date());
 				this.upStreamService.addUpstream(upStreamDto, new OperatorUser(user.getId(), user.getName()));
