@@ -290,6 +290,8 @@ public class RegisterBillController {
 		if(registerBill.getUpStreamId()!=null) {
 			UpStream upStream=this.upStreamService.get(registerBill.getUpStreamId());
 			modelMap.put("upStream", upStream);
+		}else {
+			modelMap.put("upStream", null);
 		}
 		Map<Integer,String>upStreamTypeMap=Stream.of(UpStreamTypeEnum.values()).collect(Collectors.toMap(UpStreamTypeEnum::getCode, UpStreamTypeEnum::getName));
 		modelMap.put("upStreamTypeMap", upStreamTypeMap);
