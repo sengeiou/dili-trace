@@ -247,6 +247,7 @@ public class RegisterBillApi {
 				upStreamDto.setName(user.getName());
 				upStreamDto.setSourceUserId(user.getId());
 				upStreamDto.setLicense(user.getLicense());
+				upStreamDto.setTelphone(user.getPhone());
 				upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
 				
 				upStreamDto.setCreated(new Date());

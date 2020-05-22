@@ -41,7 +41,7 @@ public class QualityTraceTradeBillSyncJob {
 	private boolean scheduleEnable;
 	
 	// 间隔两分钟同步数据
-	@Scheduled(fixedDelay = 1000L * 60L * 2L)
+//	@Scheduled(fixedDelay = 1000L * 60L * 2L)
 	public void execute() {
 		if(!scheduleEnable) {
 			return;

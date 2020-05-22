@@ -22,13 +22,13 @@ public class UsualAddressCountClearJob {
 	@Autowired
 	UsualAddressMapper usualAddressMapper;
 	//应用启用时处理一次数据，防止上一次任务未执行
-	@PostConstruct
+//	@PostConstruct
 	public void init() {
 		this.checkAndClearUsedCount();
 	}
 
 	//每天00:00:01的时候执行数据处理
-	@Scheduled(cron = "1 0 0 * * ?")
+//	@Scheduled(cron = "1 0 0 * * ?")
 	public void execute() {
 		this.checkAndClearUsedCount();
 	}
