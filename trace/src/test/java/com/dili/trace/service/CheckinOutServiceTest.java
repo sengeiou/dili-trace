@@ -68,19 +68,19 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		query.mset(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is not null and checkout_record_id is null and `sales_type` = 0)");
 
-		List<Long> separateSalesIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId)
+		List<Long> billIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId)
 				.flatMap(billId -> {
 					SeparateSalesRecord q = DTOUtils.newDTO(SeparateSalesRecord.class);
 					q.setBillId(billId);
 					return this.separateSalesRecordService.listByExample(q).stream();
 
-				}).map(SeparateSalesRecord::getId).filter(Objects::nonNull).limit(1).collect(Collectors.toList());
-		if (separateSalesIdList.size() == 0) {
+				}).map(SeparateSalesRecord::getBillId).filter(Objects::nonNull).limit(1).collect(Collectors.toList());
+		if (billIdList.size() == 0) {
 			throw new RuntimeException("没有数据可以测试");
 		}
 		ManullyCheckInput input = new ManullyCheckInput();
 		input.setPass(true);
-		input.setSeparateSalesId(separateSalesIdList.get(0));
+		input.setBillId(billIdList.get(0));
 		this.checkinOutRecordService.doManullyCheck(new OperatorUser(2222L, "wangguofeng"), input);
 	}
 

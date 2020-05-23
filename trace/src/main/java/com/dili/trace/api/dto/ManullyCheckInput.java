@@ -1,26 +1,24 @@
 package com.dili.trace.api.dto;
 
-import java.util.List;
-
 public class ManullyCheckInput {
+	private Long billId;
 
-	/**
-	 * ID
-	 */
-	private Long separateSalesId;
+	public Long getBillId() {
+		return billId;
+	}
+
+	public void setBillId(Long billId) {
+		this.billId = billId;
+	}
+
+
 
 	/**
 	 * 是否合格
 	 */
 	private Boolean pass;
 
-	public Long getSeparateSalesId() {
-		return separateSalesId;
-	}
 
-	public void setSeparateSalesId(Long separateSalesId) {
-		this.separateSalesId = separateSalesId;
-	}
 
 	public Boolean getPass() {
 		return pass;

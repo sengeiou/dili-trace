@@ -39,6 +39,7 @@ import com.dili.trace.glossary.CheckinOutTypeEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.util.BasePageUtil;
 import com.github.pagehelper.Page;
 
@@ -184,11 +185,20 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	@Transactional
 	public SeparateSalesRecord doManullyCheck(OperatorUser operateUser, ManullyCheckInput input) {
-		if (input == null || input.getSeparateSalesId() == null || input.getPass() == null) {
+		if (input == null || input.getBillId() == null || input.getPass() == null) {
 			throw new BusinessException("参数错误");
 		}
-
-		SeparateSalesRecord separateSalesRecord = this.separateSalesRecordService.get(input.getSeparateSalesId());
+		RegisterBill bill = this.registerBillService.get(input.getBillId());
+		if (bill == null) {
+			throw new BusinessException("没有找到登记单");
+		}
+		if (!RegisterBillStateEnum.WAIT_CHECK.getCode().equals(bill.getState())) {
+			throw new BusinessException("登记单状态错误");
+		}
+		SeparateSalesRecord query=DTOUtils.newDTO(SeparateSalesRecord.class);
+		query.setBillId(input.getBillId());
+		query.setSalesType(SalesTypeEnum.OWNED.getCode());
+		SeparateSalesRecord separateSalesRecord = this.separateSalesRecordService.listByExample(query).stream().findFirst().orElse(null);
 
 		if (separateSalesRecord == null) {
 			throw new BusinessException("数据错误:没有数据");
@@ -207,13 +217,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (CheckinStatusEnum.ALLOWED != checkinStatusEnum) {
 			throw new BusinessException("数据错误:进门状态错误");
 		}
-		RegisterBill bill = this.registerBillService.get(separateSalesRecord.getBillId());
-		if (bill == null) {
-			throw new BusinessException("没有找到登记单");
-		}
-		if (!RegisterBillStateEnum.WAIT_CHECK.getCode().equals(bill.getState())) {
-			throw new BusinessException("登记单状态错误");
-		}
+		
+
 
 		RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
 		updatable.setId(bill.getId());
