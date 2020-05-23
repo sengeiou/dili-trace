@@ -91,8 +91,8 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         Map<String,Object> map=(Map<String, Object>) redisService.get(SESSION_PREFIX+sessionId);
         if(MapUtil.isEmpty(map)){
         	String operatorId=request.getHeader("operatorId");
-        	String operatorName=request.getHeader("operatorName");
-        	if(StrUtil.isBlank(operatorId)||StrUtil.isBlank(operatorName)) {
+//        	String operatorName=request.getHeader("operatorName");
+        	if(StrUtil.isBlank(operatorId)) {//||StrUtil.isBlank(operatorName)) {
         		return;
         	}
         	if(sessionContext.getAccountId()==null) {

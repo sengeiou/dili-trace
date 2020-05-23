@@ -87,7 +87,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	@Test
 	public void doCheckout() {
 		RegisterBillDto query = DTOUtils.newDTO(RegisterBillDto.class);
-		query.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+		query.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 		query.setDetectStateList(
 				Arrays.asList(BillDetectStateEnum.PASS.getCode(), BillDetectStateEnum.REVIEW_PASS.getCode()));
 		query.mset(IDTO.AND_CONDITION_EXPR,

@@ -89,7 +89,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			if (registerBill == null) {
 				return false;
 			}
-			if (!RegisterBillStateEnum.ALREADY_AUDIT.getCode().equals(registerBill.getState())) {
+			if (!RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {
 				return false;
 			}
 			if (BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())
@@ -222,7 +222,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
 		updatable.setId(bill.getId());
-		updatable.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+		updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 		if (input.getPass()) {
 			if (bill.getDetectState() != null) {
 				updatable.setDetectState(BillDetectStateEnum.REVIEW_PASS.getCode());
