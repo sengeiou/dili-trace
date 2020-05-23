@@ -1,15 +1,53 @@
 package com.dili.trace.api.dto;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 import com.dili.trace.glossary.RegisterBillStateEnum;
 
 public class CheckInApiListOutput {
 	private Long billId;
 	private Integer state;
 	private String code;
-	private String name;
+	private String productName;
+	
 	private String phone;
 	private String upstreamName;
 	private String upstreamTelphone;
+	private Date created;
+	private BigDecimal storeWeight;
+	
+	
+
+	public BigDecimal getStoreWeight() {
+		return storeWeight;
+	}
+
+
+	public void setStoreWeight(BigDecimal storeWeight) {
+		this.storeWeight = storeWeight;
+	}
+
+
+	public Date getCreated() {
+		return created;
+	}
+
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+
+	public String getProductName() {
+		return productName;
+	}
+
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
 
 	public String getStateName() {
 		try {
@@ -49,13 +87,6 @@ public class CheckInApiListOutput {
 		this.code = code;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public String getPhone() {
 		return phone;

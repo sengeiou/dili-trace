@@ -18,6 +18,7 @@ import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTO;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.dto.CheckInApiDetailOutput;
 import com.dili.trace.api.dto.CheckInApiInput;
 import com.dili.trace.api.dto.CheckInApiListOutput;
@@ -107,8 +108,13 @@ public class CheckinOutRecordApi {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
+		RegisterBillDto condition=DTOUtils.newDTO(RegisterBillDto.class);
+		condition.setUserId(query.getUserId());
+		condition.setLikeProductName(query.getLikeProductName());
+		condition.setPage(query.getPage());
+		condition.setRows(query.getRows());
 
-		BasePage<CheckInApiListOutput> page = this.checkinOutRecordService.listCheckInApiListOutputPage(query);
+		BasePage<CheckInApiListOutput> page = this.checkinOutRecordService.listCheckInApiListOutputPage(condition);
 
 		return BaseOutput.success().setData(page);
 	}

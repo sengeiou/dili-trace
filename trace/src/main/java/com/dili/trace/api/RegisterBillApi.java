@@ -235,7 +235,7 @@ public class RegisterBillApi {
 			if (storeWeight.compareTo(salesWeight) < 0) {
 				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
 			}
-			if (!hasUpStream) {
+			if (!hasUpStream&&input.getSalesUserId()!=null) {
 				UpStream upStream=this.upStreamService.queryUpStreamBySourceUserId(user.getId());
 				UpStreamDto upStreamDto = new UpStreamDto();
 				if(upStream==null) {
@@ -280,8 +280,13 @@ public class RegisterBillApi {
 			input.setRegisterBillCode(registerBill.getCode());
 			input.setCreated(new Date());
 			input.setModified(new Date());
-			input.setSalesCityId(user.getSalesCityId());
-			input.setSalesCityName(user.getSalesCityName());
+			if(input.getSalesCityId()==null) {
+				input.setSalesCityId(user.getSalesCityId());
+			}
+			if(StringUtils.isBlank(input.getSalesCityName())) {
+				input.setSalesCityName(user.getSalesCityName());
+			}
+	
 			input.setStoreWeight(salesWeight);
 			registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
 			separateSalesRecordService.saveOrUpdate(input);

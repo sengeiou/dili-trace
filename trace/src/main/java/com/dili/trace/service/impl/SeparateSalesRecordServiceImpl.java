@@ -10,7 +10,10 @@ import com.dili.trace.dao.SeparateSalesRecordMapper;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.glossary.SalesTypeEnum;
+import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tk.mybatis.mapper.entity.Example;
@@ -26,6 +29,8 @@ import java.util.List;
 @Service
 public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSalesRecord, Long>
         implements SeparateSalesRecordService {
+	@Autowired
+	RegisterBillService registerBillService;
 
     public SeparateSalesRecordMapper getActualDao() {
         return (SeparateSalesRecordMapper) getDao();
@@ -72,21 +77,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
         return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
     }
 
-    @Override
-    public void checkInSeparateSalesRecord(Long checkinRecordId, Long billId) {
-        SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
-        queryCondition.setBillId(billId);
-        queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
-        SeparateSalesRecord item = this.listByExample(queryCondition).stream().findFirst()
-                .orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
-        if (item.getId() != null) {
-            SeparateSalesRecord updatable = DTOUtils.newDTO(SeparateSalesRecord.class);
-            updatable.setCheckinRecordId(checkinRecordId);
-            updatable.setId(item.getId());
-            this.updateSelective(updatable);
-        }
-    }
-
+   
     @Override
     public SeparateSalesRecord createOwnedSeparateSales(RegisterBill registerBill) {
         SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
@@ -120,5 +111,23 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
         }
         return item;
     }
+
+	@Override
+	public void checkInSeparateSalesRecord(Long checkinRecordId, RegisterBill bill) {
+		SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
+        queryCondition.setBillId(bill.getId());
+        queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
+        SeparateSalesRecord item = this.listByExample(queryCondition).stream().findFirst()
+                .orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
+        if (item.getId() != null) {
+            SeparateSalesRecord updatable = DTOUtils.newDTO(SeparateSalesRecord.class);
+            updatable.setCheckinRecordId(checkinRecordId);
+            updatable.setId(item.getId());
+            this.updateSelective(updatable);
+        }else {
+        	this.createOwnedSeparateSales(bill);
+        }
+		
+	}
    
 }

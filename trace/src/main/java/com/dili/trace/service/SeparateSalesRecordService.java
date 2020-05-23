@@ -25,5 +25,6 @@ public interface SeparateSalesRecordService extends BaseService<SeparateSalesRec
 
     public SeparateSalesRecord createOwnedSeparateSales(RegisterBill registerBill);
 
-    public void checkInSeparateSalesRecord(Long checkinRecordId, Long billId);
+    
+    public void checkInSeparateSalesRecord(Long checkinRecordId, RegisterBill bill);
 }

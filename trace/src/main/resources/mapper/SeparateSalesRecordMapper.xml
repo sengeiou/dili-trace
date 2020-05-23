@@ -82,6 +82,7 @@
     register_bill.latest_pd_result,
     register_bill.created as created,
     register_bill.state as state,
+    register_bill.detect_state as detect_state,
     register_bill.origin_name as origin_name
     from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id
     where separate_sales_record.bill_id is not null

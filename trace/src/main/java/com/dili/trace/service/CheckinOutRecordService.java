@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -166,7 +167,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		checkinRecord.setModified(new Date());
 		int returnValue = this.insertSelective(checkinRecord);
 		billList.stream().forEach(bill -> {
-			this.separateSalesRecordService.checkInSeparateSalesRecord(checkinRecord.getId(), bill.getId());
+			this.separateSalesRecordService.checkInSeparateSalesRecord(checkinRecord.getId(), bill);
 			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
 			updatable.setId(bill.getId());
 			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
@@ -270,42 +271,47 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	public BasePage<CheckInApiListOutput> listCheckInApiListOutputPage(RegisterBillDto query) {
 
-		RegisterBill condition = DTOUtils.newDTO(RegisterBill.class);
+//		RegisterBill condition = DTOUtils.newDTO(RegisterBill.class);
 		List<String> sqlList = new ArrayList<>();
 
-		if (query.getUserId() != null) {
-
-			sqlList.add("user_id=" + query.getUserId());
-
-		}
-		if (query.getUpStreamId() != null) {
-
-			sqlList.add("upstream_id=" + query.getUpStreamId());
-
-		}
-		if (query.getState() != null) {
-
-			sqlList.add("state=" + query.getState());
-		}
+//		if (query.getUserId() != null) {
+//
+//			sqlList.add("user_id=" + query.getUserId());
+//
+//		}
+//		if (query.getUpStreamId() != null) {
+//
+//			sqlList.add("upstream_id=" + query.getUpStreamId());
+//
+//		}
+//		if (query.getState() != null) {
+//
+//			sqlList.add("state=" + query.getState());
+//		}
 		if (sqlList.size() > 0) {
-
+//			query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
 		}
-		condition.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
+//		query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
 
-		BasePage<RegisterBill> billPage = this.registerBillService.listPageByExample(condition);
+		BasePage<RegisterBill> billPage = this.registerBillService.listPageByExample(query);
 		List<CheckInApiListOutput> dataList = billPage.getDatas().stream().map(bill -> {
 			CheckInApiListOutput out = new CheckInApiListOutput();
 			out.setBillId(bill.getId());
 			out.setCode(bill.getCode());
-			out.setName(bill.getName());
+			out.setProductName(bill.getProductName());
 			out.setPhone(bill.getPhone());
 			out.setState(bill.getState());
-			Optional.ofNullable(this.upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {
+			out.setCreated(bill.getCreated());
+			out.setStoreWeight(BigDecimal.valueOf(bill.getWeight()));
+			
+			if(bill.getUpStreamId()!=null) {
+				Optional.ofNullable(this.upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {
 
-				out.setUpstreamName(up.getName());
-				out.setUpstreamTelphone(up.getTelphone());
-			});
-			;
+					out.setUpstreamName(up.getName());
+					out.setUpstreamTelphone(up.getTelphone());
+				});
+			}
+	
 
 			return out;
 		}).collect(Collectors.toList());

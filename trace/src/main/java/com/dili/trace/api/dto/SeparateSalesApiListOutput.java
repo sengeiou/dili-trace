@@ -12,6 +12,7 @@ public class SeparateSalesApiListOutput extends BaseDomain {
     private BigDecimal storeWeight;
     private String productName;
     private Integer state;
+    private Integer detectState;
     private Integer salesType;
 
     private Long latestDetectRecordId;
@@ -22,7 +23,15 @@ public class SeparateSalesApiListOutput extends BaseDomain {
     private String plate;
     private Date created;
     
-    public Integer getSalesType() {
+    public Integer getDetectState() {
+		return detectState;
+	}
+
+	public void setDetectState(Integer detectState) {
+		this.detectState = detectState;
+	}
+
+	public Integer getSalesType() {
 		return salesType;
 	}
 

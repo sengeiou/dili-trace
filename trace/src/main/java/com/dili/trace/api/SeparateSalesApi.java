@@ -67,16 +67,16 @@ public class SeparateSalesApi {
     }
 
     @ApiOperation(value = "通过ID获取详细信息")
-    @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
-    public BaseOutput<SeparateSalesApiListOutput> getSeparateSalesRecord(@PathVariable Long id) {
-        LOGGER.info("获取登记单:" + id);
+    @RequestMapping(value = "/id/{separateSalesId}", method = RequestMethod.GET)
+    public BaseOutput<SeparateSalesApiListOutput> getSeparateSalesRecord(@PathVariable Long separateSalesId) {
+        LOGGER.info("获取分销单:ID{}:" + separateSalesId);
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
         SeparateSalesApiListQueryInput queryInput = new SeparateSalesApiListQueryInput();
         queryInput.setUserId(user.getId());
-        queryInput.setId(id);
+        queryInput.setId(separateSalesId);
 
         SeparateSalesApiListOutput data = this.separateSalesRecordService.listByQueryInput(queryInput).stream()
                 .findFirst().orElse(null);
