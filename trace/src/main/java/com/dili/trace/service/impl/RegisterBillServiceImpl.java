@@ -1064,8 +1064,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	private void updateUserQrItemDetail(Long registerBillId) {
 		if (registerBillId != null) {
 			RegisterBill bill = this.get(registerBillId);
-			if (bill != null) {
-				this.userQrItemService.updateQrItemDetail(bill);
+			if (bill != null&&bill.getUserId()!=null) {
+				this.userQrItemService.updateUserQrStatus(bill.getUserId());
 			}
 		}
 
@@ -1075,7 +1075,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	 */
 	private void updateUserQrItemDetailByCondition(RegisterBill condition) {
 		this.listByExample(condition).stream().forEach(bill->{
-			this.userQrItemService.updateQrItemDetail(bill);
+			if (bill != null&&bill.getUserId()!=null) {
+				this.userQrItemService.updateUserQrStatus(bill.getUserId());
+			}
 		});
 
 	}
