@@ -42,7 +42,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         if(StringUtils.isBlank(sessionId)){
             return true;
         }
-        loadData(sessionId);
+        loadData(request,sessionId);
         //检车禁用用户
         checkDisableUsers(request, response);
         request.setAttribute(ATTRIBUTE_CONTEXT_INITIALIZED, Boolean.TRUE);
@@ -86,11 +86,18 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         }
     }
 
-    private void loadData(String sessionId){
+    private void loadData(HttpServletRequest request,String sessionId){
         sessionContext.setSessionId(sessionId);
         Map<String,Object> map=(Map<String, Object>) redisService.get(SESSION_PREFIX+sessionId);
         if(MapUtil.isEmpty(map)){
-            return;
+        	String operatorId=request.getHeader("operatorId");
+        	String operatorName=request.getHeader("operatorName");
+        	if(StrUtil.isBlank(operatorId)||StrUtil.isBlank(operatorName)) {
+        		return;
+        	}
+        	if(sessionContext.getAccountId()==null) {
+        		sessionContext.setAccountId(Long.parseLong(operatorId));	
+        	}
         }
 
         long expire=redisService.getExpire(SESSION_PREFIX+sessionId)*1000;
