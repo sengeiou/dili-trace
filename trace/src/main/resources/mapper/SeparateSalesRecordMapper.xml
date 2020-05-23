@@ -72,7 +72,7 @@
     select 
     separate_sales_record.id,
     separate_sales_record.sales_plate as plate,
-
+     separate_sales_record.sales_type as sales_type,
     <![CDATA[  case when (separate_sales_record.parent_id is null and register_bill.weight<> separate_sales_record.sales_weight) then register_bill.weight else  separate_sales_record.sales_weight end as weight,]]>
     <![CDATA[  case when  (separate_sales_record.parent_id is null and  register_bill.weight<> separate_sales_record.sales_weight )then register_bill.weight else  separate_sales_record.store_weight end as store_weight,]]>
     register_bill.product_name as product_name,
