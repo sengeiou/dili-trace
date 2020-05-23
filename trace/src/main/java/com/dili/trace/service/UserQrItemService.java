@@ -42,18 +42,35 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 	RUserUpStreamService rUserUpStreamService;
 	@Autowired
 	RegisterBillMapper registerBillMapper;
+
 	@PostConstruct
 	public void init() {
+		this.initRegisterBillComplete();
+		this.intUserQrItem();
+	}
+
+	private void initRegisterBillComplete() {
+
+		RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
+		billQuery.mset(IDTO.AND_CONDITION_EXPR, " complete is null");
+		billQuery.setPage(1);
+		billQuery.setRows(50);
 		while (true) {
-			User userQuery = DTOUtils.newDTO(User.class);
-			userQuery.mset(IDTO.AND_CONDITION_EXPR, "id not in(select user_id from user_qr_item)");
-			userQuery.setPage(1);
-			userQuery.setRows(50);
-			List<User> userList = this.userService.listByExample(userQuery);
-			if (userList.isEmpty()) {
+			List<RegisterBill> billList = this.registerBillService.listByExample(billQuery);
+			if (billList.isEmpty()) {
 				break;
 			}
-			userList.stream().forEach(u -> {this.intUserQrItem(u.getId());});
+			billList.stream().forEach(bill -> {
+				RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+				updatable.setId(bill.getId());
+				if (this.checkRegisterBill(bill) != null) {
+					updatable.setComplete(0);
+				} else {
+					updatable.setComplete(1);
+				}
+				this.registerBillMapper.updateByPrimaryKeySelective(updatable);
+
+			});
 		}
 
 	}
@@ -68,6 +85,17 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 		if (userItem == null) {
 			throw new BusinessException("未能查询到用户信息");
 		}
+		if(registerBill.getComplete()==null) {
+			
+			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+			updatable.setId(registerBill.getId());
+			if (this.checkRegisterBill(registerBill) != null) {
+				updatable.setComplete(0);
+			} else {
+				updatable.setComplete(1);
+			}
+			this.registerBillMapper.updateByPrimaryKeySelective(updatable);
+		}
 		Long userId = userItem.getId();
 		// 查询并添加UserQrItem
 		UserQrItem qrItemCondition = new UserQrItem();
@@ -75,10 +103,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 		qrItemCondition.setQrItemType(QrItemTypeEnum.BILL.getCode());
 		UserQrItem qrItem = this.listByExample(qrItemCondition).stream().findFirst().orElse(null);
 
-		
-		boolean withoutUrl = this.checkRegisterBill(registerBill)!=null;
-		
-
+		boolean withoutUrl = this.checkRegisterBill(registerBill) != null;
 
 		// TODO 红码逻辑
 		// 30天内，累积检测不合格商品超50%以上，或检测不合格次数3次以上（待定）。*、
@@ -108,11 +133,8 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 		qrItemCondition.setQrItemType(QrItemTypeEnum.UPSTREAM.getCode());
 		UserQrItem qrItem = this.listByExample(qrItemCondition).stream().findFirst().orElse(null);
 
-		
-		boolean withoutAllNessaryInfo =this.checkUpStream(upStream)!=null;
-		
-	
-		
+		boolean withoutAllNessaryInfo = this.checkUpStream(upStream) != null;
+
 		this.updateUserQrStatus(userId);
 
 	}
@@ -132,18 +154,15 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 		qrItemCondition.setQrItemType(QrItemTypeEnum.USER.getCode());
 		UserQrItem qrItem = this.listByExample(qrItemCondition).stream().findFirst().orElse(null);
 
-		
 		this.updateUserQrStatus(userId);
 
 	}
 
-
-
 	/**
 	 * 通过当前条目判断并更新用户二维码状态
 	 */
-	private int updateUserQrStatus(Long userId) {
-		
+	public int updateUserQrStatus(Long userId) {
+
 		UserQrStatusEnum userQrStatus = this.updateUserQrItem(userId);
 		User user = DTOUtils.newDTO(User.class);
 		user.setId(userId);
@@ -155,153 +174,174 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 	/**
 	 * 初始化用户二维码
 	 */
-	private boolean intUserQrItem(Long userId) {
+	private boolean intUserQrItem() {
 
-		Stream.of(QrItemTypeEnum.BILL, QrItemTypeEnum.UPSTREAM, QrItemTypeEnum.USER).forEach(itemType -> {
-			UserQrItem qrItem = new UserQrItem();
-			qrItem.setUserId(userId);
-			qrItem.setQrItemType(itemType.getCode());
-			qrItem.setAction(QrItemActionEnum.DONOTHING.getCode());
-			qrItem.setHasData(TFEnum.FALSE.getCode());
-			qrItem.setValid(TFEnum.FALSE.getCode());
-			
-			if (this.listByExample(qrItem).isEmpty()) {
-				qrItem.setColor(itemType.getDefaultColor().getCode());
-				this.insertSelective(qrItem);
+		while (true) {
+			User userQuery = DTOUtils.newDTO(User.class);
+			userQuery.mset(IDTO.AND_CONDITION_EXPR, "id not in(select user_id from user_qr_item)");
+			userQuery.setPage(1);
+			userQuery.setRows(50);
+			List<User> userList = this.userService.listByExample(userQuery);
+			if (userList.isEmpty()) {
+				break;
 			}
-			
-		});
-		this.updateUserQrStatus(userId);
+			userList.stream().forEach(u -> {
+
+				Stream.of(QrItemTypeEnum.BILL, QrItemTypeEnum.UPSTREAM, QrItemTypeEnum.USER).forEach(itemType -> {
+					UserQrItem qrItem = new UserQrItem();
+					qrItem.setUserId(u.getId());
+					qrItem.setQrItemType(itemType.getCode());
+					qrItem.setAction(QrItemActionEnum.DONOTHING.getCode());
+					qrItem.setHasData(TFEnum.FALSE.getCode());
+					qrItem.setValid(TFEnum.FALSE.getCode());
+
+					if (this.listByExample(qrItem).isEmpty()) {
+						qrItem.setColor(itemType.getDefaultColor().getCode());
+						this.insertSelective(qrItem);
+					}
+
+				});
+				this.updateUserQrStatus(u.getId());
+
+			});
+		}
+
 		return true;
 	}
 
-
-	
 	private UserQrStatusEnum updateUserQrItem(Long userId) {
 
 		User user = this.userService.get(userId);
 
-		
-		
 		UserQrItem userQrItemItem = new UserQrItem();
 		userQrItemItem.setUserId(userId);
 		userQrItemItem.setQrItemType(QrItemTypeEnum.USER.getCode());
-		userQrItemItem=this.listByExample(userQrItemItem).stream().findFirst().orElse(userQrItemItem);
-		
+		userQrItemItem = this.listByExample(userQrItemItem).stream().findFirst().orElse(userQrItemItem);
 
 		userQrItemItem.setHasData(TFEnum.TRUE.getCode());
-		Long id=this.checkUser(user);
-		if(id==null) {
-			userQrItemItem.setValid(TFEnum.TRUE.getCode());
-			userQrItemItem.setColor(ColorEnum.GREEN.getCode());
-			userQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
-			userQrItemItem.setObjects(String.valueOf(userId));
-		}else {
-			userQrItemItem.setValid(TFEnum.FALSE.getCode());
-			userQrItemItem.setColor(ColorEnum.YELLOW.getCode());
-			userQrItemItem.setAction(QrItemActionEnum.APPROVE.getCode());
-		}
-		
+//		Long id=this.checkUser(user);
+//		if(id==null) {
+		userQrItemItem.setValid(TFEnum.TRUE.getCode());
+		userQrItemItem.setColor(ColorEnum.GREEN.getCode());
+		userQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
+//			userQrItemItem.setObjects(String.valueOf(userId));
+//		}else {
+//			userQrItemItem.setValid(TFEnum.FALSE.getCode());
+//			userQrItemItem.setColor(ColorEnum.YELLOW.getCode());
+//			userQrItemItem.setAction(QrItemActionEnum.APPROVE.getCode());
+//		}
+
 		this.updateSelective(userQrItemItem);
-		
-		
-		
+
 		List<UpStream> upStreamList = this.upStreamService.queryUpStreamByUserId(userId);
 
-		
 		UserQrItem upStreamQrItemItem = new UserQrItem();
 		upStreamQrItemItem.setUserId(userId);
 		upStreamQrItemItem.setQrItemType(QrItemTypeEnum.UPSTREAM.getCode());
-		upStreamQrItemItem=this.listByExample(upStreamQrItemItem).stream().findFirst().orElse(upStreamQrItemItem);
-		if(upStreamList.isEmpty()) {
+		upStreamQrItemItem = this.listByExample(upStreamQrItemItem).stream().findFirst().orElse(upStreamQrItemItem);
+		if (upStreamList.isEmpty()) {
 			upStreamQrItemItem.setHasData(TFEnum.FALSE.getCode());
 			upStreamQrItemItem.setValid(TFEnum.FALSE.getCode());
 			upStreamQrItemItem.setColor(ColorEnum.RED.getCode());
 			upStreamQrItemItem.setAction(QrItemActionEnum.CREATE.getCode());
-			
-		}else {
+
+		} else {
 			upStreamQrItemItem.setHasData(TFEnum.TRUE.getCode());
-			List<Long>  withoutAllNessaryInfo = upStreamList.stream().map(this::checkUpStream).filter(Objects::nonNull).collect(Collectors.toList());
-			if(withoutAllNessaryInfo.isEmpty()) {
-				upStreamQrItemItem.setValid(TFEnum.TRUE.getCode());
-				upStreamQrItemItem.setColor(ColorEnum.GREEN.getCode());
-				upStreamQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
-			}else {
-				upStreamQrItemItem.setValid(TFEnum.FALSE.getCode());
-				upStreamQrItemItem.setObjects(withoutAllNessaryInfo.stream().limit(1).map(String::valueOf).collect(Collectors.joining(",")));
-				upStreamQrItemItem.setColor(ColorEnum.YELLOW.getCode());
-				upStreamQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
-			}
+//			List<Long>  withoutAllNessaryInfo = upStreamList.stream().map(this::checkUpStream).filter(Objects::nonNull).collect(Collectors.toList());
+//			if(withoutAllNessaryInfo.isEmpty()) {
+			upStreamQrItemItem.setValid(TFEnum.TRUE.getCode());
+			upStreamQrItemItem.setColor(ColorEnum.GREEN.getCode());
+			upStreamQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
+//			}else {
+//				upStreamQrItemItem.setValid(TFEnum.FALSE.getCode());
+//				upStreamQrItemItem.setObjects(withoutAllNessaryInfo.stream().limit(1).map(String::valueOf).collect(Collectors.joining(",")));
+//				upStreamQrItemItem.setColor(ColorEnum.YELLOW.getCode());
+//				upStreamQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
+//			}
 		}
-		
+
 		this.updateSelective(upStreamQrItemItem);
-		
-		
-		
+
 		UserQrItem billQrItemItem = new UserQrItem();
 		billQrItemItem.setUserId(userId);
 		billQrItemItem.setQrItemType(QrItemTypeEnum.BILL.getCode());
-		billQrItemItem=this.listByExample(billQrItemItem).stream().findFirst().orElse(billQrItemItem);
-		
+		billQrItemItem = this.listByExample(billQrItemItem).stream().findFirst().orElse(billQrItemItem);
+
 		RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
 		billQuery.setUserId(userId);
 		int count = this.registerBillMapper.selectCount(billQuery);
-		if(count==0) {
+		if (count == 0) {
 			billQrItemItem.setHasData(TFEnum.FALSE.getCode());
 			billQrItemItem.setValid(TFEnum.FALSE.getCode());
-			
+
 			billQrItemItem.setColor(ColorEnum.YELLOW.getCode());
 			billQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
-			
-		}else {
+
+		} else {
 			billQrItemItem.setHasData(TFEnum.TRUE.getCode());
-			billQuery.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-			List<RegisterBill> registerBillList = this.registerBillService.listByExample(billQuery);
 			
-			List<Long> withoutUrl = registerBillList.stream().map(this::checkRegisterBill).filter(Objects::nonNull).collect(Collectors.toList());
-			if(withoutUrl.isEmpty()) {
+			
+//			billQuery.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+			billQuery.setComplete(1);
+			List<RegisterBill> registerBillList = this.registerBillService.listByExample(billQuery);
+			if(registerBillList.size()==count) {
 				billQrItemItem.setValid(TFEnum.TRUE.getCode());
 				billQrItemItem.setColor(ColorEnum.GREEN.getCode());
 				billQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
+				
 			}else {
 				billQrItemItem.setValid(TFEnum.FALSE.getCode());
-				billQrItemItem.setObjects(withoutUrl.stream().limit(1).map(String::valueOf).collect(Collectors.joining(",")));
+//				billQrItemItem.setObjects(withoutUrl.stream().limit(1).map(String::valueOf).collect(Collectors.joining(",")));
 				billQrItemItem.setColor(ColorEnum.YELLOW.getCode());
-				billQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
+				billQrItemItem.setAction(QrItemActionEnum.APPROVE.getCode());
+				
 			}
-		
+
 		}
 
 		this.updateSelective(billQrItemItem);
-		if(TFEnum.fromCode(userQrItemItem.getHasData())==TFEnum.TRUE
-				&&TFEnum.fromCode(userQrItemItem.getValid())==TFEnum.TRUE
-				&&TFEnum.fromCode(upStreamQrItemItem.getHasData())==TFEnum.TRUE
-				&& TFEnum.fromCode(upStreamQrItemItem.getValid())==TFEnum.TRUE
-				&&TFEnum.fromCode(billQrItemItem.getHasData())==TFEnum.TRUE
-				&&TFEnum.fromCode(billQrItemItem.getValid())==TFEnum.TRUE) {
-			
-			return UserQrStatusEnum.GREEN;
-		}
-		if (TFEnum.fromCode(upStreamQrItemItem.getHasData())==TFEnum.FALSE && TFEnum.fromCode(billQrItemItem.getHasData())==TFEnum.FALSE) {
+		/*
+		 * if(TFEnum.fromCode(userQrItemItem.getHasData())==TFEnum.TRUE
+		 * &&TFEnum.fromCode(userQrItemItem.getValid())==TFEnum.TRUE
+		 * &&TFEnum.fromCode(upStreamQrItemItem.getHasData())==TFEnum.TRUE &&
+		 * TFEnum.fromCode(upStreamQrItemItem.getValid())==TFEnum.TRUE
+		 * &&TFEnum.fromCode(billQrItemItem.getHasData())==TFEnum.TRUE
+		 * &&TFEnum.fromCode(billQrItemItem.getValid())==TFEnum.TRUE) {
+		 * 
+		 * return UserQrStatusEnum.GREEN; }
+		 * 
+		 * 
+		 * if (TFEnum.fromCode(upStreamQrItemItem.getHasData())==TFEnum.TRUE &&
+		 * (TFEnum.fromCode(billQrItemItem.getHasData()
+		 * )==TFEnum.FALSE||TFEnum.fromCode(billQrItemItem.getValid())==TFEnum.FALSE)) {
+		 * return UserQrStatusEnum.YELLOW; }
+		 */
+
+		if (ColorEnum.RED.equalsCode(upStreamQrItemItem.getColor())
+				&& TFEnum.fromCode(billQrItemItem.getHasData()) == TFEnum.FALSE) {
 			return UserQrStatusEnum.RED;
 		}
 
-		if (TFEnum.fromCode(upStreamQrItemItem.getHasData())==TFEnum.TRUE && (TFEnum.fromCode(billQrItemItem.getHasData() )==TFEnum.FALSE||TFEnum.fromCode(billQrItemItem.getValid())==TFEnum.FALSE)) {
+		if (ColorEnum.GREEN.equalsCode(userQrItemItem.getColor())
+				&& ColorEnum.GREEN.equalsCode(upStreamQrItemItem.getColor())
+				&& ColorEnum.GREEN.equalsCode(billQrItemItem.getColor())) {
+			return UserQrStatusEnum.GREEN;
+
+		} else {
 			return UserQrStatusEnum.YELLOW;
 		}
 
-		
-		return UserQrStatusEnum.YELLOW;
-		
 	}
+
 	private Long checkUser(User user) {
 
 		return null;
 
 	}
+
 	private Long checkRegisterBill(RegisterBill bill) {
 
-		return StringUtils.isAllBlank(bill.getOriginCertifiyUrl(), bill.getDetectReportUrl())?bill.getId():null;
+		return StringUtils.isAllBlank(bill.getOriginCertifiyUrl(), bill.getDetectReportUrl()) ? bill.getId() : null;
 
 	}
 
@@ -321,5 +361,5 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 		}
 		return null;
 	}
-	
+
 }

@@ -76,9 +76,15 @@ public class UpStreamController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
-	public String edit(ModelMap modelMap, Long id) {
+	public String edit(ModelMap modelMap, Long id,Long userId) {
 		if (null != id) {
 			modelMap.put("upstream", upStreamService.get(id));
+		}
+		if(userId!=null) {
+			User userItem=this.userService.get(userId);
+			modelMap.put("userItem", userItem);
+		}else {
+			modelMap.put("userItem", null);
 		}
 		return "upStream/edit";
 	}
@@ -137,7 +143,13 @@ public class UpStreamController {
 	 * @return
 	 */
 	@RequestMapping(value = "/listUserByUpstreamId.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput<List<User>> listUserByUpstreamId(Long upstreamId) {
+	public @ResponseBody BaseOutput<List<User>> listUserByUpstreamId(Long upstreamId,Long userId) {
+		if(userId!=null) {
+			User user=this.userService.get(userId);
+			return BaseOutput.success().setData(Arrays.asList(user));
+		}
+		
+		
 		RUserUpstream rUserUpstream = new RUserUpstream();
 		rUserUpstream.setUpstreamId(upstreamId);
 		List<Long> userIds = rUserUpStreamService.list(rUserUpstream).stream().map(o -> o.getUserId())

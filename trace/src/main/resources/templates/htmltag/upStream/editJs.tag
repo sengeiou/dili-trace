@@ -80,10 +80,12 @@
             }
         });
         let id = $('#id').val();
-        if(id){
+        let userId = $('#userId').val();
+        
+        if(id||userId){
             $.ajax({
                 url:'/upStream/listUserByUpstreamId.action',
-                data : {upstreamId : $('#id').val()},
+                data : {upstreamId : $('#id').val(),userId:$('#userId').val()},
                 success:function (result) {
                     if(result.success){
                         $.each(result.data, function(index,item){

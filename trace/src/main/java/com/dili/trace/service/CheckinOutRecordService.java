@@ -364,6 +364,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		BasePage<SeparateSalesRecord> page = this.separateSalesRecordService.listPageByExample(separateSalesRecord);
 		List<DTO>dataList=page.getDatas().stream().map(sp -> {
 			DTO dto=DTOUtils.go(sp);
+			dto.remove("id");
+			dto.put("separateSalesId", sp.getId());
 			RegisterBill rb = this.registerBillService.get(sp.getBillId());
 			dto.put("state", rb.getState());
 			dto.put("productName", rb.getProductName());
@@ -386,18 +388,21 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		List<DTO>dataList=page.getDatas().stream().map(cr -> {
 			RegisterBill billQuery=DTOUtils.newDTO(RegisterBill.class);
 			billQuery.mset(IDTO.AND_CONDITION_EXPR,
-					" id in (select bill_id from separate_sales_record where checkin_record_id ="+cr.getId()+"or checkout_record_id="+cr.getId()+") ");
+					" id in (select bill_id from separate_sales_record where checkin_record_id ="+cr.getId()+" or checkout_record_id="+cr.getId()+") ");
 			RegisterBill billItem=this.registerBillService.listByExample(billQuery).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
 			
 			SeparateSalesRecord separateSalesRecordQuery=DTOUtils.newDTO(SeparateSalesRecord.class);
 			separateSalesRecordQuery.mset(IDTO.AND_CONDITION_EXPR,
-					"  ( checkin_record_id ="+cr.getId()+"or checkout_record_id="+cr.getId()+") ");
+					"  ( checkin_record_id ="+cr.getId()+" or checkout_record_id="+cr.getId()+") ");
 			SeparateSalesRecord separateSalesRecordItem=	this.separateSalesRecordService.listByExample(separateSalesRecordQuery).stream().findFirst().orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
 			DTO dto=DTOUtils.go(cr);
-
-			dto.put("state", billItem.getState());
-			dto.put("productName", billItem.getProductName());
 			dto.put("storeWeight", separateSalesRecordItem.getStoreWeight());
+			if(billItem!=null) {
+				dto.put("state", billItem.getState());
+				dto.put("productName", billItem.getProductName());
+				
+			}
+
 			return dto;
 
 		}).collect(Collectors.toList());

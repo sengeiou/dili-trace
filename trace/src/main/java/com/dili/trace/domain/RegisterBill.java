@@ -389,6 +389,13 @@ public interface RegisterBill extends IBaseDomain {
 
     void setUpStreamId(Long upStreamId);
 
+    @ApiModelProperty(value = "数据是否完整")
+    @Column(name = "`complete`")
+    @FieldDef(label="complete")
+    @EditMode(editor = FieldEditor.Number, required = false)
+    Integer getComplete();
 
+    void setComplete(Integer complete);
 
+    
 }

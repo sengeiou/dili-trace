@@ -73,6 +73,7 @@ CREATE TABLE `user_qr_item` (
 
 ALTER TABLE `register_bill` ADD COLUMN  `separate_sales_record_id` bigint(20) NULL COMMENT '业户库存信息ID';
 ALTER TABLE `register_bill` ADD COLUMN  `upstream_id` bigint(20) NULL COMMENT '上游信息ID';
+ALTER TABLE `register_bill` ADD COLUMN  `complete` int(11) NULL COMMENT '信息是否完整';
 
 
 ALTER TABLE `separate_sales_record` ADD COLUMN  `parent_id` bigint(20) NULL  COMMENT '分销自';
@@ -85,7 +86,8 @@ ALTER TABLE `separate_sales_record` ADD COLUMN  `checkout_record_id`  bigint(20)
 ALTER TABLE `separate_sales_record` MODIFY COLUMN sales_city_id bigint(20) NULL COMMENT '分销城市';
 ALTER TABLE `separate_sales_record` MODIFY COLUMN sales_city_name varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '分销城市';
 
-
+update register_bill rb set complete=1 where (origin_certifiy_url is not null and origin_certifiy_url<>'') or (detect_report_url is not null and detect_report_url<>'')
+update register_bill rb set complete=0 where complete is null;
 
 /*进出门记录*/
 CREATE TABLE `checkinout_record` (

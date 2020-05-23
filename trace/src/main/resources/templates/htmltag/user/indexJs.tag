@@ -322,7 +322,7 @@
             type : 2,
             title : '二维码状态信息',
             content : '${contextPath}/user/qrstatus.html?id=' + selected.id,
-            area : ['650px', '600px'],
+            area : ['650px', '400px'],
             shadeClose : false,
             shade : 0.5,
             btn: ['确认', '取消']

@@ -15,13 +15,24 @@
                 <%for (userQrItem in userQrItemlist){%>
                     <div class="form-group">
                         <label class="label-title text-left">${qrItemTypeMap[userQrItem.qrItemType]}</label>
-                        <%if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.CREATE.getCode()){%>
-                             <a href="javascript:void(0)" onclick="add('${userQrItem.qrItemType}','${userId}')"><span style="color: red;">增加</span></a>
-                       <% }else if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.APPROVE.getCode()){%>
-                            <a href="javascript:void(0)" onclick="edit('${userQrItem.qrItemType}','','${userQrItem.objects}')"><span style="color: yellow;" >审核</span></a>
-                       <% }else if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.DONOTHING.getCode()){%>
-                             <a href="javascript:void(0)" onclick="view('${userQrItem.qrItemType}','${userQrItem.objects}')"><span style="color: green;" >正常</span></a>
-                       <% }%>
+                       <%if(userQrItem.qrItemType==@com.dili.trace.glossary.QrItemTypeEnum.USER.getCode()){%>
+		                                       <a href="javascript:void(0)" ><span style="color: green;" >正常</span></a>
+		               <%}else if(userQrItem.qrItemType==@com.dili.trace.glossary.QrItemTypeEnum.UPSTREAM.getCode()){%>
+					               <%if(userQrItem.action==@com.dili.trace.glossary.QrItemActionEnum.CREATE.getCode()){%>
+					                 <a href="javascript:void(0)" onclick="addUpStream('${userId}')"><span style="color: red;">增加 (点击新增上游信息)</span></a>
+					               
+					               <%}else{%>
+					               		        <a href="javascript:void(0)" ><span style="color: green;" >正常</span></a>
+					               <%}%>
+		              <%}else if(userQrItem.qrItemType==@com.dili.trace.glossary.QrItemTypeEnum.BILL.getCode()){%>
+		              				<%if(userQrItem.hasData==@com.dili.trace.glossary.TFEnum.FALSE.getCode()&&userQrItem.valid==@com.dili.trace.glossary.TFEnum.FALSE.getCode()){%>
+					                     <a href="javascript:void(0)" onclick="redirectTo('${contextPath}/registerBill/index.html')"><span style="color: red;" >无数据  (点击到登记单列表页)</span></a>
+					               <%}else if(userQrItem.hasData==@com.dili.trace.glossary.TFEnum.TRUE.getCode()&&userQrItem.valid==@com.dili.trace.glossary.TFEnum.TRUE.getCode()){%>
+					               		    <a href="javascript:void(0)" onclick="redirectTo('${contextPath}/registerBill/index.html')"><span style="color: yellow;" >正常  (点击到登记单列表页)</span></a>
+					               <%}else{%>
+					               		    <a href="javascript:void(0)" onclick="redirectTo('${contextPath}/registerBill/index.html')"><span style="color: yellow;" >审核  (点击到登记单列表页)</span></a>
+					               <%}%>
+		              <%}%>
                         <br/>
                     </div>
                 <%}%>
@@ -46,6 +57,39 @@ $('.fileimg-view').on('click', function () {
         });
     }
 });
+function redirectTo(url){
+	parent.window.location.href=url
+}
+function addUpStream(userId){
+
+    var layerOpt={type : 2, area : ['650px', '600px'],  shadeClose : false,
+            shade : 0.5,
+            btn: ['确认', '取消'],yes: function(index, layero){
+            	 //按钮【按钮一】的回调
+                var body = layer.getChildFrame('body', index);
+                let childWindow = parent.window[layero.find('iframe')[0]['name']];
+                debounce(function(){
+                    childWindow.saveOrUpdate(function () {
+                        layer.closeAll();
+                        parent.window._userGrid.datagrid("reload");
+                    });
+                },1000,true)();
+                return false;
+            }
+            ,btn2: function(index, layero){
+                //按钮【按钮二】的回调
+                
+                //return false 开启该代码可禁止点击该按钮关闭
+            },
+            cancel : function() {
+
+            }};
+
+        layerOpt.title="上游信息";
+        layerOpt.content='${contextPath}/upStream/edit.html?userId='+userId;
+        layerOpt.area= ['680px', '500px'];
+         var index = layer.open(layerOpt);
+}
 function add(qrItemType,userId){
     
     var layerOpt={type : 2, area : ['650px', '600px'],  shadeClose : false,
@@ -148,5 +192,34 @@ function view(qrItemType,id){
     }
     var index = layer.open(layerOpt);
 }
+
+/**
+ * fn [function] 需要防抖的函数
+ * wait [number] 毫秒，防抖期限值
+ * immediate 是否立即执行
+ */
+const debounce = (fn, wait, immediate = false) => {
+    let timer;
+
+    return function() {
+        if(timer) clearTimeout(timer);
+        if(immediate) {
+            let trigger = !timer;
+            timer = setTimeout(() => {
+                timer = null;
+            }, wait);
+
+            if(trigger) {
+                fn.apply(this, arguments);
+            }
+            return;
+        }
+
+        timer = setTimeout(() => {
+            fn.apply(this, arguments);
+        }, wait);
+        return;
+    }
+};
 </script>
 
