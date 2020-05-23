@@ -40,7 +40,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 	@Test
 	public void listCheckInApiListOutputPage() {
-		this.checkinOutRecordService.listCheckInApiListOutputPage(DTOUtils.newDTO(RegisterBill.class));
+		this.checkinOutRecordService.listCheckInApiListOutputPage(DTOUtils.newDTO(RegisterBillDto.class));
 	}
 
 	@Test

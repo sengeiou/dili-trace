@@ -62,9 +62,9 @@ public class CheckinOutRecordApi {
 	@RequestMapping(value = "/doCheckin.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<Long> doCheckin(@RequestBody CheckInApiInput input) {
 //		User user = userService.get(sessionContext.getAccountId());
-//		if (user == null) {
-//			return BaseOutput.failure("未登陆用户");
-//		}
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
 		try {
 			CheckinOutRecord checkinRecord = this.checkinOutRecordService
 					.doCheckin(new OperatorUser(sessionContext.getAccountId(), ""), input);
@@ -83,7 +83,9 @@ public class CheckinOutRecordApi {
 	 */
 	@RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput doCheckout(@RequestBody CheckOutApiInput input) {
-
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
 		try {
 			CheckinOutRecord checkoutRecord = this.checkinOutRecordService
 					.doCheckout(new OperatorUser(sessionContext.getAccountId(), ""), input);
@@ -100,15 +102,10 @@ public class CheckinOutRecordApi {
 
 	@RequestMapping(value = "/listPagedAvailableCheckInData.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<BasePage<RegisterBill>> listPagedAvailableCheckInData(@RequestBody RegisterBillDto query) {
-//        User user = userService.get(sessionContext.getAccountId());
-//        if (user == null) {
-//            return BaseOutput.failure("未登陆用户");
-//        }
-		logger.info(sessionContext.getSessionId());
-		logger.info("{}", sessionContext.getAccountId());
-		logger.info("{}", sessionContext.getMap());
-		logger.info("{}", sessionContext.getUserType());
-		logger.info("{}", sessionContext.getRelationId());
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
+
 		BasePage<CheckInApiListOutput> page = this.checkinOutRecordService.listCheckInApiListOutputPage(query);
 
 		return BaseOutput.success().setData(page);
@@ -119,10 +116,9 @@ public class CheckinOutRecordApi {
 	 */
 	@RequestMapping(value = "/getCheckInDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<CheckInApiDetailOutput> getCheckInDetail(@RequestBody RegisterBillDto query) {
-//		User user = userService.get(sessionContext.getAccountId());
-//		if (user == null) {
-//			return BaseOutput.failure("未登陆用户");
-//		}
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
 		if (query == null || query.getId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -140,10 +136,9 @@ public class CheckinOutRecordApi {
 	 */
 	@RequestMapping(value = "/doManullyCheck.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<Long> doManullyCheck(@RequestBody ManullyCheckInput input) {
-//		User user = userService.get(sessionContext.getAccountId());
-//		if (user == null) {
-//			return BaseOutput.failure("未登陆用户");
-//		}
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
 		try {
 			SeparateSalesRecord record = this.checkinOutRecordService
 					.doManullyCheck(new OperatorUser(sessionContext.getAccountId(), ""), input);
@@ -161,8 +156,10 @@ public class CheckinOutRecordApi {
 	 * 分页查询需要出场查询的信息
 	 */
 	@RequestMapping(value = "/listPagedAvailableCheckOutData.api", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseOutput<BasePage<DTO>> listPagedAvailableCheckOutData(
-			@RequestBody CheckoutApiListQuery query) {
+	public BaseOutput<BasePage<DTO>> listPagedAvailableCheckOutData( @RequestBody CheckoutApiListQuery query) {
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
@@ -175,6 +172,9 @@ public class CheckinOutRecordApi {
 	 */
 	@RequestMapping(value = "/getCheckoutDataDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput getCheckoutDataDetail(@RequestBody CheckoutApiListQuery input) {
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
 		if (input == null || input.getSeparateSalesId() == null) {
 			return BaseOutput.failure("参数错误");
 		}

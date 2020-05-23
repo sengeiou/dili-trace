@@ -33,6 +33,7 @@ import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.CheckinOutTypeEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
@@ -262,7 +263,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return Optional.empty();
 	}
 
-	public BasePage<CheckInApiListOutput> listCheckInApiListOutputPage(RegisterBill query) {
+	public BasePage<CheckInApiListOutput> listCheckInApiListOutputPage(RegisterBillDto query) {
 
 		RegisterBill condition = DTOUtils.newDTO(RegisterBill.class);
 		List<String> sqlList = new ArrayList<>();
