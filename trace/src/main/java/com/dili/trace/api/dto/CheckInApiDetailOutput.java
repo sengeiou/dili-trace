@@ -7,11 +7,20 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 public class CheckInApiDetailOutput {
 	private Long id;//registerbill id
 	private Integer state;
+	private Integer detectState;
 
 	private UpStream upStream;
 	private User user;
 
  
+	public Integer getDetectState() {
+		return detectState;
+	}
+
+	public void setDetectState(Integer detectState) {
+		this.detectState = detectState;
+	}
+
 	public UpStream getUpStream() {
 		return upStream;
 	}

@@ -10,10 +10,13 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.dto.CheckInApiDetailOutput;
@@ -21,6 +24,7 @@ import com.dili.trace.api.dto.CheckInApiInput;
 import com.dili.trace.api.dto.CheckInApiListOutput;
 import com.dili.trace.api.dto.CheckOutApiInput;
 import com.dili.trace.api.dto.CheckoutApiDetailOutput;
+import com.dili.trace.api.dto.CheckoutApiListQuery;
 import com.dili.trace.api.dto.ManullyCheckInput;
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.domain.CheckinOutRecord;
@@ -34,6 +38,7 @@ import com.dili.trace.glossary.CheckinOutTypeEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.util.BasePageUtil;
 import com.github.pagehelper.Page;
 
 @Service
@@ -251,6 +256,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			}
 			output.setId(registerBill.getId());
 			output.setState(registerBill.getState());
+			output.setDetectState(registerBill.getDetectState());
 			return Optional.of(output);
 		}
 		return Optional.empty();
@@ -281,7 +287,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		condition.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
 
 		BasePage<RegisterBill> billPage = this.registerBillService.listPageByExample(condition);
-		List<CheckInApiListOutput> data = billPage.getDatas().stream().map(bill -> {
+		List<CheckInApiListOutput> dataList = billPage.getDatas().stream().map(bill -> {
 			CheckInApiListOutput out = new CheckInApiListOutput();
 			out.setId(bill.getId());
 			out.setCode(bill.getCode());
@@ -297,14 +303,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 			return out;
 		}).collect(Collectors.toList());
-
-		BasePage<CheckInApiListOutput> result = new BasePage<>();
-		result.setDatas(data);
-		result.setPage(billPage.getPage());
-		result.setRows(billPage.getRows());
-		result.setTotalItem(billPage.getTotalItem());
-		result.setTotalPage(billPage.getTotalPage());
-		result.setStartIndex(billPage.getStartIndex());
+	
+		BasePage<CheckInApiListOutput> result = 	BasePageUtil.convert(dataList, billPage);
 
 		return result;
 
@@ -342,5 +342,60 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return output;
 
 	}
+	public BaseOutput<BasePage<DTO>> listPagedAvailableCheckOutData(CheckoutApiListQuery query) {
 
+
+		if (query == null || query.getUserId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+
+		SeparateSalesRecord separateSalesRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
+		separateSalesRecord.setSalesUserId(query.getUserId());
+		separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR,
+				" checkin_record_id in(select id from checkinout_record where `inout`=" + CheckinOutTypeEnum.IN.getCode()
+						+ " and status=" + CheckinStatusEnum.ALLOWED.getCode() + ")  and checkout_record_id is null");
+
+		BasePage<SeparateSalesRecord> page = this.separateSalesRecordService.listPageByExample(separateSalesRecord);
+		List<DTO>dataList=page.getDatas().stream().map(sp -> {
+			DTO dto=DTOUtils.go(sp);
+			RegisterBill rb = this.registerBillService.get(sp.getBillId());
+			dto.put("state", rb.getState());
+			dto.put("productName", rb.getProductName());
+			return dto;
+		}).collect(Collectors.toList());
+
+		BasePage<DTO> result = 	BasePageUtil.convert(dataList, page);
+		return BaseOutput.success().setData(result);
+	}
+
+	public BaseOutput<BasePage<DTO>> listPagedData(CheckoutApiListQuery query,Long operatorId) {
+		if (query == null || query.getUserId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		CheckinOutRecord checkinOutRecord = new CheckinOutRecord();
+		checkinOutRecord.setOperatorId(operatorId);
+
+		BasePage<CheckinOutRecord> page = this.listPageByExample(checkinOutRecord);
+		
+		List<DTO>dataList=page.getDatas().stream().map(cr -> {
+			RegisterBill billQuery=DTOUtils.newDTO(RegisterBill.class);
+			billQuery.mset(IDTO.AND_CONDITION_EXPR,
+					" id in (select bill_id from separate_sales_record where checkin_record_id ="+cr.getId()+"or checkout_record_id="+cr.getId()+") ");
+			RegisterBill billItem=this.registerBillService.listByExample(billQuery).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
+			
+			SeparateSalesRecord separateSalesRecordQuery=DTOUtils.newDTO(SeparateSalesRecord.class);
+			separateSalesRecordQuery.mset(IDTO.AND_CONDITION_EXPR,
+					"  ( checkin_record_id ="+cr.getId()+"or checkout_record_id="+cr.getId()+") ");
+			SeparateSalesRecord separateSalesRecordItem=	this.separateSalesRecordService.listByExample(separateSalesRecordQuery).stream().findFirst().orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
+			DTO dto=DTOUtils.go(cr);
+
+			dto.put("state", billItem.getState());
+			dto.put("productName", billItem.getProductName());
+			dto.put("storeWeight", separateSalesRecordItem.getStoreWeight());
+			return dto;
+
+		}).collect(Collectors.toList());
+		BasePage<DTO> result = 	BasePageUtil.convert(dataList, page);
+		return BaseOutput.success().setData(result);
+	}
 }

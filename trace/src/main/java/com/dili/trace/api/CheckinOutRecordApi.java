@@ -15,8 +15,7 @@ import com.dili.common.entity.SessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
+import com.dili.ss.dto.DTO;
 import com.dili.trace.api.dto.CheckInApiDetailOutput;
 import com.dili.trace.api.dto.CheckInApiInput;
 import com.dili.trace.api.dto.CheckInApiListOutput;
@@ -29,8 +28,6 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.glossary.CheckinOutTypeEnum;
-import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -85,7 +82,7 @@ public class CheckinOutRecordApi {
 	 * 出场
 	 */
 	@RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseOutput doCheckin(@RequestBody CheckOutApiInput input) {
+	public BaseOutput doCheckout(@RequestBody CheckOutApiInput input) {
 
 		try {
 			CheckinOutRecord checkoutRecord = this.checkinOutRecordService
@@ -164,34 +161,13 @@ public class CheckinOutRecordApi {
 	 * 分页查询需要出场查询的信息
 	 */
 	@RequestMapping(value = "/listPagedAvailableCheckOutData.api", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseOutput<BasePage<CheckinOutRecord>> listPagedAvailableCheckOutData(
+	public BaseOutput<BasePage<DTO>> listPagedAvailableCheckOutData(
 			@RequestBody CheckoutApiListQuery query) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
 
-		if (query == null || query.getUserId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
-
-		SeparateSalesRecord separateSalesRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
-		separateSalesRecord.setSalesUserId(query.getUserId());
-		separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR,
-				" checkin_record_id in(select id from checkinout_record where inout=" + CheckinOutTypeEnum.IN.getCode()
-						+ " and status=" + CheckinStatusEnum.ALLOWED.getCode() + ")  and checkout_record_id is null");
-
-		BasePage<SeparateSalesRecord> page = this.separateSalesRecordService.listPageByExample(separateSalesRecord);
-		page.getDatas().stream().forEach(sp -> {
-			RegisterBill rb = this.registerBillService.get(sp.getBillId());
-
-			sp.mset("state", rb.getState());
-			sp.mset("productName", rb.getProductName());
-
-			sp.setMetadata("state", rb.getState());
-			sp.setMetadata("productName", rb.getProductName());
-		});
-
-		return BaseOutput.success().setData(page);
+		return this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
 	}
 
 	/**
@@ -219,36 +195,13 @@ public class CheckinOutRecordApi {
 	 * 分页查询需要出场查询的信息
 	 */
 	@RequestMapping(value = "/listPagedData.api", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseOutput<BasePage<SeparateSalesRecord>> listPagedData(@RequestBody CheckoutApiListQuery query) {
-		if (query == null || query.getUserId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
-		CheckinOutRecord checkinOutRecord = new CheckinOutRecord();
-		checkinOutRecord.setOperatorId(sessionContext.getAccountId());
-
-		BasePage<CheckinOutRecord> page = this.checkinOutRecordService.listPageByExample(checkinOutRecord);
+	public BaseOutput<BasePage<DTO>> listPagedData(@RequestBody CheckoutApiListQuery query) {
 		
-		page.getDatas().stream().forEach(cr -> {
-			RegisterBill billQuery=DTOUtils.newDTO(RegisterBill.class);
-			billQuery.mset(IDTO.AND_CONDITION_EXPR,
-					" id in (select bill_id from separate_sales_record where checkin_record_id ="+cr.getId()+"or checkout_record_id="+cr.getId()+") ");
-			RegisterBill billItem=this.registerBillService.listByExample(billQuery).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
-			
-			SeparateSalesRecord separateSalesRecordQuery=DTOUtils.newDTO(SeparateSalesRecord.class);
-			separateSalesRecordQuery.mset(IDTO.AND_CONDITION_EXPR,
-					"  ( checkin_record_id ="+cr.getId()+"or checkout_record_id="+cr.getId()+") ");
-			SeparateSalesRecord separateSalesRecordItem=	this.separateSalesRecordService.listByExample(separateSalesRecordQuery).stream().findFirst().orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
-			
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
 
-			cr.mset("state", billItem.getState());
-			cr.mset("productName", billItem.getProductName());
-			cr.mset("storeWeight", separateSalesRecordItem.getStoreWeight());
-
-			cr.setMetadata("state", billItem.getState());
-			cr.setMetadata("productName", billItem.getProductName());
-			cr.mset("storeWeight", separateSalesRecordItem.getStoreWeight());
-		});
-
-		return BaseOutput.success().setData(page);
+		return this.checkinOutRecordService.listPagedData(query, sessionContext.getAccountId());
+		
 	}
 }
