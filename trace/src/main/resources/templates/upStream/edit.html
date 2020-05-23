@@ -18,22 +18,22 @@
             <legend><i>基础信息</i></legend>
             <div class="easyui-panel">
                 <div style="margin-bottom:5px">
-                    <input class="easyui-textbox" name="name" id="name" value="${upstream.name!}" style="width:100%" data-options="label:'名称:',validType:'length[2,20]',required:true" />
+                    <input class="easyui-textbox" name="name" id="name" value="${upstream.name!}" style="width:100%" data-options="label:'名称*:',validType:'length[2,20]',required:true" />
                 </div>
                 <div style="margin-bottom:5px">
-                    <input name="upstreamType" id="upstreamType" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="类型:"/>
+                    <input name="upstreamType" id="upstreamType" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="类型*:"/>
                     <#comboProvider _id="upstreamType" _provider='upStreamTypeProvider'  _queryParams='{required:true}' _value='${upstream.upstreamType!10}'/>
                 </div>
                 <div style="margin-bottom:5px;" id="corporateInfo">
                     <div style="margin-bottom:5px;" >
-                        <input class="easyui-textbox" name="legalPerson" id="legalPerson" style="width:100%" value="${upstream.legalPerson!}" maxlength="50" data-options="label:'法人:', validType:['isWord','length[0,20]']" />
+                        <input class="easyui-textbox" name="legalPerson" id="legalPerson" style="width:100%" value="${upstream.legalPerson!}" maxlength="50" data-options="label:'法人*:', validType:['isWord','length[0,20]'],required:true" />
                     </div>
                     <div>
-                        <input class="easyui-textbox" name="license" id="license" style="width:100%" value="${upstream.license!}" maxlength="30" data-options="label:'信用代码:', validType:['isWord','length[0,20]']" />
+                        <input class="easyui-textbox" name="license" id="license" style="width:100%" value="${upstream.license!}" maxlength="30" data-options="label:'信用代码*:', validType:['isWord','length[0,20]'],required:true" />
                     </div>
                 </div>
                 <div style="margin-bottom:5px">
-                    <input class="easyui-textbox" name="telphone" id="telphone" style="width:100%" value="${upstream.telphone!}" maxlength="11" data-options="label:'联系方式:'" />
+                    <input class="easyui-textbox" name="telphone" id="telphone" style="width:100%" value="${upstream.telphone!}" maxlength="11" data-options="label:'联系方式*:',required:true" />
                 </div>
                 <div style="margin-bottom:5px">
                     <input class="easyui-textbox" name="idCard" id="idCard" style="width:100%" value="${upstream.idCard!}" maxlength="18" data-options="label:'身份证号:', validType:'cardNo'" />

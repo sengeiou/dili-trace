@@ -74,8 +74,18 @@
             onChange : function (newValue,oldValue) {
                 if(newValue == 10){
                     $('#corporateInfo').hide();
+           	       $('#legalPerson').textbox('disableValidation');
+                     $('#license').textbox('disableValidation');
+          	       $('#legalPerson').textbox('readonly',true);
+                    $('#license').textbox('readonly',true);
+             
                 }else{
+                	alert('qy')
                     $('#corporateInfo').show();
+           	       $('#legalPerson').textbox('enableValidation');
+                     $('#license').textbox('enableValidation');
+          	       $('#legalPerson').textbox('readonly',false);
+                    $('#license').textbox('readonly',false);
                 }
             }
         });
