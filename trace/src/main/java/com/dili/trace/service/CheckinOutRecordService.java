@@ -370,9 +370,9 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	}
 
 	public BaseOutput<BasePage<DTO>> listPagedData(CheckoutApiListQuery query,Long operatorId) {
-		if (query == null || query.getUserId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
+//		if (query == null || query.getUserId() == null) {
+//			return BaseOutput.failure("参数错误");
+//		}
 		CheckinOutRecord checkinOutRecord = new CheckinOutRecord();
 		checkinOutRecord.setOperatorId(operatorId);
 
