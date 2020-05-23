@@ -21,6 +21,7 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.SeparateSalesRecordDTO;
 import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
@@ -204,7 +205,9 @@ public class RegisterBillApi {
 			if (!stateList.contains(registerBill.getState())) {
 				return BaseOutput.failure("当前状态登记单不能分销");
 			}
-
+			if(BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())&&BillDetectStateEnum.REVIEW_PASS.getCode().equals(registerBill.getDetectState())) {
+				return BaseOutput.failure("当前登记单检测不合格不能分销");
+			}
 			if (separateSalesRecord.getSalesUserId().longValue() != user.getId().longValue()) {
 				LOGGER.info("业户ID" + separateSalesRecord.getSalesUserId() + "用户ID:" + user.getId());
 				return BaseOutput.failure("没有权限分销");
