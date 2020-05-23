@@ -1,5 +1,7 @@
 package com.dili.trace.glossary;
 
+import java.util.stream.Stream;
+
 public enum UserTypeEnum {
     /**
      * 个人信息
@@ -19,7 +21,13 @@ public enum UserTypeEnum {
         this.code = code;
         this.desc = desc;
     }
+    public static UserTypeEnum fromCode(Integer code) {
+        return Stream.of(UserTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
+    }
+    public boolean equalsCode(Integer code) {
+        return this.getCode().equals(code);
 
+    }
     public Integer getCode() {
         return code;
     }

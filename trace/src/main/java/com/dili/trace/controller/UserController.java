@@ -228,8 +228,10 @@ public class UserController {
 			userItem.setAddr(MaskUserInfo.maskAddr(userItem.getAddr()));
 			userItem.setCardNo(MaskUserInfo.maskIdNo(userItem.getCardNo()));
 			userItem.setPhone(MaskUserInfo.maskPhone(userItem.getPhone()));
+			
 		}
-
+		UserTypeEnum userType=UserTypeEnum.fromCode(userItem.getUserType());
+		modelMap.put("userTypeDesc", userType==null?"":userType.getDesc());
 		modelMap.put("userItem", userItem);
 		modelMap.put("userPlates", userPlateStr);
 
