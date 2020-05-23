@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.base.BaseServiceImpl;
@@ -41,7 +41,7 @@ import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.util.BasePageUtil;
-import com.github.pagehelper.Page;
+import com.dili.trace.util.BeanMapUtil;
 
 @Service
 public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, Long> {
@@ -209,7 +209,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		CheckinOutRecord checkinRecord = this.get(separateSalesRecord.getCheckinRecordId());
 
 		if (checkinRecord == null || CheckinOutTypeEnum.IN != CheckinOutTypeEnum.fromCode(checkinRecord.getInout())) {
-			throw new BusinessException("数据错误:没有进门数据");
+			throw new BusinessException("数据错误:当前登记单还未进门");
 		}
 
 		CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.fromCode(checkinRecord.getStatus());
@@ -295,7 +295,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		BasePage<RegisterBill> billPage = this.registerBillService.listPageByExample(condition);
 		List<CheckInApiListOutput> dataList = billPage.getDatas().stream().map(bill -> {
 			CheckInApiListOutput out = new CheckInApiListOutput();
-			out.setId(bill.getId());
+			out.setBillId(bill.getId());
 			out.setCode(bill.getCode());
 			out.setName(bill.getName());
 			out.setPhone(bill.getPhone());
@@ -363,12 +363,20 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		BasePage<SeparateSalesRecord> page = this.separateSalesRecordService.listPageByExample(separateSalesRecord);
 		List<DTO>dataList=page.getDatas().stream().map(sp -> {
+			Long id=sp.getId();
+			Long billId=sp.getBillId();
 			DTO dto=DTOUtils.go(sp);
+			dto.remove("billId");
 			dto.remove("id");
-			dto.put("separateSalesId", sp.getId());
-			RegisterBill rb = this.registerBillService.get(sp.getBillId());
-			dto.put("state", rb.getState());
-			dto.put("productName", rb.getProductName());
+			dto.put("separateSalesId", id);
+			RegisterBill rb = this.registerBillService.get(billId);
+			if(rb!=null) {
+				RegisterBillStateEnum stateEnum=RegisterBillStateEnum.getRegisterBillStateEnum(rb.getState());
+				dto.put("state", rb.getState());
+				dto.put("stateName", stateEnum.getName());
+				dto.put("productName", rb.getProductName());	
+			}
+			
 			return dto;
 		}).collect(Collectors.toList());
 
@@ -376,7 +384,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return BaseOutput.success().setData(result);
 	}
 
-	public BaseOutput<BasePage<DTO>> listPagedData(CheckoutApiListQuery query,Long operatorId) {
+	public BaseOutput<BasePage<Map<String,Object>>> listPagedData(CheckoutApiListQuery query,Long operatorId) {
 //		if (query == null || query.getUserId() == null) {
 //			return BaseOutput.failure("参数错误");
 //		}
@@ -385,7 +393,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		BasePage<CheckinOutRecord> page = this.listPageByExample(checkinOutRecord);
 		
-		List<DTO>dataList=page.getDatas().stream().map(cr -> {
+		List<Map<String,Object>>dataList=page.getDatas().stream().map(cr -> {
 			RegisterBill billQuery=DTOUtils.newDTO(RegisterBill.class);
 			billQuery.mset(IDTO.AND_CONDITION_EXPR,
 					" id in (select bill_id from separate_sales_record where checkin_record_id ="+cr.getId()+" or checkout_record_id="+cr.getId()+") ");
@@ -395,8 +403,15 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			separateSalesRecordQuery.mset(IDTO.AND_CONDITION_EXPR,
 					"  ( checkin_record_id ="+cr.getId()+" or checkout_record_id="+cr.getId()+") ");
 			SeparateSalesRecord separateSalesRecordItem=	this.separateSalesRecordService.listByExample(separateSalesRecordQuery).stream().findFirst().orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
-			DTO dto=DTOUtils.go(cr);
-			dto.put("storeWeight", separateSalesRecordItem.getStoreWeight());
+			Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
+//			Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
+			dto.remove("id");
+			if(separateSalesRecordItem!=null) {
+				dto.put("storeWeight", separateSalesRecordItem.getStoreWeight());	
+			}else {
+				dto.put("storeWeight", 0);
+			}
+			
 			if(billItem!=null) {
 				dto.put("state", billItem.getState());
 				dto.put("productName", billItem.getProductName());
@@ -406,7 +421,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			return dto;
 
 		}).collect(Collectors.toList());
-		BasePage<DTO> result = 	BasePageUtil.convert(dataList, page);
+		BasePage<Map<String,Object>> result = 	BasePageUtil.convert(dataList, page);
 		return BaseOutput.success().setData(result);
 	}
 }

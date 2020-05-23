@@ -28,7 +28,7 @@
 		              				<%if(userQrItem.hasData==@com.dili.trace.glossary.TFEnum.FALSE.getCode()&&userQrItem.valid==@com.dili.trace.glossary.TFEnum.FALSE.getCode()){%>
 					                     <a href="javascript:void(0)" onclick="redirectTo('${contextPath}/registerBill/index.html')"><span style="color: red;" >无数据  (点击到登记单列表页)</span></a>
 					               <%}else if(userQrItem.hasData==@com.dili.trace.glossary.TFEnum.TRUE.getCode()&&userQrItem.valid==@com.dili.trace.glossary.TFEnum.TRUE.getCode()){%>
-					               		    <a href="javascript:void(0)" onclick="redirectTo('${contextPath}/registerBill/index.html')"><span style="color: yellow;" >正常  (点击到登记单列表页)</span></a>
+					               		    <a href="javascript:void(0)" onclick="redirectTo('${contextPath}/registerBill/index.html')"><span style="color: green;" >正常  (点击到登记单列表页)</span></a>
 					               <%}else{%>
 					               		    <a href="javascript:void(0)" onclick="redirectTo('${contextPath}/registerBill/index.html')"><span style="color: yellow;" >审核  (点击到登记单列表页)</span></a>
 					               <%}%>

@@ -1,5 +1,7 @@
 package com.dili.trace.api;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -195,7 +197,7 @@ public class CheckinOutRecordApi {
 	 * 分页查询需要出场查询的信息
 	 */
 	@RequestMapping(value = "/listPagedData.api", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseOutput<BasePage<DTO>> listPagedData(@RequestBody CheckoutApiListQuery query) {
+	public BaseOutput<BasePage<Map<String,Object>>> listPagedData(@RequestBody CheckoutApiListQuery query) {
 		
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");

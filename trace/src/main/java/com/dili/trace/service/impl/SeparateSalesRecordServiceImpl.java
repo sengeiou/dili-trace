@@ -88,7 +88,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
     }
 
     @Override
-    public void createOwnedSeparateSales(RegisterBill registerBill) {
+    public SeparateSalesRecord createOwnedSeparateSales(RegisterBill registerBill) {
         SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
         queryCondition.setBillId(registerBill.getId());
         queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
@@ -118,6 +118,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
             item.setModified(new Date());
             this.updateSelective(item);
         }
-
+        return item;
     }
+   
 }

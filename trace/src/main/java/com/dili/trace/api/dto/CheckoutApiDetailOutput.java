@@ -2,11 +2,26 @@ package com.dili.trace.api.dto;
 
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
+import com.dili.trace.glossary.RegisterBillStateEnum;
 
 public class CheckoutApiDetailOutput {
 	private Long id;//separatebillid
 	private Integer state;
+	private String stateName;
 
+	public String getStateName() {
+		  try {
+	            if (getState() == null) {
+	                return "";
+	            }
+	        }catch (Exception e){
+	            return "";
+	        }
+	        return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
+	}
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
+	}
 	private UpStream upStream;
 	private User user;
 	public Long getId() {

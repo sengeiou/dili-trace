@@ -3,7 +3,7 @@ package com.dili.trace.api.dto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 
 public class CheckInApiListOutput {
-	private Long id;
+	private Long billId;
 	private Integer state;
 	private String code;
 	private String name;
@@ -22,13 +22,16 @@ public class CheckInApiListOutput {
 		return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
 	}
 
-	public Long getId() {
-		return id;
+
+	public Long getBillId() {
+		return billId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+
+	public void setBillId(Long billId) {
+		this.billId = billId;
 	}
+
 
 	public Integer getState() {
 		return state;
