@@ -80,7 +80,6 @@
                     $('#license').textbox('readonly',true);
              
                 }else{
-                	alert('qy')
                     $('#corporateInfo').show();
            	       $('#legalPerson').textbox('enableValidation');
                      $('#license').textbox('enableValidation');
