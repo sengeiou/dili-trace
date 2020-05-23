@@ -4,6 +4,7 @@ import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
+import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import org.springframework.stereotype.Component;
@@ -25,17 +26,22 @@ import java.util.stream.Stream;
 @Component
 public class UpStreamTypeProvider implements ValueProvider {
 
-    private static final List<ValuePair<?>> BUFFER = new ArrayList<>();
-
-    static {
-        BUFFER.addAll(Stream.of(UpStreamTypeEnum.values())
+	private static final List<ValuePair<?>> BUFFER = buildValuePair();
+	private static List<ValuePair<?>> buildValuePair(){
+		
+		List<ValuePair<?>> list = new ArrayList<>();
+		list.addAll(Stream.of(UpStreamTypeEnum.values())
                 .map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString()))
                 .collect(Collectors.toList()));
+		return list;
     }
+
+	
+
 
     @Override
     public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
-        return BUFFER;
+        return buildValuePair();
     }
 
     @Override

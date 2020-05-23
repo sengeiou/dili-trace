@@ -1,19 +1,20 @@
 package com.dili.trace.provider;
 
-import com.dili.ss.metadata.FieldMeta;
-import com.dili.ss.metadata.ValuePair;
-import com.dili.ss.metadata.ValuePairImpl;
-import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
-
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.dili.ss.metadata.FieldMeta;
+import com.dili.ss.metadata.ValuePair;
+import com.dili.ss.metadata.ValuePairImpl;
+import com.dili.ss.metadata.ValueProvider;
+import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.UserQrStatusEnum;
+import com.dili.trace.glossary.UserTypeEnum;
+
+import org.springframework.stereotype.Component;
 
 /**
  * <B>Description</B>
@@ -24,18 +25,18 @@ import java.util.stream.Stream;
  * @createTime 2018/11/8 18:44
  */
 @Component
-public class EnabledStateProvider implements ValueProvider {
-	private static final List<ValuePair<?>> BUFFER = buildValuePair();
+public class UserTypeEnumProvider implements ValueProvider {
+
+    private static final List<ValuePair<?>>  BUFFER = buildValuePair();
 	private static List<ValuePair<?>> buildValuePair(){
 		
 		List<ValuePair<?>> list = new ArrayList<>();
-		list.addAll(Stream.of(EnabledStateEnum.values())
-                .map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString()))
+		list.addAll(Stream.of(UserTypeEnum.values())
+                .map(e -> new ValuePairImpl<>(e.getDesc(), e.getCode().toString()))
                 .collect(Collectors.toList()));
 		return list;
     }
-
-	
+   
 
     @Override
     public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
@@ -45,12 +46,13 @@ public class EnabledStateProvider implements ValueProvider {
     @Override
     public String getDisplayText(Object object, Map map, FieldMeta fieldMeta) {
         if (null == object) {
+            return "";
+        }
+        try{
+            return UserTypeEnum.fromCode(Integer.parseInt(object.toString())).getDesc();
+        }catch(Exception e){
             return null;
         }
-        ValuePair<?> valuePair = BUFFER.stream().filter(val -> object.toString().equals(val.getValue())).findFirst().orElse(null);
-        if (null != valuePair) {
-            return valuePair.getText();
-        }
-        return null;
+     
     }
 }
