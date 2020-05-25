@@ -90,7 +90,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
         insertSelective(user);
         // 更新用户理货区
-        updateUserTallyArea(user.getId(), Arrays.asList(user.getTallyAreaNos().split(",")));
+        updateUserTallyArea(user.getId(), Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")));
         // 增加车牌信息
         // LOGGER.info("输入车牌:{}",user.getPlates());
         List<String> plateList = this.parsePlate(user.getPlates());
@@ -119,15 +119,16 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             userTallyAreaService.deleteByExample(query);
         }
 
-        List<UserTallyArea> userTallyAreas = new ArrayList<>();
-        tallyAreaNos.forEach(tallyAreaNo -> {
+        List<UserTallyArea> userTallyAreas =tallyAreaNos.stream().filter(StringUtils::isNotBlank).map(tallyAreaNo -> {
             UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
             userTallyArea.setUserId(userId);
             userTallyArea.setTallyAreaNo(tallyAreaNo);
-            userTallyAreas.add(userTallyArea);
-        });
-
-        userTallyAreaService.batchInsert(userTallyAreas);
+            return userTallyArea;
+        }).collect(Collectors.toList());
+        if(!userTallyAreas.isEmpty()) {
+        	userTallyAreaService.batchInsert(userTallyAreas);	
+        }
+        
         this.updateUserQrItem(userId);
     }
 

@@ -9,6 +9,7 @@ ALTER TABLE `user` ADD COLUMN `legal_person`  varchar(50)  NULL COMMENT '法人�
 ALTER TABLE `user` ADD COLUMN `manufacturing_license_url`  varchar(100)  NULL COMMENT '生产许可证';
 ALTER TABLE `user` ADD COLUMN `operation_license_url`  varchar(100)  NULL COMMENT '经营许可证';
 ALTER TABLE `user` MODIFY COLUMN tally_area_nos varchar(60) NULL;
+ALTER TABLE `user_history` MODIFY COLUMN tally_area_nos varchar(60) NULL;
 
 
 CREATE TABLE `market` (

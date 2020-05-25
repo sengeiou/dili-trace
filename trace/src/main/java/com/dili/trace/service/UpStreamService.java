@@ -125,6 +125,8 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			});
 		}
 		
+		
+		
 	}
 
 	/**
@@ -139,8 +141,18 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 		RUserUpstream rUserUpstreamDelCondition = new RUserUpstream();
 		rUserUpstreamDelCondition.setUpstreamId(upStreamDto.getId());
+		
+		
+		List<Long>changedUserId=this.rUserUpStreamService.list(rUserUpstreamDelCondition).stream().map(RUserUpstream::getUserId).collect(Collectors.toList());
+		
+
 		rUserUpStreamService.deleteByExample(rUserUpstreamDelCondition);
 		addUpstreamUsers(upStreamDto, operatorUser);
+		
+		changedUserId.stream().forEach(userId->{
+			this.userQrItemService.updateUserQrStatus(userId);
+		});	
+		
 		return BaseOutput.success();
 
 	}

@@ -232,7 +232,11 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 //			userQrItemItem.setAction(QrItemActionEnum.APPROVE.getCode());
 //		}
 
-		this.updateSelective(userQrItemItem);
+		if(userQrItemItem.getId()==null) {
+			this.insertSelective(userQrItemItem);
+		}else {
+			this.updateSelective(userQrItemItem);	
+		}
 
 		List<UpStream> upStreamList = this.upStreamService.queryUpStreamByUserId(userId);
 
@@ -260,8 +264,11 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 //				upStreamQrItemItem.setAction(QrItemActionEnum.DONOTHING.getCode());
 //			}
 		}
-
-		this.updateSelective(upStreamQrItemItem);
+		if(upStreamQrItemItem.getId()==null) {
+			this.insertSelective(upStreamQrItemItem);
+		}else {
+			this.updateSelective(upStreamQrItemItem);	
+		}
 
 		UserQrItem billQrItemItem = new UserQrItem();
 		billQrItemItem.setUserId(userId);
@@ -299,8 +306,12 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 			}
 
 		}
-
-		this.updateSelective(billQrItemItem);
+		if(billQrItemItem.getId()==null) {
+			this.insertSelective(billQrItemItem);
+		}else {
+			this.updateSelective(billQrItemItem);	
+		}
+		
 		/*
 		 * if(TFEnum.fromCode(userQrItemItem.getHasData())==TFEnum.TRUE
 		 * &&TFEnum.fromCode(userQrItemItem.getValid())==TFEnum.TRUE

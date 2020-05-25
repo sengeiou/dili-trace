@@ -53,7 +53,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 	@Value("${qualityTraceTradeBill.matchTodaysDelay:2}")
 	private Long matchTodaysDelay;
 
-//	@PostConstruct
+	@PostConstruct
 	public void init() {
 		if (scheduleEnable) {
 			this.registeTrigger(this::executeMatch7daysRegisterBill, 60 * match7DaysDelay);
