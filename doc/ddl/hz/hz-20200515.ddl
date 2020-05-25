@@ -1,5 +1,9 @@
 
-
+/*
+小程序进出门权限
+POST
+checkinout/index.html#weichat-auth
+ * */
 ALTER TABLE `user` ADD COLUMN `qr_status`  int(11)  NULL default 30 COMMENT '二维码状态(默认红色)';
 ALTER TABLE `user` ADD COLUMN `user_type`  int(11)  NULL default 10 COMMENT '用户类型';
 ALTER TABLE `user` ADD COLUMN `market_id`  bigint(20)  NULL COMMENT '所属市场';
@@ -88,7 +92,7 @@ ALTER TABLE `separate_sales_record` ADD COLUMN  `checkout_record_id`  bigint(20)
 ALTER TABLE `separate_sales_record` MODIFY COLUMN sales_city_id bigint(20) NULL COMMENT '分销城市';
 ALTER TABLE `separate_sales_record` MODIFY COLUMN sales_city_name varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '分销城市';
 
-update register_bill rb set complete=1 where (origin_certifiy_url is not null and origin_certifiy_url<>'') or (detect_report_url is not null and detect_report_url<>'')
+update register_bill rb set complete=1 where (origin_certifiy_url is not null and origin_certifiy_url<>'') or (detect_report_url is not null and detect_report_url<>'');
 update register_bill rb set complete=0 where complete is null;
 
 /*进出门记录*/
