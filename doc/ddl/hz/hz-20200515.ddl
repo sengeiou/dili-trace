@@ -1,3 +1,13 @@
+INSERT INTO biz_number
+(`type`, value, memo, version, modified, created)
+VALUES('register_bill', 2020052300301, '订单编码', 1227, '2019-07-29 20:17:14', '2018-11-02 09:45:13');
+
+INSERT INTO biz_number
+(`type`, value, memo, version, modified, created)
+VALUES('register_bill_sample_code', 2020011900051, '登记单采样编号', 839, '2019-09-17 18:01:56', '2019-09-17 18:01:40');
+
+
+
 
 /*
 小程序进出门权限
