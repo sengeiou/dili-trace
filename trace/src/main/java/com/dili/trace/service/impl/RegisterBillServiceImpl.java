@@ -79,6 +79,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return (RegisterBillMapper) getDao();
 	}
 
+	@Transactional
 	@Override
 	public BaseOutput createRegisterBill(RegisterBill registerBill) {
 		BaseOutput recheck = checkBill(registerBill);
