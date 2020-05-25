@@ -69,7 +69,7 @@ public class SeparateSalesApi {
     @ApiOperation(value = "通过ID获取详细信息")
     @RequestMapping(value = "/id/{separateSalesId}", method = RequestMethod.GET)
     public BaseOutput<SeparateSalesApiListOutput> getSeparateSalesRecord(@PathVariable Long separateSalesId) {
-        LOGGER.info("获取分销单:ID{}:" + separateSalesId);
+        LOGGER.info("获取分销单详情:ID{}:", separateSalesId);
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
@@ -85,7 +85,7 @@ public class SeparateSalesApi {
     @ApiOperation(value = "删除信息")
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public BaseOutput<SeparateSalesApiListOutput> delete(@PathVariable Long id) {
-        LOGGER.info("获取登记单:" + id);
+        LOGGER.info("删除登记单:{}" , id);
         User user = userService.get(sessionContext.getAccountId());
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
