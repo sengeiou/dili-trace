@@ -327,14 +327,14 @@
             	       $('#tallyAreaNos').tagbox('disableValidation');
                 $('#license').textbox('readonly',false);	// 禁用只读模式
                 $('#legalPerson').textbox('readonly',false);	// 禁用只读模式
-                $('#tallyAreaNos').tagbox('readonly',true);
+               // $('#tallyAreaNos').tagbox('readonly',true);
              }else  if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}') {
             	 $('#license').textbox('disableValidation')
             	 $('#legalPerson').textbox('disableValidation')
             	    $('#tallyAreaNos').tagbox('enableValidation');
             	 	$('#license').textbox('readonly',true);	// 启用只读模式
             	 	  $('#legalPerson').textbox('readonly',true);	// 禁用只读模式
-            	 	 $('#tallyAreaNos').tagbox('readonly',false);
+            	 	 //$('#tallyAreaNos').tagbox('readonly',false);
                  
              }
             

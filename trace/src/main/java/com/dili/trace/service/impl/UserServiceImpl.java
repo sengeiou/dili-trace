@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
@@ -80,7 +81,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         // 验证理货区号是否已注册
         if (StringUtils.isNotBlank(user.getTallyAreaNos())) {
-            existsTallyAreaNo(null, Arrays.asList(user.getTallyAreaNos().split(",")));
+            existsTallyAreaNo(null, Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")));
         }
 
         // 验证身份证号是否已注册
@@ -156,9 +157,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         if (EnabledStateEnum.ENABLED.getCode().equals(userPO.getState())) {
-            existsTallyAreaNo(user.getId(), Arrays.asList(user.getTallyAreaNos().split(",")));
+            existsTallyAreaNo(user.getId(), Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")));
             // 更新用户理货区
-            updateUserTallyArea(user.getId(), Arrays.asList(user.getTallyAreaNos().split(",")));
+            updateUserTallyArea(user.getId(), Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")));
         }
         // LOGGER.info("输入车牌:{}",user.getPlates());
         List<String> plateList = this.parsePlate(user.getPlates());
@@ -291,7 +292,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
      * @param tallyAreaNos
      */
     public void existsTallyAreaNo(Long userId, List<String> tallyAreaNos) {
-        tallyAreaNos.forEach(tallyAreaNo -> {
+    	tallyAreaNos.stream().filter(StringUtils::isNotBlank).forEach(tallyAreaNo -> {
             UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
             query.setTallyAreaNo(tallyAreaNo);
             UserTallyArea userTallyArea = userTallyAreaService.listByExample(query).stream().findFirst().orElse(null);
@@ -325,7 +326,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (!YnEnum.YES.getCode().equals(user.getYn())) {
             return BaseOutput.failure("数据已被删除");
         }
-        List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
+        List<String> tallyAreaNos = Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(","));
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
@@ -333,13 +334,16 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             // 验证理货区号是否已注册，未注册则添加用户理货区关系
             existsTallyAreaNo(user.getId(), tallyAreaNos);
             List<UserTallyArea> userTallyAreas = new ArrayList<>();
-            tallyAreaNos.forEach(tallyAreaNo -> {
+            tallyAreaNos.stream().filter(StringUtils::isNotBlank).forEach(tallyAreaNo -> {
                 UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
                 userTallyArea.setUserId(user.getId());
                 userTallyArea.setTallyAreaNo(tallyAreaNo);
                 userTallyAreas.add(userTallyArea);
             });
-            userTallyAreaService.batchInsert(userTallyAreas);
+            if(!userTallyAreas.isEmpty()) {
+            	userTallyAreaService.batchInsert(userTallyAreas);	
+            }
+            
             redisService.setRemove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         } else {
             user.setState(EnabledStateEnum.DISABLED.getCode());
@@ -429,7 +433,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
-        List<String> tallyAreaNos = Arrays.asList(user.getTallyAreaNos().split(","));
+        List<String> tallyAreaNos = Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(","));
 
         user.setState(EnabledStateEnum.DISABLED.getCode());
         user.setYn(YnEnum.NO.getCode());
