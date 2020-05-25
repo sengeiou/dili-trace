@@ -1,14 +1,11 @@
 package com.dili.trace.service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +22,12 @@ import com.dili.trace.domain.UserQrItem;
 import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.glossary.QrItemActionEnum;
 import com.dili.trace.glossary.QrItemTypeEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 
 @Service
-public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
+public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> implements CommandLineRunner {
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -43,7 +39,12 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> {
 	@Autowired
 	RegisterBillMapper registerBillMapper;
 
-	@PostConstruct
+	 
+	public void run(String... args) {
+		this.initRegisterBillComplete();
+		this.intUserQrItem();
+	}
+//	@PostConstruct
 	public void init() {
 		this.initRegisterBillComplete();
 		this.intUserQrItem();
