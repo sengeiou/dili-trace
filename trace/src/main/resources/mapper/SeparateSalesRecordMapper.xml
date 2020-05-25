@@ -102,7 +102,7 @@
     <if test="userId != null">
       AND separate_sales_record.sales_user_id = #{userId}
     </if>
-    <if test="likeProductName != ''">
+     <if test="likeProductName != null and likeProductName != ''">
       AND register_bill.product_name like '%${likeProductName}%'
     </if>
   <if test="offSet!= null and rows!=null">
