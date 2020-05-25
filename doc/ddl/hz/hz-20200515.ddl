@@ -94,7 +94,6 @@ ALTER TABLE `register_bill` ADD COLUMN  `complete` int(11) NULL COMMENT '信息�
 
 ALTER TABLE `separate_sales_record` ADD COLUMN  `parent_id` bigint(20) NULL  COMMENT '分销自';
 ALTER TABLE `separate_sales_record` ADD COLUMN  `bill_id` bigint(20) NULL  COMMENT '最初登记单ID';
-ALTER TABLE `separate_sales_record` ADD COLUMN  `user_product_store_type`  int(11) NOT NULL COMMENT '库存来源类型';
 ALTER TABLE `separate_sales_record` ADD COLUMN  `store_weight`  DECIMAL(10,3)  NOT  NULL  default 0 COMMENT '未分销重量';
 ALTER TABLE `separate_sales_record` ADD COLUMN  `sales_type`  int(11)    NULL COMMENT '分销类型';
 ALTER TABLE `separate_sales_record` ADD COLUMN  `checkin_record_id`  bigint(20)    NULL COMMENT '进门ID';
