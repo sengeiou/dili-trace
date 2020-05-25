@@ -22,8 +22,18 @@ public class SeparateSalesApiListOutput extends BaseDomain {
     private String originName;
     private String plate;
     private Date created;
+    private String upstreamName;
     
-    public Integer getDetectState() {
+    
+    public String getUpstreamName() {
+		return upstreamName;
+	}
+
+	public void setUpstreamName(String upstreamName) {
+		this.upstreamName = upstreamName;
+	}
+
+	public Integer getDetectState() {
 		return detectState;
 	}
 

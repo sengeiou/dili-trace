@@ -83,8 +83,9 @@
     register_bill.created as created,
     register_bill.state as state,
     register_bill.detect_state as detect_state,
-    register_bill.origin_name as origin_name
-    from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id
+    register_bill.origin_name as origin_name,
+    upstream.name as upstream_name
+    from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id left join upstream on upstream.id=register_bill.upstream_id
     where separate_sales_record.bill_id is not null
     <if test="id != null">
       AND separate_sales_record.id = #{id}
@@ -108,7 +109,8 @@
 
   </select>
   <select id="countSeparateSalesOutput"  parameterType="com.dili.trace.api.dto.SeparateSalesApiListQueryInput" resultType="java.lang.Long">
-    select   count(1) from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id
+    select   count(1) from
+    from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id left join upstream on upstream.id=register_bill.upstream_id
     where separate_sales_record.bill_id is not null
     <if test="id != null">
       AND separate_sales_record.id = #{id}

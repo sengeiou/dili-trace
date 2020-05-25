@@ -414,14 +414,18 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			dto.remove("id");
 			if(separateSalesRecordItem!=null) {
 				dto.put("storeWeight", separateSalesRecordItem.getStoreWeight());	
+				dto.put("userName", separateSalesRecordItem.getSalesUserName());
 			}else {
 				dto.put("storeWeight", 0);
+				dto.put("userName", "");
 			}
 			
 			if(billItem!=null) {
 				dto.put("state", billItem.getState());
 				dto.put("productName", billItem.getProductName());
 				
+			}else {
+				dto.put("productName", "");
 			}
 
 			return dto;
