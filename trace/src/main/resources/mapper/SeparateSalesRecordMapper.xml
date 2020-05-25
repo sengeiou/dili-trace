@@ -109,7 +109,7 @@
 
   </select>
   <select id="countSeparateSalesOutput"  parameterType="com.dili.trace.api.dto.SeparateSalesApiListQueryInput" resultType="java.lang.Long">
-    select   count(1) from
+    select   count(1) 
     from separate_sales_record left join register_bill on separate_sales_record.bill_id=register_bill.id left join upstream on upstream.id=register_bill.upstream_id
     where separate_sales_record.bill_id is not null
     <if test="id != null">
