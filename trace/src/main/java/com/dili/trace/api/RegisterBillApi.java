@@ -3,6 +3,7 @@ package com.dili.trace.api;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.SessionContext;
+import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -181,120 +182,13 @@ public class RegisterBillApi {
 
 		} else if (RegisterSourceEnum.TALLY_AREA.getCode() == input.getRegisterSource()) {// 理货区分销校验
 
-			Long separateSalesRecordId = input.getParentId();
-
-			if (separateSalesRecordId == null) {
-				return BaseOutput.failure("没有需要分销的登记单");
+			try {
+				Long seprateSalesId=this.separateSalesRecordService.createSeparateSalesRecord(input, user);
+				return BaseOutput.success().setData(seprateSalesId);
+			}catch (BusinessException e) {
+				return BaseOutput.failure(e.getMessage()).setData(false);
 			}
-
-			SeparateSalesRecord separateSalesRecord = this.separateSalesRecordService.get(separateSalesRecordId);
-			if (separateSalesRecord == null) {
-				return BaseOutput.failure("没有需要分销的数据");
-			}
-
-			RegisterBill registerBill = this.registerBillService.get(separateSalesRecord.getBillId());
-
-			if (registerBill == null) {
-				return BaseOutput.failure("没有查到需要分销的登记单");
-			}
-			if (registerBill.getState() == null) {
-				return BaseOutput.failure("登记单状态错误");
-			}
-			List<Integer> stateList = Arrays.asList(RegisterBillStateEnum.ALREADY_CHECK.getCode(),
-					RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-			if (!stateList.contains(registerBill.getState())) {
-				return BaseOutput.failure("当前状态登记单不能分销");
-			}
-			if(BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())&&BillDetectStateEnum.REVIEW_PASS.getCode().equals(registerBill.getDetectState())) {
-				return BaseOutput.failure("当前登记单检测不合格不能分销");
-			}
-			if (separateSalesRecord.getSalesUserId().longValue() != user.getId().longValue()) {
-				LOGGER.info("业户ID" + separateSalesRecord.getSalesUserId() + "用户ID:" + user.getId());
-				return BaseOutput.failure("没有权限分销");
-			}
-			BigDecimal salesWeight = BigDecimal.valueOf(input.getSalesWeight());
-			BigDecimal storeWeight = separateSalesRecord.getStoreWeight();
-
-			if (separateSalesRecord.getParentId() == null
-					&& !registerBill.getWeight().equals(separateSalesRecord.getSalesWeight())) {
-				// 当前分销记录是初始用于分销的记录
-				// 更新重量(登记单重量可能被更新过)
-				SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
-				record.setStoreWeight(BigDecimal.valueOf(registerBill.getWeight()));
-				record.setSalesWeight(registerBill.getWeight());
-				record.setId(separateSalesRecord.getId());
-				this.separateSalesRecordService.updateSelective(record);
-				storeWeight = record.getStoreWeight();
-
-			}
-			Long salesUserId = input.getSalesUserId();
-			User salesUser = this.userService.get(salesUserId);
-			boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(salesUserId).stream()
-					.anyMatch(up ->user.getId().equals(up.getSourceUserId()));
 			
-			if (storeWeight.compareTo(salesWeight) < 0) {
-				return BaseOutput.failure("分销重量超过可分销重量").setData(false);
-			}
-			if (!hasUpStream&&input.getSalesUserId()!=null) {
-				UpStream upStream=this.upStreamService.queryUpStreamBySourceUserId(user.getId());
-				UpStreamDto upStreamDto = new UpStreamDto();
-				if(upStream==null) {
-					if(UserTypeEnum.USER.getCode().equals(user.getUserType())) {
-						upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());	
-					}else {
-						upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
-					}
-					
-					upStreamDto.setIdCard(user.getCardNo());
-					upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
-					upStreamDto.setOperationLicenseUrl(user.getOperationLicenseUrl());
-					upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
-					upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
-					upStreamDto.setName(user.getName());
-					upStreamDto.setSourceUserId(user.getId());
-					upStreamDto.setLicense(user.getLicense());
-					upStreamDto.setTelphone(user.getPhone());
-					upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
-					upStreamDto.setUserIds(Arrays.asList(input.getSalesUserId()));
-					upStreamDto.setCreated(new Date());
-					upStreamDto.setModified(new Date());
-					this.upStreamService.addUpstream(upStreamDto, new OperatorUser(user.getId(), user.getName()));
-				}else {
-					upStreamDto.setUserIds(Arrays.asList(input.getSalesUserId()));
-					upStreamDto.setId(upStream.getId());
-					this.upStreamService.addUpstreamUsers(upStreamDto, new OperatorUser(user.getId(), user.getName()));
-				}
-				
-
-
-			}
-
-			// 更新被分销记录的剩余重量
-			SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
-			record.setStoreWeight(storeWeight.subtract(salesWeight));
-			record.setModified(new Date());
-			record.setId(separateSalesRecordId);
-			this.separateSalesRecordService.updateSelective(record);
-
-			input.setBillId(registerBill.getId());
-			input.setRegisterBillCode(registerBill.getCode());
-			input.setCreated(new Date());
-			input.setModified(new Date());
-			if(input.getSalesCityId()==null) {
-				input.setSalesCityId(user.getSalesCityId());
-			}
-			if(StringUtils.isBlank(input.getSalesCityName())) {
-				input.setSalesCityName(user.getSalesCityName());
-			}
-	
-			input.setStoreWeight(salesWeight);
-			registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
-			separateSalesRecordService.saveOrUpdate(input);
-
-			registerBill.setOperatorName(user.getName());
-			registerBill.setOperatorId(user.getId());
-			registerBillService.update(registerBill);
-			return BaseOutput.success().setData(input.getId());
 		} else {
 			return BaseOutput.success().setData(0L);
 		}
