@@ -1,19 +1,18 @@
 package com.dili.trace.provider;
 
-import com.dili.ss.metadata.FieldMeta;
-import com.dili.ss.metadata.ValuePair;
-import com.dili.ss.metadata.ValuePairImpl;
-import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.stereotype.Component;
+
+import com.dili.ss.metadata.FieldMeta;
+import com.dili.ss.metadata.ValuePair;
+import com.dili.ss.metadata.ValuePairImpl;
+import com.dili.ss.metadata.ValueProvider;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 
 /**
  * <B>Description</B>
@@ -26,17 +25,20 @@ import java.util.stream.Stream;
 @Component
 public class UsualAddressTypeProvider implements ValueProvider {
 
-    private static final List<ValuePair<?>> BUFFER = new ArrayList<>();
+    private static final List<ValuePair<?>> BUFFER  = buildValuePair();
 
-    static {
-        BUFFER.addAll(Stream.of(UsualAddressTypeEnum.values())
-                .map(e -> new ValuePairImpl<>(e.getName(), e.getType().toString()))
-                .collect(Collectors.toList()));
-    }
+	private static List<ValuePair<?>> buildValuePair() {
 
+		List<ValuePair<?>> list = new ArrayList<>();
+		list.addAll(Stream.of(UsualAddressTypeEnum.values())
+				.map(e -> new ValuePairImpl<>(e.getName(), e.getType().toString())).collect(Collectors.toList()));
+		return list;
+	}
+   
+ 
     @Override
     public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
-        return BUFFER;
+        return buildValuePair();
     }
 
     @Override

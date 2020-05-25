@@ -1,19 +1,18 @@
 package com.dili.trace.provider;
 
-import com.dili.ss.metadata.FieldMeta;
-import com.dili.ss.metadata.ValuePair;
-import com.dili.ss.metadata.ValuePairImpl;
-import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.YnEnum;
-
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.stereotype.Component;
+
+import com.dili.ss.metadata.FieldMeta;
+import com.dili.ss.metadata.ValuePair;
+import com.dili.ss.metadata.ValuePairImpl;
+import com.dili.ss.metadata.ValueProvider;
+import com.dili.trace.glossary.YnEnum;
 
 /**
  * <B>Description</B>
@@ -26,13 +25,16 @@ import java.util.stream.Stream;
 @Component("ynEnumStateProvider")
 public class YNEnumStateProvider implements ValueProvider {
 
-    private static final List<ValuePair<?>> BUFFER = new ArrayList<>();
+    private static final List<ValuePair<?>> BUFFER  = buildValuePair();
 
-    static {
-        BUFFER.addAll(Stream.of(YnEnum.values())
-                .map(e -> new ValuePairImpl<>(e.getDesc(), e.getCode().toString()))
-                .collect(Collectors.toList()));
-    }
+	private static List<ValuePair<?>> buildValuePair() {
+
+		List<ValuePair<?>> list = new ArrayList<>();
+		list.addAll(Stream.of(YnEnum.values())
+				.map(e -> new ValuePairImpl<>(e.getDesc(), e.getCode().toString())).collect(Collectors.toList()));
+		return list;
+	}
+  
 
     @Override
     public List<ValuePair<?>> getLookupList(Object o, Map map, FieldMeta fieldMeta) {
