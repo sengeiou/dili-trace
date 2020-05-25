@@ -119,9 +119,13 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 		if (registerBill.getState() == null) {
 			throw new BusinessException("登记单状态错误");
 		}
-		List<Integer> stateList = Arrays.asList(RegisterBillStateEnum.ALREADY_CHECK.getCode(),
-				RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-		if (!stateList.contains(registerBill.getState())) {
+		
+		if (RegisterBillStateEnum.ALREADY_AUDIT.getCode().equals(registerBill.getState())) {
+			 //do nothing
+		}else  if(RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())&&(BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())
+				||BillDetectStateEnum.REVIEW_PASS.getCode().equals(registerBill.getDetectState()))) {
+			 //do nothing
+		}else {
 			throw new BusinessException("当前状态登记单不能分销");
 		}
 		if (BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())
