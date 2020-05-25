@@ -84,26 +84,27 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (recordList.isEmpty()) {
 			throw new BusinessException("没有可以出场的交易单");
 		}
-		List<Long> billList = recordList.stream().map(SeparateSalesRecord::getBillId).filter(billid -> {
-
-			RegisterBill registerBill = this.registerBillService.get(billid);
-			if (registerBill == null) {
-				return false;
-			}
-			if (!RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {
-				return false;
-			}
-			if (BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())
-					|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(registerBill.getDetectState())) {
-				return true;
-			}
-			return false;
-
-		}).collect(Collectors.toList());
-
-		if (billList.size() != checkOutApiInput.getSeparateSalesIdList().size()) {
-			throw new BusinessException("部分交易单不能出门，请重新确认");
-		}
+//		List<Long> billList = recordList.stream().map(SeparateSalesRecord::getBillId).filter(billid -> {
+//
+//			RegisterBill registerBill = this.registerBillService.get(billid);
+//			if (registerBill == null) {
+//				return false;
+//			}
+//			if (!RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {
+//				return false;
+//			}
+//			if (BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())
+//					|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(registerBill.getDetectState())) {
+//				return true;
+//			}
+//			
+//			return false;
+//
+//		}).collect(Collectors.toList());
+//
+//		if (billList.size() != checkOutApiInput.getSeparateSalesIdList().size()) {
+//			throw new BusinessException("部分交易单不能出门，请重新确认");
+//		}
 		CheckinOutRecord checkoutRecord = new CheckinOutRecord();
 		checkoutRecord.setStatus(checkoutStatusEnum.getCode());
 		checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
@@ -196,10 +197,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (!RegisterBillStateEnum.WAIT_CHECK.getCode().equals(bill.getState())) {
 			throw new BusinessException("登记单状态错误");
 		}
-		SeparateSalesRecord query=DTOUtils.newDTO(SeparateSalesRecord.class);
+		SeparateSalesRecord query = DTOUtils.newDTO(SeparateSalesRecord.class);
 		query.setBillId(input.getBillId());
 		query.setSalesType(SalesTypeEnum.OWNED.getCode());
-		SeparateSalesRecord separateSalesRecord = this.separateSalesRecordService.listByExample(query).stream().findFirst().orElse(null);
+		SeparateSalesRecord separateSalesRecord = this.separateSalesRecordService.listByExample(query).stream()
+				.findFirst().orElse(null);
 
 		if (separateSalesRecord == null) {
 			throw new BusinessException("数据错误:没有数据");
@@ -218,8 +220,6 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (CheckinStatusEnum.ALLOWED != checkinStatusEnum) {
 			throw new BusinessException("数据错误:进门状态错误");
 		}
-		
-
 
 		RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
 		updatable.setId(bill.getId());
@@ -303,20 +303,19 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			out.setState(bill.getState());
 			out.setCreated(bill.getCreated());
 			out.setStoreWeight(BigDecimal.valueOf(bill.getWeight()));
-			
-			if(bill.getUpStreamId()!=null) {
+
+			if (bill.getUpStreamId() != null) {
 				Optional.ofNullable(this.upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {
 
 					out.setUpstreamName(up.getName());
 					out.setUpstreamTelphone(up.getTelphone());
 				});
 			}
-	
 
 			return out;
 		}).collect(Collectors.toList());
-	
-		BasePage<CheckInApiListOutput> result = 	BasePageUtil.convert(dataList, billPage);
+
+		BasePage<CheckInApiListOutput> result = BasePageUtil.convert(dataList, billPage);
 
 		return result;
 
@@ -354,8 +353,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return output;
 
 	}
-	public BaseOutput<BasePage<DTO>> listPagedAvailableCheckOutData(CheckoutApiListQuery query) {
 
+	public BaseOutput<BasePage<DTO>> listPagedAvailableCheckOutData(CheckoutApiListQuery query) {
 
 		if (query == null || query.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
@@ -364,74 +363,83 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		SeparateSalesRecord separateSalesRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
 		separateSalesRecord.setSalesUserId(query.getUserId());
 		separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR,
-				" checkin_record_id in(select id from checkinout_record where `inout`=" + CheckinOutTypeEnum.IN.getCode()
-						+ " and status=" + CheckinStatusEnum.ALLOWED.getCode() + ")  and checkout_record_id is null");
+				" checkin_record_id in(select id from checkinout_record where `inout`="
+						+ CheckinOutTypeEnum.IN.getCode() + " and status=" + CheckinStatusEnum.ALLOWED.getCode()
+						+ ")  and (checkout_record_id is null or checkout_record_id in select id from checkinout_record where inout="
+						+ CheckinOutTypeEnum.OUT.getCode() + " and status="+ CheckinStatusEnum.NOTALLOWED.getCode()+" )");
 
 		BasePage<SeparateSalesRecord> page = this.separateSalesRecordService.listPageByExample(separateSalesRecord);
-		List<DTO>dataList=page.getDatas().stream().map(sp -> {
-			Long id=sp.getId();
-			Long billId=sp.getBillId();
-			DTO dto=DTOUtils.go(sp);
+		List<DTO> dataList = page.getDatas().stream().map(sp -> {
+			Long id = sp.getId();
+			Long billId = sp.getBillId();
+			DTO dto = DTOUtils.go(sp);
 			dto.remove("billId");
 			dto.remove("id");
 			dto.put("separateSalesId", id);
 			RegisterBill rb = this.registerBillService.get(billId);
-			if(rb!=null) {
-				RegisterBillStateEnum stateEnum=RegisterBillStateEnum.getRegisterBillStateEnum(rb.getState());
+			if (rb != null) {
+				RegisterBillStateEnum stateEnum = RegisterBillStateEnum.getRegisterBillStateEnum(rb.getState());
 				dto.put("state", rb.getState());
 				dto.put("stateName", stateEnum.getName());
-				dto.put("productName", rb.getProductName());	
+				dto.put("productName", rb.getProductName());
 			}
-			
+
 			return dto;
 		}).collect(Collectors.toList());
 
-		BasePage<DTO> result = 	BasePageUtil.convert(dataList, page);
+		BasePage<DTO> result = BasePageUtil.convert(dataList, page);
 		return BaseOutput.success().setData(result);
 	}
 
-	public BaseOutput<BasePage<Map<String,Object>>> listPagedData(CheckoutApiListQuery query,Long operatorId) {
+	public BaseOutput<BasePage<Map<String, Object>>> listPagedData(CheckoutApiListQuery query, Long operatorId) {
 //		if (query == null || query.getUserId() == null) {
 //			return BaseOutput.failure("参数错误");
 //		}
 		CheckinOutRecord checkinOutRecord = new CheckinOutRecord();
 		checkinOutRecord.setOperatorId(operatorId);
-
+		if (query.getDate() != null) {
+			checkinOutRecord.setMetadata(IDTO.AND_CONDITION_EXPR,
+					" DATE_FORMAT(created,'%Y-%m-%d')='" + query.getDate() + "'");
+		}
 		BasePage<CheckinOutRecord> page = this.listPageByExample(checkinOutRecord);
-		
-		List<Map<String,Object>>dataList=page.getDatas().stream().map(cr -> {
-			RegisterBill billQuery=DTOUtils.newDTO(RegisterBill.class);
+
+		List<Map<String, Object>> dataList = page.getDatas().stream().map(cr -> {
+			RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
 			billQuery.mset(IDTO.AND_CONDITION_EXPR,
-					" id in (select bill_id from separate_sales_record where checkin_record_id ="+cr.getId()+" or checkout_record_id="+cr.getId()+") ");
-			RegisterBill billItem=this.registerBillService.listByExample(billQuery).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
-			
-			SeparateSalesRecord separateSalesRecordQuery=DTOUtils.newDTO(SeparateSalesRecord.class);
+					" id in (select bill_id from separate_sales_record where checkin_record_id =" + cr.getId()
+							+ " or checkout_record_id=" + cr.getId() + ") ");
+			RegisterBill billItem = this.registerBillService.listByExample(billQuery).stream().findFirst()
+					.orElse(DTOUtils.newDTO(RegisterBill.class));
+
+			SeparateSalesRecord separateSalesRecordQuery = DTOUtils.newDTO(SeparateSalesRecord.class);
 			separateSalesRecordQuery.mset(IDTO.AND_CONDITION_EXPR,
-					"  ( checkin_record_id ="+cr.getId()+" or checkout_record_id="+cr.getId()+") ");
-			SeparateSalesRecord separateSalesRecordItem=	this.separateSalesRecordService.listByExample(separateSalesRecordQuery).stream().findFirst().orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
-			Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
+					"  ( checkin_record_id =" + cr.getId() + " or checkout_record_id=" + cr.getId() + ") ");
+			SeparateSalesRecord separateSalesRecordItem = this.separateSalesRecordService
+					.listByExample(separateSalesRecordQuery).stream().findFirst()
+					.orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
+			Map<String, Object> dto = BeanMapUtil.beanToMap(cr);
 //			Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
 			dto.remove("id");
-			if(separateSalesRecordItem!=null) {
-				dto.put("storeWeight", separateSalesRecordItem.getStoreWeight());	
+			if (separateSalesRecordItem != null) {
+				dto.put("storeWeight", separateSalesRecordItem.getStoreWeight());
 				dto.put("userName", separateSalesRecordItem.getSalesUserName());
-			}else {
+			} else {
 				dto.put("storeWeight", 0);
 				dto.put("userName", "");
 			}
-			
-			if(billItem!=null) {
+
+			if (billItem != null) {
 				dto.put("state", billItem.getState());
 				dto.put("productName", billItem.getProductName());
-				
-			}else {
+
+			} else {
 				dto.put("productName", "");
 			}
 
 			return dto;
 
 		}).collect(Collectors.toList());
-		BasePage<Map<String,Object>> result = 	BasePageUtil.convert(dataList, page);
+		BasePage<Map<String, Object>> result = BasePageUtil.convert(dataList, page);
 		return BaseOutput.success().setData(result);
 	}
 }

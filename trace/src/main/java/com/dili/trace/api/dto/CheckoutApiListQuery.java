@@ -3,9 +3,19 @@ package com.dili.trace.api.dto;
 public class CheckoutApiListQuery {
 	private Long separateSalesId;
     private Long userId;
+    private String date;
+    
 
 
-    public Long getSeparateSalesId() {
+    public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public Long getSeparateSalesId() {
 		return separateSalesId;
 	}
 

@@ -89,6 +89,16 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 	@Override
 	public EasyuiPageOutput listPageByQueryInput(SeparateSalesApiListQueryInput queryInput) throws Exception {
 		Long total = this.getActualDao().countSeparateSalesOutput(queryInput);
+		
+		if(queryInput.getPage()==null||queryInput.getPage()<=0) {
+			queryInput.setPage(1);
+		}
+		if(queryInput.getRows()==null||queryInput.getRows()<=0) {
+			queryInput.setRows(10);
+		}
+		queryInput.setOffSet((queryInput.getPage()-1)*queryInput.getRows());
+		
+		
 		List<SeparateSalesApiListOutput> list = this.getActualDao().listSeparateSalesOutput(queryInput);
 
 		List results = ValueProviderUtils.buildDataByProvider(queryInput, list);

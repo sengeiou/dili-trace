@@ -11,8 +11,19 @@ public class SeparateSalesApiListQueryInput extends BaseDomain {
     private String likeProductName;
 
     private Long userId;
+    
+    private Integer offSet;
+    
 
-    /**
+    public Integer getOffSet() {
+		return offSet;
+	}
+
+	public void setOffSet(Integer offSet) {
+		this.offSet = offSet;
+	}
+
+	/**
      * @return Long return the userId
      */
     public Long getUserId() {

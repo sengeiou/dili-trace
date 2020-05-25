@@ -105,7 +105,9 @@
     <if test="likeProductName != ''">
       AND register_bill.product_name like '%${likeProductName}%'
     </if>
-    
+  <if test="offSet!= null and rows!=null">
+	limit ${offSet},${rows}
+	</if>
 
   </select>
   <select id="countSeparateSalesOutput"  parameterType="com.dili.trace.api.dto.SeparateSalesApiListQueryInput" resultType="java.lang.Long">

@@ -14,7 +14,7 @@ public class SeparateSalesRecordServiceTest extends AutoWiredBaseTest {
 	@Test
 	public void dd() {
 		SeparateSalesApiListQueryInput queryInput=new SeparateSalesApiListQueryInput();
-		queryInput.setId(189L);
+		queryInput.setUserId(3L);
 		SeparateSalesApiListOutput output=this.separateSalesRecordService.listByQueryInput(queryInput).stream().findFirst().orElse(null);
 		System.out.println(output);
 	}
