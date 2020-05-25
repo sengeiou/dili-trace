@@ -268,11 +268,7 @@
 			<artifactId>commons</artifactId>
 			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.dili</groupId>
-			<artifactId>ss-multi-datasource</artifactId>
-			<version>${sharp-sword.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>ss-uid</artifactId>

@@ -12,10 +12,10 @@ import net.ttddyy.dsproxy.support.ProxyDataSource;
 @Configuration
 public class ProxyDataSourceConfig {
 
-	@Bean
-	@Primary
-	ProxyDataSource proxyDatasource(@Autowired AbstractRoutingDataSource ds) {
-
-		return new ProxyDataSource(ds);
-	}
+//	@Bean
+//	@Primary
+//	ProxyDataSource proxyDatasource(@Autowired AbstractRoutingDataSource ds) {
+//
+//		return new ProxyDataSource(ds);
+//	}
 }
