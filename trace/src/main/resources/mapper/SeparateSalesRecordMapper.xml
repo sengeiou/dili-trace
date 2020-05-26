@@ -94,11 +94,9 @@
       <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
     </if>
     <if test="createdEnd != null  and createdEnd != ''">
-      <![CDATA[AND separate_sales_record.id <=#{createdEnd}]]>
+      <![CDATA[AND separate_sales_record.created <=#{createdEnd}]]>
     </if>
-    <if test="likeProductName != null and likeProductName != ''">
-      AND separate_sales_record.id = #{likeProductName}
-    </if>
+   
     <if test="userId != null">
       AND separate_sales_record.sales_user_id = #{userId}
     </if>
@@ -121,13 +119,14 @@
       <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
     </if>
     <if test="createdEnd != null  and createdEnd != ''">
-      <![CDATA[AND separate_sales_record.id <=#{createdEnd}]]>
+      <![CDATA[AND separate_sales_record.created <=#{createdEnd}]]>
     </if>
-    <if test="likeProductName != null and likeProductName != ''">
-      AND separate_sales_record.id = #{likeProductName}
-    </if>
+   
     <if test="userId != null">
       AND separate_sales_record.sales_user_id = #{userId}
+    </if>
+     <if test="likeProductName != null and likeProductName != ''">
+      AND register_bill.product_name like '%${likeProductName}%'
     </if>
   </select>
   
