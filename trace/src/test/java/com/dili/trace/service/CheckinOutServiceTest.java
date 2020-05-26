@@ -17,6 +17,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.dto.CheckInApiInput;
+import com.dili.trace.api.dto.CheckInApiListOutput;
 import com.dili.trace.api.dto.CheckOutApiInput;
 import com.dili.trace.api.dto.CheckoutApiListQuery;
 import com.dili.trace.api.dto.ManullyCheckInput;
@@ -40,7 +41,12 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 	@Test
 	public void listCheckInApiListOutputPage() {
-		this.checkinOutRecordService.listCheckInApiListOutputPage(DTOUtils.newDTO(RegisterBillDto.class));
+		RegisterBillDto query=DTOUtils.newDTO(RegisterBillDto.class);
+		query.setUserId(1L);
+		query.setPage(1);
+		query.setRows(20);
+		BasePage<CheckInApiListOutput>out=	this.checkinOutRecordService.listCheckInApiListOutputPage(DTOUtils.newDTO(RegisterBillDto.class));
+		System.out.println(out);
 	}
 
 	@Test
