@@ -12,15 +12,30 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
+import com.dili.trace.api.dto.CheckInApiInput;
+import com.dili.trace.api.dto.ManullyCheckInput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CheckinRecordInputDto;
 import com.dili.trace.dto.ManullyCheckInputDto;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.dto.UserInfoDto;
@@ -28,6 +43,7 @@ import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
@@ -40,19 +56,8 @@ import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.dili.trace.util.MaskUserInfo;
+import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,6 +94,8 @@ public class RegisterBillHZController {
 	UpStreamService upStreamService;
 	@Autowired
 	CodeGenerateService codeGenerateService;
+	@Autowired
+	CheckinOutRecordService checkinOutRecordService;
 
 	@ApiOperation("新增RegisterBill")
 	@RequestMapping(value = "/update.action", method = RequestMethod.POST)
@@ -97,7 +104,7 @@ public class RegisterBillHZController {
 		try {
 			if (idList.isEmpty()) {
 				// insert
-				List<RegisterBill> billList = this.buildRegisterBillList(input, new Long[] { 0L },true);
+				List<RegisterBill> billList = this.buildRegisterBillList(input, new Long[] { 0L }, true);
 				for (RegisterBill bill : billList) {
 					BaseOutput out = this.registerBillService.createRegisterBill(bill);
 					if (!out.isSuccess()) {
@@ -106,8 +113,8 @@ public class RegisterBillHZController {
 				}
 
 			} else {
-				List<RegisterBill> billList = this.buildRegisterBillList(input,
-						idList.toArray(new Long[idList.size()]),false);
+				List<RegisterBill> billList = this.buildRegisterBillList(input, idList.toArray(new Long[idList.size()]),
+						false);
 				try {
 					this.registerBillService.batchUpdateSelective(billList);
 				} catch (Exception e) {
@@ -116,14 +123,14 @@ public class RegisterBillHZController {
 
 			}
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(),e);
+			LOGGER.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端失败");
 		}
 
 		return BaseOutput.success("操作成功");
 	}
 
-	private List<RegisterBill> buildRegisterBillList(RegisterBillInputDto input, Long[] idList,boolean insert) {
+	private List<RegisterBill> buildRegisterBillList(RegisterBillInputDto input, Long[] idList, boolean insert) {
 		return IntStream.range(0, idList.length).boxed().collect(Collectors.toMap(i -> i, i -> idList[i])).entrySet()
 				.stream().map(e -> {
 					Integer index = e.getKey();
@@ -139,10 +146,8 @@ public class RegisterBillHZController {
 					String productName = input.getProductNameList().get(index);
 					Integer weight = input.getWeightList().get(index);
 
-
-				
 					bill.setUpStreamId(upStreamId);
-					
+
 					bill.setWeight(weight);
 					bill.setCreated(new Date());
 					bill.setModified(new Date());
@@ -166,8 +171,8 @@ public class RegisterBillHZController {
 	 * @return
 	 */
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
-	public String edit(ModelMap modelMap,@RequestParam("id")Long id,@RequestParam("userId")Long userId) {
-		List<Long> ids =Arrays.asList(id);
+	public String edit(ModelMap modelMap, @RequestParam("id") Long id, @RequestParam("userId") Long userId) {
+		List<Long> ids = Arrays.asList(id);
 		User userItem = this.userService.get(userId);
 		modelMap.put("userItem", userItem);
 		List<RegisterBill> registerBillList = new ArrayList<>();
@@ -203,28 +208,23 @@ public class RegisterBillHZController {
 			if (input == null || input.getBillId() == null || input.getCheckinStatus() == null) {
 				return BaseOutput.failure("参数错误");
 			}
-			RegisterBill bill = this.registerBillService.get(input.getBillId());
-			if (bill == null) {
-				return BaseOutput.failure("数据错误");
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			if (null == userTicket) {
+				return BaseOutput.failure("未登录或登录过期");
 			}
-			if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(bill.getState())) {
-				return BaseOutput.failure("登记单状态错误");
+			CheckInApiInput checkInApiInput = new CheckInApiInput();
+			checkInApiInput.setBillIdList(Arrays.asList(input.getBillId()));
+			CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.fromCode(input.getCheckinStatus());
+			if(checkinStatusEnum==null) {
+				return BaseOutput.failure("参数错误");
 			}
-			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
-			updatable.setId(bill.getId());
-			updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
-			if (CheckinStatusEnum.ALLOWED.equalsCode(input.getCheckinStatus())) {
-				//updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
-			} else {
-				updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-				updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
-			}
-			
-			updatable.setSampleCode(codeGenerateService.nextSampleCode());
-			this.registerBillService.updateSelective(updatable);
+			checkInApiInput.setCheckinStatus(checkinStatusEnum.getCode());
+
+			this.checkinOutRecordService.doCheckin(new OperatorUser(userTicket.getId(), userTicket.getRealName()),
+					checkInApiInput);
+
 			return BaseOutput.success();
-		} catch (AppException e) {
-			LOGGER.error(e.getMessage(), e);
+		} catch (BusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -241,40 +241,27 @@ public class RegisterBillHZController {
 	 */
 	@RequestMapping(value = "/doManullyCheck.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public BaseOutput<?> doManullyCheck(@RequestBody ManullyCheckInputDto input) {
+	public BaseOutput<?> doManullyCheck(@RequestBody ManullyCheckInputDto inputDto) {
 		try {
-			if (input == null || input.getBillId() == null || input.getPass() == null) {
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			if (null == userTicket) {
+				return BaseOutput.failure("未登录或登录过期");
+			}
+			if (inputDto == null || inputDto.getBillId() == null || inputDto.getPass() == null) {
 				return BaseOutput.failure("参数错误");
 			}
-			RegisterBill bill = this.registerBillService.get(input.getBillId());
+			RegisterBill bill = this.registerBillService.get(inputDto.getBillId());
 			if (bill == null) {
 				return BaseOutput.failure("数据错误");
 			}
 			if (!RegisterBillStateEnum.WAIT_CHECK.getCode().equals(bill.getState())) {
 				return BaseOutput.failure("登记单状态错误");
 			}
-			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
-			updatable.setId(bill.getId());
-			updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-			if (input.getPass()) {
-				if (bill.getDetectState() != null) {
-					updatable.setDetectState(BillDetectStateEnum.REVIEW_PASS.getCode());
-				} else {
-					updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
-				}
-				updatable.setLatestPdResult("合格");
-			} else {
-				if (bill.getDetectState() != null) {
-					updatable.setDetectState(BillDetectStateEnum.REVIEW_NO_PASS.getCode());
-				} else {
-					updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
-				}
-				updatable.setLatestPdResult("不合格");
-			}
-			updatable.setLatestDetectTime(new Date());
-			updatable.setLatestDetectOperator(SessionContext.getSessionContext().getUserTicket().getRealName());
+			 ManullyCheckInput input=new ManullyCheckInput();
+			 input.setBillId(inputDto.getBillId());
+			 input.setPass(inputDto.getPass());
+			this.checkinOutRecordService.doManullyCheck(new OperatorUser(userTicket.getId(),userTicket.getRealName()), input);RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
 			
-			this.registerBillService.updateSelective(updatable);
 			return BaseOutput.success();
 		} catch (AppException e) {
 			LOGGER.error(e.getMessage(), e);

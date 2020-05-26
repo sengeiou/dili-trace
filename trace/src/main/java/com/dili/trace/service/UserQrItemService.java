@@ -287,8 +287,8 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 
 		} else {
 			billQrItemItem.setHasData(TFEnum.TRUE.getCode());
-			
-			
+
+			this.updateComplete(userId);
 //			billQuery.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 			billQuery.setComplete(1);
 			List<RegisterBill> registerBillList = this.registerBillService.listByExample(billQuery);
@@ -344,7 +344,26 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 		}
 
 	}
-
+	private void updateComplete(Long userId) {
+		RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
+		billQuery.setUserId(userId);
+		billQuery.mset(IDTO.AND_CONDITION_EXPR," complete is null or complete = 0");
+		this.registerBillService.listByExample(billQuery).stream().forEach(bill->{
+			Integer complete=0;
+			if(this.checkRegisterBill(bill)!=null) {
+				complete=0;
+			}else {
+				complete=1;
+			}
+			if(!complete.equals(bill.getComplete())) {
+				RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+				updatable.setId(bill.getId());
+				updatable.setComplete(complete);
+				this.registerBillService.updateSelective(updatable);
+			}
+			
+		});
+	}
 	private Long checkUser(User user) {
 
 		return null;

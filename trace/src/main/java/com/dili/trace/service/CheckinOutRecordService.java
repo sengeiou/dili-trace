@@ -43,6 +43,7 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.util.BasePageUtil;
 import com.dili.trace.util.BeanMapUtil;
+import com.diligrp.manage.sdk.session.SessionContext;
 
 @Service
 public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, Long> {
@@ -56,6 +57,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	UpStreamService upStreamService;
 	@Autowired
 	CheckinOutRecordMapper checkinOutRecordMapper;
+	@Autowired
+	CodeGenerateService codeGenerateService;
 
 	@Transactional
 	public CheckinOutRecord doCheckout(OperatorUser operateUser, CheckOutApiInput checkOutApiInput) {
@@ -176,8 +179,12 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			} else {
 				updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 				updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
-			}
+				updatable.setLatestPdResult("0%");
+				updatable.setLatestDetectTime(new Date());
+				updatable.setLatestDetectOperator(operateUser.getName());
 
+			}
+			updatable.setSampleCode(codeGenerateService.nextSampleCode());
 			this.registerBillService.updateSelective(updatable);
 		});
 
@@ -230,14 +237,18 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			} else {
 				updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
 			}
-			updatable.setLatestPdResult("合格");
+			updatable.setLatestPdResult("100%");
+			updatable.setLatestDetectTime(new Date());
+			updatable.setLatestDetectOperator(operateUser.getName());
 		} else {
 			if (bill.getDetectState() != null) {
 				updatable.setDetectState(BillDetectStateEnum.REVIEW_NO_PASS.getCode());
 			} else {
 				updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
 			}
-			updatable.setLatestPdResult("不合格");
+			updatable.setLatestPdResult("0%");
+			updatable.setLatestDetectTime(new Date());
+			updatable.setLatestDetectOperator(operateUser.getName());
 		}
 		updatable.setLatestDetectTime(new Date());
 		updatable.setLatestDetectOperator("管理员");
@@ -293,7 +304,9 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}
 //		query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
 		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-		query.mset(IDTO.AND_CONDITION_EXPR, " id in(select bill_id from separate_sales_record where checkin_record_id  is null and sales_type="+SalesTypeEnum.OWNED.getCode()+") ");
+		query.mset(IDTO.AND_CONDITION_EXPR,
+				" id in(select bill_id from separate_sales_record where checkin_record_id  is null and sales_type="
+						+ SalesTypeEnum.OWNED.getCode() + ") ");
 
 		BasePage<RegisterBill> billPage = this.registerBillService.listPageByExample(query);
 		List<CheckInApiListOutput> dataList = billPage.getDatas().stream().map(bill -> {
@@ -368,7 +381,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				" checkin_record_id in(select id from checkinout_record where `inout`="
 						+ CheckinOutTypeEnum.IN.getCode() + " and status=" + CheckinStatusEnum.ALLOWED.getCode()
 						+ ")  and (checkout_record_id is null or checkout_record_id in select id from checkinout_record where inout="
-						+ CheckinOutTypeEnum.OUT.getCode() + " and status="+ CheckinStatusEnum.NOTALLOWED.getCode()+" )");
+						+ CheckinOutTypeEnum.OUT.getCode() + " and status=" + CheckinStatusEnum.NOTALLOWED.getCode()
+						+ " )");
 
 		BasePage<SeparateSalesRecord> page = this.separateSalesRecordService.listPageByExample(separateSalesRecord);
 		List<DTO> dataList = page.getDatas().stream().map(sp -> {
