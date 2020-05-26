@@ -39,19 +39,19 @@ import com.dili.trace.service.UserService;
 
 import io.swagger.annotations.Api;
 
+@SuppressWarnings("deprecation")
 @Api(value = "/api/checkinRecordApi")
 @RestController
 @InterceptConfiguration
 @RequestMapping(value = "/api/checkinRecordApi")
 public class CheckinOutRecordApi {
-	private static final Logger logger = LoggerFactory.getLogger(UserApi.class);
+	private static final Logger logger = LoggerFactory.getLogger(CheckinOutRecordApi.class);
 	@Resource
 	private UserService userService;
 	@Resource
 	private SessionContext sessionContext;
 	@Autowired
 	RegisterBillService registerBillService;
-
 	@Autowired
 	CheckinOutRecordService checkinOutRecordService;
 	@Autowired
@@ -62,9 +62,9 @@ public class CheckinOutRecordApi {
 	/**
 	 * 进场
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/doCheckin.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<Long> doCheckin(@RequestBody CheckInApiInput input) {
-//		User user = userService.get(sessionContext.getAccountId());
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
@@ -73,7 +73,6 @@ public class CheckinOutRecordApi {
 					.doCheckin(new OperatorUser(sessionContext.getAccountId(), ""), input);
 			return BaseOutput.success().setData(checkinRecord.getId());
 		} catch (BusinessException e) {
-
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -84,6 +83,7 @@ public class CheckinOutRecordApi {
 	/**
 	 * 出场
 	 */
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput doCheckout(@RequestBody CheckOutApiInput input) {
 		if (sessionContext.getAccountId() == null) {
@@ -94,7 +94,6 @@ public class CheckinOutRecordApi {
 					.doCheckout(new OperatorUser(sessionContext.getAccountId(), ""), input);
 			return BaseOutput.success().setData(checkoutRecord.getId());
 		} catch (BusinessException e) {
-
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -102,7 +101,8 @@ public class CheckinOutRecordApi {
 		}
 
 	}
-
+	@SuppressWarnings({ "unchecked"})
+	
 	@RequestMapping(value = "/listPagedAvailableCheckInData.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<BasePage<RegisterBill>> listPagedAvailableCheckInData(@RequestBody RegisterBillDto query) {
 		if (sessionContext.getAccountId() == null) {
@@ -122,6 +122,7 @@ public class CheckinOutRecordApi {
 	/**
 	 * 分页查询需要被进场查询的信息
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/getCheckInDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<CheckInApiDetailOutput> getCheckInDetail(@RequestBody RegisterBillDto query) {
 		if (sessionContext.getAccountId() == null) {
@@ -142,6 +143,7 @@ public class CheckinOutRecordApi {
 	/**
 	 * 合格/不合格
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/doManullyCheck.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<Long> doManullyCheck(@RequestBody ManullyCheckInput input) {
 		if (sessionContext.getAccountId() == null) {
@@ -150,7 +152,7 @@ public class CheckinOutRecordApi {
 		try {
 			SeparateSalesRecord record = this.checkinOutRecordService
 					.doManullyCheck(new OperatorUser(sessionContext.getAccountId(), ""), input);
-			return BaseOutput.success();
+			return BaseOutput.success().setData(record.getId());
 		} catch (BusinessException e) {
 
 			return BaseOutput.failure(e.getMessage());
@@ -168,16 +170,13 @@ public class CheckinOutRecordApi {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		if (sessionContext.getAccountId() == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-
 		return this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
 	}
 
 	/**
 	 * 出场详情
 	 */
+	@SuppressWarnings({"rawtypes" })
 	@RequestMapping(value = "/getCheckoutDataDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput getCheckoutDataDetail(@RequestBody CheckoutApiListQuery input) {
 		if (sessionContext.getAccountId() == null) {
