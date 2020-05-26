@@ -379,11 +379,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		SeparateSalesRecord separateSalesRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
 		separateSalesRecord.setSalesUserId(query.getUserId());
 		separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR,
-				" checkin_record_id in(select id from checkinout_record where `inout`="
+				"( checkin_record_id in(select id from checkinout_record where `inout`="
 						+ CheckinOutTypeEnum.IN.getCode() + " and status=" + CheckinStatusEnum.ALLOWED.getCode()
-						+ ")  and (checkout_record_id is null or checkout_record_id in select id from checkinout_record where inout="
+						+ "  and checkout_record_id is null) or checkout_record_id in (select id from checkinout_record where `inout`="
 						+ CheckinOutTypeEnum.OUT.getCode() + " and status=" + CheckinStatusEnum.NOTALLOWED.getCode()
-						+ " )");
+						+ " ) )");
 
 		BasePage<SeparateSalesRecord> page = this.separateSalesRecordService.listPageByExample(separateSalesRecord);
 		List<DTO> dataList = page.getDatas().stream().map(sp -> {

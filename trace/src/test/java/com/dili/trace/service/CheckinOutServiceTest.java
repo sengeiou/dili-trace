@@ -140,5 +140,11 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		BaseOutput<BasePage<DTO>> out = this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
 		System.out.println(JSON.toJSONString(out));
 	}
+	@Test
+	public void listPagedAvailableCheckOutData2() {
+		CheckoutApiListQuery query=new CheckoutApiListQuery();
+		query.setUserId(1L);
+		this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
+	}
 
 }
