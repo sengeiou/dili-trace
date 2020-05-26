@@ -216,7 +216,8 @@ public class RegisterBillHZController {
 			if (CheckinStatusEnum.ALLOWED.equalsCode(input.getCheckinStatus())) {
 				//updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
 			} else {
-				//updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
+				updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+				updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
 			}
 			
 			updatable.setSampleCode(codeGenerateService.nextSampleCode());
