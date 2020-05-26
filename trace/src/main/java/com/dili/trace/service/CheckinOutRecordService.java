@@ -292,8 +292,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 //			query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
 		}
 //		query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
-		
-		query.mset(IDTO.AND_CONDITION_EXPR, " id not in(select bill_id from separate_sales_record where checkin_record_id  is not null or checkout_record_id  is not null) ");
+		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+		query.mset(IDTO.AND_CONDITION_EXPR, " id in(select bill_id from separate_sales_record where checkin_record_id  is null and sales_type="+SalesTypeEnum.OWNED.getCode()+") ");
 
 		BasePage<RegisterBill> billPage = this.registerBillService.listPageByExample(query);
 		List<CheckInApiListOutput> dataList = billPage.getDatas().stream().map(bill -> {
