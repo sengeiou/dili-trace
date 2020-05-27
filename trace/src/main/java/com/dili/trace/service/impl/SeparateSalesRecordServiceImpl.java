@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,8 @@ import tk.mybatis.mapper.entity.Example;
 @Service
 public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSalesRecord, Long>
 		implements SeparateSalesRecordService {
+	private static final Logger logger=LoggerFactory.getLogger(SeparateSalesRecordServiceImpl.class);
+	
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
@@ -109,7 +113,12 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 	public Long createSeparateSalesRecord(SeparateSalesRecordDTO input, User user) {
 
 		// 理货区分销校验
-
+		logger.info("parentId={}",input.getParentId());
+		logger.info("salesWeight={}",input.getSalesWeight());
+		
+		if(input.getSalesWeight()==null||input.getSalesWeight()<=0) {
+			throw new BusinessException("分销重量输入错误");
+		}
 		Long separateSalesRecordId = input.getParentId();
 
 		if (separateSalesRecordId == null) {
@@ -217,7 +226,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 			// 手动分销
 			//do nothing
 		}
-
+		logger.info("change SeparateSalesRecord:{} salesWeiht:{} as: {}",separateSalesRecordId,totalWeight,totalWeight.subtract(salesWeight).intValue());
 
 		// 更新被分销记录的剩余重量
 		SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
@@ -230,7 +239,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 		input.setRegisterBillCode(registerBill.getCode());
 		input.setCreated(new Date());
 		input.setModified(new Date());
-		
+		input.setSalesWeight(salesWeight.intValue());
 		input.setStoreWeight(salesWeight);
 		
 		this.saveOrUpdate(input);
