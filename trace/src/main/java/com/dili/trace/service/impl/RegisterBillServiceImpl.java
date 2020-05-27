@@ -793,7 +793,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return BaseOutput.success();
 		}
 		this.getActualDao().doRemoveReportAndCertifiy(item);
-
+		this.userQrItemService.updateUserQrStatus(item.getUserId());
 		return BaseOutput.success();
 	}
 
