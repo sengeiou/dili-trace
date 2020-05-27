@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -378,12 +379,20 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		SeparateSalesRecord separateSalesRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
 		separateSalesRecord.setSalesUserId(query.getUserId());
-		separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR,
-				"( checkin_record_id in(select id from checkinout_record where `inout`="
-						+ CheckinOutTypeEnum.IN.getCode() + " and status=" + CheckinStatusEnum.ALLOWED.getCode()
-						+ "  and checkout_record_id is null) or checkout_record_id in (select id from checkinout_record where `inout`="
-						+ CheckinOutTypeEnum.OUT.getCode() + " and status=" + CheckinStatusEnum.NOTALLOWED.getCode()
-						+ " ) )");
+		
+		StringBuilder sql=new StringBuilder("( checkin_record_id in(select id from checkinout_record where `inout`="
+				+ CheckinOutTypeEnum.IN.getCode() + " and status=" + CheckinStatusEnum.ALLOWED.getCode()
+				+ "  and checkout_record_id is null) or checkout_record_id in (select id from checkinout_record where `inout`="
+				+ CheckinOutTypeEnum.OUT.getCode() + " and status=" + CheckinStatusEnum.NOTALLOWED.getCode()
+				+ " ) )");
+		if(StringUtils.isNotBlank(query.getLikeProductName())){
+			
+			sql.append(" AND bill_id in(select id from register_bill where product_name like '%"+query.getLikeProductName()+"%')");
+			
+		}
+		
+		
+		separateSalesRecord.mset(IDTO.AND_CONDITION_EXPR,sql.toString());
 
 		BasePage<SeparateSalesRecord> page = this.separateSalesRecordService.listPageByExample(separateSalesRecord);
 		List<DTO> dataList = page.getDatas().stream().map(sp -> {

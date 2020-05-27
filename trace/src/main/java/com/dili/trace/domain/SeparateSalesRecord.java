@@ -116,7 +116,7 @@ public interface SeparateSalesRecord extends IBaseDomain {
     void setParentId(Long parentId);
 
    
-    @ApiModelProperty(value = "未分销重量")
+    @ApiModelProperty(value = "总重量")
     @Column(name = "`store_weight`")
     @FieldDef(label="store_weight")
     @EditMode(editor = FieldEditor.Number, required = true)

@@ -147,7 +147,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 			throw new BusinessException("没有权限分销");
 		}
 		BigDecimal salesWeight = BigDecimal.valueOf(input.getSalesWeight());
-		BigDecimal storeWeight = separateSalesRecord.getStoreWeight();
+		BigDecimal totalWeight = BigDecimal.valueOf(separateSalesRecord.getSalesWeight());
 
 		if (separateSalesRecord.getParentId() == null
 				&& !registerBill.getWeight().equals(separateSalesRecord.getSalesWeight())) {
@@ -158,12 +158,12 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 			record.setSalesWeight(registerBill.getWeight());
 			record.setId(separateSalesRecord.getId());
 			this.updateSelective(record);
-			storeWeight = record.getStoreWeight();
+			totalWeight = BigDecimal.valueOf(record.getSalesWeight());
 
 		}
 		
 
-		if (storeWeight.compareTo(salesWeight) < 0) {
+		if (totalWeight.compareTo(salesWeight) < 0) {
 			throw new BusinessException("分销重量超过可分销重量");
 		}
 		if (input.getSalesUserId() != null) {
@@ -221,7 +221,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 
 		// 更新被分销记录的剩余重量
 		SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
-		record.setStoreWeight(storeWeight.subtract(salesWeight));
+		record.setSalesWeight(totalWeight.subtract(salesWeight).intValue());
 		record.setModified(new Date());
 		record.setId(separateSalesRecordId);
 		this.updateSelective(record);

@@ -3,11 +3,20 @@ package com.dili.trace.api.dto;
 public class CheckoutApiListQuery {
 	private Long separateSalesId;
     private Long userId;
+    private String likeProductName;
     private String date;
     
 
 
-    public String getDate() {
+    public String getLikeProductName() {
+		return likeProductName;
+	}
+
+	public void setLikeProductName(String likeProductName) {
+		this.likeProductName = likeProductName;
+	}
+
+	public String getDate() {
 		return date;
 	}
 
