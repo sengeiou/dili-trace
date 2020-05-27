@@ -125,7 +125,7 @@
                     <div class="form-group">
                         <div class="imageUpload rectangle">
                             <img id="registerBillQRCode" alt="" class="show-image">
-                            <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="${contextPath!}/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
+                            <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="https://hz.trace.nong12.com/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
                         </div>
                     </div>
                 </div>
@@ -177,7 +177,7 @@
                                     <div class="form-group">
                                         <div class="imageUpload rectangle">
                                             <img id="separateSalesRecordQR${recordLP.index}" alt="" class="show-image">
-                                            <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="${contextPath!}/registerBill/separateSalesRecordQRCode.html?id=${record.id!}"/>
+                                            <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="https://hz.trace.nong12.com/registerBill/separateSalesRecordQRCode.html?id=${record.id!}"/>
                                         </div>
                                     </div>
                                 </div>
@@ -226,7 +226,7 @@
                             <a href="javascript:void(0)" class="show-img"><img id="tradeBillQR${qttbLP.index}" alt=""
                                                                                width="30px" height="30px"
                                                                                class="show-image"></a>
-                            <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="${contextPath!}/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
+                            <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="https://hz.trace.nong12.com/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
                             <% } } %>
                         </tr>
                         <% } %>
