@@ -157,7 +157,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 		}
 		BigDecimal salesWeight = BigDecimal.valueOf(input.getSalesWeight());
 		BigDecimal totalWeight = BigDecimal.valueOf(separateSalesRecord.getSalesWeight());
-
+		
 		if (separateSalesRecord.getParentId() == null
 				&& !registerBill.getWeight().equals(separateSalesRecord.getSalesWeight())) {
 			// 当前分销记录是初始用于分销的记录
@@ -171,12 +171,12 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 
 		}
 		
-
+		logger.info(">>>totalWeight={},salesWeight={}",totalWeight,input.getSalesWeight());
 		if (totalWeight.compareTo(salesWeight) < 0) {
 			throw new BusinessException("分销重量超过可分销重量");
 		}
 		if (input.getSalesUserId() != null) {
-			
+			logger.info("扫码分销，判断是否增加上游：salesUserId:{}",input.getSalesUserId());
 			Long salesUserId = input.getSalesUserId();
 			User salesUser = this.userService.get(salesUserId);
 			if(salesUser==null){
@@ -226,7 +226,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 			// 手动分销
 			//do nothing
 		}
-		logger.info("change SeparateSalesRecord:{} salesWeiht:{} as: {}",separateSalesRecordId,totalWeight,totalWeight.subtract(salesWeight).intValue());
+		logger.info(">>>change SeparateSalesRecord:{} salesWeiht:{} as: {}",separateSalesRecordId,totalWeight,totalWeight.subtract(salesWeight).intValue());
 
 		// 更新被分销记录的剩余重量
 		SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
