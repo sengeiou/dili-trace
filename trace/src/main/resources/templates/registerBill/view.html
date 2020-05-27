@@ -182,7 +182,7 @@
                         <div class="form-group">
                             <div class="imageUpload rectangle">
                                 <img id="registerBillQRCode"  alt="" class="show-image">
-                                <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
+                                <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="${contextPath!}/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
                             </div>
                         </div>
                     </div>
@@ -231,7 +231,7 @@
                                     <div class="form-group">
                                         <div class="imageUpload rectangle">
                                             <img id="separateSalesRecordQR${recordLP.index}" alt="" class="show-image">
-                                            <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/separateSalesRecordQRCode.html?id=${record.id!}"/>
+                                            <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="${contextPath!}/registerBill/separateSalesRecordQRCode.html?id=${record.id!}"/>
                                         </div>
                                     </div>
                                 </div>
@@ -278,7 +278,7 @@
                                 <a href="javascript:void(0)" data-trade-id="${qttb.id!}" class="ssr-view">分销记录</a></td>
                                 <% }else{ %>
                                 <a href="javascript:void(0)" ><img id="tradeBillQR${qttbLP.index}" alt="" width="30px" height="30px" class="show-image"></a>
-                                <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
+                                <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="${contextPath!}/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
                                 <% } } %>
                         </tr>
                         <% } %>
@@ -292,7 +292,7 @@
                         	for(originCertifiy in strutil.split (registerBill.originCertifiyUrl,",")){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${originCertifiy!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}${originCertifiy!}" >
 							</div>
                         <%	}
                         }%>
@@ -303,7 +303,7 @@
                         	for(detectReport in strutil.split (registerBill.detectReportUrl,",")){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${detectReport!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}${detectReport!}" >
 							</div>
                         <%	}
                         }%>
@@ -316,7 +316,7 @@
 	                        	for(src in strutil.split (registerBill.handleResultUrl,",")){
 	                        	%>
 	                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-	                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${src!}" >
+	                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}${src!}" >
 								</div>
 	                        <%	}
 	                        }%>
