@@ -1,5 +1,7 @@
 package com.dili.trace.glossary;
 
+import java.util.Optional;
+
 /**
  * <B>Description</B>
  * 本软件源代码版权归农丰时代及其团队所有,未经许可不得任意复制与传播
@@ -45,7 +47,9 @@ public enum BillDetectStateEnum {
         }
         return null;
     }
-
+    public static Optional<BillDetectStateEnum>fromCode(Integer code){
+    	return Optional.ofNullable(getBillDetectStateEnum(code));
+    }
     public Integer getCode() {
         return code;
     }
