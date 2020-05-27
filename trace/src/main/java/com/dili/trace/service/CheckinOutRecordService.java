@@ -75,15 +75,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		List<SeparateSalesRecord> recordList = checkOutApiInput.getSeparateSalesIdList().stream().map(id -> {
 
 			SeparateSalesRecord record = this.separateSalesRecordService.get(id);
-			if (record == null) {
-				return null;
-			} else {
-				if (record.getCheckoutRecordId() == null) {
-					return record;
-				}
-			}
-
-			return null;
+			return record;
 		}).filter(Objects::nonNull).collect(Collectors.toList());
 		if (recordList.isEmpty()) {
 			throw new BusinessException("没有可以出场的交易单");
