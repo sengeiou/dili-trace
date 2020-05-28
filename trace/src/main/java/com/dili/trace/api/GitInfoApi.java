@@ -29,12 +29,13 @@ public class GitInfoApi {
     public List<String> listGitInfo(){
     	List<String>list=new ArrayList<String>();
         try {
-            File file=    ResourceUtils.getFile("classpath:*/git.properties");
+            File file=    ResourceUtils.getFile("classpath:git.properties");
             BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             String line=null;
             while((line=br.readLine())!=null) {
             	list.add(line);
             }
+            br.close();
             return list;
         } catch (IOException ex) {
             return Arrays.asList(ex.getMessage());
