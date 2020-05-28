@@ -5,12 +5,15 @@
  */
 package com.dili.trace.api;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,10 +27,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class GitInfoApi {
     @RequestMapping(value = "/listGitInfo.api")
     public List<String> listGitInfo(){
+    	List<String>list=new ArrayList<String>();
         try {
             File file=    ResourceUtils.getFile("classpath:*/git.properties");
-            List<String> content = Files.readAllLines(Path.of(file.toURI()));
-            return content;
+            BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            String line=null;
+            while((line=br.readLine())!=null) {
+            	list.add(line);
+            }
+            return list;
         } catch (IOException ex) {
             return Arrays.asList(ex.getMessage());
         }
