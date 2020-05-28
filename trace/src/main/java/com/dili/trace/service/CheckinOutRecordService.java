@@ -104,15 +104,23 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 //		}
 
         return recordList.stream().map(record -> {
+            RegisterBill bill=this.registerBillService.get(record.getBillId());
+            User user=this.userService.get(bill.getUserId());
             CheckinOutRecord checkoutRecord = new CheckinOutRecord();
             checkoutRecord.setStatus(checkoutStatusEnum.getCode());
             checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
+            checkoutRecord.setProductName(bill.getProductName());
+            checkoutRecord.setSalesWeight(record.getSalesWeight());
+            checkoutRecord.setUserName(user.getName());
+            
             checkoutRecord.setOperatorId(operateUser.getId());
             checkoutRecord.setOperatorName(operateUser.getName());
             checkoutRecord.setRemark(checkOutApiInput.getRemark());
             checkoutRecord.setCreated(new Date());
             checkoutRecord.setModified(new Date());
-            int returnValue = this.insertSelective(checkoutRecord);
+
+            
+            this.insertSelective(checkoutRecord);
 
             SeparateSalesRecord updatable = DTOUtils.newDTO(SeparateSalesRecord.class);
             updatable.setId(record.getId());
