@@ -12,7 +12,7 @@ public class CheckoutApiDetailOutput {
 	public String getStateName() {
 		  try {
 	            if (getState() == null) {
-	                return "";
+	                return this.stateName;
 	            }
 	        }catch (Exception e){
 	            return "";

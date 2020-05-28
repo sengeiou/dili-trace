@@ -311,7 +311,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			out.setPhone(bill.getPhone());
 			out.setState(bill.getState());
 			out.setCreated(bill.getCreated());
-			out.setStoreWeight(BigDecimal.valueOf(bill.getWeight()));
+			out.setWeight(bill.getWeight());
 
 			if (bill.getUpStreamId() != null) {
 				Optional.ofNullable(this.upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {
@@ -439,10 +439,10 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 //			Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
 			dto.remove("id");
 			if (separateSalesRecordItem != null) {
-				dto.put("storeWeight", separateSalesRecordItem.getStoreWeight());
+				dto.put("salesWeight", separateSalesRecordItem.getSalesWeight());
 				dto.put("userName", separateSalesRecordItem.getSalesUserName());
 			} else {
-				dto.put("storeWeight", 0);
+				dto.put("salesWeight", 0);
 				dto.put("userName", "");
 			}
 

@@ -145,7 +145,8 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		CheckoutApiListQuery query=new CheckoutApiListQuery();
 		query.setUserId(1L);
 		query.setLikeProductName("abc");
-		this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
+		BaseOutput<BasePage<DTO>> out=this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
+                out.getData().getDatas();
 	}
 
 }
