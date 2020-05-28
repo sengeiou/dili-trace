@@ -16,14 +16,18 @@ public class CheckInApiListOutput {
     private String upstreamName;
     private String upstreamTelphone;
     private Date created;
-    private Integer weight;
+    private Integer weight=0;
 
     public Integer getWeight() {
         return weight;
     }
 
     public void setWeight(Integer weight) {
-        this.weight = weight;
+        if (weight != null) {
+            this.weight = weight;
+        } else {
+            this.weight = 0;
+        }
     }
 
     public Date getCreated() {
