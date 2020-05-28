@@ -433,12 +433,12 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
         BasePage<CheckinOutRecord> page = this.listPageByExample(checkinOutRecord);
 
         List<Map<String, Object>> dataList = page.getDatas().stream().map(cr -> {
-            RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
-            billQuery.mset(IDTO.AND_CONDITION_EXPR,
-                    " id in (select bill_id from separate_sales_record where checkin_record_id =" + cr.getId()
-                    + " or checkout_record_id=" + cr.getId() + ") ");
-            RegisterBill billItem = this.registerBillService.listByExample(billQuery).stream().findFirst()
-                    .orElse(DTOUtils.newDTO(RegisterBill.class));
+//            RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
+//            billQuery.mset(IDTO.AND_CONDITION_EXPR,
+//                    " id in (select bill_id from separate_sales_record where checkin_record_id =" + cr.getId()
+//                    + " or checkout_record_id=" + cr.getId() + ") ");
+//            RegisterBill billItem = this.registerBillService.listByExample(billQuery).stream().findFirst()
+//                    .orElse(DTOUtils.newDTO(RegisterBill.class));
 
             SeparateSalesRecord separateSalesRecordQuery = DTOUtils.newDTO(SeparateSalesRecord.class);
             separateSalesRecordQuery.mset(IDTO.AND_CONDITION_EXPR,
@@ -448,23 +448,10 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
                     .orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
             Map<String, Object> dto = BeanMapUtil.beanToMap(cr);
 //			Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
-            dto.remove("id");
-            if (separateSalesRecordItem != null) {
-                dto.put("salesWeight", separateSalesRecordItem.getSalesWeight());
-                dto.put("userName", separateSalesRecordItem.getSalesUserName());
-            } else {
-                dto.put("salesWeight", 0);
-                dto.put("userName", "");
-            }
-
-            if (billItem != null) {
-                dto.put("state", billItem.getState());
-                dto.put("productName", billItem.getProductName());
-
-            } else {
-                dto.put("productName", "");
-            }
-
+//            dto.remove("id");
+//            if (billItem != null) {
+//                dto.put("state", billItem.getState());
+//            }
             return dto;
 
         }).collect(Collectors.toList());

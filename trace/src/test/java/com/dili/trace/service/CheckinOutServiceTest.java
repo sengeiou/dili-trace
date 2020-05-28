@@ -30,6 +30,7 @@ import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import java.util.Map;
 
 public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	@Autowired
@@ -62,9 +63,9 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		CheckInApiInput checkInApiInput = new CheckInApiInput();
 		checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
 		checkInApiInput.setBillIdList(billIdList);
-		CheckinOutRecord record = this.checkinOutRecordService.doCheckin(new OperatorUser(1111L, "wangguofeng"),
+		List<CheckinOutRecord> record = this.checkinOutRecordService.doCheckin(new OperatorUser(1111L, "wangguofeng"),
 				checkInApiInput);
-		System.out.println(record.getId());
+		System.out.println(record.size());
 	}
 
 	@Test
@@ -109,9 +110,9 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		CheckOutApiInput checkInApiInput = new CheckOutApiInput();
 		checkInApiInput.setCheckoutStatus(CheckoutStatusEnum.ALLOWED.getCode());
 		checkInApiInput.setSeparateSalesIdList(separateSalesIdList);
-		CheckinOutRecord record = this.checkinOutRecordService.doCheckout(new OperatorUser(3333L, "wangguofeng"),
+		List<CheckinOutRecord> record = this.checkinOutRecordService.doCheckout(new OperatorUser(3333L, "wangguofeng"),
 				checkInApiInput);
-		System.out.println(record.getId());
+		System.out.println(record.size());
 	}
 
 	@Test
@@ -147,6 +148,14 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		query.setLikeProductName("abc");
 		BaseOutput<BasePage<DTO>> out=this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
                 out.getData().getDatas();
+	}
+        
+        @Test
+	public void listPagedData() {
+		CheckoutApiListQuery query=new CheckoutApiListQuery();
+		query.setDate("2020-05-28");
+		BaseOutput<BasePage<Map<String, Object>>>  out=this.checkinOutRecordService.listPagedData(query,496L);
+                System.out.println(out.getData().getDatas());
 	}
 
 }
