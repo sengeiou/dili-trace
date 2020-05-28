@@ -110,12 +110,19 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 	}
 	@Transactional
 	@Override
-	public Long createSeparateSalesRecord(SeparateSalesRecordDTO input, User user) {
+	public Long createSeparateSalesRecord(SeparateSalesRecordDTO input, User sellerUser) {
 
 		// 理货区分销校验
 		logger.info("parentId={}",input.getParentId());
-		logger.info("salesWeight={}",input.getSalesWeight());
 		
+                logger.info("seller userid={}",sellerUser.getId());
+		logger.info("buyer userid={}",input.getSalesUserId());
+                logger.info("salesWeight={}",input.getSalesWeight());
+             
+                if(sellerUser.getId().equals(input.getSalesUserId())){
+                    throw new BusinessException("买卖家不能相同");
+                }
+                
 		if(input.getSalesWeight()==null||input.getSalesWeight()<=0) {
 			throw new BusinessException("分销重量输入错误");
 		}
@@ -151,8 +158,8 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 				&& BillDetectStateEnum.REVIEW_PASS.getCode().equals(registerBill.getDetectState())) {
 			throw new BusinessException("当前登记单检测不合格不能分销");
 		}
-		if (separateSalesRecord.getSalesUserId().longValue() != user.getId().longValue()) {
-			LOGGER.info("业户ID" + separateSalesRecord.getSalesUserId() + "用户ID:" + user.getId());
+		if (separateSalesRecord.getSalesUserId().longValue() != sellerUser.getId().longValue()) {
+			LOGGER.info("业户ID" + separateSalesRecord.getSalesUserId() + "用户ID:" + sellerUser.getId());
 			throw new BusinessException("没有权限分销");
 		}
 		BigDecimal salesWeight = BigDecimal.valueOf(input.getSalesWeight());
@@ -183,37 +190,37 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 				throw new BusinessException("买家用户不存在");
 			}
 			boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(salesUserId).stream()
-					.anyMatch(up -> user.getId().equals(up.getSourceUserId()));
+					.anyMatch(up -> sellerUser.getId().equals(up.getSourceUserId()));
 			
 			// 扫码分销
 			if (!hasUpStream) {
-				UpStream upStream = this.upStreamService.queryUpStreamBySourceUserId(user.getId());
+				UpStream upStream = this.upStreamService.queryUpStreamBySourceUserId(sellerUser.getId());
 				UpStreamDto upStreamDto = new UpStreamDto();
 				if (upStream == null) {
-					if (UserTypeEnum.USER.getCode().equals(user.getUserType())) {
+					if (UserTypeEnum.USER.getCode().equals(sellerUser.getUserType())) {
 						upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
 					} else {
 						upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
 					}
 
-					upStreamDto.setIdCard(user.getCardNo());
-					upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
-					upStreamDto.setOperationLicenseUrl(user.getOperationLicenseUrl());
-					upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
-					upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
-					upStreamDto.setName(user.getName());
-					upStreamDto.setSourceUserId(user.getId());
-					upStreamDto.setLicense(user.getLicense());
-					upStreamDto.setTelphone(user.getPhone());
-					upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
+					upStreamDto.setIdCard(sellerUser.getCardNo());
+					upStreamDto.setManufacturingLicenseUrl(sellerUser.getManufacturingLicenseUrl());
+					upStreamDto.setOperationLicenseUrl(sellerUser.getOperationLicenseUrl());
+					upStreamDto.setCardNoFrontUrl(sellerUser.getCardNoFrontUrl());
+					upStreamDto.setCardNoBackUrl(sellerUser.getCardNoBackUrl());
+					upStreamDto.setName(sellerUser.getName());
+					upStreamDto.setSourceUserId(sellerUser.getId());
+					upStreamDto.setLicense(sellerUser.getLicense());
+					upStreamDto.setTelphone(sellerUser.getPhone());
+					upStreamDto.setBusinessLicenseUrl(sellerUser.getBusinessLicenseUrl());
 					upStreamDto.setUserIds(Arrays.asList(input.getSalesUserId()));
 					upStreamDto.setCreated(new Date());
 					upStreamDto.setModified(new Date());
-					this.upStreamService.addUpstream(upStreamDto, new OperatorUser(user.getId(), user.getName()));
+					this.upStreamService.addUpstream(upStreamDto, new OperatorUser(sellerUser.getId(), sellerUser.getName()));
 				} else {
 					upStreamDto.setUserIds(Arrays.asList(input.getSalesUserId()));
 					upStreamDto.setId(upStream.getId());
-					this.upStreamService.addUpstreamUsers(upStreamDto, new OperatorUser(user.getId(), user.getName()));
+					this.upStreamService.addUpstreamUsers(upStreamDto, new OperatorUser(sellerUser.getId(), sellerUser.getName()));
 				}
 
 			}
@@ -245,8 +252,8 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 		this.saveOrUpdate(input);
 
 		registerBill.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
-		registerBill.setOperatorName(user.getName());
-		registerBill.setOperatorId(user.getId());
+		registerBill.setOperatorName(sellerUser.getName());
+		registerBill.setOperatorId(sellerUser.getId());
 		registerBillService.update(registerBill);
 		return input.getId();
 

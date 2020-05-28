@@ -9,7 +9,7 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 public class SeparateSalesApiListOutput extends BaseDomain {
 
     private Long id;
-    private Integer salesWeight;
+    private Integer weight;
     private String productName;
     private Integer state;
     private Integer detectState;
@@ -36,13 +36,15 @@ public class SeparateSalesApiListOutput extends BaseDomain {
         this.detectStateName = detectStateName;
     }
 
-    public Integer getSalesWeight() {
-        return salesWeight;
+    public Integer getWeight() {
+        return weight;
     }
 
-    public void setSalesWeight(Integer salesWeight) {
-        this.salesWeight = salesWeight;
+    public void setWeight(Integer weight) {
+        this.weight = weight;
     }
+
+   
 
     public String getUpstreamName() {
         return upstreamName;
