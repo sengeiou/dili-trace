@@ -165,18 +165,18 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 		BigDecimal salesWeight = BigDecimal.valueOf(input.getSalesWeight());
 		BigDecimal totalWeight = BigDecimal.valueOf(separateSalesRecord.getSalesWeight());
 		
-		if (separateSalesRecord.getParentId() == null
-				&& !registerBill.getWeight().equals(separateSalesRecord.getSalesWeight())) {
+//		if (separateSalesRecord.getParentId() == null
+//				&& !registerBill.getWeight().equals(separateSalesRecord.getSalesWeight())) {
 			// 当前分销记录是初始用于分销的记录
 			// 更新重量(登记单重量可能被更新过)
-			SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
-			record.setStoreWeight(BigDecimal.valueOf(registerBill.getWeight()));
-			record.setSalesWeight(registerBill.getWeight());
-			record.setId(separateSalesRecord.getId());
-			this.updateSelective(record);
-			totalWeight = BigDecimal.valueOf(record.getSalesWeight());
+//			SeparateSalesRecord record = DTOUtils.newDTO(SeparateSalesRecord.class);
+//			record.setStoreWeight(BigDecimal.valueOf(registerBill.getWeight()));
+//			record.setSalesWeight(registerBill.getWeight());
+//			record.setId(separateSalesRecord.getId());
+//			this.updateSelective(record);
+//			totalWeight = BigDecimal.valueOf(record.getSalesWeight());
 
-		}
+//		}
 		
 		logger.info(">>>totalWeight={},salesWeight={}",totalWeight,input.getSalesWeight());
 		if (totalWeight.compareTo(salesWeight) < 0) {
@@ -305,6 +305,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 			SeparateSalesRecord updatable = DTOUtils.newDTO(SeparateSalesRecord.class);
 			updatable.setCheckinRecordId(checkinRecordId);
 			updatable.setId(item.getId());
+                        updatable.setSalesWeight(bill.getWeight());
 			this.updateSelective(updatable);
 		} else {
 			this.createOwnedSeparateSales(bill);
