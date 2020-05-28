@@ -51,7 +51,44 @@ public class CheckinOutRecord  extends BaseDomain {
     @ApiModelProperty(value = "更新时间")
     @Column(name = "`modified`")
     private Date modified;
+    
+    
+    @ApiModelProperty(value = "业户名称")
+    @Column(name = "`user_name`")
+    private String userName;
 
+    @ApiModelProperty(value = "商品名称")
+    @Column(name = "`product_name`")
+    private String productName;
+    
+    @ApiModelProperty(value = "商品重量")
+    @Column(name = "`sales_weight`")
+    private Integer salesWeight;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public Integer getSalesWeight() {
+        return salesWeight;
+    }
+
+    public void setSalesWeight(Integer salesWeight) {
+        this.salesWeight = salesWeight;
+    }
+        
 	public Long getId() {
 		return id;
 	}

@@ -38,6 +38,7 @@ import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 
 import io.swagger.annotations.Api;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 @Api(value = "/api/checkinRecordApi")
@@ -69,9 +70,9 @@ public class CheckinOutRecordApi {
 			return BaseOutput.failure("未登陆用户");
 		}
 		try {
-			CheckinOutRecord checkinRecord = this.checkinOutRecordService
+			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckin(new OperatorUser(sessionContext.getAccountId(), ""), input);
-			return BaseOutput.success().setData(checkinRecord.getId());
+			return BaseOutput.success();
 		} catch (BusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -90,9 +91,9 @@ public class CheckinOutRecordApi {
 			return BaseOutput.failure("未登陆用户");
 		}
 		try {
-			CheckinOutRecord checkoutRecord = this.checkinOutRecordService
+			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckout(new OperatorUser(sessionContext.getAccountId(), ""), input);
-			return BaseOutput.success().setData(checkoutRecord.getId());
+			return BaseOutput.success();
 		} catch (BusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

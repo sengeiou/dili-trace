@@ -248,6 +248,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 		input.setModified(new Date());
 		input.setSalesWeight(salesWeight.intValue());
 		input.setStoreWeight(salesWeight);
+                input.setCheckinRecordId(separateSalesRecord.getCheckinRecordId());
 		
 		this.saveOrUpdate(input);
 
