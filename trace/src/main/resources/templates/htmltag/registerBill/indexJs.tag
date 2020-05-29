@@ -377,7 +377,7 @@ var currentUser={"depId":"${user.depId!}"
             <#resource method="post" url="registerBill/index.html#checkin">
                 {
                     iconCls:'icon-man',
-                    text:'进门审核',
+                    text:'进场审核',
                     id:'checkin-btn',
                     disabled :true,
                     handler:function(){
@@ -654,7 +654,7 @@ var currentUser={"depId":"${user.depId!}"
         }
 
         let promise = new Promise((resolve, reject) => {
-            layer.confirm('是否允许进门？', {btn: ['允许', '拒绝','取消'], title: "进门审核"
+            layer.confirm('是否允许进场？', {btn: ['允许', '拒绝','取消'], title: "进场审核"
                 ,yes:function () {
                     resolve(${@com.dili.trace.glossary.CheckinStatusEnum.ALLOWED.getCode()});
                 },btn2:function(){

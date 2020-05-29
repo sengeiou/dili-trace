@@ -1,6 +1,5 @@
 package com.dili.trace.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +43,6 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.util.BasePageUtil;
 import com.dili.trace.util.BeanMapUtil;
-import com.diligrp.manage.sdk.session.SessionContext;
 
 @Service
 public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, Long> {
@@ -235,12 +233,12 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
             throw new BusinessException("数据错误:没有数据");
         }
         if (separateSalesRecord.getCheckoutRecordId() != null) {
-            throw new BusinessException("数据错误:已经出门");
+            throw new BusinessException("数据错误:已经出场");
         }
         CheckinOutRecord checkinRecord = this.get(separateSalesRecord.getCheckinRecordId());
 
         if (checkinRecord == null || CheckinOutTypeEnum.IN != CheckinOutTypeEnum.fromCode(checkinRecord.getInout())) {
-            throw new BusinessException("数据错误:当前登记单还未进门");
+            throw new BusinessException("数据错误:当前登记单还未进场");
         }
 
         CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.fromCode(checkinRecord.getStatus());
