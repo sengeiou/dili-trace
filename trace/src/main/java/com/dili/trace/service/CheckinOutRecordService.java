@@ -368,6 +368,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
         RegisterBill bill = this.registerBillService.get(separateSalesRecord.getBillId());
         User user = this.userService.get(separateSalesRecord.getSalesUserId());
+        user.setPassword("");
         output.setId(separateSalesId);
         output.setState(bill.getState());
         output.setUser(user);
