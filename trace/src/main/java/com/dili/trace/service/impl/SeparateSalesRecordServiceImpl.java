@@ -253,6 +253,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 		input.setSalesWeight(salesWeight.intValue());
 		input.setStoreWeight(salesWeight);
                 input.setCheckinRecordId(separateSalesRecord.getCheckinRecordId());
+                input.setSalesType(SalesTypeEnum.SEPARATE_SALES.getCode());
 		
 		this.saveOrUpdate(input);
 
