@@ -49,7 +49,22 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		BasePage<CheckInApiListOutput>out=	this.checkinOutRecordService.listCheckInApiListOutputPage(DTOUtils.newDTO(RegisterBillDto.class));
 		System.out.println(out);
 	}
+@Test
+	public void doCheckin2() {
+		RegisterBill query = DTOUtils.newDTO(RegisterBill.class);
+		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 
+		query.mset(IDTO.AND_CONDITION_EXPR,
+				"id in (select bill_id from separate_sales_record where checkin_record_id is null and `sales_type` = 0)");
+
+		List<Long> billIdList = Arrays.asList(79L);
+		CheckInApiInput checkInApiInput = new CheckInApiInput();
+		checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
+		checkInApiInput.setBillIdList(billIdList);
+		List<CheckinOutRecord> record = this.checkinOutRecordService.doCheckin(new OperatorUser(1111L, "wangguofeng"),
+				checkInApiInput);
+		System.out.println(record.size());
+	}
 	@Test
 	public void doCheckin() {
 		RegisterBill query = DTOUtils.newDTO(RegisterBill.class);
