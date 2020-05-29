@@ -62,7 +62,7 @@ public class CheckinOutRecord extends BaseDomain {
 
     @ApiModelProperty(value = "商品重量")
     @Column(name = "`sales_weight`")
-    private Integer salesWeight = 0;
+    private Integer salesWeight;
 
     @ApiModelProperty(value = "分销ID")
     @Column(name = "`seperate_sales_id`")
@@ -97,12 +97,7 @@ public class CheckinOutRecord extends BaseDomain {
     }
 
     public void setSalesWeight(Integer salesWeight) {
-        if (salesWeight == null) {
-            this.salesWeight = 0;
-        } else {
             this.salesWeight = salesWeight;
-        }
-
     }
 
     public Long getId() {
