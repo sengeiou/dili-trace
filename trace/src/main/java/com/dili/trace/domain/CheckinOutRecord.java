@@ -11,8 +11,9 @@ import javax.persistence.Table;
 import com.dili.ss.domain.BaseDomain;
 
 import io.swagger.annotations.ApiModelProperty;
+
 @Table(name = "`checkinout_record`")
-public class CheckinOutRecord  extends BaseDomain {
+public class CheckinOutRecord extends BaseDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +25,7 @@ public class CheckinOutRecord  extends BaseDomain {
     @ApiModelProperty(value = "状态")
     @Column(name = "`status`")
     private Integer status;
-    
-    
+
     @ApiModelProperty(value = "状态")
     @Column(name = "`inout`")
     private Integer inout;
@@ -35,7 +35,7 @@ public class CheckinOutRecord  extends BaseDomain {
     @ApiModelProperty(value = "备注")
     @Column(name = "`remark`")
     private String remark;
-    
+
     @ApiModelProperty(value = "操作人姓名")
     @Column(name = "`operator_name`")
     private String operatorName;
@@ -51,8 +51,7 @@ public class CheckinOutRecord  extends BaseDomain {
     @ApiModelProperty(value = "更新时间")
     @Column(name = "`modified`")
     private Date modified;
-    
-    
+
     @ApiModelProperty(value = "业户名称")
     @Column(name = "`user_name`")
     private String userName;
@@ -60,10 +59,22 @@ public class CheckinOutRecord  extends BaseDomain {
     @ApiModelProperty(value = "商品名称")
     @Column(name = "`product_name`")
     private String productName;
-    
+
     @ApiModelProperty(value = "商品重量")
     @Column(name = "`sales_weight`")
-    private Integer salesWeight=0;
+    private Integer salesWeight = 0;
+
+    @ApiModelProperty(value = "分销ID")
+    @Column(name = "`seperate_sales_id`")
+    private Long seperateSalesId;
+
+    public Long getSeperateSalesId() {
+        return seperateSalesId;
+    }
+
+    public void setSeperateSalesId(Long seperateSalesId) {
+        this.seperateSalesId = seperateSalesId;
+    }
 
     public String getUserName() {
         return userName;
@@ -86,77 +97,76 @@ public class CheckinOutRecord  extends BaseDomain {
     }
 
     public void setSalesWeight(Integer salesWeight) {
-    	if(salesWeight==null) {
-    		this.salesWeight=0;
-    	}else {
-    		this.salesWeight = salesWeight;	
-    	}
-        
+        if (salesWeight == null) {
+            this.salesWeight = 0;
+        } else {
+            this.salesWeight = salesWeight;
+        }
+
     }
-        
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Integer getStatus() {
-		return status;
-	}
+    public Integer getStatus() {
+        return status;
+    }
 
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-	public Integer getInout() {
-		return inout;
-	}
+    public Integer getInout() {
+        return inout;
+    }
 
-	public void setInout(Integer inout) {
-		this.inout = inout;
-	}
+    public void setInout(Integer inout) {
+        this.inout = inout;
+    }
 
-	public String getRemark() {
-		return remark;
-	}
+    public String getRemark() {
+        return remark;
+    }
 
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
-	public String getOperatorName() {
-		return operatorName;
-	}
+    public String getOperatorName() {
+        return operatorName;
+    }
 
-	public void setOperatorName(String operatorName) {
-		this.operatorName = operatorName;
-	}
+    public void setOperatorName(String operatorName) {
+        this.operatorName = operatorName;
+    }
 
-	public Long getOperatorId() {
-		return operatorId;
-	}
+    public Long getOperatorId() {
+        return operatorId;
+    }
 
-	public void setOperatorId(Long operatorId) {
-		this.operatorId = operatorId;
-	}
+    public void setOperatorId(Long operatorId) {
+        this.operatorId = operatorId;
+    }
 
-	public Date getCreated() {
-		return created;
-	}
+    public Date getCreated() {
+        return created;
+    }
 
-	public void setCreated(Date created) {
-		this.created = created;
-	}
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 
-	public Date getModified() {
-		return modified;
-	}
+    public Date getModified() {
+        return modified;
+    }
 
-	public void setModified(Date modified) {
-		this.modified = modified;
-	}
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
 
 }

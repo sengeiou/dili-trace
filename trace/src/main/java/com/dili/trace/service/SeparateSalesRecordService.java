@@ -30,5 +30,4 @@ public interface SeparateSalesRecordService extends BaseService<SeparateSalesRec
 
     public Long createSeparateSalesRecord(SeparateSalesRecordDTO input, User user);
 
-    public void checkInSeparateSalesRecord(Long checkinRecordId, RegisterBill bill);
 }

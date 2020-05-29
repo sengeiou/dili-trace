@@ -15,3 +15,4 @@
 */*.iml
 */*.log
 .vscode/launch.json
+/trace/nbproject/

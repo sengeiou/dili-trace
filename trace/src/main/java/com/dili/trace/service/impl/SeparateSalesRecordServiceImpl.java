@@ -20,6 +20,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.api.dto.SeparateSalesApiListOutput;
 import com.dili.trace.api.dto.SeparateSalesApiListQueryInput;
 import com.dili.trace.dao.SeparateSalesRecordMapper;
+import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.UpStream;
@@ -32,6 +33,7 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
@@ -53,6 +55,8 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 	UserService userService;
 	@Autowired
 	UpStreamService upStreamService;
+        @Autowired
+        CheckinOutRecordService checkinOutRecordService;
 
 	public SeparateSalesRecordMapper getActualDao() {
 		return (SeparateSalesRecordMapper) getDao();
@@ -292,25 +296,6 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 			this.updateSelective(item);
 		}
 		return item;
-	}
-
-	@Override
-	public void checkInSeparateSalesRecord(Long checkinRecordId, RegisterBill bill) {
-		SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
-		queryCondition.setBillId(bill.getId());
-		queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
-		SeparateSalesRecord item = this.listByExample(queryCondition).stream().findFirst()
-				.orElse(DTOUtils.newDTO(SeparateSalesRecord.class));
-		if (item.getId() != null) {
-			SeparateSalesRecord updatable = DTOUtils.newDTO(SeparateSalesRecord.class);
-			updatable.setCheckinRecordId(checkinRecordId);
-			updatable.setId(item.getId());
-                        updatable.setSalesWeight(bill.getWeight());
-			this.updateSelective(updatable);
-		} else {
-			this.createOwnedSeparateSales(bill);
-		}
-
 	}
 
 }

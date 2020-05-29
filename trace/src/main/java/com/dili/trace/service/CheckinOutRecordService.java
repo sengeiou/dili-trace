@@ -118,7 +118,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
             checkoutRecord.setRemark(checkOutApiInput.getRemark());
             checkoutRecord.setCreated(new Date());
             checkoutRecord.setModified(new Date());
-
+            checkoutRecord.setSeperateSalesId(record.getId());
             
             this.insertSelective(checkoutRecord);
 
@@ -165,6 +165,15 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
         // throw new BusinessException("数据错误");
         // }
         return billList.stream().map(bill -> {
+            User user = this.userService.get(bill.getUserId());
+            SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
+            queryCondition.setBillId(bill.getId());
+            queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
+            SeparateSalesRecord item = this.separateSalesRecordService.listByExample(queryCondition).stream().findFirst()
+                           .orElseGet(()->{
+                               return this.separateSalesRecordService.createOwnedSeparateSales(bill);
+                           });
+                    
             CheckinOutRecord checkinRecord = new CheckinOutRecord();
             checkinRecord.setStatus(checkinStatusEnum.getCode());
             checkinRecord.setInout(CheckinOutTypeEnum.IN.getCode());
@@ -174,10 +183,17 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
             checkinRecord.setCreated(new Date());
             checkinRecord.setModified(new Date());
             checkinRecord.setProductName(bill.getProductName());
-            User user = this.userService.get(bill.getUserId());
+            checkinRecord.setSalesWeight(bill.getWeight());
             checkinRecord.setUserName(user.getName());
+            checkinRecord.setSeperateSalesId(item.getId());
             int returnValue = this.insertSelective(checkinRecord);
-            this.separateSalesRecordService.checkInSeparateSalesRecord(checkinRecord.getId(), bill);
+            
+            SeparateSalesRecord updatableRecord = DTOUtils.newDTO(SeparateSalesRecord.class);
+            updatableRecord.setCheckinRecordId(checkinRecord.getId());
+            updatableRecord.setId(item.getId());
+            updatableRecord.setSalesWeight(bill.getWeight());
+            this.separateSalesRecordService.updateSelective(updatableRecord);
+                
             RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
             updatable.setId(bill.getId());
             if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {

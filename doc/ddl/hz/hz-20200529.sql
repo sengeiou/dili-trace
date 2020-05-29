@@ -1,0 +1,1 @@
+ALTER TABLE `checkinout_record` ADD COLUMN `seperate_sales_id`  bigint(20)  NULL COMMENT '分销ID';
