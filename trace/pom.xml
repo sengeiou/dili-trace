@@ -9,7 +9,6 @@
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <maven.test.skip>true</maven.test.skip>
 		<java.version>1.8</java.version>
 		<!-- MyBatis Generator -->
 		<!-- Java接口和实体类 -->
@@ -148,38 +147,14 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.2.5</version>
-				<executions>
-					<execution>
-						<id>get-the-git-infos</id>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>validate-the-git-infos</id>
-						<goals>
-							<goal>validateRevision</goal>
-						</goals>
-					</execution>
-				</executions>
-
-				<configuration>
-					<dotGitDirectory>${project.parent.basedir}/.git</dotGitDirectory>
-					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-					<failOnNoGitDirectory>false</failOnNoGitDirectory>
-					<generateGitPropertiesFile>true</generateGitPropertiesFile>
-				</configuration>
-			</plugin>
+			
                         <plugin>
                                <artifactId>maven-surefire-plugin</artifactId>
                                <version>2.22.2</version>
                                <configuration>
                                    <argLine>-Djdk.attach.allowAttachSelf</argLine>
-                               </configuration>
+                                   <skipTests>true</skipTests>
+                                </configuration>
                         </plugin>
 		</plugins>
 	</build>
