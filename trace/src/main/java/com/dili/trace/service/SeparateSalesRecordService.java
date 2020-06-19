@@ -9,6 +9,7 @@ import com.dili.trace.api.dto.SeparateSalesApiListQueryInput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.SeparateSalesInputDTO;
 import com.dili.trace.dto.SeparateSalesRecordDTO;
 
 /**
@@ -29,6 +30,8 @@ public interface SeparateSalesRecordService extends BaseService<SeparateSalesRec
     public SeparateSalesRecord createOwnedSeparateSales(RegisterBill registerBill);
 
     public Long createSeparateSalesRecord(SeparateSalesRecordDTO input, User user);
+    
+	public List<Long> createSeparateSalesRecordList(SeparateSalesInputDTO input, User sellerUser) ;
     
     public int deleteSeparateSalesRecordByBillId(Long billId);
 
