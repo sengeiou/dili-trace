@@ -44,16 +44,10 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 		this.initRegisterBillComplete();
 		this.intUserQrItem();
 	}
-//	@PostConstruct
-	public void init() {
-		this.initRegisterBillComplete();
-		this.intUserQrItem();
-	}
-
 	private void initRegisterBillComplete() {
 
 		RegisterBill billQuery = new RegisterBill();
-		billQuery.mset(IDTO.AND_CONDITION_EXPR, " complete is null");
+		billQuery.setMetadata(IDTO.AND_CONDITION_EXPR, " complete is null");
 		billQuery.setPage(1);
 		billQuery.setRows(50);
 		while (true) {
@@ -347,7 +341,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 	private void updateComplete(Long userId) {
 		RegisterBill billQuery = new RegisterBill();
 		billQuery.setUserId(userId);
-		billQuery.mset(IDTO.AND_CONDITION_EXPR," complete is null or complete = 0");
+		billQuery.setMetadata(IDTO.AND_CONDITION_EXPR," complete is null or complete = 0");
 		this.registerBillService.listByExample(billQuery).stream().forEach(bill->{
 			Integer complete=0;
 			if(this.checkRegisterBill(bill)!=null) {

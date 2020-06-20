@@ -37,6 +37,7 @@ import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
+import com.dili.trace.enums.BillVerifyStateEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
@@ -81,30 +82,34 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
 	}
+
 	/**
 	 * 审核
+	 * 
 	 * @param billId
 	 * @return
 	 */
-	@Transactional Long verifyRegisterBill(Long billId) {
-		
-		if(billId==null) {
+	@Transactional
+	Long verifyRegisterBill(Long billId, BillVerifyStateEnum verifyState) {
+
+		if (billId == null || verifyState == null) {
 			throw new BusinessException("参数错误");
 		}
-		RegisterBill item=this.get(billId);
-		if(item==null) {
+		RegisterBill item = this.get(billId);
+		if (item == null) {
 			throw new BusinessException("数据不存在");
 		}
-		if(!RegisterBillStateEnum.PRE_VERIFY.equalsToCode(item.getState())) {
+		if (!BillVerifyStateEnum.doVerify(item.getVerifyState())) {
 			throw new BusinessException("数据状态错误");
 		}
-		
-		RegisterBill registerBill=new RegisterBill();
+
+		RegisterBill registerBill = new RegisterBill();
 		registerBill.setId(item.getId());
-		registerBill.setState(RegisterBillStateEnum.PRE_VERIFY.getCode());
+		registerBill.setVerifyState(verifyState.getCode());
 		this.updateSelective(registerBill);
 		return item.getId();
 	}
+
 	@Transactional
 	@Override
 	public BaseOutput createRegisterBill(RegisterBill registerBill) {
@@ -112,7 +117,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!recheck.isSuccess()) {
 			return recheck;
 		}
-		registerBill.setState(RegisterBillStateEnum.PRE_VERIFY.getCode());
+		registerBill.setVerifyState(BillVerifyStateEnum.NONE.getCode());
+		registerBill.setState(RegisterBillStateEnum.NONE.getCode());
 		registerBill.setRegisterSource(RegisterSourceEnum.OTHERS.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
@@ -289,9 +295,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				try {
 					BeanUtils.copyProperties(outputDto, list.get(0));
 				} catch (IllegalAccessException | InvocationTargetException e) {
-					throw new RuntimeException(e.getMessage(),e);
+					throw new RuntimeException(e.getMessage(), e);
 				}
-				
+
 				return outputDto;
 			}
 		}
@@ -371,7 +377,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			LOGGER.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
 					+ JSON.toJSON(registerBill).toString());
 			this.delete(billId);
-                        return this.separateSalesRecordService.deleteSeparateSalesRecordByBillId(billId);
+			return this.separateSalesRecordService.deleteSeparateSalesRecordByBillId(billId);
 			// return update(registerBill);
 		} else {
 			throw new AppException("操作失败，数据状态已改变");
@@ -541,6 +547,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new AppException("操作失败，数据状态已改变");
 		}
 	}
+
 	UserTicket getOptUser() {
 		return SessionContext.getSessionContext().getUserTicket();
 	}
@@ -611,7 +618,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill) {
 		LOGGER.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
-		
+
 		if (registerBill == null) {
 			return null;
 		}
@@ -619,7 +626,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		try {
 			BeanUtils.copyProperties(outputDto, registerBill);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e.getMessage(),e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 		// 查询交易单信息
 		QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
@@ -733,10 +740,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill == null) {
 			throw new AppException("数据错误");
 		}
-		if (!RegisterBillStateEnum.PRE_VERIFY.equalsToCode(registerBill.getState())&&!RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(registerBill.getState())) {
+		if (BillVerifyStateEnum.NONE.equalsToCode(registerBill.getVerifyState())
+				|| BillVerifyStateEnum.PARTLY_PASSED.equalsToCode(registerBill.getVerifyState())) {
+		}else {
 			throw new AppException("数据状态错误");
 		}
-		// 理货区
 		registerBill.setPlate(input.getPlate());
 		if (!this.checkPlate(registerBill)) {
 			throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
@@ -833,28 +841,28 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
 		if (StringUtils.isNotBlank(dto.getAttrValue())) {
 			switch (dto.getAttr()) {
-				case "code":
-					dto.setCode(dto.getAttrValue());
-					break;
-				// case "plate":
-				// registerBill.setPlate(registerBill.getAttrValue());
-				// break;
-				// case "tallyAreaNo":
-				//// registerBill.setTallyAreaNo(registerBill.getAttrValue());
-				// registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
-				// break;
-				case "latestDetectOperator":
-					dto.setLatestDetectOperator(dto.getAttrValue());
-					break;
-				case "name":
-					dto.setName(dto.getAttrValue());
-					break;
-				case "productName":
-					dto.setProductName(dto.getAttrValue());
-					break;
-				case "likeSampleCode":
-					dto.setLikeSampleCode(dto.getAttrValue());
-					break;
+			case "code":
+				dto.setCode(dto.getAttrValue());
+				break;
+			// case "plate":
+			// registerBill.setPlate(registerBill.getAttrValue());
+			// break;
+			// case "tallyAreaNo":
+			//// registerBill.setTallyAreaNo(registerBill.getAttrValue());
+			// registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
+			// break;
+			case "latestDetectOperator":
+				dto.setLatestDetectOperator(dto.getAttrValue());
+				break;
+			case "name":
+				dto.setName(dto.getAttrValue());
+				break;
+			case "productName":
+				dto.setProductName(dto.getAttrValue());
+				break;
+			case "likeSampleCode":
+				dto.setLikeSampleCode(dto.getAttrValue());
+				break;
 			}
 		}
 		// if (registerBill.getHasReport() != null) {
@@ -869,7 +877,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		StringBuilder sql = this.buildDynamicCondition(dto);
 		if (sql.length() > 0) {
-			dto.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
+			dto.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
 		}
 
 		return dto;
@@ -898,33 +906,33 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public String listStaticsPage(RegisterBillDto dto) throws Exception {
 		if (StringUtils.isNotBlank(dto.getAttrValue())) {
 			switch (dto.getAttr()) {
-				case "code":
-					dto.setCode(dto.getAttrValue());
-					break;
-				case "plate":
-					dto.setPlate(dto.getAttrValue());
-					break;
-				case "tallyAreaNo":
-					// registerBill.setTallyAreaNo(registerBill.getAttrValue());
-					dto.setLikeTallyAreaNo(dto.getAttrValue());
-					break;
-				case "latestDetectOperator":
-					dto.setLatestDetectOperator(dto.getAttrValue());
-					break;
-				case "name":
-					dto.setName(dto.getAttrValue());
-					break;
-				case "productName":
-					dto.setLikeProductName(dto.getAttrValue());
-					break;
-				case "likeSampleCode":
-					dto.setLikeSampleCode(dto.getAttrValue());
-					break;
+			case "code":
+				dto.setCode(dto.getAttrValue());
+				break;
+			case "plate":
+				dto.setPlate(dto.getAttrValue());
+				break;
+			case "tallyAreaNo":
+				// registerBill.setTallyAreaNo(registerBill.getAttrValue());
+				dto.setLikeTallyAreaNo(dto.getAttrValue());
+				break;
+			case "latestDetectOperator":
+				dto.setLatestDetectOperator(dto.getAttrValue());
+				break;
+			case "name":
+				dto.setName(dto.getAttrValue());
+				break;
+			case "productName":
+				dto.setLikeProductName(dto.getAttrValue());
+				break;
+			case "likeSampleCode":
+				dto.setLikeSampleCode(dto.getAttrValue());
+				break;
 			}
 		}
 		StringBuilder sql = this.buildDynamicCondition(dto);
 		if (sql.length() > 0) {
-			dto.mset(IDTO.AND_CONDITION_EXPR, sql.toString());
+			dto.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
 		}
 		return listEasyuiPageByExample(dto, true).toString();
 	}
@@ -1092,24 +1100,26 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.updateUserQrItemDetailByCondition(condition);
 		return v;
 	}
+
 	/**
 	 * 基于ID更新二维码状态
 	 */
 	private void updateUserQrItemDetail(Long registerBillId) {
 		if (registerBillId != null) {
 			RegisterBill bill = this.get(registerBillId);
-			if (bill != null&&bill.getUserId()!=null) {
+			if (bill != null && bill.getUserId() != null) {
 				this.userQrItemService.updateUserQrStatus(bill.getUserId());
 			}
 		}
 
 	}
+
 	/**
 	 * 基于条件更新二维码状态
 	 */
 	private void updateUserQrItemDetailByCondition(RegisterBill condition) {
-		this.listByExample(condition).stream().forEach(bill->{
-			if (bill != null&&bill.getUserId()!=null) {
+		this.listByExample(condition).stream().forEach(bill -> {
+			if (bill != null && bill.getUserId() != null) {
 				this.userQrItemService.updateUserQrStatus(bill.getUserId());
 			}
 		});

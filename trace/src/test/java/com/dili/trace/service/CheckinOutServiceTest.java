@@ -54,7 +54,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		RegisterBill query = new RegisterBill();
 		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 
-		query.mset(IDTO.AND_CONDITION_EXPR,
+		query.setMetadata(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is null and `sales_type` = 0)");
 
 		List<Long> billIdList = Arrays.asList(79L);
@@ -70,7 +70,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		RegisterBill query = new RegisterBill();
 		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 
-		query.mset(IDTO.AND_CONDITION_EXPR,
+		query.setMetadata(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is null and `sales_type` = 0)");
 
 		List<Long> billIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId).limit(1)
@@ -87,7 +87,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	public void doManullyCheck() {
 		RegisterBillDto query = new RegisterBillDto();
 		query.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
-		query.mset(IDTO.AND_CONDITION_EXPR,
+		query.setMetadata(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is not null and checkout_record_id is null and `sales_type` = 0)");
 
 		List<Long> billIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId)
@@ -112,7 +112,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		query.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 		query.setDetectStateList(
 				Arrays.asList(BillDetectStateEnum.PASS.getCode(), BillDetectStateEnum.REVIEW_PASS.getCode()));
-		query.mset(IDTO.AND_CONDITION_EXPR,
+		query.setMetadata(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is not null  and checkout_record_id is null  and `sales_type` = 0)");
 
 		List<Long> separateSalesIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId)

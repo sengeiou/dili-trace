@@ -323,7 +323,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
         }
 //		query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
 //		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-        query.mset(IDTO.AND_CONDITION_EXPR,
+        query.setMetadata(IDTO.AND_CONDITION_EXPR,
                 " ( (id in(select bill_id from separate_sales_record where checkin_record_id  is null and sales_type="
                 + SalesTypeEnum.OWNED.getCode() + ") and state=" + RegisterBillStateEnum.WAIT_AUDIT.getCode() + " ) or  (id in(select bill_id from separate_sales_record where checkin_record_id  is not null and sales_type="
                 + SalesTypeEnum.OWNED.getCode() + " and checkout_record_id is null) ) )");

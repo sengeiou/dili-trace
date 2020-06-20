@@ -119,57 +119,17 @@ public class RegisterBillController {
 
 		for (RegisterBill registerBill : registerBills) {
 
-			if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-				// 理货区
-				User user = userService.findByTallyAreaNo(registerBill.getTallyAreaNo());
-				if (user == null) {
-					LOGGER.error("新增登记单失败理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
-					return BaseOutput.failure("理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
-				}
-				registerBill.setName(user.getName());
-				registerBill.setIdCardNo(user.getCardNo());
-				registerBill.setAddr(user.getAddr());
-				registerBill.setUserId(user.getId());
-				registerBill.setTallyAreaNo(user.getTallyAreaNos());
-			} else {
-				String tradeTypeId = StringUtils.trimToEmpty(registerBill.getTradeTypeId());
-				registerBill.setTradeTypeName(tradeTypeMap.getOrDefault(tradeTypeId, null));
-
-				if (StringUtils.isNotBlank(registerBill.getTradeAccount())
-						|| StringUtils.isNotBlank(registerBill.getTradePrintingCard())) {
-					Customer condition = DTOUtils.newDTO(Customer.class);
-					condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
-					condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
-					Customer customer = this.customerService.findByCustomerIdAndPrintingCard(condition).stream()
-							.findFirst().orElse(null);
-					if (customer == null) {
-						LOGGER.error("新增登记单失败交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
-						return BaseOutput.failure("交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
-					}
-					registerBill.setName(customer.getName());
-					registerBill.setIdCardNo(customer.getIdNo());
-					registerBill.setAddr(customer.getAddress());
-					registerBill.setTradePrintingCard(customer.getPrintingCard());
-					registerBill.setPhone(customer.getPhone());
-
-				}
-
-				// if (StringUtils.isNotBlank(registerBill.getTradeAccount())) {
-				// Customer customer =
-				// customerService.findByCustomerId(registerBill.getTradeAccount());
-				// if (customer == null) {
-				// LOGGER.error("新增登记单失败交易账号[" + registerBill.getTradeAccount() + "]对应用户不存在");
-				// return BaseOutput.failure("交易账号[" + registerBill.getTradeAccount() +
-				// "]对应用户不存在");
-				// }
-				// registerBill.setName(customer.getName());
-				// registerBill.setIdCardNo(customer.getIdNo());
-				// registerBill.setAddr(customer.getAddress());
-				// registerBill.setTradePrintingCard(customer.getPrintingCard());
-				// registerBill.setPhone(customer.getPhone());
-				// }
+			User user = userService.findByTallyAreaNo(registerBill.getTallyAreaNo());
+			if (user == null) {
+				LOGGER.error("新增登记单失败理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
+				return BaseOutput.failure("理货区号[" + registerBill.getTallyAreaNo() + "]对应用户不存在");
 			}
-			registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+			registerBill.setName(user.getName());
+			registerBill.setIdCardNo(user.getCardNo());
+			registerBill.setAddr(user.getAddr());
+			registerBill.setUserId(user.getId());
+			registerBill.setTallyAreaNo(user.getTallyAreaNos());
+
 			registerBill.setDetectReportUrl(StringUtils.trimToNull(registerBill.getDetectReportUrl()));
 			registerBill.setOriginCertifiyUrl(StringUtils.trimToNull(registerBill.getOriginCertifiyUrl()));
 			registerBill.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
@@ -224,37 +184,6 @@ public class RegisterBillController {
 
 	private List<UsualAddress> queryCitys() {
 		return usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.REGISTER);
-		// List<String> prirityCityNames = Arrays.asList("青州市", "寿光市", "莱西市", "平度市",
-		// "莱芜市", "青岛市", "博兴县", "临朐县", "辽宁省",
-		// "河北省", "吉林省", "内蒙古自治区",
-		// "元谋县","保山市","茂名市","中山市","雷州市","湛江市","澄迈县",
-		// "东方市",
-		// "海口市",
-		// "漳州市",
-		// "崇明县",
-		// "临海市",
-		// "慈溪市",
-		// "宁波市",
-		// "南通市"
-		//
-		//
-		//
-		// );
-		//
-		// List<City> cityList = new ArrayList<>();
-		// for (String name : prirityCityNames) {
-		// CityListInput query = new CityListInput();
-		// query.setKeyword(name);
-		// List<City> list = this.baseInfoRpcService.listCityByCondition(name);
-		// City city = list.stream().filter(item ->
-		// item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
-		// if (city != null) {
-		// cityList.add(city);
-		// }
-		//
-		// }
-		// return cityList;
-
 	}
 
 	/**

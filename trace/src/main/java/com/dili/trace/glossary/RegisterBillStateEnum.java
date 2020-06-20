@@ -9,9 +9,9 @@ package com.dili.trace.glossary;
  */
 public enum RegisterBillStateEnum {
 	/**
-	 * 待查验
+	 * 无
 	 */
-	PRE_VERIFY(0, "待查验"),
+	NONE(0, "无"),
 	/**
 	 * 待审核
 	 */

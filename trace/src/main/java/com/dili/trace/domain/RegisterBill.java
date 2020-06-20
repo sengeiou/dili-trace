@@ -82,18 +82,6 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`state`")
 	private Integer state;
 
-	@Transient
-	public String getStateName() {
-		try {
-			if (getState() == null) {
-				return "";
-			}
-		} catch (Exception e) {
-			return "";
-		}
-		return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
-	}
-
 	@ApiModelProperty(value = "1.分销 2.全销")
 	@Column(name = "`sales_type`")
 	private Integer salesType;
@@ -133,33 +121,6 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
 	@Column(name = "`detect_state`")
 	private Integer detectState;
-
-	@Transient
-	public String getDetectStateName() {
-		try {
-			if (getDetectState() == null) {
-				return "";
-			}
-		} catch (Exception e) {
-			return "";
-		}
-		BillDetectStateEnum state = BillDetectStateEnum.getBillDetectStateEnum(getDetectState());
-		return state.getName();
-//        if(BillDetectStateEnum.PASS==state||BillDetectStateEnum.REVIEW_PASS==state) {
-//        	return BillDetectStateEnum.PASS.getName();
-//        }else {
-//        	return BillDetectStateEnum.NO_PASS.getName();
-//        }
-	}
-
-//    @Transient
-//    default boolean getIsPass(){
-//    	Integer detectState=this.getDetectState();
-//    	if(detectState!=null&&(detectState.equals(1)||detectState.equals(3))) {
-//    		return true;
-//    	}
-//    	return false;
-//    }
 
 	@ApiModelProperty(value = "检测记录ID")
 	@Column(name = "`latest_detect_record_id`")
@@ -228,6 +189,44 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "数据是否完整")
 	@Column(name = "`complete`")
 	private Integer complete;
+	
+	@ApiModelProperty(value = "查验状态值")
+	@Column(name = "`verify_state`")
+	private Integer verifyState;
+
+	public Integer getVerifyState() {
+		return verifyState;
+	}
+
+	public void setVerifyState(Integer verifyState) {
+		this.verifyState = verifyState;
+	}
+
+	@Transient
+	public String getDetectStateName() {
+		try {
+			if (getDetectState() == null) {
+				return "";
+			}
+		} catch (Exception e) {
+			return "";
+		}
+		BillDetectStateEnum state = BillDetectStateEnum.getBillDetectStateEnum(getDetectState());
+		return state.getName();
+
+	}
+
+	@Transient
+	public String getStateName() {
+		try {
+			if (getState() == null) {
+				return "";
+			}
+		} catch (Exception e) {
+			return "";
+		}
+		return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
+	}
 
 	public Long getId() {
 		return id;

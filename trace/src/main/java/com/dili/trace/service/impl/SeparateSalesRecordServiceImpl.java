@@ -316,9 +316,9 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 	@Transactional
 	@Override
 	public List<Long> createSeparateSalesRecordList(SeparateSalesInputDTO input, User sellerUser) {
-		if (sellerUser.getId().equals(input.getSalesUserId())) {
-			throw new BusinessException("买卖家不能相同");
-		}
+//		if (sellerUser.getId().equals(input.getSalesUserId())) {
+//			throw new BusinessException("买卖家不能相同");
+//		}
 		logger.info("seller userid={}", sellerUser.getId());
 		logger.info("buyer userid={}", input.getSalesUserId());
 		
