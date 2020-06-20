@@ -19,71 +19,17 @@
         	<input type="hidden" name="id" value="${registerBill.id}">
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
-                    <select class="form-control input-sm" name="registerSource" id="registerSource" required  readonly="readonly" disabled="disabled" tabindex="0"  >
-                        <option value="1"  <% if( registerBill.registerSource==1){%>selected<%}%>>理货区</option>
-                        <option value="2" <% if( registerBill.registerSource==2){%>selected<%}%>>交易区</option>
-                    </select>
-                </div>
-                <div class="form-group"  <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>  >
-                    <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
-                    <div class="input-group">
-                        <input type="hidden" name="tallyAreaNo" id="tallyAreaNo" value="${registerBill.tallyAreaNo!}" />
-                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;" value="${registerBill.tallyAreaNo!}" readonly="readonly" disabled="disabled"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
-                        
-                    </div>
-                </div>
 
-                <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>交易区号</label>
-                    <select class="form-control input-sm" name="tradeTypeId" id="tradeTypeId"  required readonly="readonly" disabled="disabled">
-                        <option value="">请选择</option>
-                        <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
-                            for(tradeType in tradeTypes){%>
-                        <option value="${tradeType.typeId}"  <% if( registerBill.tradeTypeId==tradeType.typeId){%>selected<%}%> >${tradeType.typeName}</option>
-                        <%}%>
-                    </select>
-                </div>
-                <div class="form-group" <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>车牌号</label>
-                        <select  class="form-control input-sm editableSelect  isPlate" id = "plate" name="plate"  value="${registerBill.plate!}"  required>
-						         <% for(up in userPlateList){%>
-			                        <option value="${up.plate}">${up.plate}</option>
-			                    <%}%>     
-						 </select>
-						 
-                </div>
-                <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
-                    <label class="label-title text-right">交易账号</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="tradeAccountInput" id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"  value="${userInfo.userId}" readonly="readonly" disabled="disabled"/>
-                        <input type="hidden" name="tradeAccount" id="tradeAccount"  value="${userInfo.userId}"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
-                    </div>
-                </div>
-                <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
-                    <label class="label-title text-right">印刷卡号</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="b2" id="printingCardInput" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"  value="${userInfo.printingCard}" readonly="readonly" disabled="disabled"/>
-                        <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"  value="${userInfo.printingCard}" />
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="cardNo()">检索</span> </span>
-                    </div>
-                </div>
-                <br>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
-                    <input type="text" class="form-control input-sm" name="name" id="name"  value="${userInfo.name}" tabindex="-1" required readonly/>
+                    <input type="text" class="form-control input-sm" name="name" id="name"  value="${userInfo.name}" tabindex="-1"  readonly/>
                     <input type="hidden"  name="userId" id="userId" value="${userInfo.userId}"  required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>身份证号</label>
-                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm" tabindex="-1" value="${userInfo.idCardNo}" required readonly/>
+                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm" tabindex="-1" value="${userInfo.idCardNo}"  readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
@@ -93,6 +39,17 @@
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户手机号</label>
                     <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"  value="${userInfo.phone}"  readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌号</label>
+                        <select  class="form-control input-sm editableSelect  isPlate" id = "plate" name="plate"  value="${registerBill.plate!}"  required>
+						         <% for(up in userPlateList){%>
+			                        <option value="${up.plate}">${up.plate}</option>
+			                    <%}%>     
+						 </select>
+						 
                 </div>
             </div>
 

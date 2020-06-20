@@ -566,7 +566,24 @@ var currentUser={"depId":"${user.depId!}"
         var detectState= selected.$_detectState;
         var handleResult= selected.handleResult;
     	$('#upload-origincertifiy-btn').show();
-        if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
+        if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.PRE_VERIFY.getCode()} ){
+            //接车状态是“已打回”,启用“撤销打回”操作
+            $('#undo-btn').show();
+            $('#edit-btn').show();
+            $('#upload-detectreport-btn').show();
+        	
+            if(selected.originCertifiyUrl=='有'||selected.detectReportUrl=='有'){
+           	 $('#remove-reportAndcertifiy-btn').show();
+    	   }
+        	
+            //$('#batch-audit-btn').show();
+           if(selected.registerSource==${@com.dili.trace.glossary.RegisterSourceEnum.TALLY_AREA.getCode()}){
+        	   if(selected.originCertifiyUrl&&selected.originCertifiyUrl!=null&&selected.originCertifiyUrl!=''&&selected.originCertifiyUrl!='无'){
+        		   $('#audit-withoutDetect-btn').show();
+        	   }
+           }
+
+        }else if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
             $('#undo-btn').show();
             $('#audit-btn').show();

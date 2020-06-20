@@ -720,16 +720,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill == null) {
 			throw new AppException("数据错误");
 		}
-		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+		if (!RegisterBillStateEnum.PRE_VERIFY.equalsToCode(registerBill.getState())&&!RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(registerBill.getState())) {
 			throw new AppException("数据状态错误");
 		}
-
-		if (input.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-			// 理货区
-			registerBill.setPlate(input.getPlate());
-		} else {
-
-		}
+		// 理货区
+		registerBill.setPlate(input.getPlate());
 		if (!this.checkPlate(registerBill)) {
 			throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
 		}

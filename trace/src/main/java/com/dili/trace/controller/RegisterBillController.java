@@ -287,13 +287,14 @@ public class RegisterBillController {
 			condition.setRegisterBillCode(registerBill.getCode());
 			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
 		}
-		if(registerBill.getUpStreamId()!=null) {
-			UpStream upStream=this.upStreamService.get(registerBill.getUpStreamId());
+		if (registerBill.getUpStreamId() != null) {
+			UpStream upStream = this.upStreamService.get(registerBill.getUpStreamId());
 			modelMap.put("upStream", upStream);
-		}else {
+		} else {
 			modelMap.put("upStream", null);
 		}
-		Map<Integer,String>upStreamTypeMap=Stream.of(UpStreamTypeEnum.values()).collect(Collectors.toMap(UpStreamTypeEnum::getCode, UpStreamTypeEnum::getName));
+		Map<Integer, String> upStreamTypeMap = Stream.of(UpStreamTypeEnum.values())
+				.collect(Collectors.toMap(UpStreamTypeEnum::getCode, UpStreamTypeEnum::getName));
 		modelMap.put("upStreamTypeMap", upStreamTypeMap);
 		// DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
 		// conditon.setRegisterBillCode(registerBill.getCode());
@@ -683,36 +684,19 @@ public class RegisterBillController {
 
 	private UserInfoDto findUserInfoDto(RegisterBill registerBill, String firstTallyAreaNo) {
 		UserInfoDto userInfoDto = new UserInfoDto();
-		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-			// 理货区
-			User user = userService.findByTallyAreaNo(firstTallyAreaNo);
 
-			if (user != null) {
-				userInfoDto.setUserId(String.valueOf(user.getId()));
-				userInfoDto.setName(user.getName());
-				userInfoDto.setIdCardNo(user.getCardNo());
-				userInfoDto.setPhone(user.getPhone());
-				userInfoDto.setAddr(user.getAddr());
+		// 理货区
+		User user = userService.findByTallyAreaNo(firstTallyAreaNo);
 
-			}
-
-		} else {
-
-			Customer condition = DTOUtils.newDTO(Customer.class);
-			condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
-			condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
-			Customer customer = this.customerService.findByCustomerIdAndPrintingCard(condition).stream().findFirst()
-					.orElse(null);
-			if (customer != null) {
-				userInfoDto.setUserId(customer.getCustomerId());
-				userInfoDto.setName(customer.getName());
-				userInfoDto.setIdCardNo(customer.getIdNo());
-				userInfoDto.setPhone(customer.getPhone());
-				userInfoDto.setAddr(customer.getAddress());
-				userInfoDto.setPrintingCard(customer.getPrintingCard());
-			}
+		if (user != null) {
+			userInfoDto.setUserId(String.valueOf(user.getId()));
+			userInfoDto.setName(user.getName());
+			userInfoDto.setIdCardNo(user.getCardNo());
+			userInfoDto.setPhone(user.getPhone());
+			userInfoDto.setAddr(user.getAddr());
 
 		}
+
 		return userInfoDto;
 	}
 
