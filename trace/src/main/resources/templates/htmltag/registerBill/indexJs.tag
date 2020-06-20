@@ -165,7 +165,7 @@ var currentUser={"depId":"${user.depId!}"
 	   });
  	   
  	   
-        bindFormEvent("queryForm", "registerSource", queryRegisterBillGrid);
+        bindFormEvent("queryForm", "state", queryRegisterBillGrid);
         initRegisterBillGrid();
         //queryRegisterBillGrid();
 
@@ -566,7 +566,7 @@ var currentUser={"depId":"${user.depId!}"
         var detectState= selected.$_detectState;
         var handleResult= selected.handleResult;
     	$('#upload-origincertifiy-btn').show();
-        if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.PRE_VERIFY.getCode()} ){
+        if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.NEW.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
             $('#undo-btn').show();
             $('#edit-btn').show();

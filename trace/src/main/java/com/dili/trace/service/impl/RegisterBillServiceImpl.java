@@ -83,33 +83,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return (RegisterBillMapper) getDao();
 	}
 
-	/**
-	 * 审核
-	 * 
-	 * @param billId
-	 * @return
-	 */
-	@Transactional
-	Long verifyRegisterBill(Long billId, BillVerifyStateEnum verifyState) {
-
-		if (billId == null || verifyState == null) {
-			throw new BusinessException("参数错误");
-		}
-		RegisterBill item = this.get(billId);
-		if (item == null) {
-			throw new BusinessException("数据不存在");
-		}
-		if (!BillVerifyStateEnum.doVerify(item.getVerifyState())) {
-			throw new BusinessException("数据状态错误");
-		}
-
-		RegisterBill registerBill = new RegisterBill();
-		registerBill.setId(item.getId());
-		registerBill.setVerifyState(verifyState.getCode());
-		this.updateSelective(registerBill);
-		return item.getId();
-	}
-
 	@Transactional
 	@Override
 	public BaseOutput createRegisterBill(RegisterBill registerBill) {
@@ -118,7 +91,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return recheck;
 		}
 		registerBill.setVerifyState(BillVerifyStateEnum.NONE.getCode());
-		registerBill.setState(RegisterBillStateEnum.NONE.getCode());
+		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
 		registerBill.setRegisterSource(RegisterSourceEnum.OTHERS.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
@@ -742,7 +715,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		if (BillVerifyStateEnum.NONE.equalsToCode(registerBill.getVerifyState())
 				|| BillVerifyStateEnum.PARTLY_PASSED.equalsToCode(registerBill.getVerifyState())) {
-		}else {
+		} else {
 			throw new AppException("数据状态错误");
 		}
 		registerBill.setPlate(input.getPlate());
@@ -1124,5 +1097,30 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			}
 		});
 
+	}
+
+	@Override
+	public Long doVerify(RegisterBill input) {
+		if (input == null||input.getId()==null) {
+			throw new BusinessException("参数错误");
+		}
+		Long billId = input.getId();
+		BillVerifyStateEnum verifyState = BillVerifyStateEnum.fromCode(input.getVerifyState())
+				.orElseThrow(() -> new BusinessException("参数错误"));
+
+	
+		RegisterBill item = this.get(billId);
+		if (item == null) {
+			throw new BusinessException("数据不存在");
+		}
+		if (!BillVerifyStateEnum.doVerify(item.getVerifyState())) {
+			throw new BusinessException("数据状态错误");
+		}
+
+		RegisterBill registerBill = new RegisterBill();
+		registerBill.setId(item.getId());
+		registerBill.setVerifyState(verifyState.getCode());
+		this.updateSelective(registerBill);
+		return item.getId();
 	}
 }

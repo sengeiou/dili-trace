@@ -35,6 +35,7 @@ import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillVerifyStateEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.CheckinOutTypeEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
@@ -145,14 +146,15 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
             RegisterBill bill = this.registerBillService.get(billId);
             if (bill == null) {
-                return null;
+            	throw new BusinessException("没有查找到数据");
             } else {
-                if (RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(bill.getState())) {
+                if (BillVerifyStateEnum.PASSED.equalsToCode(bill.getVerifyState())) {
                     return bill;
+                }else {
+                	throw new BusinessException("数据状态错误");
                 }
             }
 
-            return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
         if (billList.isEmpty()) {
             throw new BusinessException("没有可以进场的登记单");

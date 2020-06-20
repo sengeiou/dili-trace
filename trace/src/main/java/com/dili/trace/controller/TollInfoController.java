@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 public class TollInfoController {
     private static final Logger LOGGER= LoggerFactory.getLogger(TollInfoController.class);
 
-//    @Autowired
-//    BaseInfoRpc baseInfoRpc;
     @Autowired
     BaseInfoRpcService baseInfoRpcService;
 
@@ -91,46 +89,9 @@ public class TollInfoController {
 
     private List<Category> queryCategorys(String name) {
     	return this.baseInfoRpcService.listCategoryByCondition(name);
-//        CategoryListInput query = new CategoryListInput();
-//        query.setKeyword(name);
-//        BaseOutput<List<Category>> result = baseInfoRpc.listCategoryByCondition(query);
-//        if(result.isSuccess()){
-//            return result.getData();
-//        }
-//        List<Category> citys = new ArrayList<>();
-//        /*Category city = new Category();
-//        city.setName("苹果");
-//        city.setId(1L);
-//        city.setParent(0L);
-//        citys.add(city);
-//        Category city1 = new Category();
-//        city1.setName("苹果2");
-//        city1.setId(2L);
-//        city1.setParent(1L);
-//        citys.add(city1);*/
-//        return citys;
+
     }
     private List<City> queryCitys(String name) {
     	return this.baseInfoRpcService.listCityByCondition(name);
-//        CityListInput query = new CityListInput();
-//        query.setKeyword(name);
-//        BaseOutput<List<City>> result = baseInfoRpc.listCityByCondition(query);
-//        if(result.isSuccess()){
-//            return result.getData();
-//        }
-//        List<City> citys = new ArrayList<>();
-//        /*City city = new City();
-//        city.setName("成都");
-//        city.setMergerName("四川成都");
-//        city.setId(1L);
-//        city.setParentId(0L);
-//        citys.add(city);
-//        City city1 = new City();
-//        city1.setName("成南");
-//        city1.setMergerName("四川成南");
-//        city1.setId(2L);
-//        city1.setParentId(1L);
-//        citys.add(city1);*/
-//        return citys;
     }
 }

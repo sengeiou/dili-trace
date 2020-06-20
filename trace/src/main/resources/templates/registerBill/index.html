@@ -13,10 +13,7 @@
             <div class="easyui-panel" style="width:100%;" align="left">
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
-                        <div class="search-item">
-                            <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto" "/>
-                            <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
-                        </div>
+
                         <div class="search-item">
                             <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"  value="${state}"/>
                             <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部"}' />
@@ -43,10 +40,7 @@
                 
                 
                         </div>
-                        <div class="search-item">
-                            <input  name="tradeTypeId" id="tradeTypeId" style="width:100%" labelAlign="right" data-options="label:'交易区'"  panelWidth="auto" panelHeight="auto"/>
-                            <#comboProvider _id="tradeTypeId" _provider='tradeTypeProvider' _queryParams='{emptyText:"全部"}' />
-                        </div>
+
                         <div class="search-item">
                             <input type="hidden" name="_salesCityName" id="_salesCityName">
                             <select class="easyui-combobox" name="originId" id="_salesCityId" style="width:100%;" labelAlign="right"
@@ -86,20 +80,8 @@
                                 <option value="false">无</option>
                             </select>
                         </div>
-                        <div class="search-item">
-                            <select class="easyui-combobox" name="hasHandleResult" id="hasHandleResult" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'处理结果'"  labelAlign="right">
-                        		<option value="">全部</option>
-                                <option value="true">有</option>
-                                <option value="false">无</option>
-                            </select>
-                        </div>
-                        <!--div class="search-item">
-                            <select class="easyui-combobox" name="hasCheckSheet" id="hasCheckSheet" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'打印报告'"  labelAlign="right">
-                        		<option value="">全部</option>
-                                <option value="true">有</option>
-                                <option value="false">无</option>
-                            </select>
-                        </div-->
+
+
                         <div class="search-item long-item">
                             <input class="easyui-datetimebox" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" style="width:58%" labelAlign="right" data-options="label:'检测时间'"/>
                             <span style="width: 2%;">-</span>
@@ -153,9 +135,7 @@
                         <th width="8%" data-options="field:'sampleCode',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             采样编号
                         </th>
-                        <!--<th width="5%"  data-options="field:'registerSource',  _provider:'registerSourceProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                          登记来源
-                        </th>-->
+
                         <th width="4%" data-options="field:'tallyAreaNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             理货区号
                         </th>
@@ -307,19 +287,10 @@
   			url:'${contextPath!}/toll/category?name='+productName,
   			success:function(resp){
   				data=resp.suggestions.map(function(v,i){v['parentId']='';return v});
-  				//console.info(data)
-  	  			 success(data);
-  				//data.unshift({id:'',value:'全部'});
-  				//$('#productName').combobox({data:data});
-  			//	$('#productName').combobox('showPanel');
-  				//$('#productName').combotree('setText',productName);
-  			//	$('#productIdList').focus();
-  				//$('#productIdList').next().find('input').focus()
+  	  			success(data);
   			}
   		})
   	
-  		
-  	// return data;
    }
 
      </script>

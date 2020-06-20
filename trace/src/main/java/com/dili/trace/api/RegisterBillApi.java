@@ -22,6 +22,7 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.SeparateSalesRecordDTO;
 import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.enums.BillVerifyStateEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -131,8 +132,6 @@ public class RegisterBillApi {
 		return BaseOutput.success().setData(easyuiPageOutput);
 	}
 
-	
-
 	@ApiOperation("处理不分销单")
 	@RequestMapping(value = "/doNoSalesRecord/{id}/{registerSource}", method = { RequestMethod.POST,
 			RequestMethod.GET })
@@ -192,40 +191,6 @@ public class RegisterBillApi {
 			return BaseOutput.success();
 		}
 
-		//
-		//
-		// RegisterBill registerBill = registerBillService.get(id);
-		// if(registerBill == null){
-		// return BaseOutput.failure("没有查到需要分销的登记单");
-		// }
-		//
-		// if(registerBill.getRegisterSource().intValue()==
-		// RegisterSourceEnum.TRADE_AREA.getCode()){//交易区分销校验
-		// //校验买家身份证
-		// QualityTraceTradeBill qualityTraceTradeBill =
-		// qualityTraceTradeBillService.findByTradeNo(registerBill.getTradeNo());
-		//
-		// if(!StringUtils.lowerCase(qualityTraceTradeBill.getBuyerIDNo()).equals(StringUtils.lowerCase(user.getCardNo()))){
-		// LOGGER.info("买家身份证"+qualityTraceTradeBill.getBuyerIDNo()+"用户身份证:"+user.getCardNo());
-		// return BaseOutput.failure("没有权限处理");
-		// }
-		// }else {//理货区分销校验
-		// if(registerBill.getUserId().longValue()!=user.getId().longValue()){
-		// LOGGER.info("业户ID"+registerBill.getUserId()+"用户ID:"+user.getId());
-		// return BaseOutput.failure("没有权限处理");
-		// }
-		// }
-		// Integer alreadyWeight
-		// =separateSalesRecordService.alreadySeparateSalesWeight(registerBill.getCode());
-		//
-		// if(alreadyWeight>0){
-		// LOGGER.error("已经有,alreadyWeight:"+alreadyWeight+",BillWeight："+registerBill.getWeight());
-		// return BaseOutput.failure("已经有分销记录,不能处理").setData(false);
-		// }
-		//
-		// registerBill.setSalesType(SalesTypeEnum.ONE_SALES.getCode());
-		// registerBillService.update(registerBill);
-		// return BaseOutput.success();
 	}
 
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
@@ -316,6 +281,23 @@ public class RegisterBillApi {
 		}
 		this.registerBillService.delete(registerBill.getId());
 		return BaseOutput.success().setData(true);
+
+	}
+
+	@ApiOperation(value = "查验登记单", httpMethod = "GET", notes = "productName=?")
+	@RequestMapping(value = "/doVerify.api", method = RequestMethod.GET)
+	public BaseOutput<Object> doVerify(@RequestBody RegisterBill input) {
+		LOGGER.info("通过ID查验登记单:{}", input);
+		try {
+			User user = userService.get(sessionContext.getAccountId());
+			Long id = this.registerBillService.doVerify(input);
+
+			return BaseOutput.success().setData(id);
+		} catch (BusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		}catch (Exception e) {
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
 
 	}
 
