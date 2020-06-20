@@ -1113,10 +1113,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (item == null) {
 			throw new BusinessException("数据不存在");
 		}
-		if (!BillVerifyStateEnum.doVerify(item.getVerifyState())) {
-			throw new BusinessException("数据状态错误");
+		if(verifyState==BillVerifyStateEnum.fromCode(item.getVerifyState()).orElse(null)){
+			throw new BusinessException("状态不能相同");
 		}
-
+		if (!BillVerifyStateEnum.canDoVerify(item.getVerifyState())) {
+			throw new BusinessException("当前状态不能进行数据操作");
+		}
 		RegisterBill registerBill = new RegisterBill();
 		registerBill.setId(item.getId());
 		registerBill.setVerifyState(verifyState.getCode());

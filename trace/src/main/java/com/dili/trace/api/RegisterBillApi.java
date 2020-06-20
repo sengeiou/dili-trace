@@ -286,7 +286,7 @@ public class RegisterBillApi {
 
 	@ApiOperation(value = "查验登记单", httpMethod = "GET", notes = "productName=?")
 	@RequestMapping(value = "/doVerify.api", method = RequestMethod.GET)
-	public BaseOutput<Object> doVerify(@RequestBody RegisterBill input) {
+	public BaseOutput<Long> doVerify(@RequestBody RegisterBill input) {
 		LOGGER.info("通过ID查验登记单:{}", input);
 		try {
 			User user = userService.get(sessionContext.getAccountId());
