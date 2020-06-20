@@ -7,11 +7,14 @@ import com.dili.common.exception.BusinessException;
 import com.dili.common.util.UUIDUtil;
 import com.dili.trace.glossary.ImageTypeEnum;
 import net.coobird.thumbnailator.Thumbnails;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -24,10 +27,16 @@ import java.util.Dictionary;
  */
 @Component
 public class ImageService {
-    private static final Logger LOGGER= LoggerFactory.getLogger(ImageService.class);
+    private static final Logger logger= LoggerFactory.getLogger(ImageService.class);
 
     @Resource
     private DefaultConfiguration defaultConfiguration;
+    
+    
+	@PostConstruct
+	public void init() {
+		logger.warn(">>>>>>>>>>>>>>请注意在应用所在服务器创建相应的图片保存目录 [{}] 及读写权限", this.defaultConfiguration.getImageDirectory());
+	}
 
     /**
      * 保存图片文件的方法

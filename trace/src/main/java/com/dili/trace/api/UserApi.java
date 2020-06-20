@@ -8,7 +8,7 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.PatternConstants;
-import com.dili.common.entity.SessionContext;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.UUIDUtil;
@@ -51,7 +51,7 @@ public class UserApi {
     @Resource
     private UserService userService;
     @Resource
-    private SessionContext sessionContext;
+    private LoginSessionContext sessionContext;
     @Resource
     private DefaultConfiguration defaultConfiguration;
     @Resource
@@ -122,33 +122,7 @@ public class UserApi {
     }
 
 
-    @ApiOperation(value ="登录【接口已通】", notes = "登录")
-    @RequestMapping(value = "/login.api", method = RequestMethod.POST)
-    public BaseOutput<Map<String,Object>> login(@RequestBody User user){
-        try{
-            if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
-                return BaseOutput.failure("手机号为空或格式错误");
-            }
-            if(StrUtil.isBlank(user.getPassword())){
-                return BaseOutput.failure("密码为空");
-            }
-            Map<String,Object> result=new HashMap<>();
-            User po=userService.login(user.getPhone(), MD5Util.md5(user.getPassword()));
-            sessionContext.setSessionId(UUIDUtil.get());
-            sessionContext.setAccountId(po.getId());
-            result.put("userId",po.getId());
-            result.put("userName",po.getName());
-            result.put("qrStatus",po.getQrStatus());
-            result.put("userType",po.getUserType());
-            result.put("sessionId",sessionContext.getSessionId());
-            return BaseOutput.success().setData(result);
-        }catch (BusinessException e){
-            return BaseOutput.failure(e.getMessage());
-        }catch (Exception e){
-            LOGGER.error("login",e);
-            return BaseOutput.failure();
-        }
-    }
+   
 
     @ApiOperation(value ="找回密码【接口已通】", notes = "找回密码")
     @RequestMapping(value = "/resetPassword.api", method = RequestMethod.POST)

@@ -2,7 +2,7 @@ package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.SessionContext;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -64,7 +64,7 @@ public class RegisterBillApi {
 	@Autowired
 	DetectRecordService detectRecordService;
 	@Resource
-	private SessionContext sessionContext;
+	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -115,7 +115,7 @@ public class RegisterBillApi {
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	// @InterceptConfiguration(loginRequired=false)
-	public BaseOutput<EasyuiPageOutput> list(RegisterBillDto registerBill) throws Exception {
+	public BaseOutput<EasyuiPageOutput> list(@RequestBody RegisterBillDto registerBill) throws Exception {
 		LOGGER.info("获取登记单列表:" + JSON.toJSON(registerBill).toString());
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {

@@ -228,7 +228,7 @@ public class DetectRecordApi {
 				"ta12355", "ta12340" };
 		List<RegisterBill> list = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+			RegisterBill registerBill = new RegisterBill();
 			registerBill.setName(name[i]);
 			registerBill.setPlate(plate[i]);
 			registerBill.setProductName(product[i]);

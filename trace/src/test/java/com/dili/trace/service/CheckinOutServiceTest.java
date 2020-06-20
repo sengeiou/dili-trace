@@ -42,16 +42,16 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 	@Test
 	public void listCheckInApiListOutputPage() {
-		RegisterBillDto query=DTOUtils.newDTO(RegisterBillDto.class);
+		RegisterBillDto query=new RegisterBillDto();
 		query.setUserId(1L);
 		query.setPage(1);
 		query.setRows(20);
-		BasePage<CheckInApiListOutput>out=	this.checkinOutRecordService.listCheckInApiListOutputPage(DTOUtils.newDTO(RegisterBillDto.class));
+		BasePage<CheckInApiListOutput>out=	this.checkinOutRecordService.listCheckInApiListOutputPage(new RegisterBillDto());
 		System.out.println(out);
 	}
 @Test
 	public void doCheckin2() {
-		RegisterBill query = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill query = new RegisterBill();
 		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 
 		query.mset(IDTO.AND_CONDITION_EXPR,
@@ -67,7 +67,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	}
 	@Test
 	public void doCheckin() {
-		RegisterBill query = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill query = new RegisterBill();
 		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 
 		query.mset(IDTO.AND_CONDITION_EXPR,
@@ -85,7 +85,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 	@Test
 	public void doManullyCheck() {
-		RegisterBillDto query = DTOUtils.newDTO(RegisterBillDto.class);
+		RegisterBillDto query = new RegisterBillDto();
 		query.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
 		query.mset(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is not null and checkout_record_id is null and `sales_type` = 0)");
@@ -108,7 +108,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 	@Test
 	public void doCheckout() {
-		RegisterBillDto query = DTOUtils.newDTO(RegisterBillDto.class);
+		RegisterBillDto query = new RegisterBillDto();
 		query.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 		query.setDetectStateList(
 				Arrays.asList(BillDetectStateEnum.PASS.getCode(), BillDetectStateEnum.REVIEW_PASS.getCode()));

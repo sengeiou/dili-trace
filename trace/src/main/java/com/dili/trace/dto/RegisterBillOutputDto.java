@@ -10,17 +10,36 @@ import com.dili.trace.domain.SeparateSalesRecord;
 /**
  * Created by laikui on 2019/7/30.
  */
-public interface RegisterBillOutputDto extends RegisterBill {
-    List<SeparateSalesRecord> getSeparateSalesRecords();
-    void setSeparateSalesRecords(List<SeparateSalesRecord> separateSalesRecords);
+public class RegisterBillOutputDto extends RegisterBill {
+	private List<SeparateSalesRecord> separateSalesRecords;
 
-    DetectRecord getDetectRecord();
-    void setDetectRecord(DetectRecord detectRecord);
+	private DetectRecord detectRecord;
 
-//    QualityTraceTradeBill getQualityTraceTradeBill();
-//    void setQualityTraceTradeBill(QualityTraceTradeBill qualityTraceTradeBill);
-    
-    
-    List<QualityTraceTradeBill> getQualityTraceTradeBillList();
-    void setQualityTraceTradeBillList(List<QualityTraceTradeBill> qualityTraceTradeBillList);
+	private List<QualityTraceTradeBill> qualityTraceTradeBillList;
+
+	public List<SeparateSalesRecord> getSeparateSalesRecords() {
+		return separateSalesRecords;
+	}
+
+	public void setSeparateSalesRecords(List<SeparateSalesRecord> separateSalesRecords) {
+		this.separateSalesRecords = separateSalesRecords;
+	}
+
+	public DetectRecord getDetectRecord() {
+		return detectRecord;
+	}
+
+	public void setDetectRecord(DetectRecord detectRecord) {
+		this.detectRecord = detectRecord;
+	}
+
+	public List<QualityTraceTradeBill> getQualityTraceTradeBillList() {
+		return qualityTraceTradeBillList;
+	}
+
+	public void setQualityTraceTradeBillList(List<QualityTraceTradeBill> qualityTraceTradeBillList) {
+		this.qualityTraceTradeBillList = qualityTraceTradeBillList;
+	}
+	
+	
 }

@@ -4,7 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
-import com.dili.common.entity.SessionContext;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.service.RedisService;
 import com.dili.ss.redis.service.RedisUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -25,7 +25,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 	// SESSION KEY
 	private static final String SESSION_PREFIX = "TRACE_SESSION_";
 	@Resource
-	private SessionContext sessionContext;
+	private LoginSessionContext sessionContext;
 	@Resource
 	private RedisService redisService;
 	@Resource
@@ -45,7 +45,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 		if (StringUtils.isBlank(sessionId)) {
 			return true;
 		}
-		loadData(request,response, sessionId);
+		loadData(request, response, sessionId);
 		// 检车禁用用户
 		checkDisableUsers(request, response);
 		request.setAttribute(ATTRIBUTE_CONTEXT_INITIALIZED, Boolean.TRUE);
@@ -96,21 +96,12 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 		sessionContext.setSessionId(sessionId);
 		Map<String, Object> map = (Map<String, Object>) redisService.get(SESSION_PREFIX + sessionId);
 		if (MapUtil.isEmpty(map)) {
-			String operatorId = request.getHeader("operatorId");
-//        	String operatorName=request.getHeader("operatorName");
-			if (StrUtil.isBlank(operatorId)) {// ||StrUtil.isBlank(operatorName)) {
-				return;
-			}
-			if (sessionContext.getAccountId() == null) {
-				sessionContext.setAccountId(Long.parseLong(operatorId));
-			}
-			this.saveSession(response);
-		} else {
-
-			long expire = redisService.getExpire(SESSION_PREFIX + sessionId) * 1000;
-			sessionContext.setMillis(expire);
-			sessionContext.setMap(map);
+			return;
 		}
+
+		long expire = redisService.getExpire(SESSION_PREFIX + sessionId) * 1000;
+		sessionContext.setMillis(expire);
+		sessionContext.setMap(map);
 
 	}
 

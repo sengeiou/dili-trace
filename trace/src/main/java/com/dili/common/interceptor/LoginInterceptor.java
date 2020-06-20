@@ -3,7 +3,7 @@ package com.dili.common.interceptor;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.ExecutionConstants;
-import com.dili.common.entity.SessionContext;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 	   
 	    @Resource
-	    private SessionContext sessionContext;
+	    private LoginSessionContext sessionContext;
 	    @Override
 	    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 	        if(!(handler instanceof HandlerMethod)){

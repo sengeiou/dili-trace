@@ -78,7 +78,7 @@ public class CheckSheetController {
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap, @RequestParam("registerBillIdList") List<Long> registerBillIdList) {
 		if (registerBillIdList != null && !registerBillIdList.isEmpty()) {
-			RegisterBillDto queryDto = DTOUtils.newDTO(RegisterBillDto.class);
+			RegisterBillDto queryDto = new RegisterBillDto();
 			queryDto.setIdList(registerBillIdList);
 			List<RegisterBill> itemList = this.registerBillService.listByExample(queryDto).stream()
 					.filter(item -> item.getCheckSheetId() == null)
@@ -206,7 +206,7 @@ public class CheckSheetController {
 				List<Long> registerBillIdList = checkSheetDetailList.stream().map(CheckSheetDetail::getRegisterBillId)
 						.collect(Collectors.toList());
 				if (!registerBillIdList.isEmpty()) {
-					RegisterBillDto registerBillQuery = DTOUtils.newDTO(RegisterBillDto.class);
+					RegisterBillDto registerBillQuery = new RegisterBillDto();
 					registerBillQuery.setIdList(registerBillIdList);
 					List<RegisterBill>registerBillList=this.registerBillService.listByExample(registerBillQuery);
 					Map<Long, RegisterBill> registerBillIdMap = registerBillList.stream()

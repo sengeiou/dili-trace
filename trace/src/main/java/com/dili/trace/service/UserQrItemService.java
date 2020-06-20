@@ -52,7 +52,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 
 	private void initRegisterBillComplete() {
 
-		RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill billQuery = new RegisterBill();
 		billQuery.mset(IDTO.AND_CONDITION_EXPR, " complete is null");
 		billQuery.setPage(1);
 		billQuery.setRows(50);
@@ -62,7 +62,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 				break;
 			}
 			billList.stream().forEach(bill -> {
-				RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+				RegisterBill updatable = new RegisterBill();
 				updatable.setId(bill.getId());
 				if (this.checkRegisterBill(bill) != null) {
 					updatable.setComplete(0);
@@ -88,7 +88,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 		}
 		if(registerBill.getComplete()==null) {
 			
-			RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+			RegisterBill updatable = new RegisterBill();
 			updatable.setId(registerBill.getId());
 			if (this.checkRegisterBill(registerBill) != null) {
 				updatable.setComplete(0);
@@ -275,7 +275,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 		billQrItemItem.setQrItemType(QrItemTypeEnum.BILL.getCode());
 		billQrItemItem = this.listByExample(billQrItemItem).stream().findFirst().orElse(billQrItemItem);
 
-		RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill billQuery = new RegisterBill();
 		billQuery.setUserId(userId);
 		int count = this.registerBillMapper.selectCount(billQuery);
 		if (count == 0) {
@@ -345,7 +345,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 
 	}
 	private void updateComplete(Long userId) {
-		RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill billQuery = new RegisterBill();
 		billQuery.setUserId(userId);
 		billQuery.mset(IDTO.AND_CONDITION_EXPR," complete is null or complete = 0");
 		this.registerBillService.listByExample(billQuery).stream().forEach(bill->{
@@ -356,7 +356,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 				complete=1;
 			}
 			if(!complete.equals(bill.getComplete())) {
-				RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+				RegisterBill updatable = new RegisterBill();
 				updatable.setId(bill.getId());
 				updatable.setComplete(complete);
 				this.registerBillService.updateSelective(updatable);

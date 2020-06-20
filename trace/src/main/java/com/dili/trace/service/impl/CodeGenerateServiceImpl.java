@@ -39,13 +39,13 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 	}
 
 	private boolean checkAndInitSampleCode() {
-		RegisterBill domain = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill domain = new RegisterBill();
 		domain.setOrder("desc");
 		domain.setSort("sample_code");
 		domain.setPage(1);
 		domain.setRows(1);
 		RegisterBill registerBill = this.registerBillService.listByExample(domain).stream().findFirst()
-				.orElse(DTOUtils.newDTO(RegisterBill.class));
+				.orElse(new RegisterBill());
 		String maxSampleCode = registerBill.getSampleCode();
 		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst()
 				.orElse(DTOUtils.newDTO(CodeGenerate.class));

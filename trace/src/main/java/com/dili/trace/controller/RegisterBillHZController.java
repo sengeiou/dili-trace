@@ -137,7 +137,7 @@ public class RegisterBillHZController {
 					Long id = e.getValue();
 					Long userId = input.getUserId();
 					User user = this.userService.get(userId);
-					RegisterBill bill = DTOUtils.newDTO(RegisterBill.class);
+					RegisterBill bill = new RegisterBill();
 					bill.setRegisterSource(RegisterSourceEnum.TRADE_AREA.getCode());
 					bill.setId(id);
 
@@ -178,7 +178,7 @@ public class RegisterBillHZController {
 		List<RegisterBill> registerBillList = new ArrayList<>();
 
 		if (!ids.isEmpty()) {
-			RegisterBillDto query = DTOUtils.newDTO(RegisterBillDto.class);
+			RegisterBillDto query = new RegisterBillDto();
 			query.setIdList(ids);
 			registerBillList.addAll(this.registerBillService.listByExample(query));
 		}
@@ -189,7 +189,7 @@ public class RegisterBillHZController {
 		modelMap.put("idUpStreamMap", idUpStreamMap);
 		modelMap.put("create", registerBillList.isEmpty());
 		if (registerBillList.isEmpty()) {
-			registerBillList.add(DTOUtils.newDTO(RegisterBill.class));
+			registerBillList.add(new RegisterBill());
 		}
 		modelMap.put("registerBillList", registerBillList);
 		return "registerBill/hz/edit";
@@ -260,7 +260,7 @@ public class RegisterBillHZController {
 			 ManullyCheckInput input=new ManullyCheckInput();
 			 input.setBillId(inputDto.getBillId());
 			 input.setPass(inputDto.getPass());
-			this.checkinOutRecordService.doManullyCheck(new OperatorUser(userTicket.getId(),userTicket.getRealName()), input);RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+			this.checkinOutRecordService.doManullyCheck(new OperatorUser(userTicket.getId(),userTicket.getRealName()), input);RegisterBill updatable = new RegisterBill();
 			
 			return BaseOutput.success();
 		} catch (AppException e) {

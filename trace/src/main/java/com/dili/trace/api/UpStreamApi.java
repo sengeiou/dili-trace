@@ -5,7 +5,7 @@ import java.util.Arrays;
 import javax.annotation.Resource;
 
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.SessionContext;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -38,7 +38,7 @@ public class UpStreamApi {
     @Resource
     private UserService userService;
     @Resource
-    private SessionContext sessionContext;
+    private LoginSessionContext sessionContext;
     @Autowired
     UpStreamService upStreamService;
 

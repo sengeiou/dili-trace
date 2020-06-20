@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.SessionContext;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -50,7 +50,7 @@ public class CheckinOutRecordApi {
 	@Resource
 	private UserService userService;
 	@Resource
-	private SessionContext sessionContext;
+	private LoginSessionContext sessionContext;
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
@@ -109,7 +109,7 @@ public class CheckinOutRecordApi {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		RegisterBillDto condition=DTOUtils.newDTO(RegisterBillDto.class);
+		RegisterBillDto condition=new RegisterBillDto();
 		condition.setUserId(query.getUserId());
 		condition.setLikeProductName(query.getLikeProductName());
 		condition.setPage(query.getPage());

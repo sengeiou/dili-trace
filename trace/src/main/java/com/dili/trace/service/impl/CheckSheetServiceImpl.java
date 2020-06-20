@@ -95,7 +95,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 
 		List<RegisterBill> updateRegisterBillList = triple.getMiddle().stream().map(detail -> {
 
-			RegisterBill item = DTOUtils.newDTO(RegisterBill.class);
+			RegisterBill item = new RegisterBill();
 			item.setId(detail.getRegisterBillId());
 
 			item.setCheckSheetId(checkSheet.getId());
@@ -255,7 +255,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 
 		List<RegisterBill> updateRegisterBillList = registerBillList.stream().map(bill -> {
 
-			RegisterBill item = DTOUtils.newDTO(RegisterBill.class);
+			RegisterBill item = new RegisterBill();
 			item.setId(bill.getId());
 			item.setCheckSheetId(bill.getCheckSheetId());
 			return item;
@@ -289,7 +289,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 //		input.setApproverBase64Sign(base64Sign);
 		List<Long> idList = new ArrayList<>(idAndAliasNameMap.keySet());
 
-		RegisterBillDto queryCondition = DTOUtils.newDTO(RegisterBillDto.class);
+		RegisterBillDto queryCondition = new RegisterBillDto();
 		queryCondition.setIdList(idList);
 		queryCondition.setSort("id");
 		queryCondition.setOrder("DESC");

@@ -6,7 +6,7 @@ import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.SessionContext;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -46,7 +46,7 @@ import io.swagger.annotations.ApiOperation;
 public class SeparateSalesApi {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SeparateSalesApi.class);
 	@Resource
-	private SessionContext sessionContext;
+	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;
 	@Autowired

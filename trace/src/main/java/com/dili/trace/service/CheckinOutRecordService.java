@@ -192,7 +192,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
             updatableRecord.setSalesWeight(bill.getWeight());
             this.separateSalesRecordService.updateSelective(updatableRecord);
                 
-            RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+            RegisterBill updatable = new RegisterBill();
             updatable.setId(bill.getId());
             if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
                 updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
@@ -247,7 +247,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
             throw new BusinessException("数据错误:进门状态错误");
         }
 
-        RegisterBill updatable = DTOUtils.newDTO(RegisterBill.class);
+        RegisterBill updatable = new RegisterBill();
         updatable.setId(bill.getId());
         updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
         if (input.getPass()) {
@@ -301,7 +301,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
     public BasePage<CheckInApiListOutput> listCheckInApiListOutputPage(RegisterBillDto query) {
 
-//		RegisterBill condition = DTOUtils.newDTO(RegisterBill.class);
+//		RegisterBill condition = new RegisterBill();
         List<String> sqlList = new ArrayList<>();
 
 //		if (query.getUserId() != null) {
@@ -448,12 +448,12 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
         BasePage<CheckinOutRecord> page = this.listPageByExample(checkinOutRecord);
 
         List<Map<String, Object>> dataList = page.getDatas().stream().map(cr -> {
-//            RegisterBill billQuery = DTOUtils.newDTO(RegisterBill.class);
+//            RegisterBill billQuery = new RegisterBill();
 //            billQuery.mset(IDTO.AND_CONDITION_EXPR,
 //                    " id in (select bill_id from separate_sales_record where checkin_record_id =" + cr.getId()
 //                    + " or checkout_record_id=" + cr.getId() + ") ");
 //            RegisterBill billItem = this.registerBillService.listByExample(billQuery).stream().findFirst()
-//                    .orElse(DTOUtils.newDTO(RegisterBill.class));
+//                    .orElse(new RegisterBill());
 
             SeparateSalesRecord separateSalesRecordQuery = DTOUtils.newDTO(SeparateSalesRecord.class);
             separateSalesRecordQuery.mset(IDTO.AND_CONDITION_EXPR,

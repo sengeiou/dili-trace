@@ -1,5 +1,6 @@
 package com.dili.trace.service.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -97,7 +99,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new BusinessException("数据状态错误");
 		}
 		
-		RegisterBill registerBill=DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill registerBill=new RegisterBill();
 		registerBill.setId(item.getId());
 		registerBill.setState(RegisterBillStateEnum.PRE_VERIFY.getCode());
 		this.updateSelective(registerBill);
@@ -245,14 +247,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public List<RegisterBill> findByProductName(String productName) {
-		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill registerBill = new RegisterBill();
 		registerBill.setProductName(productName);
 		return list(registerBill);
 	}
 
 	@Override
 	public RegisterBill findByCode(String code) {
-		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill registerBill = new RegisterBill();
 		registerBill.setCode(code);
 		List<RegisterBill> list = list(registerBill);
 		if (list != null && list.size() > 0) {
@@ -266,7 +268,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (StringUtils.isBlank(sampleCode)) {
 			return null;
 		}
-		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill registerBill = new RegisterBill();
 		registerBill.setSampleCode(sampleCode.trim());
 		List<RegisterBill> list = list(registerBill);
 		if (list != null && list.size() > 0) {
@@ -279,11 +281,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public RegisterBillOutputDto findByTradeNo(String tradeNo) {
 		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
 		if (qualityTraceTradeBill != null && StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
-			RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+			RegisterBill registerBill = new RegisterBill();
 			registerBill.setCode(qualityTraceTradeBill.getRegisterBillCode());
 			List<RegisterBill> list = this.listByExample(registerBill);
 			if (list != null && list.size() > 0) {
-				return DTOUtils.as(list.get(0), RegisterBillOutputDto.class);
+				RegisterBillOutputDto outputDto = new RegisterBillOutputDto();
+				try {
+					BeanUtils.copyProperties(outputDto, list.get(0));
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					throw new RuntimeException(e.getMessage(),e);
+				}
+				
+				return outputDto;
 			}
 		}
 		return null;
@@ -548,9 +557,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		QualityTraceTradeBillOutDto dto = DTOUtils.newDTO(QualityTraceTradeBillOutDto.class);
 		dto.setQualityTraceTradeBill(qualityTraceTradeBill);
 
-		RegisterBill registerBill = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill registerBill = new RegisterBill();
 		if (StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
-			RegisterBill condition = DTOUtils.newDTO(RegisterBill.class);
+			RegisterBill condition = new RegisterBill();
 
 			condition.setCode(qualityTraceTradeBill.getRegisterBillCode());
 			List<RegisterBill> list = this.listByExample(condition);
@@ -602,11 +611,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill) {
 		LOGGER.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
-		RegisterBillOutputDto outputDto = null;
+		
 		if (registerBill == null) {
 			return null;
-		} else {
-			outputDto = DTOUtils.as(registerBill, RegisterBillOutputDto.class);
+		}
+		RegisterBillOutputDto outputDto = new RegisterBillOutputDto();
+		try {
+			BeanUtils.copyProperties(outputDto, registerBill);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new RuntimeException(e.getMessage(),e);
 		}
 		// 查询交易单信息
 		QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
@@ -652,7 +665,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new AppException("数据错误");
 		}
 
-		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill example = new RegisterBill();
 		example.setId(item.getId());
 		example.setHandleResult(input.getHandleResult());
 		example.setHandleResultUrl(input.getHandleResultUrl());
@@ -676,7 +689,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	// throw new AppException("数据错误");
 	// }
 	//
-	// RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
+	// RegisterBill example = new RegisterBill();
 	// example.setId(item.getId());
 	// example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
 	// example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
@@ -759,7 +772,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new AppException("状态错误,不能上传检测报告");
 		}
 
-		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill example = new RegisterBill();
 		example.setId(item.getId());
 		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
 		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
@@ -783,7 +796,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
 		// throw new AppException("状态错误,不能上传产地证明");
 		// }
-		RegisterBill example = DTOUtils.newDTO(RegisterBill.class);
+		RegisterBill example = new RegisterBill();
 		example.setId(item.getId());
 		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
 		// example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
@@ -864,14 +877,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public RegisterBill findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto input) throws Exception {
-		RegisterBillDto dto = DTOUtils.newDTO(RegisterBillDto.class);
+		RegisterBillDto dto = new RegisterBillDto();
 		UserTicket userTicket = getOptUser();
 		dto.setOperatorId(userTicket.getId());
 		dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 		dto.setRows(1);
 		dto.setSort("code");
 		dto.setOrder("desc");
-		return this.listByExample(dto).stream().findFirst().orElse(DTOUtils.newDTO(RegisterBill.class));
+		return this.listByExample(dto).stream().findFirst().orElse(new RegisterBill());
 	}
 
 	@Override
