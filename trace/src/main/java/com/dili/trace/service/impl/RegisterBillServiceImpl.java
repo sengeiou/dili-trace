@@ -37,7 +37,8 @@ import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
-import com.dili.trace.enums.BillVerifyStateEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.CheckinStatusEnum;
@@ -92,9 +93,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!recheck.isSuccess()) {
 			return recheck;
 		}
-		registerBill.setVerifyState(BillVerifyStateEnum.NONE.getCode());
+		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 		registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 		registerBill.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
+		registerBill.setSaleStatus(SaleStatusEnum.NONE.getCode());
+		
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
 		registerBill.setRegisterSource(RegisterSourceEnum.OTHERS.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
@@ -717,8 +720,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill == null) {
 			throw new AppException("数据错误");
 		}
-		if (BillVerifyStateEnum.NONE.equalsToCode(registerBill.getVerifyState())
-				|| BillVerifyStateEnum.PARTLY_PASSED.equalsToCode(registerBill.getVerifyState())) {
+		if (BillVerifyStatusEnum.NONE.equalsToCode(registerBill.getVerifyStatus())
+				|| BillVerifyStatusEnum.PARTLY_PASSED.equalsToCode(registerBill.getVerifyStatus())) {
 		} else {
 			throw new AppException("数据状态错误");
 		}
@@ -1109,7 +1112,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new BusinessException("参数错误");
 		}
 		Long billId = input.getId();
-		BillVerifyStateEnum verifyState = BillVerifyStateEnum.fromCode(input.getVerifyState())
+		BillVerifyStatusEnum verifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
 				.orElseThrow(() -> new BusinessException("参数错误"));
 
 	
@@ -1117,15 +1120,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (item == null) {
 			throw new BusinessException("数据不存在");
 		}
-		if(verifyState==BillVerifyStateEnum.fromCode(item.getVerifyState()).orElse(null)){
+		if(verifyState==BillVerifyStatusEnum.fromCode(item.getVerifyStatus()).orElse(null)){
 			throw new BusinessException("状态不能相同");
 		}
-		if (!BillVerifyStateEnum.canDoVerify(item.getVerifyState())) {
+		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
 			throw new BusinessException("当前状态不能进行数据操作");
 		}
 		RegisterBill registerBill = new RegisterBill();
 		registerBill.setId(item.getId());
-		registerBill.setVerifyState(verifyState.getCode());
+		registerBill.setVerifyStatus(verifyState.getCode());
 		this.updateSelective(registerBill);
 		return item.getId();
 	}

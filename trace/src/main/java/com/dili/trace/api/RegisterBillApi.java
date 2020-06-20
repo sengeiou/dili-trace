@@ -22,7 +22,7 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.SeparateSalesRecordDTO;
 import com.dili.trace.dto.UpStreamDto;
-import com.dili.trace.enums.BillVerifyStateEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;

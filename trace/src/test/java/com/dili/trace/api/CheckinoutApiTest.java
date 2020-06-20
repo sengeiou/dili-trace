@@ -15,7 +15,7 @@ import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.dto.CheckInApiInput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
-import com.dili.trace.enums.BillVerifyStateEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
@@ -46,7 +46,7 @@ public class CheckinoutApiTest extends AutoWiredBaseTest {
 	public void doCheckin() {
 
 		RegisterBill query = new RegisterBill();
-		query.setVerifyState(BillVerifyStateEnum.PASSED.getCode());
+		query.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
 		RegisterBill item = registerBillService.listByExample(query).stream().findFirst().orElse(null);
 		CheckInApiInput input = new CheckInApiInput();
 		input.setBillIdList(Lists.newArrayList(item.getId()));

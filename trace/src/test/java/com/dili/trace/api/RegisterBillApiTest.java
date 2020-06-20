@@ -18,7 +18,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.BillVerifyStateEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 
@@ -47,7 +47,7 @@ public class RegisterBillApiTest extends AutoWiredBaseTest {
 	public void testcreateList() {
 
 		RegisterBill query = new RegisterBill();
-		query.setVerifyState(BillVerifyStateEnum.NONE.getCode());
+		query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 		RegisterBill item = registerBillService.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
 
 		CreateListBillParam createListBillParam = new CreateListBillParam();
@@ -69,9 +69,9 @@ public class RegisterBillApiTest extends AutoWiredBaseTest {
 	public void doVerify() {
 		Mockito.doReturn(new OperatorUser(0L, "test")).when(this.sessionContext).getLoginUserOrException(Mockito.any());
 		RegisterBill query = new RegisterBill();
-		query.setVerifyState(BillVerifyStateEnum.NONE.getCode());
+		query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 		RegisterBill input = registerBillService.listByExample(query).stream().findFirst().orElse(null);
-		input.setVerifyState(BillVerifyStateEnum.PASSED.getCode());
+		input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
 		BaseOutput<Long> out = this.registerBillApi.doVerify(input);
 		System.out.println(out);
 	}
