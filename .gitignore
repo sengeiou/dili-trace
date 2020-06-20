@@ -14,5 +14,7 @@
 */target/
 */*.iml
 */*.log
+
+*/nb-configuration.xml
 .vscode/launch.json
 /trace/nbproject/
