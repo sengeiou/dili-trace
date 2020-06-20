@@ -96,13 +96,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
-		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
-			// 交易区没有理货区号
-			registerBill.setTallyAreaNo(null);
-			// 交易区数据直接进行待检测状态
-			// registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-			// registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
-		}
+//		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
+//			// 交易区没有理货区号
+//			registerBill.setTallyAreaNo(null);
+//			// 交易区数据直接进行待检测状态
+//			// registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
+//			// registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
+//		}
 		if (StringUtils.isBlank(registerBill.getOperatorName())) {
 			UserTicket userTicket = getOptUser();
 			registerBill.setOperatorName(userTicket.getRealName());
@@ -136,30 +136,30 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	private boolean checkPlate(RegisterBill registerBill) {
 
-		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-
-			List<UserPlate> userPlateList = this.userPlateService
-					.findUserPlateByPlates(Arrays.asList(registerBill.getPlate()));
-
-			if (!userPlateList.isEmpty()) {
-				boolean noMatch = userPlateList.stream()
-						.noneMatch(up -> up.getUserId().equals(registerBill.getUserId()));
-				if (noMatch) {
-					// throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
-					return false;
-				}
-			}
-		}
+//		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+//
+//			List<UserPlate> userPlateList = this.userPlateService
+//					.findUserPlateByPlates(Arrays.asList(registerBill.getPlate()));
+//
+//			if (!userPlateList.isEmpty()) {
+//				boolean noMatch = userPlateList.stream()
+//						.noneMatch(up -> up.getUserId().equals(registerBill.getUserId()));
+//				if (noMatch) {
+//					// throw new AppException("当前车牌号已经与其他用户绑定,请使用其他牌号");
+//					return false;
+//				}
+//			}
+//		}
 		return true;
 
 	}
 
 	private BaseOutput checkBill(RegisterBill registerBill) {
 
-		if (registerBill.getRegisterSource() == null || registerBill.getRegisterSource().intValue() == 0) {
-			LOGGER.error("登记来源不能为空");
-			return BaseOutput.failure("登记来源不能为空");
-		}
+//		if (registerBill.getRegisterSource() == null || registerBill.getRegisterSource().intValue() == 0) {
+//			LOGGER.error("登记来源不能为空");
+//			return BaseOutput.failure("登记来源不能为空");
+//		}
 		if (StringUtils.isBlank(registerBill.getName())) {
 			LOGGER.error("业户姓名不能为空");
 			return BaseOutput.failure("业户姓名不能为空");
@@ -186,17 +186,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return BaseOutput.failure("商品重量不能为空");
 		}
 
-		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
+//		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 			if (registerBill.getWeight().longValue() <= 0L) {
 				LOGGER.error("商品重量不能小于0");
 				return BaseOutput.failure("商品重量不能小于0");
 			}
-		} else {
-			if (registerBill.getWeight().longValue() < 0L) {
-				LOGGER.error("商品重量不能为负");
-				return BaseOutput.failure("商品重量不能为负");
-			}
-		}
+//		} else {
+//			if (registerBill.getWeight().longValue() < 0L) {
+//				LOGGER.error("商品重量不能为负");
+//				return BaseOutput.failure("商品重量不能为负");
+//			}
+//		}
 
 		return BaseOutput.success();
 	}

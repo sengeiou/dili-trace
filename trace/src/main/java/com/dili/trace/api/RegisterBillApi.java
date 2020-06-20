@@ -96,13 +96,13 @@ public class RegisterBillApi {
 			registerBill.setName(user.getName());
 			registerBill.setAddr(user.getAddr());
 			registerBill.setIdCardNo(user.getCardNo());
-			if (registerBill.getRegisterSource() == null) {
-				// 小程序默认理货区
-				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-			}
-			if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-				registerBill.setTallyAreaNo(user.getTallyAreaNos());
-			}
+//			if (registerBill.getRegisterSource() == null) {
+//				// 小程序默认理货区
+//				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
+//			}
+//			if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
+//				registerBill.setTallyAreaNo(user.getTallyAreaNos());
+//			}
 
 			BaseOutput result = registerBillService.createRegisterBill(registerBill);
 			if (!result.isSuccess()) {
