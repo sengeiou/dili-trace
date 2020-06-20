@@ -7,7 +7,7 @@ public class OperatorUser {
         this.id=id;
         this.name=name;
     }
-    
+
 
     /**
      * @return Long return the id

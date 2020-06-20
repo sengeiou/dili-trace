@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -78,7 +79,30 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
 	}
-
+	/**
+	 * 审核
+	 * @param billId
+	 * @return
+	 */
+	@Transactional Long verifyRegisterBill(Long billId) {
+		
+		if(billId==null) {
+			throw new BusinessException("参数错误");
+		}
+		RegisterBill item=this.get(billId);
+		if(item==null) {
+			throw new BusinessException("数据不存在");
+		}
+		if(!RegisterBillStateEnum.PRE_VERIFY.equalsToCode(item.getState())) {
+			throw new BusinessException("数据状态错误");
+		}
+		
+		RegisterBill registerBill=DTOUtils.newDTO(RegisterBill.class);
+		registerBill.setId(item.getId());
+		registerBill.setState(RegisterBillStateEnum.PRE_VERIFY.getCode());
+		this.updateSelective(registerBill);
+		return item.getId();
+	}
 	@Transactional
 	@Override
 	public BaseOutput createRegisterBill(RegisterBill registerBill) {
@@ -86,7 +110,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!recheck.isSuccess()) {
 			return recheck;
 		}
-		registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+		registerBill.setState(RegisterBillStateEnum.PRE_VERIFY.getCode());
+		registerBill.setRegisterSource(RegisterSourceEnum.OTHERS.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
@@ -507,7 +532,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new AppException("操作失败，数据状态已改变");
 		}
 	}
-
 	UserTicket getOptUser() {
 		return SessionContext.getSessionContext().getUserTicket();
 	}

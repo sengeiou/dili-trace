@@ -14,7 +14,13 @@ public enum RegisterSourceEnum {
 	/**
 	 * 交易区
 	 */
-	TRADE_AREA(2, "交易区"),;
+	TRADE_AREA(2, "交易区"),
+	
+	/**
+	 * 其他
+	 */
+	OTHERS(30, "其他"),
+	;
 
 	private String name;
 	private Integer code;
