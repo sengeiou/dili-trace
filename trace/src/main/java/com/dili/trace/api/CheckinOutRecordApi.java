@@ -63,7 +63,6 @@ public class CheckinOutRecordApi {
 	/**
 	 * 进场
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/doCheckin.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<Long> doCheckin(@RequestBody CheckInApiInput input) {
 		if (sessionContext.getAccountId() == null) {
@@ -151,9 +150,9 @@ public class CheckinOutRecordApi {
 			return BaseOutput.failure("未登陆用户");
 		}
 		try {
-			SeparateSalesRecord record = this.checkinOutRecordService
+			SeparateSalesRecord billId = this.checkinOutRecordService
 					.doManullyCheck(new OperatorUser(sessionContext.getAccountId(), ""), input);
-			return BaseOutput.success().setData(record.getId());
+			return BaseOutput.success().setData(billId.getId());
 		} catch (BusinessException e) {
 
 			return BaseOutput.failure(e.getMessage());

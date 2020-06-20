@@ -94,9 +94,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return recheck;
 		}
 		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-		registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-		registerBill.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
-		registerBill.setSaleStatus(SaleStatusEnum.NONE.getCode());
 		
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
 		registerBill.setRegisterSource(RegisterSourceEnum.OTHERS.getCode());

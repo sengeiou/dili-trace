@@ -82,7 +82,27 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (recordList.isEmpty()) {
 			throw new BusinessException("没有可以出场的交易单");
 		}
-
+//		List<Long> billList = recordList.stream().map(SeparateSalesRecord::getBillId).filter(billid -> {
+//
+//			RegisterBill registerBill = this.registerBillService.get(billid);
+//			if (registerBill == null) {
+//				return false;
+//			}
+//			if (!RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {
+//				return false;
+//			}
+//			if (BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())
+//					|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(registerBill.getDetectState())) {
+//				return true;
+//			}
+//			
+//			return false;
+//
+//		}).collect(Collectors.toList());
+//
+//		if (billList.size() != checkOutApiInput.getSeparateSalesIdList().size()) {
+//			throw new BusinessException("部分交易单不能出门，请重新确认");
+//		}
 
 		return recordList.stream().map(record -> {
 			RegisterBill bill = this.registerBillService.get(record.getBillId());
@@ -129,8 +149,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			if (bill == null) {
 				throw new BusinessException("没有查找到数据");
 			} else {
-				if (BillVerifyStatusEnum.PASSED.equalsToCode(bill.getVerifyStatus())
-						&& CheckinStatusEnum.NONE.equalsCode(bill.getCheckinStatus())) {
+				if (BillVerifyStatusEnum.PASSED.equalsToCode(bill.getVerifyStatus())) {
 					return bill;
 				} else {
 					throw new BusinessException("数据状态错误");
@@ -142,7 +161,10 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			throw new BusinessException("没有可以进场的登记单");
 		}
 
-
+		// User user = this.userService.get(checkInApiInput.getUserId());
+		// if (user == null) {
+		// throw new BusinessException("数据错误");
+		// }
 		return billList.stream().map(bill -> {
 			User user = this.userService.get(bill.getUserId());
 			SeparateSalesRecord queryCondition = DTOUtils.newDTO(SeparateSalesRecord.class);
@@ -176,10 +198,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			RegisterBill updatable = new RegisterBill();
 			updatable.setId(bill.getId());
 			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-				updatable.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
 				updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
 			} else if (CheckinStatusEnum.NOTALLOWED == checkinStatusEnum) {
-				updatable.setCheckinStatus(CheckinStatusEnum.NOTALLOWED.getCode());
 				updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 				updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
 				updatable.setLatestPdResult("0%");
