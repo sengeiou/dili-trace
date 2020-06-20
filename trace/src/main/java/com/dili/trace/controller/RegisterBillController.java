@@ -246,7 +246,7 @@ public class RegisterBillController {
 	@RequestMapping(value = "/tradeBillSsRecord/{id}", method = RequestMethod.GET)
 	public String tradeBillSRecord(ModelMap modelMap, @PathVariable Long id) {
 		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.get(id);
-		SeparateSalesRecord condition = DTOUtils.newDTO(SeparateSalesRecord.class);
+		SeparateSalesRecord condition = new SeparateSalesRecord();
 		condition.setTradeNo(qualityTraceTradeBill.getOrderId());
 		List<SeparateSalesRecord> separateSalesRecords = separateSalesRecordService.listByExample(condition);
 		modelMap.put("separateSalesRecords", separateSalesRecords);

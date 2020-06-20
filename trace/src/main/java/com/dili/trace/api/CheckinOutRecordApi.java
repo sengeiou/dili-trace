@@ -150,9 +150,9 @@ public class CheckinOutRecordApi {
 			return BaseOutput.failure("未登陆用户");
 		}
 		try {
-			SeparateSalesRecord billId = this.checkinOutRecordService
+			Long billId = this.checkinOutRecordService
 					.doManullyCheck(new OperatorUser(sessionContext.getAccountId(), ""), input);
-			return BaseOutput.success().setData(billId.getId());
+			return BaseOutput.success().setData(billId);
 		} catch (BusinessException e) {
 
 			return BaseOutput.failure(e.getMessage());

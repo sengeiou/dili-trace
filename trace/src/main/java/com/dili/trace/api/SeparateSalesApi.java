@@ -4,27 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.BusinessException;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.api.dto.SeparateSalesApiListOutput;
-import com.dili.trace.api.dto.SeparateSalesApiListQueryInput;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.SeparateSalesInputDTO;
-import com.dili.trace.dto.SeparateSalesRecordDTO;
-import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.glossary.SalesTypeEnum;
-import com.dili.trace.service.QualityTraceTradeBillService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
-import com.dili.trace.service.UserService;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +13,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.fastjson.JSON;
+import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.exception.BusinessException;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.api.dto.SeparateSalesApiListOutput;
+import com.dili.trace.api.dto.SeparateSalesApiListQueryInput;
+import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.User;
+import com.dili.trace.dto.SeparateSalesInputDTO;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.UserService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -99,7 +94,7 @@ public class SeparateSalesApi {
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		SeparateSalesRecord query = DTOUtils.newDTO(SeparateSalesRecord.class);
+		SeparateSalesRecord query = new SeparateSalesRecord();
 		query.setSalesUserId(user.getId());
 		query.setId(id);
 

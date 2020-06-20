@@ -92,7 +92,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 		List<Long> billIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId)
 				.flatMap(billId -> {
-					SeparateSalesRecord q = DTOUtils.newDTO(SeparateSalesRecord.class);
+					SeparateSalesRecord q = new SeparateSalesRecord();
 					q.setBillId(billId);
 					return this.separateSalesRecordService.listByExample(q).stream();
 
@@ -117,7 +117,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 		List<Long> separateSalesIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId)
 				.flatMap(billId -> {
-					SeparateSalesRecord q = DTOUtils.newDTO(SeparateSalesRecord.class);
+					SeparateSalesRecord q = new SeparateSalesRecord();
 					q.setBillId(billId);
 					return this.separateSalesRecordService.listByExample(q).stream();
 
@@ -132,8 +132,8 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 	@Test
 	public void listPagedAvailableCheckOutData() {
-		SeparateSalesRecord domain=DTOUtils.newDTO(SeparateSalesRecord.class);
-		domain.mset(IDTO.AND_CONDITION_EXPR,"checkin_record_id in(\n" + 
+		SeparateSalesRecord domain=new SeparateSalesRecord();
+		domain.setMetadata(IDTO.AND_CONDITION_EXPR,"checkin_record_id in(\n" + 
 				"		select\n" + 
 				"			id\n" + 
 				"		from\n" + 

@@ -22,7 +22,7 @@ public enum CheckinOutTypeEnum {
     public static CheckinOutTypeEnum fromCode(Integer code) {
         return Stream.of(CheckinOutTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
     }
-    public boolean equalsCode(Integer code) {
+    public boolean equalsToCode(Integer code) {
         return this.getCode().equals(code);
 
     }

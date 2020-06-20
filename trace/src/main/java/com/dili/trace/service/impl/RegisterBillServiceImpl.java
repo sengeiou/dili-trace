@@ -69,8 +69,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	BizNumberFunction bizNumberFunction;
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
-	@Autowired
-	SeparateSalesRecordService separateSalesRecordService;
+
 	@Autowired
 	DetectRecordService detectRecordService;
 	@Autowired
@@ -81,6 +80,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	UsualAddressService usualAddressService;
 	@Autowired
 	UserQrItemService userQrItemService;
+	@Autowired
+	SeparateSalesRecordService separateSalesRecordService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -134,7 +135,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
 			recheck = BaseOutput.failure("创建失败");
 		}
-		this.separateSalesRecordService.createOwnedSeparateSales(registerBill);
 		return recheck;
 	}
 
@@ -1126,6 +1126,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBill registerBill = new RegisterBill();
 		registerBill.setId(item.getId());
 		registerBill.setVerifyStatus(verifyState.getCode());
+		if(BillVerifyStatusEnum.PASSED==verifyState) {
+			this.separateSalesRecordService.createOwnedSeparateSales(registerBill);
+		}
+		
 		this.updateSelective(registerBill);
 		return item.getId();
 	}

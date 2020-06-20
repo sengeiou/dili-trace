@@ -1,50 +1,48 @@
 package com.dili.trace.api;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.CreateListBillParam;
-import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.dto.SeparateSalesRecordDTO;
-import com.dili.trace.dto.UpStreamDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
-import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.service.*;
+import com.dili.trace.service.CustomerService;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.QualityTraceTradeBillService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.UpStreamService;
+import com.dili.trace.service.UserService;
+import com.dili.trace.service.UserTallyAreaService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by laikui on 2019/7/26.
