@@ -148,7 +148,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
             if (bill == null) {
             	throw new BusinessException("没有查找到数据");
             } else {
-                if (BillVerifyStateEnum.PASSED.equalsToCode(bill.getVerifyState())) {
+                if (BillVerifyStateEnum.PASSED.equalsToCode(bill.getVerifyState())&&CheckinStatusEnum.NONE.equalsCode(bill.getCheckinStatus())) {
                     return bill;
                 }else {
                 	throw new BusinessException("数据状态错误");
@@ -197,14 +197,18 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
             RegisterBill updatable = new RegisterBill();
             updatable.setId(bill.getId());
             if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
+            	updatable.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
                 updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
-            } else {
+            } else if(CheckinStatusEnum.NOTALLOWED==checkinStatusEnum){
+            	updatable.setCheckinStatus(CheckinStatusEnum.NOTALLOWED.getCode());
                 updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
                 updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
                 updatable.setLatestPdResult("0%");
                 updatable.setLatestDetectTime(new Date());
                 updatable.setLatestDetectOperator(operateUser.getName());
 
+            }else {
+            	throw new BusinessException("进门状态错误");
             }
             updatable.setSampleCode(codeGenerateService.nextSampleCode());
             this.registerBillService.updateSelective(updatable);

@@ -4,6 +4,10 @@ import java.util.stream.Stream;
 
 public enum CheckoutStatusEnum {
     /**
+     * 无
+     */
+    NONE(0, "无"),
+    /**
      * 通过
      */
     ALLOWED(10, "通过"),

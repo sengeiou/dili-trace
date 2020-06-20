@@ -40,6 +40,8 @@ import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.enums.BillVerifyStateEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.glossary.CheckinStatusEnum;
+import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
@@ -91,6 +93,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return recheck;
 		}
 		registerBill.setVerifyState(BillVerifyStateEnum.NONE.getCode());
+		registerBill.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
+		registerBill.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
 		registerBill.setRegisterSource(RegisterSourceEnum.OTHERS.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));

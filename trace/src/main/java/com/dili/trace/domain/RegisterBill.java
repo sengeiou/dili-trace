@@ -189,10 +189,33 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "数据是否完整")
 	@Column(name = "`complete`")
 	private Integer complete;
-	
+
 	@ApiModelProperty(value = "查验状态值")
 	@Column(name = "`verify_state`")
 	private Integer verifyState;
+	@ApiModelProperty(value = "查验状态值")
+	@Column(name = "`checkin_status`")
+	private Integer checkinStatus;
+
+	@ApiModelProperty(value = "查验状态值")
+	@Column(name = "`checkout_status`")
+	private Integer checkoutStatus;
+
+	public Integer getCheckinStatus() {
+		return checkinStatus;
+	}
+
+	public void setCheckinStatus(Integer checkinStatus) {
+		this.checkinStatus = checkinStatus;
+	}
+
+	public Integer getCheckoutStatus() {
+		return checkoutStatus;
+	}
+
+	public void setCheckoutStatus(Integer checkoutStatus) {
+		this.checkoutStatus = checkoutStatus;
+	}
 
 	public Integer getVerifyState() {
 		return verifyState;
