@@ -30,6 +30,7 @@ import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
+import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
@@ -138,10 +139,12 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 			item.setSalesPlate(registerBill.getPlate());
 			item.setCreated(new Date());
 			item.setModified(new Date());
-			item.setSalesType(SalesTypeEnum.OWNED.getCode());
+
 			item.setSalesCityId(0L);
 			item.setSalesCityName("");
+			item.setSalesType(SalesTypeEnum.OWNED.getCode());
 			item.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
+			item.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
 			item.setSaleStatus(SaleStatusEnum.NONE.getCode());
 			this.insertSelective(item);
 		} else {

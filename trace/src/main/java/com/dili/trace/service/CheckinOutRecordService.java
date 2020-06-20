@@ -114,7 +114,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			SeparateSalesRecord updatable = new SeparateSalesRecord();
 			updatable.setId(record.getId());
 			updatable.setCheckoutRecordId(checkoutRecord.getId());
-			updatable.setCheckoutStatus(CheckoutStatusEnum.ALLOWED.getCode());
+			
+			updatable.setCheckoutStatus(checkoutStatusEnum.getCode());
 			this.separateSalesRecordService.updateSelective(updatable);
 			return checkoutRecord;
 		});
