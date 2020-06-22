@@ -14,12 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.output.TradeDetailBillOutputDto;
+import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserService;
@@ -48,57 +52,65 @@ public class ManagerTradeDetailApi {
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listAvailableCheckInTradeDetail", method = RequestMethod.POST)
-	public BaseOutput<BasePage<TradeDetail>> listAvailableCheckInTradeDetail(@RequestBody TradeDetail input)
-			throws Exception {
+	public BaseOutput<BasePage<TradeDetailBillOutputDto>> listAvailableCheckInTradeDetail(
+			@RequestBody TradeDetail input) {
+		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			TradeDetail query = new TradeDetail();
+			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
+			List<TradeDetailBillOutputDto> list = StreamEx.of(page.getDatas()).mapToEntry(tradeDetail -> {
+				return this.registerBillService.get(tradeDetail.getBillId());
 
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
+			}).map(e -> {
+				TradeDetail tradeDetailItem = e.getKey();
+				RegisterBill registerBillItem = e.getValue();
+				TradeDetailBillOutputDto dto = new TradeDetailBillOutputDto();
+				dto.setBillId(registerBillItem.getId());
+				dto.setTradeDetailId(tradeDetailItem.getId());
+				dto.setProductName(registerBillItem.getProductName());
+				return dto;
+
+			}).toList();
+
+			return BaseOutput.success().setData(BasePageUtil.convert(list, page));
+		} catch (BusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
 		}
-		TradeDetail query = new TradeDetail();
-		BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
-		List<TradeDetailBillOutputDto> list = StreamEx.of(page.getDatas()).mapToEntry(tradeDetail -> {
-			return this.registerBillService.get(tradeDetail.getBillId());
 
-		}).map(e -> {
-			TradeDetail tradeDetailItem = e.getKey();
-			RegisterBill registerBillItem = e.getValue();
-			TradeDetailBillOutputDto dto = new TradeDetailBillOutputDto();
-			dto.setBillId(registerBillItem.getId());
-			dto.setTradeDetailId(tradeDetailItem.getId());
-			dto.setProductName(registerBillItem.getProductName());
-			return dto;
-
-		}).toList();
-
-		return BaseOutput.success().setData(BasePageUtil.convert(list, page));
 	}
 
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listAvailableCheckOutTradeDetail", method = RequestMethod.POST)
-	public BaseOutput<BasePage<TradeDetail>> listAvailableCheckOutTradeDetail(@RequestBody TradeDetail input)
-			throws Exception {
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
+	public BaseOutput<BasePage<TradeDetailBillOutputDto>> listAvailableCheckOutTradeDetail(
+			@RequestBody TradeDetail input) {
+		try {
+			TradeDetail query = new TradeDetail();
+			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
+			List<TradeDetailBillOutputDto> list = StreamEx.of(page.getDatas()).mapToEntry(tradeDetail -> {
+				return this.registerBillService.get(tradeDetail.getBillId());
+
+			}).map(e -> {
+				TradeDetail tradeDetailItem = e.getKey();
+				RegisterBill registerBillItem = e.getValue();
+				TradeDetailBillOutputDto dto = new TradeDetailBillOutputDto();
+				dto.setBillId(registerBillItem.getId());
+				dto.setTradeDetailId(tradeDetailItem.getId());
+				dto.setProductName(registerBillItem.getProductName());
+				return dto;
+
+			}).toList();
+
+			return BaseOutput.success().setData(BasePageUtil.convert(list, page));
+		} catch (BusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
 		}
-		TradeDetail query = new TradeDetail();
-		BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
-		List<TradeDetailBillOutputDto> list = StreamEx.of(page.getDatas()).mapToEntry(tradeDetail -> {
-			return this.registerBillService.get(tradeDetail.getBillId());
 
-		}).map(e -> {
-			TradeDetail tradeDetailItem = e.getKey();
-			RegisterBill registerBillItem = e.getValue();
-			TradeDetailBillOutputDto dto = new TradeDetailBillOutputDto();
-			dto.setBillId(registerBillItem.getId());
-			dto.setTradeDetailId(tradeDetailItem.getId());
-			dto.setProductName(registerBillItem.getProductName());
-			return dto;
-
-		}).toList();
-
-		return BaseOutput.success().setData(BasePageUtil.convert(list, page));
 	}
 }

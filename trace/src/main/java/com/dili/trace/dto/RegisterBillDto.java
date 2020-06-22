@@ -63,6 +63,10 @@ public class RegisterBillDto extends RegisterBill {
 	@Column(name = "`state`")
 	@Operator(Operator.IN)
 	private List<Integer> stateList;
+	
+	@Column(name = "`verify_status`")
+	@Operator(Operator.IN)
+	private List<Integer> verifyStatusList;
 
 	@Column(name = "`detect_state`")
 	@Operator(Operator.IN)
@@ -104,6 +108,14 @@ public class RegisterBillDto extends RegisterBill {
 
 	@Transient
 	private String aliasName;
+
+	public List<Integer> getVerifyStatusList() {
+		return verifyStatusList;
+	}
+
+	public void setVerifyStatusList(List<Integer> verifyStatusList) {
+		this.verifyStatusList = verifyStatusList;
+	}
 
 	public String getCreatedStart() {
 		return createdStart;

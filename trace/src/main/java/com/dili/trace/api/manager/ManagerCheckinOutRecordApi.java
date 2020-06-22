@@ -16,6 +16,7 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CheckInApiInput;
 import com.dili.trace.api.input.CheckOutApiInput;
 import com.dili.trace.domain.CheckinOutRecord;
@@ -53,10 +54,9 @@ public class ManagerCheckinOutRecordApi {
 	 */
 	@RequestMapping(value = "/doCheckin.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<Long> doCheckin(@RequestBody CheckInApiInput input) {
-		if (sessionContext.getAccountId() == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
+		
 		try {
+			OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckin(new OperatorUser(sessionContext.getAccountId(), ""), input);
 			return BaseOutput.success();
@@ -74,10 +74,8 @@ public class ManagerCheckinOutRecordApi {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput doCheckout(@RequestBody CheckOutApiInput input) {
-		if (sessionContext.getAccountId() == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
 		try {
+			OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckout(new OperatorUser(sessionContext.getAccountId(), ""), input);
 			return BaseOutput.success();
