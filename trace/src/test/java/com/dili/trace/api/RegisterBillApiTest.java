@@ -15,6 +15,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.AutoWiredBaseTest;
+import com.dili.trace.api.client.ClientRegisterBillApi;
 import com.dili.trace.api.dto.CreateRegisterBillInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
@@ -26,7 +27,7 @@ import com.dili.trace.service.UserService;
 
 public class RegisterBillApiTest extends AutoWiredBaseTest {
 	@Autowired
-	RegisterBillApi registerBillApi;
+	ClientRegisterBillApi registerBillApi;
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
