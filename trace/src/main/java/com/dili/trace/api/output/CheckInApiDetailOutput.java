@@ -1,4 +1,4 @@
-package com.dili.trace.api.dto;
+package com.dili.trace.api.output;
 
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;

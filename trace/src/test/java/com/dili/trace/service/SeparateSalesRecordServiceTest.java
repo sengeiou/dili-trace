@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dili.trace.AutoWiredBaseTest;
-import com.dili.trace.api.dto.SeparateSalesApiListOutput;
-import com.dili.trace.api.dto.SeparateSalesApiListQueryInput;
+import com.dili.trace.api.output.SeparateSalesApiListOutput;
+import com.dili.trace.api.output.SeparateSalesApiListQueryInput;
 
 public class SeparateSalesRecordServiceTest extends AutoWiredBaseTest {
 	@Autowired

@@ -15,7 +15,7 @@ import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.RegisterBillApi;
-import com.dili.trace.api.dto.VerifyBillInputDto;
+import com.dili.trace.api.output.VerifyBillInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.service.RegisterBillService;

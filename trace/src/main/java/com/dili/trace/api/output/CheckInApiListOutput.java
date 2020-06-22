@@ -1,4 +1,4 @@
-package com.dili.trace.api.dto;
+package com.dili.trace.api.output;
 
 import java.math.BigDecimal;
 import java.util.Date;

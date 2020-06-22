@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.trace.api.dto.SeparateSalesApiListOutput;
-import com.dili.trace.api.dto.SeparateSalesApiListQueryInput;
+import com.dili.trace.api.output.SeparateSalesApiListOutput;
+import com.dili.trace.api.output.SeparateSalesApiListQueryInput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;

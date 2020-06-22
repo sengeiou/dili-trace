@@ -16,7 +16,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.client.ClientRegisterBillApi;
-import com.dili.trace.api.dto.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;

@@ -3,7 +3,7 @@ package com.dili.trace.dto;
 import java.io.Serializable;
 import java.util.List;
 
-import com.dili.trace.api.dto.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.CreateRegisterBillInputDto;
 
 /**
  * Created by laikui on 2019/7/26.
