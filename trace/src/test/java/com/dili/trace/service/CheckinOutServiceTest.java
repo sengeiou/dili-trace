@@ -79,23 +79,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 //	public void endTransaction() {
 //		TestTransaction.end();
 //	}
-	@Test
-	public void doCheckin2() {
-		
-		RegisterBill query = new RegisterBill();
-		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-
-		query.setMetadata(IDTO.AND_CONDITION_EXPR,
-				"id in (select bill_id from separate_sales_record where checkin_record_id is null and `sales_type` = 0)");
-
-		List<Long> billIdList = Arrays.asList(79L);
-		CheckInApiInput checkInApiInput = new CheckInApiInput();
-		checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
-		checkInApiInput.setBillIdList(billIdList);
-		List<CheckinOutRecord> record = this.checkinOutRecordService.doCheckin(new OperatorUser(1111L, "wangguofeng"),
-				checkInApiInput);
-		System.out.println(record.size());
-	}
+	
 
 	@Test
 	public void doCheckin() {
@@ -200,16 +184,6 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	}
 
 
-	@Test
-	@Order(1)
-	public void test1() {}
-	
-	@Test
-	@Order(2)
-	public void test2() {
-		
-	}
-	
 	
 	@Test
 	@Transactional
@@ -247,11 +221,10 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 		tradeDetailItem = this.tradeDetailService.listByExample(sepQuery).stream().findFirst().orElse(null);
 		assertNotNull(tradeDetailItem);
-
 		assertEquals(tradeDetailItem.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
 		assertEquals(tradeDetailItem.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
 		assertEquals(tradeDetailItem.getTradeType(), TradeTypeEnum.NONE.getCode());
-		assertEquals(tradeDetailItem.getSaleStatus(), SaleStatusEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getSaleStatus(), SaleStatusEnum.FOR_SALE.getCode());
 		assertEquals(tradeDetailItem.getCheckinRecordId(), inRecord.getId());
 
 		assertEquals(inRecord.getInout(), CheckinOutTypeEnum.IN.getCode());
@@ -264,15 +237,11 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 //		inputCheckInput.setPass(true);
 //		this.checkinOutRecordService.doManullyCheck(new OperatorUser(1L, ""), inputCheckInput);
 		tradeDetailItem = this.tradeDetailService.listByExample(sepQuery).stream().findFirst().orElse(null);
-		assertNotNull(tradeDetailItem);
-		assertEquals(tradeDetailItem.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
-		assertEquals(tradeDetailItem.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
-		assertEquals(tradeDetailItem.getTradeType(), TradeTypeEnum.NONE.getCode());
-		assertEquals(tradeDetailItem.getSaleStatus(), SaleStatusEnum.FOR_SALE.getCode());
+
 		// ====================
 		CheckOutApiInput checkOutApiInput = new CheckOutApiInput();
 		checkOutApiInput.setCheckoutStatus(CheckoutStatusEnum.ALLOWED.getCode());
-//		checkOutApiInput.setSeparateSalesIdList(Lists.newArrayList(tradeDetailItem.getId()));
+		checkOutApiInput.setTradeDetailIdList(Lists.newArrayList(tradeDetailItem.getId()));
 		List<CheckinOutRecord> outlist = this.checkinOutRecordService.doCheckout(new OperatorUser(1L, ""),
 				checkOutApiInput);
 		assertEquals(outlist.size(), 1);
