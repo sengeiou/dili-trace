@@ -48,6 +48,7 @@ import com.dili.trace.util.BeanMapUtil;
 
 import one.util.streamex.StreamEx;
 
+@SuppressWarnings("deprecation")
 @Service
 public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, Long> {
 
@@ -92,14 +93,14 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			return bill;
 
 		}).map(e -> {
-			SeparateSalesRecord record = e.getKey();
-			RegisterBill bill = e.getValue();
-			User user = this.userService.get(bill.getUserId());
+			SeparateSalesRecord separateSalesRecordItem = e.getKey();
+			RegisterBill registerBillItem = e.getValue();
+			User user = this.userService.get(registerBillItem.getUserId());
 			CheckinOutRecord checkoutRecord = new CheckinOutRecord();
 			checkoutRecord.setStatus(checkoutStatusEnum.getCode());
 			checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
-			checkoutRecord.setProductName(bill.getProductName());
-			checkoutRecord.setSalesWeight(record.getSalesWeight());
+			checkoutRecord.setProductName(registerBillItem.getProductName());
+			checkoutRecord.setSalesWeight(separateSalesRecordItem.getSalesWeight());
 			checkoutRecord.setUserName(user.getName());
 
 			checkoutRecord.setOperatorId(operateUser.getId());
@@ -107,12 +108,12 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			checkoutRecord.setRemark(checkOutApiInput.getRemark());
 			checkoutRecord.setCreated(new Date());
 			checkoutRecord.setModified(new Date());
-			checkoutRecord.setSeperateSalesId(record.getId());
+			checkoutRecord.setSeperateSalesId(separateSalesRecordItem.getId());
 
 			this.insertSelective(checkoutRecord);
 
 			SeparateSalesRecord updatable = new SeparateSalesRecord();
-			updatable.setId(record.getId());
+			updatable.setId(separateSalesRecordItem.getId());
 			updatable.setCheckoutRecordId(checkoutRecord.getId());
 			
 			updatable.setCheckoutStatus(checkoutStatusEnum.getCode());
@@ -150,14 +151,17 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 //		}
 
 		return recordList.stream().map(record -> {
-			RegisterBill bill = this.registerBillService.get(record.getBillId());
-			User user = this.userService.get(bill.getUserId());
+			RegisterBill registerBillItem = this.registerBillService.get(record.getBillId());
+			User userItem = this.userService.get(registerBillItem.getUserId());
+			
 			CheckinOutRecord checkoutRecord = new CheckinOutRecord();
+			checkoutRecord.setUserName(userItem.getName());
+			
 			checkoutRecord.setStatus(checkoutStatusEnum.getCode());
 			checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
-			checkoutRecord.setProductName(bill.getProductName());
+			checkoutRecord.setProductName(registerBillItem.getProductName());
 			checkoutRecord.setSalesWeight(record.getSalesWeight());
-			checkoutRecord.setUserName(user.getName());
+
 
 			checkoutRecord.setOperatorId(operateUser.getId());
 			checkoutRecord.setOperatorName(operateUser.getName());
@@ -177,13 +181,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	}
 
-	private Optional<SeparateSalesRecord> findSeparateSalesRecord(Long billId) {
-		SeparateSalesRecord queryCondition = new SeparateSalesRecord();
-		queryCondition.setBillId(billId);
-		queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
-		queryCondition.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-		return this.separateSalesRecordService.listByExample(queryCondition).stream().findFirst();
-	}
+	
 
 	@Transactional
 	public List<CheckinOutRecord> doCheckin(OperatorUser operateUser, CheckInApiInput checkInApiInput) {
@@ -200,7 +198,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return StreamEx.of(checkInApiInput.getBillIdList()).nonNull().mapToEntry(billId -> {
 			return this.registerBillService.get(billId);
 		}, billId -> {
-			return this.findSeparateSalesRecord(billId).orElse(null);
+			SeparateSalesRecord queryCondition = new SeparateSalesRecord();
+			queryCondition.setBillId(billId);
+			queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
+			queryCondition.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
+			return this.separateSalesRecordService.listByExample(queryCondition).stream().findFirst().orElse(null);
 
 		}).filterKeys(bill -> {
 			if (bill == null) {
@@ -217,11 +219,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			if (!CheckinStatusEnum.NONE.equalsToCode(record.getCheckinStatus())) {
 				throw new BusinessException("数据进门状态错误");
 			}
-			return false;
+			return true;
 		}).map(e -> {
-			RegisterBill bill = e.getKey();
-			SeparateSalesRecord item = e.getValue();
-			User user = this.userService.get(bill.getUserId());
+			RegisterBill registerBillItem = e.getKey();
+			SeparateSalesRecord separateSalesRecordItem = e.getValue();
+			User user = this.userService.get(registerBillItem.getUserId());
 
 			CheckinOutRecord checkinRecord = new CheckinOutRecord();
 			checkinRecord.setStatus(checkinStatusEnum.getCode());
@@ -231,28 +233,25 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			checkinRecord.setRemark(checkInApiInput.getRemark());
 			checkinRecord.setCreated(new Date());
 			checkinRecord.setModified(new Date());
-			checkinRecord.setProductName(bill.getProductName());
-			checkinRecord.setSalesWeight(bill.getWeight());
+			checkinRecord.setProductName(registerBillItem.getProductName());
+			checkinRecord.setSalesWeight(registerBillItem.getWeight());
 			checkinRecord.setUserName(user.getName());
-			checkinRecord.setSeperateSalesId(item.getId());
+			checkinRecord.setSeperateSalesId(separateSalesRecordItem.getId());
 			this.insertSelective(checkinRecord);
 
 			SeparateSalesRecord updatableRecord = new SeparateSalesRecord();
-			updatableRecord.setId(item.getId());
+			updatableRecord.setId(separateSalesRecordItem.getId());
 			updatableRecord.setCheckinRecordId(checkinRecord.getId());
-
+			updatableRecord.setCheckinStatus(checkinStatusEnum.getCode());
+			
 			RegisterBill updatableBill = new RegisterBill();
-			updatableBill.setId(bill.getId());
+			updatableBill.setId(registerBillItem.getId());
 			updatableBill.setSampleCode(codeGenerateService.nextSampleCode());
 
 			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
 				updatableBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
-				updatableRecord.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
-//				updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
 			} else if (CheckinStatusEnum.NOTALLOWED == checkinStatusEnum) {
 				updatableBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-				updatableRecord.setCheckinStatus(CheckinStatusEnum.NOTALLOWED.getCode());
-//				updatableRecord.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
 				updatableBill.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
 				updatableBill.setLatestPdResult("0%");
 				updatableBill.setLatestDetectTime(new Date());
@@ -275,37 +274,37 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (input == null || input.getBillId() == null || input.getPass() == null) {
 			throw new BusinessException("参数错误");
 		}
-		RegisterBill bill = this.registerBillService.get(input.getBillId());
-		if (bill == null) {
+		RegisterBill registerBillItem = this.registerBillService.get(input.getBillId());
+		if (registerBillItem == null) {
 			throw new BusinessException("没有找到登记单");
 		}
 		SeparateSalesRecord queryCondition = new SeparateSalesRecord();
 		queryCondition.setBillId(input.getBillId());
 		queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
-		SeparateSalesRecord item = this.separateSalesRecordService.listByExample(queryCondition).stream().findFirst()
+		SeparateSalesRecord separateSalesRecordItem = this.separateSalesRecordService.listByExample(queryCondition).stream().findFirst()
 				.orElse(null);
 
-		if (item == null) {
+		if (separateSalesRecordItem == null) {
 			throw new BusinessException("数据错误:没有数据");
 		}
-		if (CheckinStatusEnum.ALLOWED.equalsToCode(item.getCheckinStatus())
-				&& SaleStatusEnum.NONE.equalsToCode(item.getSaleStatus())
-				&& CheckoutStatusEnum.NONE.equals(item.getCheckoutStatus())) {
+		if (CheckinStatusEnum.ALLOWED.equalsToCode(separateSalesRecordItem.getCheckinStatus())
+				&& SaleStatusEnum.NONE.equalsToCode(separateSalesRecordItem.getSaleStatus())
+				&& CheckoutStatusEnum.NONE.equalsToCode(separateSalesRecordItem.getCheckoutStatus())) {
 
 		} else {
 			throw new BusinessException("数据状态错误");
 		}
 
 		SeparateSalesRecord updatableRecord = new SeparateSalesRecord();
-		updatableRecord.setBillId(item.getBillId());
+		updatableRecord.setId(separateSalesRecordItem.getId());
 		updatableRecord.setModified(new Date());
 
 		RegisterBill updatable = new RegisterBill();
-		updatable.setId(bill.getId());
+		updatable.setId(registerBillItem.getId());
 		updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 		if (input.getPass()) {
 			updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-			if (bill.getDetectState() != null) {
+			if (registerBillItem.getDetectState() != null) {
 				updatable.setDetectState(BillDetectStateEnum.REVIEW_PASS.getCode());
 			} else {
 				updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
@@ -315,7 +314,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			updatable.setLatestDetectOperator(operateUser.getName());
 		} else {
 			updatableRecord.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
-			if (bill.getDetectState() != null) {
+			if (registerBillItem.getDetectState() != null) {
 				updatable.setDetectState(BillDetectStateEnum.REVIEW_NO_PASS.getCode());
 			} else {
 				updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
@@ -329,7 +328,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		this.registerBillService.updateSelective(updatable);
 		this.separateSalesRecordService.updateSelective(updatableRecord);
-		return bill.getId();
+		return registerBillItem.getId();
 
 	}
 

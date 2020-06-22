@@ -120,38 +120,41 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 
 	@Transactional
 	@Override
-	public SeparateSalesRecord createOwnedSeparateSales(RegisterBill registerBill) {
+	public SeparateSalesRecord createOwnedSeparateSales(Long billId) {
+		
+		RegisterBill registerBill=this.registerBillService.get(billId);
+		
 		SeparateSalesRecord queryCondition = new SeparateSalesRecord();
-		queryCondition.setBillId(registerBill.getId());
+		queryCondition.setBillId(billId);
 		queryCondition.setSalesType(SalesTypeEnum.OWNED.getCode());
+		
+	
 
 		SeparateSalesRecord item = this.listByExample(queryCondition).stream().findFirst()
 				.orElse(new SeparateSalesRecord());
+		
+		item.setBillId(registerBill.getId());
+		item.setRegisterBillCode(registerBill.getCode());
+		item.setSalesType(SalesTypeEnum.OWNED.getCode());
+		item.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
+		item.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
+		item.setSaleStatus(SaleStatusEnum.NONE.getCode());
+		item.setSalesWeight(registerBill.getWeight());
+		item.setStoreWeight(BigDecimal.valueOf(registerBill.getWeight()));
+		item.setSalesPlate(registerBill.getPlate());
+
+		item.setSalesUserId(registerBill.getUserId());
+		item.setSalesUserName(registerBill.getName());
+		item.setParentId(null);
+		item.setSalesPlate(registerBill.getPlate());
+		item.setModified(new Date());
 		if (item.getId() == null) {
-			item.setBillId(registerBill.getId());
-			item.setRegisterBillCode(registerBill.getCode());
-			item.setSalesWeight(registerBill.getWeight());
-			item.setStoreWeight(BigDecimal.valueOf(registerBill.getWeight()));
-			item.setSalesUserId(registerBill.getUserId());
-			item.setSalesUserName(registerBill.getName());
-
-			item.setParentId(null);
-			item.setSalesPlate(registerBill.getPlate());
 			item.setCreated(new Date());
-			item.setModified(new Date());
-
 			item.setSalesCityId(0L);
 			item.setSalesCityName("");
-			item.setSalesType(SalesTypeEnum.OWNED.getCode());
-			item.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-			item.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
-			item.setSaleStatus(SaleStatusEnum.NONE.getCode());
 			this.insertSelective(item);
 		} else {
-			item.setSalesWeight(registerBill.getWeight());
-			item.setStoreWeight(BigDecimal.valueOf(registerBill.getWeight()));
-			item.setSalesPlate(registerBill.getPlate());
-			item.setModified(new Date());
+
 			this.updateSelective(item);
 		}
 		return item;

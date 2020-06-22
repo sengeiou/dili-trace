@@ -1,13 +1,19 @@
 package com.dili.trace.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.nutz.json.Json;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
@@ -26,30 +32,38 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
+import com.dili.trace.glossary.CheckinOutTypeEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.SalesTypeEnum;
+import com.google.common.collect.Lists;
+
 import java.util.Map;
 
 public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	@Autowired
 	CheckinOutRecordService checkinOutRecordService;
 	@Autowired
-	RegisterBillService begisterBillService;
+	RegisterBillService registerBillService;
 	@Autowired
 	SeparateSalesRecordService separateSalesRecordService;
 
 	@Test
 	public void listCheckInApiListOutputPage() {
-		RegisterBillDto query=new RegisterBillDto();
+		RegisterBillDto query = new RegisterBillDto();
 		query.setUserId(1L);
 		query.setPage(1);
 		query.setRows(20);
-		BasePage<CheckInApiListOutput>out=	this.checkinOutRecordService.listCheckInApiListOutputPage(new RegisterBillDto());
+		BasePage<CheckInApiListOutput> out = this.checkinOutRecordService
+				.listCheckInApiListOutputPage(new RegisterBillDto());
 		System.out.println(out);
 	}
-@Test
+
+	@Test
 	public void doCheckin2() {
 		RegisterBill query = new RegisterBill();
 		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
@@ -65,6 +79,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 				checkInApiInput);
 		System.out.println(record.size());
 	}
+
 	@Test
 	public void doCheckin() {
 		RegisterBill query = new RegisterBill();
@@ -73,7 +88,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		query.setMetadata(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is null and `sales_type` = 0)");
 
-		List<Long> billIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId).limit(1)
+		List<Long> billIdList = this.registerBillService.listByExample(query).stream().map(RegisterBill::getId).limit(1)
 				.collect(Collectors.toList());
 		CheckInApiInput checkInApiInput = new CheckInApiInput();
 		checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
@@ -90,7 +105,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		query.setMetadata(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is not null and checkout_record_id is null and `sales_type` = 0)");
 
-		List<Long> billIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId)
+		List<Long> billIdList = this.registerBillService.listByExample(query).stream().map(RegisterBill::getId)
 				.flatMap(billId -> {
 					SeparateSalesRecord q = new SeparateSalesRecord();
 					q.setBillId(billId);
@@ -115,7 +130,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		query.setMetadata(IDTO.AND_CONDITION_EXPR,
 				"id in (select bill_id from separate_sales_record where checkin_record_id is not null  and checkout_record_id is null  and `sales_type` = 0)");
 
-		List<Long> separateSalesIdList = this.begisterBillService.listByExample(query).stream().map(RegisterBill::getId)
+		List<Long> separateSalesIdList = this.registerBillService.listByExample(query).stream().map(RegisterBill::getId)
 				.flatMap(billId -> {
 					SeparateSalesRecord q = new SeparateSalesRecord();
 					q.setBillId(billId);
@@ -132,45 +147,116 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 
 	@Test
 	public void listPagedAvailableCheckOutData() {
-		SeparateSalesRecord domain=new SeparateSalesRecord();
-		domain.setMetadata(IDTO.AND_CONDITION_EXPR,"checkin_record_id in(\n" + 
-				"		select\n" + 
-				"			id\n" + 
-				"		from\n" + 
-				"			checkinout_record\n" + 
-				"		where\n" + 
-				"			`inout` = 10\n" + 
-				"			and status = 10)\n" + 
-				"		and checkout_record_id is null");
-		 
-		
-		
-		Long userId=this.separateSalesRecordService.listByExample(domain).stream().map(SeparateSalesRecord::getSalesUserId).findFirst().orElse(null);
-		if(userId==null) {
+		SeparateSalesRecord domain = new SeparateSalesRecord();
+		domain.setMetadata(IDTO.AND_CONDITION_EXPR,
+				"checkin_record_id in(\n" + "		select\n" + "			id\n" + "		from\n"
+						+ "			checkinout_record\n" + "		where\n" + "			`inout` = 10\n"
+						+ "			and status = 10)\n" + "		and checkout_record_id is null");
+
+		Long userId = this.separateSalesRecordService.listByExample(domain).stream()
+				.map(SeparateSalesRecord::getSalesUserId).findFirst().orElse(null);
+		if (userId == null) {
 			throw new RuntimeException("没有可以查询的数据");
 		}
 		CheckoutApiListQuery query = new CheckoutApiListQuery();
 		query.setUserId(userId);
-		
 
 		BaseOutput<BasePage<DTO>> out = this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
 		System.out.println(JSON.toJSONString(out));
 	}
+
 	@Test
 	public void listPagedAvailableCheckOutData2() {
-		CheckoutApiListQuery query=new CheckoutApiListQuery();
+		CheckoutApiListQuery query = new CheckoutApiListQuery();
 		query.setUserId(1L);
 		query.setLikeProductName("abc");
-		BaseOutput<BasePage<DTO>> out=this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
-                out.getData().getDatas();
+		BaseOutput<BasePage<DTO>> out = this.checkinOutRecordService.listPagedAvailableCheckOutData(query);
+		out.getData().getDatas();
 	}
-        
-        @Test
+
+	@Test
 	public void listPagedData() {
-		CheckoutApiListQuery query=new CheckoutApiListQuery();
+		CheckoutApiListQuery query = new CheckoutApiListQuery();
 		query.setDate("2020-05-28");
-		BaseOutput<BasePage<Map<String, Object>>>  out=this.checkinOutRecordService.listPagedData(query,496L);
-                System.out.println(out.getData().getDatas());
+		BaseOutput<BasePage<Map<String, Object>>> out = this.checkinOutRecordService.listPagedData(query, 496L);
+		System.out.println(out.getData().getDatas());
+	}
+
+//	@BeforeAll
+//	public void init() {
+//
+//	}
+
+	@Test
+	@Transactional
+	public void testAll() {
+		RegisterBill query = new RegisterBill();
+		query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+		RegisterBill item = this.registerBillService.listByExample(query).stream().findFirst().orElse(null);
+		assertNotNull(item);
+		item.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
+		Long billId = this.registerBillService.doVerify(item);
+		assertNotNull(billId);
+		assertTrue(BillVerifyStatusEnum.PASSED.equalsToCode(this.registerBillService.get(billId).getVerifyStatus()));
+
+		SeparateSalesRecord sepQuery = new SeparateSalesRecord();
+		sepQuery.setBillId(billId);
+		sepQuery.setSalesType(SalesTypeEnum.OWNED.getCode());
+
+		SeparateSalesRecord separateSalesRecord = this.separateSalesRecordService.listByExample(sepQuery).stream()
+				.findFirst().orElse(null);
+		assertNotNull(separateSalesRecord);
+
+		assertEquals(separateSalesRecord.getCheckinStatus(), CheckinStatusEnum.NONE.getCode());
+		assertEquals(separateSalesRecord.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
+		assertEquals(separateSalesRecord.getSalesType(), SalesTypeEnum.OWNED.getCode());
+		assertEquals(separateSalesRecord.getSaleStatus(), SaleStatusEnum.NONE.getCode());
+
+		// ------doCheckin--------
+		CheckInApiInput checkInApiInput = new CheckInApiInput();
+		checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
+		checkInApiInput.setBillIdList(Lists.newArrayList(billId));
+		List<CheckinOutRecord> inoutList = this.checkinOutRecordService.doCheckin(new OperatorUser(1L, ""),
+				checkInApiInput);
+		assertEquals(inoutList.size(), 1);
+		CheckinOutRecord inRecord = inoutList.get(0);
+
+		separateSalesRecord = this.separateSalesRecordService.listByExample(sepQuery).stream().findFirst().orElse(null);
+		assertNotNull(separateSalesRecord);
+
+		assertEquals(separateSalesRecord.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
+		assertEquals(separateSalesRecord.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
+		assertEquals(separateSalesRecord.getSalesType(), SalesTypeEnum.OWNED.getCode());
+		assertEquals(separateSalesRecord.getSaleStatus(), SaleStatusEnum.NONE.getCode());
+		assertEquals(separateSalesRecord.getCheckinRecordId(), inRecord.getId());
+
+		assertEquals(inRecord.getInout(), CheckinOutTypeEnum.IN.getCode());
+		assertEquals(inRecord.getStatus(), CheckinStatusEnum.ALLOWED.getCode());
+		assertEquals(inRecord.getSeperateSalesId(), separateSalesRecord.getId());
+
+		// ------doManullyCheck--------
+		ManullyCheckInput inputCheckInput = new ManullyCheckInput();
+		inputCheckInput.setBillId(billId);
+		inputCheckInput.setPass(true);
+		this.checkinOutRecordService.doManullyCheck(new OperatorUser(1L, ""), inputCheckInput);
+		separateSalesRecord = this.separateSalesRecordService.listByExample(sepQuery).stream().findFirst().orElse(null);
+		assertNotNull(separateSalesRecord);
+		assertEquals(separateSalesRecord.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
+		assertEquals(separateSalesRecord.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
+		assertEquals(separateSalesRecord.getSalesType(), SalesTypeEnum.OWNED.getCode());
+		assertEquals(separateSalesRecord.getSaleStatus(), SaleStatusEnum.FOR_SALE.getCode());
+		// ====================
+		CheckOutApiInput checkOutApiInput = new CheckOutApiInput();
+		checkOutApiInput.setCheckoutStatus(CheckoutStatusEnum.ALLOWED.getCode());
+		checkOutApiInput.setSeparateSalesIdList(Lists.newArrayList(separateSalesRecord.getId()));
+		List<CheckinOutRecord> outlist = this.checkinOutRecordService.doCheckout(new OperatorUser(1L, ""),
+				checkOutApiInput);
+		assertEquals(outlist.size(), 1);
+		CheckinOutRecord outrecord = outlist.get(0);
+		assertEquals(outrecord.getInout(), CheckinOutTypeEnum.OUT.getCode());
+		assertEquals(outrecord.getStatus(), CheckoutStatusEnum.ALLOWED.getCode());
+		assertEquals(outrecord.getSeperateSalesId(), separateSalesRecord.getId());
+
 	}
 
 }

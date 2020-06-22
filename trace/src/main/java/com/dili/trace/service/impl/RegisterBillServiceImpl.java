@@ -1124,10 +1124,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new BusinessException("当前状态不能进行数据操作");
 		}
 		RegisterBill registerBill = new RegisterBill();
-		registerBill.setId(item.getId());
+		registerBill.setId(billId);
 		registerBill.setVerifyStatus(verifyState.getCode());
 		if(BillVerifyStatusEnum.PASSED==verifyState) {
-			this.separateSalesRecordService.createOwnedSeparateSales(registerBill);
+			this.separateSalesRecordService.createOwnedSeparateSales(billId);
 		}
 		
 		this.updateSelective(registerBill);

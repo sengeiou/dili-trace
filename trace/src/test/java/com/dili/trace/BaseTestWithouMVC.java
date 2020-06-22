@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.servlet.ServletContext;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
@@ -52,8 +53,9 @@ import mockit.MockUp;
 // })
 @EnableTransactionManagement
 //@Transactional
-@Transactional(propagation = Propagation.NEVER)
+@Transactional(propagation = Propagation.REQUIRED)
 @Rollback
+//@TestInstance()
 public class BaseTestWithouMVC {
 	protected static final Logger logger = LoggerFactory.getLogger(BaseTestWithouMVC.class);
 	@MockBean
