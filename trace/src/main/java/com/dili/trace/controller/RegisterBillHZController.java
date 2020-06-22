@@ -26,9 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.exception.AppException;
 import com.dili.trace.api.dto.CheckInApiInput;
-import com.dili.trace.api.dto.ManullyCheckInput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
@@ -238,34 +236,34 @@ public class RegisterBillHZController {
 	@RequestMapping(value = "/doManullyCheck.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput<?> doManullyCheck(@RequestBody ManullyCheckInputDto inputDto) {
-		try {
-			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-			if (null == userTicket) {
-				return BaseOutput.failure("未登录或登录过期");
-			}
-			if (inputDto == null || inputDto.getBillId() == null || inputDto.getPass() == null) {
-				return BaseOutput.failure("参数错误");
-			}
-			RegisterBill bill = this.registerBillService.get(inputDto.getBillId());
-			if (bill == null) {
-				return BaseOutput.failure("数据错误");
-			}
-			if (!RegisterBillStateEnum.WAIT_CHECK.getCode().equals(bill.getState())) {
-				return BaseOutput.failure("登记单状态错误");
-			}
-			 ManullyCheckInput input=new ManullyCheckInput();
-			 input.setBillId(inputDto.getBillId());
-			 input.setPass(inputDto.getPass());
-			this.checkinOutRecordService.doManullyCheck(new OperatorUser(userTicket.getId(),userTicket.getRealName()), input);RegisterBill updatable = new RegisterBill();
+//		try {
+//			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+//			if (null == userTicket) {
+//				return BaseOutput.failure("未登录或登录过期");
+//			}
+//			if (inputDto == null || inputDto.getBillId() == null || inputDto.getPass() == null) {
+//				return BaseOutput.failure("参数错误");
+//			}
+//			RegisterBill bill = this.registerBillService.get(inputDto.getBillId());
+//			if (bill == null) {
+//				return BaseOutput.failure("数据错误");
+//			}
+//			if (!RegisterBillStateEnum.WAIT_CHECK.getCode().equals(bill.getState())) {
+//				return BaseOutput.failure("登记单状态错误");
+//			}
+//			 ManullyCheckInput input=new ManullyCheckInput();
+//			 input.setBillId(inputDto.getBillId());
+//			 input.setPass(inputDto.getPass());
+//			this.checkinOutRecordService.doManullyCheck(new OperatorUser(userTicket.getId(),userTicket.getRealName()), input);RegisterBill updatable = new RegisterBill();
 			
 			return BaseOutput.success();
-		} catch (AppException e) {
-			LOGGER.error(e.getMessage(), e);
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-			return BaseOutput.failure("服务端出错");
-		}
+//		} catch (AppException e) {
+//			LOGGER.error(e.getMessage(), e);
+//			return BaseOutput.failure(e.getMessage());
+//		} catch (Exception e) {
+//			LOGGER.error(e.getMessage(), e);
+//			return BaseOutput.failure("服务端出错");
+//		}
 
 	}
 

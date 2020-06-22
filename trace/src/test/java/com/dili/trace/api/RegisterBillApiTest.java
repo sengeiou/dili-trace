@@ -72,7 +72,7 @@ public class RegisterBillApiTest extends AutoWiredBaseTest {
 		query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 		RegisterBill input = registerBillService.listByExample(query).stream().findFirst().orElse(null);
 		input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-		BaseOutput<Long> out = this.registerBillApi.doVerify(input);
-		System.out.println(out);
+//		BaseOutput<Long> out = this.registerBillApi.doVerify(input);
+//		System.out.println(out);
 	}
 }

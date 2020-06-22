@@ -1,4 +1,4 @@
-package com.dili.trace.api;
+package com.dili.trace.api.client;
 
 import java.util.List;
 
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.RegisterBill;
@@ -40,14 +39,14 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * Created by laikui on 2019/7/26.
+ * Created by wangguofeng
  */
 @RestController
-@RequestMapping(value = "/api/bill")
-@Api(value = "/api/bill", description = "登记单相关接口")
+@RequestMapping(value = "/api/client/clientRegisterBill")
+@Api(value = "/api/client/clientRegisterBill", description = "登记单相关接口")
 @InterceptConfiguration
-public class RegisterBillApi {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillApi.class);
+public class ClientRegisterBillApi {
+	private static final Logger logger = LoggerFactory.getLogger(ClientRegisterBillApi.class);
 	@Autowired
 	private RegisterBillService registerBillService;
 	@Autowired
@@ -70,7 +69,7 @@ public class RegisterBillApi {
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createList", method = RequestMethod.POST)
 	public BaseOutput createList(@RequestBody CreateListBillParam createListBillParam) {
-		LOGGER.info("保存多个登记单:");
+		logger.info("保存多个登记单:");
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
@@ -79,9 +78,9 @@ public class RegisterBillApi {
 		if (registerBills == null) {
 			return BaseOutput.failure("没有登记单");
 		}
-		LOGGER.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
+		logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
 		for (RegisterBill registerBill : registerBills) {
-			LOGGER.info("循环保存登记单:" + JSON.toJSONString(registerBill));
+			logger.info("循环保存登记单:" + JSON.toJSONString(registerBill));
 			registerBill.setOperatorName(user.getName());
 			registerBill.setOperatorId(user.getId());
 			registerBill.setUserId(user.getId());
@@ -109,12 +108,12 @@ public class RegisterBillApi {
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	// @InterceptConfiguration(loginRequired=false)
 	public BaseOutput<EasyuiPageOutput> list(@RequestBody RegisterBillDto registerBill) throws Exception {
-		LOGGER.info("获取登记单列表:" + JSON.toJSON(registerBill).toString());
+		logger.info("获取登记单列表:" + JSON.toJSON(registerBill).toString());
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		LOGGER.info("获取登记单列表 操作用户:" + JSON.toJSONString(user));
+		logger.info("获取登记单列表 操作用户:" + JSON.toJSONString(user));
 		registerBill.setUserId(user.getId());
 		if (StringUtils.isBlank(registerBill.getOrder())) {
 			registerBill.setOrder("desc");
@@ -129,14 +128,14 @@ public class RegisterBillApi {
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
 	@RequestMapping(value = "id/{id}", method = RequestMethod.GET)
 	public BaseOutput<RegisterBillOutputDto> getRegisterBill(@PathVariable Long id) {
-		LOGGER.info("获取登记单:" + id);
+		logger.info("获取登记单:" + id);
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
 		RegisterBill registerBill = registerBillService.get(id);
 		if (registerBill == null) {
-			LOGGER.error("获取登记单失败id:" + id);
+			logger.error("获取登记单失败id:" + id);
 			return BaseOutput.failure();
 		}
 		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
@@ -147,14 +146,14 @@ public class RegisterBillApi {
 	@ApiOperation(value = "通过登记单编号获取登记单详细信息")
 	@RequestMapping(value = "/code/{code}", method = RequestMethod.GET)
 	public BaseOutput<RegisterBillOutputDto> getRegisterBillByCode(@PathVariable String code) {
-		LOGGER.info("获取登记单:" + code);
+		logger.info("获取登记单:" + code);
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
 		RegisterBill registerBill = registerBillService.findByCode(code);
 		if (registerBill == null) {
-			LOGGER.error("获取登记单失败code:" + code);
+			logger.error("获取登记单失败code:" + code);
 			return BaseOutput.failure();
 		}
 		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
@@ -165,7 +164,7 @@ public class RegisterBillApi {
 	@ApiOperation(value = "通过分销记录ID获取分销单")
 	@RequestMapping(value = "/salesRecordId/{salesRecordId}", method = RequestMethod.GET)
 	public BaseOutput<SeparateSalesRecord> getSeparateSalesRecord(@PathVariable Long salesRecordId) {
-		LOGGER.info("获取分销记录:" + salesRecordId);
+		logger.info("获取分销记录:" + salesRecordId);
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
@@ -177,7 +176,7 @@ public class RegisterBillApi {
 	@ApiOperation(value = "通过登记单商品名获取登记单", httpMethod = "GET", notes = "productName=?")
 	@RequestMapping(value = "/productName/{productName}", method = RequestMethod.GET)
 	public BaseOutput<List<RegisterBill>> getBillByProductName(@PathVariable String productName) {
-		LOGGER.info("获取登记单&分销记录:" + productName);
+		logger.info("获取登记单&分销记录:" + productName);
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
@@ -189,7 +188,7 @@ public class RegisterBillApi {
 	@ApiOperation(value = "通过code删除登记单", httpMethod = "GET", notes = "productName=?")
 	@RequestMapping(value = "/deleteRegisterBillByCode/{registerBillCode}", method = RequestMethod.GET)
 	public BaseOutput<Object> deleteRegisterBillByCode(@PathVariable String registerBillCode) {
-		LOGGER.info("通过code删除登记单:{}", registerBillCode);
+		logger.info("通过code删除登记单:{}", registerBillCode);
 		User user = userService.get(sessionContext.getAccountId());
 		if (StringUtils.isBlank(registerBillCode)) {
 			return BaseOutput.failure("参数错误");

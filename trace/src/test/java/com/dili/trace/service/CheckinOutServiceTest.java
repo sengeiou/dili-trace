@@ -1,7 +1,6 @@
 package com.dili.trace.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -11,16 +10,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.reactive.TransactionContext;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
@@ -32,7 +27,6 @@ import com.dili.trace.api.dto.CheckInApiInput;
 import com.dili.trace.api.dto.CheckInApiListOutput;
 import com.dili.trace.api.dto.CheckOutApiInput;
 import com.dili.trace.api.dto.CheckoutApiListQuery;
-import com.dili.trace.api.dto.ManullyCheckInput;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
@@ -138,10 +132,10 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		if (billIdList.size() == 0) {
 			throw new RuntimeException("没有数据可以测试");
 		}
-		ManullyCheckInput input = new ManullyCheckInput();
-		input.setPass(true);
-		input.setBillId(billIdList.get(0));
-		this.checkinOutRecordService.doManullyCheck(new OperatorUser(2222L, "wangguofeng"), input);
+//		ManullyCheckInput input = new ManullyCheckInput();
+//		input.setPass(true);
+//		input.setBillId(billIdList.get(0));
+//		this.checkinOutRecordService.doManullyCheck(new OperatorUser(2222L, "wangguofeng"), input);
 	}
 
 	@Test
@@ -162,7 +156,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 				}).map(SeparateSalesRecord::getId).filter(Objects::nonNull).limit(1).collect(Collectors.toList());
 		CheckOutApiInput checkInApiInput = new CheckOutApiInput();
 		checkInApiInput.setCheckoutStatus(CheckoutStatusEnum.ALLOWED.getCode());
-		checkInApiInput.setSeparateSalesIdList(separateSalesIdList);
+//		checkInApiInput.setSeparateSalesIdList(separateSalesIdList);
 		List<CheckinOutRecord> record = this.checkinOutRecordService.doCheckout(new OperatorUser(3333L, "wangguofeng"),
 				checkInApiInput);
 		System.out.println(record.size());
@@ -263,12 +257,12 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		assertEquals(inRecord.getInout(), CheckinOutTypeEnum.IN.getCode());
 		assertEquals(inRecord.getStatus(), CheckinStatusEnum.ALLOWED.getCode());
 		assertEquals(inRecord.getTradeDetailId(), tradeDetailItem.getId());
-
-		// ------doManullyCheck--------
-		ManullyCheckInput inputCheckInput = new ManullyCheckInput();
-		inputCheckInput.setBillId(billId);
-		inputCheckInput.setPass(true);
-		this.checkinOutRecordService.doManullyCheck(new OperatorUser(1L, ""), inputCheckInput);
+//
+//		// ------doManullyCheck--------
+//		ManullyCheckInput inputCheckInput = new ManullyCheckInput();
+//		inputCheckInput.setBillId(billId);
+//		inputCheckInput.setPass(true);
+//		this.checkinOutRecordService.doManullyCheck(new OperatorUser(1L, ""), inputCheckInput);
 		tradeDetailItem = this.tradeDetailService.listByExample(sepQuery).stream().findFirst().orElse(null);
 		assertNotNull(tradeDetailItem);
 		assertEquals(tradeDetailItem.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
@@ -278,7 +272,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		// ====================
 		CheckOutApiInput checkOutApiInput = new CheckOutApiInput();
 		checkOutApiInput.setCheckoutStatus(CheckoutStatusEnum.ALLOWED.getCode());
-		checkOutApiInput.setSeparateSalesIdList(Lists.newArrayList(tradeDetailItem.getId()));
+//		checkOutApiInput.setSeparateSalesIdList(Lists.newArrayList(tradeDetailItem.getId()));
 		List<CheckinOutRecord> outlist = this.checkinOutRecordService.doCheckout(new OperatorUser(1L, ""),
 				checkOutApiInput);
 		assertEquals(outlist.size(), 1);

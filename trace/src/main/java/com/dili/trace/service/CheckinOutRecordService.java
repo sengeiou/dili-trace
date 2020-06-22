@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,11 +26,9 @@ import com.dili.trace.api.dto.CheckInApiListOutput;
 import com.dili.trace.api.dto.CheckOutApiInput;
 import com.dili.trace.api.dto.CheckoutApiDetailOutput;
 import com.dili.trace.api.dto.CheckoutApiListQuery;
-import com.dili.trace.api.dto.ManullyCheckInput;
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
@@ -70,7 +67,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	@Transactional
 	public List<CheckinOutRecord> doCheckout(OperatorUser operateUser, CheckOutApiInput checkOutApiInput) {
-		if (checkOutApiInput == null || checkOutApiInput.getSeparateSalesIdList() == null
+		if (checkOutApiInput == null || checkOutApiInput.getTradeDetailIdList() == null
 				|| checkOutApiInput.getCheckoutStatus() == null) {
 			throw new BusinessException("参数错误");
 		}
@@ -79,7 +76,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (checkoutStatusEnum == null) {
 			throw new BusinessException("参数错误");
 		}
-		StreamEx.of(checkOutApiInput.getSeparateSalesIdList()).nonNull().map(id -> {
+		return StreamEx.of(checkOutApiInput.getTradeDetailIdList()).nonNull().map(id -> {
 			TradeDetail record= this.tradeInfoService.get(id);
 			if(record==null) {
 				throw new BusinessException("请求出门的数据不存在"); 
@@ -122,64 +119,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			updatable.setCheckoutStatus(checkoutStatusEnum.getCode());
 			this.tradeInfoService.updateSelective(updatable);
 			return checkoutRecord;
-		});
-		List<TradeDetail> recordList = checkOutApiInput.getSeparateSalesIdList().stream().map(id -> {
+		}).toList();
 
-			TradeDetail record = this.tradeInfoService.get(id);
-			return record;
-		}).filter(Objects::nonNull).collect(Collectors.toList());
-		if (recordList.isEmpty()) {
-			throw new BusinessException("没有可以出场的交易单");
-		}
-//		List<Long> billList = recordList.stream().map(SeparateSalesRecord::getBillId).filter(billid -> {
-//
-//			RegisterBill registerBill = this.registerBillService.get(billid);
-//			if (registerBill == null) {
-//				return false;
-//			}
-//			if (!RegisterBillStateEnum.ALREADY_CHECK.getCode().equals(registerBill.getState())) {
-//				return false;
-//			}
-//			if (BillDetectStateEnum.PASS.getCode().equals(registerBill.getDetectState())
-//					|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(registerBill.getDetectState())) {
-//				return true;
-//			}
-//			
-//			return false;
-//
-//		}).collect(Collectors.toList());
-//
-//		if (billList.size() != checkOutApiInput.getSeparateSalesIdList().size()) {
-//			throw new BusinessException("部分交易单不能出门，请重新确认");
-//		}
-
-		return recordList.stream().map(tradeDetailItem -> {
-			RegisterBill registerBillItem = this.registerBillService.get(tradeDetailItem.getBillId());
-			User userItem = this.userService.get(registerBillItem.getUserId());
-			
-			CheckinOutRecord checkoutRecord = new CheckinOutRecord();
-			checkoutRecord.setUserName(userItem.getName());
-			
-			checkoutRecord.setStatus(checkoutStatusEnum.getCode());
-			checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
-			checkoutRecord.setProductName(registerBillItem.getProductName());
-			checkoutRecord.setInoutWeight(tradeDetailItem.getTradeWeight());
-
-
-			checkoutRecord.setOperatorId(operateUser.getId());
-			checkoutRecord.setOperatorName(operateUser.getName());
-			checkoutRecord.setRemark(checkOutApiInput.getRemark());
-			checkoutRecord.setCreated(new Date());
-			checkoutRecord.setModified(new Date());
-			checkoutRecord.setTradeDetailId(tradeDetailItem.getId());
-			this.insertSelective(checkoutRecord);
-
-			TradeDetail updatable = new TradeDetail();
-			updatable.setId(tradeDetailItem.getId());
-			updatable.setCheckoutRecordId(checkoutRecord.getId());
-			this.tradeInfoService.updateSelective(updatable);
-			return checkoutRecord;
-		}).collect(Collectors.toList());
 
 	}
 
@@ -188,10 +129,10 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	@Transactional
 	public List<CheckinOutRecord> doCheckin(OperatorUser operateUser, CheckInApiInput checkInApiInput) {
 		if (checkInApiInput == null || checkInApiInput.getBillIdList() == null
-				|| checkInApiInput.getCheckinStatus() == null) {
+				) {
 			throw new BusinessException("参数错误");
 		}
-		CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.fromCode(checkInApiInput.getCheckinStatus());
+		CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.ALLOWED;//.fromCode(checkInApiInput.getCheckinStatus());
 
 		if (checkinStatusEnum == null) {
 			throw new BusinessException("参数错误");
@@ -250,20 +191,21 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			updatableBill.setId(registerBillItem.getId());
 			updatableBill.setSampleCode(codeGenerateService.nextSampleCode());
 
-			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-				updatableBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
-			} else if (CheckinStatusEnum.NOTALLOWED == checkinStatusEnum) {
-				updatableBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-				updatableBill.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
-				updatableBill.setLatestPdResult("0%");
-				updatableBill.setLatestDetectTime(new Date());
-				updatableBill.setLatestDetectOperator(operateUser.getName());
+//			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
+//				updatableBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+//			} else if (CheckinStatusEnum.NOTALLOWED == checkinStatusEnum) {
+//				updatableBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+//				updatableBill.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
+//				updatableBill.setLatestPdResult("0%");
+//				updatableBill.setLatestDetectTime(new Date());
+//				updatableBill.setLatestDetectOperator(operateUser.getName());
 
-			} else {
-				throw new BusinessException("进门状态错误");
-			}
-
+//			} else {
+//				throw new BusinessException("进门状态错误");
+//			}
+		
 			this.registerBillService.updateSelective(updatableBill);
+			this.doUpdateSaleStatus(operateUser, registerBillItem.getId());
 			this.tradeInfoService.updateSelective(updatableRecord);
 			return checkinRecord;
 
@@ -271,18 +213,15 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	}
 
-	@Transactional
-	public Long doManullyCheck(OperatorUser operateUser, ManullyCheckInput input) {
-		if (input == null || input.getBillId() == null || input.getPass() == null) {
-			throw new BusinessException("参数错误");
-		}
-		RegisterBill registerBillItem = this.registerBillService.get(input.getBillId());
+	private Long doUpdateSaleStatus(OperatorUser operateUser, Long billId) {
+
+		RegisterBill registerBillItem = this.registerBillService.get(billId);
 		if (registerBillItem == null) {
 			throw new BusinessException("没有找到登记单");
 		}
 		
 		TradeDetail queryCondition = new TradeDetail();
-		queryCondition.setBillId(input.getBillId());
+		queryCondition.setBillId(billId);
 		queryCondition.setTradeType(TradeTypeEnum.NONE.getCode());
 		TradeDetail tradeInfoItem =  this.tradeInfoService.listByExample(queryCondition).stream().findFirst().orElse(null);
 	
@@ -302,34 +241,23 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		updatableRecord.setId(tradeInfoItem.getId());
 		updatableRecord.setModified(new Date());
 
-		RegisterBill updatable = new RegisterBill();
-		updatable.setId(registerBillItem.getId());
-		updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-		if (input.getPass()) {
-			updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-			if (registerBillItem.getDetectState() != null) {
-				updatable.setDetectState(BillDetectStateEnum.REVIEW_PASS.getCode());
-			} else {
-				updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
-			}
-			updatable.setLatestPdResult("100%");
-			updatable.setLatestDetectTime(new Date());
-			updatable.setLatestDetectOperator(operateUser.getName());
-		} else {
-			updatableRecord.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
-			if (registerBillItem.getDetectState() != null) {
-				updatable.setDetectState(BillDetectStateEnum.REVIEW_NO_PASS.getCode());
-			} else {
-				updatable.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
-			}
-			updatable.setLatestPdResult("0%");
-			updatable.setLatestDetectTime(new Date());
-			updatable.setLatestDetectOperator(operateUser.getName());
-		}
-		updatable.setLatestDetectTime(new Date());
-		updatable.setLatestDetectOperator("管理员");
+//		RegisterBill updatable = new RegisterBill();
+//		updatable.setId(registerBillItem.getId());
+//		updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+		updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+//		if (registerBillItem.getDetectState() != null) {
+//			updatable.setDetectState(BillDetectStateEnum.REVIEW_PASS.getCode());
+//		} else {
+//			updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
+//		}
+//		updatable.setLatestPdResult("100%");
+//		updatable.setLatestDetectTime(new Date());
+//		updatable.setLatestDetectOperator(operateUser.getName());
+//		
+//		updatable.setLatestDetectTime(new Date());
+//		updatable.setLatestDetectOperator("管理员");
 
-		this.registerBillService.updateSelective(updatable);
+//		this.registerBillService.updateSelective(updatable);
 		this.tradeInfoService.updateSelective(updatableRecord);
 		return registerBillItem.getId();
 

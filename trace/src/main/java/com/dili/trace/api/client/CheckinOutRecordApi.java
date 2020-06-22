@@ -1,4 +1,4 @@
-package com.dili.trace.api;
+package com.dili.trace.api.client;
 
 import java.util.List;
 import java.util.Map;
@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
@@ -35,13 +33,11 @@ import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 
-import io.swagger.annotations.Api;
-
-@SuppressWarnings("deprecation")
-@Api(value = "/api/checkinRecordApi")
-@RestController
-@InterceptConfiguration
-@RequestMapping(value = "/api/checkinRecordApi")
+//@SuppressWarnings("deprecation")
+//@Api(value = "/api/client/clientCheckinRecordApi")
+//@RestController
+//@InterceptConfiguration
+//@RequestMapping(value = "/api/client/clientCheckinRecordApi")
 public class CheckinOutRecordApi {
 	private static final Logger logger = LoggerFactory.getLogger(CheckinOutRecordApi.class);
 	@Resource
@@ -137,27 +133,7 @@ public class CheckinOutRecordApi {
 
 	}
 
-//	/**
-//	 * 合格/不合格
-//	 */
-//	@SuppressWarnings("unchecked")
-//	@RequestMapping(value = "/doManullyCheck.api", method = { RequestMethod.POST, RequestMethod.GET })
-//	public BaseOutput<Long> doManullyCheck(@RequestBody ManullyCheckInput input) {
-//		if (sessionContext.getAccountId() == null) {
-//			return BaseOutput.failure("未登陆用户");
-//		}
-//		try {
-//			Long billId = this.checkinOutRecordService
-//					.doManullyCheck(new OperatorUser(sessionContext.getAccountId(), ""), input);
-//			return BaseOutput.success().setData(billId);
-//		} catch (BusinessException e) {
-//
-//			return BaseOutput.failure(e.getMessage());
-//		} catch (Exception e) {
-//			logger.error(e.getMessage(), e);
-//			return BaseOutput.failure("服务端出错");
-//		}
-//	}
+	
 
 	/**
 	 * 分页查询需要出场查询的信息
