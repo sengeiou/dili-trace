@@ -86,38 +86,7 @@ public class SeparateSalesRecord extends BaseDomain {
 	@Column(name = "`checkout_record_id`")
 	private Long checkoutRecordId;
 
-	@Column(name = "`checkin_status`")
-	private Integer checkinStatus;
 
-	@Column(name = "`checkout_status`")
-	private Integer checkoutStatus;
-
-	@Column(name = "`sale_status`")
-	private Integer saleStatus;
-
-	public Integer getCheckinStatus() {
-		return checkinStatus;
-	}
-
-	public void setCheckinStatus(Integer checkinStatus) {
-		this.checkinStatus = checkinStatus;
-	}
-
-	public Integer getCheckoutStatus() {
-		return checkoutStatus;
-	}
-
-	public void setCheckoutStatus(Integer checkoutStatus) {
-		this.checkoutStatus = checkoutStatus;
-	}
-
-	public Integer getSaleStatus() {
-		return saleStatus;
-	}
-
-	public void setSaleStatus(Integer saleStatus) {
-		this.saleStatus = saleStatus;
-	}
 
 	public Long getId() {
 		return id;

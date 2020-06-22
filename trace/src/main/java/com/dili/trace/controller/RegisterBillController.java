@@ -1,28 +1,14 @@
 package com.dili.trace.controller;
 
-import com.dili.common.service.BaseInfoRpcService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
-import com.dili.ss.exception.AppException;
-import com.dili.ss.util.DateUtils;
-import com.dili.trace.domain.*;
-import com.dili.trace.dto.*;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.glossary.SalesTypeEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.*;
-import com.dili.trace.util.MaskUserInfo;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,11 +17,55 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.dili.common.service.BaseInfoRpcService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.AppException;
+import com.dili.ss.util.DateUtils;
+import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.domain.QualityTraceTradeBill;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.TradeType;
+import com.dili.trace.domain.UpStream;
+import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
+import com.dili.trace.domain.UsualAddress;
+import com.dili.trace.dto.BatchAuditDto;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.dto.RegisterBillStaticsDto;
+import com.dili.trace.dto.UserInfoDto;
+import com.dili.trace.enums.TradeTypeEnum;
+import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.service.CustomerService;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.QualityTraceTradeBillService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.TradeTypeService;
+import com.dili.trace.service.UpStreamService;
+import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserService;
+import com.dili.trace.service.UsualAddressService;
+import com.dili.trace.util.MaskUserInfo;
+import com.diligrp.manage.sdk.domain.UserTicket;
+import com.diligrp.manage.sdk.session.SessionContext;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -204,13 +234,9 @@ public class RegisterBillController {
 		}
 		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
 			// 分销信息
-			if (registerBill.getSalesType() != null
-					&& registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
-				// 分销
-				List<SeparateSalesRecord> records = separateSalesRecordService
-						.findByRegisterBillCode(registerBill.getCode());
-				modelMap.put("separateSalesRecords", records);
-			}
+			
+				modelMap.put("separateSalesRecords", Collections.emptyList());
+		
 		} else {
 			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
 			condition.setRegisterBillCode(registerBill.getCode());
@@ -267,13 +293,9 @@ public class RegisterBillController {
 		}
 		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
 			// 分销信息
-			if (registerBill.getSalesType() != null
-					&& registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
-				// 分销
-				List<SeparateSalesRecord> records = separateSalesRecordService
-						.findByRegisterBillCode(registerBill.getCode());
-				modelMap.put("separateSalesRecords", records);
-			}
+			
+			modelMap.put("separateSalesRecords", Collections.emptyList());
+		
 		} else {
 			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
 			condition.setRegisterBillCode(registerBill.getCode());
@@ -301,13 +323,7 @@ public class RegisterBillController {
 		}
 		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
 			// 分销信息
-			if (registerBill.getSalesType() != null
-					&& registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
-				// 分销
-				List<SeparateSalesRecord> records = separateSalesRecordService
-						.findByRegisterBillCode(registerBill.getCode());
-				modelMap.put("separateSalesRecords", records);
-			}
+			modelMap.put("separateSalesRecords", Collections.emptyList());
 		} else {
 			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
 			condition.setRegisterBillCode(registerBill.getCode());

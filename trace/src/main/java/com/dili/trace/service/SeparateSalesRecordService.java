@@ -26,9 +26,6 @@ public interface SeparateSalesRecordService extends BaseService<SeparateSalesRec
 
     public EasyuiPageOutput listPageByQueryInput(SeparateSalesApiListQueryInput queryInput) throws Exception;
 
-    public SeparateSalesRecord createOwnedSeparateSales(Long billId);
-    
-	public List<Long> createSeparateSalesRecordList(SeparateSalesInputDTO input, User sellerUser) ;
     
     public int deleteSeparateSalesRecordByBillId(Long billId);
 

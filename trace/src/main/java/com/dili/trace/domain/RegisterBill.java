@@ -82,9 +82,9 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`state`")
 	private Integer state;
 
-	@ApiModelProperty(value = "1.分销 2.全销")
-	@Column(name = "`sales_type`")
-	private Integer salesType;
+//	@ApiModelProperty(value = "1.分销 2.全销")
+//	@Column(name = "`sales_type`")
+//	private Integer salesType;
 
 	@ApiModelProperty(value = "1:采样检测 2:主动送检")
 	@Column(name = "`sample_source`")
@@ -340,13 +340,13 @@ public class RegisterBill extends BaseDomain {
 		this.state = state;
 	}
 
-	public Integer getSalesType() {
-		return salesType;
-	}
-
-	public void setSalesType(Integer salesType) {
-		this.salesType = salesType;
-	}
+//	public Integer getSalesType() {
+//		return salesType;
+//	}
+//
+//	public void setSalesType(Integer salesType) {
+//		this.salesType = salesType;
+//	}
 
 	public Integer getSampleSource() {
 		return sampleSource;

@@ -6,12 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.nutz.json.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTO;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.dto.CheckInApiInput;
@@ -30,19 +28,18 @@ import com.dili.trace.api.dto.ManullyCheckInput;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
+import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.CheckinOutTypeEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.SalesTypeEnum;
 import com.google.common.collect.Lists;
-
-import java.util.Map;
 
 public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	@Autowired
@@ -51,7 +48,8 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	RegisterBillService registerBillService;
 	@Autowired
 	SeparateSalesRecordService separateSalesRecordService;
-
+	@Autowired
+	TradeDetailService tradeDetailService;
 	@Test
 	public void listCheckInApiListOutputPage() {
 		RegisterBillDto query = new RegisterBillDto();
@@ -199,18 +197,18 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		assertNotNull(billId);
 		assertTrue(BillVerifyStatusEnum.PASSED.equalsToCode(this.registerBillService.get(billId).getVerifyStatus()));
 
-		SeparateSalesRecord sepQuery = new SeparateSalesRecord();
+		TradeDetail sepQuery = new TradeDetail();
 		sepQuery.setBillId(billId);
-		sepQuery.setSalesType(SalesTypeEnum.OWNED.getCode());
+		sepQuery.setTradeType(TradeTypeEnum.NONE.getCode());
 
-		SeparateSalesRecord separateSalesRecord = this.separateSalesRecordService.listByExample(sepQuery).stream()
+		TradeDetail tradeDetailItem = this.tradeDetailService.listByExample(sepQuery).stream()
 				.findFirst().orElse(null);
-		assertNotNull(separateSalesRecord);
+		assertNotNull(tradeDetailItem);
 
-		assertEquals(separateSalesRecord.getCheckinStatus(), CheckinStatusEnum.NONE.getCode());
-		assertEquals(separateSalesRecord.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
-		assertEquals(separateSalesRecord.getSalesType(), SalesTypeEnum.OWNED.getCode());
-		assertEquals(separateSalesRecord.getSaleStatus(), SaleStatusEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getCheckinStatus(), CheckinStatusEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getTradeType(), TradeTypeEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getSaleStatus(), SaleStatusEnum.NONE.getCode());
 
 		// ------doCheckin--------
 		CheckInApiInput checkInApiInput = new CheckInApiInput();
@@ -221,41 +219,41 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		assertEquals(inoutList.size(), 1);
 		CheckinOutRecord inRecord = inoutList.get(0);
 
-		separateSalesRecord = this.separateSalesRecordService.listByExample(sepQuery).stream().findFirst().orElse(null);
-		assertNotNull(separateSalesRecord);
+		tradeDetailItem = this.tradeDetailService.listByExample(sepQuery).stream().findFirst().orElse(null);
+		assertNotNull(tradeDetailItem);
 
-		assertEquals(separateSalesRecord.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
-		assertEquals(separateSalesRecord.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
-		assertEquals(separateSalesRecord.getSalesType(), SalesTypeEnum.OWNED.getCode());
-		assertEquals(separateSalesRecord.getSaleStatus(), SaleStatusEnum.NONE.getCode());
-		assertEquals(separateSalesRecord.getCheckinRecordId(), inRecord.getId());
+		assertEquals(tradeDetailItem.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
+		assertEquals(tradeDetailItem.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getTradeType(), TradeTypeEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getSaleStatus(), SaleStatusEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getCheckinRecordId(), inRecord.getId());
 
 		assertEquals(inRecord.getInout(), CheckinOutTypeEnum.IN.getCode());
 		assertEquals(inRecord.getStatus(), CheckinStatusEnum.ALLOWED.getCode());
-		assertEquals(inRecord.getSeperateSalesId(), separateSalesRecord.getId());
+		assertEquals(inRecord.getTradeDetailId(), tradeDetailItem.getId());
 
 		// ------doManullyCheck--------
 		ManullyCheckInput inputCheckInput = new ManullyCheckInput();
 		inputCheckInput.setBillId(billId);
 		inputCheckInput.setPass(true);
 		this.checkinOutRecordService.doManullyCheck(new OperatorUser(1L, ""), inputCheckInput);
-		separateSalesRecord = this.separateSalesRecordService.listByExample(sepQuery).stream().findFirst().orElse(null);
-		assertNotNull(separateSalesRecord);
-		assertEquals(separateSalesRecord.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
-		assertEquals(separateSalesRecord.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
-		assertEquals(separateSalesRecord.getSalesType(), SalesTypeEnum.OWNED.getCode());
-		assertEquals(separateSalesRecord.getSaleStatus(), SaleStatusEnum.FOR_SALE.getCode());
+		tradeDetailItem = this.tradeDetailService.listByExample(sepQuery).stream().findFirst().orElse(null);
+		assertNotNull(tradeDetailItem);
+		assertEquals(tradeDetailItem.getCheckinStatus(), CheckinStatusEnum.ALLOWED.getCode());
+		assertEquals(tradeDetailItem.getCheckoutStatus(), CheckoutStatusEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getTradeType(), TradeTypeEnum.NONE.getCode());
+		assertEquals(tradeDetailItem.getSaleStatus(), SaleStatusEnum.FOR_SALE.getCode());
 		// ====================
 		CheckOutApiInput checkOutApiInput = new CheckOutApiInput();
 		checkOutApiInput.setCheckoutStatus(CheckoutStatusEnum.ALLOWED.getCode());
-		checkOutApiInput.setSeparateSalesIdList(Lists.newArrayList(separateSalesRecord.getId()));
+		checkOutApiInput.setSeparateSalesIdList(Lists.newArrayList(tradeDetailItem.getId()));
 		List<CheckinOutRecord> outlist = this.checkinOutRecordService.doCheckout(new OperatorUser(1L, ""),
 				checkOutApiInput);
 		assertEquals(outlist.size(), 1);
 		CheckinOutRecord outrecord = outlist.get(0);
 		assertEquals(outrecord.getInout(), CheckinOutTypeEnum.OUT.getCode());
 		assertEquals(outrecord.getStatus(), CheckoutStatusEnum.ALLOWED.getCode());
-		assertEquals(outrecord.getSeperateSalesId(), separateSalesRecord.getId());
+		assertEquals(outrecord.getTradeDetailId(), tradeDetailItem.getId());
 
 	}
 

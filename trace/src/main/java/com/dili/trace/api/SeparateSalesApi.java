@@ -28,6 +28,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.SeparateSalesInputDTO;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserService;
 
 import io.swagger.annotations.Api;
@@ -48,6 +49,8 @@ public class SeparateSalesApi {
 	RegisterBillService registerBillService;
 	@Autowired
 	SeparateSalesRecordService separateSalesRecordService;
+	@Autowired
+	TradeDetailService tradeDetailService;
 
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
@@ -116,17 +119,17 @@ public class SeparateSalesApi {
 	@RequestMapping(value = "/createSalesRecordList", method = RequestMethod.POST)
 	public BaseOutput<Long> createSalesRecordList(@RequestBody SeparateSalesInputDTO input) {
 		LOGGER.info("保存分销单:" + JSON.toJSONString(input));
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
+		User sellerUser = userService.get(sessionContext.getAccountId());
+		if (sellerUser == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
 		if(input==null) {
 			return BaseOutput.failure("参数错误");
 		}
-		LOGGER.info("保存分销单操作用户:" + JSON.toJSONString(user));
+		LOGGER.info("保存分销单操作用户:" + JSON.toJSONString(sellerUser));
 
 		try {
-			List<Long> seprateSalesIdList = this.separateSalesRecordService.createSeparateSalesRecordList(input, user);
+			List<Long> seprateSalesIdList = this.tradeDetailService.createTradeList(input, sellerUser, null);
 			return BaseOutput.success().setData(seprateSalesIdList);
 		} catch (BusinessException e) {
 			return BaseOutput.failure(e.getMessage()).setData(false);

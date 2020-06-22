@@ -1,7 +1,6 @@
 package com.dili.trace.service.impl;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.BatchResultDto;
 import com.dili.trace.dto.MatchDetectParam;
@@ -38,14 +36,10 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
-import com.dili.trace.glossary.CheckinStatusEnum;
-import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.glossary.SalesTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.CodeGenerateService;
@@ -53,6 +47,7 @@ import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserQrItemService;
 import com.dili.trace.service.UsualAddressService;
@@ -82,7 +77,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	UserQrItemService userQrItemService;
 	@Autowired
 	SeparateSalesRecordService separateSalesRecordService;
-
+	@Autowired
+	TradeDetailService tradeInfoService;
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
 	}
@@ -619,13 +615,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// outputDto.setQualityTraceTradeBill(qualityTraceTradeBill);
 		// }
 		// 分销信息
-		if (registerBill.getSalesType() != null
-				&& registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
-			// 分销
-			List<SeparateSalesRecord> records = separateSalesRecordService
-					.findByRegisterBillCode(registerBill.getCode());
-			outputDto.setSeparateSalesRecords(records);
-		}
+//		if (registerBill.getSalesType() != null
+//				&& registerBill.getSalesType().intValue() == TradeTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+//			// 分销
+//			List<SeparateSalesRecord> records = separateSalesRecordService
+//					.findByRegisterBillCode(registerBill.getCode());
+//			outputDto.setSeparateSalesRecords(records);
+//		}
 
 		// 检测信息
 		// if (registerBill.getLatestDetectRecordId() != null) {
@@ -1127,7 +1123,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setId(billId);
 		registerBill.setVerifyStatus(verifyState.getCode());
 		if(BillVerifyStatusEnum.PASSED==verifyState) {
-			this.separateSalesRecordService.createOwnedSeparateSales(billId);
+			
+			this.tradeInfoService.createTradeInfoForBill(billId);
 		}
 		
 		this.updateSelective(registerBill);

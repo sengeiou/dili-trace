@@ -1,4 +1,4 @@
-package com.dili.trace.glossary;
+package com.dili.trace.enums;
 
 /**
  * <B>Description</B>
@@ -8,22 +8,22 @@ package com.dili.trace.glossary;
  * @author yuehongbo
  * @createTime 2018/11/8 18:43
  */
-public enum SalesTypeEnum {
-    OWNED(0, "自有"),
-    SEPARATE_SALES(1, "分销"),
-    ONE_SALES(2, "一次全销"),
+public enum TradeTypeEnum {
+    NONE(0, "无"),
+    SEPARATE_SALES(10, "分销"),
+
     ;
 
     private String name;
     private Integer code ;
 
-    SalesTypeEnum(Integer code, String name){
+    TradeTypeEnum(Integer code, String name){
         this.code = code;
         this.name = name;
     }
 
-    public static SalesTypeEnum getSalesTypeEnum(Integer code) {
-        for (SalesTypeEnum anEnum : SalesTypeEnum.values()) {
+    public static TradeTypeEnum getSalesTypeEnum(Integer code) {
+        for (TradeTypeEnum anEnum : TradeTypeEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return anEnum;
             }

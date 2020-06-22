@@ -1,5 +1,6 @@
 package com.dili.trace.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -60,21 +61,42 @@ public class CheckinOutRecord extends BaseDomain {
     @Column(name = "`product_name`")
     private String productName;
 
-    @ApiModelProperty(value = "商品重量")
-    @Column(name = "`sales_weight`")
-    private Integer salesWeight;
-
+//    @ApiModelProperty(value = "商品重量")
+//    @Column(name = "`sales_weight`")
+//    private Integer salesWeight;
+//    
+//
+//    @ApiModelProperty(value = "分销ID")
+//    @Column(name = "`seperate_sales_id`")
+//    private Long seperateSalesId;
+//    
+    
+    @ApiModelProperty(value = "进出门重量")
+    @Column(name = "`inout_weight`")
+    private BigDecimal inoutWeight;
+    
     @ApiModelProperty(value = "分销ID")
-    @Column(name = "`seperate_sales_id`")
-    private Long seperateSalesId;
+    @Column(name = "`trade_detail_id`")
+    private Long tradeDetailId;
+    
+    
 
-    public Long getSeperateSalesId() {
-        return seperateSalesId;
-    }
+    public BigDecimal getInoutWeight() {
+		return inoutWeight;
+	}
 
-    public void setSeperateSalesId(Long seperateSalesId) {
-        this.seperateSalesId = seperateSalesId;
-    }
+	public void setInoutWeight(BigDecimal inoutWeight) {
+		this.inoutWeight = inoutWeight;
+	}
+
+	public Long getTradeDetailId() {
+		return tradeDetailId;
+	}
+
+	public void setTradeDetailId(Long tradeDetailId) {
+		this.tradeDetailId = tradeDetailId;
+	}
+
 
     public String getUserName() {
         return userName;
@@ -90,14 +112,6 @@ public class CheckinOutRecord extends BaseDomain {
 
     public void setProductName(String productName) {
         this.productName = productName;
-    }
-
-    public Integer getSalesWeight() {
-        return salesWeight;
-    }
-
-    public void setSalesWeight(Integer salesWeight) {
-            this.salesWeight = salesWeight;
     }
 
     public Long getId() {
