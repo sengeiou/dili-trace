@@ -45,7 +45,6 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -83,8 +82,7 @@ public class RegisterBillController {
 	UserService userService;
 	@Autowired
 	UserPlateService userPlateService;
-	@Autowired
-	CustomerService customerService;
+
 
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;

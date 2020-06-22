@@ -41,7 +41,6 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.CodeGenerateService;
-import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -77,8 +76,7 @@ public class RegisterBillHZController {
 	UserService userService;
 	@Autowired
 	UserPlateService userPlateService;
-	@Autowired
-	CustomerService customerService;
+
 
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;

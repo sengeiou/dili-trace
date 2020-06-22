@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.RegisterBill;
@@ -27,7 +26,6 @@ import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -62,8 +60,7 @@ public class RegisterBillApi {
 	UserService userService;
 	@Autowired
 	UserTallyAreaService userTallyAreaService;
-	@Autowired
-	CustomerService customerService;
+
 	@Autowired
 	UpStreamService upStreamService;
 

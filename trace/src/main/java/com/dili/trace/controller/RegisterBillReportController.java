@@ -34,7 +34,6 @@ import com.dili.ss.util.DateUtils;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.RegisterBillReportQueryDto;
 import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillReportService;
 import com.dili.trace.service.RegisterBillService;
@@ -73,8 +72,7 @@ public class RegisterBillReportController {
 	UserService userService;
 	@Autowired
 	UserPlateService userPlateService;
-	@Autowired
-	CustomerService customerService;
+
 
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;
