@@ -24,6 +24,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.BatchResultDto;
@@ -39,6 +40,7 @@ import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.TradeDetailService;
@@ -60,6 +62,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Autowired
 	DetectRecordService detectRecordService;
 	@Autowired
+	ImageCertService imageCertService;
+	@Autowired
 	UserPlateService userPlateService;
 	@Autowired
 	CodeGenerateService codeGenerateService;
@@ -78,11 +82,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Transactional
 	@Override
-	public BaseOutput createRegisterBill(RegisterBill registerBill) {
-		BaseOutput recheck = checkBill(registerBill);
-		if (!recheck.isSuccess()) {
-			return recheck;
-		}
+	public BaseOutput createRegisterBill(RegisterBill registerBill,List<ImageCert> imageCertList) {
+		this.checkBill(registerBill);
+		
 		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
@@ -90,13 +92,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
-//		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
-//			// 交易区没有理货区号
-//			registerBill.setTallyAreaNo(null);
-//			// 交易区数据直接进行待检测状态
-//			// registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-//			// registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
-//		}
+
 		if (StringUtils.isBlank(registerBill.getOperatorName())) {
 			UserTicket userTicket = getOptUser();
 			registerBill.setOperatorName(userTicket.getRealName());
@@ -106,25 +102,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
 		registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
-		if (!this.checkPlate(registerBill)) {
-			return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
-		}
 
-		/*
-		 * else { List<String> otherUserPlateList = this.userPlateService
-		 * .findUserPlateByPlates(Arrays.asList(registerBill.getPlate())).stream().map(
-		 * UserPlate::getPlate) .collect(Collectors.toList()); if
-		 * (!otherUserPlateList.isEmpty()) { return
-		 * BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号"); } }
-		 */
-		this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,
-				registerBill.getOriginId());
-		int result = saveOrUpdate(registerBill);
+		int result = super.saveOrUpdate(registerBill);
 		if (result == 0) {
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
-			recheck = BaseOutput.failure("创建失败");
+			throw new BusinessException("创建失败");
 		}
-		return recheck;
+		if(imageCertList!=null) {
+			this.imageCertService.insertImageCert(imageCertList, registerBill.getId());
+		}
+		return BaseOutput.success();
 	}
 
 	private boolean checkPlate(RegisterBill registerBill) {
@@ -151,43 +138,43 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 //		if (registerBill.getRegisterSource() == null || registerBill.getRegisterSource().intValue() == 0) {
 //			LOGGER.error("登记来源不能为空");
-//			return BaseOutput.failure("登记来源不能为空");
+//			throw new BusinessException("登记来源不能为空");
 //		}
 		if (StringUtils.isBlank(registerBill.getName())) {
 			LOGGER.error("业户姓名不能为空");
-			return BaseOutput.failure("业户姓名不能为空");
+			throw new BusinessException("业户姓名不能为空");
 		}
 		if (StringUtils.isBlank(registerBill.getIdCardNo())) {
 			LOGGER.error("业户身份证号不能为空");
-			return BaseOutput.failure("业户身份证号不能为空");
+			throw new BusinessException("业户身份证号不能为空");
 		}
 		if (StringUtils.isBlank(registerBill.getAddr())) {
 			LOGGER.error("业户身份证地址不能为空");
-			return BaseOutput.failure("业户身份证地址不能为空");
+			throw new BusinessException("业户身份证地址不能为空");
 		}
 		if (StringUtils.isBlank(registerBill.getProductName())) {
 			LOGGER.error("商品名称不能为空");
-			return BaseOutput.failure("商品名称不能为空");
+			throw new BusinessException("商品名称不能为空");
 		}
 		if (StringUtils.isBlank(registerBill.getOriginName())) {
 			LOGGER.error("商品产地不能为空");
-			return BaseOutput.failure("商品产地不能为空");
+			throw new BusinessException("商品产地不能为空");
 		}
 
 		if (registerBill.getWeight() == null) {
 			LOGGER.error("商品重量不能为空");
-			return BaseOutput.failure("商品重量不能为空");
+			throw new BusinessException("商品重量不能为空");
 		}
 
 //		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 		if (registerBill.getWeight().longValue() <= 0L) {
 			LOGGER.error("商品重量不能小于0");
-			return BaseOutput.failure("商品重量不能小于0");
+			throw new BusinessException("商品重量不能小于0");
 		}
 //		} else {
 //			if (registerBill.getWeight().longValue() < 0L) {
 //				LOGGER.error("商品重量不能为负");
-//				return BaseOutput.failure("商品重量不能为负");
+//				throw new BusinessException("商品重量不能为负");
 //			}
 //		}
 

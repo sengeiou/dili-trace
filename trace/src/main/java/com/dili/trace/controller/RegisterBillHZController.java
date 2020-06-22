@@ -29,6 +29,7 @@ import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.input.CheckInApiInput;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
@@ -100,7 +101,7 @@ public class RegisterBillHZController {
 				// insert
 				List<RegisterBill> billList = this.buildRegisterBillList(input, new Long[] { 0L }, true);
 				for (RegisterBill bill : billList) {
-					BaseOutput out = this.registerBillService.createRegisterBill(bill);
+					BaseOutput out = this.registerBillService.createRegisterBill(bill,new ArrayList<ImageCert>());
 					if (!out.isSuccess()) {
 						return out;
 					}

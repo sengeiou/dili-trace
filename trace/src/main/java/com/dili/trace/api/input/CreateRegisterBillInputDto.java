@@ -1,6 +1,9 @@
 package com.dili.trace.api.input;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.dili.trace.domain.ImageCert;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -22,9 +25,22 @@ public class CreateRegisterBillInputDto {
 
 	@ApiModelProperty(value = "重量")
 	private BigDecimal weight;
-	
+
 	@ApiModelProperty(value = "重量单位")
 	private Integer weightUnit;
+
+	/**
+	 * 图片证明列表
+	 */
+	private List<ImageCert> imageCertList;
+
+	public List<ImageCert> getImageCertList() {
+		return imageCertList;
+	}
+
+	public void setImageCertList(List<ImageCert> imageCertList) {
+		this.imageCertList = imageCertList;
+	}
 
 	public String getProductName() {
 		return productName;

@@ -28,6 +28,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.TradeType;
@@ -157,7 +158,7 @@ public class RegisterBillController {
 			registerBill.setOriginCertifiyUrl(StringUtils.trimToNull(registerBill.getOriginCertifiyUrl()));
 			registerBill.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
 			try {
-				BaseOutput r = registerBillService.createRegisterBill(registerBill);
+				BaseOutput r = registerBillService.createRegisterBill(registerBill,new ArrayList<ImageCert>());
 				if (!r.isSuccess()) {
 					return r;
 				}

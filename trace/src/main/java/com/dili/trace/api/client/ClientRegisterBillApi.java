@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -100,11 +101,13 @@ public class ClientRegisterBillApi {
 //			if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
 //				registerBill.setTallyAreaNo(user.getTallyAreaNos());
 //			}
-
-			BaseOutput result = registerBillService.createRegisterBill(registerBill);
-			if (!result.isSuccess()) {
-				return result;
+			try {
+				registerBillService.createRegisterBill(registerBill,dto.getImageCertList());
+			}catch (BusinessException e) {
+				return BaseOutput.failure(e.getMessage());
 			}
+			
+			
 		}
 		return BaseOutput.success();
 	}

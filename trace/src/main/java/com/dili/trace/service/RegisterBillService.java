@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
@@ -61,7 +62,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param registerBill
 	 * @return
 	 */
-	BaseOutput createRegisterBill(RegisterBill registerBill);
+	BaseOutput createRegisterBill(RegisterBill registerBill,List<ImageCert> imageCertList);
 
 	/**
 	 * 审核登记单

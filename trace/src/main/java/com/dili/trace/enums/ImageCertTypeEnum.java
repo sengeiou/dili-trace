@@ -11,18 +11,17 @@ import one.util.streamex.StreamEx;
  */
 public enum ImageCertTypeEnum {
 
+	
 	/**
-	 * 无
+	 * 检测报告
 	 */
-	NONE(0, "无"),
+	DETECT_REPORT(1, "检测报告"),
 	/**
-	 * 可销售
+	 * 产地证明
 	 */
-	FOR_SALE(10, "可销售"),
-	/**
-	 * 不可销售
-	 */
-	NOT_FOR_SALE(20, "不可销售"),
+	ORIGIN_CERTIFIY(2, "产地证明"),
+
+
 
 	;
 
