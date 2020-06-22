@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,9 +11,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.reactive.TransactionContext;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
@@ -41,6 +49,7 @@ import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.google.common.collect.Lists;
 
+@TestInstance(Lifecycle.PER_CLASS)
 public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	@Autowired
 	CheckinOutRecordService checkinOutRecordService;
@@ -60,9 +69,25 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 				.listCheckInApiListOutputPage(new RegisterBillDto());
 		System.out.println(out);
 	}
-
+//	@BeforeAll
+//	public void startTransaction() {
+//		assertFalse(TestTransaction.isActive());
+//		TransactionContext transactionContext
+//		  = TransactionContextHolder.getCurrentTransactionContext();
+//		
+//		TestTransaction.start();
+//		TestTransaction.flagForRollback();
+//		assertTrue(TestTransaction.isActive());
+//		assertTrue(TestTransaction.isFlaggedForRollback());
+//	}c2020062000001
+//
+//	@AfterAll
+//	public void endTransaction() {
+//		TestTransaction.end();
+//	}
 	@Test
 	public void doCheckin2() {
+		
 		RegisterBill query = new RegisterBill();
 		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 
@@ -180,11 +205,18 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		System.out.println(out.getData().getDatas());
 	}
 
-//	@BeforeAll
-//	public void init() {
-//
-//	}
 
+	@Test
+	@Order(1)
+	public void test1() {}
+	
+	@Test
+	@Order(2)
+	public void test2() {
+		
+	}
+	
+	
 	@Test
 	@Transactional
 	public void testAll() {

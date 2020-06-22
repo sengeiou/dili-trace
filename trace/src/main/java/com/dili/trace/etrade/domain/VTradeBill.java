@@ -6,13 +6,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
-import com.dili.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
 
 @Table(name = "VTradeBill")
 public class VTradeBill extends BaseDomain {
@@ -285,64 +279,7 @@ public class VTradeBill extends BaseDomain {
 		this.billID = billID;
 	}
 
-	public QualityTraceTradeBill buildQualityTraceTradeBill() {
-		QualityTraceTradeBill bill = DTOUtils.newDTO(QualityTraceTradeBill.class);
-		bill.setBillId(this.billID);
-		bill.setOrderId(this.orderId);
-		
-		if (this.piecequantity != null) {
-			bill.setPieceQuantity(this.piecequantity.longValue());
-		}
+	
 
-		if (this.pieceweight != null) {
-			bill.setPieceWeight(this.pieceweight.longValue());
-		}
-
-		if (this.netWeight != null) {
-			bill.setNetWeight(this.netWeight.longValue());
-		}
-		if (this.price != null) {
-			bill.setPrice(this.price.longValue());
-		}
-		if (this.totalMoney != null) {
-			bill.setTotalMoney(this.totalMoney.longValue());
-		}
-		bill.setTradetypeId(this.tradetypeid);
-		bill.setTradetypeName(this.tradetypename);
-		bill.setBillActive(this.billActive);
-//		bill.setAmount(this.getAmount().longValue());
-		bill.setBuyerAccount(this.buyerAccount);
-		bill.setBuyerName(this.buyerName);
-		bill.setBuyerIDNo(StringUtils.trimToEmpty(this.buyerIDNo).toUpperCase());
-		bill.setCateName(this.cateName);
-//		bill.setCheckResultEid(checkResultEid);
-//		bill.setConclusion(conclusion);
-		bill.setOrderCreateDate(this.orderCreateDate);
-//		bill.setOrderItemId("");
-		bill.setOrderPayDate(this.orderPayDate);
-//		bill.setOrderStatus("");
-//		bill.setPdresult("");
-
-		bill.setProductName(this.productName);
-		bill.setSaleUnit(this.saleUnit);
-		bill.setSellerAccount(this.sellerAccount);
-		bill.setSellerName(this.sellerName);
-		bill.setSellerIDNo(StringUtils.trimToEmpty(this.sellerIDNo).toUpperCase());
-		bill.setMatchStatus(QualityTraceTradeBillMatchStatusEnum.INITED.getCode());
-
-//		bill.setTradeFlowId("");
-
-		return bill;
-
-	}
-
-	public QualityTraceTradeBillSyncPoint buildQualityTraceTradeBillSyncPoint() {
-		QualityTraceTradeBillSyncPoint bill = DTOUtils.newDTO(QualityTraceTradeBillSyncPoint.class);
-		bill.setBillId(this.billID);
-		bill.setOrderId(this.orderId);
-
-		return bill;
-
-	}
-
+	
 }

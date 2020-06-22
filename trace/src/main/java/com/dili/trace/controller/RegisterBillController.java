@@ -25,11 +25,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.TradeType;
@@ -42,7 +40,6 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.dto.UserInfoDto;
-import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -50,7 +47,6 @@ import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.TradeTypeService;
@@ -89,8 +85,7 @@ public class RegisterBillController {
 	UserPlateService userPlateService;
 	@Autowired
 	CustomerService customerService;
-	@Autowired
-	QualityTraceTradeBillService qualityTraceTradeBillService;
+
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;
 	@Autowired
@@ -238,9 +233,7 @@ public class RegisterBillController {
 				modelMap.put("separateSalesRecords", Collections.emptyList());
 		
 		} else {
-			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
-			condition.setRegisterBillCode(registerBill.getCode());
-			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+			modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
 		}
 		if (registerBill.getUpStreamId() != null) {
 			UpStream upStream = this.upStreamService.get(registerBill.getUpStreamId());
@@ -271,9 +264,7 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/tradeBillSsRecord/{id}", method = RequestMethod.GET)
 	public String tradeBillSRecord(ModelMap modelMap, @PathVariable Long id) {
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.get(id);
 		SeparateSalesRecord condition = new SeparateSalesRecord();
-		condition.setTradeNo(qualityTraceTradeBill.getOrderId());
 		List<SeparateSalesRecord> separateSalesRecords = separateSalesRecordService.listByExample(condition);
 		modelMap.put("separateSalesRecords", separateSalesRecords);
 		return "registerBill/tradeBillSsRecord";
@@ -297,9 +288,7 @@ public class RegisterBillController {
 			modelMap.put("separateSalesRecords", Collections.emptyList());
 		
 		} else {
-			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
-			condition.setRegisterBillCode(registerBill.getCode());
-			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+			modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
 		}
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
@@ -325,9 +314,7 @@ public class RegisterBillController {
 			// 分销信息
 			modelMap.put("separateSalesRecords", Collections.emptyList());
 		} else {
-			QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
-			condition.setRegisterBillCode(registerBill.getCode());
-			modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+			modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
 		}
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
@@ -520,14 +507,9 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/tradeBillDetail.html", method = RequestMethod.GET)
 	public String tradeBillDetail(String tradeNo, ModelMap modelMap) {
-		RegisterBillOutputDto registerBill = registerBillService.findByTradeNo(tradeNo);
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
 
-		if (null != registerBill) {
-			registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
-		}
-		modelMap.put("registerBill", registerBill);
-		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
+		modelMap.put("registerBill", new RegisterBillOutputDto());
+		modelMap.put("qualityTraceTradeBill", null);
 		return "registerBill/tradeBillDetail";
 	}
 
@@ -570,10 +552,8 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/tradeBillQRCcode.html", method = RequestMethod.GET)
 	public String tradeBillQRCcode(Long id, ModelMap modelMap) {
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.get(id);
-		RegisterBill bill = registerBillService.findByCode(qualityTraceTradeBill.getRegisterBillCode());
-		modelMap.put("registerBill", bill);
-		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
+		modelMap.put("registerBill", new RegisterBill());
+		modelMap.put("qualityTraceTradeBill", null);
 		return "registerBill/tradeBillQRCode";
 	}
 
@@ -587,11 +567,10 @@ public class RegisterBillController {
 	@RequestMapping(value = "/tradeSsrQRCcode.html", method = RequestMethod.GET)
 	public String tradeSsrQRCcode(Long id, ModelMap modelMap) {
 		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
-				.findByTradeNo(separateSalesRecord.getTradeNo());
-		RegisterBill bill = registerBillService.findByCode(qualityTraceTradeBill.getRegisterBillCode());
+		
+		RegisterBill bill = new RegisterBill();
 		modelMap.put("registerBill", bill);
-		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
+		modelMap.put("qualityTraceTradeBill", null);
 		modelMap.put("separateSalesRecord", separateSalesRecord);
 		return "registerBill/tradeBillQRCode";
 	}

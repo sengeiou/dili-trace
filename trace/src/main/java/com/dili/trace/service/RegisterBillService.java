@@ -1,16 +1,9 @@
 package com.dili.trace.service;
 
 import java.util.List;
-import java.util.Map;
-
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
@@ -61,13 +54,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	RegisterBill findBySampleCode(String sampleCode);
 
-	/**
-	 * 通过交易区交易单查询
-	 * 
-	 * @param tradeNo
-	 * @return
-	 */
-	RegisterBillOutputDto findByTradeNo(String tradeNo);
 
 	/**
 	 * 创建登记单
@@ -118,13 +104,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	int reviewCheckRegisterBill(Long id);
 
-	/**
-	 * 通过交易单查询，未绑定就绑定
-	 * 
-	 * @param tradeNo
-	 * @return
-	 */
-	public QualityTraceTradeBillOutDto findQualityTraceTradeBill(String tradeNo);
+
 
 	/**
 	 * 根据状态统计数据
@@ -142,13 +122,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill);
 
-	/**
-	 * 检测记录匹配
-	 * 
-	 * @param qualityTraceTradeBill
-	 * @return
-	 */
-	int matchDetectBind(QualityTraceTradeBill qualityTraceTradeBill);
 
 	/**
 	 * 保存处理结果

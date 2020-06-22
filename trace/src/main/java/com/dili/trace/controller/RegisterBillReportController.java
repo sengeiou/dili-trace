@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -31,15 +30,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.RegisterBillReportQueryDto;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillReportService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -79,8 +75,7 @@ public class RegisterBillReportController {
 	UserPlateService userPlateService;
 	@Autowired
 	CustomerService customerService;
-	@Autowired
-	QualityTraceTradeBillService qualityTraceTradeBillService;
+
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;
 	@Autowired

@@ -21,17 +21,12 @@ import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.BatchResultDto;
-import com.dili.trace.dto.MatchDetectParam;
-import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
@@ -44,7 +39,6 @@ import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.TradeDetailService;
@@ -62,8 +56,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
 	@Autowired
 	BizNumberFunction bizNumberFunction;
-	@Autowired
-	QualityTraceTradeBillService qualityTraceTradeBillService;
 
 	@Autowired
 	DetectRecordService detectRecordService;
@@ -79,6 +71,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
 	TradeDetailService tradeInfoService;
+
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
 	}
@@ -91,7 +84,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return recheck;
 		}
 		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-		
+
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
 		registerBill.setRegisterSource(RegisterSourceEnum.OTHERS.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
@@ -187,10 +180,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 
 //		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-			if (registerBill.getWeight().longValue() <= 0L) {
-				LOGGER.error("商品重量不能小于0");
-				return BaseOutput.failure("商品重量不能小于0");
-			}
+		if (registerBill.getWeight().longValue() <= 0L) {
+			LOGGER.error("商品重量不能小于0");
+			return BaseOutput.failure("商品重量不能小于0");
+		}
 //		} else {
 //			if (registerBill.getWeight().longValue() < 0L) {
 //				LOGGER.error("商品重量不能为负");
@@ -254,49 +247,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return list.get(0);
 		}
 		return null;
-	}
-
-	@Override
-	public RegisterBillOutputDto findByTradeNo(String tradeNo) {
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
-		if (qualityTraceTradeBill != null && StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
-			RegisterBill registerBill = new RegisterBill();
-			registerBill.setCode(qualityTraceTradeBill.getRegisterBillCode());
-			List<RegisterBill> list = this.listByExample(registerBill);
-			if (list != null && list.size() > 0) {
-				RegisterBillOutputDto outputDto = new RegisterBillOutputDto();
-				try {
-					BeanUtils.copyProperties(outputDto, list.get(0));
-				} catch (IllegalAccessException | InvocationTargetException e) {
-					throw new RuntimeException(e.getMessage(), e);
-				}
-
-				return outputDto;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public int matchDetectBind(QualityTraceTradeBill qualityTraceTradeBill) {
-
-		MatchDetectParam matchDetectParam = new MatchDetectParam();
-		matchDetectParam.setTradeNo(qualityTraceTradeBill.getOrderId());
-		matchDetectParam.setTradeTypeId(qualityTraceTradeBill.getTradetypeId());
-		matchDetectParam.setTradeTypeName(qualityTraceTradeBill.getTradetypeName());
-		matchDetectParam.setProductName(qualityTraceTradeBill.getProductName());
-		matchDetectParam.setIdCardNo(qualityTraceTradeBill.getSellerIDNo());
-		matchDetectParam.setEnd(qualityTraceTradeBill.getOrderPayDate());
-		Date start = new Date(qualityTraceTradeBill.getOrderPayDate().getTime() - (48 * 3600000));
-		matchDetectParam.setStart(start);
-		LOGGER.info("进行匹配:" + matchDetectParam.toString());
-		Long id = getActualDao().findMatchDetectBind(matchDetectParam);
-		int rows = 0;
-		if (null != id) {
-			rows = getActualDao().matchDetectBind(qualityTraceTradeBill.getOrderId(),
-					qualityTraceTradeBill.getNetWeight(), id);
-		}
-		return rows;
 	}
 
 	@Override
@@ -525,63 +475,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return SessionContext.getSessionContext().getUserTicket();
 	}
 
-	@Override
-	public QualityTraceTradeBillOutDto findQualityTraceTradeBill(String tradeNo) {
-		if (StringUtils.isBlank(tradeNo)) {
-			return null;
-		}
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
-		if (qualityTraceTradeBill == null) {
-			return null;
-		}
-		QualityTraceTradeBillOutDto dto = DTOUtils.newDTO(QualityTraceTradeBillOutDto.class);
-		dto.setQualityTraceTradeBill(qualityTraceTradeBill);
-
-		RegisterBill registerBill = new RegisterBill();
-		if (StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
-			RegisterBill condition = new RegisterBill();
-
-			condition.setCode(qualityTraceTradeBill.getRegisterBillCode());
-			List<RegisterBill> list = this.listByExample(condition);
-			if (!list.isEmpty()) {
-				registerBill = list.get(0);
-
-			}
-		}
-		dto.setRegisterBill(registerBill);
-
-		// RegisterBillOutputDto registerBill = findByTradeNo(tradeNo);
-
-		// if (qualityTraceTradeBill.getBuyerIDNo().equalsIgnoreCase(cardNo)) {
-		// if (registerBill == null) {
-		// int result = matchDetectBind(qualityTraceTradeBill);
-		// if (result == 1) {
-		// registerBill = findByTradeNo(tradeNo);
-		// }
-		// }
-		// }
-
-		if (registerBill != null && StringUtils.isNotBlank(registerBill.getCode())) {
-			List<SeparateSalesRecord> records = separateSalesRecordService
-					.findByRegisterBillCode(registerBill.getCode());
-			dto.setSeparateSalesRecords(records);
-			// registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
-		}
-		// 查询交易单信息
-		// if(StringUtils.isNotBlank(registerBill.getCode())) {
-		// QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
-		// example.setRegisterBillCode(registerBill.getCode());
-		// List<QualityTraceTradeBill> qualityTraceTradeBillList =
-		// this.qualityTraceTradeBillService
-		// .listByExample(example);
-		//
-		// registerBill.setQualityTraceTradeBillList(qualityTraceTradeBillList);
-		// }
-
-		// registerBill.setQualityTraceTradeBill(qualityTraceTradeBill);
-		return dto;
-	}
-
+	
 	@Override
 	public RegisterBillStaticsDto groupByState(RegisterBillDto dto) {
 		return this.getActualDao().groupByState(dto);
@@ -601,13 +495,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-		// 查询交易单信息
-		QualityTraceTradeBill example = DTOUtils.newDTO(QualityTraceTradeBill.class);
-		example.setRegisterBillCode(registerBill.getCode());
-		List<QualityTraceTradeBill> qualityTraceTradeBillList = this.qualityTraceTradeBillService
-				.listByExample(example);
 
-		outputDto.setQualityTraceTradeBillList(qualityTraceTradeBillList);
+
 		// if (StringUtils.isNotBlank(registerBill.getTradeNo())) {
 		// // 交易信息
 		// QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
@@ -1101,19 +990,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public Long doVerify(RegisterBill input) {
-		if (input == null||input.getId()==null) {
+		if (input == null || input.getId() == null) {
 			throw new BusinessException("参数错误");
 		}
 		Long billId = input.getId();
 		BillVerifyStatusEnum verifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
 				.orElseThrow(() -> new BusinessException("参数错误"));
 
-	
 		RegisterBill item = this.get(billId);
 		if (item == null) {
 			throw new BusinessException("数据不存在");
 		}
-		if(verifyState==BillVerifyStatusEnum.fromCode(item.getVerifyStatus()).orElse(null)){
+		if (verifyState == BillVerifyStatusEnum.fromCode(item.getVerifyStatus()).orElse(null)) {
 			throw new BusinessException("状态不能相同");
 		}
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
@@ -1122,12 +1010,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBill registerBill = new RegisterBill();
 		registerBill.setId(billId);
 		registerBill.setVerifyStatus(verifyState.getCode());
-		if(BillVerifyStatusEnum.PASSED==verifyState) {
-			
+		if (BillVerifyStatusEnum.PASSED == verifyState) {
+
 			this.tradeInfoService.createTradeInfoForBill(billId);
 		}
-		
+
 		this.updateSelective(registerBill);
 		return item.getId();
 	}
+
 }

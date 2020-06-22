@@ -20,20 +20,15 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.BusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
-import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
@@ -57,8 +52,7 @@ public class RegisterBillApi {
 	private RegisterBillService registerBillService;
 	@Autowired
 	private SeparateSalesRecordService separateSalesRecordService;
-	@Autowired
-	private QualityTraceTradeBillService qualityTraceTradeBillService;
+
 
 	@Autowired
 	DetectRecordService detectRecordService;
@@ -167,18 +161,7 @@ public class RegisterBillApi {
 		return BaseOutput.success().setData(bill);
 	}
 
-	@ApiOperation(value = "通过交易区的交易号获取登记单详细信息")
-	@RequestMapping(value = "/tradeNo/{tradeNo}", method = RequestMethod.GET)
-	public BaseOutput<QualityTraceTradeBillOutDto> getBillByTradeNo(@PathVariable String tradeNo) {
-		LOGGER.info("getBillByTradeNo获取登记单:" + tradeNo);
-		// User user=userService.get(sessionContext.getAccountId());
-		// if(user==null){
-		// return BaseOutput.failure("未登陆用户");
-		// }
-		QualityTraceTradeBillOutDto bill = registerBillService.findQualityTraceTradeBill(tradeNo);
-		return BaseOutput.success().setData(bill);
-	}
-
+	
 	@ApiOperation(value = "通过分销记录ID获取分销单")
 	@RequestMapping(value = "/salesRecordId/{salesRecordId}", method = RequestMethod.GET)
 	public BaseOutput<SeparateSalesRecord> getSeparateSalesRecord(@PathVariable Long salesRecordId) {

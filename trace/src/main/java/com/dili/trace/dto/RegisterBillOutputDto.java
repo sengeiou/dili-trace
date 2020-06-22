@@ -3,7 +3,6 @@ package com.dili.trace.dto;
 import java.util.List;
 
 import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.QualityTraceTradeBill;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 
@@ -15,7 +14,6 @@ public class RegisterBillOutputDto extends RegisterBill {
 
 	private DetectRecord detectRecord;
 
-	private List<QualityTraceTradeBill> qualityTraceTradeBillList;
 
 	public List<SeparateSalesRecord> getSeparateSalesRecords() {
 		return separateSalesRecords;
@@ -33,13 +31,7 @@ public class RegisterBillOutputDto extends RegisterBill {
 		this.detectRecord = detectRecord;
 	}
 
-	public List<QualityTraceTradeBill> getQualityTraceTradeBillList() {
-		return qualityTraceTradeBillList;
-	}
 
-	public void setQualityTraceTradeBillList(List<QualityTraceTradeBill> qualityTraceTradeBillList) {
-		this.qualityTraceTradeBillList = qualityTraceTradeBillList;
-	}
 	
 	
 }

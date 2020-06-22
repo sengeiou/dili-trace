@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dili.common.exception.BusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.api.dto.CheckInApiInput;
 import com.dili.trace.api.dto.ManullyCheckInput;
@@ -39,7 +38,6 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.dto.UserInfoDto;
-import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.CheckinStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -47,7 +45,6 @@ import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.TradeTypeService;
@@ -84,8 +81,7 @@ public class RegisterBillHZController {
 	UserPlateService userPlateService;
 	@Autowired
 	CustomerService customerService;
-	@Autowired
-	QualityTraceTradeBillService qualityTraceTradeBillService;
+
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;
 	@Autowired
