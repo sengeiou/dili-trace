@@ -67,6 +67,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 		item.setTradeWeight(registerBill.getWeight());
 		item.setInventoryWeight(registerBill.getWeight());
 		item.setTotalWeight(registerBill.getWeight());
+		item.setWeightUnit(registerBill.getWeightUnit());
 		item.setBuyerId(registerBill.getUserId());
 		item.setBuyerName(registerBill.getName());
 		

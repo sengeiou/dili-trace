@@ -1,4 +1,4 @@
-package com.dili.trace.api;
+package com.dili.trace.api.client;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,17 +22,17 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 
-public class RegisterBillApiTest extends AutoWiredBaseTest {
+public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 	@Autowired
-	ClientRegisterBillApi registerBillApi;
+	ClientRegisterBillApi clientRegisterBillApi;
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
 	UserService userService;
-
 	@MockBean
 	LoginSessionContext sessionContext;
 //	private MockMvc mockMvc;
@@ -60,22 +60,13 @@ public class RegisterBillApiTest extends AutoWiredBaseTest {
 		CreateRegisterBillInputDto rb = new CreateRegisterBillInputDto();
 		registerBills.add(rb);
 		rb.setWeight(BigDecimal.TEN);
+		rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
 		rb.setProductId(item.getProductId());
 		rb.setProductName(item.getProductName());
 		rb.setOriginId(item.getOriginId());
 		rb.setOriginName(item.getOriginName());
-		BaseOutput out = this.registerBillApi.createList(createListBillParam);
+		BaseOutput out = this.clientRegisterBillApi.createList(createListBillParam);
 		System.out.println(out.isSuccess());
 	}
 
-	@Test
-	public void doVerify() {
-		Mockito.doReturn(new OperatorUser(0L, "test")).when(this.sessionContext).getLoginUserOrException(Mockito.any());
-		RegisterBill query = new RegisterBill();
-		query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-		RegisterBill input = registerBillService.listByExample(query).stream().findFirst().orElse(null);
-		input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-//		BaseOutput<Long> out = this.registerBillApi.doVerify(input);
-//		System.out.println(out);
-	}
 }
