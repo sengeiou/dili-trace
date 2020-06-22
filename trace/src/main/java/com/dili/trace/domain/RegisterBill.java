@@ -116,7 +116,11 @@ public class RegisterBill extends BaseDomain {
 
 	@ApiModelProperty(value = "重量KG")
 	@Column(name = "`weight`")
-	private Integer weight;
+	private BigDecimal weight;
+	
+	@ApiModelProperty(value = "重量单位")
+	@Column(name = "`weight_unit`")
+	private Integer weightUnit;
 
 	@ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
 	@Column(name = "`detect_state`")
@@ -404,12 +408,20 @@ public class RegisterBill extends BaseDomain {
 		this.originName = originName;
 	}
 
-	public Integer getWeight() {
+	public BigDecimal getWeight() {
 		return weight;
 	}
 
-	public void setWeight(Integer weight) {
+	public void setWeight(BigDecimal weight) {
 		this.weight = weight;
+	}
+
+	public Integer getWeightUnit() {
+		return weightUnit;
+	}
+
+	public void setWeightUnit(Integer weightUnit) {
+		this.weightUnit = weightUnit;
 	}
 
 	public Integer getDetectState() {

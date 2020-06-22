@@ -1,5 +1,6 @@
 package com.dili.trace.api;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.AutoWiredBaseTest;
+import com.dili.trace.api.dto.CreateRegisterBillInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
@@ -51,12 +53,12 @@ public class RegisterBillApiTest extends AutoWiredBaseTest {
 		RegisterBill item = registerBillService.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
 
 		CreateListBillParam createListBillParam = new CreateListBillParam();
-		List<RegisterBill> registerBills = new ArrayList<RegisterBill>();
+		List<CreateRegisterBillInputDto> registerBills = new ArrayList<CreateRegisterBillInputDto>();
 		createListBillParam.setRegisterBills(registerBills);
 
-		RegisterBill rb = new RegisterBill();
+		CreateRegisterBillInputDto rb = new CreateRegisterBillInputDto();
 		registerBills.add(rb);
-		rb.setWeight(10);
+		rb.setWeight(BigDecimal.TEN);
 		rb.setProductId(item.getProductId());
 		rb.setProductName(item.getProductName());
 		rb.setOriginId(item.getOriginId());

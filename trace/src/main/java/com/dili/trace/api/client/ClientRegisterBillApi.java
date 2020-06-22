@@ -19,6 +19,7 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.trace.api.dto.CreateRegisterBillInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
@@ -72,19 +73,26 @@ public class ClientRegisterBillApi {
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		List<RegisterBill> registerBills = createListBillParam.getRegisterBills();
+		List<CreateRegisterBillInputDto> registerBills = createListBillParam.getRegisterBills();
 		if (registerBills == null) {
 			return BaseOutput.failure("没有登记单");
 		}
 		logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
-		for (RegisterBill registerBill : registerBills) {
-			logger.info("循环保存登记单:" + JSON.toJSONString(registerBill));
+		for (CreateRegisterBillInputDto dto : registerBills) {
+			logger.info("循环保存登记单:" + JSON.toJSONString(dto));
+			RegisterBill registerBill=new RegisterBill();
 			registerBill.setOperatorName(user.getName());
 			registerBill.setOperatorId(user.getId());
 			registerBill.setUserId(user.getId());
 			registerBill.setName(user.getName());
 			registerBill.setAddr(user.getAddr());
 			registerBill.setIdCardNo(user.getCardNo());
+			registerBill.setWeight(dto.getWeight());
+			registerBill.setWeightUnit(dto.getWeightUnit());
+			registerBill.setOriginId(dto.getOriginId());
+			registerBill.setOriginName(dto.getOriginName());
+			registerBill.setProductId(dto.getProductId());
+			registerBill.setProductName(dto.getProductName());
 //			if (registerBill.getRegisterSource() == null) {
 //				// 小程序默认理货区
 //				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());

@@ -64,42 +64,7 @@ public class RegisterBillApi {
 	@Autowired
 	UpStreamService upStreamService;
 
-	@ApiOperation("保存多个登记单")
-	@RequestMapping(value = "/createList", method = RequestMethod.POST)
-	public BaseOutput createList(@RequestBody CreateListBillParam createListBillParam) {
-		LOGGER.info("保存多个登记单:");
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		List<RegisterBill> registerBills = createListBillParam.getRegisterBills();
-		if (registerBills == null) {
-			return BaseOutput.failure("没有登记单");
-		}
-		LOGGER.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
-		for (RegisterBill registerBill : registerBills) {
-			LOGGER.info("循环保存登记单:" + JSON.toJSONString(registerBill));
-			registerBill.setOperatorName(user.getName());
-			registerBill.setOperatorId(user.getId());
-			registerBill.setUserId(user.getId());
-			registerBill.setName(user.getName());
-			registerBill.setAddr(user.getAddr());
-			registerBill.setIdCardNo(user.getCardNo());
-//			if (registerBill.getRegisterSource() == null) {
-//				// 小程序默认理货区
-//				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-//			}
-//			if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-//				registerBill.setTallyAreaNo(user.getTallyAreaNos());
-//			}
-
-			BaseOutput result = registerBillService.createRegisterBill(registerBill);
-			if (!result.isSuccess()) {
-				return result;
-			}
-		}
-		return BaseOutput.success();
-	}
+	
 
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")

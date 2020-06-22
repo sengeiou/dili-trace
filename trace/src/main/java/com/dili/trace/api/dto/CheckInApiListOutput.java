@@ -16,17 +16,17 @@ public class CheckInApiListOutput {
     private String upstreamName;
     private String upstreamTelphone;
     private Date created;
-    private Integer weight=0;
+    private BigDecimal weight=BigDecimal.ZERO;
 
-    public Integer getWeight() {
+    public BigDecimal getWeight() {
         return weight;
     }
 
-    public void setWeight(Integer weight) {
+    public void setWeight(BigDecimal weight) {
         if (weight != null) {
             this.weight = weight;
         } else {
-            this.weight = 0;
+            this.weight = BigDecimal.ZERO;
         }
     }
 

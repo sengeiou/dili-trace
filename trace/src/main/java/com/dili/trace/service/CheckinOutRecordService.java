@@ -177,7 +177,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			checkinRecord.setCreated(new Date());
 			checkinRecord.setModified(new Date());
 			checkinRecord.setProductName(registerBillItem.getProductName());
-			checkinRecord.setInoutWeight(new BigDecimal(registerBillItem.getWeight()));
+			checkinRecord.setInoutWeight(registerBillItem.getWeight());
 			checkinRecord.setUserName(user.getName());
 			checkinRecord.setTradeDetailId(tradeInfoItem.getId());
 			this.insertSelective(checkinRecord);

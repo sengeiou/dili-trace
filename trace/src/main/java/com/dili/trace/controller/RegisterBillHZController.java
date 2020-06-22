@@ -1,5 +1,7 @@
 package com.dili.trace.controller;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -140,7 +142,7 @@ public class RegisterBillHZController {
 
 					bill.setUpStreamId(upStreamId);
 
-					bill.setWeight(weight);
+					bill.setWeight(new BigDecimal(weight));
 					bill.setCreated(new Date());
 					bill.setModified(new Date());
 					bill.setUserId(input.getUserId());

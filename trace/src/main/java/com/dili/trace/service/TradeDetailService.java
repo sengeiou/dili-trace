@@ -64,9 +64,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 		item.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 		item.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
 		item.setSaleStatus(SaleStatusEnum.NONE.getCode());
-		item.setTradeWeight(BigDecimal.valueOf(registerBill.getWeight()));
-		item.setInventoryWeight(BigDecimal.valueOf(registerBill.getWeight()));
-		item.setTotalWeight(BigDecimal.valueOf(registerBill.getWeight()));
+		item.setTradeWeight(registerBill.getWeight());
+		item.setInventoryWeight(registerBill.getWeight());
+		item.setTotalWeight(registerBill.getWeight());
 		item.setBuyerId(registerBill.getUserId());
 		item.setBuyerName(registerBill.getName());
 		
