@@ -160,7 +160,11 @@
 	</build>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>com.github.hervian</groupId>
+			<artifactId>safety-mirror</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.zalando</groupId>
 			<artifactId>logbook-spring-boot-starter</artifactId>

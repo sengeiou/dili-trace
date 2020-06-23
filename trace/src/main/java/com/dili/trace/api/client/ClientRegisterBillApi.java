@@ -1,9 +1,12 @@
 package com.dili.trace.api.client;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.BeanMap;
+import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +37,9 @@ import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
+import com.github.hervian.reflection.Types;
 
+import cn.hutool.core.util.ClassUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -171,6 +176,9 @@ public class ClientRegisterBillApi {
 
 		
 		
+	}
+	public static void main(String[] args) {
+		System.out.println(Types.createMethod(RegisterBill::getCreated).getName());
 	}
 
 }
