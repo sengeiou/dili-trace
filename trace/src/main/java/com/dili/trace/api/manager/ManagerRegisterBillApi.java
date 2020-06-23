@@ -48,27 +48,28 @@ public class ManagerRegisterBillApi {
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;
+
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
 	public BaseOutput createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
 		logger.info("保存多个登记单:");
-		if(createListBillParam==null||createListBillParam.getUserId()==null||createListBillParam.getRegisterBills()==null) {
+		if (createListBillParam == null || createListBillParam.getUserId() == null
+				|| createListBillParam.getRegisterBills() == null) {
 			return BaseOutput.failure("参数错误");
 		}
-		
-		
-		OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+
+		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 		User user = userService.get(createListBillParam.getUserId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		List<CreateRegisterBillInputDto> registerBills =StreamEx.of(createListBillParam.getRegisterBills()).nonNull().toList();
-		
+		List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills()).nonNull()
+				.toList();
 
 		logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
 		for (CreateRegisterBillInputDto dto : registerBills) {
 			logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-			RegisterBill registerBill=new RegisterBill();
+			RegisterBill registerBill = new RegisterBill();
 			registerBill.setOperatorName(user.getName());
 			registerBill.setOperatorId(user.getId());
 			registerBill.setUserId(user.getId());
@@ -89,74 +90,73 @@ public class ManagerRegisterBillApi {
 //				registerBill.setTallyAreaNo(user.getTallyAreaNos());
 //			}
 			try {
-				registerBillService.createRegisterBill(registerBill,dto.getImageCertList(),operatorUser);
-			}catch (TraceBusinessException e) {
+				registerBillService.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
+			} catch (TraceBusinessException e) {
 				return BaseOutput.failure(e.getMessage());
 			}
-			
-			
+
 		}
 		return BaseOutput.success();
 	}
-	
+
 	@ApiOperation(value = "获得指定用户登记单信息")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
 	public BaseOutput<BasePage<RegisterBill>> listAllRegisterBill(@RequestBody RegisterBill input) {
-		if(input==null||input.getUserId()==null) {
+		if (input == null || input.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			RegisterBillDto query = new RegisterBillDto();
 			query.setSort("modified");
 			query.setOrder("desc");
 			query.setUserId(input.getUserId());
-			BasePage<RegisterBill> page = this.registerBillService.listPageByExample(query);
 
-			List<RegisterBillOutput> list = StreamEx.of(page.getDatas()).map(rb -> {
-				RegisterBillOutput dto = new RegisterBillOutput();
-				dto.setVerifyStatus(rb.getVerifyStatus());
-				dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
-						.map(BillVerifyStatusEnum::getName).orElse(""));
-				dto.setBillId(rb.getId());
-				dto.setProductName(rb.getProductName());
-				dto.setColor(ColorEnum.GREEN.getCode());
-				return dto;
-			}).toList();
-
-			return BaseOutput.success().setData(BasePageUtil.convert(list, page));
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
+					rb -> {
+						RegisterBillOutput dto = new RegisterBillOutput();
+						dto.setVerifyStatus(rb.getVerifyStatus());
+						dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
+								.map(BillVerifyStatusEnum::getName).orElse(""));
+						dto.setBillId(rb.getId());
+						dto.setProductName(rb.getProductName());
+						dto.setColor(ColorEnum.GREEN.getCode());
+						return dto;
+					});
+			return BaseOutput.success().setData(data);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
 	}
+
 	@ApiOperation(value = "获得登记单详情")
 	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput<BasePage<RegisterBill>> viewRegisterBill(@RequestBody RegisterBill input) {
-		if(input==null||input.getUserId()==null) {
+		if (input == null || input.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			RegisterBillDto query = new RegisterBillDto();
 			query.setSort("modified");
 			query.setOrder("desc");
 			query.setUserId(input.getUserId());
-			BasePage<RegisterBill> page = this.registerBillService.listPageByExample(query);
 
-			List<RegisterBillOutput> list = StreamEx.of(page.getDatas()).map(rb -> {
-				RegisterBillOutput dto = new RegisterBillOutput();
-				dto.setVerifyStatus(rb.getVerifyStatus());
-				dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
-						.map(BillVerifyStatusEnum::getName).orElse(""));
-				dto.setBillId(rb.getId());
-				dto.setProductName(rb.getProductName());
-				dto.setColor(ColorEnum.GREEN.getCode());
-				return dto;
-			}).toList();
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
+					rb -> {
+						RegisterBillOutput dto = new RegisterBillOutput();
+						dto.setVerifyStatus(rb.getVerifyStatus());
+						dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
+								.map(BillVerifyStatusEnum::getName).orElse(""));
+						dto.setBillId(rb.getId());
+						dto.setProductName(rb.getProductName());
+						dto.setColor(ColorEnum.GREEN.getCode());
+						return dto;
+					});
+			return BaseOutput.success().setData(data);
 
-			return BaseOutput.success().setData(BasePageUtil.convert(list, page));
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -169,10 +169,10 @@ public class ManagerRegisterBillApi {
 	public BaseOutput<Long> doVerify(@RequestBody VerifyBillInputDto inputDto) {
 		logger.info("通过ID查验登记单:{}", inputDto);
 		try {
-			if (inputDto == null || inputDto.getVerifyStatus() == null||inputDto.getBillId()==null) {
+			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
 				return BaseOutput.failure("参数错误");
 			}
-			OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			RegisterBill input = new RegisterBill();
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
