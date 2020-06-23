@@ -34,6 +34,9 @@ CREATE TABLE `trade_detail` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
+drop table `quality_trace_trade_bill`;
+drop table `quality_trace_trade_bill_syncpoint`;
+
 ALTER TABLE `register_bill` ADD COLUMN  `weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位';
 ALTER TABLE `register_bill` ADD COLUMN  `verify_status` int(11) not null default 0 COMMENT '查验状态';
 ALTER TABLE `register_bill` MODIFY COLUMN weight decimal(10,3)  NOT NULL default 0 COMMENT '重量';
@@ -58,7 +61,7 @@ ALTER TABLE `register_bill` DROP COLUMN `handle_result_url`;
 ALTER TABLE `register_bill` DROP COLUMN `handle_result`;
 ALTER TABLE `register_bill` DROP COLUMN `creation_source`;
 ALTER TABLE `register_bill` DROP COLUMN `check_sheet_id`;
-
+ALTER TABLE `register_bill` DROP COLUMN `separate_sales_record_id`;
 
 
 
