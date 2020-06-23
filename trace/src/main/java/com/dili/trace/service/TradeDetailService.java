@@ -61,8 +61,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		item.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 		item.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
 		item.setSaleStatus(SaleStatusEnum.NONE.getCode());
-		item.setTradeWeight(registerBill.getWeight());
-		item.setInventoryWeight(registerBill.getWeight());
+		item.setStockWeight(registerBill.getWeight());
 		item.setTotalWeight(registerBill.getWeight());
 		item.setWeightUnit(registerBill.getWeightUnit());
 		item.setBuyerId(registerBill.getUserId());
@@ -91,8 +90,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return StreamEx.of(input.getTradeDetailInputList()).nonNull().map(record -> {
 			// 理货区分销校验
 			logger.info("parentId={}", record.getParentId());
-			logger.info("salesWeight={}", record.getSalesWeight());
-			if (record.getSalesWeight() == null || record.getSalesWeight() <= 0) {
+			logger.info("salesWeight={}", record.getTradeWeight());
+			if (record.getTradeWeight() == null || BigDecimal.ZERO.compareTo(record.getTradeWeight()) <= 0) {
 				throw new TraceBusinessException("分销重量输入错误");
 			}
 			Long parentTradeId = record.getParentId();
@@ -113,10 +112,10 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			if (!parentTradeInfo.getBuyerId().equals(sellerId)) {
 				throw new TraceBusinessException("没有权限分销");
 			}
-			BigDecimal tradeWeight = BigDecimal.valueOf(record.getSalesWeight());
-			BigDecimal inventoryWeight = parentTradeInfo.getInventoryWeight();
-			logger.info(">>>inventoryWeight={},tradeWeight={}", inventoryWeight, record.getSalesWeight());
-			if (inventoryWeight.compareTo(tradeWeight) < 0) {
+			BigDecimal tradeWeight = record.getTradeWeight();
+			BigDecimal stockWeight = parentTradeInfo.getStockWeight();
+			logger.info(">>>inventoryWeight={},tradeWeight={}", stockWeight, tradeWeight);
+			if (stockWeight.compareTo(tradeWeight) < 0) {
 				throw new TraceBusinessException("分销重量超过可分销重量");
 			}
 			logger.info("扫码分销，判断是否增加上游：salesUserId:{}", buyerId);
@@ -163,11 +162,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			}
 
 			logger.info(">>>change tradeId:{} salesWeiht:{} as: {}", parentTradeInfo.getId(),
-					parentTradeInfo.getInventoryWeight(), inventoryWeight.subtract(tradeWeight).intValue());
+					parentTradeInfo.getStockWeight(), stockWeight.subtract(tradeWeight).intValue());
 
 			// 更新被分销记录的剩余重量
 			TradeDetail updatableRecord = new TradeDetail();
-			updatableRecord.setInventoryWeight(inventoryWeight.subtract(tradeWeight));
+			updatableRecord.setStockWeight(stockWeight.subtract(tradeWeight));
 			updatableRecord.setModified(new Date());
 			updatableRecord.setId(parentTradeInfo.getId());
 			this.updateSelective(updatableRecord);
@@ -177,9 +176,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			insertRecord.setBillId(parentTradeInfo.getBillId());
 			insertRecord.setCreated(new Date());
 			insertRecord.setModified(new Date());
-			insertRecord.setTradeWeight(tradeWeight);
+			insertRecord.setStockWeight(tradeWeight);
 			insertRecord.setTotalWeight(tradeWeight);
-			insertRecord.setInventoryWeight(tradeWeight);
 
 			insertRecord.setCheckinRecordId(parentTradeInfo.getCheckinRecordId());
 			insertRecord.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());

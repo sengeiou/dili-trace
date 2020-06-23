@@ -1,5 +1,7 @@
 package com.dili.trace.dto;
 
+import java.math.BigDecimal;
+
 /**
  * 由MyBatis Generator工具自动生成
  * 
@@ -8,7 +10,7 @@ package com.dili.trace.dto;
 public class TradeDetailInputDto {
 
 	private Long parentId;
-	private Integer salesWeight;
+	private BigDecimal tradeWeight;
 
 	public Long getParentId() {
 		return parentId;
@@ -18,14 +20,12 @@ public class TradeDetailInputDto {
 		this.parentId = parentId;
 	}
 
-	public Integer getSalesWeight() {
-		return salesWeight;
+	public BigDecimal getTradeWeight() {
+		return tradeWeight;
 	}
 
-	public void setSalesWeight(Integer salesWeight) {
-		this.salesWeight = salesWeight;
+	public void setTradeWeight(BigDecimal tradeWeight) {
+		this.tradeWeight = tradeWeight;
 	}
-
-	
 
 }

@@ -75,14 +75,9 @@ public class TradeDetail extends BaseDomain {
 
 
 
-	@ApiModelProperty(value = "交易重量")
-	@Column(name = "`trade_weight`")
-	private BigDecimal tradeWeight;
-
-
 	@ApiModelProperty(value = "库存重量")
-	@Column(name = "`inventory_weight`")
-	private BigDecimal inventoryWeight;
+	@Column(name = "`stock_weight`")
+	private BigDecimal stockWeight;
 	
 	@ApiModelProperty(value = "总重量")
 	@Column(name = "`total_weight`")
@@ -139,15 +134,6 @@ public class TradeDetail extends BaseDomain {
 		this.sellerName = sellerName;
 	}
 
-
-
-	public BigDecimal getTradeWeight() {
-		return tradeWeight;
-	}
-
-	public void setTradeWeight(BigDecimal tradeWeight) {
-		this.tradeWeight = tradeWeight;
-	}
 
 	public Integer getWeightUnit() {
 		return weightUnit;
@@ -237,12 +223,13 @@ public class TradeDetail extends BaseDomain {
 		this.tradeType = tradeType;
 	}
 
-	public BigDecimal getInventoryWeight() {
-		return inventoryWeight;
+
+	public BigDecimal getStockWeight() {
+		return stockWeight;
 	}
 
-	public void setInventoryWeight(BigDecimal inventoryWeight) {
-		this.inventoryWeight = inventoryWeight;
+	public void setStockWeight(BigDecimal stockWeight) {
+		this.stockWeight = stockWeight;
 	}
 
 	public BigDecimal getTotalWeight() {

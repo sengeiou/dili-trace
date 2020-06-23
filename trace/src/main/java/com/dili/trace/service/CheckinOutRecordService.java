@@ -96,7 +96,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			checkoutRecord.setStatus(checkoutStatusEnum.getCode());
 			checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
 			checkoutRecord.setProductName(registerBillItem.getProductName());
-			checkoutRecord.setInoutWeight(tradeDetailItem.getTradeWeight());
+			checkoutRecord.setInoutWeight(tradeDetailItem.getStockWeight());
 			checkoutRecord.setUserName(user.getName());
 
 			checkoutRecord.setOperatorId(operateUser.getId());
