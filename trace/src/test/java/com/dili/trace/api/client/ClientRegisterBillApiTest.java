@@ -65,7 +65,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.setProductName(item.getProductName());
 		rb.setOriginId(item.getOriginId());
 		rb.setOriginName(item.getOriginName());
-		BaseOutput out = this.clientRegisterBillApi.createList(createListBillParam);
+		BaseOutput out = this.clientRegisterBillApi.createRegisterBillList(createListBillParam);
 		System.out.println(out.isSuccess());
 	}
 

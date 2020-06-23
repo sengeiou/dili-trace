@@ -1,0 +1,56 @@
+凭证类型接口:/api/enums/listImageCertType.api
+商品规格接口:/api/enums/listSpecType.api
+获取品类列表：
+  category: "/api/categoryApi/listCategoryByCondition",
+获取城市列表
+cityList: "/api/cityApi/listCityByCondition"
+  upload: "/api/imageApi/upload", //上传图片
+
+
+
+//用户
+  register: "/api/userApi/register.api", //注册
+  login: "/api/loginApi/login.api", //登录
+  quit: "/api/loginApi/quit.api", //登出
+  changePassword: "/api/userApi/changePassword.api", //修改密码
+  getUserInfo: "/api/userApi/get.api", //获取个人信息
+  send: "/api/userApi/sendVerificationCode.api", //发送手机验证码
+  isLogin: "/api/loginApi/isLogin.api", //检查用户登录是否过期   -->
+
+  // 上游企业
+  listPagedUpStream: "/api/upstreamApi/listPagedUpStream.api", //列表
+  deleteUpStream: "/api/upstreamApi/deleteUpStream.api", //删除
+  createUpStream: "/api/upstreamApi/doCreateUpStream.api", //创建上游信息
+  modifyUpStream: "/api/upstreamApi/doModifyUpStream.api", //修改上游信息
+
+买卖家接口:
+1:进场报备:
+/api/client/clientRegisterBill/createRegisterBillList.api
+2:报备单列表
+/api/client/clientRegisterBill/listPage.api
+3:报备单详情
+/api/client/clientRegisterBill/viewRegisterBill.api
+4:订单列表
+/api/client/clientTradeDetail/listPage.api
+5:扫码交易
+/api/client/clientTradeDetail/createTradeDetail.api
+6:溯源列表
+/api/client/clientTrace/listPage.api
+7：溯源详情
+/api/client/clientTrace/viewTrace.api
+
+
+
+监管端接口列表：
+报备单列表:/api/manager/managerRegisterBill/listPage.api
+报备单审核: /api/manager/managerRegisterBill/doVerify.api
+报备单详情:/api/manager/managerRegisterBill/viewRegisterBill.api
+创建报备单:/api/manager/managerRegisterBill/createRegisterBillList.api
+进门列表:
+/api/manager/managerCheckinRecord/listPageCheckInData.api
+进门审核:
+/api/manager/managerCheckinRecord/doCheckin.api
+出门列表:
+/api/manager/managerCheckinRecord/listPageCheckOutData.api
+出门审核：
+/api/manager/managerCheckinRecord/doCheckout.api

@@ -20,8 +20,33 @@ public enum ImageCertTypeEnum {
 	 * 产地证明
 	 */
 	ORIGIN_CERTIFIY(2, "产地证明"),
+	/**
+	 * 产检疫合格证
+	 */
+	QUARANTINE_CERTIFICATE(3, "检疫合格证"),
 
+	/**
+	 * 购货凭证
+	 */
+	PURCHASE_VOUCHER(4, "购货凭证"),
+	
 
+	
+	/**
+	 *报关单
+	 */
+	CUSTOMS_DECLARATION(5, "报关单"),
+	
+	/**
+	 *采购协议
+	 */
+	PURCHASE_AGREEMENT(6, "采购协议"),
+	
+	/**
+	 *其他
+	 */
+	OTHERS(99, "其他"),
+	
 
 	;
 

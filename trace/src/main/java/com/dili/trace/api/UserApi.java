@@ -213,32 +213,7 @@ public class UserApi {
         }
     }
 
-    @ApiOperation(value ="退出【接口已通】", notes = "退出")
-    @RequestMapping(value = "/quit.api", method = RequestMethod.POST)
-    @InterceptConfiguration
-    public BaseOutput<String> quit(){
-        try{
-            sessionContext.setInvalidate(true);
-            return BaseOutput.success();
-        }catch (TraceBusinessException e){
-            return BaseOutput.failure(e.getMessage());
-        }catch (Exception e){
-            LOGGER.error("quit",e);
-            return BaseOutput.failure();
-        }
-    }
 
-    @ApiOperation(value ="验证是否登录【接口已通】", notes = "验证是否登录")
-    @RequestMapping(value = "/isLogin.api", method = RequestMethod.POST)
-    @InterceptConfiguration
-    public BaseOutput<String> isLogin(){
-        try{
-            return BaseOutput.success();
-        }catch (Exception e){
-            LOGGER.error("isLogin",e);
-            return BaseOutput.failure();
-        }
-    }
 
     private void checkRegisterParams(User user){
         if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){

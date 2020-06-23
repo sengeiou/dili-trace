@@ -14,9 +14,6 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "商品ID")
 	private Long productId;
 
-	@ApiModelProperty(value = "产地证明图片")
-	private String originCertifiyUrl;
-
 	@ApiModelProperty(value = "产地ID")
 	private Long originId;
 
@@ -56,14 +53,6 @@ public class CreateRegisterBillInputDto {
 
 	public void setProductId(Long productId) {
 		this.productId = productId;
-	}
-
-	public String getOriginCertifiyUrl() {
-		return originCertifiyUrl;
-	}
-
-	public void setOriginCertifiyUrl(String originCertifiyUrl) {
-		this.originCertifiyUrl = originCertifiyUrl;
 	}
 
 	public Long getOriginId() {

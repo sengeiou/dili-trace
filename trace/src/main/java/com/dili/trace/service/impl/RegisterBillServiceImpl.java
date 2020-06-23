@@ -1,6 +1,7 @@
 package com.dili.trace.service.impl;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.BatchResultDto;
 import com.dili.trace.dto.OperatorUser;
@@ -459,34 +461,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill == null) {
 			return null;
 		}
-		RegisterBillOutputDto outputDto = new RegisterBillOutputDto();
-		try {
-			BeanUtils.copyProperties(outputDto, registerBill);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
-
-
-		// if (StringUtils.isNotBlank(registerBill.getTradeNo())) {
-		// // 交易信息
-		// QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService
-		// .findByTradeNo(registerBill.getTradeNo());
-		// outputDto.setQualityTraceTradeBill(qualityTraceTradeBill);
-		// }
-		// 分销信息
-//		if (registerBill.getSalesType() != null
-//				&& registerBill.getSalesType().intValue() == TradeTypeEnum.SEPARATE_SALES.getCode().intValue()) {
-//			// 分销
-//			List<SeparateSalesRecord> records = separateSalesRecordService
-//					.findByRegisterBillCode(registerBill.getCode());
-//			outputDto.setSeparateSalesRecords(records);
-//		}
-
-		// 检测信息
-		// if (registerBill.getLatestDetectRecordId() != null) {
-		// // 检测信息
-		// outputDto.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
-		// }
+		RegisterBillOutputDto outputDto =RegisterBillOutputDto.build(registerBill, new ArrayList<TradeDetail>());
 		return outputDto;
 	}
 

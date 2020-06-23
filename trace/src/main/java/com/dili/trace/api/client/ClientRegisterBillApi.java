@@ -19,15 +19,18 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.DetectRecordService;
@@ -55,7 +58,6 @@ public class ClientRegisterBillApi {
 	@Autowired
 	private SeparateSalesRecordService separateSalesRecordService;
 
-
 	@Autowired
 	DetectRecordService detectRecordService;
 	@Resource
@@ -69,12 +71,12 @@ public class ClientRegisterBillApi {
 	UpStreamService upStreamService;
 
 	@ApiOperation("保存多个登记单")
-	@RequestMapping(value = "/createList", method = RequestMethod.POST)
-	public BaseOutput createList(@RequestBody CreateListBillParam createListBillParam) {
+	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
+	public BaseOutput createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
 		logger.info("保存多个登记单:");
-		
-		OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
-		
+
+		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+
 		User user = userService.get(operatorUser.getId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
@@ -86,7 +88,7 @@ public class ClientRegisterBillApi {
 		logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
 		for (CreateRegisterBillInputDto dto : registerBills) {
 			logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-			RegisterBill registerBill=new RegisterBill();
+			RegisterBill registerBill = new RegisterBill();
 			registerBill.setOperatorName(user.getName());
 			registerBill.setOperatorId(user.getId());
 			registerBill.setUserId(user.getId());
@@ -107,21 +109,19 @@ public class ClientRegisterBillApi {
 //				registerBill.setTallyAreaNo(user.getTallyAreaNos());
 //			}
 			try {
-				registerBillService.createRegisterBill(registerBill,dto.getImageCertList(),operatorUser);
-			}catch (TraceBusinessException e) {
+				registerBillService.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
+			} catch (TraceBusinessException e) {
 				return BaseOutput.failure(e.getMessage());
 			}
-			
-			
+
 		}
 		return BaseOutput.success();
 	}
 
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
-	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	// @InterceptConfiguration(loginRequired=false)
-	public BaseOutput<EasyuiPageOutput> list(@RequestBody RegisterBillDto registerBill) throws Exception {
+	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
+	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto registerBill) throws Exception {
 		logger.info("获取登记单列表:" + JSON.toJSON(registerBill).toString());
 		User user = userService.get(sessionContext.getAccountId());
 		if (user == null) {
@@ -133,92 +133,30 @@ public class ClientRegisterBillApi {
 			registerBill.setOrder("desc");
 			registerBill.setSort("id");
 		}
-		EasyuiPageOutput easyuiPageOutput = registerBillService.listEasyuiPageByExample(registerBill, true);
-		return BaseOutput.success().setData(easyuiPageOutput);
+		BasePage<RegisterBill> basePage = registerBillService.listPageByExample(registerBill);
+		return BaseOutput.success().setData(basePage);
 	}
-
-	
 
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
-	@RequestMapping(value = "id/{id}", method = RequestMethod.GET)
-	public BaseOutput<RegisterBillOutputDto> getRegisterBill(@PathVariable Long id) {
-		logger.info("获取登记单:" + id);
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		RegisterBill registerBill = registerBillService.get(id);
-		if (registerBill == null) {
-			logger.error("获取登记单失败id:" + id);
-			return BaseOutput.failure();
-		}
-		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
-
-		return BaseOutput.success().setData(bill);
-	}
-
-	@ApiOperation(value = "通过登记单编号获取登记单详细信息")
-	@RequestMapping(value = "/code/{code}", method = RequestMethod.GET)
-	public BaseOutput<RegisterBillOutputDto> getRegisterBillByCode(@PathVariable String code) {
-		logger.info("获取登记单:" + code);
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		RegisterBill registerBill = registerBillService.findByCode(code);
-		if (registerBill == null) {
-			logger.error("获取登记单失败code:" + code);
-			return BaseOutput.failure();
-		}
-		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
-		return BaseOutput.success().setData(bill);
-	}
-
-	
-	@ApiOperation(value = "通过分销记录ID获取分销单")
-	@RequestMapping(value = "/salesRecordId/{salesRecordId}", method = RequestMethod.GET)
-	public BaseOutput<SeparateSalesRecord> getSeparateSalesRecord(@PathVariable Long salesRecordId) {
-		logger.info("获取分销记录:" + salesRecordId);
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		SeparateSalesRecord record = separateSalesRecordService.get(salesRecordId);
-		return BaseOutput.success().setData(record);
-	}
-
-	@ApiOperation(value = "通过登记单商品名获取登记单", httpMethod = "GET", notes = "productName=?")
-	@RequestMapping(value = "/productName/{productName}", method = RequestMethod.GET)
-	public BaseOutput<List<RegisterBill>> getBillByProductName(@PathVariable String productName) {
-		logger.info("获取登记单&分销记录:" + productName);
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		List<RegisterBill> bills = registerBillService.findByProductName(productName);
-		return BaseOutput.success().setData(bills);
-	}
-
-	@ApiOperation(value = "通过code删除登记单", httpMethod = "GET", notes = "productName=?")
-	@RequestMapping(value = "/deleteRegisterBillByCode/{registerBillCode}", method = RequestMethod.GET)
-	public BaseOutput<Object> deleteRegisterBillByCode(@PathVariable String registerBillCode) {
-		logger.info("通过code删除登记单:{}", registerBillCode);
-		User user = userService.get(sessionContext.getAccountId());
-		if (StringUtils.isBlank(registerBillCode)) {
+	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
+	public BaseOutput<RegisterBillOutputDto> viewRegisterBill(@RequestBody RegisterBillApiInputDto inputDto) {
+		if(inputDto==null||inputDto.getBillId()==null) {
 			return BaseOutput.failure("参数错误");
 		}
-		RegisterBill registerBill = this.registerBillService.findByCode(registerBillCode);
+		logger.info("获取登记单:" + inputDto.getBillId());
+		User user = userService.get(sessionContext.getAccountId());
+		if (user == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
+		RegisterBill registerBill = registerBillService.get(inputDto.getBillId());
 		if (registerBill == null) {
-			return BaseOutput.failure("登记单不存在");
+			logger.error("获取登记单失败id:" + inputDto.getBillId());
+			return BaseOutput.failure();
 		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(registerBill.getState())) {
-			return BaseOutput.failure("不能删除当前状态登记单");
-		}
-		this.registerBillService.delete(registerBill.getId());
-		return BaseOutput.success().setData(true);
+		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
 
+		return BaseOutput.success().setData(bill);
 	}
 
-	
 
 }

@@ -38,8 +38,8 @@ import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 
 @RestController
-@RequestMapping(value = "/api/manager/manageRegisterBill")
-@Api(value = "/api/manager/manageRegisterBill", description = "登记单相关接口")
+@RequestMapping(value = "/api/manager/managerRegisterBill")
+@Api(value = "/api/manager/managerRegisterBill", description = "登记单相关接口")
 public class ManagerRegisterBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerRegisterBillApi.class);
 	@Autowired
@@ -49,8 +49,8 @@ public class ManagerRegisterBillApi {
 	@Autowired
 	UserService userService;
 	@ApiOperation("保存多个登记单")
-	@RequestMapping(value = "/createList", method = RequestMethod.POST)
-	public BaseOutput createList(@RequestBody CreateListBillParam createListBillParam) {
+	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
+	public BaseOutput createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
 		logger.info("保存多个登记单:");
 		if(createListBillParam==null||createListBillParam.getUserId()==null||createListBillParam.getRegisterBills()==null) {
 			return BaseOutput.failure("参数错误");
@@ -100,8 +100,40 @@ public class ManagerRegisterBillApi {
 	}
 	
 	@ApiOperation(value = "获得指定用户登记单信息")
-	@RequestMapping(value = "/listVerifyableBill.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> listVerifyableBill(@RequestBody RegisterBill input) {
+	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
+	public BaseOutput<BasePage<RegisterBill>> listAllRegisterBill(@RequestBody RegisterBill input) {
+		if(input==null||input.getUserId()==null) {
+			return BaseOutput.failure("参数错误");
+		}
+		try {
+			OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			RegisterBillDto query = new RegisterBillDto();
+			query.setSort("modified");
+			query.setOrder("desc");
+			query.setUserId(input.getUserId());
+			BasePage<RegisterBill> page = this.registerBillService.listPageByExample(query);
+
+			List<RegisterBillOutput> list = StreamEx.of(page.getDatas()).map(rb -> {
+				RegisterBillOutput dto = new RegisterBillOutput();
+				dto.setVerifyStatus(rb.getVerifyStatus());
+				dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
+						.map(BillVerifyStatusEnum::getName).orElse(""));
+				dto.setBillId(rb.getId());
+				dto.setProductName(rb.getProductName());
+				dto.setColor(ColorEnum.GREEN.getCode());
+				return dto;
+			}).toList();
+
+			return BaseOutput.success().setData(BasePageUtil.convert(list, page));
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
+	}
+	@ApiOperation(value = "获得登记单详情")
+	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
+	public BaseOutput<BasePage<RegisterBill>> viewRegisterBill(@RequestBody RegisterBill input) {
 		if(input==null||input.getUserId()==null) {
 			return BaseOutput.failure("参数错误");
 		}

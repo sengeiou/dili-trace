@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.components.LoginComponent;
@@ -28,6 +30,8 @@ public class LoginApi {
 	private static final Logger logger = LoggerFactory.getLogger(LoginApi.class);
 
 	@Autowired
+	LoginSessionContext loginSessionContext;
+	@Autowired
 	private LoginComponent loginComponent;
 
 	@ApiOperation(value = "登录", notes = "登录")
@@ -43,5 +47,35 @@ public class LoginApi {
 			return BaseOutput.failure();
 		}
 	}
+
+    @ApiOperation(value ="验证是否登录【接口已通】", notes = "验证是否登录")
+    @RequestMapping(value = "/isLogin.api", method = RequestMethod.POST)
+    @InterceptConfiguration
+    public BaseOutput<String> isLogin(){
+        try{
+        	if(this.loginSessionContext.getAccountId()==null) {
+        	    return BaseOutput.success().setData(false);
+        	}
+        	 return BaseOutput.success().setData(true);
+        }catch (Exception e){
+        	logger.error("isLogin",e);
+            return BaseOutput.failure();
+        }
+    }
+
+    @ApiOperation(value ="退出【接口已通】", notes = "退出")
+    @RequestMapping(value = "/quit.api", method = RequestMethod.POST)
+    @InterceptConfiguration
+    public BaseOutput<String> quit(){
+        try{
+        	loginSessionContext.setInvalidate(true);
+            return BaseOutput.success();
+        }catch (TraceBusinessException e){
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+        	logger.error("quit",e);
+            return BaseOutput.failure();
+        }
+    }
 
 }

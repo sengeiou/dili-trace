@@ -19,7 +19,7 @@ import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.SeparateSalesInputDTO;
+import com.dili.trace.dto.TradeDetailInputWrapperDto;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
@@ -34,7 +34,7 @@ import com.dili.trace.service.impl.SeparateSalesRecordServiceImpl;
 import one.util.streamex.StreamEx;
 
 @Service
-public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
+public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	private static final Logger logger = LoggerFactory.getLogger(SeparateSalesRecordServiceImpl.class);
 
 	@Autowired
@@ -43,21 +43,18 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 	UserService userService;
 	@Autowired
 	UpStreamService upStreamService;
-	
+
 	@Transactional
 	public TradeDetail createTradeInfoForBill(Long billId) {
-		
-		RegisterBill registerBill=this.registerBillService.get(billId);
-		
+
+		RegisterBill registerBill = this.registerBillService.get(billId);
+
 		TradeDetail queryCondition = new TradeDetail();
 		queryCondition.setBillId(billId);
 		queryCondition.setTradeType(TradeTypeEnum.NONE.getCode());
-		
-	
 
-		TradeDetail item = this.listByExample(queryCondition).stream().findFirst()
-				.orElse(new TradeDetail());
-		
+		TradeDetail item = this.listByExample(queryCondition).stream().findFirst().orElse(new TradeDetail());
+
 		item.setParentId(null);
 		item.setBillId(registerBill.getId());
 		item.setTradeType(TradeTypeEnum.NONE.getCode());
@@ -70,7 +67,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 		item.setWeightUnit(registerBill.getWeightUnit());
 		item.setBuyerId(registerBill.getUserId());
 		item.setBuyerName(registerBill.getName());
-		
+
 		item.setModified(new Date());
 		if (item.getId() == null) {
 			item.setCreated(new Date());
@@ -81,15 +78,17 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 		}
 		return item;
 	}
+
 	@Transactional
-	public List<Long> createTradeList(SeparateSalesInputDTO input, User sellerUser, Long buyerId) {
-//		if (sellerUser.getId().equals(input.getSalesUserId())) {
-//			throw new BusinessException("买卖家不能相同");
-//		}
-		logger.info("seller userid={}", sellerUser.getId());
+	public List<Long> createTradeList(TradeDetailInputWrapperDto input, Long sellerId) {
+		if (input == null || sellerId == null || input.getBuyerId() == null) {
+			throw new TraceBusinessException("参数错误");
+		}
+		Long buyerId = input.getBuyerId();
+		logger.info("seller userid={}", sellerId);
 		logger.info("buyer userid={}", buyerId);
-		
-		return StreamEx.of(input.getSeparateList()).nonNull().map( record->{
+
+		return StreamEx.of(input.getTradeDetailInputList()).nonNull().map(record -> {
 			// 理货区分销校验
 			logger.info("parentId={}", record.getParentId());
 			logger.info("salesWeight={}", record.getSalesWeight());
@@ -97,7 +96,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 				throw new TraceBusinessException("分销重量输入错误");
 			}
 			Long parentTradeId = record.getParentId();
-			
+
 			if (parentTradeId == null) {
 				throw new TraceBusinessException("没有需要分销的登记单");
 			}
@@ -107,11 +106,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 				throw new TraceBusinessException("没有需要分销的数据");
 			}
 
-			if(!SaleStatusEnum.FOR_SALE.equalsToCode(parentTradeInfo.getSaleStatus())) {
+			if (!SaleStatusEnum.FOR_SALE.equalsToCode(parentTradeInfo.getSaleStatus())) {
 				throw new TraceBusinessException("当前状态不能进行分销");
 			}
 
-			if (!parentTradeInfo.getBuyerId().equals(sellerUser.getId())) {
+			if (!parentTradeInfo.getBuyerId().equals(sellerId)) {
 				throw new TraceBusinessException("没有权限分销");
 			}
 			BigDecimal tradeWeight = BigDecimal.valueOf(record.getSalesWeight());
@@ -120,66 +119,60 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 			if (inventoryWeight.compareTo(tradeWeight) < 0) {
 				throw new TraceBusinessException("分销重量超过可分销重量");
 			}
-			if (input.getSalesUserId() != null) {
-				logger.info("扫码分销，判断是否增加上游：salesUserId:{}", input.getSalesUserId());
-				User buyerUserItem = this.userService.get(buyerId);
-				if (buyerUserItem == null) {
-					throw new TraceBusinessException("买家用户不存在");
-				}
-				boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(buyerId).stream()
-						.anyMatch(up -> buyerUserItem.getId().equals(up.getSourceUserId()));
+			logger.info("扫码分销，判断是否增加上游：salesUserId:{}", buyerId);
+			User buyerUserItem = this.userService.get(buyerId);
+			if (buyerUserItem == null) {
+				throw new TraceBusinessException("买家用户不存在");
+			}
+			boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(buyerId).stream()
+					.anyMatch(up -> buyerUserItem.getId().equals(up.getSourceUserId()));
 
-				// 扫码分销
-				if (!hasUpStream) {
-					UpStream upStream = this.upStreamService.queryUpStreamBySourceUserId(buyerUserItem.getId());
-					UpStreamDto upStreamDto = new UpStreamDto();
-					if (upStream == null) {
-						if (UserTypeEnum.USER.getCode().equals(buyerUserItem.getUserType())) {
-							upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
-						} else {
-							upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
-						}
-
-						upStreamDto.setIdCard(buyerUserItem.getCardNo());
-						upStreamDto.setManufacturingLicenseUrl(buyerUserItem.getManufacturingLicenseUrl());
-						upStreamDto.setOperationLicenseUrl(buyerUserItem.getOperationLicenseUrl());
-						upStreamDto.setCardNoFrontUrl(buyerUserItem.getCardNoFrontUrl());
-						upStreamDto.setCardNoBackUrl(buyerUserItem.getCardNoBackUrl());
-						upStreamDto.setName(buyerUserItem.getName());
-						upStreamDto.setSourceUserId(buyerUserItem.getId());
-						upStreamDto.setLicense(buyerUserItem.getLicense());
-						upStreamDto.setTelphone(buyerUserItem.getPhone());
-						upStreamDto.setBusinessLicenseUrl(buyerUserItem.getBusinessLicenseUrl());
-						upStreamDto.setUserIds(Arrays.asList(input.getSalesUserId()));
-						upStreamDto.setCreated(new Date());
-						upStreamDto.setModified(new Date());
-						this.upStreamService.addUpstream(upStreamDto,
-								new OperatorUser(buyerUserItem.getId(), buyerUserItem.getName()));
+			// 扫码分销
+			if (!hasUpStream) {
+				UpStream upStream = this.upStreamService.queryUpStreamBySourceUserId(buyerUserItem.getId());
+				UpStreamDto upStreamDto = new UpStreamDto();
+				if (upStream == null) {
+					if (UserTypeEnum.USER.getCode().equals(buyerUserItem.getUserType())) {
+						upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
 					} else {
-						upStreamDto.setUserIds(Arrays.asList(input.getSalesUserId()));
-						upStreamDto.setId(upStream.getId());
-						this.upStreamService.addUpstreamUsers(upStreamDto,
-								new OperatorUser(buyerUserItem.getId(), buyerUserItem.getName()));
+						upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
 					}
 
+					upStreamDto.setIdCard(buyerUserItem.getCardNo());
+					upStreamDto.setManufacturingLicenseUrl(buyerUserItem.getManufacturingLicenseUrl());
+					upStreamDto.setOperationLicenseUrl(buyerUserItem.getOperationLicenseUrl());
+					upStreamDto.setCardNoFrontUrl(buyerUserItem.getCardNoFrontUrl());
+					upStreamDto.setCardNoBackUrl(buyerUserItem.getCardNoBackUrl());
+					upStreamDto.setName(buyerUserItem.getName());
+					upStreamDto.setSourceUserId(buyerUserItem.getId());
+					upStreamDto.setLicense(buyerUserItem.getLicense());
+					upStreamDto.setTelphone(buyerUserItem.getPhone());
+					upStreamDto.setBusinessLicenseUrl(buyerUserItem.getBusinessLicenseUrl());
+					upStreamDto.setUserIds(Arrays.asList(buyerId));
+					upStreamDto.setCreated(new Date());
+					upStreamDto.setModified(new Date());
+					this.upStreamService.addUpstream(upStreamDto,
+							new OperatorUser(buyerUserItem.getId(), buyerUserItem.getName()));
+				} else {
+					upStreamDto.setUserIds(Arrays.asList(buyerId));
+					upStreamDto.setId(upStream.getId());
+					this.upStreamService.addUpstreamUsers(upStreamDto,
+							new OperatorUser(buyerUserItem.getId(), buyerUserItem.getName()));
 				}
 
-
 			}
-			
-			logger.info(">>>change tradeId:{} salesWeiht:{} as: {}", parentTradeInfo.getId(), parentTradeInfo.getInventoryWeight(),
-					inventoryWeight.subtract(tradeWeight).intValue());
-			
+
+			logger.info(">>>change tradeId:{} salesWeiht:{} as: {}", parentTradeInfo.getId(),
+					parentTradeInfo.getInventoryWeight(), inventoryWeight.subtract(tradeWeight).intValue());
+
 			// 更新被分销记录的剩余重量
 			TradeDetail updatableRecord = new TradeDetail();
 			updatableRecord.setInventoryWeight(inventoryWeight.subtract(tradeWeight));
 			updatableRecord.setModified(new Date());
 			updatableRecord.setId(parentTradeInfo.getId());
 			this.updateSelective(updatableRecord);
-			
-			TradeDetail insertRecord=new TradeDetail();
 
-
+			TradeDetail insertRecord = new TradeDetail();
 
 			insertRecord.setBillId(parentTradeInfo.getBillId());
 			insertRecord.setCreated(new Date());
@@ -187,12 +180,10 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 			insertRecord.setTradeWeight(tradeWeight);
 			insertRecord.setTotalWeight(tradeWeight);
 			insertRecord.setInventoryWeight(tradeWeight);
-			
-			
+
 			insertRecord.setCheckinRecordId(parentTradeInfo.getCheckinRecordId());
 			insertRecord.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());
 			this.saveOrUpdate(insertRecord);
-
 
 			return insertRecord.getId();
 		}).toList();

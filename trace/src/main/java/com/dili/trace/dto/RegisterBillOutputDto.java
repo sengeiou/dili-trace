@@ -1,37 +1,40 @@
 package com.dili.trace.dto;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import com.dili.trace.domain.DetectRecord;
+import org.apache.commons.beanutils.BeanUtils;
+
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.TradeDetail;
 
-/**
- * Created by laikui on 2019/7/30.
- */
 public class RegisterBillOutputDto extends RegisterBill {
-	private List<SeparateSalesRecord> separateSalesRecords;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private List<TradeDetail> tradeDetailList;
 
-	private DetectRecord detectRecord;
-
-
-	public List<SeparateSalesRecord> getSeparateSalesRecords() {
-		return separateSalesRecords;
+	public List<TradeDetail> getTradeDetailList() {
+		return tradeDetailList;
 	}
 
-	public void setSeparateSalesRecords(List<SeparateSalesRecord> separateSalesRecords) {
-		this.separateSalesRecords = separateSalesRecords;
+	public void setTradeDetailList(List<TradeDetail> tradeDetailList) {
+		this.tradeDetailList = tradeDetailList;
+	}
+	public static RegisterBillOutputDto build(RegisterBill registerBill,List<TradeDetail> tradeDetailList) {
+		
+		RegisterBillOutputDto dest=new RegisterBillOutputDto();
+		try {
+			BeanUtils.copyProperties(dest, registerBill);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new TraceBusinessException("数据结构转换出错");
+		}
+		dest.setTradeDetailList(tradeDetailList);
+		return dest;
+		
+		
 	}
 
-	public DetectRecord getDetectRecord() {
-		return detectRecord;
-	}
-
-	public void setDetectRecord(DetectRecord detectRecord) {
-		this.detectRecord = detectRecord;
-	}
-
-
-	
-	
 }

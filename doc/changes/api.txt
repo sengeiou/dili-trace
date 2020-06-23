@@ -1,0 +1,52 @@
+
+  
+
+  市场用户(客户)接口:
+ 创建登记单: /api/client/clientRegisterBill/createRegisterBillList.api
+ {
+	 [
+	 	productName:"大白菜",//商品名称
+		productId:123,//商品ID
+		originId:11,//产地ID
+		originName:"北京",//产地名
+		weight:12.34,//重量
+		weightUnit://重量单位	JIN(1, "斤"),KILO(2, "公斤")
+	 ],
+	 ...
+ }
+ 
+ (当前用户)登记单列表:/api/client/clientRegisterBill/listRegisterBill.api
+ 通过id获得登记单信息：/api/client/clientRegisterBill/getRegisterBillByBillId.api
+参数：
+{
+billId:123//登记单ID
+}
+ 
+  下面这些都不可用或者hz的版本是不需要的
+  [createExamine: "/api/bill/createList", //创建登记单]
+  [extraExamineList: "/api/allRegisterBillApi/listAllRegisterBill", //指定登记单列表]
+  [newExamineList: "/api/separateSales/list", //新登记单列表]
+  [getExtraExamine: "/api/allRegisterBillApi/id", //指定登记单详情]
+  [getNewExamine: "/api/separateSales/id", //新登记单详情]
+  [getExtraExamineMulti: "/api/allRegisterBillApi/findTop2AndLatest", //指定登记单检测记录]
+  [createSalesRecord: "/api/separateSales/createSalesRecordList", //创建分销单]
+  [doNoSalesRecord: "/api/bill/doNoSalesRecord", //不创建分销单]
+  [deleteRegisterBillByCode: "/api/bill/deleteRegisterBillByCode", //删除登记单]
+  [newDeleteRegisterBillByCode: "/api/separateSales/delete", //新删除登记单]
+  [getUserPlate: "/api/userApi/getUserPlate.api", //获取登记车牌号]
+
+
+
+
+
+
+
+
+  checkInList: "/api/checkinRecordApi/listPagedAvailableCheckInData.api", //进场登记单列表->/api/manager/managerRegisterBill/listAllRegisterBill.api
+  checkOutList: "/api/checkinRecordApi/listPagedAvailableCheckOutData.api", //出场登记单列表->/api/manager/manageTradeDetail/listAvailableCheckOutTradeDetail.api
+  checkInDetail: "/api/checkinRecordApi/getCheckInDetail.api", //进场登记单详情->/api/manager/managerRegisterBill/viewRegisterBill.api
+  checkInState: "/api/checkinRecordApi/doCheckin.api", //进场登记单审核->/api/manager/managerCheckinRecord/doCheckin.api
+  checkOutDetail: "/api/checkinRecordApi/getCheckoutDataDetail.api", //出场登记单详情->/api/manager/manageTradeDetail/viewCheckOutTradeDetail.api
+  checkOutState: "/api/checkinRecordApi/doCheckout.api", //出场登记单审核->/api/manager/managerCheckinRecord/doCheckout.api
+  [已删除，不再需要：manullyCheck: "/api/checkinRecordApi/doManullyCheck.api", //人工检测合格或不合格]
+  ioList: "/api/checkinRecordApi/listPagedData.api", //首页列表->/api/manager/managerCheckinRecord/listAllCheckInOutData.api

@@ -5,7 +5,7 @@ package com.dili.trace.dto;
  * 
  * This file was generated on 2019-07-26 09:20:35.
  */
-public class SeparateSalesRecordInput {
+public class TradeDetailInputDto {
 
 	private Long parentId;
 	private Integer salesWeight;

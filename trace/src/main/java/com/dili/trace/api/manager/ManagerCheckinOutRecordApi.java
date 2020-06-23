@@ -1,6 +1,7 @@
 package com.dili.trace.api.manager;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -16,9 +17,11 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CheckInApiInput;
 import com.dili.trace.api.input.CheckOutApiInput;
+import com.dili.trace.api.output.CheckoutApiListQuery;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.CheckinOutRecordService;
@@ -33,7 +36,7 @@ import io.swagger.annotations.Api;
 @Api(value = "/api/manager/managerCheckinRecordApi")
 @RestController
 @InterceptConfiguration
-@RequestMapping(value = "/api/manager/managerCheckinRecordApi")
+@RequestMapping(value = "/api/manager/managerCheckinRecord")
 public class ManagerCheckinOutRecordApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerCheckinOutRecordApi.class);
 	@Resource
@@ -88,63 +91,31 @@ public class ManagerCheckinOutRecordApi {
 
 	}
 
-//	/**
-//	 * 分页查询需要被进场查询的信息
-//	 */
-//	@SuppressWarnings("unchecked")
-//	@RequestMapping(value = "/getCheckInDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
-//	public BaseOutput<CheckInApiDetailOutput> getCheckInDetail(@RequestBody RegisterBillDto query) {
-//		if (sessionContext.getAccountId() == null) {
-//			return BaseOutput.failure("未登陆用户");
-//		}
-//		if (query == null || query.getId() == null) {
-//			return BaseOutput.failure("参数错误");
-//		}
-//
-//		CheckInApiDetailOutput detail = this.checkinOutRecordService.getCheckInDetail(query.getId()).orElse(null);
-//		if (detail != null) {
-//			return BaseOutput.success().setData(detail);
-//		}
-//		return BaseOutput.failure("没有查找到详情");
-//
-//	}
 
-//	/**
-//	 * 出场详情
-//	 */
-//	@SuppressWarnings({"rawtypes" })
-//	@RequestMapping(value = "/getCheckoutDataDetail.api", method = { RequestMethod.POST, RequestMethod.GET })
-//	public BaseOutput getCheckoutDataDetail(@RequestBody CheckoutApiListQuery input) {
-//		if (sessionContext.getAccountId() == null) {
-//			return BaseOutput.failure("未登陆用户");
-//		}
-//		if (input == null || input.getSeparateSalesId() == null) {
-//			return BaseOutput.failure("参数错误");
-//		}
-//		try {
-//			CheckoutApiDetailOutput detailOutput = this.checkinOutRecordService
-//					.getCheckoutDataDetail(input.getSeparateSalesId());
-//			return BaseOutput.success().setData(detailOutput);
-//		} catch (BusinessException e) {
-//			return BaseOutput.failure(e.getMessage());
-//		} catch (Exception e) {
-//			logger.error(e.getMessage(), e);
-//			return BaseOutput.failure("服务端出错");
-//		}
-//
-//	}
+	/**
+	 * 分页查询需要出场查询的信息
+	 */
+	@RequestMapping(value = "/listPageCheckInData.api", method = { RequestMethod.POST})
+	public BaseOutput<BasePage<Map<String,Object>>> listPageCheckInData(@RequestBody CheckoutApiListQuery query) {
+		
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
 
-//	/**
-//	 * 分页查询需要出场查询的信息
-//	 */
-//	@RequestMapping(value = "/listPagedData.api", method = { RequestMethod.POST, RequestMethod.GET })
-//	public BaseOutput<BasePage<Map<String,Object>>> listPagedData(@RequestBody CheckoutApiListQuery query) {
-//		
-//		if (sessionContext.getAccountId() == null) {
-//			return BaseOutput.failure("未登陆用户");
-//		}
-//
-//		return this.checkinOutRecordService.listPagedData(query, sessionContext.getAccountId());
-//		
-//	}
+		return this.checkinOutRecordService.listPagedData(query, sessionContext.getAccountId());
+		
+	}
+	/**
+	 * 分页查询需要出场查询的信息
+	 */
+	@RequestMapping(value = "/listPageCheckOutData.api", method = { RequestMethod.POST})
+	public BaseOutput<BasePage<Map<String,Object>>> listPageCheckOutData(@RequestBody CheckoutApiListQuery query) {
+		
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
+
+		return this.checkinOutRecordService.listPagedData(query, sessionContext.getAccountId());
+		
+	}
 }
