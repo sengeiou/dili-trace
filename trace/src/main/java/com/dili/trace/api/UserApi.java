@@ -9,7 +9,7 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.PatternConstants;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.UUIDUtil;
 import com.dili.common.util.VerificationCodeUtil;
@@ -71,7 +71,7 @@ public class UserApi {
             user.setCardNo(StringUtils.upperCase(user.getCardNo()));
             userService.register(user,true);
             return BaseOutput.success().setData(user.getId());
-        }catch (BusinessException e){
+        }catch (TraceBusinessException e){
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
             LOGGER.error("register",e);
@@ -138,12 +138,12 @@ public class UserApi {
                 return BaseOutput.failure("确认密码为空");
             }
             if(!user.getPassword().equals(user.getAckPassword())){
-                throw new BusinessException("密码与确认密码不同");
+                throw new TraceBusinessException("密码与确认密码不同");
             }
             user.setPassword(MD5Util.md5(user.getPassword()));
             userService.resetPassword(user);
             return BaseOutput.success();
-        }catch (BusinessException e){
+        }catch (TraceBusinessException e){
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
             LOGGER.error("resetPassword",e);
@@ -198,14 +198,14 @@ public class UserApi {
                 return BaseOutput.failure("确认密码为空");
             }
             if(!user.getPassword().equals(user.getAckPassword())){
-                throw new BusinessException("密码与确认密码不同");
+                throw new TraceBusinessException("密码与确认密码不同");
             }
             user.setPassword(MD5Util.md5(user.getPassword()));
             user.setOldPassword(MD5Util.md5(user.getOldPassword()));
             user.setId(sessionContext.getAccountId());
             userService.changePassword(user);
             return BaseOutput.success();
-        }catch (BusinessException e){
+        }catch (TraceBusinessException e){
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
             LOGGER.error("changePassword",e);
@@ -220,7 +220,7 @@ public class UserApi {
         try{
             sessionContext.setInvalidate(true);
             return BaseOutput.success();
-        }catch (BusinessException e){
+        }catch (TraceBusinessException e){
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
             LOGGER.error("quit",e);
@@ -242,31 +242,31 @@ public class UserApi {
 
     private void checkRegisterParams(User user){
         if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
-            throw new BusinessException("手机号为空或格式错误");
+            throw new TraceBusinessException("手机号为空或格式错误");
         }
         if(StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO,user.getCardNo())){
-            throw new BusinessException("身份证为空或格式错误");
+            throw new TraceBusinessException("身份证为空或格式错误");
         }
         if(StrUtil.isBlank(user.getCheckCode())){
-            throw new BusinessException("验证码为空");
+            throw new TraceBusinessException("验证码为空");
         }
         if(StrUtil.isBlank(user.getTallyAreaNos()) || !ReUtil.isMatch(PatternConstants.TALLY_AREA_NO,user.getTallyAreaNos())){
-            throw new BusinessException("理货区号为空或格式错误");
+            throw new TraceBusinessException("理货区号为空或格式错误");
         }
         if(Arrays.asList(user.getTallyAreaNos().split(",")).size()>15){
-            throw new BusinessException("用户最多添加15个理货区");
+            throw new TraceBusinessException("用户最多添加15个理货区");
         }
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
-            throw new BusinessException("姓名为空或格式错误");
+            throw new TraceBusinessException("姓名为空或格式错误");
         }
         if(StrUtil.isBlank(user.getPassword())){
-            throw new BusinessException("密码为空");
+            throw new TraceBusinessException("密码为空");
         }
         if(StrUtil.isBlank(user.getAckPassword())){
-            throw new BusinessException("确认密码为空");
+            throw new TraceBusinessException("确认密码为空");
         }
         if(!user.getPassword().equals(user.getAckPassword())){
-            throw new BusinessException("密码与确认密码不同");
+            throw new TraceBusinessException("密码与确认密码不同");
         }
     }
 

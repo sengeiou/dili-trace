@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.ApproverInfo;
@@ -98,7 +98,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 			RegisterBill item = new RegisterBill();
 			item.setId(detail.getRegisterBillId());
 
-			item.setCheckSheetId(checkSheet.getId());
+//			item.setCheckSheetId(checkSheet.getId());
 			return item;
 		}).collect(Collectors.toList());
 
@@ -147,11 +147,11 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 	@Override
 	public Map findPrintableCheckSheet(Long id) {
 		if(id==null) {
-			throw new BusinessException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 		CheckSheet checkSheet=this.get(id);
 		if(checkSheet==null) {
-			throw new BusinessException("数据不存在");
+			throw new TraceBusinessException("数据不存在");
 		}
 		CheckSheetDetail queryDomain=DTOUtils.newDTO(CheckSheetDetail.class);
 		queryDomain.setCheckSheetId(checkSheet.getId());
@@ -167,7 +167,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		Date created=checkSheet.getCreated();
 		ApproverInfo approverInfo = this.approverInfoService.get(checkSheet.getApproverInfoId());
 		if (approverInfo == null) {
-			throw new BusinessException("提交的数据错误");
+			throw new TraceBusinessException("提交的数据错误");
 		}
 		String base64Sign = this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
 		checkSheet.setApproverBase64Sign(base64Sign);
@@ -257,7 +257,7 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 
 			RegisterBill item = new RegisterBill();
 			item.setId(bill.getId());
-			item.setCheckSheetId(bill.getCheckSheetId());
+//			item.setCheckSheetId(bill.getCheckSheetId());
 			return item;
 		}).collect(Collectors.toList());
 		return MutableTriple.of(input, checkSheetDetailList, updateRegisterBillList);
@@ -279,11 +279,11 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 				}).collect(Collectors.toMap(RegisterBill::getId, item -> item.getAliasName()));
 
 		if (idAndAliasNameMap.isEmpty()) {
-			throw new BusinessException("提交的数据错误");
+			throw new TraceBusinessException("提交的数据错误");
 		}
 		ApproverInfo approverInfo = this.approverInfoService.get(input.getApproverInfoId());
 		if (approverInfo == null) {
-			throw new BusinessException("提交的数据错误");
+			throw new TraceBusinessException("提交的数据错误");
 		}
 //		String base64Sign = this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
 //		input.setApproverBase64Sign(base64Sign);
@@ -296,23 +296,23 @@ public class CheckSheetServiceImpl extends BaseServiceImpl<CheckSheet, Long> imp
 		List<RegisterBill> registerBillList = registerBillService.listByExample(queryCondition);
 
 		if (registerBillList.isEmpty()) {
-			throw new BusinessException("提交的数据错误");
+			throw new TraceBusinessException("提交的数据错误");
 		}
 
-		boolean withoutCheckSheet = registerBillList.stream().allMatch(bill -> bill.getCheckSheetId() == null);
-		if (!withoutCheckSheet) {
-			throw new BusinessException("已经有登记单创建了打印报告");
-		}
+//		boolean withoutCheckSheet = registerBillList.stream().allMatch(bill -> bill.getCheckSheetId() == null);
+//		if (!withoutCheckSheet) {
+//			throw new TraceBusinessException("已经有登记单创建了打印报告");
+//		}
 		boolean allBelongSamePerson = registerBillList.stream().map(RegisterBill::getIdCardNo).distinct().count() == 1;
 		if (!allBelongSamePerson) {
-			throw new BusinessException("登记单不属于同一个业户");
+			throw new TraceBusinessException("登记单不属于同一个业户");
 		}
 
 		boolean allChecked = registerBillList.stream()
 				.allMatch(bill -> BillDetectStateEnum.PASS.getCode().equals(bill.getDetectState())
 						|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(bill.getDetectState()));
 		if (!allChecked) {
-			throw new BusinessException("登记单状态错误");
+			throw new TraceBusinessException("登记单状态错误");
 		}
 		return MutablePair.of(registerBillList, idAndAliasNameMap);
 	}

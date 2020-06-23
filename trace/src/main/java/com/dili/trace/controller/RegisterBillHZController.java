@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.input.CheckInApiInput;
@@ -97,11 +97,12 @@ public class RegisterBillHZController {
 	public @ResponseBody BaseOutput insert(@RequestBody RegisterBillInputDto input) {
 		List<Long> idList = input.getIdList().stream().filter(Objects::nonNull).collect(Collectors.toList());
 		try {
+			UserTicket userTicket=SessionContext.getSessionContext().getUserTicket();
 			if (idList.isEmpty()) {
 				// insert
 				List<RegisterBill> billList = this.buildRegisterBillList(input, new Long[] { 0L }, true);
 				for (RegisterBill bill : billList) {
-					BaseOutput out = this.registerBillService.createRegisterBill(bill,new ArrayList<ImageCert>());
+					BaseOutput out = this.registerBillService.createRegisterBill(bill,new ArrayList<ImageCert>(),new OperatorUser(userTicket.getId(), userTicket.getRealName()));
 					if (!out.isSuccess()) {
 						return out;
 					}
@@ -133,7 +134,7 @@ public class RegisterBillHZController {
 					Long userId = input.getUserId();
 					User user = this.userService.get(userId);
 					RegisterBill bill = new RegisterBill();
-					bill.setRegisterSource(RegisterSourceEnum.TRADE_AREA.getCode());
+//					bill.setRegisterSource(RegisterSourceEnum.TRADE_AREA.getCode());
 					bill.setId(id);
 
 					Long upStreamId = input.getUpStreamIdList().get(index);
@@ -151,7 +152,7 @@ public class RegisterBillHZController {
 					bill.setIdCardNo(user.getCardNo());
 					bill.setAddr(user.getAddr());
 					bill.setUserId(user.getId());
-					bill.setTallyAreaNo(user.getTallyAreaNos());
+//					bill.setTallyAreaNo(user.getTallyAreaNos());
 
 					return bill;
 
@@ -219,7 +220,7 @@ public class RegisterBillHZController {
 					checkInApiInput);
 
 			return BaseOutput.success();
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

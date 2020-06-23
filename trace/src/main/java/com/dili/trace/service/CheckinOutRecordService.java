@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -69,22 +69,22 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	public List<CheckinOutRecord> doCheckout(OperatorUser operateUser, CheckOutApiInput checkOutApiInput) {
 		if (checkOutApiInput == null || checkOutApiInput.getTradeDetailIdList() == null
 				|| checkOutApiInput.getCheckoutStatus() == null) {
-			throw new BusinessException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 		CheckoutStatusEnum checkoutStatusEnum = CheckoutStatusEnum.fromCode(checkOutApiInput.getCheckoutStatus());
 
 		if (checkoutStatusEnum == null) {
-			throw new BusinessException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 		return StreamEx.of(checkOutApiInput.getTradeDetailIdList()).nonNull().map(id -> {
 			TradeDetail record= this.tradeInfoService.get(id);
 			if(record==null) {
-				throw new BusinessException("请求出门的数据不存在"); 
+				throw new TraceBusinessException("请求出门的数据不存在"); 
 			}
 			if(SaleStatusEnum.FOR_SALE.equalsToCode(record.getSaleStatus())&&CheckoutStatusEnum.NONE.equalsToCode(record.getCheckoutStatus())) {
 				
 			}else {
-				throw new BusinessException("请求出门的数据状态错误"); 
+				throw new TraceBusinessException("请求出门的数据状态错误"); 
 			}
 			return record;
 
@@ -130,12 +130,12 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	public List<CheckinOutRecord> doCheckin(OperatorUser operateUser, CheckInApiInput checkInApiInput) {
 		if (checkInApiInput == null || checkInApiInput.getBillIdList() == null
 				) {
-			throw new BusinessException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 		CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.ALLOWED;//.fromCode(checkInApiInput.getCheckinStatus());
 
 		if (checkinStatusEnum == null) {
-			throw new BusinessException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 
 		return StreamEx.of(checkInApiInput.getBillIdList()).nonNull().mapToEntry(billId -> {
@@ -149,18 +149,18 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		}).filterKeys(bill -> {
 			if (bill == null) {
-				throw new BusinessException("没有查找到报备数据");
+				throw new TraceBusinessException("没有查找到报备数据");
 			}
 			if (!BillVerifyStatusEnum.PASSED.equalsToCode(bill.getVerifyStatus())) {
-				throw new BusinessException("报备数据状态错误");
+				throw new TraceBusinessException("报备数据状态错误");
 			}
 			return true;
 		}).filterValues(record -> {
 			if (record == null) {
-				throw new BusinessException("没有查找到数据");
+				throw new TraceBusinessException("没有查找到数据");
 			}
 			if (!CheckinStatusEnum.NONE.equalsToCode(record.getCheckinStatus())) {
-				throw new BusinessException("数据进门状态错误");
+				throw new TraceBusinessException("数据进门状态错误");
 			}
 			return true;
 		}).map(e -> {
@@ -218,7 +218,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		RegisterBill registerBillItem = this.registerBillService.get(billId);
 		if (registerBillItem == null) {
-			throw new BusinessException("没有找到登记单");
+			throw new TraceBusinessException("没有找到登记单");
 		}
 		
 		TradeDetail queryCondition = new TradeDetail();
@@ -228,14 +228,14 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	
 
 		if (tradeInfoItem == null) {
-			throw new BusinessException("数据错误:没有数据");
+			throw new TraceBusinessException("数据错误:没有数据");
 		}
 		if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeInfoItem.getCheckinStatus())
 				&& SaleStatusEnum.NONE.equalsToCode(tradeInfoItem.getSaleStatus())
 				&& CheckoutStatusEnum.NONE.equalsToCode(tradeInfoItem.getCheckoutStatus())) {
 
 		} else {
-			throw new BusinessException("数据状态错误");
+			throw new TraceBusinessException("数据状态错误");
 		}
 
 		TradeDetail updatableRecord = new TradeDetail();
@@ -346,11 +346,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	public CheckoutApiDetailOutput getCheckoutDataDetail(Long tradeDetailId) {
 		if (tradeDetailId == null) {
-			throw new BusinessException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 		TradeDetail separateSalesRecord = this.tradeInfoService.get(tradeDetailId);
 		if (separateSalesRecord == null) {
-			throw new BusinessException("没有数据");
+			throw new TraceBusinessException("没有数据");
 		}
 	
 

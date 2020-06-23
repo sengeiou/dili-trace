@@ -52,36 +52,13 @@
                             <input  name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'"  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="detectState" _provider='billDetectStateProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="likeTallyAreaNo" id="likeTallyAreaNo" style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
-                        </div>
+
                         <div class="search-item">
                             <select class="easyui-combobox" name="likePlate" id="likePlate" style="width:100%;" editable="false" panelHeight="auto" 
                             data-options="label:'车牌号',editable:true, valueField:'plate',textField:'plate',onChange:onPlateChange,prompt:'请选择或输入'"  labelAlign="right">
                             </select>
                         </div>
                         
-                        <div class="search-item">
-                            <select class="easyui-combobox" name="multipleSelect" id="multipleSelect" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'检测报告' ,onChange:multipleSelectOnChange"  labelAlign="right">
-                        		<option value="">全部</option>
-                                <option value="hasDetectReport=true">有</option>
-                                <option value="hasDetectReport=false">无</option>
-                               <option value="hasCheckSheet=false">未打印</option>
-                                <option value="hasCheckSheet=true">已打印</option>
-                            </select>
-                            <!-- 请不要删除下面这个隐藏控件 -->
-                            <input  type="hidden"  name="hasCheckSheet">
-                            <input  type="hidden"  name="hasDetectReport">
-                        </div>
-                        <div class="search-item">
-                            <select class="easyui-combobox" name="hasOriginCertifiy" id="hasOriginCertifiy" style="width:100%;" editable="false" panelHeight="auto" data-options="label:'产地证明'"  labelAlign="right">
-                        		<option value="">全部</option>
-                                <option value="true">有</option>
-                                <option value="false">无</option>
-                            </select>
-                        </div>
-
-
                         <div class="search-item long-item">
                             <input class="easyui-datetimebox" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" style="width:58%" labelAlign="right" data-options="label:'检测时间'"/>
                             <span style="width: 2%;">-</span>
@@ -136,41 +113,23 @@
                             采样编号
                         </th>
 
-                        <th width="4%" data-options="field:'tallyAreaNo',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            理货区号
-                        </th>
-                        <th width="4%" data-options="field:'tradeTypeName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            交易区号
-                        </th>
                         <th width="4%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             业户姓名
                         </th>
                         <th width="5%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             车牌
                         </th>
-                        <!--<th width="8%" data-options="field:'sampleCode',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            采样编号
-                        </th>-->
                         <th width="4%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             商品名称
                         </th>
                         <th width="4%" data-options="field:'weight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             重量/KG
                         </th>
-                        <th width="4%" data-options="field:'originCertifiyUrl',  _provider:'originCertifiyStateProvider',  sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            产地证明
-                        </th>
-                        <th width="4%" data-options="field:'detectReportUrl', _provider:'hasOrNoneProvider', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            检测报告
-                        </th>
                         <th width="4%" data-options="field:'latestPdResult', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             检测值
                         </th>
                         <th width="10%" data-options="field:'originName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             产地
-                        </th>
-                        <th width="4%" data-options="field:'checkSheetId', _provider:'hasOrNoneProvider', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            打印报告
                         </th>
                         <th width="4%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             状态

@@ -3,7 +3,7 @@ package com.dili.common.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.UUIDUtil;
 import com.dili.trace.glossary.ImageTypeEnum;
 import net.coobird.thumbnailator.Thumbnails;
@@ -60,7 +60,7 @@ public class ImageService {
             }
             return "/image/"+uri;
         }catch (Exception e){
-            throw new BusinessException("图片操作失败",e);
+            throw new TraceBusinessException("图片操作失败",e);
         }
     }
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.dto.OperatorUser;
 
@@ -152,7 +152,7 @@ public class LoginSessionContext implements Serializable {
 		if (this.getAccountId() != null || this.getUserName() != null) {
 			return new OperatorUser(this.getAccountId(), this.getUserName());
 		}
-		throw new BusinessException("你还未登录");
+		throw new TraceBusinessException("你还未登录");
 
 	}
 

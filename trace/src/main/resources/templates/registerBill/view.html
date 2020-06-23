@@ -26,19 +26,7 @@
                 </div>
 
                 <br>
-                <% if(registerBill.registerSource == 1){ %>
-                    <div class="form-group">
-                        <label class="label-title text-right">
-                            <span class="red">&lowast;</span>理货区号</label>
-                        <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo!}" required readonly/>
-                    </div>
-                <% }else if(registerBill.registerSource == 2){ %>
-                    <div class="form-group">
-                        <label class="label-title text-right">
-                            <span class="red">&lowast;</span>交易区号</label>
-                        <input type="text" class="form-control input-sm"  value="${registerBill.tradeTypeName!}" required readonly/>
-                    </div>
-                <% } %>
+
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
@@ -87,25 +75,7 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>状态</label>
                     <input type="text" class="form-control input-sm"value="${registerBill.stateName}" required readonly/>
                 </div>
-                <% if(registerBill.registerSource == 2){ %>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>交易账号</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.tradeAccount!}" required readonly/>
-                </div>
-                 <br>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>印刷卡号</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.tradePrintingCard!}" required readonly/>
-                </div>
-               
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>业户手机号</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.phone!}" required readonly/>
-                </div>
-                <% } %>
+                
           		<br/>
                 <% if(upStream!=null){ %>
                 <div class="form-group">
@@ -170,12 +140,8 @@
             </div>
             
 			 
-            <%
-            if(registerBill.registerSource == 1){
-                if( registerBill.salesType == 2
-                        && !isEmpty(registerBill.detectState)
-                            && (registerBill.detectState == 1 || registerBill.detectState == 3)){
-            %>
+            <%if( !isEmpty(registerBill.detectState)
+                            && (registerBill.detectState == 1 || registerBill.detectState == 3)){%>
                 <div class="form-item-group">
                     <h4 class="form-item-title">溯源二维码</h4>
                     <div class="imageUploadWrap">
@@ -242,7 +208,7 @@
                     <!-- 表格后的统计 end -->
                 </div>
             </div>
-            <%}
+            <%
                 }else{ %>
 
                         <%
@@ -288,51 +254,21 @@
                             <%} }  %>
             <div class="form-item-group">
             		<h4 class="form-item-title">产地证明</h4>
-                          <%if(isNotEmpty(registerBill.originCertifiyUrl)){
-                        	for(originCertifiy in strutil.split (registerBill.originCertifiyUrl,",")){
-                        	%>
+                     
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}${originCertifiy!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}" >
 							</div>
-                        <%	}
-                        }%>
+                        
             </div>
             <div class="form-item-group">
             		<h4 class="form-item-title">检测报告</h4>
-                          <%if(isNotEmpty(registerBill.detectReportUrl)){
-                        	for(detectReport in strutil.split (registerBill.detectReportUrl,",")){
-                        	%>
+                          
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}${detectReport!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}" >
 							</div>
-                        <%	}
-                        }%>
+                       
             </div>
-
-			<%if(isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
-				<div class="form-item-group">
-	            		<h4 class="form-item-title">处理结果图片</h4>
-	                          <%if(isNotEmpty(registerBill.handleResultUrl)){
-	                        	for(src in strutil.split (registerBill.handleResultUrl,",")){
-	                        	%>
-	                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-	                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}${src!}" >
-								</div>
-	                        <%	}
-	                        }%>
-	            </div>
-	             <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
-                    <input type="text" class="form-control input-sm"   value="${registerBill.handleResult}" required readonly/>
-               	 </div>
-               
-            <%}%>
             
-            <%if(isNotEmpty(registerBill.checkSheetId)){%>
-				<div class="form-item-group">
-	            		<h4 class="form-item-title" ><a href="javascript:void(0);" onclick="showCheckSheet(${registerBill.checkSheetId})">点击此处查看打印报告详情</a></h4>
-	            </div>
-            <%}%>
         </form>
     </div>
 

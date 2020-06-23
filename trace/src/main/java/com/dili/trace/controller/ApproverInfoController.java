@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.ApproverInfo;
@@ -77,7 +77,7 @@ public class ApproverInfoController {
 			approverInfo.setUserId(0L);
 			this.approverInfoService.insertApproverInfo(approverInfo);
 			return BaseOutput.success("新增成功").setData(approverInfo.getId());
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			LOGGER.error("register", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -94,7 +94,7 @@ public class ApproverInfoController {
 		try {
 			this.approverInfoService.updateApproverInfo(approverInfo);
 			return BaseOutput.success("修改成功").setData(approverInfo.getId());
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			LOGGER.error("修改用户", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

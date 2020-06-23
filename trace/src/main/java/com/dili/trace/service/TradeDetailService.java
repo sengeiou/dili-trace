@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
@@ -94,37 +94,37 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long>{
 			logger.info("parentId={}", record.getParentId());
 			logger.info("salesWeight={}", record.getSalesWeight());
 			if (record.getSalesWeight() == null || record.getSalesWeight() <= 0) {
-				throw new BusinessException("分销重量输入错误");
+				throw new TraceBusinessException("分销重量输入错误");
 			}
 			Long parentTradeId = record.getParentId();
 			
 			if (parentTradeId == null) {
-				throw new BusinessException("没有需要分销的登记单");
+				throw new TraceBusinessException("没有需要分销的登记单");
 			}
 
 			TradeDetail parentTradeInfo = this.get(parentTradeId);
 			if (parentTradeInfo == null) {
-				throw new BusinessException("没有需要分销的数据");
+				throw new TraceBusinessException("没有需要分销的数据");
 			}
 
 			if(!SaleStatusEnum.FOR_SALE.equalsToCode(parentTradeInfo.getSaleStatus())) {
-				throw new BusinessException("当前状态不能进行分销");
+				throw new TraceBusinessException("当前状态不能进行分销");
 			}
 
 			if (!parentTradeInfo.getBuyerId().equals(sellerUser.getId())) {
-				throw new BusinessException("没有权限分销");
+				throw new TraceBusinessException("没有权限分销");
 			}
 			BigDecimal tradeWeight = BigDecimal.valueOf(record.getSalesWeight());
 			BigDecimal inventoryWeight = parentTradeInfo.getInventoryWeight();
 			logger.info(">>>inventoryWeight={},tradeWeight={}", inventoryWeight, record.getSalesWeight());
 			if (inventoryWeight.compareTo(tradeWeight) < 0) {
-				throw new BusinessException("分销重量超过可分销重量");
+				throw new TraceBusinessException("分销重量超过可分销重量");
 			}
 			if (input.getSalesUserId() != null) {
 				logger.info("扫码分销，判断是否增加上游：salesUserId:{}", input.getSalesUserId());
 				User buyerUserItem = this.userService.get(buyerId);
 				if (buyerUserItem == null) {
-					throw new BusinessException("买家用户不存在");
+					throw new TraceBusinessException("买家用户不存在");
 				}
 				boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(buyerId).stream()
 						.anyMatch(up -> buyerUserItem.getId().equals(up.getSourceUserId()));

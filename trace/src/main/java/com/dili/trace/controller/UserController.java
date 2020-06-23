@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
@@ -103,7 +103,7 @@ public class UserController {
 			user.setState(EnabledStateEnum.ENABLED.getCode());
 			userService.register(user, false);
 			return BaseOutput.success("新增成功").setData(user.getId());
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			LOGGER.error("register", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -120,7 +120,7 @@ public class UserController {
 		try {
 			userService.updateUser(user);
 			return BaseOutput.success("修改成功");
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			LOGGER.error("修改用户", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -160,7 +160,7 @@ public class UserController {
 		try {
 			userService.updateEnable(id, enable);
 			return BaseOutput.success("修改用户状态成功");
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			LOGGER.error("修改用户状态", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

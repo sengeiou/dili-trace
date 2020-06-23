@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.UUIDUtil;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -58,13 +58,13 @@ public class LoginComponent {
 	public Map<String, Object> login(LoginInputDto loginInput) {
 
 		if (loginInput == null) {
-			throw new BusinessException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 		if (StrUtil.isAllBlank(loginInput.getUsername())) {
-			throw new BusinessException("帐号/手机号不能为空");
+			throw new TraceBusinessException("帐号/手机号不能为空");
 		}
 		if (StrUtil.isBlank(loginInput.getPassword())) {
-			throw new BusinessException("密码不能为空");
+			throw new TraceBusinessException("密码不能为空");
 		}
 		if (loginInput.getLoginIdentityType() == null) {
 			loginInput.setLoginIdentityType(LoginIdentityTypeEnum.USER.getCode());
@@ -80,7 +80,7 @@ public class LoginComponent {
 			return this.responseData(operatorUser);
 
 		} else {
-			throw new BusinessException("登录参数出错");
+			throw new TraceBusinessException("登录参数出错");
 		}
 	}
 
@@ -123,12 +123,12 @@ public class LoginComponent {
 
 			Boolean success = loginDocumentContext.read("$.success");
 			if (success == null) {
-				throw new BusinessException("登录失败");
+				throw new TraceBusinessException("登录失败");
 			}
 
 			String msg = loginDocumentContext.read("$.msg");
 			if (!success) {
-				throw new BusinessException(msg);
+				throw new TraceBusinessException(msg);
 			}
 
 			Long depId = loginDocumentContext.read("$.depId", Long.class);
@@ -152,13 +152,13 @@ public class LoginComponent {
 			if ("200".equals(code)) {
 				return new OperatorUser(userId, realName);
 			} else {
-				throw new BusinessException("权限不足");
+				throw new TraceBusinessException("权限不足");
 			}
 
 		} catch (Exception e) {
-			if (!(e instanceof BusinessException)) {
+			if (!(e instanceof TraceBusinessException)) {
 				logger.error(e.getMessage(), e);
-				throw new BusinessException("登录失败:网络错误");
+				throw new TraceBusinessException("登录失败:网络错误");
 			} else {
 				throw e;
 			}

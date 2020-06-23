@@ -7,6 +7,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.BatchAuditDto;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
@@ -62,7 +63,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param registerBill
 	 * @return
 	 */
-	BaseOutput createRegisterBill(RegisterBill registerBill,List<ImageCert> imageCertList);
+	BaseOutput createRegisterBill(RegisterBill registerBill,List<ImageCert> imageCertList,OperatorUser operatorUser);
 
 	/**
 	 * 审核登记单

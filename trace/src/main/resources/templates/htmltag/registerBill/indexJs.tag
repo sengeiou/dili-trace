@@ -160,10 +160,6 @@ var currentUser={"depId":"${user.depId!}"
      */
      window._registerBillGrid = $('#registerBillGrid');
     $(function () {
- 	   $('#likeTallyAreaNo').textbox('textbox').bind('input', function(n,o) {
-		   queryPlatesByTallyAreaNo($(this).val());
-	   });
- 	   
  	   
         bindFormEvent("queryForm", "state", queryRegisterBillGrid);
         initRegisterBillGrid();
@@ -209,85 +205,7 @@ var currentUser={"depId":"${user.depId!}"
                     }
                 },
         </#resource>
-        <#resource method="post" url="registerBill/index.html#batchAudit">
-                {
-                    iconCls:'icon-man',
-                    text:'批量审核',
-                    id:'batch-audit-btn',
-                    disabled :true,
-                    handler:function(){
-                        batchAudit();
-                    }
-                },
-                
-        </#resource>
-              <#resource method="post" url="registerBill/index.html#auditWithoutDetect">
-                {
-                    iconCls:'icon-man',
-                    text:'审核不检测',
-                    id:'audit-withoutDetect-btn',
-                    disabled :true,
-                    handler:function(){
-                    	auditWithoutDetect();
-                    }
-                },
-            </#resource>
-            <#resource method="post" url="registerBill/index.html#review">
-                {
-                    iconCls:'icon-man',
-                    text:'复检',
-                    id:'review-btn',
-                    disabled :true,
-                    handler:function(){
-                        reviewCheck();
-                    }
-                },
-        </#resource>
-         <#resource method="post" url="registerBill/index.html#auto">
-                {
-                    iconCls:'icon-man',
-                    text:'主动送检',
-                    id:'auto-btn',
-                    disabled :true,
-                    handler:function(){
-                        autoCheck();
-                    }
-                },
-        </#resource>
-                
-        <#resource method="post" url="registerBill/index.html#batchAuto">
-                {
-                    iconCls:'icon-man',
-                    text:'批量主动送检',
-                    id:'batch-auto-btn',
-                    disabled :true,
-                    handler:function(){
-                        batchAutoCheck();
-                    }
-                },
-        </#resource>
-        <#resource method="post" url="registerBill/index.html#sampling">
-                {
-                    iconCls:'icon-man',
-                    text:'采样检测',
-                    id:'sampling-btn',
-                    disabled :true,
-                    handler:function(){
-                        samplingCheck();
-                    }
-                },
-        </#resource>
-        <#resource method="post" url="registerBill/index.html#batchSampling">
-                {
-                    iconCls:'icon-man',
-                    text:'批量采样检测',
-                    id:'batch-sampling-btn',
-                    disabled :true,
-                    handler:function(){
-                        batchSamplingCheck();
-                    }
-                },
-        </#resource>
+        
             <#resource method="post" url="registerBill/index.html#undo">
                 {
                     iconCls:'icon-undo',
@@ -300,80 +218,8 @@ var currentUser={"depId":"${user.depId!}"
                     }
                 },
         </#resource>
-                <#resource method="post" url="registerBill/index.html#createCheckSheet">
-                {
-                    iconCls:'icon-add',
-                    text:'创建打印报告',
-                    id:'createsheet-btn',
-                    disabled :true,
-                    handler:doCreateCheckSheet,
-                    handler:function(){
-                    	doCreateCheckSheet();
-                    }
-                },
-            </#resource>
-         <#resource method="post" url="registerBill/index.html#handle">
-                {
-                    iconCls:'icon-redo',
-                    text:'上传处理结果',
-                    id:'handle-btn',
-                    disabled :true,
-                    handler:doHandler,
-                    handler:function(){
-                        doHandler();
-                    }
-                },
-            </#resource>
-                <#resource method="post" url="registerBill/index.html#uploadOrigincertifiy">
-                {
-                    iconCls:'icon-edit',
-                    text:'上传产地证明',
-                    id:'upload-origincertifiy-btn',
-                    disabled :true,
-                    handler:doUploadOrigincertifiy,
-                    handler:function(){
-                    	doUploadOrigincertifiy();
-                    }
-                },
-            </#resource>
-            <#resource method="post" url="registerBill/index.html#modify">
-                {
-                    iconCls:'icon-edit',
-                    text:'上传检测报告',
-                    id:'upload-detectreport-btn',
-                    disabled :true,
-                    handler:doUploadDetectReport,
-                    handler:function(){
-                        doUploadDetectReport();
-                    }
-                },
-            </#resource>
-                <#resource method="post" url="registerBill/index.html#removeReportAndCertifiy">
-                {
-                    iconCls:'icon-remove',
-                    text:'删除检测报告和产地证明',
-                    id:'remove-reportAndcertifiy-btn',
-                    disabled :true,
-                    handler:doRemoveReportAndCertifiy,
-                    handler:function(){
-                        doRemoveReportAndCertifiy();
-                    }
-                },
-            </#resource>
-                
-                <#resource method="post" url="registerBill/index.html#copy">
-                {
-                    iconCls:'icon-copy',
-                    text:'补录',
-                    id:'copy-btn',
-                    disabled :true,
-                    handler:doCopy,
-                    handler:function(){
-                    	doCopy();
-                    }
-                },
-            </#resource>
-
+              
+        
             <#resource method="post" url="registerBill/index.html#checkin">
                 {
                     iconCls:'icon-man',
@@ -577,11 +423,6 @@ var currentUser={"depId":"${user.depId!}"
     	   }
         	
             //$('#batch-audit-btn').show();
-           if(selected.registerSource==${@com.dili.trace.glossary.RegisterSourceEnum.TALLY_AREA.getCode()}){
-        	   if(selected.originCertifiyUrl&&selected.originCertifiyUrl!=null&&selected.originCertifiyUrl!=''&&selected.originCertifiyUrl!='无'){
-        		   $('#audit-withoutDetect-btn').show();
-        	   }
-           }
 
         }else if (state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()} ){
             //接车状态是“已打回”,启用“撤销打回”操作
@@ -596,11 +437,6 @@ var currentUser={"depId":"${user.depId!}"
     	   }
         	
             //$('#batch-audit-btn').show();
-           if(selected.registerSource==${@com.dili.trace.glossary.RegisterSourceEnum.TALLY_AREA.getCode()}){
-        	   if(selected.originCertifiyUrl&&selected.originCertifiyUrl!=null&&selected.originCertifiyUrl!=''&&selected.originCertifiyUrl!='无'){
-        		   $('#audit-withoutDetect-btn').show();
-        	   }
-           }
 
         }else if(state == ${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_SAMPLE.getCode()} ){
         	 $('#undo-btn').show();

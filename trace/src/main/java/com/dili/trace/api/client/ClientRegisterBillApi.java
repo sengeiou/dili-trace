@@ -17,14 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
@@ -70,7 +72,10 @@ public class ClientRegisterBillApi {
 	@RequestMapping(value = "/createList", method = RequestMethod.POST)
 	public BaseOutput createList(@RequestBody CreateListBillParam createListBillParam) {
 		logger.info("保存多个登记单:");
-		User user = userService.get(sessionContext.getAccountId());
+		
+		OperatorUser operatorUser=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+		
+		User user = userService.get(operatorUser.getId());
 		if (user == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
@@ -102,8 +107,8 @@ public class ClientRegisterBillApi {
 //				registerBill.setTallyAreaNo(user.getTallyAreaNos());
 //			}
 			try {
-				registerBillService.createRegisterBill(registerBill,dto.getImageCertList());
-			}catch (BusinessException e) {
+				registerBillService.createRegisterBill(registerBill,dto.getImageCertList(),operatorUser);
+			}catch (TraceBusinessException e) {
 				return BaseOutput.failure(e.getMessage());
 			}
 			

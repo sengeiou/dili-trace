@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.entity.ExecutionConstants;
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.RedisService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -76,7 +76,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         // 验证手机号是否已注册
         if (existsAccount(user.getPhone())) {
-            throw new BusinessException("手机号已注册");
+            throw new TraceBusinessException("手机号已注册");
         }
 
         // 验证理货区号是否已注册
@@ -86,7 +86,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         // 验证身份证号是否已注册
         if (existsCardNo(user.getCardNo())) {
-            throw new BusinessException("身份证号已注册");
+            throw new TraceBusinessException("身份证号已注册");
         }
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
         insertSelective(user);
@@ -99,7 +99,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (!plateList.isEmpty()) {
             UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
             if (up != null) {
-                throw new BusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
+                throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
             }
             this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
         }
@@ -145,7 +145,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             if (CollectionUtils.isNotEmpty(users)) {
                 users.forEach(o -> {
                     if (!o.getId().equals(user.getId()) && o.getPhone().equals(user.getPhone())) {
-                        throw new BusinessException("手机号已注册");
+                        throw new TraceBusinessException("手机号已注册");
                     }
                 });
             }
@@ -153,7 +153,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         User userPO = get(user.getId());
         if (!YnEnum.YES.getCode().equals(userPO.getYn())) {
-            throw new BusinessException("数据已被删除");
+            throw new TraceBusinessException("数据已被删除");
         }
 
         if (EnabledStateEnum.ENABLED.getCode().equals(userPO.getState())) {
@@ -169,7 +169,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 return !p.getUserId().equals(userPO.getId());
             }).findFirst().orElse(null);
             if (up != null) {
-                throw new BusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
+                throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
             }
         }
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
@@ -201,13 +201,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         String verificationCodeTemp = String
                 .valueOf(redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone));
         if (StringUtils.isBlank(verificationCodeTemp)) {
-            throw new BusinessException("验证码已过期");
+            throw new TraceBusinessException("验证码已过期");
         }
         if (verificationCodeTemp.equals(verCode)) {
             redisService.del(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone);
             return true;
         } else {
-            throw new BusinessException("验证码不正确");
+            throw new TraceBusinessException("验证码不正确");
         }
     }
 
@@ -218,13 +218,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setYn(YnEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
-            throw new BusinessException("手机号未注册");
+            throw new TraceBusinessException("手机号未注册");
         }
         if (EnabledStateEnum.DISABLED.getCode().equals(po.getState())) {
-            throw new BusinessException("手机号已禁用");
+            throw new TraceBusinessException("手机号已禁用");
         }
         if (!po.getPassword().equals(encryptedPassword)) {
-            throw new BusinessException("密码错误");
+            throw new TraceBusinessException("密码错误");
         }
         return po;
     }
@@ -237,7 +237,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setYn(YnEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
-            throw new BusinessException("用户不存在");
+            throw new TraceBusinessException("用户不存在");
         }
         User condition = DTOUtils.newDTO(User.class);
         condition.setId(po.getId());
@@ -246,7 +246,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         po.setVersion(po.getVersion() + 1);
         int i = updateSelectiveByExample(po, condition);
         if (i != 1) {
-            throw new BusinessException("数据已变更,请稍后重试");
+            throw new TraceBusinessException("数据已变更,请稍后重试");
         }
     }
 
@@ -255,10 +255,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public void changePassword(User user) {
         User po = get(user.getId());
         if (po == null) {
-            throw new BusinessException("用户不存在");
+            throw new TraceBusinessException("用户不存在");
         }
         if (!po.getPassword().equals(user.getOldPassword())) {
-            throw new BusinessException("原密码错误");
+            throw new TraceBusinessException("原密码错误");
         }
         User condition = DTOUtils.newDTO(User.class);
         condition.setId(po.getId());
@@ -267,7 +267,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         po.setVersion(po.getVersion() + 1);
         int i = updateSelectiveByExample(po, condition);
         if (i != 1) {
-            throw new BusinessException("数据已变更,请稍后重试");
+            throw new TraceBusinessException("数据已变更,请稍后重试");
         }
     }
 
@@ -297,7 +297,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             query.setTallyAreaNo(tallyAreaNo);
             UserTallyArea userTallyArea = userTallyAreaService.listByExample(query).stream().findFirst().orElse(null);
             if (null != userTallyArea && !userTallyArea.getUserId().equals(userId)) {
-                throw new BusinessException("理货区号【" + tallyAreaNo + "】已被注册");
+                throw new TraceBusinessException("理货区号【" + tallyAreaNo + "】已被注册");
             }
         });
     }

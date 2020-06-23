@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.components.LoginComponent;
 import com.dili.trace.api.input.LoginInputDto;
@@ -36,7 +36,7 @@ public class LoginApi {
 		try {
 			Map<String, Object> data = this.loginComponent.login(loginInput);
 			return BaseOutput.success().setData(data);
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

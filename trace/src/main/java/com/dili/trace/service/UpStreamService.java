@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -71,7 +71,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	public int deleteUpstream(Long userId, Long upstreamId) {
 
 		if (userId == null || upstreamId == null) {
-			throw new BusinessException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 		RUserUpstream rUserUpstream = new RUserUpstream();
 		rUserUpstream.setUserId(userId);

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.ApproverInfo;
@@ -31,14 +31,14 @@ public class ApproverInfoServiceImpl extends BaseServiceImpl<ApproverInfo, Long>
 
 		String signBase64 = input.getSignBase64();
 		if (StringUtils.isBlank(signBase64)) {
-			throw new BusinessException("签名不能为空");
+			throw new TraceBusinessException("签名不能为空");
 		}
 		if (StringUtils.isBlank(input.getUserName())) {
-			throw new BusinessException("用户名不能为空");
+			throw new TraceBusinessException("用户名不能为空");
 		}
 		boolean existSameUserName=this.findByUserName(input.getUserName()).map((item)->{return true;}).orElse(false);
 		if(existSameUserName) {
-			throw new BusinessException("用户名已存在");
+			throw new TraceBusinessException("用户名已存在");
 		}
 		this.insertSelective(input);
 
@@ -54,15 +54,15 @@ public class ApproverInfoServiceImpl extends BaseServiceImpl<ApproverInfo, Long>
 
 		String signBase64 = input.getSignBase64();
 		if (StringUtils.isBlank(signBase64)) {
-			throw new BusinessException("签名不能为空");
+			throw new TraceBusinessException("签名不能为空");
 		}
 		if (StringUtils.isBlank(input.getUserName())) {
-			throw new BusinessException("用户名不能为空");
+			throw new TraceBusinessException("用户名不能为空");
 		}
 		ApproverInfo approverInfo = this.get(input.getId());
 		boolean existSameUserName=this.findByUserName(input.getUserName()).map((item)->{return (item.getUserName().equals(input.getUserName())&&!item.getId().equals(input.getId()));}).orElse(false);
 		if(existSameUserName) {
-			throw new BusinessException("用户名已存在");
+			throw new TraceBusinessException("用户名已存在");
 		}
 		
 		approverInfo.setUserName(input.getUserName());

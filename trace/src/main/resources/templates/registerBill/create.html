@@ -48,59 +48,8 @@
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
-                    <select class="form-control input-sm" name="registerSource" id="registerSource" required tabindex="0">
-                        <option value="1">理货区</option>
-                        <option value="2">交易区</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
-                    <div class="input-group">
-                        <input type="hidden" name="tallyAreaNo" id="tallyAreaNo"/>
-                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
-                    </div>
-                </div>
 
-                <div class="form-group" style="display: none;">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>交易区号</label>
-                    <select class="form-control input-sm" name="tradeTypeId" id="tradeTypeId"  required>
-                        <option value="">请选择</option>
-                        <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
-                            for(tradeType in tradeTypes){%>
-                        <option value="${tradeType.typeId}">${tradeType.typeName}</option>
-                        <%}%>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>车牌号</label>
-						 <select  class="form-control input-sm editableSelect isPlate" id = "plate" name="plate" data-options="['a','b']" required>
-						 </select>
-
-                </div>
-               
-
-                <div class="form-group" style="display: none;">
-                    <label class="label-title text-right">交易账号</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="tradeAccountInput" id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"/>
-                        <input type="hidden" name="tradeAccount" id="tradeAccount"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
-                    </div>
-                </div>
-                <div class="form-group" style="display: none;">
-                    <label class="label-title text-right">印刷卡号</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="b2" id="printingCardInput" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"/>
-                        <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="cardNo()">检索</span> </span>
-                    </div>
-                </div>
-                <br>
+                
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
@@ -120,6 +69,14 @@
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户手机号</label>
                     <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1" readonly/>
+                </div>
+                <br/>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌号</label>
+						 <select  class="form-control input-sm editableSelect isPlate" id = "plate" name="plate" data-options="['a','b']" required>
+						 </select>
+
                 </div>
             </div>
 

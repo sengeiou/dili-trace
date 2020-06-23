@@ -37,7 +37,30 @@ CREATE TABLE `trade_detail` (
 ALTER TABLE `register_bill` ADD COLUMN  `weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位';
 ALTER TABLE `register_bill` ADD COLUMN  `verify_status` int(11) not null default 0 COMMENT '查验状态';
 ALTER TABLE `register_bill` MODIFY COLUMN weight decimal(10,3)  NOT NULL default 0 COMMENT '重量';
+
+
 ALTER TABLE `register_bill` DROP COLUMN `sales_type`;
+
+ALTER TABLE `register_bill` DROP COLUMN `register_source`;
+ALTER TABLE `register_bill` DROP COLUMN `tally_area_no`;
+
+ALTER TABLE `register_bill` DROP COLUMN `trade_account`;
+ALTER TABLE `register_bill` DROP COLUMN `trade_printing_card`;
+
+ALTER TABLE `register_bill` DROP COLUMN `detect_report_url`;
+
+ALTER TABLE `register_bill` DROP COLUMN `origin_certifiy_url`;
+ALTER TABLE `register_bill` DROP COLUMN `exe_machine_no`;
+
+ALTER TABLE `register_bill` DROP COLUMN `trade_type_id`;
+ALTER TABLE `register_bill` DROP COLUMN `trade_type_name`;
+ALTER TABLE `register_bill` DROP COLUMN `handle_result_url`;
+ALTER TABLE `register_bill` DROP COLUMN `handle_result`;
+ALTER TABLE `register_bill` DROP COLUMN `creation_source`;
+ALTER TABLE `register_bill` DROP COLUMN `check_sheet_id`;
+
+
+
 
 
 

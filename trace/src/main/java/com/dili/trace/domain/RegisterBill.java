@@ -38,13 +38,13 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`sample_code`")
 	private String sampleCode;
 
-	@ApiModelProperty(value = "1.理货区 2.交易区")
-	@Column(name = "`register_source`")
-	private Integer registerSource;
-
-	@ApiModelProperty(value = "理货区号")
-	@Column(name = "`tally_area_no`")
-	private String tallyAreaNo;
+//	@ApiModelProperty(value = "1.理货区 2.交易区")
+//	@Column(name = "`register_source`")
+//	private Integer registerSource;
+//
+//	@ApiModelProperty(value = "理货区号")
+//	@Column(name = "`tally_area_no`")
+//	private String tallyAreaNo;
 
 	@ApiModelProperty(value = "业户姓名")
 	@Column(name = "`name`")
@@ -62,13 +62,13 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`phone`")
 	private String phone;
 
-	@ApiModelProperty(value = "交易账号")
-	@Column(name = "`trade_account`")
-	private String tradeAccount;
-
-	@ApiModelProperty(value = "印刷卡号")
-	@Column(name = "`trade_printing_card`")
-	private String tradePrintingCard;
+//	@ApiModelProperty(value = "交易账号")
+//	@Column(name = "`trade_account`")
+//	private String tradeAccount;
+//
+//	@ApiModelProperty(value = "印刷卡号")
+//	@Column(name = "`trade_printing_card`")
+//	private String tradePrintingCard;
 
 	@ApiModelProperty(value = "用户iD")
 	@Column(name = "`user_id`")
@@ -90,9 +90,9 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`sample_source`")
 	private Integer sampleSource;
 
-	@ApiModelProperty(value = "检测报告url")
-	@Column(name = "`detect_report_url`")
-	String detectReportUrl;
+//	@ApiModelProperty(value = "检测报告url")
+//	@Column(name = "`detect_report_url`")
+//	String detectReportUrl;
 
 	@ApiModelProperty(value = "商品名称")
 	@Column(name = "`product_name`")
@@ -102,9 +102,9 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`product_id`")
 	private Long productId;
 
-	@ApiModelProperty(value = "产地证明图片")
-	@Column(name = "`origin_certifiy_url`")
-	private String originCertifiyUrl;
+//	@ApiModelProperty(value = "产地证明图片")
+//	@Column(name = "`origin_certifiy_url`")
+//	private String originCertifiyUrl;
 
 	@ApiModelProperty(value = "产地ID")
 	@Column(name = "`origin_id`")
@@ -142,9 +142,9 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`latest_pd_result`")
 	private String latestPdResult;
 
-	@ApiModelProperty(value = "仪器编号")
-	@Column(name = "`exe_machine_no`")
-	private String exeMachineNo;
+//	@ApiModelProperty(value = "仪器编号")
+//	@Column(name = "`exe_machine_no`")
+//	private String exeMachineNo;
 
 	@ApiModelProperty(value = "版本")
 	@Column(name = "`version`")
@@ -164,27 +164,27 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`operator_id`")
 	private Long operatorId;
 
-	@Column(name = "`trade_type_id`")
-	private String tradeTypeId;
+//	@Column(name = "`trade_type_id`")
+//	private String tradeTypeId;
+//
+//	@Column(name = "`trade_type_name`")
+//	private String tradeTypeName;
 
-	@Column(name = "`trade_type_name`")
-	private String tradeTypeName;
+//	@ApiModelProperty(value = "处理结果图片URL")
+//	@Column(name = "`handle_result_url`")
+//	private String handleResultUrl;
+//
+//	@ApiModelProperty(value = "处理结果备注")
+//	@Column(name = "`handle_result`")
+//	private String handleResult;
+//
+//	@ApiModelProperty(value = "数据创建来源")
+//	@Column(name = "`creation_source`")
+//	private Integer creationSource;
 
-	@ApiModelProperty(value = "处理结果图片URL")
-	@Column(name = "`handle_result_url`")
-	private String handleResultUrl;
-
-	@ApiModelProperty(value = "处理结果备注")
-	@Column(name = "`handle_result`")
-	private String handleResult;
-
-	@ApiModelProperty(value = "数据创建来源")
-	@Column(name = "`creation_source`")
-	private Integer creationSource;
-
-	@ApiModelProperty(value = "检测报告单ID")
-	@Column(name = "`check_sheet_id`")
-	private Long checkSheetId;
+//	@ApiModelProperty(value = "检测报告单ID")
+//	@Column(name = "`check_sheet_id`")
+//	private Long checkSheetId;
 
 	@ApiModelProperty(value = "上游信息ID")
 	@Column(name = "`upstream_id`")
@@ -256,21 +256,21 @@ public class RegisterBill extends BaseDomain {
 		this.sampleCode = sampleCode;
 	}
 
-	public Integer getRegisterSource() {
-		return registerSource;
-	}
-
-	public void setRegisterSource(Integer registerSource) {
-		this.registerSource = registerSource;
-	}
-
-	public String getTallyAreaNo() {
-		return tallyAreaNo;
-	}
-
-	public void setTallyAreaNo(String tallyAreaNo) {
-		this.tallyAreaNo = tallyAreaNo;
-	}
+//	public Integer getRegisterSource() {
+//		return registerSource;
+//	}
+//
+//	public void setRegisterSource(Integer registerSource) {
+//		this.registerSource = registerSource;
+//	}
+//
+//	public String getTallyAreaNo() {
+//		return tallyAreaNo;
+//	}
+//
+//	public void setTallyAreaNo(String tallyAreaNo) {
+//		this.tallyAreaNo = tallyAreaNo;
+//	}
 
 	public String getName() {
 		return name;
@@ -304,21 +304,21 @@ public class RegisterBill extends BaseDomain {
 		this.phone = phone;
 	}
 
-	public String getTradeAccount() {
-		return tradeAccount;
-	}
-
-	public void setTradeAccount(String tradeAccount) {
-		this.tradeAccount = tradeAccount;
-	}
-
-	public String getTradePrintingCard() {
-		return tradePrintingCard;
-	}
-
-	public void setTradePrintingCard(String tradePrintingCard) {
-		this.tradePrintingCard = tradePrintingCard;
-	}
+//	public String getTradeAccount() {
+//		return tradeAccount;
+//	}
+//
+//	public void setTradeAccount(String tradeAccount) {
+//		this.tradeAccount = tradeAccount;
+//	}
+//
+//	public String getTradePrintingCard() {
+//		return tradePrintingCard;
+//	}
+//
+//	public void setTradePrintingCard(String tradePrintingCard) {
+//		this.tradePrintingCard = tradePrintingCard;
+//	}
 
 	public Long getUserId() {
 		return userId;
@@ -360,13 +360,13 @@ public class RegisterBill extends BaseDomain {
 		this.sampleSource = sampleSource;
 	}
 
-	public String getDetectReportUrl() {
-		return detectReportUrl;
-	}
-
-	public void setDetectReportUrl(String detectReportUrl) {
-		this.detectReportUrl = detectReportUrl;
-	}
+//	public String getDetectReportUrl() {
+//		return detectReportUrl;
+//	}
+//
+//	public void setDetectReportUrl(String detectReportUrl) {
+//		this.detectReportUrl = detectReportUrl;
+//	}
 
 	public String getProductName() {
 		return productName;
@@ -384,13 +384,13 @@ public class RegisterBill extends BaseDomain {
 		this.productId = productId;
 	}
 
-	public String getOriginCertifiyUrl() {
-		return originCertifiyUrl;
-	}
-
-	public void setOriginCertifiyUrl(String originCertifiyUrl) {
-		this.originCertifiyUrl = originCertifiyUrl;
-	}
+//	public String getOriginCertifiyUrl() {
+//		return originCertifiyUrl;
+//	}
+//
+//	public void setOriginCertifiyUrl(String originCertifiyUrl) {
+//		this.originCertifiyUrl = originCertifiyUrl;
+//	}
 
 	public Long getOriginId() {
 		return originId;
@@ -464,13 +464,13 @@ public class RegisterBill extends BaseDomain {
 		this.latestPdResult = latestPdResult;
 	}
 
-	public String getExeMachineNo() {
-		return exeMachineNo;
-	}
-
-	public void setExeMachineNo(String exeMachineNo) {
-		this.exeMachineNo = exeMachineNo;
-	}
+//	public String getExeMachineNo() {
+//		return exeMachineNo;
+//	}
+//
+//	public void setExeMachineNo(String exeMachineNo) {
+//		this.exeMachineNo = exeMachineNo;
+//	}
 
 	public Integer getVersion() {
 		return version;
@@ -512,53 +512,53 @@ public class RegisterBill extends BaseDomain {
 		this.operatorId = operatorId;
 	}
 
-	public String getTradeTypeId() {
-		return tradeTypeId;
-	}
-
-	public void setTradeTypeId(String tradeTypeId) {
-		this.tradeTypeId = tradeTypeId;
-	}
-
-	public String getTradeTypeName() {
-		return tradeTypeName;
-	}
-
-	public void setTradeTypeName(String tradeTypeName) {
-		this.tradeTypeName = tradeTypeName;
-	}
-
-	public String getHandleResultUrl() {
-		return handleResultUrl;
-	}
-
-	public void setHandleResultUrl(String handleResultUrl) {
-		this.handleResultUrl = handleResultUrl;
-	}
-
-	public String getHandleResult() {
-		return handleResult;
-	}
-
-	public void setHandleResult(String handleResult) {
-		this.handleResult = handleResult;
-	}
-
-	public Integer getCreationSource() {
-		return creationSource;
-	}
-
-	public void setCreationSource(Integer creationSource) {
-		this.creationSource = creationSource;
-	}
-
-	public Long getCheckSheetId() {
-		return checkSheetId;
-	}
-
-	public void setCheckSheetId(Long checkSheetId) {
-		this.checkSheetId = checkSheetId;
-	}
+//	public String getTradeTypeId() {
+//		return tradeTypeId;
+//	}
+//
+//	public void setTradeTypeId(String tradeTypeId) {
+//		this.tradeTypeId = tradeTypeId;
+//	}
+//
+//	public String getTradeTypeName() {
+//		return tradeTypeName;
+//	}
+//
+//	public void setTradeTypeName(String tradeTypeName) {
+//		this.tradeTypeName = tradeTypeName;
+//	}
+//
+//	public String getHandleResultUrl() {
+//		return handleResultUrl;
+//	}
+//
+//	public void setHandleResultUrl(String handleResultUrl) {
+//		this.handleResultUrl = handleResultUrl;
+//	}
+//
+//	public String getHandleResult() {
+//		return handleResult;
+//	}
+//
+//	public void setHandleResult(String handleResult) {
+//		this.handleResult = handleResult;
+//	}
+//
+//	public Integer getCreationSource() {
+//		return creationSource;
+//	}
+//
+//	public void setCreationSource(Integer creationSource) {
+//		this.creationSource = creationSource;
+//	}
+//
+//	public Long getCheckSheetId() {
+//		return checkSheetId;
+//	}
+//
+//	public void setCheckSheetId(Long checkSheetId) {
+//		this.checkSheetId = checkSheetId;
+//	}
 
 	public Long getUpStreamId() {
 		return upStreamId;

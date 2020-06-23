@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -81,7 +81,7 @@ public class CheckSheetController {
 			RegisterBillDto queryDto = new RegisterBillDto();
 			queryDto.setIdList(registerBillIdList);
 			List<RegisterBill> itemList = this.registerBillService.listByExample(queryDto).stream()
-					.filter(item -> item.getCheckSheetId() == null)
+//					.filter(item -> item.getCheckSheetId() == null)
 					.filter(bill -> BillDetectStateEnum.PASS.getCode().equals(bill.getDetectState())
 							|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(bill.getDetectState()))
 					.collect(Collectors.toList());
@@ -135,7 +135,7 @@ public class CheckSheetController {
 		try {
 			Map resultMapDto = this.checkSheetService.createCheckSheet(input);
 			return BaseOutput.success("新增成功").setData(resultMapDto);
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			LOGGER.error("checksheet", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -152,7 +152,7 @@ public class CheckSheetController {
 		try {
 			Map resultMapDto = this.checkSheetService.prePrint(input);
 			return BaseOutput.success().setData(resultMapDto);
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			LOGGER.error("checksheet", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -168,7 +168,7 @@ public class CheckSheetController {
 		try {
 			Map resultMapDto = this.checkSheetService.findPrintableCheckSheet(input.getId());
 			return BaseOutput.success().setData(resultMapDto);
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			LOGGER.error("checksheet", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTO;
@@ -65,7 +65,7 @@ public class CheckinOutRecordApi {
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckin(new OperatorUser(sessionContext.getAccountId(), ""), input);
 			return BaseOutput.success();
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -86,7 +86,7 @@ public class CheckinOutRecordApi {
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckout(new OperatorUser(sessionContext.getAccountId(), ""), input);
 			return BaseOutput.success();
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -162,7 +162,7 @@ public class CheckinOutRecordApi {
 			CheckoutApiDetailOutput detailOutput = this.checkinOutRecordService
 					.getCheckoutDataDetail(input.getSeparateSalesId());
 			return BaseOutput.success().setData(detailOutput);
-		} catch (BusinessException e) {
+		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

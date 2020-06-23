@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.common.exception.BusinessException;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -78,7 +78,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 
 		User userItem = this.userService.get(registerBill.getUserId());
 		if (userItem == null) {
-			throw new BusinessException("未能查询到用户信息");
+			throw new TraceBusinessException("未能查询到用户信息");
 		}
 		if(registerBill.getComplete()==null) {
 			
@@ -116,11 +116,11 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 	public void updateQrItemDetail(UpStream upStream, Long userId) {
 		User userItem = this.userService.get(userId);
 		if (userItem == null) {
-			throw new BusinessException("未能查询到用户信息");
+			throw new TraceBusinessException("未能查询到用户信息");
 		}
 		UpStream upStreamItem = this.upStreamService.get(upStream.getId());
 		if (upStreamItem == null) {
-			throw new BusinessException("未能查询到上游信息");
+			throw new TraceBusinessException("未能查询到上游信息");
 		}
 
 		UserQrItem qrItemCondition = new UserQrItem();
@@ -142,7 +142,7 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 		Long userId = user.getId();
 		User userItem = this.userService.get(userId);
 		if (userItem == null) {
-			throw new BusinessException("未能查询到用户信息");
+			throw new TraceBusinessException("未能查询到用户信息");
 		}
 		UserQrItem qrItemCondition = new UserQrItem();
 		qrItemCondition.setUserId(userItem.getId());
@@ -339,24 +339,24 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 
 	}
 	private void updateComplete(Long userId) {
-		RegisterBill billQuery = new RegisterBill();
-		billQuery.setUserId(userId);
-		billQuery.setMetadata(IDTO.AND_CONDITION_EXPR," complete is null or complete = 0");
-		this.registerBillService.listByExample(billQuery).stream().forEach(bill->{
-			Integer complete=0;
-			if(this.checkRegisterBill(bill)!=null) {
-				complete=0;
-			}else {
-				complete=1;
-			}
-			if(!complete.equals(bill.getComplete())) {
-				RegisterBill updatable = new RegisterBill();
-				updatable.setId(bill.getId());
-				updatable.setComplete(complete);
-				this.registerBillService.updateSelective(updatable);
-			}
-			
-		});
+//		RegisterBill billQuery = new RegisterBill();
+//		billQuery.setUserId(userId);
+//		billQuery.setMetadata(IDTO.AND_CONDITION_EXPR," complete is null or complete = 0");
+//		this.registerBillService.listByExample(billQuery).stream().forEach(bill->{
+//			Integer complete=0;
+//			if(this.checkRegisterBill(bill)!=null) {
+//				complete=0;
+//			}else {
+//				complete=1;
+//			}
+//			if(!complete.equals(bill.getComplete())) {
+//				RegisterBill updatable = new RegisterBill();
+//				updatable.setId(bill.getId());
+//				updatable.setComplete(complete);
+//				this.registerBillService.updateSelective(updatable);
+//			}
+//			
+//		});
 	}
 	private Long checkUser(User user) {
 
@@ -365,8 +365,9 @@ public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> impleme
 	}
 
 	private Long checkRegisterBill(RegisterBill bill) {
-
-		return StringUtils.isAllBlank(bill.getOriginCertifiyUrl(), bill.getDetectReportUrl()) ? bill.getId() : null;
+//TODO
+		return null;
+//		return StringUtils.isAllBlank(bill.getOriginCertifiyUrl(), bill.getDetectReportUrl()) ? bill.getId() : null;
 
 	}
 
