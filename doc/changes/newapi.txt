@@ -1,5 +1,7 @@
-凭证类型接口:/api/enums/listImageCertType.api
+凭证图片类型接口:/api/enums/listImageCertType.api
 商品规格接口:/api/enums/listSpecType.api
+报备单审核状态接口:/api/enums/listBillVerifyStatus.api
+
 获取品类列表：
   category: "/api/categoryApi/listCategoryByCondition",
 获取城市列表
@@ -26,6 +28,24 @@ cityList: "/api/cityApi/listCityByCondition"
 买卖家接口:
 1:进场报备:
 /api/client/clientRegisterBill/createRegisterBillList.api
+ {
+	 [
+	 	{
+	 	productName:"大白菜",//商品名称
+		productId:123,//商品ID
+		originId:11,//产地ID
+		originName:"北京",//产地名
+		weight:12.34,//重量
+		weightUnit:1,//重量单位	JIN(1, "斤"),KILO(2, "公斤")
+		imageCertList:[{ //任何时候都要提交这两个参数
+			url:"",//图片URL
+			certType://图片类型 (凭证图片类型接口)
+		}]
+	 	}
+	 	
+	 ]
+
+ }
 2:报备单列表
 /api/client/clientRegisterBill/listPage.api
 3:报备单详情

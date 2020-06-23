@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.ImageCertTypeEnum;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -27,9 +28,12 @@ public class ImageCert extends BaseDomain {
 	@Column(name = "`url`")
 	private String url;
 
+	/**
+	 * {@link ImageCertTypeEnum}
+	 */
 	@ApiModelProperty(value = "图片类型")
-	@Column(name = "`image_type`")
-	private Integer imageType;
+	@Column(name = "`cert_type`")
+	private Integer certType;
 
 	@Column(name = "`target_id`")
 	private Long targetId;
@@ -50,12 +54,14 @@ public class ImageCert extends BaseDomain {
 		this.url = url;
 	}
 
-	public Integer getImageType() {
-		return imageType;
+
+
+	public Integer getCertType() {
+		return certType;
 	}
 
-	public void setImageType(Integer imageType) {
-		this.imageType = imageType;
+	public void setCertType(Integer certType) {
+		this.certType = certType;
 	}
 
 	public Long getTargetId() {

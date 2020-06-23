@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.beust.jcommander.internal.Lists;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.ImageCert;
 
@@ -12,11 +13,20 @@ import one.util.streamex.StreamEx;
 @Service
 public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
 	public List<ImageCert> insertImageCert(List<ImageCert> imageCertList, Long billId) {
-		return StreamEx.of(imageCertList).nonNull().map(cert -> {
-			cert.setTargetId(billId);
-			this.insertSelective(cert);
-			return cert;
-		}).toList();
+		if (billId != null) {
+			// 先删除全部原有图片
+			ImageCert deleteConditon = new ImageCert();
+			deleteConditon.setTargetId(billId);
+			this.deleteByExample(deleteConditon);
+
+			// 增加新的图片
+			return StreamEx.of(imageCertList).nonNull().map(cert -> {
+				cert.setTargetId(billId);
+				this.insertSelective(cert);
+				return cert;
+			}).toList();
+		}
+		return Lists.newArrayList(0);
 	}
 
 }

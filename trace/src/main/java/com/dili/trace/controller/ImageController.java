@@ -2,7 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.common.service.ImageService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.glossary.ImageTypeEnum;
+import com.dili.trace.glossary.ImageCertTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;

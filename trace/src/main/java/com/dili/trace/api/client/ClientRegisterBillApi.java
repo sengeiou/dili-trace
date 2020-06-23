@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,19 +19,15 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -43,6 +38,7 @@ import com.dili.trace.service.UserTallyAreaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.code.IdentityDialect;
 
 /**
  * Created by wangguofeng
@@ -121,42 +117,60 @@ public class ClientRegisterBillApi {
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto registerBill) throws Exception {
-		logger.info("获取登记单列表:" + JSON.toJSON(registerBill).toString());
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
+	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto input) {
+		logger.info("获取登记单列表:" + JSON.toJSON(input).toString());
+		try {
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			User user = userService.get(userId);
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			logger.info("获取登记单列表 操作用户:" + JSON.toJSONString(user));
+			input.setUserId(userId);
+			if (StringUtils.isBlank(input.getOrder())) {
+				input.setOrder("desc");
+				input.setSort("id");
+			}
+			BasePage<RegisterBill> basePage = registerBillService.listPageByExample(input);
+			return BaseOutput.success().setData(basePage);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("查询数据出错");
 		}
-		logger.info("获取登记单列表 操作用户:" + JSON.toJSONString(user));
-		registerBill.setUserId(user.getId());
-		if (StringUtils.isBlank(registerBill.getOrder())) {
-			registerBill.setOrder("desc");
-			registerBill.setSort("id");
-		}
-		BasePage<RegisterBill> basePage = registerBillService.listPageByExample(registerBill);
-		return BaseOutput.success().setData(basePage);
+
 	}
 
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
 	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput<RegisterBillOutputDto> viewRegisterBill(@RequestBody RegisterBillApiInputDto inputDto) {
-		if(inputDto==null||inputDto.getBillId()==null) {
+		if (inputDto == null || inputDto.getBillId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
+		
 		logger.info("获取登记单:" + inputDto.getBillId());
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		RegisterBill registerBill = registerBillService.get(inputDto.getBillId());
-		if (registerBill == null) {
-			logger.error("获取登记单失败id:" + inputDto.getBillId());
-			return BaseOutput.failure();
-		}
-		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
+		try {
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			User user = userService.get(userId);
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			RegisterBill registerBill = registerBillService.get(inputDto.getBillId());
+			if (registerBill == null) {
+				logger.error("获取登记单失败id:" + inputDto.getBillId());
+				return BaseOutput.failure();
+			}
+			RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
 
-		return BaseOutput.success().setData(bill);
+			return BaseOutput.success().setData(bill);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("查询数据出错");
+		}
+
+		
+		
 	}
-
 
 }

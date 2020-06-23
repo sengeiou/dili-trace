@@ -77,7 +77,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Autowired
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
-	TradeDetailService tradeInfoService;
+	TradeDetailService tradeDetailService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -85,9 +85,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Transactional
 	@Override
-	public BaseOutput createRegisterBill(RegisterBill registerBill,List<ImageCert> imageCertList,OperatorUser operatorUser) {
+	public BaseOutput createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList,
+			OperatorUser operatorUser) {
 		this.checkBill(registerBill);
-		
+
 		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
@@ -110,13 +111,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
 			throw new TraceBusinessException("创建失败");
 		}
-		if(imageCertList!=null) {
+		if (imageCertList != null) {
 			this.imageCertService.insertImageCert(imageCertList, registerBill.getId());
 		}
 		return BaseOutput.success();
 	}
-
-
 
 	private BaseOutput checkBill(RegisterBill registerBill) {
 
@@ -348,19 +347,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					return registerBill;
 				}).filter(Objects::nonNull).filter(registerBill -> {
 					if (Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-						//if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
-								//&& StringUtils.isBlank(registerBill.getDetectReportUrl())) {
-							return false;
-						//}
+						// if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
+						// && StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+						return false;
+						// }
 					}
 					return true;
 				}).collect(Collectors.partitioningBy((registerBill) -> {
 
 					if (Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-						//if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
-							//	&& StringUtils.isBlank(registerBill.getDetectReportUrl())) {
-							return true;
-						//}
+						// if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
+						// && StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+						return true;
+						// }
 					}
 					return false;
 				}));
@@ -425,8 +424,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()) {
 			updateState = true;
 		} else if (registerBill.getDetectState().intValue() == BillDetectStateEnum.REVIEW_NO_PASS.getCode().intValue()
-				//&& StringUtils.isBlank(registerBill.getHandleResult())
-				) {
+		// && StringUtils.isBlank(registerBill.getHandleResult())
+		) {
 			// 多次复检
 			updateState = true;
 		}
@@ -447,7 +446,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return SessionContext.getSessionContext().getUserTicket();
 	}
 
-	
 	@Override
 	public RegisterBillStaticsDto groupByState(RegisterBillDto dto) {
 		return this.getActualDao().groupByState(dto);
@@ -461,14 +459,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill == null) {
 			return null;
 		}
-		RegisterBillOutputDto outputDto =RegisterBillOutputDto.build(registerBill, new ArrayList<TradeDetail>());
+		RegisterBillOutputDto outputDto = RegisterBillOutputDto.build(registerBill, new ArrayList<TradeDetail>());
 		return outputDto;
 	}
 
 	@Override
 	public Long saveHandleResult(RegisterBill input) {
 		if (input == null || input.getId() == null) {
-				//|| StringUtils.isAnyBlank(input.getHandleResult(), input.getHandleResultUrl())) {
+			// || StringUtils.isAnyBlank(input.getHandleResult(),
+			// input.getHandleResultUrl())) {
 			throw new AppException("参数错误");
 		}
 //		if (input.getHandleResult().trim().length() > 1000) {
@@ -950,10 +949,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setId(billId);
 		registerBill.setVerifyStatus(verifyState.getCode());
 		if (BillVerifyStatusEnum.PASSED == verifyState) {
-
-			this.tradeInfoService.createTradeInfoForBill(billId);
+			this.tradeDetailService.createTradeInfoForBill(billId);
 		}
-
 		this.updateSelective(registerBill);
 		return item.getId();
 	}

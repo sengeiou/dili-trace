@@ -8,7 +8,7 @@ package com.dili.trace.glossary;
  * @author jcy
  * @createTime 2019/8/2 18:43
  */
-public enum ImageTypeEnum {
+public enum ImageCertTypeEnum {
 
     ID_CARD(1, "身份证照"),
     BUSINESS_LICENSE(2, "营业执照"),
@@ -20,13 +20,13 @@ public enum ImageTypeEnum {
     private String name;
     private Integer code ;
 
-    ImageTypeEnum(Integer code, String name){
+    ImageCertTypeEnum(Integer code, String name){
         this.code = code;
         this.name = name;
     }
 
-    public static ImageTypeEnum getImageTypeEnum(Integer code) {
-        for (ImageTypeEnum anEnum : ImageTypeEnum.values()) {
+    public static ImageCertTypeEnum getImageTypeEnum(Integer code) {
+        for (ImageCertTypeEnum anEnum : ImageCertTypeEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return anEnum;
             }
