@@ -2,6 +2,7 @@ package com.dili.trace.api.client;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -25,18 +26,24 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.VerifyHistory;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
+import com.dili.trace.service.VerifyHistoryService;
+import com.dili.trace.util.BasePageUtil;
+import com.dili.trace.util.MethodUtil;
 import com.github.hervian.reflection.Types;
 
 import cn.hutool.core.util.ClassUtil;
@@ -56,20 +63,15 @@ public class ClientRegisterBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientRegisterBillApi.class);
 	@Autowired
 	private RegisterBillService registerBillService;
-	@Autowired
-	private SeparateSalesRecordService separateSalesRecordService;
 
-	@Autowired
-	DetectRecordService detectRecordService;
 	@Resource
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;
 	@Autowired
-	UserTallyAreaService userTallyAreaService;
-
+	ImageCertService imageCertService;
 	@Autowired
-	UpStreamService upStreamService;
+	VerifyHistoryService verifyHistoryService;
 
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
@@ -102,13 +104,6 @@ public class ClientRegisterBillApi {
 			registerBill.setOriginName(dto.getOriginName());
 			registerBill.setProductId(dto.getProductId());
 			registerBill.setProductName(dto.getProductName());
-//			if (registerBill.getRegisterSource() == null) {
-//				// 小程序默认理货区
-//				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-//			}
-//			if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-//				registerBill.setTallyAreaNo(user.getTallyAreaNos());
-//			}
 			try {
 				registerBillService.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
 			} catch (TraceBusinessException e) {
@@ -136,7 +131,13 @@ public class ClientRegisterBillApi {
 				input.setOrder("desc");
 				input.setSort("id");
 			}
-			BasePage<RegisterBill> basePage = registerBillService.listPageByExample(input);
+			BasePage basePage = BasePageUtil.convert(registerBillService.listPageByExample(input), bill -> {
+
+				return new MethodUtil().newKey(RegisterBill::getId, "billId").toMap(bill, RegisterBill::getId,
+						RegisterBill::getCreated, RegisterBill::getProductName, RegisterBill::getWeight,
+						RegisterBill::getWeightUnit, RegisterBill::getVerifyStatus);
+
+			});
 			return BaseOutput.success().setData(basePage);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -152,31 +153,36 @@ public class ClientRegisterBillApi {
 		if (inputDto == null || inputDto.getBillId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
-		
+
 		logger.info("获取登记单:" + inputDto.getBillId());
 		try {
+			Long billId = inputDto.getBillId();
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			User user = userService.get(userId);
 			if (user == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			RegisterBill registerBill = registerBillService.get(inputDto.getBillId());
+			RegisterBill registerBill = registerBillService.get(billId);
 			if (registerBill == null) {
-				logger.error("获取登记单失败id:" + inputDto.getBillId());
+				logger.error("获取登记单失败id:" + billId);
 				return BaseOutput.failure();
 			}
-			RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
+			Map<Object, Object> resultMap = new BeanMap(registerBill);
+			resultMap.put("billId", resultMap.remove("id"));
+			List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(billId);
+			resultMap.put("imageCertList", imageCertList);
+			VerifyHistory verifyHistory = this.verifyHistoryService.findValidVerifyHistoryByBillId(billId).orElse(null);
+			resultMap.put("verifyHistory", verifyHistory);
 
-			return BaseOutput.success().setData(bill);
+			return BaseOutput.success().setData(resultMap);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			return BaseOutput.failure("查询数据出错");
 		}
 
-		
-		
 	}
+
 	public static void main(String[] args) {
 		System.out.println(Types.createMethod(RegisterBill::getCreated).getName());
 	}

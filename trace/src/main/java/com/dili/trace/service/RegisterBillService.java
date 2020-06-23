@@ -197,5 +197,5 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	
 	public BaseOutput doRemoveReportAndCertifiy(Long id,String deleteType);
 	
-	public Long doVerify(RegisterBill input);
+	public Long doVerify(RegisterBill input,OperatorUser operatorUser);
 }

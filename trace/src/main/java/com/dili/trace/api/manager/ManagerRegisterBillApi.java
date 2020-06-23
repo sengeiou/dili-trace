@@ -176,7 +176,7 @@ public class ManagerRegisterBillApi {
 			RegisterBill input = new RegisterBill();
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
-			Long id = this.registerBillService.doVerify(input);
+			Long id = this.registerBillService.doVerify(input,operatorUser);
 			return BaseOutput.success().setData(id);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

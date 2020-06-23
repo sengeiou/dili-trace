@@ -28,5 +28,13 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
 		}
 		return Lists.newArrayList(0);
 	}
+	public List<ImageCert> findImageCertListByBillId(Long billId){
+		if(billId==null) {
+			return com.google.common.collect.Lists.newArrayList();
+		}
+		ImageCert queryCondition = new ImageCert();
+		queryCondition.setTargetId(billId);
+		return this.listByExample(queryCondition);
+	}
 
 }

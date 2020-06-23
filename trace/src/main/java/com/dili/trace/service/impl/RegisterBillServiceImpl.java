@@ -50,6 +50,7 @@ import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserQrItemService;
 import com.dili.trace.service.UsualAddressService;
+import com.dili.trace.service.VerifyHistoryService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
@@ -78,6 +79,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
 	TradeDetailService tradeDetailService;
+	@Autowired
+	VerifyHistoryService verifyHistoryService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -927,19 +930,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	@Override
-	public Long doVerify(RegisterBill input) {
+	public Long doVerify(RegisterBill input, OperatorUser operatorUser) {
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
 		Long billId = input.getId();
-		BillVerifyStatusEnum verifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
+		BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
 				.orElseThrow(() -> new TraceBusinessException("参数错误"));
 
 		RegisterBill item = this.get(billId);
 		if (item == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-		if (verifyState == BillVerifyStatusEnum.fromCode(item.getVerifyStatus()).orElse(null)) {
+		if (toVerifyState == BillVerifyStatusEnum.fromCode(item.getVerifyStatus()).orElse(null)) {
 			throw new TraceBusinessException("状态不能相同");
 		}
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
@@ -947,10 +950,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		RegisterBill registerBill = new RegisterBill();
 		registerBill.setId(billId);
-		registerBill.setVerifyStatus(verifyState.getCode());
-		if (BillVerifyStatusEnum.PASSED == verifyState) {
+		registerBill.setVerifyStatus(toVerifyState.getCode());
+		if (BillVerifyStatusEnum.PASSED == toVerifyState) {
 			this.tradeDetailService.createTradeInfoForBill(billId);
 		}
+		this.verifyHistoryService.insertVerifyHistory(billId, item.getVerifyStatus(), toVerifyState.getCode(),
+				operatorUser);
 		this.updateSelective(registerBill);
 		return item.getId();
 	}

@@ -1,5 +1,7 @@
 package com.dili.trace.domain;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,6 +40,12 @@ public class ImageCert extends BaseDomain {
 	@Column(name = "`target_id`")
 	private Long targetId;
 
+	@Column(name = "`created`")
+	private Date created;
+
+	@Column(name = "`modified`")
+	private Date modified;
+
 	public Long getId() {
 		return id;
 	}
@@ -54,7 +62,21 @@ public class ImageCert extends BaseDomain {
 		this.url = url;
 	}
 
+	public Date getCreated() {
+		return created;
+	}
 
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public Date getModified() {
+		return modified;
+	}
+
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
 
 	public Integer getCertType() {
 		return certType;

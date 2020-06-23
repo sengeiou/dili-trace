@@ -53,6 +53,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
 	TradeDetailService tradeDetailService;
+
 	@Test
 	public void listCheckInApiListOutputPage() {
 		RegisterBillDto query = new RegisterBillDto();
@@ -63,7 +64,6 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 				.listCheckInApiListOutputPage(new RegisterBillDto());
 		System.out.println(out);
 	}
-
 
 	@Test
 	public void listPagedAvailableCheckOutData() {
@@ -102,8 +102,6 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		System.out.println(out.getData().getDatas());
 	}
 
-
-	
 	@Test
 	@Transactional
 	public void testAll() {
@@ -112,7 +110,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		RegisterBill item = this.registerBillService.listByExample(query).stream().findFirst().orElse(null);
 		assertNotNull(item);
 		item.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-		Long billId = this.registerBillService.doVerify(item);
+		Long billId = this.registerBillService.doVerify(item, new OperatorUser(0L, "test"));
 		assertNotNull(billId);
 		assertTrue(BillVerifyStatusEnum.PASSED.equalsToCode(this.registerBillService.get(billId).getVerifyStatus()));
 
@@ -120,8 +118,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		sepQuery.setBillId(billId);
 		sepQuery.setTradeType(TradeTypeEnum.NONE.getCode());
 
-		TradeDetail tradeDetailItem = this.tradeDetailService.listByExample(sepQuery).stream()
-				.findFirst().orElse(null);
+		TradeDetail tradeDetailItem = this.tradeDetailService.listByExample(sepQuery).stream().findFirst().orElse(null);
 		assertNotNull(tradeDetailItem);
 
 		assertEquals(tradeDetailItem.getCheckinStatus(), CheckinStatusEnum.NONE.getCode());
