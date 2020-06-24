@@ -31,7 +31,6 @@ import com.dili.trace.dto.BatchResultDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;

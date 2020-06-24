@@ -8,10 +8,8 @@ import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.dto.RegisterBillStaticsDto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
