@@ -42,9 +42,7 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.dto.UserInfoDto;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.DetectRecordService;
@@ -84,7 +82,6 @@ public class RegisterBillController {
 	UserService userService;
 	@Autowired
 	UserPlateService userPlateService;
-
 
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;
@@ -141,7 +138,7 @@ public class RegisterBillController {
 		LOGGER.info("保存登记单数据:" + registerBills.size());
 		Map<String, String> tradeTypeMap = CollectionUtils.emptyIfNull(tradeTypeService.findAll()).stream()
 				.filter(Objects::nonNull).collect(Collectors.toMap(TradeType::getTypeId, TradeType::getTypeName));
-		UserTicket userTicket=SessionContext.getSessionContext().getUserTicket();
+		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		for (RegisterBill registerBill : registerBills) {
 
 			User user = userService.get(registerBill.getUserId());
@@ -158,7 +155,8 @@ public class RegisterBillController {
 //			registerBill.setOriginCertifiyUrl(StringUtils.trimToNull(registerBill.getOriginCertifiyUrl()));
 //			registerBill.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
 			try {
-				BaseOutput r = registerBillService.createRegisterBill(registerBill,new ArrayList<ImageCert>(),new OperatorUser(userTicket.getId(), userTicket.getRealName()));
+				BaseOutput r = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
+						new OperatorUser(userTicket.getId(), userTicket.getRealName()));
 				if (!r.isSuccess()) {
 					return r;
 				}
@@ -226,14 +224,10 @@ public class RegisterBillController {
 		if (displayWeight == null) {
 			displayWeight = false;
 		}
-		//if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
-			// 分销信息
-			
-			modelMap.put("separateSalesRecords", Collections.emptyList());
-		
-		//} else {
-			modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
-		//}
+
+		modelMap.put("separateSalesRecords", Collections.emptyList());
+
+		modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
 		if (registerBill.getUpStreamId() != null) {
 			UpStream upStream = this.upStreamService.get(registerBill.getUpStreamId());
 			modelMap.put("upStream", upStream);
@@ -281,14 +275,10 @@ public class RegisterBillController {
 		if (registerBill == null) {
 			return "";
 		}
-//		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
-			// 分销信息
-			
-			modelMap.put("separateSalesRecords", Collections.emptyList());
-		
-//		} else {
-			modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
-//		}
+
+		modelMap.put("separateSalesRecords", Collections.emptyList());
+
+		modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
@@ -309,12 +299,8 @@ public class RegisterBillController {
 		if (registerBill == null) {
 			return "";
 		}
-		//if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
-			// 分销信息
-			modelMap.put("separateSalesRecords", Collections.emptyList());
-		//} else {
-			modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
-		//}
+		modelMap.put("separateSalesRecords", Collections.emptyList());
+		modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
@@ -474,28 +460,6 @@ public class RegisterBillController {
 		return BaseOutput.success("操作成功");
 	}
 
-	@ApiOperation("跳转到statics页面")
-	@RequestMapping(value = "/statics.html", method = RequestMethod.GET)
-	public String statics(ModelMap modelMap) {
-		Date now = new Date();
-		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-		return "registerBill/statics";
-	}
-
-	@RequestMapping(value = "/listStaticsPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listStaticsPage(RegisterBillDto registerBill) throws Exception {
-		return this.registerBillService.listStaticsPage(registerBill);
-	}
-
-	@RequestMapping(value = "/listStaticsData.action", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public BaseOutput<?> listStaticsData(RegisterBillDto registerBill) {
-		registerBill.setAttrValue(StringUtils.trimToEmpty(registerBill.getAttrValue()));
-		RegisterBillStaticsDto staticsDto = this.registerBillService.groupByState(registerBill);
-
-		return BaseOutput.success().setData(staticsDto);
-	}
 
 	/**
 	 * 交易区订单溯源页面（二维码）
@@ -566,7 +530,7 @@ public class RegisterBillController {
 	@RequestMapping(value = "/tradeSsrQRCcode.html", method = RequestMethod.GET)
 	public String tradeSsrQRCcode(Long id, ModelMap modelMap) {
 		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
-		
+
 		RegisterBill bill = new RegisterBill();
 		modelMap.put("registerBill", bill);
 		modelMap.put("qualityTraceTradeBill", null);
@@ -584,9 +548,11 @@ public class RegisterBillController {
 	@RequestMapping(value = "/copy.html", method = RequestMethod.GET)
 	public String copy(Long id, ModelMap modelMap) {
 		RegisterBill registerBill = registerBillService.get(id);
-		String firstTallyAreaNo = "";/*Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
-				.filter(StringUtils::isNotBlank).findFirst().orElse("");*/
-		//registerBill.setTallyAreaNo(firstTallyAreaNo);
+		String firstTallyAreaNo = "";/*
+										 * Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
+										 * .filter(StringUtils::isNotBlank).findFirst().orElse("");
+										 */
+		// registerBill.setTallyAreaNo(firstTallyAreaNo);
 
 		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
 		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
@@ -595,12 +561,8 @@ public class RegisterBillController {
 
 		modelMap.put("citys", this.queryCitys());
 
-		//if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-			List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
-			modelMap.put("userPlateList", userPlateList);
-		//} else {
-		//	modelMap.put("userPlateList", new ArrayList<>(0));
-		//}
+		List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
+		modelMap.put("userPlateList", userPlateList);
 
 		return "registerBill/copy";
 	}
@@ -762,8 +724,8 @@ public class RegisterBillController {
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(Long id, ModelMap modelMap) {
 		RegisterBill registerBill = registerBillService.get(id);
-		String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty("").split(","))
-				.filter(StringUtils::isNotBlank).findFirst().orElse("");
+		String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty("").split(",")).filter(StringUtils::isNotBlank)
+				.findFirst().orElse("");
 //		registerBill.setTallyAreaNo(firstTallyAreaNo);
 
 		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
@@ -776,12 +738,8 @@ public class RegisterBillController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
 
-//		if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-			List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
-			modelMap.put("userPlateList", userPlateList);
-//		} else {
-//			modelMap.put("userPlateList", new ArrayList<>(0));
-//		}
+		List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
+		modelMap.put("userPlateList", userPlateList);
 		return "registerBill/edit";
 	}
 

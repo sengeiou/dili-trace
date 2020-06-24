@@ -1,18 +1,18 @@
 package com.dili.trace.provider;
 
-import com.dili.ss.metadata.FieldMeta;
-import com.dili.ss.metadata.ValuePair;
-import com.dili.ss.metadata.ValuePairImpl;
-import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.stereotype.Component;
+
+import com.dili.ss.metadata.FieldMeta;
+import com.dili.ss.metadata.ValuePair;
+import com.dili.ss.metadata.ValuePairImpl;
+import com.dili.ss.metadata.ValueProvider;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 
 /**
  * <B>Description</B>
@@ -23,14 +23,14 @@ import java.util.stream.Stream;
  * @createTime 2018/11/8 18:44
  */
 @Component
-public class RegisterSourceProvider implements ValueProvider {
+public class VerifyStatusProvider implements ValueProvider {
 
 	
 	private static final List<ValuePair<?>> BUFFER = buildValuePair();
 	private static List<ValuePair<?>> buildValuePair(){
 		
 		List<ValuePair<?>> list = new ArrayList<>();
-		list.addAll(Stream.of(RegisterSourceEnum.values())
+		list.addAll(Stream.of(BillVerifyStatusEnum.values())
                 .map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString()))
                 .collect(Collectors.toList()));
 		return list;

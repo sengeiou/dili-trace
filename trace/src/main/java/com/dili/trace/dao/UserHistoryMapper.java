@@ -3,7 +3,6 @@ package com.dili.trace.dao;
 import java.util.List;
 
 import com.dili.ss.base.MyMapper;
-import com.dili.ss.domain.BasePage;
 import com.dili.trace.domain.UserHistory;
 import com.dili.trace.dto.UserHistoryListDto;
 import com.dili.trace.dto.UserHistoryStaticsDto;

@@ -16,9 +16,6 @@ var currentUser={"depId":"${user.depId!}"
 }
     //表格查询
 	function loadRegisterBillGridData(param,success,error){
-    	
-		//console.info('loadRegisterBillGridData')
-		//debugger
 		$.extend(_registerBillGrid.datagrid("options").queryParams,buildGridQueryData());
 
 		

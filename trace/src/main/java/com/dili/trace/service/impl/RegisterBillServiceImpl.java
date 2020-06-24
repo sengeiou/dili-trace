@@ -1,6 +1,5 @@
 package com.dili.trace.service.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -38,9 +36,7 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.ImageCertService;
@@ -95,7 +91,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
-//		registerBill.setRegisterSource(RegisterSourceEnum.OTHERS.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
@@ -152,17 +147,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("商品重量不能为空");
 		}
 
-//		if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 		if (registerBill.getWeight().longValue() <= 0L) {
 			LOGGER.error("商品重量不能小于0");
 			throw new TraceBusinessException("商品重量不能小于0");
 		}
-//		} else {
-//			if (registerBill.getWeight().longValue() < 0L) {
-//				LOGGER.error("商品重量不能为负");
-//				throw new BusinessException("商品重量不能为负");
-//			}
-//		}
 
 		return BaseOutput.success();
 	}
@@ -234,19 +222,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setOperatorName(userTicket.getRealName());
 			registerBill.setOperatorId(userTicket.getId());
 			if (pass) {
-
-//				// 理货区
-//				if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())
-//						&& StringUtils.isNotBlank(registerBill.getDetectReportUrl())) {
-//					// 有检测报告，直接已审核
-//					// registerBill.setLatestDetectTime(new Date());
-//					registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-//					registerBill.setDetectState(null);
-//				}
-//				if (!RegisterBillStateEnum.ALREADY_AUDIT.getCode().equals(registerBill.getState())) {
-//					registerBill.setSampleCode(this.getNextSampleCode());
-//					registerBill.setState(RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue());
-//				}
 
 			} else {
 				registerBill.setState(-1);
@@ -529,10 +504,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
 			throw new AppException("数据状态错误");
 		}
-//		if (!RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
-//			throw new AppException("数据来源错误");
-//
-//		}
 		registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
 		// registerBill.setDetectState(null);
 		this.updateSelective(registerBill);

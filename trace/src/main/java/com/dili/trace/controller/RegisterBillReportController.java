@@ -33,7 +33,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.RegisterBillReportQueryDto;
-import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillReportService;
 import com.dili.trace.service.RegisterBillService;
@@ -139,9 +138,6 @@ public class RegisterBillReportController {
 
 	private RegisterBillReportQueryDto calAndSetDates(RegisterBillReportQueryDto dto) {
 
-//		if (RegisterSourceEnum.TALLY_AREA.getCode().equals(dto.getRegisterSource())) {
-//			//dto.setTradeTypeId(null);
-//		}
 
 		LocalDate start = dto.getCreatedStart();
 		LocalDate end = dto.getCreatedEnd();
@@ -263,7 +259,6 @@ public class RegisterBillReportController {
 
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
-//		modelMap.put("registerSource", RegisterSourceEnum.TALLY_AREA.getCode());
 
 		return "registerBillReport/plate-report";
 	}
@@ -339,7 +334,6 @@ public class RegisterBillReportController {
 
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
-//		modelMap.put("registerSource", RegisterSourceEnum.TALLY_AREA.getCode());
 
 		return "registerBillReport/origin-report";
 	}

@@ -17,7 +17,6 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.RegisterBillApi;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.RegisterBillOutput;
@@ -82,13 +81,7 @@ public class ManagerRegisterBillApi {
 			registerBill.setOriginName(dto.getOriginName());
 			registerBill.setProductId(dto.getProductId());
 			registerBill.setProductName(dto.getProductName());
-//			if (registerBill.getRegisterSource() == null) {
-//				// 小程序默认理货区
-//				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
-//			}
-//			if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-//				registerBill.setTallyAreaNo(user.getTallyAreaNos());
-//			}
+
 			try {
 				registerBillService.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
 			} catch (TraceBusinessException e) {
