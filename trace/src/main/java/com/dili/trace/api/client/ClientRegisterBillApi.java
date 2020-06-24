@@ -37,8 +37,6 @@ import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.VerifyHistoryService;
 import com.dili.trace.util.BasePageUtil;
-import com.dili.trace.util.MethodUtil;
-import com.github.hervian.reflection.Types;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -124,10 +122,9 @@ public class ClientRegisterBillApi {
 				input.setSort("id");
 			}
 			BasePage basePage = BasePageUtil.convert(registerBillService.listPageByExample(input), bill -> {
-
-				return new MethodUtil().newKey(RegisterBill::getId, "billId").toMap(bill, RegisterBill::getId,
-						RegisterBill::getCreated, RegisterBill::getProductName, RegisterBill::getWeight,
-						RegisterBill::getWeightUnit, RegisterBill::getVerifyStatus);
+				Map<Object, Object> map = new BeanMap(bill);
+				map.put("billId", map.remove("id"));
+				return map;
 
 			});
 			return BaseOutput.success().setData(basePage);
@@ -175,8 +172,5 @@ public class ClientRegisterBillApi {
 
 	}
 
-	public static void main(String[] args) {
-		System.out.println(Types.createMethod(RegisterBill::getCreated).getName());
-	}
 
 }

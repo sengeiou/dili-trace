@@ -7,12 +7,12 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<description>trace</description>
 	<packaging>jar</packaging>
-        <repositories>
+	<repositories>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
-                </repository>
-        </repositories>
+		</repository>
+	</repositories>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
@@ -120,20 +120,20 @@
 		<!-- 资源文件过滤 -->
 
 		<plugins>
-                    <plugin>   
-                        <groupId>org.apache.maven.plugins</groupId>  
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.0.2</version>
-                        <configuration>  
-                             <encoding>UTF-8</encoding>  
-                              <resources>
-                                <resource>
-                                        <directory>src/main/resources</directory>
-                                        <filtering>true</filtering>
-                                </resource>
-                           </resources>
-                        </configuration>  
-                    </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<resources>
+						<resource>
+							<directory>src/main/resources</directory>
+							<filtering>true</filtering>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -176,10 +176,10 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.hervian</groupId>
-			<artifactId>safety-mirror</artifactId>
-			<version>1.0.0</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jooq</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.zalando</groupId>
 			<artifactId>logbook-spring-boot-starter</artifactId>
