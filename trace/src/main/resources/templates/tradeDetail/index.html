@@ -1,0 +1,141 @@
+ <#body head_title="签名列表">
+     <style>
+         .textbox-text[readonly] {
+             background: #ebebe4;
+         }
+     </style>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+            </div>
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="queryForm" class="easyui-form" method="post" fit="true">
+                    <div class="search-wrap">
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'创建时间'" value=""/>
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;" value=""/>
+                        </div>
+       					<div class="search-item">
+                            <input class="easyui-textbox" name="billCode" id="billCode" style="width:100%" labelAlign="right" data-options="label:'报备单编号:'" />
+                        </div>
+                       <div class="search-item">
+                            <input class="easyui-textbox" name="sellerName" id="sellerName" style="width:100%" labelAlign="right" data-options="label:'卖家:'" />
+                        </div>
+                       <div class="search-item">
+                            <input class="easyui-textbox" name="buyerName" id="buyerName" style="width:100%" labelAlign="right" data-options="label:'买家:'" />
+                        </div>
+                        <div class="search-item">
+                            <input  name="tradeType" id="tradeType" style="width:100%" labelAlign="right" data-options="label:'交易类型' "  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="tradeType" _provider='tradeTypeEnumProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="签名列表" id="approverInfoGrid" fitColumns="true" noheader="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
+                   align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+                <thead>
+                    <tr>
+                        <th width="30%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            创建时间
+                        </th>
+                      
+                        <th width="30%" data-options="field:'userName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            卖家
+                        </th>
+                        <th width="40%" data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            买家
+                        </th>
+                        <th width="40%" data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                           交易类型
+                        </th>
+
+                   </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增" style="padding:20px" modal="true" border="thin" closed="true"
+         data-options="
+				iconCls: 'icon-edit',
+				height: 350,
+				buttons: [{
+					text:'确认',
+					iconCls:'icon-ok',
+					handler:saveOrUpdate
+				},{
+					text:'取消',
+					iconCls:'icon-cancel',
+					handler:function(){
+						$('#dlg').dialog('close');
+					}
+				}]
+			">
+    <form id="_form" class="easyui-form" method="post" fit="true">
+        <input name="_id" id="_id" type="hidden">
+        <input name="_userId" id="_userId" type="hidden">
+        <table width="430px">
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_userName" id="_userName" style="width:100%" data-options="label:'姓名*:', validType:'length[2,20]',required:true" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_phone" id="_phone" style="width:100%" data-options="label:'手机号:', validType:'phoneNum'" />
+                </td>
+            </tr>
+        </table>
+        <table width="430px">
+            <tr>
+
+
+                <td style="padding:5px;">
+                    <div class="fileimg-box" style="margin: 0 auto;">
+                        <span class="fileimg-plus-icon">+</span>
+                        <span class="fileimg-des">上传签名</span>
+                        <input type="file" name="file" id="_signBase64" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                        <input type="hidden" name="_signBase64">
+                        <img class="magnifying">
+                        <div class="fileimg-cover" style="display: none;"></div>
+                        <div class="fileimg-edit" style="display: none;">
+                            <span class="fileimg-view">查看</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+     <#tradeDetail_indexJs />
+</#body>

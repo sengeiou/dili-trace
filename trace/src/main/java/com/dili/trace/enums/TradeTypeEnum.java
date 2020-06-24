@@ -9,8 +9,8 @@ package com.dili.trace.enums;
  * @createTime 2018/11/8 18:43
  */
 public enum TradeTypeEnum {
-    NONE(0, "无"),
-    SEPARATE_SALES(10, "分销"),
+    NONE(0, "自主报备"),
+    SEPARATE_SALES(10, "交易流转"),
 
     ;
 
