@@ -143,11 +143,6 @@ public class RegisterBillController {
 			registerBill.setIdCardNo(user.getCardNo());
 			registerBill.setAddr(user.getAddr());
 			registerBill.setUserId(user.getId());
-//			registerBill.setTallyAreaNo(user.getTallyAreaNos());
-
-//			registerBill.setDetectReportUrl(StringUtils.trimToNull(registerBill.getDetectReportUrl()));
-//			registerBill.setOriginCertifiyUrl(StringUtils.trimToNull(registerBill.getOriginCertifiyUrl()));
-//			registerBill.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
 			try {
 				BaseOutput r = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
 						new OperatorUser(userTicket.getId(), userTicket.getRealName()));

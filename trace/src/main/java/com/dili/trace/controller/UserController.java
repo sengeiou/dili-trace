@@ -218,27 +218,6 @@ public class UserController {
 		return "user/view";
 	}
 
-	// private List<City> queryCitys() {
-	// List<String> prirityCityNames = Arrays.asList("北京市", "哈尔滨市", "牡丹江市", "佳木斯市",
-	// "鹤岗市", "绥化市", "内蒙古自治区", "呼和浩特市",
-	// "包头市", "呼伦贝尔市", "天津市", "沈阳市", "大连市", "河北省", "苏州市", "烟台市", "合肥市", "长春市",
-	// "四平市", "上海市");
-	//
-	// List<City> cityList = new ArrayList<>();
-	// for (String name : prirityCityNames) {
-	// CityListInput query = new CityListInput();
-	// query.setKeyword(name);
-	// List<City> list = this.baseInfoRpcService.listCityByCondition(name);
-	// City city = list.stream().filter(item ->
-	// item.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
-	// if (city != null) {
-	// cityList.add(city);
-	// }
-	//
-	// }
-	// return cityList;
-	//
-	// }
 	@Autowired
 	UserQrItemService userQrItemService;
 	@ApiOperation("跳转到qrstatus页面")
@@ -285,18 +264,5 @@ public class UserController {
 		return "user/edit";
 	}
 
-	@RequestMapping(value = "/queryUser.action", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public BaseOutput queryUser(User input) {
-		try {
-			input.setId(132L);
-			List<User> list = this.userService.listByExample(input);
-			return BaseOutput.success().setData(list);
-
-		} catch (Exception e) {
-			LOGGER.error("查询失败", e);
-			return BaseOutput.failure();
-		}
-
-	}
+	
 }
