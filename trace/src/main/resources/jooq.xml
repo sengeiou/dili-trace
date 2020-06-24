@@ -69,7 +69,7 @@ directory layout here -->
         <strategy>
             <name>org.jooq.codegen.DefaultGeneratorStrategy</name>
 <!--            <name>com.jooq.CustomJooqGeneratorStrategy</name> -->
-           <!--matchers>
+           <matchers>
                <tables>
                    <table>
 
@@ -87,7 +87,7 @@ directory layout here -->
                        </recordClass> 
                    </table>
                </tables>
-           </matchers-->
+           </matchers>
        </strategy>
     </generator>
 
