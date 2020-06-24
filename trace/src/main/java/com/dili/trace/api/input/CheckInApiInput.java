@@ -4,7 +4,7 @@ import java.util.List;
 
 public class CheckInApiInput {
     /**
-     * 状态 {@link com.dili.trace.glossary.CheckinStatusEnum}
+     * 状态 {@link com.dili.trace.enums.CheckinStatusEnum}
      */
     private Integer checkinStatus;
     /**

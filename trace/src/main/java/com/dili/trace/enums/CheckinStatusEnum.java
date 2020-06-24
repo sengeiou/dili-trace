@@ -1,4 +1,4 @@
-package com.dili.trace.glossary;
+package com.dili.trace.enums;
 
 import java.util.stream.Stream;
 

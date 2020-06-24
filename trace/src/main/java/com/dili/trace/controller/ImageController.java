@@ -1,8 +1,10 @@
 package com.dili.trace.controller;
 
-import com.dili.common.service.ImageService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.glossary.ImageCertTypeEnum;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.dili.common.service.ImageService;
+import com.dili.ss.domain.BaseOutput;
 
 @RestController
 @RequestMapping(value = "/action/imageApi")

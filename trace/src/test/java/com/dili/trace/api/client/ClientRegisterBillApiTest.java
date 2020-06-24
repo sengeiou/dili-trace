@@ -18,7 +18,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.AutoWiredBaseTest;
-import com.dili.trace.api.client.ClientRegisterBillApi;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -27,8 +26,8 @@ import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.glossary.ImageCertTypeEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 
@@ -78,7 +77,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.setImageCertList(new ArrayList<ImageCert>());
 		ImageCert imageCert = new ImageCert();
 		imageCert.setUrl("imageurl");
-		imageCert.setCertType(ImageCertTypeEnum.BUSINESS_LICENSE.getCode());
+		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
 		rb.getImageCertList().add(imageCert);
 		BaseOutput out = this.clientRegisterBillApi.createRegisterBillList(createListBillParam);
 		System.out.println(out.isSuccess());

@@ -460,9 +460,9 @@ var currentUser={"depId":"${user.depId!}"
         let promise = new Promise((resolve, reject) => {
             layer.confirm('是否允许进场？', {btn: ['允许', '拒绝','取消'], title: "进场审核"
                 ,yes:function () {
-                    resolve(${@com.dili.trace.glossary.CheckinStatusEnum.ALLOWED.getCode()});
+                    resolve(${@com.dili.trace.enums.CheckinStatusEnum.ALLOWED.getCode()});
                 },btn2:function(){
-                    resolve(${@com.dili.trace.glossary.CheckinStatusEnum.NOTALLOWED.getCode()});
+                    resolve(${@com.dili.trace.enums.CheckinStatusEnum.NOTALLOWED.getCode()});
                 }
             });
 		});

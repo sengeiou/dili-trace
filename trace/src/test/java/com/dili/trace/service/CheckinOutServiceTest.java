@@ -34,12 +34,12 @@ import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.CheckinOutTypeEnum;
+import com.dili.trace.enums.CheckinStatusEnum;
+import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.CheckinOutTypeEnum;
-import com.dili.trace.glossary.CheckinStatusEnum;
-import com.dili.trace.glossary.CheckoutStatusEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.google.common.collect.Lists;
 

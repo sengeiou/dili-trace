@@ -4,7 +4,7 @@ import java.util.List;
 
 public class CheckOutApiInput {
 	/**
-	 * 状态 {@link com.dili.trace.glossary.CheckinStatusEnum}
+	 * 状态 {@link com.dili.trace.enums.CheckinStatusEnum}
 	 */
 	private Integer checkoutStatus;
 	/**

@@ -21,7 +21,7 @@ public class CheckinOutRecord extends BaseDomain {
     @Column(name = "`id`")
     private Long id;
     /**
-     * 状态 {@link com.dili.trace.glossary.CheckinStatusEnum}
+     * 状态 {@link com.dili.trace.enums.CheckinStatusEnum}
      */
     @ApiModelProperty(value = "状态")
     @Column(name = "`status`")

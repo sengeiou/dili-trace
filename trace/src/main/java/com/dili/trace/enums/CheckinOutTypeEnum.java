@@ -1,30 +1,26 @@
-package com.dili.trace.glossary;
+package com.dili.trace.enums;
 
 import java.util.stream.Stream;
 
-public enum CheckoutStatusEnum {
+public enum CheckinOutTypeEnum {
     /**
-     * 无
+     * 进门
      */
-    NONE(0, "无"),
+    IN(10, "进门"),
     /**
-     * 通过
+     * 出门
      */
-    ALLOWED(10, "通过"),
-    /**
-     * 不通过
-     */
-    NOTALLOWED(20, "不通过"),;
+    OUT(20, "出门"),;
 
     private Integer code;
     private String desc;
 
-    CheckoutStatusEnum(Integer code, String desc) {
+    CheckinOutTypeEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
     }
-    public static CheckoutStatusEnum fromCode(Integer code) {
-        return Stream.of(CheckoutStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
+    public static CheckinOutTypeEnum fromCode(Integer code) {
+        return Stream.of(CheckinOutTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
     }
     public boolean equalsToCode(Integer code) {
         return this.getCode().equals(code);

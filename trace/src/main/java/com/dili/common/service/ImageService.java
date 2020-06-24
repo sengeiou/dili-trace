@@ -5,7 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.UUIDUtil;
-import com.dili.trace.glossary.ImageCertTypeEnum;
+import com.dili.trace.enums.ImageCertTypeEnum;
+
 import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +72,7 @@ public class ImageService {
      */
     private StringBuilder createDirectory(Integer type) {
         StringBuilder directory = new StringBuilder();
-        directory.append(ImageCertTypeEnum.getImageTypeEnum(type));
+        directory.append(ImageCertTypeEnum.fromCode(type).map(ImageCertTypeEnum::getName).orElse("default"));
         directory.append("/");
         directory.append(DateUtil.format(new Date(),"yyyyMM"));
         directory.append("/");
