@@ -1,14 +1,13 @@
 凭证图片类型接口:/api/enums/listImageCertType.api
 商品规格接口:/api/enums/listSpecType.api
 报备单审核状态接口:/api/enums/listBillVerifyStatus.api
+商品储存类型(鲜活,冰鲜,冻品,加工品) :/api/enums/listPreserveType.api
 
 获取品类列表：
   category: "/api/categoryApi/listCategoryByCondition",
 获取城市列表
 cityList: "/api/cityApi/listCityByCondition"
   upload: "/api/imageApi/upload", //上传图片
-
-
 
 //用户
   register: "/api/userApi/register.api", //注册

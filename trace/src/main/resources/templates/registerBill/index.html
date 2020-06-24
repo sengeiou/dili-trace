@@ -201,22 +201,7 @@
      <script>
      
      function multipleSelectOnChange(n,o){
-    	 
-		$('input[name="hasDetectReport"]').val('')
-  		$('input[name="hasCheckSheet"]').val('')
-  		   
-    	if(n=='hasDetectReport=true'){
-  		   $('input[name="hasDetectReport"]').val('true')
-  	   }else if(n=='hasDetectReport=false'){
-  		   $('input[name="hasDetectReport"]').val('false')
-  	   }else if(n=='hasCheckSheet=true'){
-  		   $('input[name="hasCheckSheet"]').val('true')
-  	   }else if(n=='hasCheckSheet=false'){
-  		   $('input[name="hasCheckSheet"]').val('false')
-  	   }else{
-  		   $('input[name="hasDetectReport"]').val('')
-  		   $('input[name="hasCheckSheet"]').val('')
-  	   }
+    	
      }
      
      function queryProduct(param,success,error){

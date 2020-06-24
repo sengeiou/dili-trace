@@ -31,13 +31,7 @@ public interface BaseInfoRpc {
     @POST("/api/city/listCityByCondition")
     public BaseOutput<List<City>> listCityByCondition(@VOBody CityListInput input);
 
-    /**
-     * 品类数据列表
-     * @param query
-     * @return
-     */
-    @POST("/api/category/listCategoryByCondition")
-    public BaseOutput<List<Category>> listCategoryByCondition(@VOBody CategoryListInput query);
+
     
     
     @POST("/api/department/queryByIds")

@@ -1,16 +1,8 @@
 package com.dili.trace.controller;
 
-import com.dili.common.service.BaseInfoRpcService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Category;
-import com.dili.trace.domain.City;
-import com.dili.trace.dto.CategoryListInput;
-import com.dili.trace.dto.CityListInput;
-import com.dili.trace.rpc.BaseInfoRpc;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.dili.common.service.BaseInfoRpcService;
+import com.dili.trace.dao.CategoryService;
+import com.dili.trace.domain.Category;
+import com.dili.trace.domain.City;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * 神农系统中相关基础信息
@@ -33,16 +25,18 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/toll")
 public class TollInfoController {
-    private static final Logger LOGGER= LoggerFactory.getLogger(TollInfoController.class);
+    private static final Logger logger= LoggerFactory.getLogger(TollInfoController.class);
 
     @Autowired
     BaseInfoRpcService baseInfoRpcService;
 
+    @Autowired
+    CategoryService categoryService;
 
     @RequestMapping("/category")
     @ResponseBody
     public Map<String, ?> listByName(String name, boolean allFlag) {
-        List<Category> categorys = queryCategorys(name);
+        List<Category> categorys = this.categoryService.listCategoryByKeyword(name);
 
         List<Map<String, Object>> list = Lists.newArrayList();
         if (categorys != null && !categorys.isEmpty()) {
@@ -87,10 +81,6 @@ public class TollInfoController {
         return map;
     }
 
-    private List<Category> queryCategorys(String name) {
-    	return this.baseInfoRpcService.listCategoryByCondition(name);
-
-    }
     private List<City> queryCitys(String name) {
     	return this.baseInfoRpcService.listCityByCondition(name);
     }

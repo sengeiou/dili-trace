@@ -57,7 +57,7 @@ public class LoginComponent {
 
 	public Map<String, Object> login(LoginInputDto loginInput) {
 
-		if (loginInput == null) {
+		if (loginInput == null||loginInput.getLoginIdentityType() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
 		if (StrUtil.isAllBlank(loginInput.getUsername())) {
@@ -66,10 +66,6 @@ public class LoginComponent {
 		if (StrUtil.isBlank(loginInput.getPassword())) {
 			throw new TraceBusinessException("密码不能为空");
 		}
-		if (loginInput.getLoginIdentityType() == null) {
-			loginInput.setLoginIdentityType(LoginIdentityTypeEnum.USER.getCode());
-		}
-
 		if (LoginIdentityTypeEnum.USER.equalsToCode(loginInput.getLoginIdentityType())) {
 			OperatorUser operatorUser = this.userLogin(loginInput.getUsername(), loginInput.getPassword());
 			return this.responseData(operatorUser);

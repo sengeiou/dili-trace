@@ -335,24 +335,7 @@ var currentUser={"depId":"${user.depId!}"
         
 	    var rows=_registerBillGrid.datagrid("getSelections");
 	    
-		var arr=$.makeArray(rows).filter(function(v,i){
-			var detectState=v.$_detectState;
-			   if(detectState==${@com.dili.trace.glossary.BillDetectStateEnum.PASS.getCode()} || detectState==${@com.dili.trace.glossary.BillDetectStateEnum.REVIEW_PASS.getCode()}){
-				   return true;
-			   }
-			   return false;
-		}).filter(function(v,i){
-			if(v.$_checkSheetId&&v.$_checkSheetId!=null&&v.$_checkSheetId!=''){
-        		return false;
-        	}else{
-        		return true;
-        	}
-		});
-		if(arr.length>0){
-			 $('#createsheet-btn').show();
-		}else{
-			 $('#createsheet-btn').hide();
-		}
+		
 		
         if(rows.length>1){
         	//batch
@@ -1207,23 +1190,7 @@ var currentUser={"depId":"${user.depId!}"
         }
         openWin('/registerBill/uploadDetectReport/' + selected.id);
     }
-    function doCreateCheckSheet(){
-        var selected = _registerBillGrid.datagrid("getSelected");
-        if (null == selected) {
-            swal({
-                title: '警告',
-                text: '请选中一条数据',
-                type: 'warning',
-                width: 300
-            });
-            return;
-        }
-        
-        var rows=_registerBillGrid.datagrid("getSelections");
-        var registerBillIdList=rows.filter(function(v,i){return true;}).map(function(v,i){return v.id});
-        openWin('/checkSheet/edit.html?' +$.param({registerBillIdList:registerBillIdList},true));
-    }
-   
+
     
     function openIframe(content,selected){
         layer.open({

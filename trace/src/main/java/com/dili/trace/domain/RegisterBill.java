@@ -152,7 +152,11 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "查验状态值")
 	@Column(name = "`verify_status`")
 	private Integer verifyStatus;
-
+	
+	@ApiModelProperty(value = "保存类型")
+	@Column(name = "`preserve_type`")
+	private Integer preserveType;
+	
 	public Integer getVerifyStatus() {
 		return verifyStatus;
 	}
