@@ -155,28 +155,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return BaseOutput.success();
 	}
 
-	@Override
-	public List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount) {
-		List<RegisterBill> exist = getActualDao().findByExeMachineNo(exeMachineNo);
-		if (!exist.isEmpty()) {
-			LOGGER.info("获取的任务已经有相应的数量了" + taskCount);
-			if (exist.size() >= taskCount) {
-				return exist.subList(0, taskCount);
-			}
-		}
-
-		int fetchSize = taskCount - exist.size();
-		LOGGER.info("还需要再拿多少个：" + fetchSize);
-
-		List<Long> ids = getActualDao().findIdsByExeMachineNo(fetchSize);
-		StringBuilder sb = new StringBuilder();
-		sb.append(0);
-		for (Long id : ids) {
-			sb.append(",").append(id);
-		}
-		getActualDao().taskByExeMachineNo(exeMachineNo, sb.toString());
-		return getActualDao().findByExeMachineNo(exeMachineNo);
-	}
+	
 
 	@Override
 	public List<RegisterBill> findByProductName(String productName) {
@@ -424,12 +403,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return SessionContext.getSessionContext().getUserTicket();
 	}
 
-	@Override
-	public RegisterBillStaticsDto groupByState(RegisterBillDto dto) {
-		return this.getActualDao().groupByState(dto);
-
-	}
-
+	
 	@Override
 	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill) {
 		LOGGER.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
@@ -607,7 +581,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 //			// do nothing
 //			return BaseOutput.success();
 //		}
-		this.getActualDao().doRemoveReportAndCertifiy(item);
+//		this.getActualDao().doRemoveReportAndCertifiy(item);
 		this.userQrItemService.updateUserQrStatus(item.getUserId());
 		return BaseOutput.success();
 	}
@@ -676,82 +650,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return this.listEasyuiPageByExample(dto, true).toString();
 	}
 
-	@Override
-	public String listStaticsPage(RegisterBillDto dto) throws Exception {
-		if (StringUtils.isNotBlank(dto.getAttrValue())) {
-			switch (dto.getAttr()) {
-			case "code":
-				dto.setCode(dto.getAttrValue());
-				break;
-			case "plate":
-				dto.setPlate(dto.getAttrValue());
-				break;
-			case "tallyAreaNo":
-				// registerBill.setTallyAreaNo(registerBill.getAttrValue());
-				dto.setLikeTallyAreaNo(dto.getAttrValue());
-				break;
-			case "latestDetectOperator":
-				dto.setLatestDetectOperator(dto.getAttrValue());
-				break;
-			case "name":
-				dto.setName(dto.getAttrValue());
-				break;
-			case "productName":
-				dto.setLikeProductName(dto.getAttrValue());
-				break;
-			case "likeSampleCode":
-				dto.setLikeSampleCode(dto.getAttrValue());
-				break;
-			}
-		}
-		StringBuilder sql = this.buildDynamicCondition(dto);
-		if (sql.length() > 0) {
-			dto.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
-		}
-		return listEasyuiPageByExample(dto, true).toString();
-	}
+	
 
 	private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
 		StringBuilder sql = new StringBuilder();
-		if (registerBill.getHasDetectReport() != null) {
-			if (registerBill.getHasDetectReport()) {
-				sql.append("  (detect_report_url is not null AND detect_report_url<>'') ");
-			} else {
-				sql.append("  (detect_report_url is  null or detect_report_url='') ");
-			}
-		}
-
-		if (registerBill.getHasOriginCertifiy() != null) {
-			if (sql.length() > 0) {
-				sql.append(" AND ");
-			}
-			if (registerBill.getHasOriginCertifiy()) {
-				sql.append("  (origin_certifiy_url is not null AND origin_certifiy_url<>'') ");
-			} else {
-				sql.append("  (origin_certifiy_url is  null or origin_certifiy_url='') ");
-			}
-		}
-
-		if (registerBill.getHasHandleResult() != null) {
-			if (sql.length() > 0) {
-				sql.append(" AND ");
-			}
-			if (registerBill.getHasHandleResult()) {
-				sql.append("  (handle_result is not null AND handle_result<>'') ");
-			} else {
-				sql.append("  (handle_result is  null or handle_result='') ");
-			}
-		}
-		if (registerBill.getHasCheckSheet() != null) {
-			if (sql.length() > 0) {
-				sql.append(" AND ");
-			}
-			if (registerBill.getHasCheckSheet()) {
-				sql.append("  (check_sheet_id is not null ) ");
-			} else {
-				sql.append("  (check_sheet_id is  null) ");
-			}
-		}
+		
 		return sql;
 	}
 

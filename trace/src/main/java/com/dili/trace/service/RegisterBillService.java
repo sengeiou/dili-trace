@@ -17,20 +17,12 @@ import com.dili.trace.dto.RegisterBillStaticsDto;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
 public interface RegisterBillService extends BaseService<RegisterBill, Long> {
-	
-	public RegisterBill findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto dto) throws Exception;
-	public String listPage(RegisterBillDto dto)throws Exception;
-	
-	public String listStaticsPage(RegisterBillDto dto)throws Exception;
 
-	/**
-	 * 查找任务
-	 * 
-	 * @param exeMachineNo
-	 * @param taskCount
-	 * @return
-	 */
-	List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount);
+	public RegisterBill findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto dto) throws Exception;
+
+	public String listPage(RegisterBillDto dto) throws Exception;
+
+
 
 	/**
 	 * 通过商品查找
@@ -47,7 +39,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	RegisterBill findByCode(String code);
-	
+
 	/**
 	 * 通过采样编号查找
 	 * 
@@ -56,14 +48,13 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	RegisterBill findBySampleCode(String sampleCode);
 
-
 	/**
 	 * 创建登记单
 	 * 
 	 * @param registerBill
 	 * @return
 	 */
-	BaseOutput createRegisterBill(RegisterBill registerBill,List<ImageCert> imageCertList,OperatorUser operatorUser);
+	BaseOutput createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList, OperatorUser operatorUser);
 
 	/**
 	 * 审核登记单
@@ -106,16 +97,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	int reviewCheckRegisterBill(Long id);
 
-
-
-	/**
-	 * 根据状态统计数据
-	 * 
-	 * @param dto
-	 * @return
-	 */
-	public RegisterBillStaticsDto groupByState(RegisterBillDto dto);
-
 	/**
 	 * 通过登记单，获取详情
 	 * 
@@ -123,7 +104,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill);
-
 
 	/**
 	 * 保存处理结果
@@ -140,6 +120,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doUploadDetectReport(RegisterBill input);
+
 	/**
 	 * 保存修改数据
 	 * 
@@ -147,9 +128,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doUploadOrigincertifiy(RegisterBill input);
-	
-	
-	
+
 	/**
 	 * 直接审核通过不需要检测
 	 * 
@@ -157,9 +136,10 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doAuditWithoutDetect(RegisterBill input);
-	
+
 	/**
 	 * 修改登记单
+	 * 
 	 * @param input
 	 * @return
 	 */
@@ -180,22 +160,24 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public BaseOutput doBatchSamplingCheck(List<Long> idList);
-	
-	
+
 	/**
 	 * 批量审核
+	 * 
 	 * @param batchAuditDto
 	 * @return
 	 */
-	public  BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) ;
+	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto);
+
 	/**
 	 * 删除产地证明及检测报告
+	 * 
 	 * @param id
 	 * @param deleteType
 	 * @return
 	 */
-	
-	public BaseOutput doRemoveReportAndCertifiy(Long id,String deleteType);
-	
-	public Long doVerify(RegisterBill input,OperatorUser operatorUser);
+
+	public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType);
+
+	public Long doVerify(RegisterBill input, OperatorUser operatorUser);
 }

@@ -93,35 +93,6 @@ var currentUser={"depId":"${user.depId!}"
     	}
     }
 
-	function queryPlatesByTallyAreaNo(tallyAreaNo){
-		//console.info(tallyAreaNo)
-		//console.info(tallyAreaNo)
-		$('#likePlate').combobox('loadData',[])
-		if(tallyAreaNo&&tallyAreaNo!=''){
-			
-			
-			 $.ajax({
-                 type: "POST",
-                 url: "${contextPath}/user/findPlatesByTallyAreaNo.action",
-                 processData:true,
-                 dataType: "json",
-                 data:{tallyAreaNo:tallyAreaNo},
-                 async : true,
-                 success: function (ret) {
-                     if(ret.success){
-                    	 $('#likePlate').combobox('loadData',ret.data)
-                     }else{
-                    	 //$('#plate').combobox('loadData',[])
-                     }
-                 },
-                 error: function(){
-                	// $('#plate').combobox('loadData',[])
-                 }
-             });
-			
-		}
-	}
-    
 	function onPlateChange(v){
 		if(v&&v!='全部'){
 			queryRegisterBillGrid();
@@ -1252,19 +1223,7 @@ var currentUser={"depId":"${user.depId!}"
         var registerBillIdList=rows.filter(function(v,i){return true;}).map(function(v,i){return v.id});
         openWin('/checkSheet/edit.html?' +$.param({registerBillIdList:registerBillIdList},true));
     }
-    function doCopy(){
-        var selected = _registerBillGrid.datagrid("getSelected");
-        if (null == selected) {
-            swal({
-                title: '警告',
-                text: '请选中一条数据',
-                type: 'warning',
-                width: 300
-            });
-            return;
-        }
-        openWin('/registerBill/copy.html?id=' + selected.id+"#copy");
-    }
+   
     
     function openIframe(content,selected){
         layer.open({

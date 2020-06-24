@@ -65,7 +65,6 @@ public interface UserService extends BaseService<User, Long> {
 	 */
 	BaseOutput updateEnable(Long id, Boolean enable);
 
-	User findByTallyAreaNo(String tallyAreaNo);
 
 	public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception;
 	

@@ -22,7 +22,6 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
-import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
@@ -31,7 +30,6 @@ import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
-import com.dili.trace.service.UserTallyAreaService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -58,8 +56,7 @@ public class RegisterBillApi {
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;
-	@Autowired
-	UserTallyAreaService userTallyAreaService;
+
 
 	@Autowired
 	UpStreamService upStreamService;

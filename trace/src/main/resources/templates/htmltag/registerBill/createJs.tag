@@ -169,45 +169,6 @@ var currentUser={"depId":"${user.depId!}"
         });
     }
     function tallyAreaNo() {
-        var tallyAreaNo = $("#tallyAreaNoInput").val();
-        if(tallyAreaNo == ""){
-            return;
-        }
-        if (tallyAreaNo.length > 0) {
-            $.ajax({
-                type: 'post',
-                url: '/trade/customer/tallyAreaNo/'+tallyAreaNo,
-                dataType: 'json',
-                async: false,
-                success: function (ret) {
-                    if (ret.code == "200") {
-                        var customer = ret.data;
-                        $("#idCardNo").val(customer.cardNo).valid();
-                        $("#name").val(customer.name).valid();
-                        $("#addr").val(customer.addr).valid();
-                        $("#userId").val(customer.id).valid();
-                        $("#phone").val(customer.phone).valid();
-                        $("#tallyAreaNo").val(tallyAreaNo);
-                        findUserPlateByUserId(customer.id,'#plate');
-                    } else {
-                        $("#idCardNo").val("");
-                        $("#name").val("");
-                        $("#addr").val("");
-                        $("#userId").val("");
-                        $("#phone").val("");
-                        $("#tallyAreaNo").val("");
-                    }
-                },
-                error:function(){
-                    $("#idCardNo").val("");
-                    $("#name").val("");
-                    $("#addr").val("");
-                    $("#userId").val("");
-                    $("#phone").val("");
-                    $("#tallyAreaNo").val("");
-                }
-            });
-        }
     }
     function customerId() {
         var customerId = $("#tradeAccountInput").val();

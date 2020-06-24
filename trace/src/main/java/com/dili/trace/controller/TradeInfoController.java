@@ -39,22 +39,6 @@ public class TradeInfoController {
 	
 
 
-	/**
-	 * 根据客户账号获取
-	 * 
-	 * @param tallyAreaNo
-	 * @return
-	 */
-	@ApiOperation("根据理货区号获取客户获取")
-	@RequestMapping(value = "/tallyAreaNo/{tallyAreaNo}", method = { RequestMethod.GET, RequestMethod.POST })
-	public BaseOutput<User> findTallyAreaNo(@PathVariable String tallyAreaNo) {
-		User customer = userService.findByTallyAreaNo(tallyAreaNo);
-		if (customer != null) {
-			return BaseOutput.success().setData(this.maskUser(customer));
-		} else {
-			return BaseOutput.failure();
-		}
-	}
 
 	/**
 	 * 根据客户ID获取车牌号

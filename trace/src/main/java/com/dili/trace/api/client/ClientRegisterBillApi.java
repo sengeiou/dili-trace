@@ -1,13 +1,11 @@
 package com.dili.trace.api.client;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.beanutils.BeanMap;
-import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,23 +32,17 @@ import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
-import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
-import com.dili.trace.service.UserTallyAreaService;
 import com.dili.trace.service.VerifyHistoryService;
 import com.dili.trace.util.BasePageUtil;
 import com.dili.trace.util.MethodUtil;
 import com.github.hervian.reflection.Types;
 
-import cn.hutool.core.util.ClassUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import tk.mybatis.mapper.code.IdentityDialect;
 
 /**
  * Created by wangguofeng

@@ -1,13 +1,8 @@
 package com.dili.trace.service;
 
-import java.util.List;
-
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserHistory;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserHistoryListDto;
 import com.dili.trace.dto.UserHistoryStaticsDto;
 

@@ -196,27 +196,7 @@ public class UserController {
 
 	}
 
-	@RequestMapping(value = "/findPlatesByTallyAreaNo.action", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public BaseOutput findPlatesByTallyAreaNo(String tallyAreaNo) {
-		try {
-			List<UserPlate> list = this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo);
-			// List<String> plateList =
-			// this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo).stream().map(UserPlate::getPlate)
-			// .collect(Collectors.toList());
-			// plateList.add("SSS");
-			// UserPlate item=DTOUtils.newDTO(UserPlate.class);
-			// item.setPlate("ABC");
-			// item.setId(1L);
-			// list.add(item);
-			return BaseOutput.success().setData(list);
-
-		} catch (Exception e) {
-			LOGGER.error("查询失败", e);
-			return BaseOutput.failure();
-		}
-
-	}
+	
 
 	@ApiOperation("跳转到User页面")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)

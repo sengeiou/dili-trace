@@ -14,21 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.UserHistoryMapper;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserHistory;
 import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserTallyArea;
 import com.dili.trace.dto.UserHistoryListDto;
 import com.dili.trace.dto.UserHistoryStaticsDto;
 import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
-import com.dili.trace.service.UserTallyAreaService;
-import com.github.pagehelper.Page;
 
 @Transactional
 @Service
@@ -37,8 +33,7 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 	UserService userService;
 	@Autowired
 	UserPlateService userPlateService;
-	@Autowired
-	UserTallyAreaService tallyAreaService;
+
 
 	private UserHistoryMapper getActualDao() {
 
@@ -122,16 +117,13 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 		if (item == null) {
 			return Optional.empty();
 		}
-		UserTallyArea condition = DTOUtils.newDTO(UserTallyArea.class);
-		condition.setUserId(userId);
 
-		List<UserTallyArea> tallyAreaList = this.tallyAreaService.listByExample(condition);
 		List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(userId);
-		return Optional.of(this.buildUserHistory(item, userPlateList, tallyAreaList));
+		return Optional.of(this.buildUserHistory(item, userPlateList));
 
 	}
 
-	private UserHistory buildUserHistory(User user, List<UserPlate> userPlateList, List<UserTallyArea> tallyAreaList) {
+	private UserHistory buildUserHistory(User user, List<UserPlate> userPlateList) {
 		UserHistory history = DTOUtils.newDTO(UserHistory.class);
 		history.setUserId(user.getId());
 		history.setAddr(user.getAddr());

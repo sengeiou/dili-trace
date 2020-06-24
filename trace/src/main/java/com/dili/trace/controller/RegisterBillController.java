@@ -31,7 +31,6 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.TradeType;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
@@ -40,7 +39,6 @@ import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.dto.UserInfoDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
@@ -48,7 +46,6 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
-import com.dili.trace.service.TradeTypeService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
@@ -76,8 +73,7 @@ public class RegisterBillController {
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
 	DetectRecordService detectRecordService;
-	@Autowired
-	TradeTypeService tradeTypeService;
+
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -136,8 +132,6 @@ public class RegisterBillController {
 	@RequestMapping(value = "/insert.action", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
 		LOGGER.info("保存登记单数据:" + registerBills.size());
-		Map<String, String> tradeTypeMap = CollectionUtils.emptyIfNull(tradeTypeService.findAll()).stream()
-				.filter(Objects::nonNull).collect(Collectors.toMap(TradeType::getTypeId, TradeType::getTypeName));
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		for (RegisterBill registerBill : registerBills) {
 
@@ -194,11 +188,7 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/create.html")
 	public String create(ModelMap modelMap) {
-		try {
-			modelMap.put("tradeTypes", tradeTypeService.findAll());
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		
 		modelMap.put("citys", this.queryCitys());
 
 		return "registerBill/create";
@@ -538,40 +528,11 @@ public class RegisterBillController {
 		return "registerBill/tradeBillQRCode";
 	}
 
-	/**
-	 * 交易单复制
-	 *
-	 * @param id
-	 * @param modelMap
-	 * @return
-	 */
-	@RequestMapping(value = "/copy.html", method = RequestMethod.GET)
-	public String copy(Long id, ModelMap modelMap) {
-		RegisterBill registerBill = registerBillService.get(id);
-		String firstTallyAreaNo = "";/*
-										 * Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
-										 * .filter(StringUtils::isNotBlank).findFirst().orElse("");
-										 */
-		// registerBill.setTallyAreaNo(firstTallyAreaNo);
-
-		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
-		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
-		modelMap.put("tradeTypes", tradeTypeService.findAll());
-		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
-
-		modelMap.put("citys", this.queryCitys());
-
-		List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
-		modelMap.put("userPlateList", userPlateList);
-
-		return "registerBill/copy";
-	}
-
 	private UserInfoDto findUserInfoDto(RegisterBill registerBill, String firstTallyAreaNo) {
 		UserInfoDto userInfoDto = new UserInfoDto();
 
 		// 理货区
-		User user = userService.findByTallyAreaNo(firstTallyAreaNo);
+		User user = userService.get(registerBill.getUserId());
 
 		if (user != null) {
 			userInfoDto.setUserId(String.valueOf(user.getId()));
@@ -730,7 +691,6 @@ public class RegisterBillController {
 
 		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
 		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
-		modelMap.put("tradeTypes", tradeTypeService.findAll());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
 		modelMap.put("citys", this.queryCitys());
