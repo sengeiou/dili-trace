@@ -2,93 +2,14 @@
 <configuration>
     <property name="log_file_path" value="/diliapp/server/trace/logs"/>
     <property name="worker_log_file_path" value="/diliapp/server/work/logs"/>
-    <!-- 开发环境 -->
-    <springProfile name="dev">
-        <!-- 控制台输出 -->
-        <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-                <pattern>[hz-trace-dev]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
-            </encoder>
-        </appender>
-    </springProfile>
-    <!-- 测试环境 -->
-    <springProfile name="test">
-        <!-- 控制台输出 -->
-        <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-                <pattern>[hz-trace-test]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
-            </encoder>
-        </appender>
-    </springProfile>
-    <!-- 线上环境 -->
-    <springProfile name="prod">
-        <!-- 按照每天生成日志文件 -->
-        <appender name="appender"  class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <!--日志文件输出的文件名-->
-                <FileNamePattern>${log_file_path}/log-%d{yyyy-MM-dd}.log</FileNamePattern>
-                <!--日志文件保留天数-->
-                <MaxHistory>90</MaxHistory>
-            </rollingPolicy>
-            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-                <pattern>[hz-trace-prod]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
-            </encoder>
-            <!--日志文件最大的大小-->
-            <!--<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-                <MaxFileSize>20MB</MaxFileSize>
-            </triggeringPolicy>-->
-        </appender>
-    </springProfile>
-    <!-- 线上环境worker -->
-    <springProfile name="prod-worker">
-        <!-- 按照每天生成日志文件 -->
-        <appender name="appender"  class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <!--日志文件输出的文件名-->
-                <FileNamePattern>${worker_log_file_path}/log-%d{yyyy-MM-dd}.log</FileNamePattern>
-                <!--日志文件保留天数-->
-                <MaxHistory>90</MaxHistory>
-            </rollingPolicy>
-            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-                <pattern>[hz-trace-prod-worker]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
-            </encoder>
-            <!--日志文件最大的大小-->
-            <!--<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-                <MaxFileSize>20MB</MaxFileSize>
-            </triggeringPolicy>-->
-        </appender>
-    </springProfile>
-    <!-- 预发环境 -->
-    <springProfile name="pre">
-        <!-- 按照每天生成日志文件 -->
-        <appender name="appender"  class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <!--日志文件输出的文件名-->
-                <FileNamePattern>${log_file_path}/log-%d{yyyy-MM-dd}.log</FileNamePattern>
-                <!--日志文件保留天数-->
-                <MaxHistory>90</MaxHistory>
-            </rollingPolicy>
-            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-                <pattern>[hz-trace-prod]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
-            </encoder>
-            <!--日志文件最大的大小-->
-            <!--<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-                <MaxFileSize>20MB</MaxFileSize>
-            </triggeringPolicy>-->
-        </appender>
-    </springProfile>
-    <!-- show parameters for hibernate sql 专为 Hibernate 定制 -->
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder"  level="TRACE" />
-    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor"  level="DEBUG" />
-    <logger name="org.hibernate.SQL" level="DEBUG" />
-    <logger name="org.hibernate.engine.QueryParameters" level="DEBUG" />
-    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" />
-
+    
+    <!-- 控制台输出 -->
+    <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>[hz-trace-dev]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
+        </encoder>
+    </appender>
    <!-- SQL输出 -->
 	<logger name="p6spy" level="debug"/>
     
