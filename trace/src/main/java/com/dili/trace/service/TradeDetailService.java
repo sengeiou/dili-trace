@@ -217,9 +217,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 					return item.getId();
 				}).toList();
-//		if (tradeDetailIdList.isEmpty()) {
-//			throw new TraceBusinessException("所有交易单已完成退货申请");
-//		}
+		if (tradeDetailIdList.isEmpty()) {
+			throw new TraceBusinessException("没有可以进行退货的交易单");
+		}
 		return tradeDetailIdList;
 	}
 
@@ -260,9 +260,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 					return item.getId();
 				}).toList();
-//		if (tradeDetailIdList.isEmpty()) {
-//			throw new TraceBusinessException("完成退货");
-//		}
+		if (tradeDetailIdList.isEmpty()) {
+			throw new TraceBusinessException("没有可以进行处理的退货申请");
+		}
 		return tradeDetailIdList;
 	}
 }

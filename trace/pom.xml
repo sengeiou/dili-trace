@@ -105,6 +105,9 @@
 		<!-- 资源文件过滤 -->
 
 		<plugins>
+
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -117,6 +120,17 @@
 							<filtering>true</filtering>
 						</resource>
 					</resources>
+
+					<testResources>
+					<addDefaultExcludes>true</addDefaultExcludes>
+						<testResource>
+							<directory>src/main/resources</directory>
+							<excludes>
+								<exclude>src/main/resources/mapper/*.xml</exclude>
+							</excludes> 
+
+						</testResource>
+					</testResources>
 				</configuration>
 			</plugin>
 			<plugin>

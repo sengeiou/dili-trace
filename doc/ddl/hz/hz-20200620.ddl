@@ -24,8 +24,8 @@ CREATE TABLE `image_cert` (
 CREATE TABLE `verify_history` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`bill_id` bigint(20)  NULL COMMENT '所属数据ID',
-	`from_verify_state` int(11) NOT NULL COMMENT '初始审核状态',
-	`to_verify_state` int(11)  NOT NULL COMMENT '审核状态',
+	`from_verify_status` int(11) NOT NULL COMMENT '初始审核状态',
+	`to_verify_status` int(11)  NOT NULL COMMENT '审核状态',
 	`verify_user_id` bigint(20) NOT NULL COMMENT '审核人ID',
 	`verify_user_name` varchar(50) NOT NULL COMMENT '审核人姓名',
 	`valid` int(11) NOT NULL COMMENT '是否是当前有效的数据',
