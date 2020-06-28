@@ -53,7 +53,7 @@ public class ManagerCheckinOutRecordApi {
 	UpStreamService upStreamService;
 
 	/**
-	 * 进场
+	 * 进门验货
 	 */
 	@RequestMapping(value = "/doCheckin.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<Long> doCheckin(@RequestBody CheckInApiInput input) {
@@ -72,7 +72,7 @@ public class ManagerCheckinOutRecordApi {
 	}
 
 	/**
-	 * 出场
+	 * 出门验货
 	 */
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })

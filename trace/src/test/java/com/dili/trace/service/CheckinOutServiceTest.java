@@ -101,7 +101,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		BaseOutput<BasePage<Map<String, Object>>> out = this.checkinOutRecordService.listPagedData(query, 496L);
 		System.out.println(out.getData().getDatas());
 	}
-
+//"com.dili.trace.dao.CodeGenerateMapper.BaseResultMap"
 	@Test
 	@Transactional
 	public void testAll() {
@@ -110,7 +110,7 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		RegisterBill item = this.registerBillService.listByExample(query).stream().findFirst().orElse(null);
 		assertNotNull(item);
 		item.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-		Long billId = this.registerBillService.doVerify(item, new OperatorUser(0L, "test"));
+		Long billId = this.registerBillService.doVerifyBeforeCheckIn(item, new OperatorUser(0L, "test"));
 		assertNotNull(billId);
 		assertTrue(BillVerifyStatusEnum.PASSED.equalsToCode(this.registerBillService.get(billId).getVerifyStatus()));
 

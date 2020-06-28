@@ -10,10 +10,19 @@ import java.util.List;
 public class TradeDetailInputWrapperDto {
 
 	private Long buyerId;
-	
+
+	private Integer status;
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
 	private List<TradeDetailInputDto> tradeDetailInputList;
 
-	
 	public List<TradeDetailInputDto> getTradeDetailInputList() {
 		return tradeDetailInputList;
 	}

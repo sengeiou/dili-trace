@@ -494,7 +494,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new AppException("数据错误");
 		}
 		if (BillVerifyStatusEnum.NONE.equalsToCode(registerBill.getVerifyStatus())
-				|| BillVerifyStatusEnum.PARTLY_PASSED.equalsToCode(registerBill.getVerifyStatus())) {
+				|| BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
 		} else {
 			throw new AppException("数据状态错误");
 		}
@@ -803,7 +803,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	@Override
-	public Long doVerify(RegisterBill input, OperatorUser operatorUser) {
+	public Long doVerifyBeforeCheckIn(RegisterBill input, OperatorUser operatorUser) {
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -832,5 +832,38 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.updateSelective(registerBill);
 		return item.getId();
 	}
+
+	@Override
+	public Long doVerifyAfterCheckIn(RegisterBill input, OperatorUser operatorUser) {
+		if (input == null || input.getId() == null) {
+			throw new TraceBusinessException("参数错误");
+		}
+		Long billId = input.getId();
+		BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
+				.orElseThrow(() -> new TraceBusinessException("参数错误"));
+
+		RegisterBill item = this.get(billId);
+		if (item == null) {
+			throw new TraceBusinessException("数据不存在");
+		}
+		if (toVerifyState == BillVerifyStatusEnum.fromCode(item.getVerifyStatus()).orElse(null)) {
+			throw new TraceBusinessException("状态不能相同");
+		}
+		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
+			throw new TraceBusinessException("当前状态不能进行数据操作");
+		}
+		RegisterBill registerBill = new RegisterBill();
+		registerBill.setId(billId);
+		registerBill.setVerifyStatus(toVerifyState.getCode());
+		if (BillVerifyStatusEnum.PASSED == toVerifyState) {
+			this.tradeDetailService.createTradeInfoForBill(billId);
+		}
+		this.verifyHistoryService.insertVerifyHistory(billId, item.getVerifyStatus(), toVerifyState.getCode(),
+				operatorUser);
+		this.updateSelective(registerBill);
+		return item.getId();
+	}
+
+	
 
 }

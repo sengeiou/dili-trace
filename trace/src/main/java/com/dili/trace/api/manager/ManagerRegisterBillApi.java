@@ -92,9 +92,71 @@ public class ManagerRegisterBillApi {
 		return BaseOutput.success();
 	}
 
-	@ApiOperation(value = "获得指定用户登记单信息")
-	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> listAllRegisterBill(@RequestBody RegisterBill input) {
+	@ApiOperation(value = "获得报备审核列表")
+	@RequestMapping(value = "/listBillForVerifyBeforeCheckInPage.api", method = RequestMethod.POST)
+	public BaseOutput<BasePage<RegisterBill>> listBillForVerifyBeforeCheckInPage(@RequestBody RegisterBill input) {
+		if (input == null || input.getUserId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			RegisterBillDto query = new RegisterBillDto();
+			query.setSort("modified");
+			query.setOrder("desc");
+			query.setUserId(input.getUserId());
+
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
+					rb -> {
+						RegisterBillOutput dto = new RegisterBillOutput();
+						dto.setVerifyStatus(rb.getVerifyStatus());
+						dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
+								.map(BillVerifyStatusEnum::getName).orElse(""));
+						dto.setBillId(rb.getId());
+						dto.setProductName(rb.getProductName());
+						dto.setColor(ColorEnum.GREEN.getCode());
+						return dto;
+					});
+			return BaseOutput.success().setData(data);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
+	}
+	@ApiOperation(value = "获得场内审核列表")
+	@RequestMapping(value = "/listBillForVerifyAfterCheckInPage.api", method = RequestMethod.POST)
+	public BaseOutput<BasePage<RegisterBill>> listBillForVerifyAfterCheckInPage(@RequestBody RegisterBill input) {
+		if (input == null || input.getUserId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			RegisterBillDto query = new RegisterBillDto();
+			query.setSort("modified");
+			query.setOrder("desc");
+			query.setUserId(input.getUserId());
+
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
+					rb -> {
+						RegisterBillOutput dto = new RegisterBillOutput();
+						dto.setVerifyStatus(rb.getVerifyStatus());
+						dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
+								.map(BillVerifyStatusEnum::getName).orElse(""));
+						dto.setBillId(rb.getId());
+						dto.setProductName(rb.getProductName());
+						dto.setColor(ColorEnum.GREEN.getCode());
+						return dto;
+					});
+			return BaseOutput.success().setData(data);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
+	}
+	@ApiOperation(value = "获得进门验货信息列表")
+	@RequestMapping(value = "/listBillForCheckInPage.api", method = RequestMethod.POST)
+	public BaseOutput<BasePage<RegisterBill>> listBillForCheckInPage(@RequestBody RegisterBill input) {
 		if (input == null || input.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -157,9 +219,9 @@ public class ManagerRegisterBillApi {
 		}
 	}
 
-	@ApiOperation(value = "查验登记单")
-	@RequestMapping(value = "/doVerify.api", method = RequestMethod.POST)
-	public BaseOutput<Long> doVerify(@RequestBody VerifyBillInputDto inputDto) {
+	@ApiOperation(value = "报备审核登记单")
+	@RequestMapping(value = "/doVerifyBeforeCheckIn.api", method = RequestMethod.POST)
+	public BaseOutput<Long> doVerifyBeforeCheckIn(@RequestBody VerifyBillInputDto inputDto) {
 		logger.info("通过ID查验登记单:{}", inputDto);
 		try {
 			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
@@ -169,7 +231,28 @@ public class ManagerRegisterBillApi {
 			RegisterBill input = new RegisterBill();
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
-			Long id = this.registerBillService.doVerify(input,operatorUser);
+			Long id = this.registerBillService.doVerifyBeforeCheckIn(input,operatorUser);
+			return BaseOutput.success().setData(id);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
+
+	}
+	@ApiOperation(value = "场内审核登记单")
+	@RequestMapping(value = "/doVerifyAfterCheckIn.api", method = RequestMethod.POST)
+	public BaseOutput<Long> doVerifyAfterCheckIn(@RequestBody VerifyBillInputDto inputDto) {
+		logger.info("通过ID查验登记单:{}", inputDto);
+		try {
+			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
+				return BaseOutput.failure("参数错误");
+			}
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			RegisterBill input = new RegisterBill();
+			input.setId(inputDto.getBillId());
+			input.setVerifyStatus(inputDto.getVerifyStatus());
+			Long id = this.registerBillService.doVerifyAfterCheckIn(input,operatorUser);
 			return BaseOutput.success().setData(id);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

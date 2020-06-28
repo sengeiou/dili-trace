@@ -35,7 +35,6 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`bill_id`")
 	private Long billId;
 
-	
 
 	@ApiModelProperty(value = "进场审核ID")
 	@Column(name = "`checkin_record_id`")
@@ -57,6 +56,10 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`trade_type`")
 	private Integer tradeType;
 	
+	
+	@Column(name = "`status`")
+	private Integer status;
+	
 	@ApiModelProperty(value = "买家ID")
 	@Column(name = "`buyer_id`")
 	private Long buyerId;
@@ -67,13 +70,11 @@ public class TradeDetail extends BaseDomain {
 
 	@ApiModelProperty(value = "卖家ID")
 	@Column(name = "`seller_id`")
-	private String sellerId;
+	private Long sellerId;
 
 	@ApiModelProperty(value = "卖家姓名")
 	@Column(name = "`seller_name`")
 	private String sellerName;
-
-
 
 	@ApiModelProperty(value = "库存重量")
 	@Column(name = "`stock_weight`")
@@ -93,6 +94,14 @@ public class TradeDetail extends BaseDomain {
 
 	@Column(name = "`modified`")
 	private Date modified;
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 
 	public Long getId() {
 		return id;
@@ -118,11 +127,11 @@ public class TradeDetail extends BaseDomain {
 		this.buyerName = buyerName;
 	}
 
-	public String getSellerId() {
+	public Long getSellerId() {
 		return sellerId;
 	}
 
-	public void setSellerId(String sellerId) {
+	public void setSellerId(Long sellerId) {
 		this.sellerId = sellerId;
 	}
 

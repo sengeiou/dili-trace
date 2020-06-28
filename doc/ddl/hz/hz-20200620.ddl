@@ -52,6 +52,7 @@ CREATE TABLE `trade_detail` (
 	`stock_weight` decimal(10,3) NOT NULL default 0 COMMENT '库存重量',
 	`total_weight` decimal(10,3) NOT NULL default 0 COMMENT '总重量',
 	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',
+	`status` int(11) NOT NULL default 0 COMMENT '交易单状态',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

@@ -8,17 +8,17 @@ import java.math.BigDecimal;
  * This file was generated on 2019-07-26 09:20:35.
  */
 public class TradeDetailInputDto {
-
-	private Long parentId;
+	private Long tradeDetailId;
 	private BigDecimal tradeWeight;
 
-	public Long getParentId() {
-		return parentId;
+	public Long getTradeDetailId() {
+		return tradeDetailId;
 	}
 
-	public void setParentId(Long parentId) {
-		this.parentId = parentId;
+	public void setTradeDetailId(Long tradeDetailId) {
+		this.tradeDetailId = tradeDetailId;
 	}
+
 
 	public BigDecimal getTradeWeight() {
 		return tradeWeight;

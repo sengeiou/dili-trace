@@ -12,17 +12,17 @@ import one.util.streamex.StreamEx;
 public enum BillVerifyStatusEnum {
 
 	/**
-	 * 无
+	 * 未审核
 	 */
-	NONE(0, "无"),
+	NONE(0, "未审核"),
 	/**
-	 * 部分合格
+	 * 已退回
 	 */
-	PARTLY_PASSED(10, "部分合格"),
+	RETURNED(10, "已退回"),
 	/**
-	 * 合格
+	 * 已通过
 	 */
-	PASSED(20, "合格"),
+	PASSED(20, "已通过"),
 
 	/**
 	 * 不通过
@@ -46,7 +46,7 @@ public enum BillVerifyStatusEnum {
 	}
 
 	public static boolean canDoVerify(Integer code) {
-		return BillVerifyStatusEnum.NONE.equalsToCode(code) || BillVerifyStatusEnum.PARTLY_PASSED.equalsToCode(code);
+		return BillVerifyStatusEnum.NONE.equalsToCode(code) || BillVerifyStatusEnum.RETURNED.equalsToCode(code);
 	}
 
 	public Integer getCode() {
