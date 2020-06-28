@@ -25,7 +25,6 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
@@ -48,10 +47,6 @@ public class RegisterBillApi {
 	private RegisterBillService registerBillService;
 	@Autowired
 	private SeparateSalesRecordService separateSalesRecordService;
-
-
-	@Autowired
-	DetectRecordService detectRecordService;
 	@Resource
 	private LoginSessionContext sessionContext;
 	@Autowired

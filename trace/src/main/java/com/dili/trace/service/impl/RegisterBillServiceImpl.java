@@ -37,7 +37,6 @@ import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.CodeGenerateService;
-import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -57,9 +56,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
 	@Autowired
 	BizNumberFunction bizNumberFunction;
-
-	@Autowired
-	DetectRecordService detectRecordService;
 	@Autowired
 	ImageCertService imageCertService;
 	@Autowired

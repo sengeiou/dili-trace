@@ -43,7 +43,6 @@ import com.dili.trace.dto.UserInfoDto;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
@@ -71,9 +70,6 @@ public class RegisterBillController {
 	RegisterBillService registerBillService;
 	@Autowired
 	SeparateSalesRecordService separateSalesRecordService;
-	@Autowired
-	DetectRecordService detectRecordService;
-
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -226,8 +222,7 @@ public class RegisterBillController {
 		// conditon.setRegisterBillCode(registerBill.getCode());
 		// conditon.setSort("id");
 		// conditon.setOrder("desc");
-		List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(registerBill.getCode());
-		modelMap.put("detectRecordList", detectRecordList);
+		modelMap.put("detectRecordList", Collections.emptyList());
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		modelMap.put("displayWeight", displayWeight);
 		return "registerBill/view";
