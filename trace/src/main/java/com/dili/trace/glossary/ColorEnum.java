@@ -4,6 +4,10 @@ import java.util.stream.Stream;
 
 public enum ColorEnum {
     /**
+     * 黑色
+     */
+    BLACK(0, "黑色"),
+    /**
      * 绿色
      */
     GREEN(10, "绿色"),
