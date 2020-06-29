@@ -251,14 +251,14 @@ public interface User extends IBaseDomain {
 
     void setPlates(String plates);
 
-    
-//    @ApiModelProperty(value = "审核状态")
+
     @Column(name = "`validate_state`")
-//    @FieldDef(label = "0:未实名  1:待审核  2:审核未通过  3:审核通过")
-//    @EditMode(editor = FieldEditor.Number, required = false)
     Integer getValidateState();
 
     void setValidateState(Integer state);
 
+    @Column(name = "`vocation_type`")
+    Integer getVocationType();
 
+    void setVocationType(Integer type);
 }

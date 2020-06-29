@@ -1,4 +1,4 @@
-package com.dili.trace.glossary;
+package com.dili.trace.enums;
 
 /**
  * <B>Description</B>
@@ -8,29 +8,45 @@ package com.dili.trace.glossary;
  * @author yuehongbo
  * @createTime 2018/11/8 18:43
  */
-public enum EnabledStateEnum {
+public enum ValidateStateEnum {
     /**
-     * 启用
+     * 未实名
      */
-    ENABLED(1, "启用"),
-    DISABLED(0, "禁用"),
+    CERTREQ(0, "未实名"),
+
+    /**
+     * 待审核
+     */
+    UNCERT(1, "待审核"),
+    /**
+     * 审核未通过
+     */
+    NOPASS(2, "审核未通过"),
+    /**
+     * 审核通过
+     */
+    PASSED(3, "审核通过"),
     ;
 
     private String name;
     private Integer code ;
 
-    EnabledStateEnum(Integer code, String name){
+    ValidateStateEnum(Integer code, String name){
         this.code = code;
         this.name = name;
     }
 
-    public static EnabledStateEnum getEnabledState(Integer code) {
-        for (EnabledStateEnum anEnum : EnabledStateEnum.values()) {
+    public static ValidateStateEnum getEnabledState(Integer code) {
+        for (ValidateStateEnum anEnum : ValidateStateEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return anEnum;
             }
         }
         return null;
+    }
+
+    public boolean equalsToCode(Integer code) {
+        return this.getCode().equals(code);
     }
 
     public Integer getCode() {

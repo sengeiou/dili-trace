@@ -16,10 +16,13 @@ import com.dili.common.util.VerificationCodeUtil;
 import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
@@ -78,19 +81,27 @@ public class UserApi {
         }
     }
 
-    @ApiOperation(value ="请求实名认证【接口已通】", notes = "请求实名认证")
+    @ApiOperation(value ="请求实名认证", notes = "请求实名认证")
     @RequestMapping(value = "/realNameCertificationReq.api", method = RequestMethod.POST)
     public BaseOutput<Long> realNameCertificationReq(@RequestBody User user){
         try{
-            checkRegisterParams(user);
-            user.setState(EnabledStateEnum.ENABLED.getCode());
+            Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            User currentUser = userService.get(id);
+            if (ValidateStateEnum.PASSED.equalsToCode(currentUser.getValidateState())){//已通过
+                return BaseOutput.success().setData(id);
+            }
+
+            checkRealNameCertificationParams(user);
+
             user.setCardNo(StringUtils.upperCase(user.getCardNo()));
-            userService.register(user,true);
+            user.setLicense(StringUtils.upperCase(user.getLicense()));
+            user.setValidateState(ValidateStateEnum.UNCERT.getCode());
+            userService.updateUser(user);
             return BaseOutput.success().setData(user.getId());
         }catch (TraceBusinessException e){
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
-            LOGGER.error("register",e);
+            LOGGER.error("realNameCertificationReq",e);
             return BaseOutput.failure(e.getMessage());
         }
     }
@@ -273,8 +284,14 @@ public class UserApi {
     }
 
     private void checkRealNameCertificationParams(User user){
-        if(StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO,user.getCardNo())){
-            throw new TraceBusinessException("身份证为空或格式错误");
+        if (UserTypeEnum.USER.getCode() == user.getUserType()){//个人
+            if(StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO,user.getCardNo())){
+                throw new TraceBusinessException("身份证为空或格式错误");
+            }
+        }
+
+        if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
+            throw new TraceBusinessException("手机号为空或格式错误");
         }
 
         if(StrUtil.isBlank(user.getTallyAreaNos()) || !ReUtil.isMatch(PatternConstants.TALLY_AREA_NO,user.getTallyAreaNos())){
@@ -286,15 +303,7 @@ public class UserApi {
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
             throw new TraceBusinessException("姓名为空或格式错误");
         }
-        if(StrUtil.isBlank(user.getPassword())){
-            throw new TraceBusinessException("密码为空");
-        }
-        if(StrUtil.isBlank(user.getAckPassword())){
-            throw new TraceBusinessException("确认密码为空");
-        }
-        if(!user.getPassword().equals(user.getAckPassword())){
-            throw new TraceBusinessException("密码与确认密码不同");
-        }
+//        TODO 增加
     }
 
 }
