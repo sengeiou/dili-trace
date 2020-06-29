@@ -61,12 +61,28 @@ public class UserApi {
     @Resource
     UserPlateService userPlateService;
 
-    @ApiOperation(value ="注册【接口已通】", notes = "注册")
+    @ApiOperation(value ="注册", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
     public BaseOutput<Long> register(@RequestBody User user){
         try{
             checkRegisterParams(user);
             user.setPassword(MD5Util.md5(user.getPassword()));
+            user.setState(EnabledStateEnum.ENABLED.getCode());
+            userService.register(user,true);
+            return BaseOutput.success().setData(user.getId());
+        }catch (TraceBusinessException e){
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("register",e);
+            return BaseOutput.failure(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value ="请求实名认证【接口已通】", notes = "请求实名认证")
+    @RequestMapping(value = "/realNameCertificationReq.api", method = RequestMethod.POST)
+    public BaseOutput<Long> realNameCertificationReq(@RequestBody User user){
+        try{
+            checkRegisterParams(user);
             user.setState(EnabledStateEnum.ENABLED.getCode());
             user.setCardNo(StringUtils.upperCase(user.getCardNo()));
             userService.register(user,true);
@@ -122,7 +138,7 @@ public class UserApi {
     }
 
 
-   
+
 
     @ApiOperation(value ="找回密码【接口已通】", notes = "找回密码")
     @RequestMapping(value = "/resetPassword.api", method = RequestMethod.POST)
@@ -213,18 +229,54 @@ public class UserApi {
         }
     }
 
+    @ApiOperation(value ="退出【接口已通】", notes = "退出")
+    @RequestMapping(value = "/quit.api", method = RequestMethod.POST)
+    @InterceptConfiguration
+    public BaseOutput<String> quit(){
+        try{
+            sessionContext.setInvalidate(true);
+            return BaseOutput.success();
+        }catch (TraceBusinessException e){
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("quit",e);
+            return BaseOutput.failure();
+        }
+    }
 
+    @ApiOperation(value ="验证是否登录【接口已通】", notes = "验证是否登录")
+    @RequestMapping(value = "/isLogin.api", method = RequestMethod.POST)
+    @InterceptConfiguration
+    public BaseOutput<String> isLogin(){
+        try{
+            return BaseOutput.success();
+        }catch (Exception e){
+            LOGGER.error("isLogin",e);
+            return BaseOutput.failure();
+        }
+    }
 
     private void checkRegisterParams(User user){
+        if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
+            throw new TraceBusinessException("姓名为空或格式错误");
+        }
         if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
             throw new TraceBusinessException("手机号为空或格式错误");
-        }
-        if(StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO,user.getCardNo())){
-            throw new TraceBusinessException("身份证为空或格式错误");
         }
         if(StrUtil.isBlank(user.getCheckCode())){
             throw new TraceBusinessException("验证码为空");
         }
+        if(StrUtil.isBlank(user.getPassword())){
+            throw new TraceBusinessException("密码为空");
+        }
+
+    }
+
+    private void checkRealNameCertificationParams(User user){
+        if(StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO,user.getCardNo())){
+            throw new TraceBusinessException("身份证为空或格式错误");
+        }
+
         if(StrUtil.isBlank(user.getTallyAreaNos()) || !ReUtil.isMatch(PatternConstants.TALLY_AREA_NO,user.getTallyAreaNos())){
             throw new TraceBusinessException("理货区号为空或格式错误");
         }
