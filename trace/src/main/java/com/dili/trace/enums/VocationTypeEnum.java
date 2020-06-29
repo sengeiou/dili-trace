@@ -1,4 +1,4 @@
-package com.dili.trace.glossary;
+package com.dili.trace.enums;
 
 /**
  * <B>Description</B>
@@ -8,24 +8,25 @@ package com.dili.trace.glossary;
  * @author yuehongbo
  * @createTime 2018/11/8 18:43
  */
-public enum EnabledStateEnum {
-    /**
-     * 启用
-     */
-    ENABLED(1, "启用"),
-    DISABLED(0, "禁用"),
+public enum VocationTypeEnum {
+    WHOLESALE(10, "批发"),
+    AGRICULTURETRADE(20, "农贸"),
+    GROUP(30, "团体"),
+    PERSONAL(40, "个人"),
+    CATERER(50, "餐饮"),
+    DELIVERIOR(60, "配送商"),
     ;
 
     private String name;
     private Integer code ;
 
-    EnabledStateEnum(Integer code, String name){
+    VocationTypeEnum(Integer code, String name){
         this.code = code;
         this.name = name;
     }
 
-    public static EnabledStateEnum getEnabledState(Integer code) {
-        for (EnabledStateEnum anEnum : EnabledStateEnum.values()) {
+    public static VocationTypeEnum getEnabledState(Integer code) {
+        for (VocationTypeEnum anEnum : VocationTypeEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return anEnum;
             }
