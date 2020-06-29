@@ -163,6 +163,14 @@ public class RegisterBill extends BaseDomain {
 	@Column(name="`bill_type`")
 	private Integer billType;
 
+	@ApiModelProperty(value = "品牌名称")
+	@Column(name = "`brand_name`")
+	private String brandName;
+
+	@ApiModelProperty(value = "品牌ID")
+	@Column(name = "`brand_id`")
+	private Long brandId;
+
 	public Integer getVerifyStatus() {
 		return verifyStatus;
 	}
@@ -503,6 +511,36 @@ public class RegisterBill extends BaseDomain {
      */
     public void setBillType(Integer billType) {
         this.billType = billType;
+    }
+
+
+    /**
+     * @return Long return the brandId
+     */
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    /**
+     * @param brandId the brandId to set
+     */
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+
+    /**
+     * @return String return the brandName
+     */
+    public String getBrandName() {
+        return brandName;
+    }
+
+    /**
+     * @param brandName the brandName to set
+     */
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
 
 }

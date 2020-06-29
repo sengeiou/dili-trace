@@ -42,8 +42,8 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 	UserService userService;
 	@MockBean
 	LoginSessionContext sessionContext;
-//	private MockMvc mockMvc;
-//	@Injectable
+	// private MockMvc mockMvc;
+	// @Injectable
 
 	@BeforeEach
 	public void before() {
@@ -72,6 +72,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		registerBills.add(rb);
 		rb.setWeight(BigDecimal.TEN);
 		rb.setSpecName("筐");
+		rb.setBrandName("四川最好");
 		rb.setPreserveType(PreserveTypeEnum.ICED.getCode());
 		rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
 		rb.setProductId(item.getProductId());
@@ -86,6 +87,32 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.getImageCertList().add(imageCert);
 		BaseOutput out = this.clientRegisterBillApi.createRegisterBillList(createListBillParam);
 		System.out.println(out.isSuccess());
+	}
+
+	@Test
+	public void doEdit() {
+		RegisterBill query = new RegisterBill();
+		query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+		RegisterBill item = registerBillService.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
+
+		CreateRegisterBillInputDto rb = new CreateRegisterBillInputDto();
+		rb.setBillId(item.getId());
+		rb.setWeight(BigDecimal.TEN);
+		rb.setSpecName("筐");
+		rb.setBrandName("四川第二");
+		rb.setPreserveType(PreserveTypeEnum.ICED.getCode());
+		rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
+		rb.setProductId(item.getProductId());
+		rb.setProductName(item.getProductName());
+		rb.setOriginId(item.getOriginId());
+		rb.setOriginName(item.getOriginName());
+		rb.setBillType(BillTypeEnum.CARPOOL.getCode());
+		rb.setImageCertList(new ArrayList<ImageCert>());
+		ImageCert imageCert = new ImageCert();
+		imageCert.setUrl("imageurl");
+		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
+		rb.getImageCertList().add(imageCert);
+		this.clientRegisterBillApi.doEditRegisterBill(rb);
 	}
 
 	@Test

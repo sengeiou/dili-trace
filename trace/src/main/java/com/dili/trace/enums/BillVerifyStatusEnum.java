@@ -12,9 +12,9 @@ import one.util.streamex.StreamEx;
 public enum BillVerifyStatusEnum {
 
 	/**
-	 * 未审核
+	 * 待审核
 	 */
-	NONE(0, "未审核"),
+	NONE(0, "待审核"),
 	/**
 	 * 已退回
 	 */

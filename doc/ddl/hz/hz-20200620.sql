@@ -39,6 +39,7 @@ CREATE TABLE `trade_detail` (
 	`total_weight` decimal(10,3) NOT NULL default 0 COMMENT '总重量',
 	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',
 	`status` int(11) NOT NULL default 0 COMMENT '交易单状态',
+	`batch_stock_id` bigint(20)  NULL COMMENT '批ID',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -280,6 +281,16 @@ CREATE TABLE `batch_stock` (
   	`product_id` bigint(20) NOT NULL,
    	`user_name` varchar(50) DEFAULT NULL COMMENT '业户姓名',
   	`user_id` bigint(20) DEFAULT NULL COMMENT '理货区用户ID',
+	`brand_id` bigint(20) DEFAULT NULL COMMENT '品牌ID',
+	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `brand` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`brand_name` varchar(50)   NULL   COMMENT '品牌名称',
+  	`user_id` bigint(20) DEFAULT NULL COMMENT '用户ID',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -302,6 +313,8 @@ ALTER TABLE `register_bill` ADD COLUMN  `verified_history_bill_id` bigint(20)  N
 ALTER TABLE `register_bill` ADD COLUMN  `verify_type` int(11)  NOT NULL  default 0 COMMENT '查验类型';
 ALTER TABLE `register_bill` ADD COLUMN  `spec_name` varchar(20)  NULL  COMMENT '规格';
 ALTER TABLE `register_bill` ADD COLUMN  `bill_type` int(11)  NOT NULL  default 10 COMMENT '报备类型';
+ALTER TABLE `register_bill` ADD COLUMN  `brand_id` bigint(20)    NULL   COMMENT '品牌ID';
+ALTER TABLE `register_bill` ADD COLUMN  `brand_name` varchar(50)   NULL   COMMENT '品牌名称';
 ALTER TABLE `register_bill` MODIFY COLUMN `weight` decimal(10,3)  NOT NULL default 0 COMMENT '重量';
 
 

@@ -56,7 +56,12 @@ public class BatchStockServiceTest extends AutoWiredBaseTest {
         tradeDetail.setTotalWeight(BigDecimal.valueOf(20L));
         this.tradeDetailService.insertSelective(tradeDetail);
 
-        this.batchStockService.createOrUpdateBatchStock(tradeDetail);
+        this.batchStockService.createOrUpdateBatchStock(tradeDetail).ifPresent(batchStockId->{
+            TradeDetail domain = new TradeDetail();
+            domain.setBatchStockId(batchStockId);
+            domain.setId(tradeDetail.getId());
+            this.tradeDetailService.updateSelective(domain);
+        });
     }
 
 }

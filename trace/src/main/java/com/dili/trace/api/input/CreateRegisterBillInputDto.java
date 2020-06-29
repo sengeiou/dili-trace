@@ -7,9 +7,13 @@ import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class CreateRegisterBillInputDto {
+	@ApiModelProperty(value = "报备单ID")
+	private Long billId;
 
 	@ApiModelProperty(value = "保存类型")
 	private Integer preserveType;
@@ -38,6 +42,12 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "报备类型")
 	private Integer billType;
 
+	@ApiModelProperty(value = "品牌名称")
+	private String brandName;
+
+	@ApiModelProperty(value = "品牌ID")
+	private Long brandId;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -45,6 +55,7 @@ public class CreateRegisterBillInputDto {
 
 	public RegisterBill build(User user) {
 		RegisterBill registerBill = new RegisterBill();
+		registerBill.setId(this.getBillId());
 		registerBill.setOperatorName(user.getName());
 		registerBill.setOperatorId(user.getId());
 		registerBill.setUserId(user.getId());
@@ -57,9 +68,11 @@ public class CreateRegisterBillInputDto {
 		registerBill.setOriginName(this.getOriginName());
 		registerBill.setProductId(this.getProductId());
 		registerBill.setProductName(this.getProductName());
-		registerBill.setSpecName(this.getSpecName());
+		registerBill.setSpecName(StringUtils.trim(this.getSpecName()));
 		registerBill.setPreserveType(this.getPreserveType());
 		registerBill.setBillType(this.getBillType());
+		registerBill.setBrandId(this.getBrandId());
+		registerBill.setBrandName(StringUtils.trim(this.getBrandName()));
 		return registerBill;
 	}
 
@@ -160,6 +173,50 @@ public class CreateRegisterBillInputDto {
      */
     public void setBillType(Integer billType) {
         this.billType = billType;
+    }
+
+
+    /**
+     * @return Long return the billId
+     */
+    public Long getBillId() {
+        return billId;
+    }
+
+    /**
+     * @param billId the billId to set
+     */
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
+
+
+    /**
+     * @return String return the brandName
+     */
+    public String getBrandName() {
+        return brandName;
+    }
+
+    /**
+     * @param brandName the brandName to set
+     */
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    /**
+     * @return Long return the brandId
+     */
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    /**
+     * @param brandId the brandId to set
+     */
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
 }

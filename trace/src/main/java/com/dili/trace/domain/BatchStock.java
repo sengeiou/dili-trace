@@ -62,6 +62,11 @@ public class BatchStock extends BaseDomain {
     @ApiModelProperty(value = "规格名称")
 	@Column(name="`spec_name`")
     private String specName;
+
+    @ApiModelProperty(value = "品牌ID")
+	@Column(name = "`brand_id`")
+    private Long brandId;
+    
     
 	@Column(name = "`created`")
 	private Date created;
@@ -240,6 +245,21 @@ public class BatchStock extends BaseDomain {
      */
     public void setSpecName(String specName) {
         this.specName = specName;
+    }
+
+
+    /**
+     * @return Long return the brandId
+     */
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    /**
+     * @param brandId the brandId to set
+     */
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
 }

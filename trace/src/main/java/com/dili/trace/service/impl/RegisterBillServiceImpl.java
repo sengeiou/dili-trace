@@ -39,6 +39,7 @@ import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.service.BrandService;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
@@ -72,6 +73,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
 	TradeDetailService tradeDetailService;
+	@Autowired
+	BrandService brandService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -105,6 +108,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (imageCertList != null) {
 			this.imageCertService.insertImageCert(imageCertList, registerBill.getId());
 		}
+		
+		//创建/更新品牌信息并更新brandId字段值
+		this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId()).ifPresent(brandId->{
+			RegisterBill bill=new RegisterBill();
+			bill.setBrandId(brandId);
+			bill.setId(registerBill.getId());
+			this.updateSelective(bill);
+		});
 		return BaseOutput.success();
 	}
 
@@ -481,26 +492,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (input == null || input.getId() == null) {
 			throw new AppException("参数错误");
 		}
-		RegisterBill registerBill = this.get(input.getId());
-		if (registerBill == null) {
+		RegisterBill billItem = this.get(input.getId());
+		if (billItem == null) {
 			throw new AppException("数据错误");
 		}
-		if (BillVerifyStatusEnum.NONE.equalsToCode(registerBill.getVerifyStatus())
-				|| BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
+		if (BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
+				|| BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
 		} else {
 			throw new AppException("数据状态错误");
 		}
-		registerBill.setPlate(input.getPlate());
-		registerBill.setProductId(input.getProductId());
-		registerBill.setProductName(input.getProductName());
-
-		registerBill.setOriginId(input.getOriginId());
-		registerBill.setOriginName(input.getOriginName());
-
-		registerBill.setWeight(input.getWeight());
-
-		this.updateSelective(registerBill);
-		return registerBill.getId();
+		this.updateSelective(input);
+		return input.getId();
 	}
 
 	@Override

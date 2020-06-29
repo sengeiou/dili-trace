@@ -14,6 +14,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
+import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
@@ -59,7 +60,6 @@ public class ClientRegisterBillApi {
 	@Autowired
 	ImageCertService imageCertService;
 
-
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
 	public BaseOutput createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
@@ -89,6 +89,33 @@ public class ClientRegisterBillApi {
 		return BaseOutput.success();
 	}
 
+	@ApiOperation("修改报备单")
+	@RequestMapping(value = "/doEditRegisterBill.api", method = RequestMethod.POST)
+	public BaseOutput doEditRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
+		logger.info("修改报备单:");
+		if (dto == null || dto.getBillId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+
+		User user = userService.get(operatorUser.getId());
+		if (user == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
+
+		logger.info("保存登记单:" + JSON.toJSONString(dto));
+		RegisterBill registerBill = dto.build(user);
+		try {
+			this.registerBillService.doEdit(registerBill);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+		return BaseOutput.success();
+	}
+
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
@@ -108,6 +135,7 @@ public class ClientRegisterBillApi {
 			}
 			BasePage basePage = BasePageUtil.convert(registerBillService.listPageByExample(input), bill -> {
 				Map<Object, Object> map = new BeanMap(bill);
+				//将id换为billId字段
 				map.put("billId", map.remove("id"));
 				return map;
 
@@ -154,6 +182,5 @@ public class ClientRegisterBillApi {
 		}
 
 	}
-
 
 }

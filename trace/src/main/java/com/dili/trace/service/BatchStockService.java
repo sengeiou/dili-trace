@@ -32,6 +32,7 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
         query.setProductId(billItem.getProductId());
         query.setWeightUnit(billItem.getWeightUnit());
         query.setSpecName(billItem.getSpecName());
+        query.setBrandId(billItem.getBrandId());
         BatchStock batchStockItem = StreamEx.of(this.listByExample(query)).findFirst().orElseGet(() -> {
             // 创建初始BatchStock
             User userItem = this.userService.get(userId);
@@ -46,6 +47,7 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
             batchStock.setTotalWeight(BigDecimal.ZERO);
             batchStock.setWeightUnit(billItem.getWeightUnit());
             batchStock.setSpecName(billItem.getSpecName());
+            batchStock.setBrandId(billItem.getBrandId());
             this.insertSelective(batchStock);
             return batchStock;
         });
