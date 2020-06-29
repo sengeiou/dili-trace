@@ -257,6 +257,9 @@ public class UserApi {
     }
 
     private void checkRegisterParams(User user){
+        if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
+            throw new TraceBusinessException("姓名为空或格式错误");
+        }
         if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
             throw new TraceBusinessException("手机号为空或格式错误");
         }
