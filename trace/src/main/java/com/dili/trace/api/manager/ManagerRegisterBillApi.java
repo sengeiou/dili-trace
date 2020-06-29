@@ -156,16 +156,12 @@ public class ManagerRegisterBillApi {
 	}
 	@ApiOperation(value = "获得进门验货信息列表")
 	@RequestMapping(value = "/listBillForCheckInPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> listBillForCheckInPage(@RequestBody RegisterBill input) {
-		if (input == null || input.getUserId() == null) {
+	public BaseOutput<BasePage<RegisterBill>> listBillForCheckInPage(@RequestBody RegisterBillDto query) {
+		if (query == null || query.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			RegisterBillDto query = new RegisterBillDto();
-			query.setSort("modified");
-			query.setOrder("desc");
-			query.setUserId(input.getUserId());
 
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {

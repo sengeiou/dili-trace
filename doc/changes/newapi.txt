@@ -18,14 +18,14 @@ cityList: "/api/cityApi/listCityByCondition"
   send: "/api/userApi/sendVerificationCode.api", //发送手机验证码
   isLogin: "/api/loginApi/isLogin.api", //检查用户登录是否过期   -->
 
-  // 上游企业
+//上游企业
   listPagedUpStream: "/api/upstreamApi/listPagedUpStream.api", //列表
   deleteUpStream: "/api/upstreamApi/deleteUpStream.api", //删除
   createUpStream: "/api/upstreamApi/doCreateUpStream.api", //创建上游信息
   modifyUpStream: "/api/upstreamApi/doModifyUpStream.api", //修改上游信息
 
 买家接口:
-1:进场报备:
+1:报备
 /api/client/clientRegisterBill/createRegisterBillList.api
  {
 	 [
@@ -42,13 +42,13 @@ cityList: "/api/cityApi/listCityByCondition"
     brandId:"品牌ID",
 		imageCertList:[{ //任何时候都要提交这两个参数
 			url:"",//图片URL
-			certType://图片类型 (凭证图片类型接口)
+			certType:1,//图片类型 (凭证图片类型接口)
 		}]
 	 	}
 	 ]
  }
 
- 
+
  2:修改报备:
 /api/client/clientRegisterBill/doEditRegisterBill.api
   {

@@ -171,6 +171,11 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`brand_id`")
 	private Long brandId;
 
+	
+	@ApiModelProperty(value = "是否有效")
+	@Column(name="`yn`")
+	private Integer yn;
+
 	public Integer getVerifyStatus() {
 		return verifyStatus;
 	}
@@ -541,6 +546,21 @@ public class RegisterBill extends BaseDomain {
      */
     public void setBrandName(String brandName) {
         this.brandName = brandName;
+    }
+
+
+    /**
+     * @return Integer return the yn
+     */
+    public Integer getYn() {
+        return yn;
+    }
+
+    /**
+     * @param yn the yn to set
+     */
+    public void setYn(Integer yn) {
+        this.yn = yn;
     }
 
 }

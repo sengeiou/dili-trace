@@ -56,4 +56,5 @@ public enum BillVerifyStatusEnum {
 	public String getName() {
 		return name;
 	}
+	
 }

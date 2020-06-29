@@ -39,6 +39,7 @@ import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.BrandService;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.ImageCertService;
@@ -56,7 +57,7 @@ import com.diligrp.manage.sdk.session.SessionContext;
  */
 @Service
 public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
 	@Autowired
 	BizNumberFunction bizNumberFunction;
 	@Autowired
@@ -92,6 +93,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
+		registerBill.setYn(YnEnum.YES.getCode());
 
 		registerBill.setOperatorName(operatorUser.getName());
 		registerBill.setOperatorId(operatorUser.getId());
@@ -102,7 +104,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		int result = super.saveOrUpdate(registerBill);
 		if (result == 0) {
-			LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
+			logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
 			throw new TraceBusinessException("创建失败");
 		}
 		if (imageCertList != null) {
@@ -127,33 +129,33 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// throw new BusinessException("登记来源不能为空");
 		// }
 		if (StringUtils.isBlank(registerBill.getName())) {
-			LOGGER.error("业户姓名不能为空");
+			logger.error("业户姓名不能为空");
 			throw new TraceBusinessException("业户姓名不能为空");
 		}
 		if (StringUtils.isBlank(registerBill.getIdCardNo())) {
-			LOGGER.error("业户身份证号不能为空");
+			logger.error("业户身份证号不能为空");
 			throw new TraceBusinessException("业户身份证号不能为空");
 		}
 		if (StringUtils.isBlank(registerBill.getAddr())) {
-			LOGGER.error("业户身份证地址不能为空");
+			logger.error("业户身份证地址不能为空");
 			throw new TraceBusinessException("业户身份证地址不能为空");
 		}
 		if (StringUtils.isBlank(registerBill.getProductName())) {
-			LOGGER.error("商品名称不能为空");
+			logger.error("商品名称不能为空");
 			throw new TraceBusinessException("商品名称不能为空");
 		}
 		if (StringUtils.isBlank(registerBill.getOriginName())) {
-			LOGGER.error("商品产地不能为空");
+			logger.error("商品产地不能为空");
 			throw new TraceBusinessException("商品产地不能为空");
 		}
 
 		if (registerBill.getWeight() == null) {
-			LOGGER.error("商品重量不能为空");
+			logger.error("商品重量不能为空");
 			throw new TraceBusinessException("商品重量不能为空");
 		}
 
 		if (registerBill.getWeight().longValue() <= 0L) {
-			LOGGER.error("商品重量不能小于0");
+			logger.error("商品重量不能小于0");
 			throw new TraceBusinessException("商品重量不能小于0");
 		}
 
@@ -227,7 +229,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()
 				|| registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
 			UserTicket userTicket = getOptUser();
-			LOGGER.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
+			logger.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
 					+ JSON.toJSON(registerBill).toString());
 			this.delete(billId);
 			return this.separateSalesRecordService.deleteSeparateSalesRecordByBillId(billId);
@@ -408,7 +410,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill) {
-		LOGGER.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
+		logger.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
 
 		if (registerBill == null) {
 			return null;
@@ -809,14 +811,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (item == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-		if (toVerifyState == BillVerifyStatusEnum.fromCode(item.getVerifyStatus()).orElse(null)) {
+		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(item.getVerifyStatus())
+		.orElseThrow(() -> new TraceBusinessException("数据错误"));
+
+		logger.info("from {} to {}",fromVerifyState,toVerifyState);
+		if (fromVerifyState==toVerifyState) {
 			throw new TraceBusinessException("状态不能相同");
 		}
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
 		return this.createHistoryRegisterBillForVerify(item, toVerifyState, VerifyTypeEnum.VERIFY_BEFORE_CHECKIN,
-				operatorUser).getId();
+				operatorUser);
 	}
 
 	@Override
@@ -839,24 +845,32 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
 		return this.createHistoryRegisterBillForVerify(item, toVerifyState, VerifyTypeEnum.VERIFY_AFTER_CHECKIN,
-				operatorUser).getId();
+				operatorUser);
 	}
 
-	private RegisterBill createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,
+	private Long createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,
 			VerifyTypeEnum verifyType, OperatorUser operatorUser) {
-		RegisterBill newRegisterBill = new RegisterBill();
+		RegisterBill historyBill = new RegisterBill();
 		try {
-			BeanUtils.copyProperties(newRegisterBill, item);
-			newRegisterBill.setId(null);
+			BeanUtils.copyProperties(historyBill, item);
+			historyBill.setId(null);
+			historyBill.setCode("h_"+historyBill.getCode());
+			historyBill.setSampleCode(null);
+			historyBill.setYn(YnEnum.NO.getCode());
+			this.insertSelective(historyBill);
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new TraceBusinessException("创建查询数据出错");
 		}
-		newRegisterBill.setVerifiedHistoryBillId(item.getId());
-		newRegisterBill.setVerifyType(verifyType.getCode());
-		newRegisterBill.setOperatorId(operatorUser.getId());
-		newRegisterBill.setOperatorName(operatorUser.getName());
-		this.insertSelective(newRegisterBill);
-		return newRegisterBill;
+		RegisterBill bill=new RegisterBill();
+		bill.setId(item.getId());
+		bill.setVerifyStatus(toVerifyState.getCode());
+		bill.setVerifiedHistoryBillId(historyBill.getId());
+		bill.setVerifyType(verifyType.getCode());
+		bill.setOperatorId(operatorUser.getId());
+		bill.setOperatorName(operatorUser.getName());
+		bill.setYn(YnEnum.YES.getCode());
+		this.updateSelective(bill);
+		return bill.getId();
 	}
 
 }
