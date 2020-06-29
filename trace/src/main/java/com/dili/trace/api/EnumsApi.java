@@ -3,17 +3,18 @@ package com.dili.trace.api;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 
-import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import one.util.streamex.StreamEx;
+
 
 @RestController
 @RequestMapping(value = "/api/enums")
@@ -54,6 +55,19 @@ public class EnumsApi {
 		try {
 			List<Entry<Integer, String>> list = StreamEx.of(PreserveTypeEnum.values())
 					.mapToEntry(PreserveTypeEnum::getCode, PreserveTypeEnum::getName).toList();
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	/**
+	 * 报备单类型查询
+	 */
+	@RequestMapping(value = "/listBillType.api", method = RequestMethod.POST)
+	public BaseOutput<List<Entry<Integer, String>>> listBillType() {
+		try {
+			List<Entry<Integer, String>> list = StreamEx.of(BillTypeEnum.values())
+					.mapToEntry(BillTypeEnum::getCode, BillTypeEnum::getName).toList();
 			return BaseOutput.success().setData(list);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());

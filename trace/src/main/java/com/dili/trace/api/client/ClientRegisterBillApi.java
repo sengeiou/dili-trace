@@ -14,7 +14,6 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
-import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
@@ -138,7 +137,6 @@ public class ClientRegisterBillApi {
 				//将id换为billId字段
 				map.put("billId", map.remove("id"));
 				return map;
-
 			});
 			return BaseOutput.success().setData(basePage);
 		} catch (TraceBusinessException e) {

@@ -1,7 +1,7 @@
 凭证图片类型接口:/api/enums/listImageCertType.api
-商品规格接口:/api/enums/listSpecType.api
 报备单审核状态接口:/api/enums/listBillVerifyStatus.api
 商品储存类型(鲜活,冰鲜,冻品,加工品) :/api/enums/listPreserveType.api
+报备单类型:/api/enums//listBillType.api
 
 获取品类列表：
   category: "/api/categoryApi/listCategoryByCondition",
@@ -24,7 +24,7 @@ cityList: "/api/cityApi/listCityByCondition"
   createUpStream: "/api/upstreamApi/doCreateUpStream.api", //创建上游信息
   modifyUpStream: "/api/upstreamApi/doModifyUpStream.api", //修改上游信息
 
-买卖家接口:
+买家接口:
 1:进场报备:
 /api/client/clientRegisterBill/createRegisterBillList.api
  {
@@ -36,26 +36,50 @@ cityList: "/api/cityApi/listCityByCondition"
 		originName:"北京",//产地名
 		weight:12.34,//重量
 		weightUnit:1,//重量单位	JIN(1, "斤"),KILO(2, "公斤")
+    specName:"筐",//规格
+    billType:10,//10:整车,20:拼车
+    brandName:"品牌名称",
+    brandId:"品牌ID",
 		imageCertList:[{ //任何时候都要提交这两个参数
 			url:"",//图片URL
 			certType://图片类型 (凭证图片类型接口)
 		}]
 	 	}
-	 	
 	 ]
-
  }
-2:报备单列表
+
+ 
+ 2:修改报备:
+/api/client/clientRegisterBill/doEditRegisterBill.api
+  {
+  billId:123,//报备单ID
+  productName:"大白菜",//商品名称
+  productId:123,//商品ID
+  originId:11,//产地ID
+  originName:"北京",//产地名
+  weight:12.34,//重量
+  weightUnit:1,//重量单位	JIN(1, "斤"),KILO(2, "公斤")
+  specName:"筐",//规格
+  billType:10,//10:整车,20:拼车
+  brandName:"品牌名称",
+  brandId:"品牌ID",
+  imageCertList:[{ //任何时候都要提交这两个参数
+    url:"",//图片URL
+    certType://图片类型 (凭证图片类型接口)
+  }]
+  }
+
+3:报备单列表
 /api/client/clientRegisterBill/listPage.api
-3:报备单详情
+4:报备单详情
 /api/client/clientRegisterBill/viewRegisterBill.api
-4:订单列表
+5:订单列表
 /api/client/clientTradeDetail/listPage.api
-5:扫码交易
+6:扫码交易
 /api/client/clientTradeDetail/createTradeDetail.api
-6:溯源列表
+7:溯源列表
 /api/client/clientTrace/listPage.api
-7：溯源详情
+8：溯源详情
 /api/client/clientTrace/viewTrace.api
 
 
