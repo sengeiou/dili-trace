@@ -327,3 +327,5 @@ ALTER TABLE `checkinout_record` ADD COLUMN  `trade_detail_id` bigint not null de
 ALTER TABLE `checkinout_record` DROP COLUMN `sales_weight`;
 ALTER TABLE `checkinout_record` DROP COLUMN `seperate_sales_id`;
 
+#2020年6月23日11点35分
+ALTER TABLE hztrace.`user` ADD validate_state TINYINT(1) DEFAULT 0 NOT NULL COMMENT '0 未实名 1 待审核 2 审核未通过 3 审核通过';
