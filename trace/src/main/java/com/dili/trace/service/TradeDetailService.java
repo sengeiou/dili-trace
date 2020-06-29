@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
@@ -238,12 +237,12 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		TradeDetailStatusEnum statusEnum = TradeDetailStatusEnum.fromCode(input.getStatus()).orElseThrow(() -> {
 			return new TraceBusinessException("参数错误");
 		});
-		if(TradeDetailStatusEnum.REFUSE==statusEnum||TradeDetailStatusEnum.RETURNED==statusEnum) {
-			//donothing
-		}else {
+		if (TradeDetailStatusEnum.REFUSE == statusEnum || TradeDetailStatusEnum.RETURNED == statusEnum) {
+			// donothing
+		} else {
 			throw new TraceBusinessException("参数错误");
 		}
-		
+
 		List<Long> tradeDetailIdList = StreamEx.of(input.getTradeDetailInputList()).nonNull()
 				.map(TradeDetailInputDto::getTradeDetailId).nonNull().map(tradeDetailId -> {
 					return this.get(tradeDetailId);
@@ -265,4 +264,6 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		}
 		return tradeDetailIdList;
 	}
+
+
 }

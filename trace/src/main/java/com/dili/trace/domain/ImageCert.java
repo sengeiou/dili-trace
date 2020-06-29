@@ -37,8 +37,8 @@ public class ImageCert extends BaseDomain {
 	@Column(name = "`cert_type`")
 	private Integer certType;
 
-	@Column(name = "`target_id`")
-	private Long targetId;
+	@Column(name = "`bill_id`")
+	private Long billId;
 
 	@Column(name = "`created`")
 	private Date created;
@@ -86,12 +86,21 @@ public class ImageCert extends BaseDomain {
 		this.certType = certType;
 	}
 
-	public Long getTargetId() {
-		return targetId;
-	}
 
-	public void setTargetId(Long targetId) {
-		this.targetId = targetId;
-	}
+
+
+    /**
+     * @return Long return the billId
+     */
+    public Long getBillId() {
+        return billId;
+    }
+
+    /**
+     * @param billId the billId to set
+     */
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
 
 }

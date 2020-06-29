@@ -11,7 +11,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
-import com.dili.trace.enums.SpecTypeEnum;
 
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
@@ -33,19 +32,6 @@ public class EnumsApi {
 		}
 	}
 
-	/**
-	 * 规格查询
-	 */
-	@RequestMapping(value = "/listSpecType.api", method = RequestMethod.POST)
-	public BaseOutput<List<Entry<Integer, String>>> listSpecType() {
-		try {
-			List<Entry<Integer, String>> list = StreamEx.of(SpecTypeEnum.values())
-					.mapToEntry(SpecTypeEnum::getCode, SpecTypeEnum::getName).toList();
-			return BaseOutput.success().setData(list);
-		} catch (Exception e) {
-			return BaseOutput.failure(e.getMessage());
-		}
-	}
 
 	/**
 	 * 报备单审核状态查询

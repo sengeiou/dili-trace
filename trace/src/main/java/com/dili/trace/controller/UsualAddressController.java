@@ -5,6 +5,17 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.service.BaseInfoRpcService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.exception.AppException;
+import com.dili.ss.util.DateUtils;
+import com.dili.trace.domain.UsualAddress;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UsualAddressService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,19 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.exception.TraceBusinessException;
-import com.dili.common.service.BaseInfoRpcService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.exception.AppException;
-import com.dili.ss.util.DateUtils;
-import com.dili.trace.domain.UsualAddress;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UsualAddressService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

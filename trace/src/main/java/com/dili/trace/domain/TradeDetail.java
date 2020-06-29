@@ -25,16 +25,14 @@ public class TradeDetail extends BaseDomain {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "`id`")
 	private Long id;
-	
+
 	@ApiModelProperty(value = "分销自")
 	@Column(name = "`parent_id`")
 	private Long parentId;
-	
-	
+
 	@ApiModelProperty(value = "最初登记单ID")
 	@Column(name = "`bill_id`")
 	private Long billId;
-
 
 	@ApiModelProperty(value = "进场审核ID")
 	@Column(name = "`checkin_record_id`")
@@ -52,14 +50,13 @@ public class TradeDetail extends BaseDomain {
 
 	@Column(name = "`sale_status`")
 	private Integer saleStatus;
-	
+
 	@Column(name = "`trade_type`")
 	private Integer tradeType;
-	
-	
+
 	@Column(name = "`status`")
 	private Integer status;
-	
+
 	@ApiModelProperty(value = "买家ID")
 	@Column(name = "`buyer_id`")
 	private Long buyerId;
@@ -79,15 +76,22 @@ public class TradeDetail extends BaseDomain {
 	@ApiModelProperty(value = "库存重量")
 	@Column(name = "`stock_weight`")
 	private BigDecimal stockWeight;
-	
+
 	@ApiModelProperty(value = "总重量")
 	@Column(name = "`total_weight`")
 	private BigDecimal totalWeight;
-	
-	
+
 	@ApiModelProperty(value = "重量单位")
 	@Column(name = "`weight_unit`")
 	private Integer weightUnit;
+
+	@ApiModelProperty(value = "批次库存ID")
+	@Column(name = "`batch_stock_id`")
+	private Long batchStockId;
+
+	@ApiModelProperty(value = "批次交易ID")
+	@Column(name = "`trade_request_id`")
+	private Long tradeRequestId;
 
 	@Column(name = "`created`")
 	private Date created;
@@ -142,7 +146,6 @@ public class TradeDetail extends BaseDomain {
 	public void setSellerName(String sellerName) {
 		this.sellerName = sellerName;
 	}
-
 
 	public Integer getWeightUnit() {
 		return weightUnit;
@@ -232,7 +235,6 @@ public class TradeDetail extends BaseDomain {
 		this.tradeType = tradeType;
 	}
 
-
 	public BigDecimal getStockWeight() {
 		return stockWeight;
 	}
@@ -247,6 +249,34 @@ public class TradeDetail extends BaseDomain {
 
 	public void setTotalWeight(BigDecimal totalWeight) {
 		this.totalWeight = totalWeight;
+	}
+
+	/**
+	 * @return Long return the batchStockId
+	 */
+	public Long getBatchStockId() {
+		return batchStockId;
+	}
+
+	/**
+	 * @param batchStockId the batchStockId to set
+	 */
+	public void setBatchStockId(Long batchStockId) {
+		this.batchStockId = batchStockId;
+	}
+
+	/**
+	 * @return Long return the tradeRequestId
+	 */
+	public Long getTradeRequestId() {
+		return tradeRequestId;
+	}
+
+	/**
+	 * @param tradeRequestId the tradeRequestId to set
+	 */
+	public void setTradeRequestId(Long tradeRequestId) {
+		this.tradeRequestId = tradeRequestId;
 	}
 
 }

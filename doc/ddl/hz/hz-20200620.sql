@@ -12,23 +12,9 @@ CREATE TABLE `category` (
 
 CREATE TABLE `image_cert` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
-	`target_id` bigint(20)  NULL COMMENT '所属数据ID',
+	`bill_id` bigint(20)  NULL COMMENT '所属数据ID',
 	`url` varchar(200)  NULL COMMENT '图片URL',
 	`cert_type` int(11) not NULL COMMENT '图片类型',
-	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE `verify_history` (
-	`id` bigint(20) NOT NULL AUTO_INCREMENT,
-	`bill_id` bigint(20)  NULL COMMENT '所属数据ID',
-	`from_verify_status` int(11) NOT NULL COMMENT '初始审核状态',
-	`to_verify_status` int(11)  NOT NULL COMMENT '审核状态',
-	`verify_user_id` bigint(20) NOT NULL COMMENT '审核人ID',
-	`verify_user_name` varchar(50) NOT NULL COMMENT '审核人姓名',
-	`valid` int(11) NOT NULL COMMENT '是否是当前有效的数据',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -283,6 +269,21 @@ INSERT INTO category (parent_id,name,full_name,created,modified) VALUES
 ,(7,'海参','其他,海参',now(),now())
 ;
 
+CREATE TABLE `batch_stock` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`preserve_type` int(11) NOT NULL  default 10 COMMENT '保存类型',
+	`stock_weight` decimal(10,3) NOT NULL default 0 COMMENT '库存重量',
+	`total_weight` decimal(10,3) NOT NULL default 0 COMMENT '总重量',
+	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',
+	`spec_name` varchar(20)  NULL  COMMENT '规格',
+	`product_name` varchar(20) NOT NULL COMMENT '商品名称',
+  	`product_id` bigint(20) NOT NULL,
+   	`user_name` varchar(50) DEFAULT NULL COMMENT '业户姓名',
+  	`user_id` bigint(20) DEFAULT NULL COMMENT '理货区用户ID',
+	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 drop table `quality_trace_trade_bill`;
 drop table `quality_trace_trade_bill_syncpoint`;
@@ -290,10 +291,18 @@ drop table `user_tally_area`;
 
 drop table `check_sheet`;
 drop table `check_sheet_detail`;
+
+drop table `detect_record`;
+
+
 ALTER TABLE `register_bill` ADD COLUMN  `weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位';
 ALTER TABLE `register_bill` ADD COLUMN  `verify_status` int(11) not null default 0 COMMENT '查验状态';
 ALTER TABLE `register_bill` ADD COLUMN  `preserve_type` int(11) NOT NULL  default 10 COMMENT '保存类型';
-ALTER TABLE `register_bill` MODIFY COLUMN weight decimal(10,3)  NOT NULL default 0 COMMENT '重量';
+ALTER TABLE `register_bill` ADD COLUMN  `verified_history_bill_id` bigint(20)  NULL COMMENT '查验历史ID';
+ALTER TABLE `register_bill` ADD COLUMN  `verify_type` int(11)  NOT NULL  default 0 COMMENT '查验类型';
+ALTER TABLE `register_bill` ADD COLUMN  `spec_name` varchar(20)  NULL  COMMENT '规格';
+ALTER TABLE `register_bill` ADD COLUMN  `bill_type` int(11)  NOT NULL  default 10 COMMENT '报备类型';
+ALTER TABLE `register_bill` MODIFY COLUMN `weight` decimal(10,3)  NOT NULL default 0 COMMENT '重量';
 
 
 ALTER TABLE `register_bill` DROP COLUMN `sales_type`;

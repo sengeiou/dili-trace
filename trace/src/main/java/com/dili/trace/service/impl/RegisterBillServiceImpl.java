@@ -1,5 +1,6 @@
 package com.dili.trace.service.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
@@ -44,7 +47,6 @@ import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserQrItemService;
 import com.dili.trace.service.UsualAddressService;
-import com.dili.trace.service.VerifyHistoryService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
@@ -70,8 +72,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
 	TradeDetailService tradeDetailService;
-	@Autowired
-	VerifyHistoryService verifyHistoryService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -84,16 +84,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.checkBill(registerBill);
 
 		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-
+		registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
 
-		if (StringUtils.isBlank(registerBill.getOperatorName())) {
-			registerBill.setOperatorName(operatorUser.getName());
-			registerBill.setOperatorId(operatorUser.getId());
-		}
+		registerBill.setOperatorName(operatorUser.getName());
+		registerBill.setOperatorId(operatorUser.getId());
 
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
@@ -112,10 +110,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	private BaseOutput checkBill(RegisterBill registerBill) {
 
-//		if (registerBill.getRegisterSource() == null || registerBill.getRegisterSource().intValue() == 0) {
-//			LOGGER.error("登记来源不能为空");
-//			throw new BusinessException("登记来源不能为空");
-//		}
+		// if (registerBill.getRegisterSource() == null ||
+		// registerBill.getRegisterSource().intValue() == 0) {
+		// LOGGER.error("登记来源不能为空");
+		// throw new BusinessException("登记来源不能为空");
+		// }
 		if (StringUtils.isBlank(registerBill.getName())) {
 			LOGGER.error("业户姓名不能为空");
 			throw new TraceBusinessException("业户姓名不能为空");
@@ -149,8 +148,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		return BaseOutput.success();
 	}
-
-	
 
 	@Override
 	public List<RegisterBill> findByProductName(String productName) {
@@ -387,7 +384,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			registerBill.setOperatorId(userTicket.getId());
 			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
 			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
-//			registerBill.setExeMachineNo(null);
+			// registerBill.setExeMachineNo(null);
 			return update(registerBill);
 		} else {
 			throw new AppException("操作失败，数据状态已改变");
@@ -398,7 +395,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return SessionContext.getSessionContext().getUserTicket();
 	}
 
-	
 	@Override
 	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill) {
 		LOGGER.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
@@ -417,19 +413,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			// input.getHandleResultUrl())) {
 			throw new AppException("参数错误");
 		}
-//		if (input.getHandleResult().trim().length() > 1000) {
-//			throw new AppException("处理结果不能超过1000");
-//		}
+		// if (input.getHandleResult().trim().length() > 1000) {
+		// throw new AppException("处理结果不能超过1000");
+		// }
 		RegisterBill item = this.get(input.getId());
 		if (item == null) {
 			throw new AppException("数据错误");
 		}
 
-//		RegisterBill example = new RegisterBill();
-//		example.setId(item.getId());
-//		example.setHandleResult(input.getHandleResult());
-//		example.setHandleResultUrl(input.getHandleResultUrl());
-//		this.updateSelective(example);
+		// RegisterBill example = new RegisterBill();
+		// example.setId(item.getId());
+		// example.setHandleResult(input.getHandleResult());
+		// example.setHandleResultUrl(input.getHandleResultUrl());
+		// this.updateSelective(example);
 
 		return item.getId();
 
@@ -467,9 +463,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (registerBill == null) {
 			throw new AppException("数据错误");
 		}
-//		if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl())) {
-//			throw new AppException("请上传产地证明");
-//		}
+		// if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl())) {
+		// throw new AppException("请上传产地证明");
+		// }
 		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
 			throw new AppException("数据状态错误");
 		}
@@ -512,9 +508,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (input == null || input.getId() == null) {
 			throw new AppException("参数错误");
 		}
-//		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
-//			throw new AppException("请上传报告");
-//		}
+		// if (StringUtils.isBlank(input.getOriginCertifiyUrl()) &&
+		// StringUtils.isBlank(input.getDetectReportUrl())) {
+		// throw new AppException("请上传报告");
+		// }
 		RegisterBill item = this.get(input.getId());
 		if (item == null) {
 			throw new AppException("数据错误");
@@ -525,8 +522,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		RegisterBill example = new RegisterBill();
 		example.setId(item.getId());
-//		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-//		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
+		// example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
+		// example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
 		this.updateSelective(example);
 
 		return example.getId();
@@ -537,9 +534,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (input == null || input.getId() == null) {
 			throw new AppException("参数错误");
 		}
-//		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
-//			throw new AppException("请上传报告");
-//		}
+		// if (StringUtils.isBlank(input.getOriginCertifiyUrl()) &&
+		// StringUtils.isBlank(input.getDetectReportUrl())) {
+		// throw new AppException("请上传报告");
+		// }
 		RegisterBill item = this.get(input.getId());
 		if (item == null) {
 			throw new AppException("数据错误");
@@ -549,7 +547,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// }
 		RegisterBill example = new RegisterBill();
 		example.setId(item.getId());
-//		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
+		// example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
 		// example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
 		this.updateSelective(example);
 
@@ -565,18 +563,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
 			throw new AppException("状态错误,不能删除产地证明和检测报告");
 		}
-//		if ("all".equalsIgnoreCase(deleteType)) {
-//			item.setOriginCertifiyUrl(null);
-//			item.setDetectReportUrl(null);
-//		} else if ("originCertifiy".equalsIgnoreCase(deleteType)) {
-//			item.setOriginCertifiyUrl(null);
-//		} else if ("detectReport".equalsIgnoreCase(deleteType)) {
-//			item.setDetectReportUrl(null);
-//		} else {
-//			// do nothing
-//			return BaseOutput.success();
-//		}
-//		this.getActualDao().doRemoveReportAndCertifiy(item);
+		// if ("all".equalsIgnoreCase(deleteType)) {
+		// item.setOriginCertifiyUrl(null);
+		// item.setDetectReportUrl(null);
+		// } else if ("originCertifiy".equalsIgnoreCase(deleteType)) {
+		// item.setOriginCertifiyUrl(null);
+		// } else if ("detectReport".equalsIgnoreCase(deleteType)) {
+		// item.setDetectReportUrl(null);
+		// } else {
+		// // do nothing
+		// return BaseOutput.success();
+		// }
+		// this.getActualDao().doRemoveReportAndCertifiy(item);
 		this.userQrItemService.updateUserQrStatus(item.getUserId());
 		return BaseOutput.success();
 	}
@@ -584,28 +582,28 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
 		if (StringUtils.isNotBlank(dto.getAttrValue())) {
 			switch (dto.getAttr()) {
-			case "code":
-				dto.setCode(dto.getAttrValue());
-				break;
-			// case "plate":
-			// registerBill.setPlate(registerBill.getAttrValue());
-			// break;
-			// case "tallyAreaNo":
-			//// registerBill.setTallyAreaNo(registerBill.getAttrValue());
-			// registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
-			// break;
-			case "latestDetectOperator":
-				dto.setLatestDetectOperator(dto.getAttrValue());
-				break;
-			case "name":
-				dto.setName(dto.getAttrValue());
-				break;
-			case "productName":
-				dto.setProductName(dto.getAttrValue());
-				break;
-			case "likeSampleCode":
-				dto.setLikeSampleCode(dto.getAttrValue());
-				break;
+				case "code":
+					dto.setCode(dto.getAttrValue());
+					break;
+				// case "plate":
+				// registerBill.setPlate(registerBill.getAttrValue());
+				// break;
+				// case "tallyAreaNo":
+				//// registerBill.setTallyAreaNo(registerBill.getAttrValue());
+				// registerBill.setLikeTallyAreaNo(registerBill.getAttrValue());
+				// break;
+				case "latestDetectOperator":
+					dto.setLatestDetectOperator(dto.getAttrValue());
+					break;
+				case "name":
+					dto.setName(dto.getAttrValue());
+					break;
+				case "productName":
+					dto.setProductName(dto.getAttrValue());
+					break;
+				case "likeSampleCode":
+					dto.setLikeSampleCode(dto.getAttrValue());
+					break;
 			}
 		}
 		// if (registerBill.getHasReport() != null) {
@@ -645,11 +643,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return this.listEasyuiPageByExample(dto, true).toString();
 	}
 
-	
-
 	private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
 		StringBuilder sql = new StringBuilder();
-		
+
 		return sql;
 	}
 
@@ -817,16 +813,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
-		RegisterBill registerBill = new RegisterBill();
-		registerBill.setId(billId);
-		registerBill.setVerifyStatus(toVerifyState.getCode());
-		if (BillVerifyStatusEnum.PASSED == toVerifyState) {
-			this.tradeDetailService.createTradeInfoForBill(billId);
-		}
-		this.verifyHistoryService.insertVerifyHistory(billId, item.getVerifyStatus(), toVerifyState.getCode(),
-				operatorUser);
-		this.updateSelective(registerBill);
-		return item.getId();
+		return this.createHistoryRegisterBillForVerify(item, toVerifyState, VerifyTypeEnum.VERIFY_BEFORE_CHECKIN,
+				operatorUser).getId();
 	}
 
 	@Override
@@ -848,18 +836,25 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
-		RegisterBill registerBill = new RegisterBill();
-		registerBill.setId(billId);
-		registerBill.setVerifyStatus(toVerifyState.getCode());
-		if (BillVerifyStatusEnum.PASSED == toVerifyState) {
-			this.tradeDetailService.createTradeInfoForBill(billId);
-		}
-		this.verifyHistoryService.insertVerifyHistory(billId, item.getVerifyStatus(), toVerifyState.getCode(),
-				operatorUser);
-		this.updateSelective(registerBill);
-		return item.getId();
+		return this.createHistoryRegisterBillForVerify(item, toVerifyState, VerifyTypeEnum.VERIFY_AFTER_CHECKIN,
+				operatorUser).getId();
 	}
 
-	
+	private RegisterBill createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,
+			VerifyTypeEnum verifyType, OperatorUser operatorUser) {
+		RegisterBill newRegisterBill = new RegisterBill();
+		try {
+			BeanUtils.copyProperties(newRegisterBill, item);
+			newRegisterBill.setId(null);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new TraceBusinessException("创建查询数据出错");
+		}
+		newRegisterBill.setVerifiedHistoryBillId(item.getId());
+		newRegisterBill.setVerifyType(verifyType.getCode());
+		newRegisterBill.setOperatorId(operatorUser.getId());
+		newRegisterBill.setOperatorName(operatorUser.getName());
+		this.insertSelective(newRegisterBill);
+		return newRegisterBill;
+	}
 
 }

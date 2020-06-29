@@ -5,16 +5,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.beanutils.BeanMap;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
@@ -27,7 +17,6 @@ import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
-import com.dili.trace.domain.VerifyHistory;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
@@ -35,8 +24,17 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
-import com.dili.trace.service.VerifyHistoryService;
 import com.dili.trace.util.BasePageUtil;
+
+import org.apache.commons.beanutils.BeanMap;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -60,8 +58,7 @@ public class ClientRegisterBillApi {
 	UserService userService;
 	@Autowired
 	ImageCertService imageCertService;
-	@Autowired
-	VerifyHistoryService verifyHistoryService;
+
 
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
@@ -81,19 +78,7 @@ public class ClientRegisterBillApi {
 		logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
 		for (CreateRegisterBillInputDto dto : registerBills) {
 			logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-			RegisterBill registerBill = new RegisterBill();
-			registerBill.setOperatorName(user.getName());
-			registerBill.setOperatorId(user.getId());
-			registerBill.setUserId(user.getId());
-			registerBill.setName(user.getName());
-			registerBill.setAddr(user.getAddr());
-			registerBill.setIdCardNo(user.getCardNo());
-			registerBill.setWeight(dto.getWeight());
-			registerBill.setWeightUnit(dto.getWeightUnit());
-			registerBill.setOriginId(dto.getOriginId());
-			registerBill.setOriginName(dto.getOriginName());
-			registerBill.setProductId(dto.getProductId());
-			registerBill.setProductName(dto.getProductName());
+			RegisterBill registerBill = dto.build(user);
 			try {
 				registerBillService.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
 			} catch (TraceBusinessException e) {
@@ -160,8 +145,6 @@ public class ClientRegisterBillApi {
 			resultMap.put("billId", resultMap.remove("id"));
 			List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(billId);
 			resultMap.put("imageCertList", imageCertList);
-			VerifyHistory verifyHistory = this.verifyHistoryService.findValidVerifyHistoryByBillId(billId).orElse(null);
-			resultMap.put("verifyHistory", verifyHistory);
 
 			return BaseOutput.success().setData(resultMap);
 		} catch (TraceBusinessException e) {

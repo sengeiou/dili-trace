@@ -4,18 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
@@ -39,9 +29,13 @@ import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.google.common.collect.Lists;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class CheckinOutServiceTest extends AutoWiredBaseTest {
@@ -101,7 +95,6 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		BaseOutput<BasePage<Map<String, Object>>> out = this.checkinOutRecordService.listPagedData(query, 496L);
 		System.out.println(out.getData().getDatas());
 	}
-//"com.dili.trace.dao.CodeGenerateMapper.BaseResultMap"
 	@Test
 	@Transactional
 	public void testAll() {

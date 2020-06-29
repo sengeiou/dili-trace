@@ -1,22 +1,20 @@
 package com.dili.trace.domain;
 
-import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import io.swagger.annotations.ApiModelProperty;
-
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
-import javax.persistence.*;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.glossary.BillDetectStateEnum;
+import com.dili.trace.glossary.RegisterBillStateEnum;
+
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -37,14 +35,6 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "采样编号")
 	@Column(name = "`sample_code`")
 	private String sampleCode;
-
-//	@ApiModelProperty(value = "1.理货区 2.交易区")
-//	@Column(name = "`register_source`")
-//	private Integer registerSource;
-//
-//	@ApiModelProperty(value = "理货区号")
-//	@Column(name = "`tally_area_no`")
-//	private String tallyAreaNo;
 
 	@ApiModelProperty(value = "业户姓名")
 	@Column(name = "`name`")
@@ -156,7 +146,23 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "保存类型")
 	@Column(name = "`preserve_type`")
 	private Integer preserveType;
+
+	@ApiModelProperty(value = "查验历史ID")
+	@Column(name = "`verified_history_bill_id`")
+	private Long verifiedHistoryBillId;
 	
+	@ApiModelProperty(value = "查验类型")
+	@Column(name = "`verify_type`")
+	private Integer verifyType;
+
+	@ApiModelProperty(value = "规格名称")
+	@Column(name="`spec_name`")
+	private String specName;
+
+	@ApiModelProperty(value = "报备类型")
+	@Column(name="`bill_type`")
+	private Integer billType;
+
 	public Integer getVerifyStatus() {
 		return verifyStatus;
 	}
@@ -422,5 +428,81 @@ public class RegisterBill extends BaseDomain {
 	public void setComplete(Integer complete) {
 		this.complete = complete;
 	}
+
+
+    /**
+     * @return Integer return the preserveType
+     */
+    public Integer getPreserveType() {
+        return preserveType;
+    }
+
+    /**
+     * @param preserveType the preserveType to set
+     */
+    public void setPreserveType(Integer preserveType) {
+        this.preserveType = preserveType;
+    }
+
+
+    /**
+     * @return Long return the verifiedHistoryBillId
+     */
+    public Long getVerifiedHistoryBillId() {
+        return verifiedHistoryBillId;
+    }
+
+    /**
+     * @param verifiedHistoryBillId the verifiedHistoryBillId to set
+     */
+    public void setVerifiedHistoryBillId(Long verifiedHistoryBillId) {
+        this.verifiedHistoryBillId = verifiedHistoryBillId;
+    }
+
+
+    /**
+     * @return Integer return the verifyType
+     */
+    public Integer getVerifyType() {
+        return verifyType;
+    }
+
+    /**
+     * @param verifyType the verifyType to set
+     */
+    public void setVerifyType(Integer verifyType) {
+        this.verifyType = verifyType;
+    }
+
+
+    /**
+     * @return String return the specName
+     */
+    public String getSpecName() {
+        return specName;
+    }
+
+    /**
+     * @param specName the specName to set
+     */
+    public void setSpecName(String specName) {
+        this.specName = specName;
+    }
+
+
+
+    /**
+     * @return Integer return the billType
+     */
+    public Integer getBillType() {
+        return billType;
+    }
+
+    /**
+     * @param billType the billType to set
+     */
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+    }
 
 }

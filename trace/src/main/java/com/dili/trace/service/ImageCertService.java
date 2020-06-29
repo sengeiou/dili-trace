@@ -16,12 +16,12 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
 		if (billId != null) {
 			// 先删除全部原有图片
 			ImageCert deleteConditon = new ImageCert();
-			deleteConditon.setTargetId(billId);
+			deleteConditon.setBillId(billId);
 			this.deleteByExample(deleteConditon);
 
 			// 增加新的图片
 			return StreamEx.of(imageCertList).nonNull().map(cert -> {
-				cert.setTargetId(billId);
+				cert.setBillId(billId);
 				this.insertSelective(cert);
 				return cert;
 			}).toList();
@@ -33,7 +33,7 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
 			return com.google.common.collect.Lists.newArrayList();
 		}
 		ImageCert queryCondition = new ImageCert();
-		queryCondition.setTargetId(billId);
+		queryCondition.setBillId(billId);
 		return this.listByExample(queryCondition);
 	}
 

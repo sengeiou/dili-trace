@@ -9,41 +9,37 @@ import one.util.streamex.StreamEx;
  *
  * @author wangguofeng
  */
-public enum SpecTypeEnum {
+public enum BillTypeEnum {
 
 	/**
-	 * 筐
+	 * 整车
 	 */
-	BASKET(1, "筐"),
+	FULL_LOAD(10, "整车"),
 	/**
-	 * 箱
+	 * 拼车
 	 */
-	CARTON(2, "箱"),
-	/**
-	 * 件
-	 */
-	PIECE(3, "件"),
-	/**
-	 * 袋
-	 */
-	BAG(4, "袋"),
+	CARPOOL(20, "拼车"),
 
 	;
 
 	private String name;
 	private Integer code;
 
-	SpecTypeEnum(Integer code, String name) {
+	BillTypeEnum(Integer code, String name) {
 		this.code = code;
 		this.name = name;
 	}
 
-	public static Optional<SpecTypeEnum> fromCode(Integer code) {
-		return StreamEx.of(SpecTypeEnum.values()).filterBy(SpecTypeEnum::getCode, code).findFirst();
+	public static Optional<BillVerifyStatusEnum> fromCode(Integer code) {
+		return StreamEx.of(BillVerifyStatusEnum.values()).filterBy(BillVerifyStatusEnum::getCode, code).findFirst();
 	}
 
 	public boolean equalsToCode(Integer code) {
 		return this.getCode().equals(code);
+	}
+
+	public static boolean canDoVerify(Integer code) {
+		return BillVerifyStatusEnum.NONE.equalsToCode(code) || BillVerifyStatusEnum.RETURNED.equalsToCode(code);
 	}
 
 	public Integer getCode() {

@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.dao.CategoryService;
 import com.dili.trace.domain.Category;
 import com.dili.trace.dto.CategoryListInput;
+import com.dili.trace.service.CategoryService;
 
 import io.swagger.annotations.ApiOperation;
 

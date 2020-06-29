@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.common.service.BaseInfoRpcService;
-import com.dili.trace.dao.CategoryService;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.City;
+import com.dili.trace.service.CategoryService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
