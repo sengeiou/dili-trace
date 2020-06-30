@@ -39,13 +39,11 @@ public class ClientBrandApiTest extends AutoWiredBaseTest {
         Mockito.doReturn(new OperatorUser(brand.getUserId(), "test")).when(this.sessionContext)
                 .getLoginUserOrException(Mockito.any());
         BrandInputDto inputDto = new BrandInputDto();
-        BaseOutput<BasePage<BrandOutputDto>> out = this.clientBrandApi.listPage(inputDto);
+        BaseOutput<List<BrandOutputDto>> out = this.clientBrandApi.listPage(inputDto);
         assertNotNull(out);
         assertTrue(out.isSuccess());
 
-        BasePage<BrandOutputDto> page = out.getData();
-        assertNotNull(page);
-        List<BrandOutputDto> list = page.getDatas();
+        List<BrandOutputDto> list = out.getData();
         BrandOutputDto dto = StreamEx.of(list).findFirst().orElse(null);
         assertNotNull(dto);
         assertNotNull(dto.getBrandId());
