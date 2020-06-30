@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
+import com.beust.jcommander.internal.Lists;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
@@ -19,6 +20,7 @@ import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
@@ -27,6 +29,7 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
+import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
 
@@ -43,6 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 
 /**
  * Created by wangguofeng
@@ -64,7 +68,8 @@ public class ClientRegisterBillApi {
 	ImageCertService imageCertService;
 	@Autowired
 	TradeDetailService tradeDetailService;
-
+	@Autowired
+	UpStreamService upStreamService;
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
 	public BaseOutput createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
@@ -138,7 +143,7 @@ public class ClientRegisterBillApi {
 				input.setOrder("desc");
 				input.setSort("id");
 			}
-			
+
 			BasePage basePage = this.tradeDetailService.selectTradeDetailAndBill(input);
 			return BaseOutput.success().setData(basePage);
 		} catch (TraceBusinessException e) {
@@ -153,29 +158,47 @@ public class ClientRegisterBillApi {
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
 	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput<RegisterBillOutputDto> viewRegisterBill(@RequestBody RegisterBillApiInputDto inputDto) {
-		if (inputDto == null || inputDto.getBillId() == null) {
+		if (inputDto == null || (inputDto.getBillId() == null && inputDto.getTradeDetailId() == null)) {
 			return BaseOutput.failure("参数错误");
 		}
 
 		logger.info("获取登记单:" + inputDto.getBillId());
 		try {
-			Long billId = inputDto.getBillId();
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			User user = userService.get(userId);
 			if (user == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			RegisterBill registerBill = registerBillService.get(billId);
-			if (registerBill == null) {
-				logger.error("获取登记单失败id:" + billId);
-				return BaseOutput.failure();
-			}
-			Map<Object, Object> resultMap = new BeanMap(registerBill);
-			resultMap.put("billId", resultMap.remove("id"));
-			List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(billId);
-			resultMap.put("imageCertList", imageCertList);
+			TradeDetail tradeDetailItem = StreamEx.ofNullable(inputDto.getTradeDetailId()).nonNull()
+					.map(tradeDetailId -> {
+						return this.tradeDetailService.get(tradeDetailId);
+					}).findFirst().orElse(new TradeDetail());
 
-			return BaseOutput.success().setData(resultMap);
+			RegisterBill registerBill = StreamEx.ofNullable(inputDto.getBillId()).append(tradeDetailItem.getBillId())
+					.nonNull().map(billId -> {
+						return this.registerBillService.get(billId);
+					}).findFirst().orElse(new RegisterBill());
+
+			List<ImageCert> imageCertList = StreamEx.ofNullable(registerBill.getId()).nonNull().flatMap(billId -> {
+				return this.imageCertService.findImageCertListByBillId(billId).stream();
+			}).toList();
+
+			UpStream upStream = StreamEx.ofNullable(registerBill.getUpStreamId()).nonNull().map(upStreamId -> {
+				return this.upStreamService.get(upStreamId);
+			}).nonNull().findAny().orElse(null);
+
+			if (tradeDetailItem.getId() != null && registerBill.getId() != null) {
+				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
+				outputdto.setImageCertList(imageCertList);
+				outputdto.setUpStream(upStream);
+				outputdto.setWeight(tradeDetailItem.getStockWeight());
+			} else if (registerBill.getId() != null) {
+				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
+				outputdto.setUpStream(upStream);
+				outputdto.setImageCertList(imageCertList);
+			} else {
+				return BaseOutput.failure("没有数据");
+			}
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

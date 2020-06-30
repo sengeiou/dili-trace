@@ -51,6 +51,8 @@ public class CreateRegisterBillInputDto {
 
 	@ApiModelProperty(value = "品牌ID")
 	private Long brandId;
+	@ApiModelProperty(value = "车牌")
+	private String plate;
 
 	/**
 	 * 图片证明列表
@@ -78,6 +80,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
 		registerBill.setBrandId(this.getBrandId());
 		registerBill.setBrandName(StringUtils.trim(this.getBrandName()));
+		registerBill.setPlate(this.getPlate());
 		return registerBill;
 	}
 
@@ -237,6 +240,21 @@ public class CreateRegisterBillInputDto {
      */
     public void setTruckType(Integer truckType) {
         this.truckType = truckType;
+    }
+
+
+    /**
+     * @return String return the plate
+     */
+    public String getPlate() {
+        return plate;
+    }
+
+    /**
+     * @param plate the plate to set
+     */
+    public void setPlate(String plate) {
+        this.plate = plate;
     }
 
 }
