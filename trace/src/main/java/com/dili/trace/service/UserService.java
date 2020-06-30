@@ -82,7 +82,7 @@ public interface UserService extends BaseService<User, Long> {
 	 */
 	BaseOutput deleteUser(Long id);
 
-	BaseOutput<Map<String, String>> countGroupByValidateState(User user);
+	BaseOutput<List<UserOutput>> countGroupByValidateState(User user);
 
 	BasePage<UserOutput> pageUserByQuery(UserInput user);
 

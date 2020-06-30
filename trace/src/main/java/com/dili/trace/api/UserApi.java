@@ -71,7 +71,9 @@ public class UserApi {
             checkRegisterParams(user);
             user.setPassword(MD5Util.md5(user.getPassword()));
             user.setState(EnabledStateEnum.ENABLED.getCode());
-            userService.register(user,true);
+            user.setAddr("");
+            user.setCardNo("");
+            userService.register(user,false);
             return BaseOutput.success().setData(user.getId());
         }catch (TraceBusinessException e){
             return BaseOutput.failure(e.getMessage());

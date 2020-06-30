@@ -6,6 +6,15 @@ public class UserOutput {
 	private String phone;
 	private String tallyAreaNos;
 	private String name;
+	private String numbers;
+
+	public String getNumbers() {
+		return numbers;
+	}
+
+	public void setNumbers(String numbers) {
+		this.numbers = numbers;
+	}
 
 	public Long getId() {
 		return id;

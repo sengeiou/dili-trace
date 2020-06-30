@@ -1,5 +1,6 @@
 package com.dili.trace.api;
 
+import com.alibaba.fastjson.JSONPObject;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.UserInput;
@@ -15,6 +16,7 @@ import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.domain.User;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.List;
 import java.util.Map;
 
 @Rollback(false)
@@ -29,15 +31,14 @@ public class UserApiTest extends AutoWiredBaseTest {
 	@Test
 	public void register() {
 		JSONObject object = new JSONObject();
-		object.put("phone", "15928695074");
+		object.put("phone", "15828695074");
 		object.put("name", "庞先生");
-		object.put("cardNo", "");
 		object.put("password", "123123");
 		object.put("checkCode", "456634");
-		object.put("addr", "");
 		User user = JSONObject.parseObject(object.toJSONString(),User.class);
 		
-		userApi.register(user);
+		BaseOutput<Long> out = userApi.register(user);
+		System.out.println(out);
 	}
 	
 	@Test
@@ -61,33 +62,37 @@ public class UserApiTest extends AutoWiredBaseTest {
 		object.put("market_id", "1");
 		object.put("user_type", UserTypeEnum.CORPORATE.getCode());
 		object.put("vocationType", VocationTypeEnum.WHOLESALE.getCode());
-		object.put("tally_area_nos", "101,102");
+		object.put("tally_area_nos", "101,103");
 		object.put("manufacturing_license_url", "生产许可证");
-		object.put("business_license_url", "营业执照");
+		object.put("business_license_url", "/image/DETECT_REPORT/202005/9b7c78f4979049ab9c634b1fea9dcbd0.jpg");
 		object.put("operation_license_url", "经营许可证");
 		object.put("addr", "四川成都青羊区人民路9号");
 		User user = JSONObject.parseObject(object.toJSONString(),User.class);
 
 		userApi.realNameCertificationReq(user);
+		System.out.println("OK");
 	}
 
 	@Test
 	public void certCount(){
-		BaseOutput<Map<String,String>> out = managerUserApi.countGroupByValidateState(null);
+		BaseOutput<List<UserOutput>> out = managerUserApi.countGroupByValidateState(null);
 		System.out.println("--------->" + out.getCode());
 		System.out.println("--------->" + out.getData());
+		System.out.println(JSONObject.toJSON(out));
 	}
 
 	@Test
 	public void pageUser(){
 		JSONObject object = new JSONObject();
 		object.put("validateState", "10");
-//		object.put("page", "2");
+		object.put("page", "1");
 		object.put("keyword", "5");
 		UserInput user = JSONObject.parseObject(object.toJSONString(),UserInput.class);
+		System.out.println(JSONObject.toJSONString(user));
 		BaseOutput<BasePage<UserOutput>> out = managerUserApi.listUserCertByQuery(user);
 		System.out.println(out.getCode());
 		System.out.println(out.getData());
+		System.out.println(JSONObject.toJSONString(out));
 	}
 
 	@Test
@@ -95,8 +100,10 @@ public class UserApiTest extends AutoWiredBaseTest {
 		JSONObject object = new JSONObject();
 		object.put("id", "10");
 		UserInput user = JSONObject.parseObject(object.toJSONString(),UserInput.class);
+		System.out.println(JSONObject.toJSONString(user));
 		BaseOutput<User> out = managerUserApi.userCertDetail(user);
 		System.out.println(out.getCode());
+		System.out.println(JSONObject.toJSONString(out));
 	}
 
 	@Test
@@ -105,8 +112,10 @@ public class UserApiTest extends AutoWiredBaseTest {
 		object.put("id", "18");
 		object.put("validateState", "30");
 		UserInput user = JSONObject.parseObject(object.toJSONString(),UserInput.class);
+		System.out.println(JSONObject.toJSONString(user));
 		BaseOutput out = managerUserApi.verifyUserCert(user);
 		System.out.println(out.getCode());
+		System.out.println(JSONObject.toJSONString(out));
 	}
 
 }
