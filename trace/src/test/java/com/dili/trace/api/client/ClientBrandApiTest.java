@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.BrandInputDto;
 import com.dili.trace.api.output.BrandOutputDto;
