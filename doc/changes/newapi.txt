@@ -5,6 +5,11 @@
 车类型:/api/enums/listTruckType.api
 获取品类列表：
   category: "/api/categoryApi/listCategoryByCondition",
+  {
+   keyword:"关键字"
+   parentId:5,//父级节点ID
+   level:1//层级
+  }
 获取城市列表
 cityList: "/api/cityApi/listCityByCondition"
   upload: "/api/imageApi/upload", //上传图片

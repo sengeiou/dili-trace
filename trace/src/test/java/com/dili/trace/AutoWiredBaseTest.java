@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.input.CheckInApiInput;
+import com.dili.trace.api.input.CheckOutApiInput;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.ImageCert;
@@ -187,5 +188,20 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		assertTrue(VerifyTypeEnum.VERIFY_AFTER_CHECKIN.equalsToCode(billItem.getVerifyType()));
 
 		return billId;
+	}
+	protected CheckinOutRecord doCheckOut(Long tradeDetailId, CheckoutStatusEnum checkoutStatusEnum) {
+		assertNotNull(tradeDetailId);
+		TradeDetail tradeDetailItem=this.tradeDetailService.get(tradeDetailId);
+		assertNotNull(tradeDetailItem);
+		CheckOutApiInput outapiinput=new CheckOutApiInput();
+		outapiinput.setCheckoutStatus(checkoutStatusEnum.getCode());
+		outapiinput.setTradeDetailIdList(Lists.newArrayList(tradeDetailId));
+
+		List<CheckinOutRecord>checkoutList=this.checkinOutRecordService.doCheckout(new OperatorUser(1L, "test"), outapiinput);
+		assertNotNull(checkoutList);
+		assertTrue(checkoutList.size()==1);
+		CheckinOutRecord checkinOutRecord=checkoutList.get(0);
+
+		return checkinOutRecord;
 	}
 }

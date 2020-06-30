@@ -506,7 +506,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
 				|| BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
 		} else {
-			throw new AppException("数据状态错误");
+			throw new AppException("当前状态不能修改数据");
 		}
 		this.updateSelective(input);
 		return input.getId();
