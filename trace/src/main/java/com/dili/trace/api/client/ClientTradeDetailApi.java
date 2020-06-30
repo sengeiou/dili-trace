@@ -17,7 +17,9 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.TradeDetailInputWrapperDto;
@@ -32,7 +34,7 @@ import io.swagger.annotations.Api;
 import tk.mybatis.mapper.code.IdentityDialect;
 
 @SuppressWarnings("deprecation")
-@Api(value = "/api/client/clientCheckinRecord")
+@Api(value = "/api/client/clientTradeDetail")
 @RestController
 @InterceptConfiguration
 @RequestMapping(value = "/api/client/clientTradeDetail")
@@ -55,12 +57,16 @@ public class ClientTradeDetailApi {
 
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetail condition) {
+	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetailInputDto condition) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		condition.setBuyerId(sessionContext.getAccountId());
-
+		if(condition.getBuyerId()!=null){
+			condition.setBuyerId(sessionContext.getAccountId());
+		}
+		if(condition.getSellerId()!=null){
+			condition.setSellerId(sessionContext.getAccountId());
+		}
 		BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(condition);
 
 		return BaseOutput.success().setData(page);
