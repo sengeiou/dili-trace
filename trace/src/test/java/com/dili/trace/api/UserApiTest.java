@@ -1,5 +1,10 @@
 package com.dili.trace.api;
 
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.input.UserInput;
+import com.dili.trace.api.manager.ManagerUserApi;
+import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.enums.VocationTypeEnum;
 import org.junit.jupiter.api.Test;
@@ -10,11 +15,15 @@ import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.domain.User;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.Map;
+
 @Rollback(false)
 public class UserApiTest extends AutoWiredBaseTest {
 
 	@Autowired
 	UserApi userApi;
+	@Autowired
+	ManagerUserApi managerUserApi;
 
 
 	@Test
@@ -62,5 +71,42 @@ public class UserApiTest extends AutoWiredBaseTest {
 		userApi.realNameCertificationReq(user);
 	}
 
+	@Test
+	public void certCount(){
+		BaseOutput<Map<String,String>> out = managerUserApi.countGroupByValidateState(null);
+		System.out.println("--------->" + out.getCode());
+		System.out.println("--------->" + out.getData());
+	}
+
+	@Test
+	public void pageUser(){
+		JSONObject object = new JSONObject();
+		object.put("validateState", "10");
+//		object.put("page", "2");
+		object.put("keyword", "5");
+		UserInput user = JSONObject.parseObject(object.toJSONString(),UserInput.class);
+		BaseOutput<BasePage<UserOutput>> out = managerUserApi.listUserCertByQuery(user);
+		System.out.println(out.getCode());
+		System.out.println(out.getData());
+	}
+
+	@Test
+	public void userCertDetail(){
+		JSONObject object = new JSONObject();
+		object.put("id", "10");
+		UserInput user = JSONObject.parseObject(object.toJSONString(),UserInput.class);
+		BaseOutput<User> out = managerUserApi.userCertDetail(user);
+		System.out.println(out.getCode());
+	}
+
+	@Test
+	public void verifyUserCert(){
+		JSONObject object = new JSONObject();
+		object.put("id", "18");
+		object.put("validateState", "30");
+		UserInput user = JSONObject.parseObject(object.toJSONString(),UserInput.class);
+		BaseOutput out = managerUserApi.verifyUserCert(user);
+		System.out.println(out.getCode());
+	}
 
 }

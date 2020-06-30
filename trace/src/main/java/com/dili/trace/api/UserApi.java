@@ -85,7 +85,7 @@ public class UserApi {
     @RequestMapping(value = "/realNameCertificationReq.api", method = RequestMethod.POST)
     public BaseOutput<Long> realNameCertificationReq(@RequestBody User user){
         try{
-            Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            Long id = user.getId();//this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
             User currentUser = userService.get(id);
             if (ValidateStateEnum.PASSED.equalsToCode(currentUser.getValidateState())){//已通过
                 return BaseOutput.success().setData(id);
