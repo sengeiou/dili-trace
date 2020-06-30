@@ -88,7 +88,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="countGroupByValidateState" parameterType="com.dili.trace.domain.User" resultType="java.util.Map">
+  <select id="countGroupByValidateState" parameterType="com.dili.trace.domain.User" resultType="com.dili.trace.api.output.UserOutput">
     SELECT validate_state validateState,COUNT(1) numbers from `user` u  GROUP BY validate_state
   </select>
 

@@ -48,7 +48,7 @@ public class ManagerUserApi {
 
 	@ApiOperation(value = "商户审核统计概览")
 	@RequestMapping(value = "/userCertCount.api", method = RequestMethod.POST)
-	public BaseOutput<Map<String,String>> countGroupByValidateState(@RequestBody User user) {
+	public BaseOutput<List<UserOutput>> countGroupByValidateState(@RequestBody User user) {
 		try {
 			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			return userService.countGroupByValidateState(user);
@@ -80,7 +80,7 @@ public class ManagerUserApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-//			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			User data = userService.get(input.getId());
 			return BaseOutput.success().setData(data);
 
@@ -95,7 +95,7 @@ public class ManagerUserApi {
 	@RequestMapping(value = "/verifyUserCert.api", method = RequestMethod.POST)
 	public BaseOutput<Long> verifyUserCert(@RequestBody UserInput input) {
 		try {
-//			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			return userService.verifyUserCert(input);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

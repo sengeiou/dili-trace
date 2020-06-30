@@ -82,23 +82,23 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             throw new TraceBusinessException("手机号已注册");
         }
 
-        // 验证身份证号是否已注册
-        if (existsCardNo(user.getCardNo())) {
-            throw new TraceBusinessException("身份证号已注册");
-        }
-        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
+//        // 验证身份证号是否已注册
+//        if (existsCardNo(user.getCardNo())) {
+//            throw new TraceBusinessException("身份证号已注册");
+//        }
+//        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
         insertSelective(user);
-        // 增加车牌信息
-        // LOGGER.info("输入车牌:{}",user.getPlates());
-        List<String> plateList = this.parsePlate(user.getPlates());
-        // LOGGER.info("解析车牌:{}",plateList.toString());
-        if (!plateList.isEmpty()) {
-            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
-            if (up != null) {
-                throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
-            }
-            this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
-        }
+//        // 增加车牌信息
+//        // LOGGER.info("输入车牌:{}",user.getPlates());
+//        List<String> plateList = this.parsePlate(user.getPlates());
+//        // LOGGER.info("解析车牌:{}",plateList.toString());
+//        if (!plateList.isEmpty()) {
+//            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
+//            if (up != null) {
+//                throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
+//            }
+//            this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
+//        }
         this.userHistoryService.insertUserHistoryForNewUser(user.getId());
         this.updateUserQrItem(user.getId());
     }
@@ -121,6 +121,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                     }
                 });
             }
+        }
+
+        // 验证身份证号是否已注册
+        if (existsCardNo(user.getCardNo())) {
+            throw new TraceBusinessException("身份证号已注册");
         }
 
         User userPO = get(user.getId());
@@ -381,7 +386,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public BaseOutput<Map<String, String>> countGroupByValidateState(User user) {
+    public BaseOutput<List<UserOutput>> countGroupByValidateState(User user) {
 //        if (user == null) {
 //			return BaseOutput.failure("参数错误");
 //		}
@@ -390,7 +395,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Override
     public BasePage<UserOutput> pageUserByQuery(UserInput user) {
-        user.setRows(5);
         PageHelper.startPage(user.getPage(), user.getRows());
         List<UserOutput> list = getActualDao().listUserByQuery(user);
         Page<User> page = (Page)list;
