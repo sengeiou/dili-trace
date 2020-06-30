@@ -27,6 +27,10 @@ public class Category extends BaseDomain {
 	@Column(name = "`parent_id`")
 	private Long parentId;
 
+	@ApiModelProperty(value = "层级")
+	@Column(name = "`level`")
+    private Integer level;
+
 	public Long getId() {
 		return id;
 	}
@@ -58,5 +62,20 @@ public class Category extends BaseDomain {
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
+
+
+    /**
+     * @return Integer return the level
+     */
+    public Integer getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
 }

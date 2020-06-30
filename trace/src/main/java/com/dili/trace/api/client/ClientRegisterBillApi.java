@@ -15,8 +15,10 @@ import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.RegisterBillOutput;
+import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
@@ -24,6 +26,7 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
 
@@ -59,6 +62,8 @@ public class ClientRegisterBillApi {
 	UserService userService;
 	@Autowired
 	ImageCertService imageCertService;
+	@Autowired
+	TradeDetailService tradeDetailService;
 
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
@@ -119,7 +124,7 @@ public class ClientRegisterBillApi {
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBillOutput>> listPage(@RequestBody RegisterBillDto input) {
+	public BaseOutput<BasePage<TradeDetailBillOutput>> listPage(@RequestBody RegisterBillDto input) {
 		logger.info("获取登记单列表:" + JSON.toJSON(input).toString());
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
@@ -133,9 +138,8 @@ public class ClientRegisterBillApi {
 				input.setOrder("desc");
 				input.setSort("id");
 			}
-			BasePage basePage = BasePageUtil.convert(registerBillService.listPageByExample(input), bill -> {
-				return RegisterBillOutput.build(bill);
-			});
+			
+			BasePage basePage = this.tradeDetailService.selectTradeDetailAndBill(input);
 			return BaseOutput.success().setData(basePage);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

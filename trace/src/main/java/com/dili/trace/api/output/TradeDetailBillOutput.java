@@ -101,4 +101,19 @@ public class TradeDetailBillOutput {
         this.tradeType = tradeType;
     }
 
+
+    /**
+     * @return Date return the created
+     */
+    public Date getCreated() {
+        return created;
+    }
+
+    /**
+     * @param created the created to set
+     */
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
 }
