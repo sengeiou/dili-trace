@@ -192,10 +192,12 @@ public class ClientRegisterBillApi {
 				outputdto.setImageCertList(imageCertList);
 				outputdto.setUpStream(upStream);
 				outputdto.setWeight(tradeDetailItem.getStockWeight());
+				return BaseOutput.success().setData(outputdto);
 			} else if (registerBill.getId() != null) {
 				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
 				outputdto.setUpStream(upStream);
 				outputdto.setImageCertList(imageCertList);
+				return BaseOutput.success().setData(outputdto);
 			} else {
 				return BaseOutput.failure("没有数据");
 			}
