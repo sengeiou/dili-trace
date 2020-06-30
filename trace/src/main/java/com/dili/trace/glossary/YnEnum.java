@@ -11,7 +11,9 @@ public enum YnEnum {
         this.code=code;
         this.desc=desc;
     }
-
+	public boolean equalsToCode(Integer code) {
+		return this.getCode().equals(code);
+	}
     public Integer getCode() {
         return code;
     }

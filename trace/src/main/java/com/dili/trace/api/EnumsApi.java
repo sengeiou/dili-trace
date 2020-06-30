@@ -8,6 +8,7 @@ import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
+import com.dili.trace.enums.TruckTypeEnum;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -68,6 +69,19 @@ public class EnumsApi {
 		try {
 			List<Entry<Integer, String>> list = StreamEx.of(BillTypeEnum.values())
 					.mapToEntry(BillTypeEnum::getCode, BillTypeEnum::getName).toList();
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	/**
+	 * 报备单类型查询
+	 */
+	@RequestMapping(value = "/listTruckType.api", method = RequestMethod.POST)
+	public BaseOutput<List<Entry<Integer, String>>> listTruckType() {
+		try {
+			List<Entry<Integer, String>> list = StreamEx.of(TruckTypeEnum.values())
+					.mapToEntry(TruckTypeEnum::getCode, TruckTypeEnum::getName).toList();
 			return BaseOutput.success().setData(list);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());

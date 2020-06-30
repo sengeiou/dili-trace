@@ -162,6 +162,9 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "报备类型")
 	@Column(name="`bill_type`")
 	private Integer billType;
+	@ApiModelProperty(value = "拼车类型")
+	@Column(name="`truck_type`")
+	private Integer truckType;
 
 	@ApiModelProperty(value = "品牌名称")
 	@Column(name = "`brand_name`")
@@ -561,6 +564,21 @@ public class RegisterBill extends BaseDomain {
      */
     public void setYn(Integer yn) {
         this.yn = yn;
+    }
+
+
+    /**
+     * @return Integer return the truckType
+     */
+    public Integer getTruckType() {
+        return truckType;
+    }
+
+    /**
+     * @param truckType the truckType to set
+     */
+    public void setTruckType(Integer truckType) {
+        this.truckType = truckType;
     }
 
 }

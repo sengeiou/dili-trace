@@ -40,6 +40,7 @@ CREATE TABLE `trade_detail` (
 	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',
 	`status` int(11) NOT NULL default 0 COMMENT '交易单状态',
 	`batch_stock_id` bigint(20)  NULL COMMENT '批ID',
+	`trade_request_id` bigint(20)  NULL COMMENT '交易请求ID',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -313,6 +314,7 @@ ALTER TABLE `register_bill` ADD COLUMN  `verified_history_bill_id` bigint(20)  N
 ALTER TABLE `register_bill` ADD COLUMN  `verify_type` int(11)  NOT NULL  default 0 COMMENT '查验类型';
 ALTER TABLE `register_bill` ADD COLUMN  `spec_name` varchar(20)  NULL  COMMENT '规格';
 ALTER TABLE `register_bill` ADD COLUMN  `bill_type` int(11)  NOT NULL  default 10 COMMENT '报备类型';
+ALTER TABLE `register_bill` ADD COLUMN  `truck_type` int(11)  NOT NULL  default 10 COMMENT '车类型';
 ALTER TABLE `register_bill` ADD COLUMN  `brand_id` bigint(20)    NULL   COMMENT '品牌ID';
 ALTER TABLE `register_bill` ADD COLUMN  `brand_name` varchar(50)   NULL   COMMENT '品牌名称';
 ALTER TABLE `register_bill` ADD COLUMN  `yn` int(11)  NOT NULL  default 1 COMMENT '是否有效';

@@ -29,6 +29,7 @@ import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
+import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
@@ -79,7 +80,8 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.setProductName(item.getProductName());
 		rb.setOriginId(item.getOriginId());
 		rb.setOriginName(item.getOriginName());
-		rb.setBillType(BillTypeEnum.CARPOOL.getCode());
+		rb.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
+		rb.setTruckType(TruckTypeEnum.FULL.getCode());
 		rb.setImageCertList(new ArrayList<ImageCert>());
 		ImageCert imageCert = new ImageCert();
 		imageCert.setUrl("imageurl");
@@ -106,7 +108,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.setProductName(item.getProductName());
 		rb.setOriginId(item.getOriginId());
 		rb.setOriginName(item.getOriginName());
-		rb.setBillType(BillTypeEnum.CARPOOL.getCode());
+		rb.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
 		rb.setImageCertList(new ArrayList<ImageCert>());
 		ImageCert imageCert = new ImageCert();
 		imageCert.setUrl("imageurl");

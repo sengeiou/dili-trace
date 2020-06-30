@@ -52,7 +52,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param registerBill
 	 * @return
 	 */
-	BaseOutput createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList, OperatorUser operatorUser);
+	Long createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList, OperatorUser operatorUser);
 
 	/**
 	 * 审核登记单

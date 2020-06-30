@@ -91,7 +91,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}).map(e -> {
 			TradeDetail tradeDetailItem = e.getKey();
 			RegisterBill registerBillItem = e.getValue();
-			User user=this.getUser(registerBillItem.getUserId()).orElseThrow(()->new TraceBusinessException("用户信息不存在"));
+			User user = this.getUser(registerBillItem.getUserId())
+					.orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
 			CheckinOutRecord checkoutRecord = new CheckinOutRecord();
 			checkoutRecord.setStatus(checkoutStatusEnum.getCode());
 			checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
@@ -135,35 +136,24 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			throw new TraceBusinessException("参数错误");
 		}
 
-		return StreamEx.of(checkInApiInput.getBillIdList()).nonNull().mapToEntry(billId -> {
-			return this.registerBillService.get(billId);
-		}, billId -> {
-			TradeDetail queryCondition = new TradeDetail();
-			queryCondition.setBillId(billId);
-			queryCondition.setTradeType(TradeTypeEnum.NONE.getCode());
-			queryCondition.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-			return this.tradeInfoService.listByExample(queryCondition).stream().findFirst().orElse(null);
+		return StreamEx.of(checkInApiInput.getBillIdList()).nonNull().map(billId -> {
 
-		}).filterKeys(bill -> {
+			return this.registerBillService.get(billId);
+
+		}).filter(bill -> {
 			if (bill == null) {
 				throw new TraceBusinessException("没有查找到报备数据");
 			}
-			if (!BillVerifyStatusEnum.PASSED.equalsToCode(bill.getVerifyStatus())) {
-				throw new TraceBusinessException("报备数据状态错误");
-			}
 			return true;
-		}).filterValues(tradeDetailItem -> {
-			if (tradeDetailItem == null) {
-				throw new TraceBusinessException("没有查找到数据");
-			}
-			if (!CheckinStatusEnum.NONE.equalsToCode(tradeDetailItem.getCheckinStatus())) {
-				throw new TraceBusinessException("数据进门状态错误");
-			}
-			return true;
+		}).mapToEntry(bill -> {
+			TradeDetail tradeDetail = this.tradeInfoService.createTradeDetailForBill(bill);
+			return tradeDetail;
+
 		}).map(e -> {
 			RegisterBill registerBillItem = e.getKey();
 			TradeDetail tradeInfoItem = e.getValue();
-			User user=this.getUser(registerBillItem.getUserId()).orElseThrow(()->new TraceBusinessException("用户信息不存在"));
+			User user = this.getUser(registerBillItem.getUserId())
+					.orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
 
 			CheckinOutRecord checkinRecord = new CheckinOutRecord();
 			checkinRecord.setStatus(checkinStatusEnum.getCode());
@@ -184,26 +174,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			updatableRecord.setCheckinRecordId(checkinRecord.getId());
 			updatableRecord.setCheckinStatus(checkinStatusEnum.getCode());
 
-			RegisterBill updatableBill = new RegisterBill();
-			updatableBill.setId(registerBillItem.getId());
-			updatableBill.setSampleCode(codeGenerateService.nextSampleCode());
-
-//			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-//				updatableBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
-//			} else if (CheckinStatusEnum.NOTALLOWED == checkinStatusEnum) {
-//				updatableBill.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-//				updatableBill.setDetectState(BillDetectStateEnum.NO_PASS.getCode());
-//				updatableBill.setLatestPdResult("0%");
-//				updatableBill.setLatestDetectTime(new Date());
-//				updatableBill.setLatestDetectOperator(operateUser.getName());
-
-//			} else {
-//				throw new BusinessException("进门状态错误");
-//			}
-
-			this.registerBillService.updateSelective(updatableBill);
 			this.tradeInfoService.updateSelective(updatableRecord);
-			this.doUpdateSaleStatus(operateUser, registerBillItem.getId());
+			this.tradeInfoService.doUpdateSaleStatus(operateUser, registerBillItem.getId());
 
 			return checkinRecord;
 
@@ -211,55 +183,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	}
 
-	private Long doUpdateSaleStatus(OperatorUser operateUser, Long billId) {
-
-		RegisterBill registerBillItem = this.registerBillService.get(billId);
-		if (registerBillItem == null) {
-			throw new TraceBusinessException("没有找到登记单");
-		}
-
-		TradeDetail queryCondition = new TradeDetail();
-		queryCondition.setBillId(billId);
-		queryCondition.setTradeType(TradeTypeEnum.NONE.getCode());
-		TradeDetail tradeInfoItem = this.tradeInfoService.listByExample(queryCondition).stream().findFirst()
-				.orElse(null);
-
-		if (tradeInfoItem == null) {
-			throw new TraceBusinessException("数据错误:没有数据");
-		}
-		if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeInfoItem.getCheckinStatus())
-				&& SaleStatusEnum.NONE.equalsToCode(tradeInfoItem.getSaleStatus())
-				&& CheckoutStatusEnum.NONE.equalsToCode(tradeInfoItem.getCheckoutStatus())) {
-
-		} else {
-			throw new TraceBusinessException("数据状态错误");
-		}
-
-		TradeDetail updatableRecord = new TradeDetail();
-		updatableRecord.setId(tradeInfoItem.getId());
-		updatableRecord.setModified(new Date());
-
-//		RegisterBill updatable = new RegisterBill();
-//		updatable.setId(registerBillItem.getId());
-//		updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-		updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-//		if (registerBillItem.getDetectState() != null) {
-//			updatable.setDetectState(BillDetectStateEnum.REVIEW_PASS.getCode());
-//		} else {
-//			updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
-//		}
-//		updatable.setLatestPdResult("100%");
-//		updatable.setLatestDetectTime(new Date());
-//		updatable.setLatestDetectOperator(operateUser.getName());
-//		
-//		updatable.setLatestDetectTime(new Date());
-//		updatable.setLatestDetectOperator("管理员");
-
-//		this.registerBillService.updateSelective(updatable);
-		this.tradeInfoService.updateSelective(updatableRecord);
-		return registerBillItem.getId();
-
-	}
+	
 
 	public Optional<CheckInApiDetailOutput> getCheckInDetail(Long billId) {
 		RegisterBill registerBill = this.registerBillService.get(billId);
@@ -272,7 +196,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				output.setUpStream(upStream);
 			}
 			if (userId != null) {
-				User user=this.getUser(userId).orElseThrow(()->new TraceBusinessException("用户信息不存在"));
+				User user = this.getUser(userId).orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
 				output.setUser(user);
 			}
 			output.setId(registerBill.getId());
@@ -285,28 +209,28 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	public BasePage<CheckInApiListOutput> listCheckInApiListOutputPage(RegisterBillDto query) {
 
-//		RegisterBill condition = new RegisterBill();
+		// RegisterBill condition = new RegisterBill();
 		List<String> sqlList = new ArrayList<>();
 
-//		if (query.getUserId() != null) {
-//
-//			sqlList.add("user_id=" + query.getUserId());
-//
-//		}
-//		if (query.getUpStreamId() != null) {
-//
-//			sqlList.add("upstream_id=" + query.getUpStreamId());
-//
-//		}
-//		if (query.getState() != null) {
-//
-//			sqlList.add("state=" + query.getState());
-//		}
+		// if (query.getUserId() != null) {
+		//
+		// sqlList.add("user_id=" + query.getUserId());
+		//
+		// }
+		// if (query.getUpStreamId() != null) {
+		//
+		// sqlList.add("upstream_id=" + query.getUpStreamId());
+		//
+		// }
+		// if (query.getState() != null) {
+		//
+		// sqlList.add("state=" + query.getState());
+		// }
 		if (sqlList.size() > 0) {
-//			query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
+			// query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
 		}
-//		query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
-//		query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+		// query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
+		// query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
 		query.setMetadata(IDTO.AND_CONDITION_EXPR,
 				" ( (id in(select bill_id from separate_sales_record where checkin_record_id  is null and sales_type="
 						+ TradeTypeEnum.NONE.getCode() + ") and state=" + RegisterBillStateEnum.WAIT_AUDIT.getCode()
@@ -351,7 +275,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}
 
 		RegisterBill bill = this.registerBillService.get(tradeDetailItem.getBillId());
-		User user=this.getUser(bill.getUserId()).orElseThrow(()->new TraceBusinessException("用户信息不存在"));
+		User user = this.getUser(bill.getUserId()).orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
 		user.setPassword("");
 
 		CheckoutApiDetailOutput output = new CheckoutApiDetailOutput();
@@ -421,9 +345,9 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	}
 
 	public BaseOutput<BasePage<Map<String, Object>>> listPagedData(CheckoutApiListQuery query, Long operatorId) {
-//		if (query == null || query.getUserId() == null) {
-//			return BaseOutput.failure("参数错误");
-//		}
+		// if (query == null || query.getUserId() == null) {
+		// return BaseOutput.failure("参数错误");
+		// }
 		CheckinOutRecord checkinOutRecord = new CheckinOutRecord();
 		checkinOutRecord.setOperatorId(operatorId);
 		if (query.getDate() != null) {
@@ -433,12 +357,14 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		BasePage<CheckinOutRecord> page = this.listPageByExample(checkinOutRecord);
 
 		List<Map<String, Object>> dataList = page.getDatas().stream().map(cr -> {
-//            RegisterBill billQuery = new RegisterBill();
-//            billQuery.mset(IDTO.AND_CONDITION_EXPR,
-//                    " id in (select bill_id from separate_sales_record where checkin_record_id =" + cr.getId()
-//                    + " or checkout_record_id=" + cr.getId() + ") ");
-//            RegisterBill billItem = this.registerBillService.listByExample(billQuery).stream().findFirst()
-//                    .orElse(new RegisterBill());
+			// RegisterBill billQuery = new RegisterBill();
+			// billQuery.mset(IDTO.AND_CONDITION_EXPR,
+			// " id in (select bill_id from separate_sales_record where checkin_record_id ="
+			// + cr.getId()
+			// + " or checkout_record_id=" + cr.getId() + ") ");
+			// RegisterBill billItem =
+			// this.registerBillService.listByExample(billQuery).stream().findFirst()
+			// .orElse(new RegisterBill());
 
 			TradeDetail separateSalesRecordQuery = new TradeDetail();
 			separateSalesRecordQuery.setMetadata(IDTO.AND_CONDITION_EXPR,
@@ -446,11 +372,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			TradeDetail separateSalesRecordItem = this.tradeInfoService.listByExample(separateSalesRecordQuery).stream()
 					.findFirst().orElse(new TradeDetail());
 			Map<String, Object> dto = BeanMapUtil.beanToMap(cr);
-//			Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
-//            dto.remove("id");
-//            if (billItem != null) {
-//                dto.put("state", billItem.getState());
-//            }
+			// Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
+			// dto.remove("id");
+			// if (billItem != null) {
+			// dto.put("state", billItem.getState());
+			// }
 			return dto;
 
 		}).collect(Collectors.toList());

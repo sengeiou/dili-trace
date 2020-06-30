@@ -1,15 +1,20 @@
 package com.dili.trace.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
 
 import com.dili.trace.AutoWiredBaseTest;
+import com.dili.trace.api.input.CheckInApiInput;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
+import com.dili.trace.enums.CheckinStatusEnum;
+import com.google.common.collect.Lists;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,23 +42,27 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
     }
 
     @Test
-    public void doVerifyAfterCheckIn(){
-        CheckinOutRecord recordQuery=new CheckinOutRecord();
-        recordQuery.setInout(CheckinOutTypeEnum.IN.getCode());
-       
-        CheckinOutRecord recordItem= StreamEx.of( this.checkinOutRecordService.listByExample(recordQuery)).findFirst().orElse(null);
-        assertNotNull(recordItem);
-        Long tradeDetailId=recordItem.getTradeDetailId();
-        TradeDetail tradeDetailItem=this.tradeDetailService.get(tradeDetailId);
-        assertNotNull(tradeDetailItem);
+    public void doVerifyAfterCheckIn() {
 
-        RegisterBill input = this.billService.get(tradeDetailItem.getBillId());
+        RegisterBill query = new RegisterBill();
+        query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+        RegisterBill input = StreamEx.of(this.billService.listByExample(query)).findFirst().orElse(null);
         assertNotNull(input);
+        assertTrue(BillVerifyStatusEnum.NONE.equalsToCode(input.getVerifyStatus()));
+        CheckInApiInput checkInApiInput = new CheckInApiInput();
+        checkInApiInput.setBillIdList(Lists.newArrayList(input.getId()));
+        checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
+        List<CheckinOutRecord> checkInList = this.checkinOutRecordService.doCheckin(new OperatorUser(1L, "test"),
+                checkInApiInput);
+        assertTrue(checkInList.size() == 1);
+        CheckinOutRecord recordItem = checkInList.get(0);
+        assertTrue(CheckinOutTypeEnum.IN.equalsToCode(recordItem.getInout()));
+        assertTrue(CheckinStatusEnum.ALLOWED.equalsToCode(recordItem.getStatus()));
+
         OperatorUser operatorUser = new OperatorUser(1L, "test");
         input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
         Long billId = this.billService.doVerifyAfterCheckIn(input, operatorUser);
         assertNotNull(billId);
-
 
     }
 

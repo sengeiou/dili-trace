@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.UpStream;
@@ -21,6 +23,8 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.TradeDetailInputDto;
 import com.dili.trace.dto.TradeDetailInputWrapperDto;
 import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
@@ -44,18 +48,46 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	UserService userService;
 	@Autowired
 	UpStreamService upStreamService;
+	@Autowired
+	CheckinOutRecordService checkinOutRecordService;
 
-	@Transactional
-	public TradeDetail createTradeInfoForBill(Long billId) {
+	public Long doUpdateSaleStatus(OperatorUser operateUser, Long billId) {
 
-		RegisterBill registerBill = this.registerBillService.get(billId);
+		RegisterBill billItem = this.registerBillService.get(billId);
+		if (billItem == null) {
+			throw new TraceBusinessException("没有找到登记单");
+		}
 
 		TradeDetail queryCondition = new TradeDetail();
 		queryCondition.setBillId(billId);
 		queryCondition.setTradeType(TradeTypeEnum.NONE.getCode());
+		TradeDetail tradeInfoItem = this.listByExample(queryCondition).stream().findFirst()
+				.orElse(null);
 
-		TradeDetail item = this.listByExample(queryCondition).stream().findFirst().orElse(new TradeDetail());
+		if (tradeInfoItem == null) {
+			return billItem.getId();
+		}
+		if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeInfoItem.getCheckinStatus())
+				&& BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
+				&& SaleStatusEnum.NONE.equalsToCode(tradeInfoItem.getSaleStatus())
+				&& CheckoutStatusEnum.NONE.equalsToCode(tradeInfoItem.getCheckoutStatus())) {
+			TradeDetail updatableRecord = new TradeDetail();
+			updatableRecord.setId(tradeInfoItem.getId());
+			updatableRecord.setModified(new Date());
 
+			updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+			this.updateSelective(updatableRecord);
+		} else {
+			//throw new TraceBusinessException("数据状态错误");
+		}
+
+		return billItem.getId();
+
+	}
+
+	public TradeDetail createTradeDetailForBill(RegisterBill registerBill) {
+
+		TradeDetail item = new TradeDetail();
 		item.setParentId(null);
 		item.setBillId(registerBill.getId());
 		item.setTradeType(TradeTypeEnum.NONE.getCode());
@@ -69,14 +101,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		item.setBuyerName(registerBill.getName());
 
 		item.setModified(new Date());
-		if (item.getId() == null) {
-			item.setCreated(new Date());
-			this.insertSelective(item);
-		} else {
+		item.setCreated(new Date());
+		this.insertSelective(item);
 
-			this.updateSelective(item);
-		}
 		return item;
+
 	}
 
 	@Transactional
@@ -264,6 +293,5 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		}
 		return tradeDetailIdList;
 	}
-
 
 }

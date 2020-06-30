@@ -9,23 +9,23 @@ import one.util.streamex.StreamEx;
  *
  * @author wangguofeng
  */
-public enum BillTypeEnum {
+public enum TruckTypeEnum {
 
 	/**
-	 * 正常进场
+	 * 整车
 	 */
-	NONE(10, "正常进场"),
+	FULL(10, "整车"),
 	/**
-	 * 补单
+	 * 拼车
 	 */
-	SUPPLEMENT(20, "补单"),
+	POOL(20, "拼车"),
 
 	;
 
 	private String name;
 	private Integer code;
 
-	BillTypeEnum(Integer code, String name) {
+	TruckTypeEnum(Integer code, String name) {
 		this.code = code;
 		this.name = name;
 	}

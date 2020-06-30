@@ -1,8 +1,8 @@
 凭证图片类型接口:/api/enums/listImageCertType.api
 报备单审核状态接口:/api/enums/listBillVerifyStatus.api
 商品储存类型(鲜活,冰鲜,冻品,加工品) :/api/enums/listPreserveType.api
-报备单类型:/api/enums//listBillType.api
-
+单据类型:/api/enums/listBillType.api
+车类型:/api/enums/listTruckType.api
 获取品类列表：
   category: "/api/categoryApi/listCategoryByCondition",
 获取城市列表
@@ -27,6 +27,7 @@ cityList: "/api/cityApi/listCityByCondition"
 买家接口:
 1:报备
 /api/client/clientRegisterBill/createRegisterBillList.api
+ /api/client/clientRegisterBill/createRegisterBillList.api
  {
 	 [
 	 	{
@@ -37,7 +38,8 @@ cityList: "/api/cityApi/listCityByCondition"
 		weight:12.34,//重量
 		weightUnit:1,//重量单位	JIN(1, "斤"),KILO(2, "公斤")
     specName:"筐",//规格
-    billType:10,//10:整车,20:拼车
+    billType:10,//10:正常,20:补单//接口有返回
+    truckType:10,//10:整车,20:拼车//接口有返回
     brandName:"品牌名称",
     brandId:"品牌ID",
 		imageCertList:[{ //任何时候都要提交这两个参数
@@ -45,7 +47,9 @@ cityList: "/api/cityApi/listCityByCondition"
 			certType:1,//图片类型 (凭证图片类型接口)
 		}]
 	 	}
+	 	
 	 ]
+
  }
 
 
@@ -60,7 +64,8 @@ cityList: "/api/cityApi/listCityByCondition"
   weight:12.34,//重量
   weightUnit:1,//重量单位	JIN(1, "斤"),KILO(2, "公斤")
   specName:"筐",//规格
-  billType:10,//10:整车,20:拼车
+  billType:10,//10:正常,20:补单//接口有返回
+  truckType:10,//10:整车,20:拼车//接口有返回
   brandName:"品牌名称",
   brandId:"品牌ID",
   imageCertList:[{ //任何时候都要提交这两个参数

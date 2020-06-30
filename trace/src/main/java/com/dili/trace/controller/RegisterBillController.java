@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.AppException;
@@ -65,7 +66,7 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/registerBill")
 public class RegisterBillController {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillController.class);
+	private static final Logger logger = LoggerFactory.getLogger(RegisterBillController.class);
 	@Autowired
 	RegisterBillService registerBillService;
 	@Autowired
@@ -127,7 +128,7 @@ public class RegisterBillController {
 	@ApiOperation("新增RegisterBill")
 	@RequestMapping(value = "/insert.action", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput insert(@RequestBody List<RegisterBill> registerBills) {
-		LOGGER.info("保存登记单数据:" + registerBills.size());
+		logger.info("保存登记单数据:" + registerBills.size());
 		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
 		for (RegisterBill registerBill : registerBills) {
 
@@ -140,13 +141,15 @@ public class RegisterBillController {
 			registerBill.setAddr(user.getAddr());
 			registerBill.setUserId(user.getId());
 			try {
-				BaseOutput r = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
+				Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
 						new OperatorUser(userTicket.getId(), userTicket.getRealName()));
-				if (!r.isSuccess()) {
-					return r;
-				}
+
+			} catch (TraceBusinessException e) {
+				return BaseOutput.failure(e.getMessage());
+
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
+				return BaseOutput.failure("服务端出错");
 
 			}
 		}
@@ -179,7 +182,7 @@ public class RegisterBillController {
 	 */
 	@RequestMapping(value = "/create.html")
 	public String create(ModelMap modelMap) {
-		
+
 		modelMap.put("citys", this.queryCitys());
 
 		return "registerBill/create";
@@ -440,7 +443,6 @@ public class RegisterBillController {
 		return BaseOutput.success("操作成功");
 	}
 
-
 	/**
 	 * 交易区订单溯源页面（二维码）
 	 * 
@@ -590,10 +592,10 @@ public class RegisterBillController {
 			Long id = this.registerBillService.doUploadOrigincertifiy(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
 
@@ -612,10 +614,10 @@ public class RegisterBillController {
 			Long id = this.registerBillService.doUploadDetectReport(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
 
@@ -634,10 +636,10 @@ public class RegisterBillController {
 			// Long id = this.registerBillService.doUploadDetectReport(input);
 			return this.registerBillService.doRemoveReportAndCertifiy(id, deleteType);
 		} catch (AppException e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
 
@@ -656,10 +658,10 @@ public class RegisterBillController {
 			Long id = this.registerBillService.doAuditWithoutDetect(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
 
@@ -677,7 +679,7 @@ public class RegisterBillController {
 		RegisterBill registerBill = registerBillService.get(id);
 		String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty("").split(",")).filter(StringUtils::isNotBlank)
 				.findFirst().orElse("");
-//		registerBill.setTallyAreaNo(firstTallyAreaNo);
+		// registerBill.setTallyAreaNo(firstTallyAreaNo);
 
 		UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
 		modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
@@ -707,10 +709,10 @@ public class RegisterBillController {
 			Long id = this.registerBillService.doEdit(input);
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
 

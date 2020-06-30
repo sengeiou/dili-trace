@@ -6,6 +6,7 @@ import java.util.List;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
+import com.dili.trace.enums.TruckTypeEnum;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,6 +40,9 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "规格")
 	private String specName;
 
+	@ApiModelProperty(value = "拼车类型")
+	private Integer truckType;
+
 	@ApiModelProperty(value = "报备类型")
 	private Integer billType;
 
@@ -71,6 +75,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setSpecName(StringUtils.trim(this.getSpecName()));
 		registerBill.setPreserveType(this.getPreserveType());
 		registerBill.setBillType(this.getBillType());
+		registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
 		registerBill.setBrandId(this.getBrandId());
 		registerBill.setBrandName(StringUtils.trim(this.getBrandName()));
 		return registerBill;
@@ -217,6 +222,21 @@ public class CreateRegisterBillInputDto {
      */
     public void setBrandId(Long brandId) {
         this.brandId = brandId;
+    }
+
+
+    /**
+     * @return Integer return the truckType
+     */
+    public Integer getTruckType() {
+        return truckType;
+    }
+
+    /**
+     * @param truckType the truckType to set
+     */
+    public void setTruckType(Integer truckType) {
+        this.truckType = truckType;
     }
 
 }
