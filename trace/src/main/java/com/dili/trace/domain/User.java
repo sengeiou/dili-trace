@@ -252,6 +252,7 @@ public interface User extends IBaseDomain {
     void setPlates(String plates);
 
 
+    @ApiModelProperty(value = "审核状态")
     @Column(name = "`validate_state`")
     Integer getValidateState();
 

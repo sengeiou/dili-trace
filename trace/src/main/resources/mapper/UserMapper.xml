@@ -7,15 +7,18 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="card_no" jdbcType="VARCHAR" property="cardNo" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
     <result column="card_no_url" jdbcType="VARCHAR" property="cardNoUrl" />
-    <result column="tally_area_no" jdbcType="VARCHAR" property="tallyAreaNo" />
+    <result column="tally_area_nos" jdbcType="VARCHAR" property="tallyAreaNos" />
     <result column="business_license_url" jdbcType="VARCHAR" property="businessLicenseUrl" />
     <result column="sales_city_id" jdbcType="BIGINT" property="salesCityId" />
     <result column="sales_city_name" jdbcType="VARCHAR" property="salesCityName" />
     <result column="state" jdbcType="BIT" property="state" />
+    <result column="validate_state" jdbcType="BIT" property="validateState" />
+    <result column="vocation_type" jdbcType="BIT" property="vocationType" />
     <result column="pwd" jdbcType="VARCHAR" property="pwd" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
@@ -24,8 +27,8 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, user_name, phone, card_no, addr, card_no_url, tally_area_no, business_license_url,
-    sales_city_id, sales_city_name, state, pwd, created, modified
+    id, user_name, phone, card_no, addr, card_no_url, tally_area_nos, business_license_url,
+    sales_city_id, sales_city_name, state, pwd, created, modified,name,validate_state,vocation_type
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -84,4 +87,21 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="countGroupByValidateState" parameterType="com.dili.trace.domain.User" resultType="java.util.Map">
+    SELECT validate_state validateState,COUNT(1) numbers from `user` u  GROUP BY validate_state
+  </select>
+
+  <select id="listUserByQuery" parameterType="com.dili.trace.api.input.UserInput" resultType="com.dili.trace.api.output.UserOutput">
+    SELECT id,name,tally_area_nos,phone,validate_state
+    from `user` u
+    where 1=1
+    <if test="validateState != null">
+      and validate_state = #{validateState}
+    </if>
+    <if test="keyword != null">
+      and (name LIKE CONCAT('%',#{keyword},'%')  or tally_area_nos LIKE CONCAT('%',#{keyword},'%'))
+    </if>
+
+  </select>
 </mapper>

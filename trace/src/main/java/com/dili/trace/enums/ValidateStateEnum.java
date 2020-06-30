@@ -12,20 +12,20 @@ public enum ValidateStateEnum {
     /**
      * 未实名
      */
-    CERTREQ(0, "未实名"),
+    CERTREQ(10, "未实名"),
 
     /**
      * 待审核
      */
-    UNCERT(1, "待审核"),
+    UNCERT(20, "待审核"),
     /**
      * 审核未通过
      */
-    NOPASS(2, "审核未通过"),
+    NOPASS(30, "审核未通过"),
     /**
      * 审核通过
      */
-    PASSED(3, "审核通过"),
+    PASSED(40, "审核通过"),
     ;
 
     private String name;
