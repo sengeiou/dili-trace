@@ -1,5 +1,6 @@
 package com.dili.trace.api.client;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 
 /**
  * Created by wangguofeng
@@ -47,17 +49,17 @@ public class ClientBrandApi {
 	@ApiOperation(value = "获取品牌列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<BrandOutputDto>> listPage(@RequestBody BrandInputDto inputDto) {
+	public BaseOutput<List<BrandOutputDto>> listPage(@RequestBody BrandInputDto inputDto) {
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			logger.info("获取登记单列表 操作用户:{}", userId);
+			logger.info("获取品牌列表 操作用户:{}", userId);
 			inputDto.setUserId(userId);
 			if (StringUtils.isBlank(inputDto.getOrder())) {
 				inputDto.setOrder("desc");
 				inputDto.setSort("created");
 			}
-			BasePage basePage = BasePageUtil.convert(brandService.listPageByExample(inputDto), BrandOutputDto::build);
-			return BaseOutput.success().setData(basePage);
+			List<BrandOutputDto>list=StreamEx.of(brandService.listByExample(inputDto)).map(BrandOutputDto::build).toList();
+			return BaseOutput.success().setData(list);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

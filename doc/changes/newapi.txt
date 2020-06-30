@@ -82,7 +82,6 @@ cityList: "/api/cityApi/listCityByCondition"
 3:报备单列表
 /api/client/clientRegisterBill/listPage.api
 {
-
   createdStart:'2010-01-01 00:00:00',
   createdEnd:'2019-12-31 23:59:59',
   likeProductName:'贝壳'
@@ -102,11 +101,16 @@ tradeDetailId:456 //交易单ID(tradeDetailId优先级高于billId,即当两个�
   buyerId:123, //买家ID(查询买家订单)
   sellerId:456 //卖家ID(查询卖家订单>>这两个ID只传递一个)
 }
-6:扫码交易
+6:品牌查询
+/api/client/clientBrand/listPage.api
+{
+  likeBrandName:'品牌名称关键字'
+}
+7:扫码交易
 /api/client/clientTradeDetail/createTradeDetail.api
-7:溯源列表
+8:溯源列表
 /api/client/clientTrace/listPage.api
-8：溯源详情
+9：溯源详情
 /api/client/clientTrace/viewTrace.api
 
 
