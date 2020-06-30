@@ -73,6 +73,10 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`seller_name`")
 	private String sellerName;
 
+	@ApiModelProperty(value = "商品名称")
+	@Column(name = "`product_name`")
+	private String productName;
+
 	@ApiModelProperty(value = "库存重量")
 	@Column(name = "`stock_weight`")
 	private BigDecimal stockWeight;
@@ -278,5 +282,20 @@ public class TradeDetail extends BaseDomain {
 	public void setTradeRequestId(Long tradeRequestId) {
 		this.tradeRequestId = tradeRequestId;
 	}
+
+
+    /**
+     * @return String return the productName
+     */
+    public String getProductName() {
+        return productName;
+    }
+
+    /**
+     * @param productName the productName to set
+     */
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
 }

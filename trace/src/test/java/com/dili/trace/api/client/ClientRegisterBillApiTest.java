@@ -1,6 +1,8 @@
 package com.dili.trace.api.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,12 +15,16 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import one.util.streamex.StreamEx;
+
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.output.RegisterBillOutput;
+import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
@@ -31,6 +37,7 @@ import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.service.BrandService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 
@@ -41,29 +48,30 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 	RegisterBillService registerBillService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	BrandService brandService;
 	@MockBean
 	LoginSessionContext sessionContext;
 	// private MockMvc mockMvc;
 	// @Injectable
+	private User userItem;
 
 	@BeforeEach
 	public void before() {
 		MockitoAnnotations.initMocks(this);
-		User user = this.userService.listPageByExample(DTOUtils.newDTO(User.class)).getDatas().stream().findFirst()
+		userItem = this.userService.listPageByExample(DTOUtils.newDTO(User.class)).getDatas().stream().findFirst()
 				.orElse(null);
-		assertNotNull(user);
-		Mockito.doReturn(user.getId()).when(sessionContext).getAccountId();
-		Mockito.doReturn(user.getName()).when(sessionContext).getUserName();
-		Mockito.doReturn(new OperatorUser(user.getId(), user.getName())).when(this.sessionContext)
+		assertNotNull(userItem);
+		Mockito.doReturn(userItem.getId()).when(sessionContext).getAccountId();
+		Mockito.doReturn(userItem.getName()).when(sessionContext).getUserName();
+		Mockito.doReturn(new OperatorUser(userItem.getId(), userItem.getName())).when(this.sessionContext)
 				.getLoginUserOrException(Mockito.any());
 	}
 
 	@Test
 	public void createRegisterBillList() {
 
-		RegisterBill query = new RegisterBill();
-		query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-		RegisterBill item = registerBillService.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
+		RegisterBill billItem = super.createRegisterBill(super.buildBill());
 
 		CreateListBillParam createListBillParam = new CreateListBillParam();
 		List<CreateRegisterBillInputDto> registerBills = new ArrayList<CreateRegisterBillInputDto>();
@@ -76,10 +84,10 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.setBrandName("四川最好");
 		rb.setPreserveType(PreserveTypeEnum.ICED.getCode());
 		rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
-		rb.setProductId(item.getProductId());
-		rb.setProductName(item.getProductName());
-		rb.setOriginId(item.getOriginId());
-		rb.setOriginName(item.getOriginName());
+		rb.setProductId(billItem.getProductId());
+		rb.setProductName(billItem.getProductName());
+		rb.setOriginId(billItem.getOriginId());
+		rb.setOriginName(billItem.getOriginName());
 		rb.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
 		rb.setTruckType(TruckTypeEnum.FULL.getCode());
 		rb.setImageCertList(new ArrayList<ImageCert>());
@@ -89,6 +97,12 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.getImageCertList().add(imageCert);
 		BaseOutput out = this.clientRegisterBillApi.createRegisterBillList(createListBillParam);
 		System.out.println(out.isSuccess());
+
+		Brand brandQuery = new Brand();
+		brandQuery.setBrandName(rb.getBrandName());
+		brandQuery.setUserId(userItem.getId());
+		Brand brandItem = StreamEx.of(this.brandService.listByExample(brandQuery)).findFirst().orElse(null);
+		assertNotNull(brandItem);
 	}
 
 	@Test
@@ -100,7 +114,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		CreateRegisterBillInputDto rb = new CreateRegisterBillInputDto();
 		rb.setBillId(item.getId());
 		rb.setWeight(BigDecimal.TEN);
-		rb.setSpecName("筐");
+		rb.setSpecName("箱");
 		rb.setBrandName("四川第二");
 		rb.setPreserveType(PreserveTypeEnum.ICED.getCode());
 		rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
@@ -115,12 +129,33 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
 		rb.getImageCertList().add(imageCert);
 		this.clientRegisterBillApi.doEditRegisterBill(rb);
+
+		Brand brandQuery = new Brand();
+		brandQuery.setBrandName(rb.getBrandName());
+		brandQuery.setUserId(userItem.getId());
+		Brand brandItem = StreamEx.of(this.brandService.listByExample(brandQuery)).findFirst().orElse(null);
+		assertNotNull(brandItem);
 	}
 
 	@Test
 	public void listPage() {
-		BaseOutput<BasePage<RegisterBill>> output = this.clientRegisterBillApi.listPage(new RegisterBillDto());
-		System.out.println(output);
+		RegisterBill bill = super.buildBill();
+		bill.setUserId(this.userItem.getId());
+		bill.setName(this.userItem.getName());
+		RegisterBill billItem = super.createRegisterBill(bill);
+		RegisterBillDto queryDto = new RegisterBillDto();
+		queryDto.setVerifyStatus(billItem.getVerifyStatus());
+		BaseOutput<BasePage<RegisterBillOutput>> out = this.clientRegisterBillApi.listPage(queryDto);
+		assertNotNull(out);
+		assertTrue(out.isSuccess());
+
+		BasePage<RegisterBillOutput> page = out.getData();
+		assertNotNull(page);
+		List<RegisterBillOutput> list = page.getDatas();
+		RegisterBillOutput outBill = StreamEx.of(list).findFirst().orElse(null);
+		assertNotNull(outBill);
+		assertEquals(outBill.getUserId(), userItem.getId());
+		assertEquals(outBill.getVerifyStatus(), billItem.getVerifyStatus());
 	}
 
 }

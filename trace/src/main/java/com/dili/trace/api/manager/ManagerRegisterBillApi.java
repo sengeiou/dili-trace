@@ -4,14 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.fastjson.JSON;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
@@ -26,11 +18,18 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -107,12 +106,7 @@ public class ManagerRegisterBillApi {
 
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {
-						RegisterBillOutput dto = new RegisterBillOutput();
-						dto.setVerifyStatus(rb.getVerifyStatus());
-						dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
-								.map(BillVerifyStatusEnum::getName).orElse(""));
-						dto.setBillId(rb.getId());
-						dto.setProductName(rb.getProductName());
+						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						dto.setColor(ColorEnum.GREEN.getCode());
 						return dto;
 					});
@@ -138,12 +132,7 @@ public class ManagerRegisterBillApi {
 
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {
-						RegisterBillOutput dto = new RegisterBillOutput();
-						dto.setVerifyStatus(rb.getVerifyStatus());
-						dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
-								.map(BillVerifyStatusEnum::getName).orElse(""));
-						dto.setBillId(rb.getId());
-						dto.setProductName(rb.getProductName());
+						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						dto.setColor(ColorEnum.GREEN.getCode());
 						return dto;
 					});
@@ -165,12 +154,7 @@ public class ManagerRegisterBillApi {
 
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {
-						RegisterBillOutput dto = new RegisterBillOutput();
-						dto.setVerifyStatus(rb.getVerifyStatus());
-						dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
-								.map(BillVerifyStatusEnum::getName).orElse(""));
-						dto.setBillId(rb.getId());
-						dto.setProductName(rb.getProductName());
+						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						dto.setColor(ColorEnum.GREEN.getCode());
 						return dto;
 					});
@@ -197,12 +181,7 @@ public class ManagerRegisterBillApi {
 
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {
-						RegisterBillOutput dto = new RegisterBillOutput();
-						dto.setVerifyStatus(rb.getVerifyStatus());
-						dto.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(rb.getVerifyStatus())
-								.map(BillVerifyStatusEnum::getName).orElse(""));
-						dto.setBillId(rb.getId());
-						dto.setProductName(rb.getProductName());
+						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						dto.setColor(ColorEnum.GREEN.getCode());
 						return dto;
 					});

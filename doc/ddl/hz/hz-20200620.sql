@@ -36,6 +36,7 @@ CREATE TABLE `trade_detail` (
 	`buyer_name` varchar(20) NOT NULL COMMENT '买家姓名',
 	`seller_id` bigint(20)  NULL COMMENT '卖家ID',
 	`seller_name` varchar(20)  NULL COMMENT '卖家姓名',
+	`product_name` varchar(50) NOT NULL COMMENT '商品名称',
 	`stock_weight` decimal(10,3) NOT NULL default 0 COMMENT '库存重量',
 	`total_weight` decimal(10,3) NOT NULL default 0 COMMENT '总重量',
 	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',

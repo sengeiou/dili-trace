@@ -36,7 +36,7 @@ public class TollInfoController {
     @RequestMapping("/category")
     @ResponseBody
     public Map<String, ?> listByName(String name, boolean allFlag) {
-        List<Category> categorys = this.categoryService.listCategoryByKeyword(name);
+        List<Category> categorys = this.categoryService.listCategoryByKeyword(name,null,null);
 
         List<Map<String, Object>> list = Lists.newArrayList();
         if (categorys != null && !categorys.isEmpty()) {

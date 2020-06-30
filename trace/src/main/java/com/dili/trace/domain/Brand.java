@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -23,7 +24,8 @@ public class Brand extends BaseDomain {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "`id`")
+    @Column(name = "`id`")
+    @JSONField(serialize = false)
 	private Long id;
 
 

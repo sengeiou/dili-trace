@@ -509,6 +509,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new AppException("当前状态不能修改数据");
 		}
 		this.updateSelective(input);
+		this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
 		return input.getId();
 	}
 

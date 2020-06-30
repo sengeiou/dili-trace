@@ -4,37 +4,38 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+
+import com.dili.common.exception.TraceBusinessException;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.output.TradeDetailBillOutput;
+import com.dili.trace.dao.TradeDetailMapper;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.domain.UpStream;
+import com.dili.trace.domain.User;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.TradeDetailInputDto;
+import com.dili.trace.dto.TradeDetailInputWrapperDto;
+import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.CheckinStatusEnum;
+import com.dili.trace.enums.CheckoutStatusEnum;
+import com.dili.trace.enums.SaleStatusEnum;
+import com.dili.trace.enums.TradeDetailStatusEnum;
+import com.dili.trace.enums.TradeTypeEnum;
+import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.service.impl.SeparateSalesRecordServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.dili.common.exception.TraceBusinessException;
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.domain.CheckinOutRecord;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.UpStream;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.TradeDetailInputDto;
-import com.dili.trace.dto.TradeDetailInputWrapperDto;
-import com.dili.trace.dto.UpStreamDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.CheckinOutTypeEnum;
-import com.dili.trace.enums.CheckinStatusEnum;
-import com.dili.trace.enums.CheckoutStatusEnum;
-import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeDetailStatusEnum;
-import com.dili.trace.enums.TradeTypeEnum;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
-import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.service.impl.SeparateSalesRecordServiceImpl;
 
 import one.util.streamex.StreamEx;
 
@@ -50,6 +51,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	UpStreamService upStreamService;
 	@Autowired
 	CheckinOutRecordService checkinOutRecordService;
+	@Autowired
+	TradeDetailMapper tradeDetailMapper;
 
 	public Long doUpdateSaleStatus(OperatorUser operateUser, Long billId) {
 
@@ -61,8 +64,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		TradeDetail queryCondition = new TradeDetail();
 		queryCondition.setBillId(billId);
 		queryCondition.setTradeType(TradeTypeEnum.NONE.getCode());
-		TradeDetail tradeInfoItem = this.listByExample(queryCondition).stream().findFirst()
-				.orElse(null);
+		TradeDetail tradeInfoItem = this.listByExample(queryCondition).stream().findFirst().orElse(null);
 
 		if (tradeInfoItem == null) {
 			return billItem.getId();
@@ -78,7 +80,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
 			this.updateSelective(updatableRecord);
 		} else {
-			//throw new TraceBusinessException("数据状态错误");
+			// throw new TraceBusinessException("数据状态错误");
 		}
 
 		return billItem.getId();
@@ -292,6 +294,36 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			throw new TraceBusinessException("没有可以进行处理的退货申请");
 		}
 		return tradeDetailIdList;
+	}
+
+	/**
+	 * 查询用户的登记单类型
+	 */
+	public BasePage<TradeDetailBillOutput> selectTradeDetailAndBill(RegisterBillDto dto) {
+		if (dto.getPage() == null || dto.getPage() < 0) {
+			dto.setPage(1);
+		}
+		if (dto.getRows() == null || dto.getRows() <= 0) {
+			dto.setRows(10);
+		}
+		PageHelper.startPage(dto.getPage(), dto.getRows());
+		List<TradeDetailBillOutput> list = this.tradeDetailMapper.selectTradeDetailAndBill(dto);
+		Page<TradeDetailBillOutput> page = (Page) list;
+		StreamEx.of(page).forEach(o -> {
+			if (o.getTradeType() == null) {
+				o.setTradeType(TradeTypeEnum.NONE.getCode());
+			}
+
+		});
+		BasePage<TradeDetailBillOutput> result = new BasePage<TradeDetailBillOutput>();
+		result.setDatas(list);
+		result.setPage(page.getPageNum());
+		result.setRows(page.getPageSize());
+		result.setTotalItem(Integer.parseInt(String.valueOf(page.getTotal())));
+		result.setTotalPage(page.getPages());
+		result.setStartIndex(page.getStartRow());
+		return result;
+
 	}
 
 }

@@ -81,7 +81,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		this.UpStreamService.listPageUpStream(11L, new UpStream());
 	}
 
-	private Category findCategory() {
+	protected Category findCategory() {
 		Category query = new Category();
 		query.setPage(1);
 		query.setRows(1);
@@ -91,7 +91,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		return categoryItem;
 	}
 
-	private User findUser() {
+	protected User findUser() {
 		User query = DTOUtils.newDTO(User.class);
 		query.setPage(1);
 		query.setRows(1);

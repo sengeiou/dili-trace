@@ -14,6 +14,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
+import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
@@ -118,7 +119,7 @@ public class ClientRegisterBillApi {
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto input) {
+	public BaseOutput<BasePage<RegisterBillOutput>> listPage(@RequestBody RegisterBillDto input) {
 		logger.info("获取登记单列表:" + JSON.toJSON(input).toString());
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
@@ -133,15 +134,13 @@ public class ClientRegisterBillApi {
 				input.setSort("id");
 			}
 			BasePage basePage = BasePageUtil.convert(registerBillService.listPageByExample(input), bill -> {
-				Map<Object, Object> map = new BeanMap(bill);
-				//将id换为billId字段
-				map.put("billId", map.remove("id"));
-				return map;
+				return RegisterBillOutput.build(bill);
 			});
 			return BaseOutput.success().setData(basePage);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("查询数据出错");
 		}
 
