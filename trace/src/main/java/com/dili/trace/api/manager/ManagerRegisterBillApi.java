@@ -18,7 +18,9 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.ColorEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
@@ -151,7 +153,8 @@ public class ManagerRegisterBillApi {
 		}
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-
+			query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+			query.setYn(YnEnum.YES.getCode());
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
