@@ -8,6 +8,8 @@ import com.dili.trace.domain.TradeRequest;
 import io.swagger.annotations.ApiModelProperty;
 
 public class TradeRequestWrapperDto {
+    private Long tradeRequestId;
+    
     @ApiModelProperty(value = "购买重量")
     private BigDecimal tradeWeight;
     @ApiModelProperty(value = "卖家ID")
@@ -96,6 +98,21 @@ public class TradeRequestWrapperDto {
      */
     public void setTradeRequestList(List<TradeRequestInputDto> tradeRequestList) {
         this.tradeRequestList = tradeRequestList;
+    }
+
+
+    /**
+     * @return Long return the tradeRequestId
+     */
+    public Long getTradeRequestId() {
+        return tradeRequestId;
+    }
+
+    /**
+     * @param tradeRequestId the tradeRequestId to set
+     */
+    public void setTradeRequestId(Long tradeRequestId) {
+        this.tradeRequestId = tradeRequestId;
     }
 
 }

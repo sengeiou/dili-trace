@@ -130,7 +130,18 @@ batchStockId:111//库存ID
 /api/client/clientTrace/listPage.api
 11：溯源详情
 /api/client/clientTrace/viewTrace.api
-
+12: 交易列表：
+/api/client/clientTradeRequestApi/listPage.api
+13:交易详情
+/api/client/clientTradeRequestApi/viewTradeDetail.api
+{
+  tradeRequestId:234// 交易ID
+}
+14:交易详情(相关的批次交易列表)
+/api/client/clientTradeRequestApi/listTradeDetailByTradeRequest.api
+{
+  tradeRequestId:234// 交易ID
+}
 
 
 监管端接口列表：

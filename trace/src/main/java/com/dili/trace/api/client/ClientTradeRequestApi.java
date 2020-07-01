@@ -29,6 +29,7 @@ import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.TradeDetailService;
+import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 
@@ -36,11 +37,11 @@ import io.swagger.annotations.Api;
 import tk.mybatis.mapper.code.IdentityDialect;
 
 @SuppressWarnings("deprecation")
-@Api(value = "/api/client/clientTradeDetail")
+@Api(value = "/api/client/clientTradeRequestApi")
 @RestController
 @InterceptConfiguration
-@RequestMapping(value = "/api/client/clientTradeDetail")
-public class ClientTradeDetailApi {
+@RequestMapping(value = "/api/client/clientTradeRequestApi")
+public class ClientTradeRequestApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);
 	@Resource
 	private UserService userService;
@@ -56,76 +57,52 @@ public class ClientTradeDetailApi {
 	UpStreamService upStreamService;
 	@Autowired
 	TradeDetailService tradeDetailService;
+	@Autowired
+	TradeRequestService tradeRequestService;
 
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetailInputDto condition) {
+	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequest condition) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		if(!sessionContext.getAccountId().equals(condition.getBuyerId())&&!sessionContext.getAccountId().equals(condition.getSellerId())){
+		if (condition.getBuyerId() == null && condition.getSellerId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
-		BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(condition);
+		if (!sessionContext.getAccountId().equals(condition.getBuyerId())
+				&& !sessionContext.getAccountId().equals(condition.getSellerId())) {
+			return BaseOutput.failure("参数错误");
+		}
+
+		BasePage<TradeRequest> page = this.tradeRequestService.listPageByExample(condition);
 
 		return BaseOutput.success().setData(page);
 	}
 
-	// /**
-	//  * 分页查询需要被进场查询的信息
-	//  */
-	// @SuppressWarnings("unchecked")
-	// @RequestMapping(value = "/createTradeDetail.api", method = { RequestMethod.POST })
-	// public BaseOutput<CheckInApiDetailOutput> createTradeDetail(@RequestBody TradeDetailInputWrapperDto inputDto) {
-	// 	if (sessionContext.getAccountId() == null) {
-	// 		return BaseOutput.failure("未登陆用户");
-	// 	}
-	// 	try {
-	// 		Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-	// 		List<Long> idList = this.tradeDetailService.createTradeList(inputDto, sellerId);
-	// 		return BaseOutput.success().setData(idList);
-	// 	} catch (TraceBusinessException e) {
-	// 		return BaseOutput.failure(e.getMessage());
-	// 	} catch (Exception e) {
-	// 		logger.error(e.getMessage(), e);
-	// 		return BaseOutput.failure("服务端出错");
-	// 	}
-
-	// }
 	/**
-	 * 发起退货
+	 * 详情
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/doReturning.api", method = { RequestMethod.POST })
-	public BaseOutput<CheckInApiDetailOutput> doReturning(@RequestBody TradeDetailInputWrapperDto inputDto) {
+	@RequestMapping(value = "/viewTradeDetail.api", method = { RequestMethod.POST })
+	public BaseOutput<CheckInApiDetailOutput> viewTradeDetail(@RequestBody TradeRequestWrapperDto inputDto) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
+		if (inputDto == null || inputDto.getTradeRequestId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			List<Long> idList = this.tradeDetailService.doReturning(inputDto, userId);
-			return BaseOutput.success().setData(idList);
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("服务端出错");
-		}
 
-	}
-	/**
-	 * 确认退货
-	 */
-	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/handleReturning.api", method = { RequestMethod.POST })
-	public BaseOutput<CheckInApiDetailOutput> handleReturning(@RequestBody TradeDetailInputWrapperDto inputDto) {
-		if (sessionContext.getAccountId() == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			List<Long> idList = this.tradeDetailService.handleReturning(inputDto, userId);
-			return BaseOutput.success().setData(idList);
+			TradeRequest tradeRequestItem = this.tradeRequestService.get(inputDto.getTradeRequestId());
+			if (tradeRequestItem == null) {
+				return BaseOutput.failure("数据不存在");
+			}
+			if (!tradeRequestItem.getBuyerId().equals(userId) && !tradeRequestItem.getSellerId().equals(userId)) {
+				return BaseOutput.failure("没有权限查看数据");
+			}
+
+			return BaseOutput.success().setData(tradeRequestItem);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -135,5 +112,40 @@ public class ClientTradeDetailApi {
 
 	}
 
+	/**
+	 * 根据交易请求查询交易列表
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/listTradeDetailByTradeRequest.api", method = { RequestMethod.POST })
+	public BaseOutput<CheckInApiDetailOutput> listTradeDetailByTradeRequest(
+			@RequestBody TradeRequestWrapperDto inputDto) {
+		if (sessionContext.getAccountId() == null) {
+			return BaseOutput.failure("未登陆用户");
+		}
+		if (inputDto == null || inputDto.getTradeRequestId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		try {
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 
+			TradeRequest tradeRequestItem = this.tradeRequestService.get(inputDto.getTradeRequestId());
+			if (tradeRequestItem == null) {
+				return BaseOutput.failure("数据不存在");
+			}
+			if (!tradeRequestItem.getBuyerId().equals(userId) && !tradeRequestItem.getSellerId().equals(userId)) {
+				return BaseOutput.failure("没有权限查看数据");
+			}
+
+			TradeDetail tradeDetailQuery = new TradeDetail();
+			tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
+			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+			return BaseOutput.success().setData(tradeDetailList);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+
+	}
 }
