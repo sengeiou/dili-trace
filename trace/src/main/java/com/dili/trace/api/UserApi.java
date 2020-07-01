@@ -73,7 +73,7 @@ public class UserApi {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             user.setAddr("");
             user.setCardNo("");
-            userService.register(user,false);
+            userService.register(user,true);
             return BaseOutput.success().setData(user.getId());
         }catch (TraceBusinessException e){
             return BaseOutput.failure(e.getMessage());
@@ -87,7 +87,7 @@ public class UserApi {
     @RequestMapping(value = "/realNameCertificationReq.api", method = RequestMethod.POST)
     public BaseOutput<Long> realNameCertificationReq(@RequestBody User user){
         try{
-            Long id = user.getId();//this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
             User currentUser = userService.get(id);
             if (ValidateStateEnum.PASSED.equalsToCode(currentUser.getValidateState())){//已通过
                 return BaseOutput.success().setData(id);
