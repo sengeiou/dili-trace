@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
     <property name="log_file_path" value="/diliapp/server/trace/logs"/>
-    <property name="worker_log_file_path" value="/diliapp/server/work/logs"/>
   
     <!-- 线上环境 -->
 
