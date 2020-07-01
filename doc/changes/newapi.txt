@@ -106,16 +106,45 @@ tradeDetailId:456 //交易单ID(tradeDetailId优先级高于billId,即当两个�
 {
   likeBrandName:'品牌名称关键字'
 }
-7:扫码交易
+7:购买接口
+/api/client/clientRegisterBill/createBuyProductRequest.api
+{
+tradeWeight:12.34,//总购买重量
+batchStockId:111//库存ID
+}
+
+8:销售接口
+/api/client/clientRegisterBill/createSellProductRequest.api
+{
+  tradeWeight:12.34,//总销售重量
+  batchStockId:222,//库存ID
+  tradeRequestList:[
+    tradeWeight:12.34,//每批次销售重量
+    tradeDetailId:345//订单ID
+  ]
+}
+
+9:扫码交易
 /api/client/clientTradeDetail/createTradeDetail.api
-8:溯源列表
+10:溯源列表
 /api/client/clientTrace/listPage.api
-9：溯源详情
+11：溯源详情
 /api/client/clientTrace/viewTrace.api
 
 
 
 监管端接口列表：
+1:报备单列表
+/api/manager/managerRegisterBill//listPage.api
+
+2:预审核
+/api/manager/managerRegisterBill/doVerifyBeforeCheckIn.api
+{
+	billId:123,//报备单ID
+	verifyStatus://审核状态((10, "已退回")(20, "已通过")(30, "不通过"))
+}
+
+
 报备单列表:/api/manager/managerRegisterBill/listPage.api
 报备单审核: /api/manager/managerRegisterBill/doVerify.api
 报备单详情:/api/manager/managerRegisterBill/viewRegisterBill.api

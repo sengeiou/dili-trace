@@ -222,7 +222,7 @@ public class ClientRegisterBillApi {
 	@ApiOperation(value = "创建购买请求")
 	@RequestMapping(value = "/createBuyProductRequest.api", method = RequestMethod.POST)
 	public BaseOutput<Long> createBuyProductRequest(@RequestBody TradeRequestWrapperDto inputDto) {
-		if (inputDto == null || inputDto.getSellerId() == null || inputDto.getTradeWeight() == null
+		if (inputDto == null  || inputDto.getTradeWeight() == null
 				|| inputDto.getBatchStockId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -259,7 +259,6 @@ public class ClientRegisterBillApi {
 
 		try {
 			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			inputDto.setSellerId(sellerId);
 			User user = userService.get(sellerId);
 			if (user == null) {
 				return BaseOutput.failure("未登陆用户");

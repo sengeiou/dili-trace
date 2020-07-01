@@ -48,7 +48,15 @@ public class TradeRequest extends BaseDomain {
 	
 	@ApiModelProperty(value = "批次库存ID")
 	@Column(name = "`batch_stock_id`")
-	private Long batchStockId;
+    private Long batchStockId;
+    
+    @ApiModelProperty(value = "类型")
+	@Column(name = "`trade_request_type`")
+    private Integer tradeRequestType;
+
+    @ApiModelProperty(value = "状态")
+	@Column(name = "`trade_request_status`")
+    private Integer tradeRequestStatus;
 
 	@Column(name = "`created`")
 	private Date created;
@@ -181,6 +189,38 @@ public class TradeRequest extends BaseDomain {
      */
     public void setBatchStockId(Long batchStockId) {
         this.batchStockId = batchStockId;
+    }
+
+
+   
+
+
+    /**
+     * @return Integer return the tradeRequestType
+     */
+    public Integer getTradeRequestType() {
+        return tradeRequestType;
+    }
+
+    /**
+     * @param tradeRequestType the tradeRequestType to set
+     */
+    public void setTradeRequestType(Integer tradeRequestType) {
+        this.tradeRequestType = tradeRequestType;
+    }
+
+    /**
+     * @return Integer return the tradeRequestStatus
+     */
+    public Integer getTradeRequestStatus() {
+        return tradeRequestStatus;
+    }
+
+    /**
+     * @param tradeRequestStatus the tradeRequestStatus to set
+     */
+    public void setTradeRequestStatus(Integer tradeRequestStatus) {
+        this.tradeRequestStatus = tradeRequestStatus;
     }
 
 }

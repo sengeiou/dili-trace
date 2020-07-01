@@ -50,17 +50,17 @@ public class ManagerRegisterBillApi {
 	UserService userService;
 
 	@ApiOperation(value = "获得报备审核列表")
-	@RequestMapping(value = "/listBillForVerifyBeforeCheckInPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> listBillForVerifyBeforeCheckInPage(@RequestBody RegisterBill input) {
-		if (input == null || input.getUserId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
+	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
+	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBill input) {
+		// if (input == null || input.getUserId() == null) {
+		// 	return BaseOutput.failure("参数错误");
+		// }
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			RegisterBillDto query = new RegisterBillDto();
 			query.setSort("modified");
 			query.setOrder("desc");
-			query.setUserId(input.getUserId());
+			// query.setUserId(input.getUserId());
 
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {

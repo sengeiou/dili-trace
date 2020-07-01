@@ -3,12 +3,9 @@ package com.dili.trace.api.input;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.beust.jcommander.internal.Lists;
-import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 
 import io.swagger.annotations.ApiModelProperty;
-import one.util.streamex.StreamEx;
 
 public class TradeRequestWrapperDto {
     @ApiModelProperty(value = "购买重量")
