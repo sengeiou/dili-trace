@@ -137,11 +137,6 @@ batchStockId:111//库存ID
 {
   tradeRequestId:234// 交易ID
 }
-14:交易详情(相关的批次交易列表)
-/api/client/clientTradeRequestApi/listTradeDetailByTradeRequest.api
-{
-  tradeRequestId:234// 交易ID
-}
 
 
 监管端接口列表：
