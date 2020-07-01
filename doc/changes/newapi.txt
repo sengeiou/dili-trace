@@ -87,7 +87,7 @@ cityList: "/api/cityApi/listCityByCondition"
   likeProductName:'贝壳'
 }
 4:报备单详情
-/api/client/clientRegisterBill/viewRegisterBill.api
+/api/client/clientRegisterBill/viewTradeDetailBill.api
 {
 billId:123, //报备单ID
 tradeDetailId:456 //交易单ID(tradeDetailId优先级高于billId,即当两个都存在的时候，可以只传递tradeDetailId，如果没有就可以只传递billId)
@@ -144,9 +144,6 @@ batchStockId:111//库存ID
 	verifyStatus://审核状态((10, "已退回")(20, "已通过")(30, "不通过"))
 }
 
-
-报备单列表:/api/manager/managerRegisterBill/listPage.api
-报备单审核: /api/manager/managerRegisterBill/doVerify.api
 报备单详情:/api/manager/managerRegisterBill/viewRegisterBill.api
 创建报备单:/api/manager/managerRegisterBill/createRegisterBillList.api
 进门列表:

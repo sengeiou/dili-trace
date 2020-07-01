@@ -166,8 +166,8 @@ public class ClientRegisterBillApi {
 	}
 
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
-	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
-	public BaseOutput<RegisterBillOutputDto> viewRegisterBill(@RequestBody RegisterBillApiInputDto inputDto) {
+	@RequestMapping(value = "/viewTradeDetailBill.api", method = RequestMethod.POST)
+	public BaseOutput<RegisterBillOutputDto> viewTradeDetailBill(@RequestBody RegisterBillApiInputDto inputDto) {
 		if (inputDto == null || (inputDto.getBillId() == null && inputDto.getTradeDetailId() == null)) {
 			return BaseOutput.failure("参数错误");
 		}
