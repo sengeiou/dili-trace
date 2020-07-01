@@ -47,12 +47,12 @@ public class UpStreamApi {
      */
     @RequestMapping(value = "/listPagedUpStream.api", method = { RequestMethod.POST, RequestMethod.GET })
     public BaseOutput<BasePage<UpStream>> listPagedUpStream(@RequestBody UpStream query) {
-        User user = userService.get(sessionContext.getAccountId());
-        if (user == null) {
-            return BaseOutput.failure("未登陆用户");
-        }
+//        User user = userService.get(sessionContext.getAccountId());
+//        if (user == null) {
+//            return BaseOutput.failure("未登陆用户");
+//        }
         try {
-            BasePage<UpStream> data = this.upStreamService.listPageUpStream(user.getId(),query);
+            BasePage<UpStream> data = this.upStreamService.listPageUpStream(18l,query);
             return BaseOutput.success().setData(data);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
