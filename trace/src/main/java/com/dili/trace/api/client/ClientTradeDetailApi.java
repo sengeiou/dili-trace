@@ -71,27 +71,6 @@ public class ClientTradeDetailApi {
 		return BaseOutput.success().setData(page);
 	}
 
-	// /**
-	//  * 分页查询需要被进场查询的信息
-	//  */
-	// @SuppressWarnings("unchecked")
-	// @RequestMapping(value = "/createTradeDetail.api", method = { RequestMethod.POST })
-	// public BaseOutput<CheckInApiDetailOutput> createTradeDetail(@RequestBody TradeDetailInputWrapperDto inputDto) {
-	// 	if (sessionContext.getAccountId() == null) {
-	// 		return BaseOutput.failure("未登陆用户");
-	// 	}
-	// 	try {
-	// 		Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-	// 		List<Long> idList = this.tradeDetailService.createTradeList(inputDto, sellerId);
-	// 		return BaseOutput.success().setData(idList);
-	// 	} catch (TraceBusinessException e) {
-	// 		return BaseOutput.failure(e.getMessage());
-	// 	} catch (Exception e) {
-	// 		logger.error(e.getMessage(), e);
-	// 		return BaseOutput.failure("服务端出错");
-	// 	}
-
-	// }
 	/**
 	 * 发起退货
 	 */

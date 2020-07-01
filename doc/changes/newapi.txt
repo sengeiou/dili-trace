@@ -29,6 +29,11 @@ cityList: "/api/cityApi/listCityByCondition"
   createUpStream: "/api/upstreamApi/doCreateUpStream.api", //创建上游信息
   modifyUpStream: "/api/upstreamApi/doModifyUpStream.api", //修改上游信息
 
+增加品牌
+/api/client/clientBrand/createBrand.api
+{
+brandName:"品牌名"
+}
 买家接口:
 1:报备
 /api/client/clientRegisterBill/createRegisterBillList.api
