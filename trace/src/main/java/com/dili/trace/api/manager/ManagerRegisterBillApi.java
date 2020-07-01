@@ -49,50 +49,6 @@ public class ManagerRegisterBillApi {
 	@Autowired
 	UserService userService;
 
-	@ApiOperation("保存多个登记单")
-	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
-	public BaseOutput createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
-		logger.info("保存多个登记单:");
-		if (createListBillParam == null || createListBillParam.getUserId() == null
-				|| createListBillParam.getRegisterBills() == null) {
-			return BaseOutput.failure("参数错误");
-		}
-
-		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-		User user = userService.get(createListBillParam.getUserId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills()).nonNull()
-				.toList();
-
-		logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
-		for (CreateRegisterBillInputDto dto : registerBills) {
-			logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-			RegisterBill registerBill = new RegisterBill();
-			registerBill.setOperatorName(user.getName());
-			registerBill.setOperatorId(user.getId());
-			registerBill.setUserId(user.getId());
-			registerBill.setName(user.getName());
-			registerBill.setAddr(user.getAddr());
-			registerBill.setIdCardNo(user.getCardNo());
-			registerBill.setWeight(dto.getWeight());
-			registerBill.setWeightUnit(dto.getWeightUnit());
-			registerBill.setOriginId(dto.getOriginId());
-			registerBill.setOriginName(dto.getOriginName());
-			registerBill.setProductId(dto.getProductId());
-			registerBill.setProductName(dto.getProductName());
-
-			try {
-				registerBillService.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
-			} catch (TraceBusinessException e) {
-				return BaseOutput.failure(e.getMessage());
-			}
-
-		}
-		return BaseOutput.success();
-	}
-
 	@ApiOperation(value = "获得报备审核列表")
 	@RequestMapping(value = "/listBillForVerifyBeforeCheckInPage.api", method = RequestMethod.POST)
 	public BaseOutput<BasePage<RegisterBill>> listBillForVerifyBeforeCheckInPage(@RequestBody RegisterBill input) {
