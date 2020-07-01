@@ -135,16 +135,28 @@ batchStockId:111//库存ID
 
 监管端接口列表：
 1:报备单列表
-/api/manager/managerRegisterBill//listPage.api
-
+/api/manager/managerVerifyApi/listPage.ap
 2:预审核
-/api/manager/managerRegisterBill/doVerifyBeforeCheckIn.api
+/api/manager/managerVerifyApi/doVerify.api
 {
 	billId:123,//报备单ID
 	verifyStatus://审核状态((10, "已退回")(20, "已通过")(30, "不通过"))
 }
 
-报备单详情:/api/manager/managerRegisterBill/viewRegisterBill.api
+场内:
+1:报备单列表
+/api/manager/managerAfterCheckInApi/listPage.ap
+2:预审核
+/api/manager/managerAfterCheckInApi/doVerify.api
+{
+	billId:123,//报备单ID
+	verifyStatus://审核状态((10, "已退回")(20, "已通过")(30, "不通过"))
+}
+
+5:报备单详情:/api/manager/managerRegisterBill/viewRegisterBill.api
+{
+  billId:123//报备单ID
+}
 创建报备单:/api/manager/managerRegisterBill/createRegisterBillList.api
 进门列表:
 /api/manager/managerCheckinRecord/listPageCheckInData.api

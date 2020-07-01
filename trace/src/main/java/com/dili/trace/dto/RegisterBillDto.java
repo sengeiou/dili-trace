@@ -55,6 +55,7 @@ public class RegisterBillDto extends RegisterBill {
 	@Column(name = "`detect_state`")
 	@Operator(Operator.IN)
 	private List<Integer> detectStateList;
+	
 
 	/**
 	 * 昵称模糊查询
@@ -92,6 +93,9 @@ public class RegisterBillDto extends RegisterBill {
 
 	@Transient
 	private String aliasName;
+
+	@Transient
+	private Long billId;
 
 	public List<Integer> getVerifyStatusList() {
 		return verifyStatusList;
@@ -238,5 +242,20 @@ public class RegisterBillDto extends RegisterBill {
 	public void setAliasName(String aliasName) {
 		this.aliasName = aliasName;
 	}
+
+
+    /**
+     * @return Long return the billId
+     */
+    public Long getBillId() {
+        return billId;
+    }
+
+    /**
+     * @param billId the billId to set
+     */
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
 
 }
