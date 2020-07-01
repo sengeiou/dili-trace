@@ -2,92 +2,101 @@ package com.dili.trace.api.output;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 
 public class RegisterBillOutput {
-	private Long billId;
-	private Long userId;
-	private Integer verifyStatus;
-	private String verifyStatusDesc;
-	private String productName;
-	private String plate;
-	private BigDecimal weight;
+    private Long billId;
+    private Long userId;
+    private Integer verifyStatus;
+    private String verifyStatusDesc;
+    private String productName;
+    private String plate;
+    private BigDecimal weight;
     private Integer weightUnit;
     private String weightUnitName;
-	private Integer truckType;
+    private Integer truckType;
     private Date created;
 
     private String userName;
     private String tallyAreaNo;
     private String originName;
-	
-	private Integer color;
-	public static RegisterBillOutput build(RegisterBill bill){
-		RegisterBillOutput out=new RegisterBillOutput();
-		out.setBillId(bill.getId());
-		out.setVerifyStatus(bill.getVerifyStatus());
-		out.setProductName(bill.getProductName());
-		out.setVerifyStatusDesc(BillVerifyStatusEnum.fromCode(bill.getVerifyStatus())
-								.map(BillVerifyStatusEnum::getName).orElse(""));
-		out.setUserId(bill.getUserId());
-		out.setPlate(bill.getPlate());
-		out.setWeight(bill.getWeight());
-		out.setWeightUnit(bill.getWeightUnit());
-		out.setCreated(bill.getCreated());
+    // 上游名称
+    private String upStreamName;
+    // 编号
+    private String code;
+    // 品牌
+    private String brandName;
+    // 图片列表
+    private List<ImageCert> imageCertList;
+
+    private Integer color;
+
+    public static RegisterBillOutput build(RegisterBill bill) {
+        RegisterBillOutput out = new RegisterBillOutput();
+        out.setBillId(bill.getId());
+        out.setVerifyStatus(bill.getVerifyStatus());
+        out.setProductName(bill.getProductName());
+        out.setVerifyStatusDesc(
+                BillVerifyStatusEnum.fromCode(bill.getVerifyStatus()).map(BillVerifyStatusEnum::getName).orElse(""));
+        out.setUserId(bill.getUserId());
+        out.setPlate(bill.getPlate());
+        out.setWeight(bill.getWeight());
+        out.setWeightUnit(bill.getWeightUnit());
+        out.setCreated(bill.getCreated());
         out.setTruckType(bill.getTruckType());
         out.setUserName(bill.getName());
         out.setOriginName(bill.getOriginName());
         out.setTallyAreaNo(bill.getTallyAreaNo());
         out.setWeightUnitName(WeightUnitEnum.fromCode(bill.getWeightUnit()).map(WeightUnitEnum::getName).orElse(""));
-		return out;
-	}
-	
-	public Integer getColor() {
-		return color;
-	}
+        out.setBrandName(bill.getBrandName());
+        out.setCode(bill.getCode());
+        return out;
+    }
 
-	public void setColor(Integer color) {
-		this.color = color;
-	}
+    public Integer getColor() {
+        return color;
+    }
 
-	public String getProductName() {
-		return productName;
-	}
+    public void setColor(Integer color) {
+        this.color = color;
+    }
 
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
+    public String getProductName() {
+        return productName;
+    }
 
-	public Integer getVerifyStatus() {
-		return verifyStatus;
-	}
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
-	public void setVerifyStatus(Integer verifyStatus) {
-		this.verifyStatus = verifyStatus;
-	}
+    public Integer getVerifyStatus() {
+        return verifyStatus;
+    }
 
-	public String getVerifyStatusDesc() {
-		return verifyStatusDesc;
-	}
+    public void setVerifyStatus(Integer verifyStatus) {
+        this.verifyStatus = verifyStatus;
+    }
 
-	public void setVerifyStatusDesc(String verifyStatusDesc) {
-		this.verifyStatusDesc = verifyStatusDesc;
-	}
+    public String getVerifyStatusDesc() {
+        return verifyStatusDesc;
+    }
 
-	public Long getBillId() {
-		return billId;
-	}
+    public void setVerifyStatusDesc(String verifyStatusDesc) {
+        this.verifyStatusDesc = verifyStatusDesc;
+    }
 
-	public void setBillId(Long billId) {
-		this.billId = billId;
-	}
-	
-	
-	
+    public Long getBillId() {
+        return billId;
+    }
 
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
 
     /**
      * @return Long return the userId
@@ -103,7 +112,6 @@ public class RegisterBillOutput {
         this.userId = userId;
     }
 
-
     /**
      * @return String return the plate
      */
@@ -117,7 +125,6 @@ public class RegisterBillOutput {
     public void setPlate(String plate) {
         this.plate = plate;
     }
-
 
     /**
      * @return BigDecimal return the weight
@@ -147,7 +154,6 @@ public class RegisterBillOutput {
         this.weightUnit = weightUnit;
     }
 
-
     /**
      * @return Date return the created
      */
@@ -162,7 +168,6 @@ public class RegisterBillOutput {
         this.created = created;
     }
 
-
     /**
      * @return Integer return the truckType
      */
@@ -176,7 +181,6 @@ public class RegisterBillOutput {
     public void setTruckType(Integer truckType) {
         this.truckType = truckType;
     }
-
 
     /**
      * @return String return the userName
@@ -220,7 +224,6 @@ public class RegisterBillOutput {
         this.originName = originName;
     }
 
-
     /**
      * @return String return the weightUnitName
      */
@@ -233,6 +236,62 @@ public class RegisterBillOutput {
      */
     public void setWeightUnitName(String weightUnitName) {
         this.weightUnitName = weightUnitName;
+    }
+
+    /**
+     * @return String return the upStreamName
+     */
+    public String getUpStreamName() {
+        return upStreamName;
+    }
+
+    /**
+     * @param upStreamName the upStreamName to set
+     */
+    public void setUpStreamName(String upStreamName) {
+        this.upStreamName = upStreamName;
+    }
+
+    /**
+     * @return String return the code
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * @param code the code to set
+     */
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    /**
+     * @return String return the brandName
+     */
+    public String getBrandName() {
+        return brandName;
+    }
+
+    /**
+     * @param brandName the brandName to set
+     */
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    /**
+     * @return List<ImageCert> return the imageCertList
+     */
+    public List<ImageCert> getImageCertList() {
+        return imageCertList;
+    }
+
+    /**
+     * @param imageCertList the imageCertList to set
+     */
+    public void setImageCertList(List<ImageCert> imageCertList) {
+        this.imageCertList = imageCertList;
     }
 
 }

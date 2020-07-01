@@ -9,10 +9,13 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.ColorEnum;
+import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
 
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 
 @RestController
 @RequestMapping(value = "/api/manager/managerRegisterBill")
@@ -38,6 +42,10 @@ public class ManagerRegisterBillApi {
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;
+	@Autowired
+	UpStreamService upStreamService;
+	@Autowired
+	ImageCertService imageCertService;
 
 	@ApiOperation(value = "获得登记单详情")
 	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
@@ -51,7 +59,12 @@ public class ManagerRegisterBillApi {
 			if(billItem==null){
 				return BaseOutput.failure("数据不存在");
 			}
+
 			RegisterBillOutput dto = RegisterBillOutput.build(billItem);
+			
+			String upStreamName=StreamEx.ofNullable(billItem.getUpStreamId()).nonNull().map(upId->this.upStreamService.get(upId)).nonNull().map(UpStream::getName).findFirst().orElse(""));
+			dto.setUpStreamName(upStreamName);
+			dto.setImageCertList(this.imageCertService.findImageCertListByBillId(billItem.getId()));
 			return BaseOutput.success().setData(dto);
 
 		} catch (TraceBusinessException e) {

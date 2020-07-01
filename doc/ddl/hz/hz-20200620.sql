@@ -309,7 +309,7 @@ drop table `check_sheet_detail`;
 drop table `detect_record`;
 
 
-ALTER TABLE `register_bill` ADD COLUMN  `weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位';
+ALTER TABLE `register_bill` ADD COLUMN  `weight_unit` int(11) NOT NULL default 1 COMMENT '重量单位';
 ALTER TABLE `register_bill` ADD COLUMN  `verify_status` int(11) not null default 0 COMMENT '查验状态';
 ALTER TABLE `register_bill` ADD COLUMN  `preserve_type` int(11) NOT NULL  default 10 COMMENT '保存类型';
 ALTER TABLE `register_bill` ADD COLUMN  `verified_history_bill_id` bigint(20)  NULL COMMENT '查验历史ID';
