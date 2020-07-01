@@ -115,6 +115,10 @@ public class UpStream extends BaseDomain {
     @Column(name = "`modified`")
     private Date modified;
 
+    @ApiModelProperty(value = "上下游标志 上游企业10 下游企业20")
+    @Column(name = "upORdown")
+    private Integer upORdown;
+
     public Long getSourceUserId() {
 		return sourceUserId;
 	}
@@ -123,7 +127,15 @@ public class UpStream extends BaseDomain {
 		this.sourceUserId = sourceUserId;
 	}
 
-	/**
+    public Integer getUpORdown() {
+        return upORdown;
+    }
+
+    public void setUpORdown(Integer upORdown) {
+        this.upORdown = upORdown;
+    }
+
+    /**
      * @return Long return the id
      */
     public Long getId() {
