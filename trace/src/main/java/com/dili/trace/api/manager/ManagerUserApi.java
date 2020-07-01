@@ -1,29 +1,16 @@
 package com.dili.trace.api.manager;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.UserInput;
-import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.api.output.UserOutput;
-import com.dili.trace.api.output.VerifyBillInputDto;
-import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
-import com.dili.trace.dto.CreateListBillParam;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.glossary.ColorEnum;
-import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
-import com.dili.trace.util.BasePageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/manager/user")

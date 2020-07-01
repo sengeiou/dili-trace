@@ -1,6 +1,5 @@
 package com.dili.trace.api;
 
-import com.alibaba.fastjson.JSONPObject;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.UserInput;
@@ -19,7 +18,6 @@ import com.dili.trace.domain.User;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
-import java.util.Map;
 
 @Rollback(false)
 public class UserApiTest extends AutoWiredBaseTest {
@@ -146,7 +144,7 @@ public class UserApiTest extends AutoWiredBaseTest {
 	public void listUpstream(){
 		UpStreamDto upStream = new UpStreamDto();
 		upStream.setSourceUserId(18l);
-		upStream.setUpORdown(10);
+		upStream.setUpORdown(20);
 		BaseOutput<BasePage<UpStream>> pageUpstream = upStreamApi.listPagedUpStream(upStream);
 		System.out.println(pageUpstream.getCode());
 	}
