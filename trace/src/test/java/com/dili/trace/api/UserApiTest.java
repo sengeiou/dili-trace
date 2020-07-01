@@ -6,6 +6,8 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.manager.ManagerUserApi;
 import com.dili.trace.api.output.UserOutput;
+import com.dili.trace.domain.UpStream;
+import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.enums.VocationTypeEnum;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,8 @@ public class UserApiTest extends AutoWiredBaseTest {
 	UserApi userApi;
 	@Autowired
 	ManagerUserApi managerUserApi;
+	@Autowired
+	UpStreamApi upStreamApi;
 
 
 	@Test
@@ -116,6 +120,35 @@ public class UserApiTest extends AutoWiredBaseTest {
 		BaseOutput out = managerUserApi.verifyUserCert(user);
 		System.out.println(out.getCode());
 		System.out.println(JSONObject.toJSONString(out));
+	}
+
+	@Test
+	public void addUpstream(){
+		UpStreamDto upStream = new UpStreamDto();
+		upStream.setSourceUserId(18l);
+		upStream.setUpstreamType(10);
+		upStream.setIdCard("110101199003075533");
+		upStream.setTelphone("13812340987");
+		upStream.setName("个体户甲");
+		upStream.setUpORdown(20);
+		upStreamApi.doCreateUpStream(upStream);
+	}
+
+	@Test
+	public void modifyUpstream(){
+		UpStreamDto upStream = new UpStreamDto();
+		upStream.setId(19l);
+		upStream.setName("个体户甲-改");
+		upStreamApi.doModifyUpStream(upStream);
+	}
+
+	@Test
+	public void listUpstream(){
+		UpStreamDto upStream = new UpStreamDto();
+		upStream.setSourceUserId(18l);
+		upStream.setUpORdown(10);
+		BaseOutput<BasePage<UpStream>> pageUpstream = upStreamApi.listPagedUpStream(upStream);
+		System.out.println(pageUpstream.getCode());
 	}
 
 }
