@@ -70,33 +70,34 @@ public class ClientRegisterBillApi {
 	TradeDetailService tradeDetailService;
 	@Autowired
 	UpStreamService upStreamService;
+
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
-	public BaseOutput createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
+	public BaseOutput<List<Long>> createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
 		logger.info("保存多个登记单:");
-
-		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
-
-		User user = userService.get(operatorUser.getId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
+		if(createListBillParam==null||createListBillParam.getRegisterBills()==null){
+			return BaseOutput.failure("参数错误");
 		}
-		List<CreateRegisterBillInputDto> registerBills = createListBillParam.getRegisterBills();
-		if (registerBills == null) {
-			return BaseOutput.failure("没有登记单");
-		}
-		logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
-		for (CreateRegisterBillInputDto dto : registerBills) {
-			logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-			RegisterBill registerBill = dto.build(user);
-			try {
-				registerBillService.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
-			} catch (TraceBusinessException e) {
-				return BaseOutput.failure(e.getMessage());
+		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+
+			User user = userService.get(operatorUser.getId());
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
 			}
-
+			List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills()).nonNull().toList();
+			if (registerBills == null) {
+				return BaseOutput.failure("没有登记单");
+			}
+			logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
+			List<Long> idList = this.registerBillService.createBillList(registerBills, user, operatorUser);
+			return BaseOutput.success().setData(idList);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
 		}
-		return BaseOutput.success();
 	}
 
 	@ApiOperation("修改报备单")
@@ -106,16 +107,17 @@ public class ClientRegisterBillApi {
 		if (dto == null || dto.getBillId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
-		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
-
-		User user = userService.get(operatorUser.getId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-
-		logger.info("保存登记单:" + JSON.toJSONString(dto));
-		RegisterBill registerBill = dto.build(user);
 		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+
+			User user = userService.get(operatorUser.getId());
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+
+			logger.info("保存登记单:" + JSON.toJSONString(dto));
+			RegisterBill registerBill = dto.build(user);
+
 			this.registerBillService.doEdit(registerBill);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

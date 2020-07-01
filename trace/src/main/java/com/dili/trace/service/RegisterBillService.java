@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
@@ -19,8 +21,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	public RegisterBill findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto dto) throws Exception;
 
 	public String listPage(RegisterBillDto dto) throws Exception;
-
-
 
 	/**
 	 * 通过商品查找
@@ -178,6 +178,9 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType);
 
 	public Long doVerifyBeforeCheckIn(RegisterBill input, OperatorUser operatorUser);
-	
+
 	public Long doVerifyAfterCheckIn(RegisterBill input, OperatorUser operatorUser);
+
+	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+			OperatorUser operatorUser);
 }

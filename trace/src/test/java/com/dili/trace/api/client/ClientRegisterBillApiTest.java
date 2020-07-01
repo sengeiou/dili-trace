@@ -97,7 +97,8 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
 		rb.getImageCertList().add(imageCert);
 		BaseOutput out = this.clientRegisterBillApi.createRegisterBillList(createListBillParam);
-		System.out.println(out.isSuccess());
+		assertTrue(out.isSuccess());
+		System.out.println(out.getData());
 
 		Brand brandQuery = new Brand();
 		brandQuery.setBrandName(rb.getBrandName());

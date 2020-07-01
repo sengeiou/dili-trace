@@ -16,10 +16,12 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
+import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.dto.BatchResultDto;
 import com.dili.trace.dto.OperatorUser;
@@ -50,11 +52,14 @@ import com.diligrp.manage.sdk.session.SessionContext;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SQLQuery.ReturnProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import one.util.streamex.StreamEx;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -83,6 +88,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
+	}
+
+	@Transactional
+	@Override
+	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+			OperatorUser operatorUser) {
+			return	StreamEx.of(registerBills).nonNull().map(dto->{
+					logger.info("循环保存登记单:" + JSON.toJSONString(dto));
+					RegisterBill registerBill = dto.build(user);
+					return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
+
+				}).toList();
+
 	}
 
 	@Transactional
@@ -128,13 +146,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	private BaseOutput checkBill(RegisterBill registerBill) {
 
-		if(!BillTypeEnum.fromCode(registerBill.getBillType()).isPresent()){
+		if (!BillTypeEnum.fromCode(registerBill.getBillType()).isPresent()) {
 			throw new TraceBusinessException("单据类型错误");
 		}
-		if(!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()){
+		if (!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()) {
 			throw new TraceBusinessException("装车类型错误");
 		}
-		if(!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()){
+		if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
 			throw new TraceBusinessException("商品类型错误");
 		}
 		if (StringUtils.isBlank(registerBill.getName())) {
@@ -142,11 +160,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("业户姓名不能为空");
 		}
 
-		if (StringUtils.isBlank(registerBill.getProductName())||registerBill.getProductId()==null) {
+		if (StringUtils.isBlank(registerBill.getProductName()) || registerBill.getProductId() == null) {
 			logger.error("商品名称不能为空");
 			throw new TraceBusinessException("商品名称不能为空");
 		}
-		if (StringUtils.isBlank(registerBill.getOriginName())||registerBill.getOriginId()==null) {
+		if (StringUtils.isBlank(registerBill.getOriginName()) || registerBill.getOriginId() == null) {
 			logger.error("商品产地不能为空");
 			throw new TraceBusinessException("商品产地不能为空");
 		}
@@ -827,8 +845,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
-		 this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReturnedReason(),VerifyTypeEnum.VERIFY_BEFORE_CHECKIN,
-				operatorUser);
+		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReturnedReason(),
+				VerifyTypeEnum.VERIFY_BEFORE_CHECKIN, operatorUser);
 		this.tradeDetailService.doUpdateSaleStatus(operatorUser, billId);
 		return billId;
 	}
@@ -852,15 +870,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
-		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReturnedReason(),VerifyTypeEnum.VERIFY_AFTER_CHECKIN, operatorUser);
+		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReturnedReason(),
+				VerifyTypeEnum.VERIFY_AFTER_CHECKIN, operatorUser);
 		this.tradeDetailService.doUpdateSaleStatus(operatorUser, billId);
 
 		return billId;
 
 	}
 
-	private Long createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,String returnedReason,
-			VerifyTypeEnum verifyType, OperatorUser operatorUser) {
+	private Long createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,
+			String returnedReason, VerifyTypeEnum verifyType, OperatorUser operatorUser) {
 		RegisterBill historyBill = new RegisterBill();
 		try {
 			BeanUtils.copyProperties(historyBill, item);
