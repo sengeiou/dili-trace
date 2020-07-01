@@ -62,7 +62,9 @@ public class ManagerRegisterBillApi {
 
 			RegisterBillOutput dto = RegisterBillOutput.build(billItem);
 			
-			String upStreamName=StreamEx.ofNullable(billItem.getUpStreamId()).nonNull().map(upId->this.upStreamService.get(upId)).nonNull().map(UpStream::getName).findFirst().orElse(""));
+			String upStreamName=StreamEx.ofNullable(billItem.getUpStreamId()).nonNull()
+			.map(upId->{return this.upStreamService.get(upId);})
+			.nonNull().map(UpStream::getName).findFirst().orElse("");
 			dto.setUpStreamName(upStreamName);
 			dto.setImageCertList(this.imageCertService.findImageCertListByBillId(billItem.getId()));
 			return BaseOutput.success().setData(dto);
