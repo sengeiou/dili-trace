@@ -177,3 +177,156 @@ batchStockId:111//库存ID
 /api/manager/managerCheckinRecord/listPageCheckOutData.api
 出门审核：
 /api/manager/managerCheckinRecord/doCheckout.api
+
+--------------------------
+用户模块接口
+注册
+/api/userApi/register.api
+请求字段：
+{
+"password": "123123",
+"phone": "15828695074",
+"name": "庞先生",
+"checkCode": "456634"
+}
+返回字段：
+{
+code:200
+data:19 – 用户id
+}
+
+资料完善
+/api/userApi/realNameCertificationReq.api
+请求数据：
+{
+"businessLicenseUrl": "营业执照",
+"cardNo": "110101199003070839",
+"operationLicenseUrl": "经营许可证",
+"tallyAreaNos": "101,103",
+"license": "45663LL89788W984",
+"vocationType": 10, //行业： 批发 10 农贸 20 团体 30 个人40 餐饮50 配送商 60
+"cardNoBackUrl": "/image/DETECT_REPORT/202005/9b7c78f4979049ab9c634b1fea9dcbd0.jpg",
+"phone": "15928695074",
+"legalPerson": "庞先生",
+"cardNoFrontUrl": "/image/DETECT_REPORT/202005/9b7c78f4979049ab9c634b1fea9dcbd0.jpg",
+"name": "庞记水产公司",
+"userType": 20,
+"addr": "四川成都青羊区人民路9号",
+"manufacturingLicenseUrl": "生产许可证"
+}
+返回数据：
+{
+code:200
+}
+
+监管端-商户审核概览
+/api/manager/user/userCertCount.api
+请求数据：
+{}
+返回数据：
+{
+{
+"result": "OK",
+"code": "200",
+"data": [{
+"numbers": "14",
+"validateState": 10 //未实名10 待审核 20 审核未通过 30 审核通过 40
+}, {
+"numbers": "1",
+"validateState": 30
+}],
+"success": true,
+"message": "OK"
+}
+}
+
+监管端-商户审核列表
+/api/manager/user/listUserCertByQuery.api
+请求数据
+{
+"page": 1,
+"rows": 20,
+"validateState": 10,
+"keyword":"关键字"
+}
+返回数据
+{
+"code": "200",
+"data": {
+"datas": [{
+"id": 1,
+"name": "王国峰",
+"phone": "18380475460",
+"tallyAreaNos": "555",
+"validateState": 10
+}, {
+"id": 8,
+"name": "删除测试",
+"phone": "13111111213",
+"tallyAreaNos": "567",
+"validateState": 10
+}],
+"nextPageAvailable": false,
+"orderFieldNextType": "ASC",
+"page": 1,
+"previousPageAvailable": false,
+"rows": 5,
+"totalItem": 2,
+"totalPage": 1
+},
+"message": "OK",
+"result": "OK",
+"success": true
+}
+
+监管端-商户详情
+/api/manager/user/userCertDetail.api
+请求数据
+{
+"id": 10
+}
+返回数据
+{
+"code": "200",
+"data": {
+"addr": "达州市",
+"businessLicenseUrl": "/image/BUSINESS_LICENSE/202005/e1077652fa874fec81cf1e0f092663b2.png",
+"cardNo": "513001199602081058",
+"cardNoBackUrl": "/image/ID_CARD/202005/89605ca5b25e405d8e8ce707b7e5dcd5.png",
+"cardNoFrontUrl": "/image/ID_CARD/202005/af5b98c0976342aa8be22dc7d50ddf76.png",
+"created": 1590735662000,
+"id": 10,
+"isDelete": 0,
+"modified": 1593486352000,
+"name": "张老师",
+"password": "96E79218965EB72C92A549DD5A330112",
+"phone": "13211111111",
+"qrStatus": 10,
+"state": 1,
+"tallyAreaNos": "886,226",
+"userType": 10,
+"validateState": 10,
+"version": 0,
+"yn": 1
+},
+"message": "OK",
+"result": "OK",
+"success": true
+}
+
+监管端-商户审核
+/api/manager/user/listUserCertByQuery.api
+请求数据
+{
+"id": 18,
+"validateState": 30, //审核不通过 30 审核通过 40
+"refuseReason":""
+}
+返回数据
+{
+"code": "5000", //200 成功
+"message": "当前状态不能审核",
+"result": "当前状态不能审核",
+"success": false
+}
+----------------

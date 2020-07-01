@@ -355,8 +355,27 @@ ALTER TABLE `checkinout_record` DROP COLUMN `sales_weight`;
 ALTER TABLE `checkinout_record` DROP COLUMN `seperate_sales_id`;
 
 #2020年6月23日11点35分
-ALTER TABLE hztrace.`user` ADD COLUMN validate_state tinyint(2) DEFAULT 10 NOT NULL COMMENT '未实名10 待审核 20  审核未通过 30 审核通过 40';
-ALTER TABLE hztrace.`user` MODIFY COLUMN business_license_url varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '营业执照';
-ALTER TABLE hztrace.`user` ADD vocation_type TINYINT(2) NULL COMMENT '批发 10 农贸 20 团体 30 个人40 餐饮50 配送商 60';
+ALTER TABLE `user` ADD COLUMN validate_state tinyint(2) DEFAULT 10 NOT NULL COMMENT '未实名10 待审核 20  审核未通过 30 审核通过 40';
+ALTER TABLE `user` MODIFY COLUMN business_license_url varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '营业执照';
+ALTER TABLE `user` ADD vocation_type TINYINT(2) NULL COMMENT '批发 10 农贸 20 团体 30 个人40 餐饮50 配送商 60';
 #2020年7月1日
-ALTER TABLE hztrace.upstream ADD upORdown TINYINT(2) DEFAULT 10 NULL COMMENT '上游企业10 下游企业20';
+ALTER TABLE upstream ADD upORdown TINYINT(2) DEFAULT 10 NULL COMMENT '上游企业10 下游企业20';
+
+CREATE TABLE event_message (
+	id BIGINT(20) auto_increment NOT NULL,
+	title varchar(20) NULL,
+	overview varchar(50) NULL,
+	content varchar(150) NULL,
+	source_business_id BIGINT(20) NULL COMMENT '关联业务id',
+	source_business_type_id BIGINT(20) NULL COMMENT '关联业务类型id',
+	creator_id BIGINT(20) NULL,
+	creator varchar(50) NULL,
+	receiver_id BIGINT(20) NULL COMMENT '消息接收者id',
+	receiver varchar(50) NULL,
+	create_time TIMESTAMP DEFAULT now() NULL,
+	read_flag TINYINT(1) DEFAULT 0 NULL COMMENT '已读标志 未读0 已读 1',
+	CONSTRAINT event_message_PK PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci;
