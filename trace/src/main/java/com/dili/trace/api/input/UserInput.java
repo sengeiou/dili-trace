@@ -7,6 +7,15 @@ public class UserInput extends BasePage {
 	private Integer validateState;
 	private String tallyAreaNos;
 	private String name;
+	private String refuseReason;
+
+	public String getRefuseReason() {
+		return refuseReason;
+	}
+
+	public void setRefuseReason(String refuseReason) {
+		this.refuseReason = refuseReason;
+	}
 
 	public Long getId() {
 		return id;
