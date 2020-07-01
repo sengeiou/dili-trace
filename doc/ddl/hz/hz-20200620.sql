@@ -319,6 +319,7 @@ ALTER TABLE `register_bill` ADD COLUMN  `bill_type` int(11)  NOT NULL  default 1
 ALTER TABLE `register_bill` ADD COLUMN  `truck_type` int(11)  NOT NULL  default 10 COMMENT '车类型';
 ALTER TABLE `register_bill` ADD COLUMN  `brand_id` bigint(20)    NULL   COMMENT '品牌ID';
 ALTER TABLE `register_bill` ADD COLUMN  `brand_name` varchar(50)   NULL   COMMENT '品牌名称';
+ALTER TABLE `register_bill` ADD COLUMN  `returned_reason` varchar(100)   NULL   COMMENT '退回原因';
 ALTER TABLE `register_bill` ADD COLUMN  `yn` int(11)  NOT NULL  default 1 COMMENT '是否有效';
 ALTER TABLE `register_bill` MODIFY COLUMN `weight` decimal(10,3)  NOT NULL default 0 COMMENT '重量';
 

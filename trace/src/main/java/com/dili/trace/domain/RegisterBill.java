@@ -179,6 +179,11 @@ public class RegisterBill extends BaseDomain {
 	@Column(name="`yn`")
 	private Integer yn;
 
+	@ApiModelProperty(value = "退回原因")
+	@Column(name = "`returned_reason`")
+	private String returnedReason;
+	
+
 	public Integer getVerifyStatus() {
 		return verifyStatus;
 	}
@@ -579,6 +584,21 @@ public class RegisterBill extends BaseDomain {
      */
     public void setTruckType(Integer truckType) {
         this.truckType = truckType;
+    }
+
+
+    /**
+     * @return String return the returnedReason
+     */
+    public String getReturnedReason() {
+        return returnedReason;
+    }
+
+    /**
+     * @param returnedReason the returnedReason to set
+     */
+    public void setReturnedReason(String returnedReason) {
+        this.returnedReason = returnedReason;
     }
 
 }
