@@ -55,6 +55,9 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "用户iD")
 	@Column(name = "`user_id`")
 	private Long userId;
+	@ApiModelProperty(value = "摊位号")
+	@Column(name = "`tally_area_no`")
+	private String tallyAreaNo;
 
 	@ApiModelProperty(value = "车牌")
 	@Column(name = "`plate`")
@@ -112,7 +115,6 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`latest_pd_result`")
 	private String latestPdResult;
 
-
 	@ApiModelProperty(value = "版本")
 	@Column(name = "`version`")
 	private Integer version;
@@ -142,7 +144,7 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "查验状态值")
 	@Column(name = "`verify_status`")
 	private Integer verifyStatus;
-	
+
 	@ApiModelProperty(value = "保存类型")
 	@Column(name = "`preserve_type`")
 	private Integer preserveType;
@@ -150,20 +152,20 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "查验历史ID")
 	@Column(name = "`verified_history_bill_id`")
 	private Long verifiedHistoryBillId;
-	
+
 	@ApiModelProperty(value = "查验类型")
 	@Column(name = "`verify_type`")
 	private Integer verifyType;
 
 	@ApiModelProperty(value = "规格名称")
-	@Column(name="`spec_name`")
+	@Column(name = "`spec_name`")
 	private String specName;
 
 	@ApiModelProperty(value = "报备类型")
-	@Column(name="`bill_type`")
+	@Column(name = "`bill_type`")
 	private Integer billType;
 	@ApiModelProperty(value = "拼车类型")
-	@Column(name="`truck_type`")
+	@Column(name = "`truck_type`")
 	private Integer truckType;
 
 	@ApiModelProperty(value = "品牌名称")
@@ -174,15 +176,13 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`brand_id`")
 	private Long brandId;
 
-	
 	@ApiModelProperty(value = "是否有效")
-	@Column(name="`yn`")
+	@Column(name = "`yn`")
 	private Integer yn;
 
 	@ApiModelProperty(value = "退回原因")
 	@Column(name = "`returned_reason`")
 	private String returnedReason;
-	
 
 	public Integer getVerifyStatus() {
 		return verifyStatus;
@@ -450,155 +450,159 @@ public class RegisterBill extends BaseDomain {
 		this.complete = complete;
 	}
 
+	/**
+	 * @return Integer return the preserveType
+	 */
+	public Integer getPreserveType() {
+		return preserveType;
+	}
+
+	/**
+	 * @param preserveType the preserveType to set
+	 */
+	public void setPreserveType(Integer preserveType) {
+		this.preserveType = preserveType;
+	}
+
+	/**
+	 * @return Long return the verifiedHistoryBillId
+	 */
+	public Long getVerifiedHistoryBillId() {
+		return verifiedHistoryBillId;
+	}
+
+	/**
+	 * @param verifiedHistoryBillId the verifiedHistoryBillId to set
+	 */
+	public void setVerifiedHistoryBillId(Long verifiedHistoryBillId) {
+		this.verifiedHistoryBillId = verifiedHistoryBillId;
+	}
+
+	/**
+	 * @return Integer return the verifyType
+	 */
+	public Integer getVerifyType() {
+		return verifyType;
+	}
+
+	/**
+	 * @param verifyType the verifyType to set
+	 */
+	public void setVerifyType(Integer verifyType) {
+		this.verifyType = verifyType;
+	}
+
+	/**
+	 * @return String return the specName
+	 */
+	public String getSpecName() {
+		return specName;
+	}
+
+	/**
+	 * @param specName the specName to set
+	 */
+	public void setSpecName(String specName) {
+		this.specName = specName;
+	}
+
+	/**
+	 * @return Integer return the billType
+	 */
+	public Integer getBillType() {
+		return billType;
+	}
+
+	/**
+	 * @param billType the billType to set
+	 */
+	public void setBillType(Integer billType) {
+		this.billType = billType;
+	}
+
+	/**
+	 * @return Long return the brandId
+	 */
+	public Long getBrandId() {
+		return brandId;
+	}
+
+	/**
+	 * @param brandId the brandId to set
+	 */
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
+	}
+
+	/**
+	 * @return String return the brandName
+	 */
+	public String getBrandName() {
+		return brandName;
+	}
+
+	/**
+	 * @param brandName the brandName to set
+	 */
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
+
+	/**
+	 * @return Integer return the yn
+	 */
+	public Integer getYn() {
+		return yn;
+	}
+
+	/**
+	 * @param yn the yn to set
+	 */
+	public void setYn(Integer yn) {
+		this.yn = yn;
+	}
+
+	/**
+	 * @return Integer return the truckType
+	 */
+	public Integer getTruckType() {
+		return truckType;
+	}
+
+	/**
+	 * @param truckType the truckType to set
+	 */
+	public void setTruckType(Integer truckType) {
+		this.truckType = truckType;
+	}
+
+	/**
+	 * @return String return the returnedReason
+	 */
+	public String getReturnedReason() {
+		return returnedReason;
+	}
+
+	/**
+	 * @param returnedReason the returnedReason to set
+	 */
+	public void setReturnedReason(String returnedReason) {
+		this.returnedReason = returnedReason;
+	}
+
 
     /**
-     * @return Integer return the preserveType
+     * @return String return the tallyAreaNo
      */
-    public Integer getPreserveType() {
-        return preserveType;
+    public String getTallyAreaNo() {
+        return tallyAreaNo;
     }
 
     /**
-     * @param preserveType the preserveType to set
+     * @param tallyAreaNo the tallyAreaNo to set
      */
-    public void setPreserveType(Integer preserveType) {
-        this.preserveType = preserveType;
-    }
-
-
-    /**
-     * @return Long return the verifiedHistoryBillId
-     */
-    public Long getVerifiedHistoryBillId() {
-        return verifiedHistoryBillId;
-    }
-
-    /**
-     * @param verifiedHistoryBillId the verifiedHistoryBillId to set
-     */
-    public void setVerifiedHistoryBillId(Long verifiedHistoryBillId) {
-        this.verifiedHistoryBillId = verifiedHistoryBillId;
-    }
-
-
-    /**
-     * @return Integer return the verifyType
-     */
-    public Integer getVerifyType() {
-        return verifyType;
-    }
-
-    /**
-     * @param verifyType the verifyType to set
-     */
-    public void setVerifyType(Integer verifyType) {
-        this.verifyType = verifyType;
-    }
-
-
-    /**
-     * @return String return the specName
-     */
-    public String getSpecName() {
-        return specName;
-    }
-
-    /**
-     * @param specName the specName to set
-     */
-    public void setSpecName(String specName) {
-        this.specName = specName;
-    }
-
-
-
-    /**
-     * @return Integer return the billType
-     */
-    public Integer getBillType() {
-        return billType;
-    }
-
-    /**
-     * @param billType the billType to set
-     */
-    public void setBillType(Integer billType) {
-        this.billType = billType;
-    }
-
-
-    /**
-     * @return Long return the brandId
-     */
-    public Long getBrandId() {
-        return brandId;
-    }
-
-    /**
-     * @param brandId the brandId to set
-     */
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
-    }
-
-
-    /**
-     * @return String return the brandName
-     */
-    public String getBrandName() {
-        return brandName;
-    }
-
-    /**
-     * @param brandName the brandName to set
-     */
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
-    }
-
-
-    /**
-     * @return Integer return the yn
-     */
-    public Integer getYn() {
-        return yn;
-    }
-
-    /**
-     * @param yn the yn to set
-     */
-    public void setYn(Integer yn) {
-        this.yn = yn;
-    }
-
-
-    /**
-     * @return Integer return the truckType
-     */
-    public Integer getTruckType() {
-        return truckType;
-    }
-
-    /**
-     * @param truckType the truckType to set
-     */
-    public void setTruckType(Integer truckType) {
-        this.truckType = truckType;
-    }
-
-
-    /**
-     * @return String return the returnedReason
-     */
-    public String getReturnedReason() {
-        return returnedReason;
-    }
-
-    /**
-     * @param returnedReason the returnedReason to set
-     */
-    public void setReturnedReason(String returnedReason) {
-        this.returnedReason = returnedReason;
+    public void setTallyAreaNo(String tallyAreaNo) {
+        this.tallyAreaNo = tallyAreaNo;
     }
 
 }

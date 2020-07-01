@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.WeightUnitEnum;
 
 public class RegisterBillOutput {
 	private Long billId;
@@ -14,9 +15,14 @@ public class RegisterBillOutput {
 	private String productName;
 	private String plate;
 	private BigDecimal weight;
-	private Integer weightUnit;
+    private Integer weightUnit;
+    private String weightUnitName;
 	private Integer truckType;
-	private Date created;
+    private Date created;
+
+    private String userName;
+    private String tallyAreaNo;
+    private String originName;
 	
 	private Integer color;
 	public static RegisterBillOutput build(RegisterBill bill){
@@ -31,7 +37,11 @@ public class RegisterBillOutput {
 		out.setWeight(bill.getWeight());
 		out.setWeightUnit(bill.getWeightUnit());
 		out.setCreated(bill.getCreated());
-		out.setTruckType(bill.getTruckType());
+        out.setTruckType(bill.getTruckType());
+        out.setUserName(bill.getName());
+        out.setOriginName(bill.getOriginName());
+        out.setTallyAreaNo(bill.getTallyAreaNo());
+        out.setWeightUnitName(WeightUnitEnum.fromCode(bill.getWeightUnit()).map(WeightUnitEnum::getName).orElse(""));
 		return out;
 	}
 	
@@ -165,6 +175,64 @@ public class RegisterBillOutput {
      */
     public void setTruckType(Integer truckType) {
         this.truckType = truckType;
+    }
+
+
+    /**
+     * @return String return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * @return String return the tallyAreaNo
+     */
+    public String getTallyAreaNo() {
+        return tallyAreaNo;
+    }
+
+    /**
+     * @param tallyAreaNo the tallyAreaNo to set
+     */
+    public void setTallyAreaNo(String tallyAreaNo) {
+        this.tallyAreaNo = tallyAreaNo;
+    }
+
+    /**
+     * @return String return the originName
+     */
+    public String getOriginName() {
+        return originName;
+    }
+
+    /**
+     * @param originName the originName to set
+     */
+    public void setOriginName(String originName) {
+        this.originName = originName;
+    }
+
+
+    /**
+     * @return String return the weightUnitName
+     */
+    public String getWeightUnitName() {
+        return weightUnitName;
+    }
+
+    /**
+     * @param weightUnitName the weightUnitName to set
+     */
+    public void setWeightUnitName(String weightUnitName) {
+        this.weightUnitName = weightUnitName;
     }
 
 }

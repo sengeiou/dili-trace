@@ -327,7 +327,6 @@ ALTER TABLE `register_bill` MODIFY COLUMN `weight` decimal(10,3)  NOT NULL defau
 ALTER TABLE `register_bill` DROP COLUMN `sales_type`;
 
 ALTER TABLE `register_bill` DROP COLUMN `register_source`;
-ALTER TABLE `register_bill` DROP COLUMN `tally_area_no`;
 
 ALTER TABLE `register_bill` DROP COLUMN `trade_account`;
 ALTER TABLE `register_bill` DROP COLUMN `trade_printing_card`;

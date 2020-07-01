@@ -98,7 +98,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					logger.info("循环保存登记单:" + JSON.toJSONString(dto));
 					RegisterBill registerBill = dto.build(user);
 					return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
-
 				}).toList();
 
 	}
@@ -158,6 +157,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (StringUtils.isBlank(registerBill.getName())) {
 			logger.error("业户姓名不能为空");
 			throw new TraceBusinessException("业户姓名不能为空");
+		}
+		if (registerBill.getUserId()==null) {
+			logger.error("业户ID不能为空");
+			throw new TraceBusinessException("业户ID不能为空");
 		}
 
 		if (StringUtils.isBlank(registerBill.getProductName()) || registerBill.getProductId() == null) {
