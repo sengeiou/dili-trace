@@ -13,6 +13,7 @@ public class TradeDetailBillOutput {
     private Integer weightUnit;
     private Integer tradeType;
     private Date created;
+    private String productName;
 
 
     /**
@@ -114,6 +115,21 @@ public class TradeDetailBillOutput {
      */
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+
+    /**
+     * @return String return the productName
+     */
+    public String getProductName() {
+        return productName;
+    }
+
+    /**
+     * @param productName the productName to set
+     */
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
 }

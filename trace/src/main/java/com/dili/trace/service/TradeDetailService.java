@@ -110,11 +110,66 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	}
 
+	/**
+	 * 创建单个交易信息
+	 */
+	public TradeDetail createTradeDetail(Long tradeRequestId, Long tradeDetailId, BigDecimal tradeWeight, User seller,
+			User buyer) {
+		TradeDetail tradeDetailItem = this.get(tradeDetailId);
+		if (tradeDetailItem == null) {
+			throw new TraceBusinessException("数据不存在");
+		}
+		if (!tradeDetailItem.getBuyerId().equals(seller.getId())) {
+			throw new TraceBusinessException("没有权限销售");
+		}
+		if (!SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetailItem.getSaleStatus())) {
+			throw new TraceBusinessException("当前状态不能销售");
+		}
+		if (tradeDetailItem.getStockWeight().compareTo(tradeWeight) < 0) {
+			throw new TraceBusinessException("库存不足不能销售");
+		}
+
+		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
+		tradeDetailItem.setStockWeight(tradeDetailItem.getStockWeight().subtract(tradeWeight));
+		this.updateSelective(tradeDetailItem);
+
+		TradeDetail tradeDetail = new TradeDetail();
+		tradeDetail.setBatchStockId(tradeDetailItem.getBatchStockId());
+		tradeDetail.setBillId(tradeDetailItem.getBillId());
+
+		tradeDetail.setBuyerId(buyer.getId());
+		tradeDetail.setBuyerName(buyer.getName());
+
+		tradeDetail.setSellerId(seller.getId());
+		tradeDetail.setSellerName(seller.getName());
+
+		tradeDetail.setStockWeight(stockWeight);
+		tradeDetail.setTotalWeight(stockWeight);
+		tradeDetail.setCheckinRecordId(tradeDetailItem.getCheckinRecordId());
+		tradeDetail.setCheckinStatus(tradeDetailItem.getCheckinStatus());
+		tradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
+		tradeDetail.setCheckoutRecordId(null);
+		tradeDetail.setCreated(new Date());
+		tradeDetail.setModified(new Date());
+		tradeDetail.setParentId(tradeDetailItem.getId());
+		tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+		tradeDetail.setProductName(tradeDetailItem.getProductName());
+		tradeDetail.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());
+		tradeDetail.setStatus(TradeDetailStatusEnum.NONE.getCode());
+		tradeDetail.setWeightUnit(tradeDetailItem.getWeightUnit());
+		tradeDetail.setTradeRequestId(tradeRequestId);
+		this.insertSelective(tradeDetail);
+		return tradeDetail;
+	}
+
 	@Transactional
 	public List<Long> createTradeList(TradeDetailInputWrapperDto input, Long sellerId) {
 		if (input == null || sellerId == null || input.getBuyerId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
+		User seller=this.userService.get(sellerId);
+		User buyer=this.userService.get(input.getBuyerId());
+		
 		Long buyerId = input.getBuyerId();
 		logger.info("seller userid={}", sellerId);
 		logger.info("buyer userid={}", buyerId);

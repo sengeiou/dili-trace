@@ -1,5 +1,6 @@
 package com.dili.trace.api.client;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +16,14 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
+import com.dili.trace.api.input.TradeRequestInputDto;
+import com.dili.trace.api.input.TradeRequestWrapperDto;
 import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
@@ -29,6 +33,7 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
+import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
@@ -70,12 +75,14 @@ public class ClientRegisterBillApi {
 	TradeDetailService tradeDetailService;
 	@Autowired
 	UpStreamService upStreamService;
+	@Autowired
+	TradeRequestService tradeRequestService;
 
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
 	public BaseOutput<List<Long>> createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
 		logger.info("保存多个登记单:");
-		if(createListBillParam==null||createListBillParam.getRegisterBills()==null){
+		if (createListBillParam == null || createListBillParam.getRegisterBills() == null) {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
@@ -85,7 +92,8 @@ public class ClientRegisterBillApi {
 			if (user == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills()).nonNull().toList();
+			List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills())
+					.nonNull().toList();
 			if (registerBills == null) {
 				return BaseOutput.failure("没有登记单");
 			}
@@ -203,6 +211,62 @@ public class ClientRegisterBillApi {
 			} else {
 				return BaseOutput.failure("没有数据");
 			}
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("查询数据出错");
+		}
+
+	}
+
+	@ApiOperation(value = "创建购买请求")
+	@RequestMapping(value = "/createBuyProductRequest.api", method = RequestMethod.POST)
+	public BaseOutput<Long> createBuyProductRequest(@RequestBody TradeRequestWrapperDto inputDto) {
+		if (inputDto == null || inputDto.getSellerId() == null || inputDto.getTradeWeight() == null
+				|| inputDto.getBatchStockId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		if (BigDecimal.ZERO.compareTo(inputDto.getTradeWeight()) >= 0) {
+			return BaseOutput.failure("购买重量不能小于0");
+		}
+		try {
+			Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			inputDto.setBuyerId(buyerId);
+			User user = userService.get(buyerId);
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			Long tradeRequestId = this.tradeRequestService.createBuyRequest(inputDto.buildTradeRequest());
+			return BaseOutput.success().setData(tradeRequestId);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("查询数据出错");
+		}
+
+	}
+
+	@ApiOperation(value = "创建销售请求")
+	@RequestMapping(value = "/createSellProductRequest.api", method = RequestMethod.POST)
+	public BaseOutput<Long> createSellProductRequest(@RequestBody TradeRequestWrapperDto inputDto) {
+		if (inputDto == null || inputDto.getBuyerId() == null || inputDto.getTradeWeight() == null
+				|| inputDto.getBatchStockId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		if (BigDecimal.ZERO.compareTo(inputDto.getTradeWeight()) >= 0) {
+			return BaseOutput.failure("销售重量不能小于0");
+		}
+
+		try {
+			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			inputDto.setSellerId(sellerId);
+			User user = userService.get(sellerId);
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			Long tradeRequestId = this.tradeRequestService.createSellRequest(inputDto.buildTradeRequest(),
+					inputDto.getTradeRequestList());
+			return BaseOutput.success().setData(tradeRequestId);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

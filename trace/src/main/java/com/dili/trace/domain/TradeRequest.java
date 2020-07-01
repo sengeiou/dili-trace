@@ -25,7 +25,6 @@ public class TradeRequest extends BaseDomain {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "`id`")
 	private Long id;
-
 	
 	@ApiModelProperty(value = "买家ID")
 	@Column(name = "`buyer_id`")
@@ -46,11 +45,142 @@ public class TradeRequest extends BaseDomain {
 	@ApiModelProperty(value = "交易重量")
 	@Column(name = "`trade_weight`")
 	private BigDecimal tradeWeight;
+	
+	@ApiModelProperty(value = "批次库存ID")
+	@Column(name = "`batch_stock_id`")
+	private Long batchStockId;
 
 	@Column(name = "`created`")
 	private Date created;
 
 	@Column(name = "`modified`")
 	private Date modified;
+
+    /**
+     * @return Long return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return Long return the buyerId
+     */
+    public Long getBuyerId() {
+        return buyerId;
+    }
+
+    /**
+     * @param buyerId the buyerId to set
+     */
+    public void setBuyerId(Long buyerId) {
+        this.buyerId = buyerId;
+    }
+
+    /**
+     * @return String return the buyerName
+     */
+    public String getBuyerName() {
+        return buyerName;
+    }
+
+    /**
+     * @param buyerName the buyerName to set
+     */
+    public void setBuyerName(String buyerName) {
+        this.buyerName = buyerName;
+    }
+
+    /**
+     * @return Long return the sellerId
+     */
+    public Long getSellerId() {
+        return sellerId;
+    }
+
+    /**
+     * @param sellerId the sellerId to set
+     */
+    public void setSellerId(Long sellerId) {
+        this.sellerId = sellerId;
+    }
+
+    /**
+     * @return String return the sellerName
+     */
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    /**
+     * @param sellerName the sellerName to set
+     */
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    /**
+     * @return BigDecimal return the tradeWeight
+     */
+    public BigDecimal getTradeWeight() {
+        return tradeWeight;
+    }
+
+    /**
+     * @param tradeWeight the tradeWeight to set
+     */
+    public void setTradeWeight(BigDecimal tradeWeight) {
+        this.tradeWeight = tradeWeight;
+    }
+
+    /**
+     * @return Date return the created
+     */
+    public Date getCreated() {
+        return created;
+    }
+
+    /**
+     * @param created the created to set
+     */
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    /**
+     * @return Date return the modified
+     */
+    public Date getModified() {
+        return modified;
+    }
+
+    /**
+     * @param modified the modified to set
+     */
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
+
+    /**
+     * @return Long return the batchStockId
+     */
+    public Long getBatchStockId() {
+        return batchStockId;
+    }
+
+    /**
+     * @param batchStockId the batchStockId to set
+     */
+    public void setBatchStockId(Long batchStockId) {
+        this.batchStockId = batchStockId;
+    }
 
 }
