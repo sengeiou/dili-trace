@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.ImageCertTypeEnum;
@@ -45,6 +46,10 @@ public class ImageCert extends BaseDomain {
 
 	@Column(name = "`modified`")
 	private Date modified;
+
+	@Transient
+	private String certTypeName;
+	
 
 	public Long getId() {
 		return id;
@@ -102,5 +107,14 @@ public class ImageCert extends BaseDomain {
     public void setBillId(Long billId) {
         this.billId = billId;
     }
+
+
+    /**
+     * @return String return the certTypeName
+     */
+    public String getCertTypeName() {
+        return ImageCertTypeEnum.fromCode(this.getCertType()).map(ImageCertTypeEnum::getName).orElse("");
+    }
+
 
 }
