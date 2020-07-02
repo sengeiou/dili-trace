@@ -30,16 +30,12 @@ public enum TruckTypeEnum {
 		this.name = name;
 	}
 
-	public static Optional<BillVerifyStatusEnum> fromCode(Integer code) {
-		return StreamEx.of(BillVerifyStatusEnum.values()).filterBy(BillVerifyStatusEnum::getCode, code).findFirst();
+	public static Optional<TruckTypeEnum> fromCode(Integer code) {
+		return StreamEx.of(TruckTypeEnum.values()).filterBy(TruckTypeEnum::getCode, code).findFirst();
 	}
 
 	public boolean equalsToCode(Integer code) {
 		return this.getCode().equals(code);
-	}
-
-	public static boolean canDoVerify(Integer code) {
-		return BillVerifyStatusEnum.NONE.equalsToCode(code) || BillVerifyStatusEnum.RETURNED.equalsToCode(code);
 	}
 
 	public Integer getCode() {

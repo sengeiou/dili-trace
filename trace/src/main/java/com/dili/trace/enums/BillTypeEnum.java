@@ -30,8 +30,8 @@ public enum BillTypeEnum {
 		this.name = name;
 	}
 
-	public static Optional<BillVerifyStatusEnum> fromCode(Integer code) {
-		return StreamEx.of(BillVerifyStatusEnum.values()).filterBy(BillVerifyStatusEnum::getCode, code).findFirst();
+	public static Optional<BillTypeEnum> fromCode(Integer code) {
+		return StreamEx.of(BillTypeEnum.values()).filterBy(BillTypeEnum::getCode, code).findFirst();
 	}
 
 	public boolean equalsToCode(Integer code) {
