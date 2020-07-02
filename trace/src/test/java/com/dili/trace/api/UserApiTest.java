@@ -100,9 +100,9 @@ public class UserApiTest extends AutoWiredBaseTest {
 	@Test
 	public void userCertDetail(){
 		JSONObject object = new JSONObject();
-		object.put("id", "10");
+		object.put("id", "18");
 		UserInput user = JSONObject.parseObject(object.toJSONString(),UserInput.class);
-		System.out.println(JSONObject.toJSONString(user));
+
 		BaseOutput<User> out = managerUserApi.userCertDetail(user);
 		System.out.println(out.getCode());
 		System.out.println(JSONObject.toJSONString(out));

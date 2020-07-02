@@ -20,6 +20,10 @@
     <result column="validate_state" jdbcType="BIT" property="validateState" />
     <result column="vocation_type" jdbcType="BIT" property="vocationType" />
     <result column="pwd" jdbcType="VARCHAR" property="pwd" />
+    <result column="market_id" jdbcType="BIGINT" property="marketId" />
+    <result column="market_name" jdbcType="VARCHAR" property="marketName" />
+    <result column="business_category_ids" jdbcType="VARCHAR" property="businessCategoryIds" />
+    <result column="business_categories" jdbcType="VARCHAR" property="marketName" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
   </resultMap>
@@ -27,8 +31,8 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, user_name, phone, card_no, addr, card_no_url, tally_area_nos, business_license_url,
-    sales_city_id, sales_city_name, state, pwd, created, modified,name,validate_state,vocation_type
+    id, user_name, phone, card_no, addr, card_no_url, tally_area_nos, business_license_url,market_id,market_name,
+    sales_city_id, sales_city_name, state, pwd, created, modified,name,validate_state,vocation_type,business_category_ids,business_categories
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
