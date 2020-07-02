@@ -1,5 +1,7 @@
 package com.dili.trace.api.manager;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import com.dili.common.entity.LoginSessionContext;
@@ -8,16 +10,15 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.output.RegisterBillOutput;
+import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
-import com.dili.trace.util.BasePageUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,25 @@ public class ManagerRegisterBillApi {
 		} catch (Exception e) {
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
+	}
+		/**
+	 * 不同审核状态数据统计
+	 */
+	@RequestMapping(value = "/countByVerifyStatus.api", method = { RequestMethod.POST })
+	public BaseOutput<List<VerifyStatusCountOutputDto>> countByVerifyStatus(@RequestBody RegisterBill query) {
+
+		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			  List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatus(query);
+			return BaseOutput.success().setData(list);
+
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
+	
+
 	}
 
 }

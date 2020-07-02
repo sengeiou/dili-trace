@@ -5,6 +5,7 @@ import java.util.List;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
@@ -183,4 +184,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser);
+
+	public List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBill query);
 }

@@ -136,4 +136,18 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+  <select id="countByVerifyStatus" parameterType="com.dili.trace.domain.RegisterBill" resultType="com.dili.trace.api.output.VerifyStatusCountOutputDto">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    verify_type,verify_status,count(1) as num
+    from register_bill
+    where 1=1
+    <if test="verifyType != null">
+      verify_type = #{verifyType},
+    </if>
+    group by verify_status
+  </select>
+
 </mapper>

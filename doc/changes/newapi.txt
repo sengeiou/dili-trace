@@ -129,6 +129,13 @@ batchStockId:111//库存ID
   ]
 }
 
+报备单数据统计:
+/api/manager/managerRegisterBill/countByVerifyStatus.api
+{
+verifyType: 10// (10, "报备预审"),(20, "场内审核"),;
+}
+ 
+
 9:扫码交易
 /api/client/clientTradeDetail/createTradeDetail.api
 10:溯源列表

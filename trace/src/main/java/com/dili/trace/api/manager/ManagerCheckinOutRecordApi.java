@@ -126,17 +126,18 @@ public class ManagerCheckinOutRecordApi {
 
 	}
 
-	/**
-	 * 分页查询需要出场查询的信息
-	 */
-	@RequestMapping(value = "/listPageCheckOutData.api", method = { RequestMethod.POST })
-	public BaseOutput<BasePage<Map<String, Object>>> listPageCheckOutData(@RequestBody CheckoutApiListQuery query) {
 
-		if (sessionContext.getAccountId() == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
+	// /**
+	//  * 分页查询需要出场查询的信息
+	//  */
+	// @RequestMapping(value = "/listPageCheckOutData.api", method = { RequestMethod.POST })
+	// public BaseOutput<BasePage<Map<String, Object>>> listPageCheckOutData(@RequestBody CheckoutApiListQuery query) {
 
-		return this.checkinOutRecordService.listPagedData(query, sessionContext.getAccountId());
+	// 	if (sessionContext.getAccountId() == null) {
+	// 		return BaseOutput.failure("未登陆用户");
+	// 	}
 
-	}
+	// 	return this.checkinOutRecordService.listPagedData(query, sessionContext.getAccountId());
+
+	// }
 }

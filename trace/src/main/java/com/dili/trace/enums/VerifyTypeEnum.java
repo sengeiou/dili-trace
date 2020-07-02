@@ -20,8 +20,8 @@ public enum VerifyTypeEnum {
         this.code = code;
         this.desc = desc;
     }
-    public static CheckinOutTypeEnum fromCode(Integer code) {
-        return Stream.of(CheckinOutTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
+    public static VerifyTypeEnum fromCode(Integer code) {
+        return Stream.of(VerifyTypeEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
     }
     public boolean equalsToCode(Integer code) {
         return this.getCode().equals(code);

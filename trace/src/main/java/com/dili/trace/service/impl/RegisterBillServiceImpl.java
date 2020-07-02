@@ -17,6 +17,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -52,13 +53,13 @@ import com.diligrp.manage.sdk.session.SessionContext;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SQLQuery.ReturnProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 
 /**
@@ -94,11 +95,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser) {
-			return	StreamEx.of(registerBills).nonNull().map(dto->{
-					logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-					RegisterBill registerBill = dto.build(user);
-					return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
-				}).toList();
+		return StreamEx.of(registerBills).nonNull().map(dto -> {
+			logger.info("循环保存登记单:" + JSON.toJSONString(dto));
+			RegisterBill registerBill = dto.build(user);
+			return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
+		}).toList();
 
 	}
 
@@ -151,8 +152,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()) {
 			throw new TraceBusinessException("装车类型错误");
 		}
-		if(TruckTypeEnum.POOL.equalsToCode(registerBill.getTruckType())){
-			if(StringUtils.isBlank(registerBill.getPlate())){
+		if (TruckTypeEnum.POOL.equalsToCode(registerBill.getTruckType())) {
+			if (StringUtils.isBlank(registerBill.getPlate())) {
 				throw new TraceBusinessException("车牌不能为空");
 			}
 		}
@@ -163,7 +164,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			logger.error("业户姓名不能为空");
 			throw new TraceBusinessException("业户姓名不能为空");
 		}
-		if (registerBill.getUserId()==null) {
+		if (registerBill.getUserId() == null) {
 			logger.error("业户ID不能为空");
 			throw new TraceBusinessException("业户ID不能为空");
 		}
@@ -910,6 +911,26 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		bill.setReason(StringUtils.trimToNull(returnedReason));
 		this.updateSelective(bill);
 		return bill.getId();
+	}
+
+	@Override
+	public List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBill query) {
+		if(query==null||query.getVerifyType()==null){
+			throw new TraceBusinessException("参数错误");
+		}
+		List<VerifyStatusCountOutputDto> dtoList = this.getActualDao().countByVerifyStatus(query);
+		StreamEx.of(BillVerifyStatusEnum.values()).flatMap(verifystatus -> {
+			return StreamEx.ofNullable(VerifyTypeEnum.fromCode(query.getVerifyType())).flatMapToEntry(verifyType -> {
+				return EntryStream.of(verifyType, verifystatus).toMap();
+			});
+		}).map(e -> {
+			VerifyStatusCountOutputDto dto = VerifyStatusCountOutputDto.buildDefault(e.getKey(), e.getValue());
+			if(dtoList.contains(dto)){
+				return dtoList.get(dtoList.indexOf(dto));
+			}
+			return dto;
+		}).toList();
+		return dtoList;
 	}
 
 }
