@@ -99,6 +99,12 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		assertNotNull(userItem);
 		return userItem;
 	}
+	protected List<User> findUsers() {
+		User query = DTOUtils.newDTO(User.class);
+		query.setPage(1);
+		query.setRows(10);
+		return this.userService.listPageByExample(query).getDatas();
+	}
 
 	protected RegisterBill buildBill() {
 		User userItem = this.findUser();

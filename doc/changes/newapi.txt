@@ -168,6 +168,11 @@ batchStockId:111//库存ID
 {
   billId:123//报备单ID
 }
+6进门: /api/manager/managerCheckinRecord/doCheckin.api
+{
+  billIdList:[123,456],
+  checkinStatus:10 //10:通过,20:不通过
+}
 创建报备单:/api/manager/managerRegisterBill/createRegisterBillList.api
 进门列表:
 /api/manager/managerCheckinRecord/listPageCheckInData.api

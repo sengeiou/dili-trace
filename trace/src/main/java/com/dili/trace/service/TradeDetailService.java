@@ -119,6 +119,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (tradeDetailItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
+		logger.info("detail item :stockweight:{},seller id:{}, owner user id:{}",tradeDetailItem.getStockWeight(),tradeDetailItem.getSellerId(),tradeDetailItem.getBuyerId());
+		logger.info("trade>tradeWeight:{}, seller id:{}, buyer id:{}",tradeWeight,seller.getId(),buyer.getId());
 		if (!tradeDetailItem.getBuyerId().equals(seller.getId())) {
 			throw new TraceBusinessException("没有权限销售");
 		}
@@ -128,9 +130,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (tradeDetailItem.getStockWeight().compareTo(tradeWeight) < 0) {
 			throw new TraceBusinessException("库存不足不能销售");
 		}
-
+		logger.info("id:{},stockWeight:{},tradeWeight:{}", tradeDetailItem.getId(),tradeDetailItem.getStockWeight(),tradeWeight);
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
-		tradeDetailItem.setStockWeight(tradeDetailItem.getStockWeight().subtract(tradeWeight));
+		tradeDetailItem.setStockWeight(stockWeight);
 		this.updateSelective(tradeDetailItem);
 
 		TradeDetail tradeDetail = new TradeDetail();
@@ -143,8 +145,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		tradeDetail.setSellerId(seller.getId());
 		tradeDetail.setSellerName(seller.getName());
 
-		tradeDetail.setStockWeight(stockWeight);
-		tradeDetail.setTotalWeight(stockWeight);
+		tradeDetail.setStockWeight(tradeWeight);
+		tradeDetail.setTotalWeight(tradeWeight);
 		tradeDetail.setCheckinRecordId(tradeDetailItem.getCheckinRecordId());
 		tradeDetail.setCheckinStatus(tradeDetailItem.getCheckinStatus());
 		tradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());

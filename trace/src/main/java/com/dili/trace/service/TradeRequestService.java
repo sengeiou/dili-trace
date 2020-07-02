@@ -17,13 +17,17 @@ import com.dili.trace.enums.TradeRequestTypeEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.StreamEx;
 
 @Service
 public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
+    private static final Logger logger=LoggerFactory.getLogger(TradeRequestService.class);
     @Autowired
     UserService userService;
     @Autowired
@@ -39,6 +43,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param request
      * @return
      */
+    @Transactional
     public Long createBuyRequest(TradeRequest request) {
 
         if (request.getBuyerId() == null) {
@@ -64,10 +69,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             throw new TraceBusinessException("卖家信息不存在");
         }
         request.setSellerId(seller.getId());
-
+        request.setBuyerName(batchStock.getUserName());
         request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
         request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
-
         this.insertSelective(request);
         return request.getId();
     }
@@ -75,6 +79,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 创建销售请求
      */
+    @Transactional
     public Long createSellRequest(TradeRequest request, List<TradeRequestInputDto> tradeRequestInputDtoList) {
         if (request.getBuyerId() == null) {
             throw new TraceBusinessException("买家ID不能为空");
@@ -94,6 +99,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (seller == null) {
             throw new TraceBusinessException("卖家信息不存在");
         }
+        request.setSellerName(seller.getName());
+        request.setSellerId(seller.getId());
+        request.setBuyerName(buyer.getName());
+        logger.info("buyer id:{},seller id:{}",request.getBuyerId(),request.getSellerId());
         List<MutablePair<Long, BigDecimal>> tradeDetailIdList = StreamEx
                 .of(CollectionUtils.emptyIfNull(tradeRequestInputDtoList)).nonNull().map(tr -> {
                     if (tr.getTradeWeight() == null || BigDecimal.ZERO.compareTo(tr.getTradeWeight()) >= 0) {
@@ -135,7 +144,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     return null;
                 }
                 TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(request.getId(), td.getId(),
-                        tradeWeight, buyer, buyer);
+                        tradeWeight, seller, buyer);
                 return tradeDetail;
 
             }).toList();

@@ -319,7 +319,7 @@ ALTER TABLE `register_bill` ADD COLUMN  `bill_type` int(11)  NOT NULL  default 1
 ALTER TABLE `register_bill` ADD COLUMN  `truck_type` int(11)  NOT NULL  default 10 COMMENT '车类型';
 ALTER TABLE `register_bill` ADD COLUMN  `brand_id` bigint(20)    NULL   COMMENT '品牌ID';
 ALTER TABLE `register_bill` ADD COLUMN  `brand_name` varchar(50)   NULL   COMMENT '品牌名称';
-ALTER TABLE `register_bill` ADD COLUMN  `returned_reason` varchar(100)   NULL   COMMENT '退回原因';
+ALTER TABLE `register_bill` ADD COLUMN  `reason` varchar(100)   NULL   COMMENT '原因';
 ALTER TABLE `register_bill` ADD COLUMN  `yn` int(11)  NOT NULL  default 1 COMMENT '是否有效';
 ALTER TABLE `register_bill` MODIFY COLUMN `weight` decimal(10,3)  NOT NULL default 0 COMMENT '重量';
 
@@ -379,3 +379,18 @@ CREATE TABLE event_message (
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `trade_request` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`buyer_id` bigint(20) NOT NULL COMMENT '买家ID',
+	`buyer_name` varchar(20) NOT NULL COMMENT '买家姓名',
+	`seller_id` bigint(20)  NULL COMMENT '卖家ID',
+	`seller_name` varchar(20)  NULL COMMENT '卖家姓名',
+	`trade_weight` decimal(10,3) NOT NULL  COMMENT '交易重量',
+	`batch_stock_id` bigint(20) NOT NULL COMMENT '商品库存ID',
+	`trade_request_type` int(11) NOT NULL  COMMENT '交易类型',
+	`trade_request_status` int(11) NOT NULL  COMMENT '交易状态',
+	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

@@ -848,7 +848,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
-		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReturnedReason(),
+		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReason(),
 				VerifyTypeEnum.VERIFY_BEFORE_CHECKIN, operatorUser);
 		this.tradeDetailService.doUpdateSaleStatus(operatorUser, billId);
 		return billId;
@@ -873,7 +873,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
-		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReturnedReason(),
+		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReason(),
 				VerifyTypeEnum.VERIFY_AFTER_CHECKIN, operatorUser);
 		this.tradeDetailService.doUpdateSaleStatus(operatorUser, billId);
 
@@ -902,7 +902,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		bill.setOperatorId(operatorUser.getId());
 		bill.setOperatorName(operatorUser.getName());
 		bill.setYn(YnEnum.YES.getCode());
-		bill.setReturnedReason(StringUtils.trimToNull(returnedReason));
+		bill.setReason(StringUtils.trimToNull(returnedReason));
 		this.updateSelective(bill);
 		return bill.getId();
 	}

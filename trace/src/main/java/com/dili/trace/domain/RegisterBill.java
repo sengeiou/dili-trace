@@ -180,9 +180,9 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`yn`")
 	private Integer yn;
 
-	@ApiModelProperty(value = "退回原因")
-	@Column(name = "`returned_reason`")
-	private String returnedReason;
+	@ApiModelProperty(value = "原因")
+	@Column(name = "`reason`")
+	private String reason;
 
 	public Integer getVerifyStatus() {
 		return verifyStatus;
@@ -576,20 +576,7 @@ public class RegisterBill extends BaseDomain {
 		this.truckType = truckType;
 	}
 
-	/**
-	 * @return String return the returnedReason
-	 */
-	public String getReturnedReason() {
-		return returnedReason;
-	}
-
-	/**
-	 * @param returnedReason the returnedReason to set
-	 */
-	public void setReturnedReason(String returnedReason) {
-		this.returnedReason = returnedReason;
-	}
-
+	
 
     /**
      * @return String return the tallyAreaNo
@@ -603,6 +590,21 @@ public class RegisterBill extends BaseDomain {
      */
     public void setTallyAreaNo(String tallyAreaNo) {
         this.tallyAreaNo = tallyAreaNo;
+    }
+
+
+    /**
+     * @return String return the reason
+     */
+    public String getReason() {
+        return reason;
+    }
+
+    /**
+     * @param reason the reason to set
+     */
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
 }
