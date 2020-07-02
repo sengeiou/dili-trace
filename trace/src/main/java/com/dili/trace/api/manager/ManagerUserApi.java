@@ -8,10 +8,10 @@ import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +67,7 @@ public class ManagerUserApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-//			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			User data = userService.get(input.getId());
 			data.setPassword(null);
 			return BaseOutput.success().setData(data);
@@ -83,8 +83,8 @@ public class ManagerUserApi {
 	@RequestMapping(value = "/verifyUserCert.api", method = RequestMethod.POST)
 	public BaseOutput<Long> verifyUserCert(@RequestBody UserInput input) {
 		try {
-			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			return userService.verifyUserCert(input);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			return userService.verifyUserCert(input,operatorUser);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

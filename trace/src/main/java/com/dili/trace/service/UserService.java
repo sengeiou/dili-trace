@@ -8,6 +8,7 @@ import com.dili.ss.domain.PageOutput;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
 
 import java.util.List;
@@ -86,5 +87,5 @@ public interface UserService extends BaseService<User, Long> {
 
 	BasePage<UserOutput> pageUserByQuery(UserInput user);
 
-	BaseOutput verifyUserCert(UserInput input);
+	BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser);
 }
