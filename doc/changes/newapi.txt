@@ -142,6 +142,11 @@ batchStockId:111//库存ID
 {
   tradeRequestId:234// 交易ID
 }
+14获得当前用户的进门数据:
+/api/manager/managerCheckinRecord/listPageCheckInData.api
+{
+  userId:123
+}
 
 
 监管端接口列表：

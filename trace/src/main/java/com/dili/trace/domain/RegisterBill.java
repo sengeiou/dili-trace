@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 
@@ -190,6 +191,11 @@ public class RegisterBill extends BaseDomain {
 
 	public void setVerifyStatus(Integer verifyStatus) {
 		this.verifyStatus = verifyStatus;
+	}
+
+	@Transient
+	public String getVerifyStatusName() {
+		return BillVerifyStatusEnum.fromCode(this.getVerifyStatus()).map(BillVerifyStatusEnum::getName).orElse("");
 	}
 
 	@Transient
@@ -576,35 +582,32 @@ public class RegisterBill extends BaseDomain {
 		this.truckType = truckType;
 	}
 
-	
+	/**
+	 * @return String return the tallyAreaNo
+	 */
+	public String getTallyAreaNo() {
+		return tallyAreaNo;
+	}
 
-    /**
-     * @return String return the tallyAreaNo
-     */
-    public String getTallyAreaNo() {
-        return tallyAreaNo;
-    }
+	/**
+	 * @param tallyAreaNo the tallyAreaNo to set
+	 */
+	public void setTallyAreaNo(String tallyAreaNo) {
+		this.tallyAreaNo = tallyAreaNo;
+	}
 
-    /**
-     * @param tallyAreaNo the tallyAreaNo to set
-     */
-    public void setTallyAreaNo(String tallyAreaNo) {
-        this.tallyAreaNo = tallyAreaNo;
-    }
+	/**
+	 * @return String return the reason
+	 */
+	public String getReason() {
+		return reason;
+	}
 
-
-    /**
-     * @return String return the reason
-     */
-    public String getReason() {
-        return reason;
-    }
-
-    /**
-     * @param reason the reason to set
-     */
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
+	/**
+	 * @param reason the reason to set
+	 */
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
 
 }
