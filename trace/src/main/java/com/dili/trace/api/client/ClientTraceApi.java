@@ -59,7 +59,7 @@ public class ClientTraceApi {
 	TradeDetailService tradeDetailService;
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST})
 	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetail query) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
@@ -78,7 +78,7 @@ public class ClientTraceApi {
 	 * 分页查询需要被进场查询的信息
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/viewTrace.api", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/viewTrace.api", method = { RequestMethod.POST})
 	public BaseOutput<TraceDetailOutputDto> viewTrace(@RequestBody TradeDetail query) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");

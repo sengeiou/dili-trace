@@ -58,7 +58,7 @@ public class ClientTradeRequestApi {
 	TradeRequestService tradeRequestService;
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST})
 	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequest condition) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");

@@ -51,7 +51,7 @@ public class ClientBatchStockApi {
 	TradeRequestService tradeRequestService;
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listMyBatchStock.api", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/listMyBatchStock.api", method = { RequestMethod.POST})
 	public BaseOutput<BasePage<BatchStock>> listMyBatchStock(@RequestBody BatchStockQueryDto condition) {
 		try {
 			Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
@@ -67,7 +67,7 @@ public class ClientBatchStockApi {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listSellersBatchStock.api", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/listSellersBatchStock.api", method = { RequestMethod.POST})
 	public BaseOutput<BasePage<BatchStock>> listSellersBatchStock(@RequestBody BatchStockQueryDto condition) {
 		if (condition == null || condition.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
