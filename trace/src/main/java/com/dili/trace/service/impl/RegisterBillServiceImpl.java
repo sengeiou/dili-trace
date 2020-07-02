@@ -855,7 +855,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReason(),
 				VerifyTypeEnum.VERIFY_BEFORE_CHECKIN, operatorUser);
-		this.tradeDetailService.doUpdateSaleStatus(operatorUser, billId);
+		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
 		return billId;
 	}
 
@@ -880,7 +880,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReason(),
 				VerifyTypeEnum.VERIFY_AFTER_CHECKIN, operatorUser);
-		this.tradeDetailService.doUpdateSaleStatus(operatorUser, billId);
+		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
 
 		return billId;
 

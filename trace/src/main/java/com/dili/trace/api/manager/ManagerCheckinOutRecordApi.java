@@ -2,16 +2,9 @@ package com.dili.trace.api.manager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
@@ -32,7 +25,14 @@ import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
-import com.google.common.collect.Maps;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import one.util.streamex.EntryStream;
@@ -101,7 +101,7 @@ public class ManagerCheckinOutRecordApi {
 	 * 分页查询需要出场查询的信息
 	 */
 	@RequestMapping(value = "/listPageCheckInData.api", method = { RequestMethod.POST })
-	public BaseOutput<BasePage<Map<String, Object>>> listPageCheckInData(@RequestBody RegisterBillDto query) {
+	public BaseOutput<Map<Integer, Object>> listPageCheckInData(@RequestBody RegisterBillDto query) {
 
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
@@ -112,13 +112,12 @@ public class ManagerCheckinOutRecordApi {
 
 		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(this.registerBillService.listByExample(query))
 				.groupingBy(RegisterBill::getTruckType);
-
 		Map<Integer, Object> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
 			if (TruckTypeEnum.FULL.equalsToCode(k)) {
-				return StreamEx.of(v);
+				return Stream.of(v);
 			}
 			if (TruckTypeEnum.POOL.equalsToCode(k)) {
-				return StreamEx.of(StreamEx.of(v).groupingBy(RegisterBill::getPlate));
+				return Stream.of(StreamEx.of(v).groupingBy(RegisterBill::getPlate));
 			}
 			return StreamEx.empty();
 		}).toMap();

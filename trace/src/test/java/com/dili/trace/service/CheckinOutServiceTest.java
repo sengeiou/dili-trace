@@ -4,29 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.List;
-
-import com.alibaba.fastjson.JSON;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTO;
-import com.dili.ss.dto.IDTO;
 import com.dili.trace.AutoWiredBaseTest;
-import com.dili.trace.api.input.CheckOutApiInput;
-import com.dili.trace.api.output.CheckInApiListOutput;
-import com.dili.trace.api.output.CheckoutApiListQuery;
 import com.dili.trace.domain.CheckinOutRecord;
-import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
-import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
@@ -37,8 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class CheckinOutServiceTest extends AutoWiredBaseTest {
-	@Autowired
-	private CheckinOutRecordService checkinOutRecordService;
 	@Autowired
 	private TradeDetailService tradeDetailService;
 

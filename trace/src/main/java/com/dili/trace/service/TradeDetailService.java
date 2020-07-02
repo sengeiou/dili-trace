@@ -54,7 +54,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	@Autowired
 	TradeDetailMapper tradeDetailMapper;
 
-	public Long doUpdateSaleStatus(OperatorUser operateUser, Long billId) {
+	public Long doUpdateTradeDetailSaleStatus(OperatorUser operateUser, Long billId) {
 
 		RegisterBill billItem = this.registerBillService.get(billId);
 		if (billItem == null) {
@@ -69,20 +69,35 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (tradeInfoItem == null) {
 			return billItem.getId();
 		}
+		TradeDetail updatableRecord = new TradeDetail();
+		updatableRecord.setId(tradeInfoItem.getId());
+		updatableRecord.setModified(new Date());
+
 		if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeInfoItem.getCheckinStatus())
-				&& BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
-				&& SaleStatusEnum.NONE.equalsToCode(tradeInfoItem.getSaleStatus())
-				&& CheckoutStatusEnum.NONE.equalsToCode(tradeInfoItem.getCheckoutStatus())) {
-			TradeDetail updatableRecord = new TradeDetail();
-			updatableRecord.setId(tradeInfoItem.getId());
-			updatableRecord.setModified(new Date());
+				&& BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())) {
 
-			updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-			this.updateSelective(updatableRecord);
+			if (CheckoutStatusEnum.NONE.equalsToCode(tradeInfoItem.getCheckoutStatus())) {
+				if (!SaleStatusEnum.FOR_SALE.equalsToCode(tradeInfoItem.getSaleStatus())) {
+					// 报备审核通过，允许进门之后，变为可销售状态
+					updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+					this.updateSelective(updatableRecord);
+				}
+			} else if (CheckoutStatusEnum.ALLOWED.equalsToCode(tradeInfoItem.getCheckoutStatus())) {
+				if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeInfoItem.getSaleStatus())) {
+					// 报备审核通过当前为可进行销售状态，允许出门之后，变为不可销售状态
+					updatableRecord.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+					this.updateSelective(updatableRecord);
+				}
+			}
+
 		} else {
-			// throw new TraceBusinessException("数据状态错误");
+			//报备审核没有通过或者没有被允许进门
+			if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeInfoItem.getSaleStatus())) {
+				// 报备审核通过当前为可进行销售状态，允许出门之后，变为不可销售状态
+				updatableRecord.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+				this.updateSelective(updatableRecord);
+			}
 		}
-
 		return billItem.getId();
 
 	}
@@ -119,8 +134,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (tradeDetailItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-		logger.info("detail item :stockweight:{},seller id:{}, owner user id:{}",tradeDetailItem.getStockWeight(),tradeDetailItem.getSellerId(),tradeDetailItem.getBuyerId());
-		logger.info("trade>tradeWeight:{}, seller id:{}, buyer id:{}",tradeWeight,seller.getId(),buyer.getId());
+		logger.info("detail item :stockweight:{},seller id:{}, owner user id:{}", tradeDetailItem.getStockWeight(),
+				tradeDetailItem.getSellerId(), tradeDetailItem.getBuyerId());
+		logger.info("trade>tradeWeight:{}, seller id:{}, buyer id:{}", tradeWeight, seller.getId(), buyer.getId());
 		if (!tradeDetailItem.getBuyerId().equals(seller.getId())) {
 			throw new TraceBusinessException("没有权限销售");
 		}
@@ -130,7 +146,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (tradeDetailItem.getStockWeight().compareTo(tradeWeight) < 0) {
 			throw new TraceBusinessException("库存不足不能销售");
 		}
-		logger.info("id:{},stockWeight:{},tradeWeight:{}", tradeDetailItem.getId(),tradeDetailItem.getStockWeight(),tradeWeight);
+		logger.info("id:{},stockWeight:{},tradeWeight:{}", tradeDetailItem.getId(), tradeDetailItem.getStockWeight(),
+				tradeWeight);
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
 		tradeDetailItem.setStockWeight(stockWeight);
 		this.updateSelective(tradeDetailItem);
@@ -169,9 +186,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (input == null || sellerId == null || input.getBuyerId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		User seller=this.userService.get(sellerId);
-		User buyer=this.userService.get(input.getBuyerId());
-		
+		User seller = this.userService.get(sellerId);
+		User buyer = this.userService.get(input.getBuyerId());
+
 		Long buyerId = input.getBuyerId();
 		logger.info("seller userid={}", sellerId);
 		logger.info("buyer userid={}", buyerId);

@@ -175,7 +175,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			updatableRecord.setCheckinStatus(checkinStatusEnum.getCode());
 
 			this.tradeInfoService.updateSelective(updatableRecord);
-			this.tradeInfoService.doUpdateSaleStatus(operateUser, registerBillItem.getId());
+			this.tradeInfoService.doUpdateTradeDetailSaleStatus(operateUser, registerBillItem.getId());
 
 			return checkinRecord;
 

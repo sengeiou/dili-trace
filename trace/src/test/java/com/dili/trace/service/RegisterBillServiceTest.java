@@ -9,7 +9,6 @@ import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.CheckInApiInput;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
