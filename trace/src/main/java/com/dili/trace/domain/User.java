@@ -199,7 +199,10 @@ public interface User extends IBaseDomain {
     public Long getMarketId() ;
     public void setMarketId(Long marketId);
 
-
+    @ApiModelProperty(value = "所属市场名称")
+    @Column(name = "`market_name`")
+    public String getMarketName();
+    public void setMarketName(String marketName);
 
 
     @ApiModelProperty(value = "生产许可证URL")
@@ -262,4 +265,13 @@ public interface User extends IBaseDomain {
     Integer getVocationType();
 
     void setVocationType(Integer type);
+
+
+    @Column(name = "business_category_ids")
+    String getBusinessCategoryIds();
+    void setBusinessCategoryIds(String businessCategoryIds);
+
+    @Column(name = "business_categories")
+    String getBusinessCategories();
+    void setBusinessCategories(String businessCategories);
 }

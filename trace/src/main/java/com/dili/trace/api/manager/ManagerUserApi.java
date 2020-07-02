@@ -11,6 +11,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +67,9 @@ public class ManagerUserApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+//			sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			User data = userService.get(input.getId());
+			data.setPassword(null);
 			return BaseOutput.success().setData(data);
 
 		} catch (TraceBusinessException e) {

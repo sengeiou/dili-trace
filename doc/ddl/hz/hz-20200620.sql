@@ -394,3 +394,8 @@ CREATE TABLE `trade_request` (
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+ALTER TABLE event_message MODIFY COLUMN source_business_type TINYINT NOT NULL COMMENT '关联业务类型 用户 10 报备 20 交易 30 ;';
+ALTER TABLE event_message MODIFY COLUMN source_business_type tinyint(2) NOT NULL COMMENT '关联业务类型 用户 10 报备 20 交易 30 ;';
+ALTER TABLE hztrace.event_message ADD receiver_type TINYINT(2) NOT NULL COMMENT '接收者角色 普通用户10 管理员20';
+ALTER TABLE hztrace.event_message MODIFY COLUMN read_flag tinyint(1) DEFAULT 0 NOT NULL COMMENT '已读标志 未读0 已读 1';
+ALTER TABLE hztrace.event_message MODIFY COLUMN create_time timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL;

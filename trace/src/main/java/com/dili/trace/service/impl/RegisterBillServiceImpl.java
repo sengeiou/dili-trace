@@ -53,6 +53,7 @@ import com.diligrp.manage.sdk.session.SessionContext;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+//import org.hibernate.SQLQuery.ReturnProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
