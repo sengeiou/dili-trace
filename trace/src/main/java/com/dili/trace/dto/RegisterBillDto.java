@@ -56,6 +56,9 @@ public class RegisterBillDto extends RegisterBill {
 	@Operator(Operator.IN)
 	private List<Integer> detectStateList;
 	
+	@Column(name = "`plate`")
+	@Operator(Operator.IN)
+	private List<String> plateList;
 
 	/**
 	 * 昵称模糊查询
@@ -256,6 +259,21 @@ public class RegisterBillDto extends RegisterBill {
      */
     public void setBillId(Long billId) {
         this.billId = billId;
+    }
+
+
+    /**
+     * @return List<String> return the plateList
+     */
+    public List<String> getPlateList() {
+        return plateList;
+    }
+
+    /**
+     * @param plateList the plateList to set
+     */
+    public void setPlateList(List<String> plateList) {
+        this.plateList = plateList;
     }
 
 }
