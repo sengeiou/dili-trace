@@ -203,6 +203,10 @@ public class RegisterBill extends BaseDomain {
 		return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
 	}
 	@Transient
+	public Long getBillId() {
+		return this.getId();
+	}
+	@Transient
 	public String getDetectStateName() {
 		try {
 			if (getDetectState() == null) {
