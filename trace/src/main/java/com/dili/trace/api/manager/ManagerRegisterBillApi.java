@@ -80,7 +80,7 @@ public class ManagerRegisterBillApi {
 	 * 不同审核状态数据统计
 	 */
 	@RequestMapping(value = "/countByVerifyStatus.api", method = { RequestMethod.POST })
-	public BaseOutput<List<VerifyStatusCountOutputDto>> countByVerifyStatus(@RequestBody RegisterBill query) {
+	public BaseOutput<List<VerifyStatusCountOutputDto>> countByVerifyStatus(@RequestBody RegisterBillDto query) {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
