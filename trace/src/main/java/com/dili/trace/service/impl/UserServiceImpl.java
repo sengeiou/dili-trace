@@ -11,10 +11,14 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.domain.PageOutput;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
+import com.dili.trace.domain.EventMessage;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.ValidateStateEnum;
+import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.service.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,11 +43,6 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.service.UserHistoryService;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserQrItemService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.service.UsualAddressService;
 
 import cn.hutool.core.collection.CollUtil;
 
@@ -68,6 +67,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     UsualAddressService usualAddressService;
     @Resource
     UserQrItemService userQrItemService;
+    @Resource
+    EventMessageService eventMessageService;
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -409,7 +411,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public BaseOutput verifyUserCert(UserInput input) {
+    public BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser) {
         if (input == null || input.getId() == null) {
             return BaseOutput.failure("参数错误");
         }
@@ -419,20 +421,40 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         String message ;
         if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()){//审核通过
-            message = "已通过审核申请";
+            message = "用户资料审核申请已通过";
         }else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()){//审核不通过
-            message = "已退回审核申请";
+            message = "用户资料审核申请未通过";
         }else {
             message = "系统出现异常";
             return BaseOutput.failure(message);
         }
+
         user.setValidateState(input.getValidateState());
         int retRows = update(user);
         if (retRows > 0){
+            sendVerifyCertMessage(user,message,input.getRefuseReason(), operatorUser);
             return BaseOutput.success(message);
         }else {
             return BaseOutput.failure();
         }
+    }
+
+    private void sendVerifyCertMessage(User user,String message,String operateReason,OperatorUser operatorUser){
+        //增加消息
+        EventMessage eventMessage = new EventMessage();
+        eventMessage.setTitle(message);
+        eventMessage.setOverview(operateReason);
+
+        eventMessage.setCreator(operatorUser.getName());
+        eventMessage.setCreatorId(operatorUser.getId());
+        eventMessage.setReceiver(user.getName());
+        eventMessage.setReceiverId(user.getId());
+        eventMessage.setReceiverType(UserTypeEnum.USER.getCode());
+
+        eventMessage.setSourceBusinessId(user.getId());
+        eventMessage.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
+
+        eventMessageService.addMessage(eventMessage);
     }
 
     private void updateUserQrItem(Long userId) {

@@ -20,7 +20,8 @@ public class EventMessageServiceTest extends AutoWiredBaseTest {
 
     @Test
     public void addTest(){
-        for (int i = 1 ; i < 25; i++){
+        System.out.println("-------------->开始");
+        for (int i = 1 ; i < 2; i++){
             EventMessage eventMessage = new EventMessage();
             eventMessage.setTitle("测试消息：报备单已审核，编号是"+i);
             eventMessage.setOverview("测试消息概览：报备单已审核，编号是"+i);
@@ -31,9 +32,9 @@ public class EventMessageServiceTest extends AutoWiredBaseTest {
             eventMessage.setReceiverId(18l);
             eventMessage.setReceiver("庞先生");
 
-            eventMessageService.insertSelective(eventMessage);
+            eventMessageService.addMessage(eventMessage);
         }
-
+        System.out.println("---------------->结束");
     }
 
     @Test

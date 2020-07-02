@@ -11,7 +11,6 @@ import com.dili.common.entity.PatternConstants;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.MD5Util;
-import com.dili.common.util.UUIDUtil;
 import com.dili.common.util.VerificationCodeUtil;
 import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
@@ -19,7 +18,6 @@ import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
-import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
@@ -27,16 +25,13 @@ import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -290,6 +285,19 @@ public class UserApi {
             if(StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO,user.getCardNo())){
                 throw new TraceBusinessException("身份证为空或格式错误");
             }
+            if(StrUtil.isBlank(user.getCardNoFrontUrl())){
+                throw new TraceBusinessException("身份证正面照片未上传");
+            }
+            if(StrUtil.isBlank(user.getCardNoBackUrl())){
+                throw new TraceBusinessException("身份证背面照片未上传");
+            }
+        }else {
+            if(StrUtil.isBlank(user.getBusinessLicenseUrl())){
+                throw new TraceBusinessException("营业执照照片未上传");
+            }
+            if(StrUtil.isBlank(user.getLicense())){
+                throw new TraceBusinessException("统一信用编码不能为空");
+            }
         }
 
         if(StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE,user.getPhone())){
@@ -300,12 +308,13 @@ public class UserApi {
             throw new TraceBusinessException("理货区号为空或格式错误");
         }
         if(Arrays.asList(user.getTallyAreaNos().split(",")).size()>15){
-            throw new TraceBusinessException("用户最多添加15个理货区");
+            throw new TraceBusinessException("用户最多添加15个摊位号");
         }
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
             throw new TraceBusinessException("姓名为空或格式错误");
         }
-//        TODO 增加
+
+
     }
 
 }
