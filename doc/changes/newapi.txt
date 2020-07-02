@@ -340,3 +340,61 @@ code:200
 "success": false
 }
 ----------------
+消息模块
+消息列表
+/api/message/pageMssage.api
+请求数据
+{
+"page": 1
+}
+返回数据
+{
+	"code": "200",
+	"data": {
+		"datas": [{
+			"createTime": "2020-07-02 14:21:03",
+			"creator": "系统管理员-甲",
+			"id": 3,
+			"overview": "测试消息概览：报备单已审核，编号是1",
+			"readFlag": 0,
+			"receiver": "庞先生",
+			"receiverId": 18,
+			"receiverType": 10,
+			"sourceBusinessId": 1,
+			"sourceBusinessType": 20,
+			"title": "测试消息：报备单已审核，编号是1"
+		}, {
+			"createTime": "2020-07-02 14:21:03",
+			"creator": "系统管理员-甲",
+			"id": 7,
+			"overview": "测试消息概览：报备单已审核，编号是5",
+			"readFlag": 0,
+			"receiver": "庞先生",
+			"receiverId": 18,
+			"receiverType": 10,
+			"sourceBusinessId": 5,
+			"sourceBusinessType": 20,
+			"title": "测试消息：报备单已审核，编号是5"
+		}],
+		"nextPageAvailable": false,
+		"orderFieldNextType": "ASC",
+		"page": 1,
+		"previousPageAvailable": false,
+		"rows": 5,
+		"totalItem": 24,
+		"totalPage": 5
+	},
+	"message": "OK",
+	"result": "OK",
+	"success": true
+}
+
+标记已读
+/api/message/read.api
+请求数据
+{
+"id":1
+}
+返回数据
+无
+-----------------------------

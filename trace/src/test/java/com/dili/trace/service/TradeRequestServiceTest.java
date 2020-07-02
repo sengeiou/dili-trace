@@ -23,8 +23,6 @@ import com.dili.trace.enums.TradeTypeEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import liquibase.pro.packaged.a;
-
 public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Autowired
     TradeRequestService tradeRequestService;
