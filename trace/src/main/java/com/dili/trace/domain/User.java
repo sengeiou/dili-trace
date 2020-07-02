@@ -274,12 +274,4 @@ public interface User extends IBaseDomain {
     @Column(name = "business_categories")
     String getBusinessCategories();
     void setBusinessCategories(String businessCategories);
-
-    @Column(name = "creator_id")
-    Long getCreatorId();
-    void setCreatorId(Long creatorId);
-
-    @Column(name = "creator")
-    String getCreator();
-    void setCreator(String creator);
 }
