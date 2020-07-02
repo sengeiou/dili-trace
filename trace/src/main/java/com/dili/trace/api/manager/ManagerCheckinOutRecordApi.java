@@ -122,6 +122,7 @@ public class ManagerCheckinOutRecordApi {
 		query.setPlateList(plateList);
 		query.setUserId(null);
 		query.setTruckType(TruckTypeEnum.POOL.getCode());
+		query.setMetadata(IDTO.AND_CONDITION_EXPR," id not in (select bill_id from trade_detail where checkin_status="+CheckinStatusEnum.ALLOWED.getCode()+" trade_type="+TradeTypeEnum.NONE.getCode()+")");
 		List<RegisterBill>samePlatePoolTruckTypeBillList =  this.registerBillService.listByExample(query);
 
 		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(samePlatePoolTruckTypeBillList)
