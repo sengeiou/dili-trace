@@ -84,12 +84,13 @@ public class ManagerRegisterBillApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			  List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatus(query);
+			List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatus(query);
 			return BaseOutput.success().setData(list);
 
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
 	

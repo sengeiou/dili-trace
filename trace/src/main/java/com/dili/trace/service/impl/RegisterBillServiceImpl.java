@@ -923,7 +923,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("参数错误");
 		}
 		List<VerifyStatusCountOutputDto> dtoList = this.getActualDao().countByVerifyStatus(query);
-		StreamEx.of(BillVerifyStatusEnum.values()).flatMap(verifystatus -> {
+		return StreamEx.of(BillVerifyStatusEnum.values()).flatMap(verifystatus -> {
 			return StreamEx.ofNullable(VerifyTypeEnum.fromCode(query.getVerifyType())).flatMapToEntry(verifyType -> {
 				return EntryStream.of(verifyType, verifystatus).toMap();
 			});
@@ -934,7 +934,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			}
 			return dto;
 		}).toList();
-		return dtoList;
 	}
 
 }
