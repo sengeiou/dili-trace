@@ -33,7 +33,7 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 
 	@Override
 	public List<UserPlate> findUserPlateByPlates(List<String> plateList) {
-		if(CollectionUtils.isEmpty(plateList)) {
+		if (CollectionUtils.isEmpty(plateList)) {
 			return new ArrayList<>(0);
 		}
 		Example example = new Example(UserPlate.class);
@@ -46,9 +46,9 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 		UserPlate example = DTOUtils.newDTO(UserPlate.class);
 		example.setUserId(userId);
 		this.deleteByExample(example);
-		
-		List<UserPlate> list =plateList.stream().map(p->{
-			
+
+		List<UserPlate> list = plateList.stream().map(p -> {
+
 			UserPlate item = DTOUtils.newDTO(UserPlate.class);
 			item.setPlate(p.toUpperCase());
 			item.setUserId(userId);
@@ -56,23 +56,36 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 			item.setCreated(new Date());
 			return item;
 		}).collect(Collectors.toList());
-		if(!list.isEmpty()) {
-			return this.batchInsert(list);	
+		if (!list.isEmpty()) {
+			return this.batchInsert(list);
 		}
 		return 0;
-		
+
 	}
 
 	@Override
 	public Map<Long, List<UserPlate>> findUserPlateByUserIdList(List<Long> userIdList) {
-		if(CollectionUtils.isEmpty(userIdList)) {
+		if (CollectionUtils.isEmpty(userIdList)) {
 			return new HashMap<>(0);
 		}
 		Example example = new Example(UserPlate.class);
 		example.and().andIn("userId", userIdList);
-		List<UserPlate>userPlateList= this.getDao().selectByExampleExpand(example);
+		List<UserPlate> userPlateList = this.getDao().selectByExampleExpand(example);
 		return userPlateList.stream().collect(Collectors.groupingBy(UserPlate::getUserId));
 	}
 
+	@Override
+	public int checkAndInsertUserPlate(Long userId, String plate) {
+		if(userId!=null&&plate!=null){
+			UserPlate item = DTOUtils.newDTO(UserPlate.class);
+			item.setPlate(plate.toUpperCase());
+			item.setUserId(userId);
+			boolean exists=this.listByExample(item).size()>0;
+			if(!exists){
+				this.insertSelective(item);
+			}
+		}
+		return 0;
+	}
 
 }

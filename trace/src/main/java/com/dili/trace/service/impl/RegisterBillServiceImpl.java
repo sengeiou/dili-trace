@@ -87,6 +87,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	TradeDetailService tradeDetailService;
 	@Autowired
 	BrandService brandService;
+	
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -123,7 +124,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
-		registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
+		String plate=StreamEx.ofNullable(registerBill.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull().map(String::toUpperCase).findFirst().orElse(null);
+		registerBill.setPlate(plate);
+		this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
 		int result = super.saveOrUpdate(registerBill);
 		if (result == 0) {

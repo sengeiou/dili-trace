@@ -33,6 +33,14 @@ public interface UserPlateService extends BaseService<UserPlate, Long> {
 	 * @return
 	 */
 	public int deleteAndInsertUserPlate(Long userId,List<String>plateList);
+
+		/**
+	 * 根据userId删除所有UserPlate,并插入plateList
+	 * @param userId
+	 * @param plateList
+	 * @return
+	 */
+	public int checkAndInsertUserPlate(Long userId,String plate);
 	
 	/**
 	 * 根据user集合查询Map<userid,List<UserPlate>>
