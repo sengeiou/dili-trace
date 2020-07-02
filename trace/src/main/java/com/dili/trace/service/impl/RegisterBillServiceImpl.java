@@ -151,6 +151,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!TruckTypeEnum.fromCode(registerBill.getTruckType()).isPresent()) {
 			throw new TraceBusinessException("装车类型错误");
 		}
+		if(TruckTypeEnum.POOL.equalsToCode(registerBill.getTruckType())){
+			if(StringUtils.isBlank(registerBill.getPlate())){
+				throw new TraceBusinessException("车牌不能为空");
+			}
+		}
 		if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
 			throw new TraceBusinessException("商品类型错误");
 		}
