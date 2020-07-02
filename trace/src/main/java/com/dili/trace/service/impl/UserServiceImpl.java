@@ -432,17 +432,18 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setValidateState(input.getValidateState());
         int retRows = update(user);
         if (retRows > 0){
-            sendVerifyCertMessage(user,message, operatorUser);
+            sendVerifyCertMessage(user,message,input.getRefuseReason(), operatorUser);
             return BaseOutput.success(message);
         }else {
             return BaseOutput.failure();
         }
     }
 
-    private void sendVerifyCertMessage(User user,String message,OperatorUser operatorUser){
+    private void sendVerifyCertMessage(User user,String message,String operateReason,OperatorUser operatorUser){
         //增加消息
         EventMessage eventMessage = new EventMessage();
         eventMessage.setTitle(message);
+        eventMessage.setOverview(operateReason);
 
         eventMessage.setCreator(operatorUser.getName());
         eventMessage.setCreatorId(operatorUser.getId());
