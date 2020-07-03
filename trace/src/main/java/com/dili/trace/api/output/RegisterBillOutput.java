@@ -20,6 +20,8 @@ public class RegisterBillOutput {
     private Integer weightUnit;
     private String weightUnitName;
     private Integer truckType;
+    private Integer verifyType;
+    private Integer billType;
     private Date created;
 
     private String userName;
@@ -55,6 +57,8 @@ public class RegisterBillOutput {
         out.setWeightUnitName(WeightUnitEnum.fromCode(bill.getWeightUnit()).map(WeightUnitEnum::getName).orElse(""));
         out.setBrandName(bill.getBrandName());
         out.setCode(bill.getCode());
+        out.setBillType(bill.getBillType());
+        out.setVerifyType(bill.getVerifyType());
         return out;
     }
 
@@ -292,6 +296,34 @@ public class RegisterBillOutput {
      */
     public void setImageCertList(List<ImageCert> imageCertList) {
         this.imageCertList = imageCertList;
+    }
+
+    /**
+     * @return Integer return the verifyType
+     */
+    public Integer getVerifyType() {
+        return verifyType;
+    }
+
+    /**
+     * @param verifyType the verifyType to set
+     */
+    public void setVerifyType(Integer verifyType) {
+        this.verifyType = verifyType;
+    }
+
+    /**
+     * @return Integer return the billType
+     */
+    public Integer getBillType() {
+        return billType;
+    }
+
+    /**
+     * @param billType the billType to set
+     */
+    public void setBillType(Integer billType) {
+        this.billType = billType;
     }
 
 }

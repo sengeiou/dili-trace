@@ -1,6 +1,7 @@
 package com.dili.trace.api.client;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -15,12 +16,15 @@ import com.dili.trace.api.input.TradeRequestWrapperDto;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.service.BatchStockService;
+import com.dili.trace.service.BrandService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UserService;
+import com.dili.trace.util.BasePageUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
+import one.util.streamex.StreamEx;
 
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientBatchStockApi")
@@ -49,14 +54,22 @@ public class ClientBatchStockApi {
 	TradeDetailService tradeDetailService;
 	@Autowired
 	TradeRequestService tradeRequestService;
+	@Autowired
+	BrandService brandService;
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listMyBatchStock.api", method = { RequestMethod.POST})
+	@RequestMapping(value = "/listMyBatchStock.api", method = { RequestMethod.POST })
 	public BaseOutput<BasePage<BatchStock>> listMyBatchStock(@RequestBody BatchStockQueryDto condition) {
 		try {
 			Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			condition.setUserId(userId);
-			BasePage<BatchStock> page = this.batchStockService.listPageByExample(condition);
+			BasePage<BatchStock> source = this.batchStockService.listPageByExample(condition);
+			List<Long> brandIdList = StreamEx.of(source.getDatas()).nonNull().map(BatchStock::getBrandId).toList();
+			Map<Long,Brand>idBrandMap=this.brandService.findBrandMapByIdList(brandIdList);
+			BasePage<BatchStock> page=	BasePageUtil.convert(source, bs->{
+				bs.setBrandName(idBrandMap.getOrDefault(bs.getBrandId(),new Brand()).getBrandName());
+				return bs;
+			});
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -67,7 +80,7 @@ public class ClientBatchStockApi {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listSellersBatchStock.api", method = { RequestMethod.POST})
+	@RequestMapping(value = "/listSellersBatchStock.api", method = { RequestMethod.POST })
 	public BaseOutput<BasePage<BatchStock>> listSellersBatchStock(@RequestBody BatchStockQueryDto condition) {
 		if (condition == null || condition.getUserId() == null) {
 			return BaseOutput.failure("参数错误");

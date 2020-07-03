@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.dili.ss.base.BaseService;
+import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
@@ -74,13 +75,15 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser);
 
+	public BasePage<RegisterBill> listPageVerifyBill(RegisterBillDto query);
+
 	/**
 	 * 统计不同审核状态报备单数据
 	 * 
 	 * @param query
 	 * @return
 	 */
-	public List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBill query);
+	public List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBillDto query);
 
 	/**
 	 * 根据用户最新报备单审核状态更新颜色码

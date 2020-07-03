@@ -143,17 +143,16 @@
     select verify_status,count(1) as num
     from register_bill
     where 1=1
-    <if test="verifyType != null">
-     AND  verify_type = #{verifyType}
-    </if>
+    <foreach collection="metadata.entrySet()" item="value" index="key">  
+      <if test="key != null and key !=''">
+        AND  (${value})
+      </if>
+    </foreach>
     <if test="createdStart != null  and createdStart != ''">
       <![CDATA[ AND #{createdStart}<=created ]]>
     </if>
     <if test="createdEnd != null  and createdEnd != ''">
       <![CDATA[AND created <=#{createdEnd}]]>
-    </if>
-    <if test="billType != null">
-      AND bill_type=#{billType}
     </if>
     group by verify_status
   </select>

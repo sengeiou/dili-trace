@@ -48,9 +48,9 @@ public class ManagerVerifyApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			input.setBillType(BillTypeEnum.NONE.getCode());
-			// input.setVerifyType(VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode());
-			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(input),
+			// input.setBillType(BillTypeEnum.NONE.getCode());
+			input.setVerifyType(VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode());
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageVerifyBill(input),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						dto.setColor(ColorEnum.GREEN.getCode());

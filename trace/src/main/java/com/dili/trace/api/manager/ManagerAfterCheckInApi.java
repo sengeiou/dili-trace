@@ -45,10 +45,9 @@ public class ManagerAfterCheckInApi {
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
 	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto input) {
 		try {
-			// input.setBillType(BillTypeEnum.NONE.getCode());
 			input.setVerifyType(VerifyTypeEnum.VERIFY_AFTER_CHECKIN.getCode());
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(input),
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageVerifyBill(input),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						dto.setColor(ColorEnum.GREEN.getCode());

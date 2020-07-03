@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
 
@@ -22,58 +23,59 @@ import io.swagger.annotations.ApiModelProperty;
 @Table(name = "`batch_stock`")
 public class BatchStock extends BaseDomain {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "`id`")
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
+    private Long id;
 
-	@ApiModelProperty(value = "业户姓名")
-	@Column(name = "`user_name`")
-	private String userName;
+    @ApiModelProperty(value = "业户姓名")
+    @Column(name = "`user_name`")
+    private String userName;
 
-	@ApiModelProperty(value = "用户iD")
-	@Column(name = "`user_id`")
-	private Long userId;
+    @ApiModelProperty(value = "用户iD")
+    @Column(name = "`user_id`")
+    private Long userId;
 
-	@ApiModelProperty(value = "保存类型")
-	@Column(name = "`preserve_type`")
-	private Integer preserveType;
+    @ApiModelProperty(value = "保存类型")
+    @Column(name = "`preserve_type`")
+    private Integer preserveType;
 
-	@ApiModelProperty(value = "商品名称")
-	@Column(name = "`product_name`")
-	private String productName;
+    @ApiModelProperty(value = "商品名称")
+    @Column(name = "`product_name`")
+    private String productName;
 
-	@ApiModelProperty(value = "商品ID")
-	@Column(name = "`product_id`")
-	private Long productId;
+    @ApiModelProperty(value = "商品ID")
+    @Column(name = "`product_id`")
+    private Long productId;
 
-	@ApiModelProperty(value = "库存重量")
-	@Column(name = "`stock_weight`")
-	private BigDecimal stockWeight;
-	
-	@ApiModelProperty(value = "累计总重量")
-	@Column(name = "`total_weight`")
+    @ApiModelProperty(value = "库存重量")
+    @Column(name = "`stock_weight`")
+    private BigDecimal stockWeight;
+
+    @ApiModelProperty(value = "累计总重量")
+    @Column(name = "`total_weight`")
     private BigDecimal totalWeight;
 
     @ApiModelProperty(value = "重量单位")
-	@Column(name = "`weight_unit`")
+    @Column(name = "`weight_unit`")
     private Integer weightUnit;
-    
+
     @ApiModelProperty(value = "规格名称")
-	@Column(name="`spec_name`")
+    @Column(name = "`spec_name`")
     private String specName;
 
     @ApiModelProperty(value = "品牌ID")
-	@Column(name = "`brand_id`")
+    @Column(name = "`brand_id`")
     private Long brandId;
-    
-    
-	@Column(name = "`created`")
-	private Date created;
 
-	@Column(name = "`modified`")
+    @Column(name = "`created`")
+    private Date created;
+
+    @Column(name = "`modified`")
     private Date modified;
-    
+
+    @Transient
+    private String brandName;
 
     /**
      * @return Long return the id
@@ -88,7 +90,6 @@ public class BatchStock extends BaseDomain {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     /**
      * @return Long return the userId
@@ -174,7 +175,6 @@ public class BatchStock extends BaseDomain {
         this.totalWeight = totalWeight;
     }
 
-
     /**
      * @return String return the userName
      */
@@ -188,7 +188,6 @@ public class BatchStock extends BaseDomain {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
 
     /**
      * @return Integer return the weightUnit
@@ -232,7 +231,6 @@ public class BatchStock extends BaseDomain {
         this.modified = modified;
     }
 
-
     /**
      * @return String return the specName
      */
@@ -247,7 +245,6 @@ public class BatchStock extends BaseDomain {
         this.specName = specName;
     }
 
-
     /**
      * @return Long return the brandId
      */
@@ -260,6 +257,21 @@ public class BatchStock extends BaseDomain {
      */
     public void setBrandId(Long brandId) {
         this.brandId = brandId;
+    }
+
+
+    /**
+     * @return String return the brandName
+     */
+    public String getBrandName() {
+        return brandName;
+    }
+
+    /**
+     * @param brandName the brandName to set
+     */
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
 
 }
