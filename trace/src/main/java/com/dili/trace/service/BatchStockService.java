@@ -20,6 +20,8 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
     @Autowired
     RegisterBillService registerBillService;
     @Autowired
+    TradeDetailService tradeDetailService;
+    @Autowired
     UserService userService;
 
     private Optional<Long> addBatchStock(TradeDetail tradeDetail) {
@@ -83,10 +85,20 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
         return Optional.of(batchStock.getId());
     }
 
-    public Optional<Long> createOrUpdateBatchStock(TradeDetail tradeDetail) {
+    public Optional<Long> createOrUpdateBatchStock(Long tradeDetailId) {
+        TradeDetail tradeDetail=this.tradeDetailService.get(tradeDetailId);
+        if(tradeDetail==null){
+            return Optional.empty();
+        }
 		if(tradeDetail.getBatchStockId()==null){
 			if(SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetail.getSaleStatus())){
-				return this.addBatchStock(tradeDetail);
+                 return this.addBatchStock(tradeDetail).map(batchStockId->{
+                    TradeDetail domain = new TradeDetail();
+                    domain.setBatchStockId(batchStockId);
+                    domain.setId(tradeDetail.getId());
+                    this.tradeDetailService.updateSelective(domain);
+                    return batchStockId;
+                });
 			}
 		}else{
 			if(SaleStatusEnum.NOT_FOR_SALE.equalsToCode(tradeDetail.getSaleStatus())){

@@ -53,6 +53,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	CheckinOutRecordService checkinOutRecordService;
 	@Autowired
 	TradeDetailMapper tradeDetailMapper;
+	@Autowired
+	BatchStockService batchStockService;
 
 	public Long doUpdateTradeDetailSaleStatus(OperatorUser operateUser, Long billId) {
 
@@ -98,6 +100,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 				this.updateSelective(updatableRecord);
 			}
 		}
+		
+        this.batchStockService.createOrUpdateBatchStock(tradeInfoItem.getId());
 		return billItem.getId();
 
 	}
