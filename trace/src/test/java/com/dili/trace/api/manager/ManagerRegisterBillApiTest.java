@@ -1,6 +1,7 @@
 package com.dili.trace.api.manager;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -8,9 +9,9 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
-import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.VerifyTypeEnum;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -43,10 +44,15 @@ public class ManagerRegisterBillApiTest extends AutoWiredBaseTest {
 
     @Test
     public void countByVerifyStatus() {
-        RegisterBill input = new RegisterBill();
+        RegisterBillDto input = new RegisterBillDto();
+        input.setCreatedStart("2010-01-01 00:00:00");
+        input.setCreatedEnd("2020-12-31 23:59:59");
         input.setVerifyType(VerifyTypeEnum.VERIFY_AFTER_CHECKIN.getCode());
         BaseOutput<List<VerifyStatusCountOutputDto>> out=this.managerRegisterBillApi.countByVerifyStatus(input);
         assertNotNull(out);
+        List<VerifyStatusCountOutputDto>list=out.getData();
+        assertNotNull(list);
+        assertTrue(list.size()==4);
 
     }
 

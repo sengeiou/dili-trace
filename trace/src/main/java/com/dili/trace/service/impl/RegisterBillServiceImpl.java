@@ -923,14 +923,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("参数错误");
 		}
 		List<VerifyStatusCountOutputDto> dtoList = this.getActualDao().countByVerifyStatus(query);
+		Map<Integer,Integer>verifyStatusNumMap=StreamEx.of(dtoList).toMap(VerifyStatusCountOutputDto::getVerifyStatus, VerifyStatusCountOutputDto::getNum);
 		return StreamEx.of(BillVerifyStatusEnum.values()).flatMap(verifystatus -> {
 			return StreamEx.ofNullable(VerifyTypeEnum.fromCode(query.getVerifyType())).flatMapToEntry(verifyType -> {
 				return EntryStream.of(verifyType, verifystatus).toMap();
 			});
 		}).map(e -> {
 			VerifyStatusCountOutputDto dto = VerifyStatusCountOutputDto.buildDefault(e.getKey(), e.getValue());
-			if(dtoList.contains(dto)){
-				return dtoList.get(dtoList.indexOf(dto));
+			if(verifyStatusNumMap.containsKey(dto.getVerifyStatus())){
+				dto.setNum(verifyStatusNumMap.get(dto.getVerifyStatus()));
 			}
 			return dto;
 		}).toList();

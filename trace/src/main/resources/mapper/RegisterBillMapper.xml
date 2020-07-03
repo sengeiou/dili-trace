@@ -140,8 +140,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    select 
-    verify_type,verify_status,count(1) as num
+    select verify_status,count(1) as num
     from register_bill
     where 1=1
     <if test="verifyType != null">

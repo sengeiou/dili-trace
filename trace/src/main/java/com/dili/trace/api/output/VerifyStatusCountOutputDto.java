@@ -1,7 +1,5 @@
 package com.dili.trace.api.output;
 
-import java.util.Objects;
-
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
 
@@ -17,7 +15,8 @@ public class VerifyStatusCountOutputDto {
         VerifyStatusCountOutputDto dto = new VerifyStatusCountOutputDto();
         dto.setNum(0);
         dto.setVerifyType(verifyType.getCode());
-        dto.setVerifyStatusName(verifyType.getDesc());
+        dto.setVerifyTypeName(verifyType.getDesc());
+        
         dto.setVerifyStatus(verifyStatus.getCode());
         dto.setVerifyStatusName(verifyStatus.getName());
         return dto;
@@ -91,36 +90,6 @@ public class VerifyStatusCountOutputDto {
      */
     public void setNum(Integer num) {
         this.num = num;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(verifyStatus,verifyType);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof VerifyStatusCountOutputDto)) {
-            return false;
-        }
-        VerifyStatusCountOutputDto other = (VerifyStatusCountOutputDto) obj;
-        return Objects.equals(verifyStatus, other.verifyStatus)
-                && Objects.equals(verifyType, other.verifyType) ;
     }
 
 }
