@@ -66,7 +66,7 @@ public class ManagerVerifyApi {
 	@ApiOperation(value = "报备审核登记单")
 	@RequestMapping(value = "/doVerify.api", method = RequestMethod.POST)
 	public BaseOutput<Long> doVerify(@RequestBody VerifyBillInputDto inputDto) {
-		logger.info("通过ID查验登记单:{}", inputDto);
+		logger.info("报备审核登记单:{}", inputDto.getBillId());
 		try {
 			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
 				return BaseOutput.failure("参数错误");
@@ -114,25 +114,25 @@ public class ManagerVerifyApi {
 	}
 
 	
-	@ApiOperation(value = "场内审核登记单")
-	@RequestMapping(value = "/doVerifyAfterCheckIn.api", method = RequestMethod.POST)
-	public BaseOutput<Long> doVerifyAfterCheckIn(@RequestBody VerifyBillInputDto inputDto) {
-		logger.info("通过ID查验登记单:{}", inputDto);
-		try {
-			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
-				return BaseOutput.failure("参数错误");
-			}
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			RegisterBill input = new RegisterBill();
-			input.setId(inputDto.getBillId());
-			input.setVerifyStatus(inputDto.getVerifyStatus());
-			Long id = this.registerBillService.doVerifyAfterCheckIn(input,operatorUser);
-			return BaseOutput.success().setData(id);
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			return BaseOutput.failure("操作失败：服务端出错");
-		}
+	// @ApiOperation(value = "场内审核登记单")
+	// @RequestMapping(value = "/doVerifyAfterCheckIn.api", method = RequestMethod.POST)
+	// public BaseOutput<Long> doVerifyAfterCheckIn(@RequestBody VerifyBillInputDto inputDto) {
+	// 	logger.info("场内审核登记单:{}", inputDto.getBillId());
+	// 	try {
+	// 		if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
+	// 			return BaseOutput.failure("参数错误");
+	// 		}
+	// 		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+	// 		RegisterBill input = new RegisterBill();
+	// 		input.setId(inputDto.getBillId());
+	// 		input.setVerifyStatus(inputDto.getVerifyStatus());
+	// 		Long id = this.registerBillService.doVerifyAfterCheckIn(input,operatorUser);
+	// 		return BaseOutput.success().setData(id);
+	// 	} catch (TraceBusinessException e) {
+	// 		return BaseOutput.failure(e.getMessage());
+	// 	} catch (Exception e) {
+	// 		return BaseOutput.failure("操作失败：服务端出错");
+	// 	}
 
-	}
+	// }
 }

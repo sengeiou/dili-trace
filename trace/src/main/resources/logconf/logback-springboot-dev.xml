@@ -17,7 +17,8 @@
     <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" />
 
    <!-- SQL输出 -->
-	<logger name="p6spy" level="debug"/>
+    <logger name="p6spy" level="debug"/>
+    <logger name="org.zalando.logbook.Logbook" level="trace" />
     
     <!-- 日志输出级别 -->
     <root level="INFO">

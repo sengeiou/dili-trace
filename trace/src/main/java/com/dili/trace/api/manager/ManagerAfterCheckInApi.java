@@ -65,7 +65,7 @@ public class ManagerAfterCheckInApi {
 	@ApiOperation(value = "场内审核登记单")
 	@RequestMapping(value = "/doVerify.api", method = RequestMethod.POST)
 	public BaseOutput<Long> doVerify(@RequestBody VerifyBillInputDto inputDto) {
-		logger.info("通过ID查验登记单:{}", inputDto);
+		logger.info("场内审核登记单:{}", inputDto);
 		try {
 			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
 				return BaseOutput.failure("参数错误");

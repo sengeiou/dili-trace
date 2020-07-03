@@ -17,6 +17,7 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
@@ -24,6 +25,7 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
+import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.glossary.BizNumberType;
@@ -309,10 +311,20 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (billItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
+
+		TradeDetail query=new TradeDetail();
+		query.setBillId(billId);
+		query.setBuyerId(billItem.getUserId());
+		query.setTradeType(TradeTypeEnum.NONE.getCode());
+		TradeDetail tradeDetailItem=this.tradeDetailService.listByExample(query).stream().findFirst().orElse(null);
+		if(tradeDetailItem!=null){
+				throw new TraceBusinessException("当前报备单已进门,不能预审核");
+		}
+
 		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
 				.orElseThrow(() -> new TraceBusinessException("数据错误"));
 
-		logger.info("from {} to {}", fromVerifyState, toVerifyState);
+		logger.info("预审核: billId: {} from {} to {}",billId, fromVerifyState, toVerifyState);
 		if (fromVerifyState == toVerifyState) {
 			throw new TraceBusinessException("状态不能相同");
 		}
@@ -340,12 +352,25 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (billItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
+
+		TradeDetail query=new TradeDetail();
+		query.setBillId(billId);
+		query.setBuyerId(billItem.getUserId());
+		query.setTradeType(TradeTypeEnum.NONE.getCode());
+		TradeDetail tradeDetailItem=this.tradeDetailService.listByExample(query).stream().findFirst().orElse(null);
+		if(tradeDetailItem==null){
+				throw new TraceBusinessException("当前报备单未进门,不能场内审核");
+		}
+		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
+		.orElseThrow(() -> new TraceBusinessException("数据错误"));
+
 		if (toVerifyState == BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElse(null)) {
 			throw new TraceBusinessException("状态不能相同");
 		}
 		if (!BillVerifyStatusEnum.canDoVerify(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
+		logger.info("场内审核: billId: {} from {} to {}",billId, fromVerifyState, toVerifyState);
 		this.createHistoryRegisterBillForVerify(billItem, toVerifyState, input.getReason(),
 				VerifyTypeEnum.VERIFY_AFTER_CHECKIN, operatorUser);
 		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
