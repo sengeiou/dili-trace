@@ -35,6 +35,7 @@ import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.BrandService;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.ImageCertService;
+import com.dili.trace.service.RegisterBillHistoryService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserPlateService;
@@ -74,6 +75,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	TradeDetailService tradeDetailService;
 	@Autowired
 	BrandService brandService;
+	@Autowired
+	RegisterBillHistoryService registerBillHistoryService;
 	
 
 	public RegisterBillMapper getActualDao() {
@@ -387,21 +390,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	private Long createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,
 			String returnedReason, VerifyTypeEnum verifyType, OperatorUser operatorUser) {
-		RegisterBill historyBill = new RegisterBill();
-		try {
-			BeanUtils.copyProperties(historyBill, item);
-			historyBill.setId(null);
-			historyBill.setCode("h_" + historyBill.getCode());
-			historyBill.setSampleCode(null);
-			historyBill.setYn(YnEnum.NO.getCode());
-			//this.insertSelective(historyBill);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new TraceBusinessException("创建查询数据出错");
-		}
+			this.registerBillHistoryService.createHistory(item);
 		RegisterBill bill = new RegisterBill();
 		bill.setId(item.getId());
 		bill.setVerifyStatus(toVerifyState.getCode());
-		bill.setVerifiedHistoryBillId(historyBill.getId());
 		bill.setVerifyType(verifyType.getCode());
 		bill.setOperatorId(operatorUser.getId());
 		bill.setOperatorName(operatorUser.getName());
