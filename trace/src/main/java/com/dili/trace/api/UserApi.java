@@ -89,13 +89,14 @@ public class UserApi {
             }
 
             checkRealNameCertificationParams(user);
-
+            user.setId(id);
             user.setCardNo(StringUtils.upperCase(user.getCardNo()));
             user.setLicense(StringUtils.upperCase(user.getLicense()));
             user.setValidateState(ValidateStateEnum.UNCERT.getCode());
             userService.updateUser(user);
             return BaseOutput.success().setData(user.getId());
         }catch (TraceBusinessException e){
+            LOGGER.error("realNameCertificationReq",e);
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
             LOGGER.error("realNameCertificationReq",e);
