@@ -26,7 +26,7 @@ import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 
-@Service
+// @Service
 public class UserQrItemService extends BaseServiceImpl<UserQrItem, Long> implements CommandLineRunner {
 	@Autowired
 	UserService userService;

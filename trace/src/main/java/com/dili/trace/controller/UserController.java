@@ -10,17 +10,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BaseInfoRpcService;
@@ -37,10 +26,20 @@ import com.dili.trace.glossary.QrItemTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserQrItemService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.dili.trace.util.MaskUserInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
