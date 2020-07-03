@@ -487,7 +487,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public void updateAllUserQrStatusByRegisterBillNum(Date createdStart, Date createdEnd) {
 		UserListDto dto = DTOUtils.newDTO(UserListDto.class);
 		dto.setQrStatus(UserQrStatusEnum.BLACK.getCode());
-
+		dto.setCreatedStart(createdStart);
+		dto.setCreatedEnd(createdEnd);
 		this.getActualDao().updateAllUserQrStatusByRegisterBillNum(dto);
 	}
 
