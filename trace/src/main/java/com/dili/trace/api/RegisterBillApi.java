@@ -79,41 +79,4 @@ public class RegisterBillApi {
 	}
 
 	
-
-	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
-	@RequestMapping(value = "id/{id}", method = RequestMethod.GET)
-	public BaseOutput<RegisterBillOutputDto> getRegisterBill(@PathVariable Long id) {
-		LOGGER.info("获取登记单:" + id);
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		RegisterBill registerBill = registerBillService.get(id);
-		if (registerBill == null) {
-			LOGGER.error("获取登记单失败id:" + id);
-			return BaseOutput.failure();
-		}
-		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
-
-		return BaseOutput.success().setData(bill);
-	}
-
-	@ApiOperation(value = "通过登记单编号获取登记单详细信息")
-	@RequestMapping(value = "/code/{code}", method = RequestMethod.GET)
-	public BaseOutput<RegisterBillOutputDto> getRegisterBillByCode(@PathVariable String code) {
-		LOGGER.info("获取登记单:" + code);
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		RegisterBill registerBill = registerBillService.findByCode(code);
-		if (registerBill == null) {
-			LOGGER.error("获取登记单失败code:" + code);
-			return BaseOutput.failure();
-		}
-		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
-		return BaseOutput.success().setData(bill);
-	}
-	
-
 }

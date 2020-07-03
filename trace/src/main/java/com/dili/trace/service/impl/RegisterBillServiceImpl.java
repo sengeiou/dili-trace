@@ -1,6 +1,5 @@
 package com.dili.trace.service.impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +11,7 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -24,6 +24,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
@@ -31,6 +32,7 @@ import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.BrandService;
 import com.dili.trace.service.CodeGenerateService;
@@ -39,13 +41,12 @@ import com.dili.trace.service.RegisterBillHistoryService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
-//import org.hibernate.SQLQuery.ReturnProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	BrandService brandService;
 	@Autowired
 	RegisterBillHistoryService registerBillHistoryService;
-	
+	@Autowired
+	UserService userService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -114,18 +116,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
-		String plate=StreamEx.ofNullable(registerBill.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull().map(String::toUpperCase).findFirst().orElse(null);
+		String plate = StreamEx.ofNullable(registerBill.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
+				.map(String::toUpperCase).findFirst().orElse(null);
 		registerBill.setPlate(plate);
-		//保存车牌
+		// 保存车牌
 		this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
-		//保存报备单
+		// 保存报备单
 		int result = super.saveOrUpdate(registerBill);
 		if (result == 0) {
 			logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
 			throw new TraceBusinessException("创建失败");
 		}
-		//保存图片
+		// 保存图片
 		if (imageCertList != null) {
 			this.imageCertService.insertImageCert(imageCertList, registerBill.getId());
 		}
@@ -143,6 +146,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	/**
 	 * 检查用户输入参数
+	 * 
 	 * @param registerBill
 	 * @return
 	 */
@@ -207,24 +211,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return null;
 	}
 
-
-
-	
-
 	private UserTicket getOptUser() {
 		return SessionContext.getSessionContext().getUserTicket();
 	}
 
-	@Override
-	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill) {
-		logger.info("获取登记单信息信息" + JSON.toJSONString(registerBill));
-
-		if (registerBill == null) {
-			return null;
-		}
-		RegisterBillOutputDto outputDto = RegisterBillOutputDto.build(registerBill, new ArrayList<TradeDetail>());
-		return outputDto;
-	}
 	@Transactional
 	@Override
 	public Long doEdit(RegisterBill input) {
@@ -304,6 +294,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		return sql;
 	}
+
 	@Transactional
 	@Override
 	public Long doVerifyBeforeCheckIn(RegisterBill input, OperatorUser operatorUser) {
@@ -333,6 +324,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
 		return billId;
 	}
+
 	@Transactional
 	@Override
 	public Long doVerifyAfterCheckIn(RegisterBill input, OperatorUser operatorUser) {
@@ -378,28 +370,78 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBill query) {
-		if(query==null||query.getVerifyType()==null){
+		if (query == null || query.getVerifyType() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
 		List<VerifyStatusCountOutputDto> dtoList = this.getActualDao().countByVerifyStatus(query);
-		Map<Integer,Integer>verifyStatusNumMap=StreamEx.of(dtoList).toMap(VerifyStatusCountOutputDto::getVerifyStatus, VerifyStatusCountOutputDto::getNum);
+		Map<Integer, Integer> verifyStatusNumMap = StreamEx.of(dtoList)
+				.toMap(VerifyStatusCountOutputDto::getVerifyStatus, VerifyStatusCountOutputDto::getNum);
 		return StreamEx.of(BillVerifyStatusEnum.values()).flatMap(verifystatus -> {
 			return StreamEx.ofNullable(VerifyTypeEnum.fromCode(query.getVerifyType())).flatMapToEntry(verifyType -> {
 				return EntryStream.of(verifyType, verifystatus).toMap();
 			});
 		}).map(e -> {
 			VerifyStatusCountOutputDto dto = VerifyStatusCountOutputDto.buildDefault(e.getKey(), e.getValue());
-			if(verifyStatusNumMap.containsKey(dto.getVerifyStatus())){
+			if (verifyStatusNumMap.containsKey(dto.getVerifyStatus())) {
 				dto.setNum(verifyStatusNumMap.get(dto.getVerifyStatus()));
 			}
 			return dto;
 		}).toList();
 	}
-	public void updateUser(Long userId){
 
+	/**
+	 * 根据用户最新报备单审核状态更新颜色码
+	 * 
+	 * @param userId
+	 */
+	public void updateUserQrStatusByUserId(Long userId) {
+		if (userId == null) {
+			return;
+		}
+		RegisterBill query = new RegisterBill();
+		query.setPage(1);
+		query.setRows(1);
+		query.setSort("created");
+		query.setSort("desc");
+		RegisterBill billItem = this.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
+		if (billItem == null) {
+			return;
+		}
+		BillVerifyStatusEnum verifyStatus = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElse(null);
+		UserQrStatusEnum userQrStatus = UserQrStatusEnum.BLACK;
+		switch (verifyStatus) {
+			case PASSED:
+				userQrStatus = UserQrStatusEnum.GREEN;
+				break;
+			case NO_PASSED:
+				userQrStatus = UserQrStatusEnum.RED;
+				break;
+			case RETURNED:
+				userQrStatus = UserQrStatusEnum.YELLOW;
+				break;
+			case NONE:
+				userQrStatus = UserQrStatusEnum.YELLOW;
+				break;
+			default:
+				throw new TraceBusinessException("错误");
+		}
+		User user = DTOUtils.newDTO(User.class);
+		user.setId(userId);
+		user.setQrStatus(userQrStatus.getCode());
+		this.userService.updateSelective(user);
 	}
-	public void updateAllUser(){
-		
+
+	/**
+	 * 根据报备单数量更新用户状态到黑码
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	public void updateAllUserQrStatusByRegisterBillNum(Date createdStart,Date createdEnd) {
+		UserListDto dto = DTOUtils.newDTO(UserListDto.class);
+		dto.setQrStatus(UserQrStatusEnum.BLACK.getCode());
+
+		this.getActualDao().updateAllUserQrStatusByRegisterBillNum(dto);
 	}
 
 }

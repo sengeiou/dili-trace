@@ -151,9 +151,6 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`preserve_type`")
 	private Integer preserveType;
 
-	@ApiModelProperty(value = "查验历史ID")
-	@Column(name = "`verified_history_bill_id`")
-	private Long verifiedHistoryBillId;
 
 	@ApiModelProperty(value = "查验类型")
 	@Column(name = "`verify_type`")
@@ -476,20 +473,6 @@ public class RegisterBill extends BaseDomain {
 	 */
 	public void setPreserveType(Integer preserveType) {
 		this.preserveType = preserveType;
-	}
-
-	/**
-	 * @return Long return the verifiedHistoryBillId
-	 */
-	public Long getVerifiedHistoryBillId() {
-		return verifiedHistoryBillId;
-	}
-
-	/**
-	 * @param verifiedHistoryBillId the verifiedHistoryBillId to set
-	 */
-	public void setVerifiedHistoryBillId(Long verifiedHistoryBillId) {
-		this.verifiedHistoryBillId = verifiedHistoryBillId;
 	}
 
 	/**

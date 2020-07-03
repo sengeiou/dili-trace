@@ -43,7 +43,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    select 
+    select
     <include refid="Base_Column_List" />
     from register_bill
     where id = #{id,jdbcType=BIGINT}
@@ -156,8 +156,17 @@
   </select>
 
 
-  <!--update id="updateUserByRegisterBill" parameterType="com.dili.trace.domain.RegisterBill">
-   
-  </update-->
+  <update id="updateAllUserQrStatusByRegisterBillNum" parameterType="com.dili.trace.dto.UserListDto">
+    update `user` set `user`.qr_status=#{qrStatus} where not exists(
+      select `user`.id from  register_bill where register_bill.user_id =`user`.id
+    <if test="createdStart != null  and createdStart != ''">
+      <![CDATA[ AND #{createdStart}<=created ]]>
+    </if>
+    <if test="createdEnd != null  and createdEnd != ''">
+      <![CDATA[AND created <=#{createdEnd}]]>
+    </if>
+    )
+    <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
+  </update>
 
 </mapper>

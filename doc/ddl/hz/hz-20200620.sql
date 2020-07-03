@@ -312,7 +312,6 @@ drop table `detect_record`;
 ALTER TABLE `register_bill` ADD COLUMN  `weight_unit` int(11) NOT NULL default 1 COMMENT '重量单位';
 ALTER TABLE `register_bill` ADD COLUMN  `verify_status` int(11) not null default 0 COMMENT '查验状态';
 ALTER TABLE `register_bill` ADD COLUMN  `preserve_type` int(11) NOT NULL  default 10 COMMENT '保存类型';
-ALTER TABLE `register_bill` ADD COLUMN  `verified_history_bill_id` bigint(20)  NULL COMMENT '查验历史ID';
 ALTER TABLE `register_bill` ADD COLUMN  `verify_type` int(11)  NOT NULL  default 10 COMMENT '查验类型';
 ALTER TABLE `register_bill` ADD COLUMN  `spec_name` varchar(20)  NULL  COMMENT '规格';
 ALTER TABLE `register_bill` ADD COLUMN  `bill_type` int(11)  NOT NULL  default 10 COMMENT '报备类型';
@@ -414,7 +413,6 @@ CREATE TABLE `register_bill_history` (
   `verify_status` int(11) NOT NULL DEFAULT '0' COMMENT '查验状态',
   `weight_unit` int(11) NOT NULL DEFAULT '1' COMMENT '重量单位',
   `preserve_type` int(11) NOT NULL DEFAULT '10' COMMENT '保存类型',
-  `verified_history_bill_id` bigint(20) DEFAULT NULL COMMENT '查验历史ID',
   `verify_type` int(11) NOT NULL DEFAULT '0' COMMENT '查验类型',
   `spec_name` varchar(20) DEFAULT NULL COMMENT '规格',
   `bill_type` int(11) NOT NULL DEFAULT '10' COMMENT '报备类型',

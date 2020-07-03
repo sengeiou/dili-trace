@@ -325,22 +325,6 @@ public class RegisterBillController {
 	}
 
 	/**
-	 * 登记单分销记录溯源（二维码）
-	 * 
-	 * @param id
-	 * @param modelMap
-	 * @return
-	 */
-	@RequestMapping(value = "/separateSalesRecordQRCode.html", method = RequestMethod.GET)
-	public String separateSalesRecordQRCcode(Long id, ModelMap modelMap) {
-		SeparateSalesRecord separateSalesRecord = separateSalesRecordService.get(id);
-		RegisterBill bill = registerBillService.findByCode(separateSalesRecord.getRegisterBillCode());
-		modelMap.put("registerBill", bill);
-		modelMap.put("separateSalesRecord", separateSalesRecord);
-		return "registerBill/registerBillQRCode";
-	}
-
-	/**
 	 * 交易单溯源（二维码） 没有分销记录
 	 *
 	 * @param id       交易单ID
