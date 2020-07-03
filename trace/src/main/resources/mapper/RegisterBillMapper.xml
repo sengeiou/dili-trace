@@ -148,10 +148,10 @@
      AND  verify_type = #{verifyType}
     </if>
     <if test="createdStart != null  and createdStart != ''">
-      <![CDATA[ AND #{createdStart}<=separate_sales_record.created ]]>
+      <![CDATA[ AND #{createdStart}<=created ]]>
     </if>
     <if test="createdEnd != null  and createdEnd != ''">
-      <![CDATA[AND separate_sales_record.created <=#{createdEnd}]]>
+      <![CDATA[AND created <=#{createdEnd}]]>
     </if>
     group by verify_status
   </select>
