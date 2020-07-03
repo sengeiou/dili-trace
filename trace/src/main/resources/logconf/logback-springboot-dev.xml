@@ -19,6 +19,8 @@
    <!-- SQL输出 -->
     <logger name="p6spy" level="debug"/>
     <logger name="org.zalando.logbook.Logbook" level="trace" />
+    <logger name="springfox.documentation.spring.web.readers.operation" level="warn"/>
+    <logger name="tk.mybatis.mapper.autoconfigure.MapperCacheDisabler" level="warn"/>
     
     <!-- 日志输出级别 -->
     <root level="INFO">
