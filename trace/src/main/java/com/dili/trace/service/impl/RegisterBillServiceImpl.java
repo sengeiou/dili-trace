@@ -311,6 +311,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (billItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
+		if(!VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.equalsToCode(billItem.getVerifyType())){
+			throw new TraceBusinessException("当前报备单只能场内审核");
+		}
 
 		TradeDetail query=new TradeDetail();
 		query.setBillId(billId);
@@ -352,7 +355,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (billItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-
+		if(!VerifyTypeEnum.VERIFY_AFTER_CHECKIN.equalsToCode(billItem.getVerifyType())){
+			throw new TraceBusinessException("当前报备单只能预审核");
+		}
 		TradeDetail query=new TradeDetail();
 		query.setBillId(billId);
 		query.setBuyerId(billItem.getUserId());

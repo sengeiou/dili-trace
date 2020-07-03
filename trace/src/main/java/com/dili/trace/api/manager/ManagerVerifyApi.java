@@ -49,7 +49,7 @@ public class ManagerVerifyApi {
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			// input.setBillType(BillTypeEnum.NONE.getCode());
-			input.setVerifyType(VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode());
+			// input.setVerifyType(VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode());
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(input),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
