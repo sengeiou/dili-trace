@@ -624,7 +624,7 @@ var currentUser={"depId":"${user.depId!}"
             });
             return;
         }
-        openIframe('/registerBill/audit/' + selected.id,selected)
+        
 
     }
 	function    auditWithoutDetect(){
@@ -638,54 +638,6 @@ var currentUser={"depId":"${user.depId!}"
 	        });
 	        return;
 	    }
-	    layer.confirm('确认审核不检测?', {btn: ['确定', '取消'], title: "提示"}
-	    	, function () {
-	    	 $.ajax({
-                 type: "POST",
-                 url: "${contextPath}/registerBill/doAuditWithoutDetect.action",
-                 processData:true,
-                 dataType: "json",
-                 data:{id:selected.id},
-                 async : true,
-                 success: function (ret) {
-                     if(ret.success){
-                         _registerBillGrid.datagrid("reload");
-                         TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
-                         layer.alert('操作成功',{
- 								title:'操作',
-	                           	time : 600,
-	                           	end :function(){
-	                           		 layer.closeAll();
-	                           	}
-	                          },
-                         	 function () {
-                         	  layer.closeAll();
-                                 }
-                         );
-                         
-                     }else{
-                         swal(
-                                 '操作',
-                                 ret.result,
-                                 'info'
-                         );
-                         layer.closeAll();
-
-                     }
-                     
-                 },
-                 error: function(){
-
-                     swal(
-                             '错误',
-                             '远程访问失败',
-                             'error'
-                     );
-                     layer.closeAll();
-                 }
-             });
-	    	
-	    })
 	}
 	async function batchAudit(){
 	   	var rows=_registerBillGrid.datagrid("getSelections");
@@ -737,46 +689,6 @@ var currentUser={"depId":"${user.depId!}"
 				passWithOriginCertifiyUrl=await reconfirmPromise;
 		  }
 		  layer.closeAll();
-		  $.ajax({
-      		type: "POST",
-              url: "${contextPath}/registerBill/doBatchAudit",
-              processData:true,
-              contentType:'application/json;charset=utf-8',
-              data:JSON.stringify({registerBillIdList:batchIdList,pass:true,passWithOriginCertifiyUrl:passWithOriginCertifiyUrl}),
-              dataType: "json",
-              async : true,
-              success: function (ret) {
-                  if(ret.success){
-                 	 var failureList=ret.data.failureList;
-	              	 if(failureList.length==0){
-	                       _registerBillGrid.datagrid("reload");
-	                       TLOG.component.operateLog('登记单管理',"批量审核","【编号】:"+codeList.join(','));
-	                       layer.alert('操作成功：</br>'+ret.data.successList.join('</br>'),{title:'操作',time : 3000});  
-	
-	              	 }else{
-	              		 swal(
-	                               '操作',
-	                               '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
-	                               'info'
-	                       );
-	              	 }
-                  }else{
-                      swal(
-                              '错误',
-                              ret.result,
-                              'error'
-                      );
-                  }
-              },
-              error: function(){
-                  swal(
-                          '错误',
-                          '远程访问失败',
-                          'error'
-                  );
-              }
-          });
-		  
 	  }
 	  
 
@@ -804,33 +716,7 @@ var currentUser={"depId":"${user.depId!}"
             cancelButtonColor: '#d33'
         }).then((result) => {
             if(result.value){
-            $.ajax({
-                type: "GET",
-                url: "${contextPath}/registerBill/autoCheck/"+ selected.id,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (ret) {
-                    if(ret.success){
-                        _registerBillGrid.datagrid("reload");
-                        TLOG.component.operateLog('登记单管理',"主动送检","【编号】:"+selected.code);
-                        layer.alert('操作成功',{title:'操作',time : 600});  
-                    }else{
-                        swal(
-                                '错误',
-                                ret.result,
-                                'error'
-                        );
-                    }
-                },
-                error: function(){
-                    swal(
-                            '错误',
-                            '远程访问失败',
-                            'error'
-                    );
-                }
-            });
+           
         }
     });
     }
@@ -856,33 +742,7 @@ var currentUser={"depId":"${user.depId!}"
             cancelButtonColor: '#d33'
         }).then((result) => {
             if(result.value){
-            $.ajax({
-                type: "GET",
-                url: "${contextPath}/registerBill/samplingCheck/"+ selected.id,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (ret) {
-                    if(ret.success){
-                        _registerBillGrid.datagrid("reload");
-                        TLOG.component.operateLog('登记单管理',"采样检测","【编号】:"+selected.code);
-                        layer.alert('操作成功',{title:'操作',time : 600});  
-                    }else{
-                        swal(
-                                '错误',
-                                ret.result,
-                                'error'
-                        );
-                    }
-                },
-                error: function(){
-                    swal(
-                            '错误',
-                            '远程访问失败',
-                            'error'
-                    );
-                }
-            });
+           
         }
     });
     }
@@ -912,54 +772,6 @@ var currentUser={"depId":"${user.depId!}"
 			layer.alert('所选登记单子不能主动送检')
 			return;
 		}
-        layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量主动送检"}, function () {
-        	 $.ajax({
-                 type: "POST",
-                 url: "${contextPath}/registerBill/doBatchAutoCheck",
-                 processData:true,
-                 dataType: "json",
-                 contentType:'application/json;charset=utf-8',
-                 data:JSON.stringify(batchIdList),
-                 async : true,
-                 success: function (ret) {
-                     if(ret.success){
-                    	 var failureList=ret.data.failureList;
-                    	 if(failureList.length==0){
-                             _registerBillGrid.datagrid("reload");
-                             TLOG.component.operateLog('登记单管理',"批量主动送检","【编号】:"+codeList.join(','));
-                           layer.alert('操作成功',{title:'操作',time : 600});   
-                               
-                    	 }else{
-                    		 swal(
-                                     '操作',
-                                     '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
-                                     'info'
-                             );
-                    	 }
-                    	 
-                    	 
-
-                     }else{
-                         swal(
-                                 '错误',
-                                 ret.result,
-                                 'error'
-                         );
-                     }
-                 },
-                 error: function(){
-                     swal(
-                             '错误',
-                             '远程访问失败',
-                             'error'
-                     );
-                 }
-             });
-        	
-        	
-        	
-        	
-        })
     	
     }
     
@@ -986,47 +798,6 @@ var currentUser={"depId":"${user.depId!}"
 			layer.alert('所选登记单子不能采样检测')
 			return;
 		}
-        layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量采样检测"}, function () {
-        	$.ajax({
-        		type: "POST",
-                url: "${contextPath}/registerBill/doBatchSamplingCheck",
-                processData:true,
-                contentType:'application/json;charset=utf-8',
-                data:JSON.stringify(batchIdList),
-                dataType: "json",
-                async : true,
-                success: function (ret) {
-                    if(ret.success){
-                   	 var failureList=ret.data.failureList;
-                	 if(failureList.length==0){
-                         _registerBillGrid.datagrid("reload");
-                         TLOG.component.operateLog('登记单管理',"批量采样检测","【编号】:"+codeList.join(','));
-                         layer.alert('操作成功',{title:'操作',time : 600});  
-
-                	 }else{
-                		 swal(
-                                 '操作',
-                                 '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
-                                 'info'
-                         );
-                	 }
-                    }else{
-                        swal(
-                                '错误',
-                                ret.result,
-                                'error'
-                        );
-                    }
-                },
-                error: function(){
-                    swal(
-                            '错误',
-                            '远程访问失败',
-                            'error'
-                    );
-                }
-            });
-        })
     	
     }
     function reviewCheck() {
@@ -1050,33 +821,7 @@ var currentUser={"depId":"${user.depId!}"
             cancelButtonColor: '#d33'
         }).then((result) => {
             if(result.value){
-            $.ajax({
-                type: "GET",
-                url: "${contextPath}/registerBill/reviewCheck/"+ selected.id,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (ret) {
-                    if(ret.success){
-                        _registerBillGrid.datagrid("reload");
-                        TLOG.component.operateLog('登记单管理',"复检","【编号】:"+selected.code);
-                        layer.alert('操作成功',{title:'操作',time : 600});  
-                    }else{
-                        swal(
-                                '错误',
-                                ret.result,
-                                'error'
-                        );
-                    }
-                },
-                error: function(){
-                    swal(
-                            '错误',
-                            '远程访问失败',
-                            'error'
-                    );
-                }
-            });
+            
         }
     });
     }
@@ -1101,45 +846,9 @@ var currentUser={"depId":"${user.depId!}"
             cancelButtonColor: '#d33'
         }).then((result) => {
             if(result.value){
-            $.ajax({
-                type: "GET",
-                url: "${contextPath}/registerBill/undo/"+ selected.id,
-                processData:true,
-                dataType: "json",
-                async : true,
-                success: function (ret) {
-                    if(ret.success){
-                        _registerBillGrid.datagrid("reload");
-                        TLOG.component.operateLog('登记单管理',"撤销","【编号】:"+selected.code
-                        		+"<br/>【采样编号】:"+(typeof(selected.sampleCode)=='undefined'?'':selected.sampleCode)
-                        		+"<br/>【理货区号】:"+(typeof(selected.tallyAreaNo)=='undefined'?'':selected.tallyAreaNo) 
-                        		+"<br/>【业户姓名】:"+(typeof(selected.name)=='undefined'?'':selected.name)
-                        		+"<br/>【身份证号】:"+(typeof(selected.idCardNo)=='undefined'?'':selected.idCardNo) 
-                        		+"<br/>【业户手机号】:"+(typeof(selected.phone)=='undefined'?'':selected.phone) 
-                        		+"<br/>【交易账号】:"+(typeof(selected.tradeAccount)=='undefined'?'':selected.tradeAccount) 
-                        		+"<br/>【印刷卡号】:"+(typeof(selected.tradePrintingCard)=='undefined'?'':selected.tradePrintingCard)
-                        		+"<br/>【车牌】:"+(typeof(selected.plate)=='undefined'?'':selected.plate) 
-                        
-                        );
-                        layer.alert('操作成功',{title:'操作',time : 600});  
-                    }else{
-                        swal(
-                                '错误',
-                                ret.result,
-                                'error'
-                        );
-                    }
-                },
-                error: function(){
-                    swal(
-                            '错误',
-                            '远程访问失败',
-                            'error'
-                    );
-                }
-            });
-        }
-    });
+           
+            }
+        });
     }
 
     function cityLoader(param,success,error) {
@@ -1204,52 +913,6 @@ var currentUser={"depId":"${user.depId!}"
             content: content,//传入一个链接地址 比如：http://www.baidu.com
             btn: ['进场审核','取消'],
             yes: function(index, layero){
-                $.ajax({
-                    type: "GET",
-                    url: "${contextPath}/registerBill/audit/"+ selected.id+"/true",
-                    processData:true,
-                    dataType: "json",
-                    async : true,
-                    success: function (ret) {
-                        if(ret.success){
-                            _registerBillGrid.datagrid("reload");
-                            TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
-                           // layer.alert('操作成功',{title:'操作',time : 3000}); 
-                            
-                            layer.alert('操作成功',{
-                            	 title:'操作',
-                              	time : 600,
-                              	end :function(){
-                              		 layer.closeAll();
-                              		
-                              	}
-                             },
-                             function () {
-                            	 layer.closeAll();
-                                    }
-                                );
-                            
-                        }else{
-                            swal(
-                                    '操作',
-                                    ret.result,
-                                    'info'
-                            );
-                            layer.closeAll();
-
-                        }
-                        
-                    },
-                    error: function(){
-
-                        swal(
-                                '错误',
-                                '远程访问失败',
-                                'error'
-                        );
-                        layer.closeAll();
-                    }
-                });
             }
         });
     }
@@ -1400,32 +1063,7 @@ var currentUser={"depId":"${user.depId!}"
     	   return;
        }
     
-        var _url = "${contextPath}/registerBill/saveHandleResult.action";
-        $.ajax({
-            type: "POST",
-            url: _url,
-            data: _formData,
-            processData:true,
-            dataType: "json",
-            async : true,
-            success: function (data) {
-                if(data.code=="200"){
-                	TLOG.component.operateLog('登记单管理',"上传处理结果",'【图片ID】:'+_formData.handleResultUrl);
-               	 $('#dlg').dialog('close');	 
-                    layer.alert('处理成功',function(){
-                   	 layer.closeAll();
-                   	 $('#handle-btn').hide();
-                   	 queryRegisterBillGrid();
-                    })
-                    
-                }else{
-                    swal('错误',data.result, 'error');
-                }
-            },
-            error: function(){
-                swal('错误', '远程访问失败', 'error');
-            }
-        });
+      
     }
     
     $('.fileimg-view').on('click', function () {

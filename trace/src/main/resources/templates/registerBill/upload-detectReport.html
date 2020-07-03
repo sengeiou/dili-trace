@@ -324,37 +324,6 @@ var currentUser={"depId":"${user.depId!}"
 	   formData.originCertifiyUrl=originCertifiyUrl;
 	   formData.detectReportUrl=detectReportUrl;
 
-        $.ajax({
-            type: "POST",
-            url: "${contextPath}/registerBill/doUploadDetectReport.action",
-            data : JSON.stringify(formData),
-            dataType: "json",
-            async : true,
-            contentType: "application/json; charset=utf-8",
-            success: function (ret) {
-                if(ret.success){
-                    //TLOG.component.operateLog(TLOG.operates.add, "登记单管理", ret.data, ret.data);
-                    //location.href = '/registerBill/index.html';
-                    //var paramStr = JSON.stringify(ret.data);
-                    parent.closeWin('view_win')
-                }else{
-                    swal(
-                            '错误',
-                            ret.result,
-                            'error'
-                    );
-                }
-            },
-            error: function(){
-                swal(
-                        '错误',
-                        '远程访问失败',
-                        'error'
-                );
-            }
-        });
-		
-		
 	}
     $('.imageUpload,.show-img').on('click', function () {
         var url = $(this).find("img").attr('src');

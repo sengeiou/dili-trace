@@ -114,52 +114,6 @@ public class RegisterBillApi {
 		RegisterBillOutputDto bill = registerBillService.conversionDetailOutput(registerBill);
 		return BaseOutput.success().setData(bill);
 	}
-
-	
-	@ApiOperation(value = "通过分销记录ID获取分销单")
-	@RequestMapping(value = "/salesRecordId/{salesRecordId}", method = RequestMethod.GET)
-	public BaseOutput<SeparateSalesRecord> getSeparateSalesRecord(@PathVariable Long salesRecordId) {
-		LOGGER.info("获取分销记录:" + salesRecordId);
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		SeparateSalesRecord record = separateSalesRecordService.get(salesRecordId);
-		return BaseOutput.success().setData(record);
-	}
-
-	@ApiOperation(value = "通过登记单商品名获取登记单", httpMethod = "GET", notes = "productName=?")
-	@RequestMapping(value = "/productName/{productName}", method = RequestMethod.GET)
-	public BaseOutput<List<RegisterBill>> getBillByProductName(@PathVariable String productName) {
-		LOGGER.info("获取登记单&分销记录:" + productName);
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		List<RegisterBill> bills = registerBillService.findByProductName(productName);
-		return BaseOutput.success().setData(bills);
-	}
-
-	@ApiOperation(value = "通过code删除登记单", httpMethod = "GET", notes = "productName=?")
-	@RequestMapping(value = "/deleteRegisterBillByCode/{registerBillCode}", method = RequestMethod.GET)
-	public BaseOutput<Object> deleteRegisterBillByCode(@PathVariable String registerBillCode) {
-		LOGGER.info("通过code删除登记单:{}", registerBillCode);
-		User user = userService.get(sessionContext.getAccountId());
-		if (StringUtils.isBlank(registerBillCode)) {
-			return BaseOutput.failure("参数错误");
-		}
-		RegisterBill registerBill = this.registerBillService.findByCode(registerBillCode);
-		if (registerBill == null) {
-			return BaseOutput.failure("登记单不存在");
-		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(registerBill.getState())) {
-			return BaseOutput.failure("不能删除当前状态登记单");
-		}
-		this.registerBillService.delete(registerBill.getId());
-		return BaseOutput.success().setData(true);
-
-	}
-
 	
 
 }

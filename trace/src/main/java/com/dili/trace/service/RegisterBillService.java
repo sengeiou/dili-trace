@@ -23,13 +23,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 
 	public String listPage(RegisterBillDto dto) throws Exception;
 
-	/**
-	 * 通过商品查找
-	 * 
-	 * @param productName
-	 * @return
-	 */
-	List<RegisterBill> findByProductName(String productName);
+
 
 	/**
 	 * 通过登记单查找
@@ -39,13 +33,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	RegisterBill findByCode(String code);
 
-	/**
-	 * 通过采样编号查找
-	 * 
-	 * @param sampleCode
-	 * @return
-	 */
-	RegisterBill findBySampleCode(String sampleCode);
 
 	/**
 	 * 创建登记单
@@ -55,46 +42,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	Long createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList, OperatorUser operatorUser);
 
-	/**
-	 * 审核登记单
-	 * 
-	 * @param id
-	 * @param pass
-	 * @return
-	 */
-	int auditRegisterBill(Long id, Boolean pass);
-
-	/**
-	 * 撤销交易单
-	 * 
-	 * @param id
-	 * @return
-	 */
-	int undoRegisterBill(Long id);
-
-	/**
-	 * 自动送检标记
-	 * 
-	 * @param id
-	 * @return
-	 */
-	int autoCheckRegisterBill(Long id);
-
-	/**
-	 * 采样检测标记
-	 * 
-	 * @param id
-	 * @return
-	 */
-	int samplingCheckRegisterBill(Long id);
-
-	/**
-	 * 复检标记
-	 * 
-	 * @param id
-	 * @return
-	 */
-	int reviewCheckRegisterBill(Long id);
 
 	/**
 	 * 通过登记单，获取详情
@@ -104,37 +51,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	public RegisterBillOutputDto conversionDetailOutput(RegisterBill registerBill);
 
-	/**
-	 * 保存处理结果
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public Long saveHandleResult(RegisterBill input);
 
-	/**
-	 * 保存修改数据
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public Long doUploadDetectReport(RegisterBill input);
-
-	/**
-	 * 保存修改数据
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public Long doUploadOrigincertifiy(RegisterBill input);
-
-	/**
-	 * 直接审核通过不需要检测
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public Long doAuditWithoutDetect(RegisterBill input);
 
 	/**
 	 * 修改登记单
@@ -143,30 +60,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doEdit(RegisterBill input);
-
-	/**
-	 * 批量主动送检
-	 * 
-	 * @param idList
-	 * @return
-	 */
-	public BaseOutput doBatchAutoCheck(List<Long> idList);
-
-	/**
-	 * 批量采样检测
-	 * 
-	 * @param idList
-	 * @return
-	 */
-	public BaseOutput doBatchSamplingCheck(List<Long> idList);
-
-	/**
-	 * 批量审核
-	 * 
-	 * @param batchAuditDto
-	 * @return
-	 */
-	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto);
 
 	/**
 	 * 删除产地证明及检测报告

@@ -199,13 +199,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	@Override
-	public List<RegisterBill> findByProductName(String productName) {
-		RegisterBill registerBill = new RegisterBill();
-		registerBill.setProductName(productName);
-		return list(registerBill);
-	}
-
-	@Override
 	public RegisterBill findByCode(String code) {
 		RegisterBill registerBill = new RegisterBill();
 		registerBill.setCode(code);
@@ -216,25 +209,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return null;
 	}
 
-	@Override
-	public RegisterBill findBySampleCode(String sampleCode) {
-		if (StringUtils.isBlank(sampleCode)) {
-			return null;
-		}
-		RegisterBill registerBill = new RegisterBill();
-		registerBill.setSampleCode(sampleCode.trim());
-		List<RegisterBill> list = list(registerBill);
-		if (list != null && list.size() > 0) {
-			return list.get(0);
-		}
-		return null;
-	}
 
-	@Override
-	public int auditRegisterBill(Long id, Boolean pass) {
-		RegisterBill registerBill = get(id);
-		return auditRegisterBill(pass, registerBill);
-	}
 
 	private int auditRegisterBill(Boolean pass, RegisterBill registerBill) {
 		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
@@ -252,34 +227,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 	}
 
-	private String getNextSampleCode() {
-		String sampleCode = this.codeGenerateService.nextSampleCode();
-		// String
-		// sampleCode=this.bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL_SAMPLE_CODE);
-		return sampleCode;
-	}
 
-	@Override
-	public int undoRegisterBill(Long billId) {
-		RegisterBill registerBill = get(billId);
-		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()
-				|| registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
-			UserTicket userTicket = getOptUser();
-			logger.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
-					+ JSON.toJSON(registerBill).toString());
-			this.delete(billId);
-			return this.separateSalesRecordService.deleteSeparateSalesRecordByBillId(billId);
-			// return update(registerBill);
-		} else {
-			throw new AppException("操作失败，数据状态已改变");
-		}
-	}
-
-	@Override
-	public int autoCheckRegisterBill(Long id) {
-		RegisterBill registerBill = get(id);
-		return autoCheckRegisterBill(registerBill);
-	}
 
 	private int autoCheckRegisterBill(RegisterBill registerBill) {
 		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
@@ -294,151 +242,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 	}
 
-	@Override
-	public BaseOutput doBatchAutoCheck(List<Long> idList) {
-		BatchResultDto<String> dto = new BatchResultDto<>();
-		for (Long id : idList) {
-			RegisterBill registerBill = get(id);
-			if (registerBill == null) {
-				continue;
-			}
-			try {
-				this.autoCheckRegisterBill(registerBill);
-				dto.getSuccessList().add(registerBill.getCode());
-			} catch (Exception e) {
-				dto.getFailureList().add(registerBill.getCode());
-			}
-		}
-
-		return BaseOutput.success().setData(dto);
-
-	}
-
-	@Override
-	public BaseOutput doBatchSamplingCheck(List<Long> idList) {
-		BatchResultDto<String> dto = new BatchResultDto<>();
-		for (Long id : idList) {
-			RegisterBill registerBill = get(id);
-			if (registerBill == null) {
-				continue;
-			}
-			try {
-				this.samplingCheckRegisterBill(registerBill);
-				dto.getSuccessList().add(registerBill.getCode());
-			} catch (Exception e) {
-				dto.getFailureList().add(registerBill.getCode());
-			}
-		}
-		return BaseOutput.success().setData(dto);
-
-	}
-
-	@Transactional
-	@Override
-	public BaseOutput doBatchAudit(BatchAuditDto batchAuditDto) {
-		BatchResultDto<String> dto = new BatchResultDto<>();
-
-		// id转换为RegisterBill,并通过条件判断partition(true:只有产地证明，且需要进行批量处理,false:其他)
-		Map<Boolean, List<RegisterBill>> partitionedMap = CollectionUtils
-				.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream().filter(Objects::nonNull).map(id -> {
-					RegisterBill registerBill = get(id);
-					return registerBill;
-				}).filter(Objects::nonNull).filter(registerBill -> {
-					if (Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-						// if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
-						// && StringUtils.isBlank(registerBill.getDetectReportUrl())) {
-						return false;
-						// }
-					}
-					return true;
-				}).collect(Collectors.partitioningBy((registerBill) -> {
-
-					if (Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-						// if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
-						// && StringUtils.isBlank(registerBill.getDetectReportUrl())) {
-						return true;
-						// }
-					}
-					return false;
-				}));
-
-		// 只有产地证明，且需要进行批量处理
-		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.TRUE)).forEach(registerBill -> {
-			if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
-				UserTicket userTicket = getOptUser();
-				registerBill.setOperatorName(userTicket.getRealName());
-				registerBill.setOperatorId(userTicket.getId());
-				registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-				registerBill.setDetectState(null);
-				this.updateSelective(registerBill);
-				dto.getSuccessList().add(registerBill.getCode());
-			} else {
-				dto.getFailureList().add(registerBill.getCode());
-			}
-
-		});
-		// 其他登记单
-		CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.FALSE)).forEach(registerBill -> {
-			try {
-				this.auditRegisterBill(batchAuditDto.getPass(), registerBill);
-				dto.getSuccessList().add(registerBill.getCode());
-			} catch (Exception e) {
-				dto.getFailureList().add(registerBill.getCode());
-			}
-
-		});
-
-		return BaseOutput.success().setData(dto);
-	}
-
-	@Override
-	public int samplingCheckRegisterBill(Long id) {
-		RegisterBill registerBill = get(id);
-		return samplingCheckRegisterBill(registerBill);
-	}
-
-	private int samplingCheckRegisterBill(RegisterBill registerBill) {
-		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
-			UserTicket userTicket = getOptUser();
-			registerBill.setOperatorName(userTicket.getRealName());
-			registerBill.setOperatorId(userTicket.getId());
-			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
-			return update(registerBill);
-		} else {
-			throw new AppException("操作失败，数据状态已改变");
-		}
-	}
-
-	@Override
-	public int reviewCheckRegisterBill(Long id) {
-		RegisterBill registerBill = get(id);
-		if (registerBill.getState().intValue() != RegisterBillStateEnum.ALREADY_CHECK.getCode().intValue()) {
-			throw new AppException("操作失败，数据状态已改变");
-		}
-
-		boolean updateState = false;
-		// 第一次复检
-		if (registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()) {
-			updateState = true;
-		} else if (registerBill.getDetectState().intValue() == BillDetectStateEnum.REVIEW_NO_PASS.getCode().intValue()
-		// && StringUtils.isBlank(registerBill.getHandleResult())
-		) {
-			// 多次复检
-			updateState = true;
-		}
-		if (updateState) {
-			UserTicket userTicket = getOptUser();
-			registerBill.setOperatorName(userTicket.getRealName());
-			registerBill.setOperatorId(userTicket.getId());
-			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-			registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
-			// registerBill.setExeMachineNo(null);
-			return update(registerBill);
-		} else {
-			throw new AppException("操作失败，数据状态已改变");
-		}
-	}
+	
 
 	UserTicket getOptUser() {
 		return SessionContext.getSessionContext().getUserTicket();
@@ -455,75 +259,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return outputDto;
 	}
 
-	@Override
-	public Long saveHandleResult(RegisterBill input) {
-		if (input == null || input.getId() == null) {
-			// || StringUtils.isAnyBlank(input.getHandleResult(),
-			// input.getHandleResultUrl())) {
-			throw new AppException("参数错误");
-		}
-		// if (input.getHandleResult().trim().length() > 1000) {
-		// throw new AppException("处理结果不能超过1000");
-		// }
-		RegisterBill item = this.get(input.getId());
-		if (item == null) {
-			throw new AppException("数据错误");
-		}
-
-		// RegisterBill example = new RegisterBill();
-		// example.setId(item.getId());
-		// example.setHandleResult(input.getHandleResult());
-		// example.setHandleResultUrl(input.getHandleResultUrl());
-		// this.updateSelective(example);
-
-		return item.getId();
-
-	}
-
-	// @Override
-	// public Long doModifyRegisterBill(RegisterBill input) {
-	// if (input == null || input.getId() == null) {
-	// throw new AppException("参数错误");
-	// }
-	// if (StringUtils.isBlank(input.getOriginCertifiyUrl()) &&
-	// StringUtils.isBlank(input.getDetectReportUrl())) {
-	// throw new AppException("请上传报告");
-	// }
-	// RegisterBill item = this.get(input.getId());
-	// if (item == null) {
-	// throw new AppException("数据错误");
-	// }
-	//
-	// RegisterBill example = new RegisterBill();
-	// example.setId(item.getId());
-	// example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-	// example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
-	// this.updateSelective(example);
-	//
-	// return example.getId();
-	// }
-
-	@Override
-	public Long doAuditWithoutDetect(RegisterBill input) {
-		if (input == null || input.getId() == null) {
-			throw new AppException("参数错误");
-		}
-		RegisterBill registerBill = this.get(input.getId());
-		if (registerBill == null) {
-			throw new AppException("数据错误");
-		}
-		// if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl())) {
-		// throw new AppException("请上传产地证明");
-		// }
-		if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
-			throw new AppException("数据状态错误");
-		}
-		registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-		// registerBill.setDetectState(null);
-		this.updateSelective(registerBill);
-
-		return registerBill.getId();
-	}
+	
 
 	@Override
 	public Long doEdit(RegisterBill input) {
@@ -542,57 +278,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.updateSelective(input);
 		this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
 		return input.getId();
-	}
-
-	@Override
-	public Long doUploadDetectReport(RegisterBill input) {
-		if (input == null || input.getId() == null) {
-			throw new AppException("参数错误");
-		}
-		// if (StringUtils.isBlank(input.getOriginCertifiyUrl()) &&
-		// StringUtils.isBlank(input.getDetectReportUrl())) {
-		// throw new AppException("请上传报告");
-		// }
-		RegisterBill item = this.get(input.getId());
-		if (item == null) {
-			throw new AppException("数据错误");
-		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
-			throw new AppException("状态错误,不能上传检测报告");
-		}
-
-		RegisterBill example = new RegisterBill();
-		example.setId(item.getId());
-		// example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-		// example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
-		this.updateSelective(example);
-
-		return example.getId();
-	}
-
-	@Override
-	public Long doUploadOrigincertifiy(RegisterBill input) {
-		if (input == null || input.getId() == null) {
-			throw new AppException("参数错误");
-		}
-		// if (StringUtils.isBlank(input.getOriginCertifiyUrl()) &&
-		// StringUtils.isBlank(input.getDetectReportUrl())) {
-		// throw new AppException("请上传报告");
-		// }
-		RegisterBill item = this.get(input.getId());
-		if (item == null) {
-			throw new AppException("数据错误");
-		}
-		// if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
-		// throw new AppException("状态错误,不能上传产地证明");
-		// }
-		RegisterBill example = new RegisterBill();
-		example.setId(item.getId());
-		// example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-		// example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
-		this.updateSelective(example);
-
-		return example.getId();
 	}
 
 	@Override
