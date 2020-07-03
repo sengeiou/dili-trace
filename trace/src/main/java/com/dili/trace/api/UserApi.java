@@ -89,13 +89,14 @@ public class UserApi {
             }
 
             checkRealNameCertificationParams(user);
-
+            user.setId(id);
             user.setCardNo(StringUtils.upperCase(user.getCardNo()));
             user.setLicense(StringUtils.upperCase(user.getLicense()));
             user.setValidateState(ValidateStateEnum.UNCERT.getCode());
             userService.updateUser(user);
             return BaseOutput.success().setData(user.getId());
         }catch (TraceBusinessException e){
+            LOGGER.error("realNameCertificationReq",e);
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
             LOGGER.error("realNameCertificationReq",e);
@@ -304,9 +305,9 @@ public class UserApi {
             throw new TraceBusinessException("手机号为空或格式错误");
         }
 
-        if(StrUtil.isBlank(user.getTallyAreaNos()) || !ReUtil.isMatch(PatternConstants.TALLY_AREA_NO,user.getTallyAreaNos())){
-            throw new TraceBusinessException("理货区号为空或格式错误");
-        }
+//        if(StrUtil.isBlank(user.getTallyAreaNos()) || !ReUtil.isMatch(PatternConstants.TALLY_AREA_NO,user.getTallyAreaNos())){
+//            throw new TraceBusinessException("理货区号为空或格式错误");
+//        }
         if(Arrays.asList(user.getTallyAreaNos().split(",")).size()>15){
             throw new TraceBusinessException("用户最多添加15个摊位号");
         }
