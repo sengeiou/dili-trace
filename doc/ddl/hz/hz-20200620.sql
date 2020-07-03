@@ -355,6 +355,7 @@ ALTER TABLE `checkinout_record` DROP COLUMN `sales_weight`;
 ALTER TABLE `checkinout_record` DROP COLUMN `seperate_sales_id`;
 
 #2020年6月23日11点35分
+ALTER TABLE `user` DROP INDEX user_unique_cardno;
 ALTER TABLE `user` ADD COLUMN validate_state tinyint(2) DEFAULT 10 NOT NULL COMMENT '未实名10 待审核 20  审核未通过 30 审核通过 40';
 ALTER TABLE `user` MODIFY COLUMN business_license_url varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '营业执照';
 ALTER TABLE `user` ADD vocation_type TINYINT(2) NULL COMMENT '批发 10 农贸 20 团体 30 个人40 餐饮50 配送商 60';
