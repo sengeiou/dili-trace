@@ -1,7 +1,6 @@
 package com.dili.trace.service.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,17 +12,14 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
-import com.dili.ss.exception.AppException;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
@@ -141,6 +137,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					bill.setId(registerBill.getId());
 					this.updateSelective(bill);
 				});
+		this.updateUserQrStatusByUserId(registerBill.getUserId());
 		return registerBill.getId();
 	}
 
@@ -219,19 +216,22 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public Long doEdit(RegisterBill input) {
 		if (input == null || input.getId() == null) {
-			throw new AppException("参数错误");
+			throw new TraceBusinessException("参数错误");
 		}
 		RegisterBill billItem = this.get(input.getId());
 		if (billItem == null) {
-			throw new AppException("数据错误");
+			throw new TraceBusinessException("数据错误");
 		}
 		if (BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
 				|| BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+			// 待审核，或者已退回状态可以进行数据修改
 		} else {
-			throw new AppException("当前状态不能修改数据");
+			throw new TraceBusinessException("当前状态不能修改数据");
 		}
+		input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 		this.updateSelective(input);
 		this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
+		this.updateUserQrStatusByUserId(billItem.getUserId());
 		return input.getId();
 	}
 
@@ -305,23 +305,24 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
 				.orElseThrow(() -> new TraceBusinessException("参数错误"));
 
-		RegisterBill item = this.get(billId);
-		if (item == null) {
+		RegisterBill billItem = this.get(billId);
+		if (billItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(item.getVerifyStatus())
+		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
 				.orElseThrow(() -> new TraceBusinessException("数据错误"));
 
 		logger.info("from {} to {}", fromVerifyState, toVerifyState);
 		if (fromVerifyState == toVerifyState) {
 			throw new TraceBusinessException("状态不能相同");
 		}
-		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
+		if (!BillVerifyStatusEnum.canDoVerify(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
-		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReason(),
+		this.createHistoryRegisterBillForVerify(billItem, toVerifyState, input.getReason(),
 				VerifyTypeEnum.VERIFY_BEFORE_CHECKIN, operatorUser);
 		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
+		this.updateUserQrStatusByUserId(billItem.getUserId());
 		return billId;
 	}
 
@@ -335,20 +336,20 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
 				.orElseThrow(() -> new TraceBusinessException("参数错误"));
 
-		RegisterBill item = this.get(billId);
-		if (item == null) {
+		RegisterBill billItem = this.get(billId);
+		if (billItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-		if (toVerifyState == BillVerifyStatusEnum.fromCode(item.getVerifyStatus()).orElse(null)) {
+		if (toVerifyState == BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElse(null)) {
 			throw new TraceBusinessException("状态不能相同");
 		}
-		if (!BillVerifyStatusEnum.canDoVerify(item.getVerifyStatus())) {
+		if (!BillVerifyStatusEnum.canDoVerify(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
-		this.createHistoryRegisterBillForVerify(item, toVerifyState, input.getReason(),
+		this.createHistoryRegisterBillForVerify(billItem, toVerifyState, input.getReason(),
 				VerifyTypeEnum.VERIFY_AFTER_CHECKIN, operatorUser);
 		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
-
+		this.updateUserQrStatusByUserId(billItem.getUserId());
 		return billId;
 
 	}
@@ -437,7 +438,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	 * @param dto
 	 * @return
 	 */
-	public void updateAllUserQrStatusByRegisterBillNum(Date createdStart,Date createdEnd) {
+	public void updateAllUserQrStatusByRegisterBillNum(Date createdStart, Date createdEnd) {
 		UserListDto dto = DTOUtils.newDTO(UserListDto.class);
 		dto.setQrStatus(UserQrStatusEnum.BLACK.getCode());
 

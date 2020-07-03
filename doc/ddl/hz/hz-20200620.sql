@@ -321,6 +321,7 @@ ALTER TABLE `register_bill` ADD COLUMN  `brand_name` varchar(50)   NULL   COMMEN
 ALTER TABLE `register_bill` ADD COLUMN  `reason` varchar(100)   NULL   COMMENT '原因';
 ALTER TABLE `register_bill` ADD COLUMN  `yn` int(11)  NOT NULL  default 1 COMMENT '是否有效';
 ALTER TABLE `register_bill` MODIFY COLUMN `weight` decimal(10,3)  NOT NULL default 0 COMMENT '重量';
+ALTER TABLE `register_bill` MODIFY COLUMN plate varchar(15) NULL COMMENT '车牌';
 
 
 ALTER TABLE `register_bill` DROP COLUMN `sales_type`;
@@ -389,7 +390,7 @@ CREATE TABLE `register_bill_history` (
   `addr` varchar(50) DEFAULT NULL COMMENT '地址',
   `phone` varchar(20) DEFAULT NULL,
   `user_id` bigint(20) DEFAULT NULL COMMENT '理货区用户ID',
-  `plate` varchar(15) NOT NULL COMMENT '车牌',
+  `plate` varchar(15)  NULL COMMENT '车牌',
   `state` tinyint(1) NOT NULL COMMENT '1.待审核 2.待采样 3.已采样 4.待检测 5.检测中 6.已检测 7.复检中，8.审核未通过',
   `sales_type` tinyint(1) DEFAULT NULL COMMENT '1.分销 2.全销',
   `product_name` varchar(20) NOT NULL COMMENT '商品名称',

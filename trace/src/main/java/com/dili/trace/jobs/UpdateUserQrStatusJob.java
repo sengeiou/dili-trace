@@ -6,6 +6,8 @@ import java.util.Date;
 
 import com.dili.trace.service.RegisterBillService;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ public class UpdateUserQrStatusJob implements CommandLineRunner {
         LocalDateTime now = LocalDateTime.now();
         Date start = this.start(now);
         Date end = this.end(now);
-        logger.info("开始执行任务: 根据{}到{}之内报备单数据更新用户颜色码", start, end);
+        logger.info("开始执行任务: 根据 {}-{} 之内报备单数据更新用户颜色码",DateFormatUtils.format(start, "yyyy-MM-dd HH:mm:ss"),DateFormatUtils.format(end, "yyyy-MM-dd HH:mm:ss") );
         try {
             this.billService.updateAllUserQrStatusByRegisterBillNum(start, end);
         } catch (Exception e) {
@@ -54,8 +56,7 @@ public class UpdateUserQrStatusJob implements CommandLineRunner {
         UpdateUserQrStatusJob job = new UpdateUserQrStatusJob();
         Date start = job.start(now);
         Date end = job.end(now);
-        logger.info("{}", start);
-        logger.info("{}", end);
+        logger.info("{}-{}",DateFormatUtils.format(start, "yyyy-MM-dd HH:mm:ss"),DateFormatUtils.format(end, "yyyy-MM-dd HH:mm:ss") );
     }
 
 }
