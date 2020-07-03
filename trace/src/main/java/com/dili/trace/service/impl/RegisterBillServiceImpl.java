@@ -225,9 +225,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBillOutputDto outputDto = RegisterBillOutputDto.build(registerBill, new ArrayList<TradeDetail>());
 		return outputDto;
 	}
-
-	
-
+	@Transactional
 	@Override
 	public Long doEdit(RegisterBill input) {
 		if (input == null || input.getId() == null) {
@@ -306,32 +304,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		return sql;
 	}
-
-	/**
-	 * 基于ID更新二维码状态
-	 */
-	private void updateUserQrItemDetail(Long registerBillId) {
-		if (registerBillId != null) {
-			RegisterBill bill = this.get(registerBillId);
-			if (bill != null && bill.getUserId() != null) {
-				// this.userQrItemService.updateUserQrStatus(bill.getUserId());
-			}
-		}
-
-	}
-
-	/**
-	 * 基于条件更新二维码状态
-	 */
-	private void updateUserQrItemDetailByCondition(RegisterBill condition) {
-		this.listByExample(condition).stream().forEach(bill -> {
-			if (bill != null && bill.getUserId() != null) {
-				// this.userQrItemService.updateUserQrStatus(bill.getUserId());
-			}
-		});
-
-	}
-
+	@Transactional
 	@Override
 	public Long doVerifyBeforeCheckIn(RegisterBill input, OperatorUser operatorUser) {
 		if (input == null || input.getId() == null) {
@@ -360,7 +333,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
 		return billId;
 	}
-
+	@Transactional
 	@Override
 	public Long doVerifyAfterCheckIn(RegisterBill input, OperatorUser operatorUser) {
 		if (input == null || input.getId() == null) {
@@ -390,7 +363,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	private Long createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,
 			String returnedReason, VerifyTypeEnum verifyType, OperatorUser operatorUser) {
-			this.registerBillHistoryService.createHistory(item);
+		this.registerBillHistoryService.createHistory(item);
 		RegisterBill bill = new RegisterBill();
 		bill.setId(item.getId());
 		bill.setVerifyStatus(toVerifyState.getCode());
@@ -421,6 +394,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			}
 			return dto;
 		}).toList();
+	}
+	public void updateUser(Long userId){
+
+	}
+	public void updateAllUser(){
+		
 	}
 
 }

@@ -155,4 +155,9 @@
     group by verify_status
   </select>
 
+
+  <!--update id="updateUserByRegisterBill" parameterType="com.dili.trace.domain.RegisterBill">
+   
+  </update-->
+
 </mapper>

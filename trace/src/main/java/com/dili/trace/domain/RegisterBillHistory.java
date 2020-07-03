@@ -29,6 +29,7 @@ public class RegisterBillHistory extends BaseDomain {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "`id`")
 	private Long id;
+
 	@Column(name = "`bill_id`")
 	private Long billId;
 
@@ -196,47 +197,7 @@ public class RegisterBillHistory extends BaseDomain {
 		this.verifyStatus = verifyStatus;
 	}
 
-	@Transient
-	public String getVerifyStatusName() {
-		return BillVerifyStatusEnum.fromCode(this.getVerifyStatus()).map(BillVerifyStatusEnum::getName).orElse("");
-	}
-
-	@Transient
-	public String getWeightUnitName() {
-		return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
-	}
-
-	@Transient
-	public Long getBillId() {
-		return this.getId();
-	}
-
-	@Transient
-	public String getDetectStateName() {
-		try {
-			if (getDetectState() == null) {
-				return "";
-			}
-		} catch (Exception e) {
-			return "";
-		}
-		BillDetectStateEnum state = BillDetectStateEnum.getBillDetectStateEnum(getDetectState());
-		return state.getName();
-
-	}
-
-	@Transient
-	public String getStateName() {
-		try {
-			if (getState() == null) {
-				return "";
-			}
-		} catch (Exception e) {
-			return "";
-		}
-		return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
-	}
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -623,12 +584,11 @@ public class RegisterBillHistory extends BaseDomain {
 		this.reason = reason;
 	}
 
-
-    /**
-     * @param billId the billId to set
-     */
-    public void setBillId(Long billId) {
-        this.billId = billId;
-    }
+	/**
+	 * @param billId the billId to set
+	 */
+	public void setBillId(Long billId) {
+		this.billId = billId;
+	}
 
 }
