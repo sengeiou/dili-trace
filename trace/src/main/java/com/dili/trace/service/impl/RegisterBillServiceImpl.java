@@ -100,7 +100,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.checkBill(registerBill);
 
 		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-		registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
+		registerBill.setVerifyType(VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode());
 		registerBill.setState(RegisterBillStateEnum.NEW.getCode());
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);

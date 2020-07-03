@@ -12,7 +12,7 @@ import com.dili.trace.api.output.VerifyBillInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
@@ -45,7 +45,8 @@ public class ManagerAfterCheckInApi {
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
 	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto input) {
 		try {
-			input.setBillType(BillTypeEnum.NONE.getCode());
+			// input.setBillType(BillTypeEnum.NONE.getCode());
+			input.setVerifyType(VerifyTypeEnum.VERIFY_AFTER_CHECKIN.getCode());
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(input),
 					rb -> {
@@ -60,7 +61,7 @@ public class ManagerAfterCheckInApi {
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
 	}
-	
+
 	@ApiOperation(value = "场内审核登记单")
 	@RequestMapping(value = "/doVerify.api", method = RequestMethod.POST)
 	public BaseOutput<Long> doVerify(@RequestBody VerifyBillInputDto inputDto) {
@@ -73,7 +74,7 @@ public class ManagerAfterCheckInApi {
 			RegisterBill input = new RegisterBill();
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
-			Long id = this.registerBillService.doVerifyAfterCheckIn(input,operatorUser);
+			Long id = this.registerBillService.doVerifyAfterCheckIn(input, operatorUser);
 			return BaseOutput.success().setData(id);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
