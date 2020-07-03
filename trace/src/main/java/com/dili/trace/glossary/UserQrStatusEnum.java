@@ -3,10 +3,10 @@ package com.dili.trace.glossary;
 import java.util.stream.Stream;
 
 public enum UserQrStatusEnum {
-    // /**
-    // * 黑色
-    // */
-    // BLACK(0, "黑色"),
+    /**
+    * 黑色
+    */
+    BLACK(0, "黑色"),
     /**
      * 绿色
      */

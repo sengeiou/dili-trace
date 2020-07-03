@@ -61,16 +61,6 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 */
 	public Long doEdit(RegisterBill input);
 
-	/**
-	 * 删除产地证明及检测报告
-	 * 
-	 * @param id
-	 * @param deleteType
-	 * @return
-	 */
-
-	public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType);
-
 	public Long doVerifyBeforeCheckIn(RegisterBill input, OperatorUser operatorUser);
 
 	public Long doVerifyAfterCheckIn(RegisterBill input, OperatorUser operatorUser);

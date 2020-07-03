@@ -1001,48 +1001,8 @@ var currentUser={"depId":"${user.depId!}"
 				  });
 			  $('.layui-layer').width('460px');
 			});
-		  let result = await promise; // wait until the promise resolves (*) 
-		
-		  if(result!='cancel'){
-			  var _url = "${contextPath}/registerBill/doRemoveReportAndCertifiy.action";
-		        $.ajax({
-		            type: "POST",
-		            url: _url,
-		            data: {id:selected.id,deleteType:result},
-		            processData:true,
-		            dataType: "json",
-		            async : true,
-		            success: function (data) {
-		                if(data.code=="200"){
-		                	TLOG.component.operateLog('登记单管理',"删除产地证明和报告",'【ID】:'+selected.id);
-		               	
-	                         layer.alert('操作成功',{
-	 								title:'操作',
-		                           	time : 600,
-		                           	end :function(){
-		                           		 layer.closeAll();
-		                           		queryRegisterBillGrid();
-		                           	}
-		                          },
-	                         	 function () {
-	                         	  layer.closeAll();
-	                         	 queryRegisterBillGrid();
-	                                 }
-	                         );
-
-		                }else{
-		                	  layer.closeAll();
-		                    swal('错误',data.result, 'error');
-		                }
-		            },
-		            error: function(){
-		            	  layer.closeAll();
-		                swal('错误', '远程访问失败', 'error');
-		            }
-		        });
-		  }else{
-			  layer.closeAll();
-		  }
+		    let result = await promise; // wait until the promise resolves (*) 
+		    layer.closeAll();
 		 
 		 
     }

@@ -35,8 +35,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	@Autowired
 	RUserUpStreamService rUserUpStreamService;
-	@Autowired
-	UserQrItemService userQrItemService;
 
 	/**
 	 * 分页查询上游信息
@@ -79,7 +77,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		RUserUpstream item = this.rUserUpStreamService.listByExample(rUserUpstream).stream().findFirst().orElse(null);
 		if (item != null) {
 			int value= this.rUserUpStreamService.delete(item.getId());
-			this.userQrItemService.updateUserQrStatus(userId);
 			return value;
 		}
 		return 0;
@@ -118,14 +115,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			});
 			rUserUpStreamService.batchInsert(rUserUpstreams);
 		}
-		if (CollectionUtils.isNotEmpty(upStreamDto.getUserIds())) {
-			
-			upStreamDto.getUserIds().forEach(userId -> {
-				this.userQrItemService.updateUserQrStatus(userId);
-			});
-		}
-		
-		
 		
 	}
 
@@ -148,10 +137,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 		rUserUpStreamService.deleteByExample(rUserUpstreamDelCondition);
 		addUpstreamUsers(upStreamDto, operatorUser);
-		
-		changedUserId.stream().forEach(userId->{
-			this.userQrItemService.updateUserQrStatus(userId);
-		});	
 		
 		return BaseOutput.success();
 

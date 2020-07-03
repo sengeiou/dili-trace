@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBusinessException;
@@ -23,8 +21,6 @@ import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
-import com.dili.trace.dto.BatchAuditDto;
-import com.dili.trace.dto.BatchResultDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
@@ -33,25 +29,20 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
-import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.BrandService;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserQrItemService;
 import com.dili.trace.service.UsualAddressService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 //import org.hibernate.SQLQuery.ReturnProperty;
 import org.slf4j.Logger;
@@ -79,10 +70,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	CodeGenerateService codeGenerateService;
 	@Autowired
 	UsualAddressService usualAddressService;
-	@Autowired
-	UserQrItemService userQrItemService;
-	@Autowired
-	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
 	TradeDetailService tradeDetailService;
 	@Autowired
@@ -126,13 +113,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// 车牌转大写
 		String plate=StreamEx.ofNullable(registerBill.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull().map(String::toUpperCase).findFirst().orElse(null);
 		registerBill.setPlate(plate);
+		//保存车牌
 		this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
+		//保存报备单
 		int result = super.saveOrUpdate(registerBill);
 		if (result == 0) {
 			logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
 			throw new TraceBusinessException("创建失败");
 		}
+		//保存图片
 		if (imageCertList != null) {
 			this.imageCertService.insertImageCert(imageCertList, registerBill.getId());
 		}
@@ -148,6 +138,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return registerBill.getId();
 	}
 
+	/**
+	 * 检查用户输入参数
+	 * @param registerBill
+	 * @return
+	 */
 	private BaseOutput checkBill(RegisterBill registerBill) {
 
 		if (!BillTypeEnum.fromCode(registerBill.getBillType()).isPresent()) {
@@ -211,40 +206,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 
 
-	private int auditRegisterBill(Boolean pass, RegisterBill registerBill) {
-		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
-			UserTicket userTicket = getOptUser();
-			registerBill.setOperatorName(userTicket.getRealName());
-			registerBill.setOperatorId(userTicket.getId());
-			if (pass) {
-
-			} else {
-				registerBill.setState(-1);
-			}
-			return update(registerBill);
-		} else {
-			throw new AppException("操作失败，数据状态已改变");
-		}
-	}
-
-
-
-	private int autoCheckRegisterBill(RegisterBill registerBill) {
-		if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_SAMPLE.getCode().intValue()) {
-			UserTicket userTicket = getOptUser();
-			registerBill.setOperatorName(userTicket.getRealName());
-			registerBill.setOperatorId(userTicket.getId());
-			registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-			registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
-			return update(registerBill);
-		} else {
-			throw new AppException("操作失败，数据状态已改变");
-		}
-	}
-
 	
 
-	UserTicket getOptUser() {
+	private UserTicket getOptUser() {
 		return SessionContext.getSessionContext().getUserTicket();
 	}
 
@@ -280,31 +244,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		return input.getId();
 	}
 
-	@Override
-	public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType) {
-		RegisterBill item = this.get(id);
-		if (item == null) {
-			throw new AppException("数据错误");
-		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
-			throw new AppException("状态错误,不能删除产地证明和检测报告");
-		}
-		// if ("all".equalsIgnoreCase(deleteType)) {
-		// item.setOriginCertifiyUrl(null);
-		// item.setDetectReportUrl(null);
-		// } else if ("originCertifiy".equalsIgnoreCase(deleteType)) {
-		// item.setOriginCertifiyUrl(null);
-		// } else if ("detectReport".equalsIgnoreCase(deleteType)) {
-		// item.setDetectReportUrl(null);
-		// } else {
-		// // do nothing
-		// return BaseOutput.success();
-		// }
-		// this.getActualDao().doRemoveReportAndCertifiy(item);
-		this.userQrItemService.updateUserQrStatus(item.getUserId());
-		return BaseOutput.success();
-	}
-
 	private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
 		if (StringUtils.isNotBlank(dto.getAttrValue())) {
 			switch (dto.getAttr()) {
@@ -332,15 +271,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					break;
 			}
 		}
-		// if (registerBill.getHasReport() != null) {
-		// if (registerBill.getHasReport()) {
-		// registerBill.mset(IDTO.AND_CONDITION_EXPR,
-		// " (detect_report_url is not null AND detect_report_url<>'')");
-		// } else {
-		// registerBill.mset(IDTO.AND_CONDITION_EXPR, " (detect_report_url is null or
-		// detect_report_url='')");
-		// }
-		// }
 
 		StringBuilder sql = this.buildDynamicCondition(dto);
 		if (sql.length() > 0) {
@@ -365,7 +295,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public String listPage(RegisterBillDto input) throws Exception {
 		RegisterBillDto dto = this.preBuildDTO(input);
-
 		return this.listEasyuiPageByExample(dto, true).toString();
 	}
 
@@ -373,126 +302,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		StringBuilder sql = new StringBuilder();
 
 		return sql;
-	}
-
-	@Override
-	public int batchInsert(List<RegisterBill> list) {
-		int v = super.batchInsert(list);
-		return v;
-	}
-
-	@Override
-	public int batchUpdate(List<RegisterBill> list) {
-		int v = super.batchUpdate(list);
-		return v;
-	}
-
-	@Override
-	public int batchUpdateSelective(List<RegisterBill> list) {
-		int v = super.batchUpdateSelective(list);
-		return v;
-	}
-
-	// @Override
-	// public int delete(Long key) {
-	// int v= super.delete(key);
-	// return v;
-	// }
-
-	// @Override
-	// public int delete(List<Long> ids) {
-	// int v= super.delete(ids);
-	// return v;
-	// }
-
-	// @Override
-	// public int deleteByExample(RegisterBill t) {
-	// int v= super.deleteByExample(t);
-	// return v;
-	// }
-
-	@Override
-	public int insert(RegisterBill t) {
-		int v = super.insert(t);
-		// this.updateUserQrItemDetail(t.getId());
-		return v;
-	}
-
-	@Override
-	public int insertExact(RegisterBill t) {
-		int v = super.insertExact(t);
-		// this.updateUserQrItemDetail(t.getId());
-		return v;
-	}
-
-	@Override
-	public int insertExactSimple(RegisterBill t) {
-		int v = super.insertExactSimple(t);
-		// this.updateUserQrItemDetail(t.getId());
-		return v;
-	}
-
-	@Override
-	public int insertSelective(RegisterBill t) {
-		int v = super.insertSelective(t);
-		// this.updateUserQrItemDetail(t.getId());
-		return v;
-	}
-
-	@Override
-	public int update(RegisterBill condtion) {
-		int v = super.update(condtion);
-		// this.updateUserQrItemDetail(condtion.getId());
-		return v;
-	}
-
-	@Override
-	public int updateByExample(RegisterBill domain, RegisterBill condition) {
-		int v = super.updateByExample(domain, condition);
-		// this.updateUserQrItemDetailByCondition(condition);
-		return v;
-	}
-
-	@Override
-	public int updateExact(RegisterBill record) {
-		int v = super.updateExact(record);
-		// this.updateUserQrItemDetail(record.getId());
-		return v;
-	}
-
-	@Override
-	public int updateExactByExample(RegisterBill domain, RegisterBill condition) {
-		int v = super.updateExactByExample(domain, condition);
-		// this.updateUserQrItemDetailByCondition(condition);
-		return v;
-	}
-
-	@Override
-	public int updateExactByExampleSimple(RegisterBill domain, RegisterBill condition) {
-		int v = super.updateExactByExampleSimple(domain, condition);
-		// this.updateUserQrItemDetailByCondition(condition);
-		return v;
-	}
-
-	@Override
-	public int updateExactSimple(RegisterBill record) {
-		int v = super.updateExactSimple(record);
-		// this.updateUserQrItemDetail(record.getId());
-		return v;
-	}
-
-	@Override
-	public int updateSelective(RegisterBill condtion) {
-		int v = super.updateSelective(condtion);
-		// this.updateUserQrItemDetail(condtion.getId());
-		return v;
-	}
-
-	@Override
-	public int updateSelectiveByExample(RegisterBill domain, RegisterBill condition) {
-		int v = super.updateSelectiveByExample(domain, condition);
-		// this.updateUserQrItemDetailByCondition(condition);
-		return v;
 	}
 
 	/**
@@ -585,7 +394,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			historyBill.setCode("h_" + historyBill.getCode());
 			historyBill.setSampleCode(null);
 			historyBill.setYn(YnEnum.NO.getCode());
-			this.insertSelective(historyBill);
+			//this.insertSelective(historyBill);
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new TraceBusinessException("创建查询数据出错");
 		}

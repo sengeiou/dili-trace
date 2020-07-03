@@ -218,18 +218,10 @@ public class UserController {
 		return "user/view";
 	}
 
-	@Autowired
-	UserQrItemService userQrItemService;
 	@ApiOperation("跳转到qrstatus页面")
 	@RequestMapping(value = "/qrstatus.html", method = RequestMethod.GET)
 	public String qrstatus(ModelMap modelMap, Long id) {
 		List<UserQrItem> userQrItemlist = Collections.emptyList();
-		if (id != null) {
-			UserQrItem userQrIztem = new UserQrItem();
-			userQrIztem.setUserId(id);
-			userQrItemlist = this.userQrItemService.listByExample(userQrIztem);
-		}
-
 //		List<UserQrItemDetail>userQrItemDetailList= this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
 //		Map<Long,String>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId,Collectors.mapping(UserQrItemDetail::getObjectId,Collectors.joining(","))));
 		modelMap.put("userQrItemlist", userQrItemlist);

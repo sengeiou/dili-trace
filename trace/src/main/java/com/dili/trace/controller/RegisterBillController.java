@@ -391,28 +391,6 @@ public class RegisterBillController {
 	}
 
 	/**
-	 * 删除检测报告及产地证明
-	 * 
-	 * @param input
-	 * @return
-	 */
-	@RequestMapping(value = "/doRemoveReportAndCertifiy.action", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public BaseOutput<?> doRemoveReportAndCertifiy(Long id, String deleteType) {
-		try {
-			// Long id = this.registerBillService.doUploadDetectReport(input);
-			return this.registerBillService.doRemoveReportAndCertifiy(id, deleteType);
-		} catch (AppException e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("服务端出错");
-		}
-
-	}
-
-	/**
 	 * 交易单修改
 	 *
 	 * @param id

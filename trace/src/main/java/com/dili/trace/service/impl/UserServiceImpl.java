@@ -66,8 +66,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Resource
     UsualAddressService usualAddressService;
     @Resource
-    UserQrItemService userQrItemService;
-    @Resource
     EventMessageService eventMessageService;
 
 
@@ -457,7 +455,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         eventMessageService.addMessage(eventMessage);
     }
 
-    private void updateUserQrItem(Long userId) {
-        this.userQrItemService.updateQrItemDetail(this.get(userId));
+    public void updateUserQrItem(Long userId) {
+        
     }
+
+    
 }
