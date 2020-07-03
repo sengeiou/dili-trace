@@ -6,16 +6,13 @@ import com.dili.trace.enums.VerifyTypeEnum;
 public class VerifyStatusCountOutputDto {
     private Integer verifyStatus;
     private String verifyStatusName;
-    private Integer verifyType;
-    private String verifyTypeName;
+
     private Integer num;
 
-    public static VerifyStatusCountOutputDto buildDefault(VerifyTypeEnum verifyType,
+    public static VerifyStatusCountOutputDto buildDefault(
             BillVerifyStatusEnum verifyStatus) {
         VerifyStatusCountOutputDto dto = new VerifyStatusCountOutputDto();
         dto.setNum(0);
-        dto.setVerifyType(verifyType.getCode());
-        dto.setVerifyTypeName(verifyType.getDesc());
         
         dto.setVerifyStatus(verifyStatus.getCode());
         dto.setVerifyStatusName(verifyStatus.getName());
@@ -48,34 +45,6 @@ public class VerifyStatusCountOutputDto {
      */
     public void setVerifyStatusName(String verifyStatusName) {
         this.verifyStatusName = verifyStatusName;
-    }
-
-    /**
-     * @return Integer return the verifyType
-     */
-    public Integer getVerifyType() {
-        return verifyType;
-    }
-
-    /**
-     * @param verifyType the verifyType to set
-     */
-    public void setVerifyType(Integer verifyType) {
-        this.verifyType = verifyType;
-    }
-
-    /**
-     * @return String return the verifyTypeName
-     */
-    public String getVerifyTypeName() {
-        return verifyTypeName;
-    }
-
-    /**
-     * @param verifyTypeName the verifyTypeName to set
-     */
-    public void setVerifyTypeName(String verifyTypeName) {
-        this.verifyTypeName = verifyTypeName;
     }
 
     /**

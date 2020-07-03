@@ -401,18 +401,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBill query) {
-		if (query == null || query.getVerifyType() == null) {
+		if (query == null) {
 			throw new TraceBusinessException("参数错误");
+		}
+		if(query.getVerifyType()==null||VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.equalsToCode(query.getVerifyType())){
+			query.setBillType(BillTypeEnum.NONE.getCode());
 		}
 		List<VerifyStatusCountOutputDto> dtoList = this.getActualDao().countByVerifyStatus(query);
 		Map<Integer, Integer> verifyStatusNumMap = StreamEx.of(dtoList)
 				.toMap(VerifyStatusCountOutputDto::getVerifyStatus, VerifyStatusCountOutputDto::getNum);
-		return StreamEx.of(BillVerifyStatusEnum.values()).flatMap(verifystatus -> {
-			return StreamEx.ofNullable(VerifyTypeEnum.fromCode(query.getVerifyType())).flatMapToEntry(verifyType -> {
-				return EntryStream.of(verifyType, verifystatus).toMap();
-			});
-		}).map(e -> {
-			VerifyStatusCountOutputDto dto = VerifyStatusCountOutputDto.buildDefault(e.getKey(), e.getValue());
+		return StreamEx.of(BillVerifyStatusEnum.values()).map(e -> {
+			VerifyStatusCountOutputDto dto = VerifyStatusCountOutputDto.buildDefault(e);
 			if (verifyStatusNumMap.containsKey(dto.getVerifyStatus())) {
 				dto.setNum(verifyStatusNumMap.get(dto.getVerifyStatus()));
 			}

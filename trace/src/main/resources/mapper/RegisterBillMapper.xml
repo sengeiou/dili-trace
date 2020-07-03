@@ -152,6 +152,9 @@
     <if test="createdEnd != null  and createdEnd != ''">
       <![CDATA[AND created <=#{createdEnd}]]>
     </if>
+    <if test="billType != null">
+      AND bill_type=#{billType}
+    </if>
     group by verify_status
   </select>
 
