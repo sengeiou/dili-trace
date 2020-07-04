@@ -112,20 +112,26 @@ tradeDetailId:456 //交易单ID(tradeDetailId优先级高于billId,即当两个�
   likeBrandName:'品牌名称关键字'
 }
 7:购买接口
-/api/client/clientRegisterBill/createBuyProductRequest.api
+/api/client/clientTradeRequestApi/createBuyProductRequest.api
 {
-tradeWeight:12.34,//总购买重量
+tradeWeight:33,//总购买重量
 batchStockId:111//库存ID
 }
 
 8:销售接口
-/api/client/clientRegisterBill/createSellProductRequest.api
+/api/client/clientTradeRequestApi/createSellProductRequest.api
 {
-  tradeWeight:12.34,//总销售重量
+  tradeWeight:334,//总销售重量
   batchStockId:222,//库存ID
+  buyerId:111,//买家ID
   tradeRequestList:[
-    tradeWeight:12.34,//每批次销售重量
+    {
+      tradeWeight:11,//每批次销售重量
     tradeDetailId:345//订单ID
+    },{
+      tradeWeight:22,//每批次销售重量
+    tradeDetailId:34567//订单ID
+    },
   ]
 }
 车牌查询:

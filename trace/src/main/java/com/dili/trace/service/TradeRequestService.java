@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.TradeDetail;
@@ -45,7 +46,25 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @return
      */
     @Transactional
-    public Long createBuyRequest(TradeRequest request) {
+    public  List<TradeRequest> createBuyRequest(Long buyerId, List<BatchStockInput> batchStockInputList) {
+
+        List<TradeRequest> list = StreamEx.of(batchStockInputList).nonNull().map(input -> {
+            if (input.getTradeWeight() == null || BigDecimal.ZERO.compareTo(input.getTradeWeight()) >= 0) {
+                throw new TraceBusinessException("购买重量不能小于0");
+            }
+            if(input.getBatchStockId()==null){
+                throw new TraceBusinessException("购买商品ID不能为空");
+            }
+            TradeRequest request=new TradeRequest();
+            request.setBuyerId(buyerId);
+            request.setBatchStockId(input.getBatchStockId());
+            request.setTradeWeight(input.getTradeWeight());
+            return this.createBuyRequest(request);
+        }).toList();
+        return list;
+    }
+
+    private TradeRequest createBuyRequest(TradeRequest request) {
 
         if (request.getBuyerId() == null) {
             throw new TraceBusinessException("买家ID不能为空");
@@ -75,14 +94,29 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         request.setReturnStatus(TradeReturnStatusEnum.NONE.getCode());
         request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
         this.insertSelective(request);
-        return request.getId();
+        return request;
+    }
+    public List<TradeRequest> createSellRequest(Long sellerId,Long buyerId, List<BatchStockInput> batchStockInputList) {
+
+        List<TradeRequest> list = StreamEx.of(batchStockInputList).nonNull().map(input -> {
+            if (input.getTradeWeight() == null || BigDecimal.ZERO.compareTo(input.getTradeWeight()) >= 0) {
+                throw new TraceBusinessException("购买重量不能小于0");
+            }
+            if(input.getBatchStockId()==null){
+                throw new TraceBusinessException("购买商品ID不能为空");
+            }
+            TradeRequest request=new TradeRequest();
+            request.setSellerId(sellerId);
+            request.setBuyerId(buyerId);
+            request.setBatchStockId(input.getBatchStockId());
+            request.setTradeWeight(input.getTradeWeight());
+            return this.createSellRequest(request,input.getTradeRequestList());
+        }).toList();
+        return list;
+
     }
 
-    /**
-     * 创建销售请求
-     */
-    @Transactional
-    public Long createSellRequest(TradeRequest request, List<TradeRequestInputDto> tradeRequestInputDtoList) {
+    private TradeRequest createSellRequest(TradeRequest request, List<TradeRequestInputDto> tradeRequestInputDtoList) {
         if (request.getBuyerId() == null) {
             throw new TraceBusinessException("买家ID不能为空");
         }
@@ -163,7 +197,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             }).toList();
 
         }
-        return request.getId();
+        return request;
     }
 
     /**
@@ -236,7 +270,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @return
      */
     @Transactional
-    public Long handleReturning(Long tradeRequestId, Long userId,TradeReturnStatusEnum returnStatus,String reason) {
+    public Long handleReturning(Long tradeRequestId, Long userId, TradeReturnStatusEnum returnStatus, String reason) {
         if (tradeRequestId == null || userId == null) {
             throw new TraceBusinessException("参数错误");
         }
@@ -247,9 +281,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (!tradeRequestItem.getSellerId().equals(userId)) {
             throw new TraceBusinessException("没有权限访问当前数据");
         }
-        if(TradeReturnStatusEnum.REFUSE==returnStatus||TradeReturnStatusEnum.RETURNED==returnStatus){
-            //do nothing
-        }else{
+        if (TradeReturnStatusEnum.REFUSE == returnStatus || TradeReturnStatusEnum.RETURNED == returnStatus) {
+            // do nothing
+        } else {
             throw new TraceBusinessException("处理状态错误");
         }
         TradeRequest tradeRequest = new TradeRequest();

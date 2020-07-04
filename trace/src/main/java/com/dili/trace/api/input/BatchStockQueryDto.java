@@ -4,6 +4,7 @@ import javax.persistence.Column;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
+
 import com.dili.trace.domain.BatchStock;
 
 import io.swagger.annotations.ApiModelProperty;
