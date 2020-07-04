@@ -2,7 +2,7 @@ package com.dili.trace.api.input;
 
 import java.util.List;
 
-public class MyRequestInput {
+public class TradeRequestListInput {
     private Long buyerId;
     private List<BatchStockInput> batchStockList;
 

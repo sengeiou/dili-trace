@@ -1,6 +1,5 @@
 package com.dili.trace.api.client;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -11,16 +10,14 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.api.input.BatchStockInput;
-import com.dili.trace.api.input.MyRequestInput;
 import com.dili.trace.api.input.TradeRequestInputDto;
-import com.dili.trace.api.input.TradeRequestWrapperDto;
+import com.dili.trace.api.input.TradeRequestListInput;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
-import com.dili.trace.domain.User;
 import com.dili.trace.enums.TradeReturnStatusEnum;
+import com.dili.trace.enums.TradeStatusEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -39,7 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
 
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeRequestApi")
@@ -94,7 +90,7 @@ public class ClientTradeRequestApi {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewTradeDetail.api", method = { RequestMethod.POST })
-	public BaseOutput<CheckInApiDetailOutput> viewTradeDetail(@RequestBody TradeRequestWrapperDto inputDto) {
+	public BaseOutput<CheckInApiDetailOutput> viewTradeDetail(@RequestBody TradeRequestInputDto inputDto) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
@@ -129,19 +125,14 @@ public class ClientTradeRequestApi {
 
 	@ApiOperation(value = "创建购买请求")
 	@RequestMapping(value = "/createBuyProductRequest.api", method = RequestMethod.POST)
-	public BaseOutput<?> createBuyProductRequest(@RequestBody MyRequestInput inputDto) {
+	public BaseOutput<?> createBuyProductRequest(@RequestBody TradeRequestListInput inputDto) {
 		if (inputDto == null || inputDto.getBatchStockList() == null || inputDto.getBatchStockList().isEmpty()) {
 			return BaseOutput.failure("参数错误");
 		}
 
 		try {
-
 			Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			inputDto.setBuyerId(buyerId);
-			User user = userService.get(buyerId);
-			if (user == null) {
-				return BaseOutput.failure("未登陆用户");
-			}
 			List<TradeRequest>list=this.tradeRequestService.createBuyRequest(buyerId,inputDto.getBatchStockList());
 			return BaseOutput.success();
 		} catch (TraceBusinessException e) {
@@ -154,7 +145,7 @@ public class ClientTradeRequestApi {
 
 	@ApiOperation(value = "创建销售请求")
 	@RequestMapping(value = "/createSellProductRequest.api", method = RequestMethod.POST)
-	public BaseOutput<?> createSellProductRequest(@RequestBody MyRequestInput inputDto) {
+	public BaseOutput<?> createSellProductRequest(@RequestBody TradeRequestListInput inputDto) {
 		if (inputDto == null || inputDto.getBuyerId() == null || inputDto.getBatchStockList() == null
 				|| inputDto.getBatchStockList().isEmpty()) {
 			return BaseOutput.failure("参数错误");
@@ -162,12 +153,31 @@ public class ClientTradeRequestApi {
 
 		try {
 			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			User user = userService.get(sellerId);
-			if (user == null) {
-				return BaseOutput.failure("未登陆用户");
-			}
+
 			List<TradeRequest>list= this.tradeRequestService.createSellRequest(sellerId,inputDto.getBuyerId(),inputDto.getBatchStockList());
 			return BaseOutput.success();
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("查询数据出错");
+		}
+
+	}
+	@ApiOperation(value = "处理购买请求")
+	@RequestMapping(value = "/handleBuyRequest.api", method = RequestMethod.POST)
+	public BaseOutput<?> handleBuyRequest(@RequestBody TradeRequestInputDto inputDto) {
+		if (inputDto == null || inputDto.getTradeRequestId()==null||inputDto.getTradeStatus()==null) {
+			return BaseOutput.failure("参数错误");
+		}
+		TradeStatusEnum tradeRequestStatus=TradeStatusEnum.fromCode(inputDto.getTradeStatus()).orElse(null);
+		if(tradeRequestStatus==null){
+			return BaseOutput.failure("参数错误");
+		}
+		try {
+			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+
+			Long id= this.tradeRequestService.handleBuyRequest(inputDto.getTradeRequestId(),tradeRequestStatus);
+			return BaseOutput.success().setData(id);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -181,7 +191,7 @@ public class ClientTradeRequestApi {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/createReturning.api", method = { RequestMethod.POST })
-	public BaseOutput<Long> createReturning(@RequestBody TradeRequestWrapperDto inputDto) {
+	public BaseOutput<Long> createReturning(@RequestBody TradeRequestInputDto inputDto) {
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			Long id = this.tradeRequestService.createReturning(inputDto.getTradeRequestId(), userId);
@@ -200,7 +210,7 @@ public class ClientTradeRequestApi {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/handleReturning.api", method = { RequestMethod.POST })
-	public BaseOutput<Long> handleReturning(@RequestBody TradeRequestWrapperDto inputDto) {
+	public BaseOutput<Long> handleReturning(@RequestBody TradeRequestInputDto inputDto) {
 
 		try {
 			TradeReturnStatusEnum returnStatus = TradeReturnStatusEnum.fromCode(inputDto.getReturnStatus())

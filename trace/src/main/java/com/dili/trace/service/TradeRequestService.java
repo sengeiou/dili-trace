@@ -39,6 +39,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     @Autowired
     TradeDetailService tradeDetailService;
 
+
     /**
      * 创建购买请求
      * 

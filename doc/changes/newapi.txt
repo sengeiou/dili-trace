@@ -114,25 +114,68 @@ tradeDetailId:456 //交易单ID(tradeDetailId优先级高于billId,即当两个�
 7:购买接口
 /api/client/clientTradeRequestApi/createBuyProductRequest.api
 {
-tradeWeight:33,//总购买重量
-batchStockId:111//库存ID
+batchStockList:[
+    {
+    batchStockId:1,//库存ID
+    tradeWeight:100//重量
+    },{
+    batchStockId:2,//库存ID
+    tradeWeight:200//重量
+    }
+  ]
 }
 
 8:销售接口
 /api/client/clientTradeRequestApi/createSellProductRequest.api
+
 {
-  tradeWeight:334,//总销售重量
-  batchStockId:222,//库存ID
   buyerId:111,//买家ID
-  tradeRequestList:[
+  batchStockList:[
     {
-      tradeWeight:11,//每批次销售重量
-    tradeDetailId:345//订单ID
+    batchStockId:1,//库存ID
+    tradeWeight:33,//重量
+    tradeRequestList:[
+        {
+          tradeWeight:11,//每批次销售重量
+          tradeDetailId:345//订单ID
+        },{
+          tradeWeight:22,//每批次销售重量
+          tradeDetailId:34567//订单ID
+        },
+      ]
     },{
-      tradeWeight:22,//每批次销售重量
-    tradeDetailId:34567//订单ID
-    },
+    batchStockId:2,//库存ID
+    tradeWeight:200//重量
+    }
   ]
+}
+9：处理购买请求:
+/api/client/clientTradeRequestApi/handleBuyRequest.api
+   
+{
+
+    tradeRequestId:1 ,//要处理的交易ID
+    tradeStatus//要处理为最终的状态 (10, "完成"),(20, "拒绝"),;
+    reason:"拒绝原因",//
+    batchStockList:[
+      {
+      batchStockId:1,//库存ID
+      tradeWeight:33,//重量
+      tradeRequestList:[
+          {
+            tradeWeight:11,//每批次销售重量
+            tradeDetailId:345//订单ID
+          },{
+            tradeWeight:22,//每批次销售重量
+            tradeDetailId:34567//订单ID
+          },
+        ]
+      },{
+      batchStockId:2,//库存ID
+      tradeWeight:200//重量
+      }
+    ]
+
 }
 车牌查询:
 /api/client/clientUserPlateApi/listPage.api

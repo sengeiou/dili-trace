@@ -1,8 +1,6 @@
 package com.dili.trace.api.client;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -16,14 +14,10 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
-import com.dili.trace.api.input.TradeRequestInputDto;
-import com.dili.trace.api.input.TradeRequestWrapperDto;
-import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
@@ -36,9 +30,7 @@ import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
-import com.dili.trace.util.BasePageUtil;
 
-import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
