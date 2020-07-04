@@ -1,5 +1,6 @@
 package com.dili.trace.api.client;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -15,6 +16,7 @@ import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
+import com.dili.trace.domain.User;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeRequestApi")
@@ -58,22 +61,28 @@ public class ClientTradeRequestApi {
 	TradeRequestService tradeRequestService;
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST})
+	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
 	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequest condition) {
-		if (sessionContext.getAccountId() == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		if (condition.getBuyerId() == null && condition.getSellerId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
-		if (!sessionContext.getAccountId().equals(condition.getBuyerId())
-				&& !sessionContext.getAccountId().equals(condition.getSellerId())) {
-			return BaseOutput.failure("参数错误");
+
+		try {
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			if (condition.getBuyerId() == null && condition.getSellerId() == null) {
+				return BaseOutput.failure("参数错误");
+			}
+			if (!sessionContext.getAccountId().equals(condition.getBuyerId())
+					&& !sessionContext.getAccountId().equals(condition.getSellerId())) {
+				return BaseOutput.failure("参数错误");
+			}
+			BasePage<TradeRequest> page = this.tradeRequestService.listPageByExample(condition);
+			return BaseOutput.success().setData(page);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
 		}
 
-		BasePage<TradeRequest> page = this.tradeRequestService.listPageByExample(condition);
 
-		return BaseOutput.success().setData(page);
 	}
 
 	/**
@@ -98,7 +107,7 @@ public class ClientTradeRequestApi {
 			if (!tradeRequestItem.getBuyerId().equals(userId) && !tradeRequestItem.getSellerId().equals(userId)) {
 				return BaseOutput.failure("没有权限查看数据");
 			}
-			TradeRequestOutputDto out=new TradeRequestOutputDto();
+			TradeRequestOutputDto out = new TradeRequestOutputDto();
 			TradeDetail tradeDetailQuery = new TradeDetail();
 			tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
 			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
@@ -110,6 +119,60 @@ public class ClientTradeRequestApi {
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
+		}
+
+	}
+
+	@ApiOperation(value = "创建购买请求")
+	@RequestMapping(value = "/createBuyProductRequest.api", method = RequestMethod.POST)
+	public BaseOutput<Long> createBuyProductRequest(@RequestBody TradeRequestWrapperDto inputDto) {
+		if (inputDto == null || inputDto.getTradeWeight() == null || inputDto.getBatchStockId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		if (BigDecimal.ZERO.compareTo(inputDto.getTradeWeight()) >= 0) {
+			return BaseOutput.failure("购买重量不能小于0");
+		}
+		try {
+			Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			inputDto.setBuyerId(buyerId);
+			User user = userService.get(buyerId);
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			Long tradeRequestId = this.tradeRequestService.createBuyRequest(inputDto.buildTradeRequest());
+			return BaseOutput.success().setData(tradeRequestId);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("查询数据出错");
+		}
+
+	}
+
+	@ApiOperation(value = "创建销售请求")
+	@RequestMapping(value = "/createSellProductRequest.api", method = RequestMethod.POST)
+	public BaseOutput<Long> createSellProductRequest(@RequestBody TradeRequestWrapperDto inputDto) {
+		if (inputDto == null || inputDto.getBuyerId() == null || inputDto.getTradeWeight() == null
+				|| inputDto.getBatchStockId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		if (BigDecimal.ZERO.compareTo(inputDto.getTradeWeight()) >= 0) {
+			return BaseOutput.failure("销售重量不能小于0");
+		}
+
+		try {
+			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			User user = userService.get(sellerId);
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			Long tradeRequestId = this.tradeRequestService.createSellRequest(inputDto.buildTradeRequest(),
+					inputDto.getTradeRequestList());
+			return BaseOutput.success().setData(tradeRequestId);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("查询数据出错");
 		}
 
 	}

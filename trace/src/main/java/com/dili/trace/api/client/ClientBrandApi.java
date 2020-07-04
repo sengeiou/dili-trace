@@ -1,7 +1,6 @@
 package com.dili.trace.api.client;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -9,15 +8,12 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.BrandInputDto;
 import com.dili.trace.api.output.BrandOutputDto;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.service.BrandService;
-import com.dili.trace.util.BasePageUtil;
 
-import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
