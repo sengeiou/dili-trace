@@ -40,7 +40,6 @@ CREATE TABLE `trade_detail` (
 	`stock_weight` decimal(10,3) NOT NULL default 0 COMMENT '库存重量',
 	`total_weight` decimal(10,3) NOT NULL default 0 COMMENT '总重量',
 	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',
-	`status` int(11) NOT NULL default 0 COMMENT '交易单状态',
 	`batch_stock_id` bigint(20)  NULL COMMENT '批ID',
 	`trade_request_id` bigint(20)  NULL COMMENT '交易请求ID',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -439,7 +438,9 @@ CREATE TABLE `trade_request` (
 	`trade_weight` decimal(10,3) NOT NULL  COMMENT '交易重量',
 	`batch_stock_id` bigint(20) NOT NULL COMMENT '商品库存ID',
 	`trade_request_type` int(11) NOT NULL  COMMENT '交易类型',
-	`trade_request_status` int(11) NOT NULL  COMMENT '交易状态',
+	`trade_status` int(11) NOT NULL  COMMENT '交易状态',
+	`return_status` int(11) NOT NULL  COMMENT '退货状态',
+	`reason` varchar(200)  NULL  COMMENT '原因',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

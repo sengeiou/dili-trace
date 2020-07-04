@@ -9,7 +9,7 @@ import one.util.streamex.StreamEx;
  *
  * @author wangguofeng
  */
-public enum TradeRequestStatusEnum {
+public enum TradeStatusEnum {
 
 	/**
 	 * 待完成
@@ -27,13 +27,13 @@ public enum TradeRequestStatusEnum {
 	private String name;
 	private Integer code;
 
-	TradeRequestStatusEnum(Integer code, String name) {
+	TradeStatusEnum(Integer code, String name) {
 		this.code = code;
 		this.name = name;
 	}
 
-	public static Optional<TradeRequestStatusEnum> fromCode(Integer code) {
-		return StreamEx.of(TradeRequestStatusEnum.values()).filterBy(TradeRequestStatusEnum::getCode, code).findFirst();
+	public static Optional<TradeStatusEnum> fromCode(Integer code) {
+		return StreamEx.of(TradeStatusEnum.values()).filterBy(TradeStatusEnum::getCode, code).findFirst();
 	}
 
 	public boolean equalsToCode(Integer code) {

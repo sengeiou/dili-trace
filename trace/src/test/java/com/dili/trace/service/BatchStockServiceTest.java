@@ -12,7 +12,6 @@ import com.dili.trace.domain.User;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeDetailStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,6 @@ public class BatchStockServiceTest extends AutoWiredBaseTest {
         TradeDetail tradeDetail = new TradeDetail();
         tradeDetail.setBillId(billItem.getId());
         tradeDetail.setTradeType(TradeTypeEnum.NONE.getCode());
-        tradeDetail.setStatus(TradeDetailStatusEnum.NONE.getCode());
         tradeDetail.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
         tradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
         tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());

@@ -12,8 +12,9 @@ import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeRequestStatusEnum;
+import com.dili.trace.enums.TradeStatusEnum;
 import com.dili.trace.enums.TradeRequestTypeEnum;
+import com.dili.trace.enums.TradeReturnStatusEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -33,8 +34,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     UserService userService;
     @Autowired
     BatchStockService batchStockService;
-    @Autowired
-    TradeRequestService tradeRequestService;
+
     @Autowired
     TradeDetailService tradeDetailService;
 
@@ -71,7 +71,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
         request.setSellerId(seller.getId());
         request.setBuyerName(batchStock.getUserName());
-        request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
+        request.setTradeStatus(TradeStatusEnum.NONE.getCode());
+        request.setReturnStatus(TradeReturnStatusEnum.NONE.getCode());
         request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
         this.insertSelective(request);
         return request.getId();
@@ -114,9 +115,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (tradeDetailIdList.isEmpty() && request.getBatchStockId() == null) {
             throw new TraceBusinessException("参数错误:没有选定正确的商品");
         }
-        request.setTradeRequestStatus(TradeRequestStatusEnum.FINISHED.getCode());
+        request.setTradeStatus(TradeStatusEnum.FINISHED.getCode());
+        request.setReturnStatus(TradeReturnStatusEnum.NONE.getCode());
         request.setTradeRequestType(TradeRequestTypeEnum.SELL.getCode());
-        this.tradeRequestService.insertSelective(request);
+        this.insertSelective(request);
 
         if (tradeDetailIdList.isEmpty()) {
             TradeDetail tradeDetailQuery = new TradeDetail();
@@ -169,7 +171,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * 
      * @return
      */
-    public Long handleBuyRequest(Long tradeRequestId, TradeRequestStatusEnum tradeRequestStatus) {
+    public Long handleBuyRequest(Long tradeRequestId, TradeStatusEnum tradeRequestStatus) {
 
         // request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
         // request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
@@ -180,17 +182,81 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (tradeRequestItem == null) {
             throw new TraceBusinessException("交易请求不存在");
         }
-        if (TradeRequestStatusEnum.NONE == tradeRequestStatus) {
+        if (TradeStatusEnum.NONE == tradeRequestStatus) {
             throw new TraceBusinessException("参数错误");
         }
-        if (!TradeRequestStatusEnum.NONE.equalsToCode(tradeRequestItem.getTradeRequestStatus())) {
+        if (!TradeStatusEnum.NONE.equalsToCode(tradeRequestItem.getTradeStatus())) {
             throw new TraceBusinessException("不能对当前状态交易请求进行处理");
         }
         TradeRequest tradeRequest = new TradeRequest();
         tradeRequest.setId(tradeRequestItem.getId());
-        tradeRequestItem.setTradeRequestStatus(tradeRequestStatus.getCode());
+        tradeRequestItem.setTradeStatus(tradeRequestStatus.getCode());
         this.updateSelective(tradeRequest);
 
+        return tradeRequest.getId();
+    }
+
+    /**
+     * 申请退货
+     * 
+     * @param input
+     * @param userId
+     * @return
+     */
+    @Transactional
+    public Long createReturning(Long tradeRequestId, Long userId) {
+        if (tradeRequestId == null || userId == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        TradeRequest tradeRequestItem = this.get(tradeRequestId);
+        if (tradeRequestItem == null) {
+            throw new TraceBusinessException("数据不存在");
+        }
+        if (!tradeRequestItem.getBuyerId().equals(userId)) {
+            throw new TraceBusinessException("没有权限访问当前数据");
+        }
+        if (!TradeStatusEnum.FINISHED.equalsToCode(tradeRequestItem.getTradeStatus())) {
+            throw new TraceBusinessException("交易状态错误");
+        }
+        if (!TradeReturnStatusEnum.NONE.equalsToCode(tradeRequestItem.getReturnStatus())) {
+            throw new TraceBusinessException("退货状态错误");
+        }
+        TradeRequest tradeRequest = new TradeRequest();
+        tradeRequest.setId(tradeRequestItem.getId());
+        tradeRequest.setReturnStatus(TradeReturnStatusEnum.RETURNING.getCode());
+        this.updateSelective(tradeRequest);
+        return tradeRequest.getId();
+    }
+
+    /**
+     * 完成退货处理
+     * 
+     * @param input
+     * @param userId
+     * @return
+     */
+    @Transactional
+    public Long handleReturning(Long tradeRequestId, Long userId,TradeReturnStatusEnum returnStatus,String reason) {
+        if (tradeRequestId == null || userId == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        TradeRequest tradeRequestItem = this.get(tradeRequestId);
+        if (tradeRequestItem == null) {
+            throw new TraceBusinessException("数据不存在");
+        }
+        if (!tradeRequestItem.getSellerId().equals(userId)) {
+            throw new TraceBusinessException("没有权限访问当前数据");
+        }
+        if(TradeReturnStatusEnum.REFUSE==returnStatus||TradeReturnStatusEnum.RETURNED==returnStatus){
+            //do nothing
+        }else{
+            throw new TraceBusinessException("处理状态错误");
+        }
+        TradeRequest tradeRequest = new TradeRequest();
+        tradeRequest.setId(tradeRequestItem.getId());
+        tradeRequest.setReturnStatus(returnStatus.getCode());
+        tradeRequest.setReason(reason);
+        this.updateSelective(tradeRequest);
         return tradeRequest.getId();
     }
 }

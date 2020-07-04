@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class TradeRequestWrapperDto {
     private Long tradeRequestId;
+    private Integer returnStatus;
+    private String reason;
     
     @ApiModelProperty(value = "购买重量")
     private BigDecimal tradeWeight;
@@ -113,6 +115,36 @@ public class TradeRequestWrapperDto {
      */
     public void setTradeRequestId(Long tradeRequestId) {
         this.tradeRequestId = tradeRequestId;
+    }
+
+
+    /**
+     * @return Integer return the returnStatus
+     */
+    public Integer getReturnStatus() {
+        return returnStatus;
+    }
+
+    /**
+     * @param returnStatus the returnStatus to set
+     */
+    public void setReturnStatus(Integer returnStatus) {
+        this.returnStatus = returnStatus;
+    }
+
+
+    /**
+     * @return String return the reason
+     */
+    public String getReason() {
+        return reason;
+    }
+
+    /**
+     * @param reason the reason to set
+     */
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
 }

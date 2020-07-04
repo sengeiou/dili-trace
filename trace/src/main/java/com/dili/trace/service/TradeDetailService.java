@@ -16,14 +16,12 @@ import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.TradeDetailInputDto;
 import com.dili.trace.dto.TradeDetailInputWrapperDto;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeDetailStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
@@ -179,7 +177,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
 		tradeDetail.setProductName(tradeDetailItem.getProductName());
 		tradeDetail.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());
-		tradeDetail.setStatus(TradeDetailStatusEnum.NONE.getCode());
+		// tradeDetail.setStatus(TradeDetailStatusEnum.NONE.getCode());
 		tradeDetail.setWeightUnit(tradeDetailItem.getWeightUnit());
 		tradeDetail.setTradeRequestId(tradeRequestId);
 		this.insertSelective(tradeDetail);
@@ -296,83 +294,6 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 			return insertRecord.getId();
 		}).toList();
-	}
-
-	/**
-	 * 申请退货
-	 * 
-	 * @param input
-	 * @param userId
-	 * @return
-	 */
-	@Transactional
-	public List<Long> doReturning(TradeDetailInputWrapperDto input, Long userId) {
-		if (input == null || userId == null || input.getTradeDetailInputList().isEmpty()) {
-			throw new TraceBusinessException("参数错误");
-		}
-		List<Long> tradeDetailIdList = StreamEx.of(input.getTradeDetailInputList()).nonNull()
-				.map(TradeDetailInputDto::getTradeDetailId).nonNull().map(tradeDetailId -> {
-					return this.get(tradeDetailId);
-				}).filter(item -> {
-					return item.getBuyerId().equals(userId);
-				}).filter(item -> {
-					return TradeDetailStatusEnum.NONE.equalsToCode(item.getStatus());
-				}).map(item -> {
-
-					TradeDetail data = new TradeDetail();
-					data.setId(item.getId());
-					data.setStatus(TradeDetailStatusEnum.RETURNING.getCode());
-					this.updateSelective(data);
-
-					return item.getId();
-				}).toList();
-		if (tradeDetailIdList.isEmpty()) {
-			throw new TraceBusinessException("没有可以进行退货的交易单");
-		}
-		return tradeDetailIdList;
-	}
-
-	/**
-	 * 完成退货处理
-	 * 
-	 * @param input
-	 * @param userId
-	 * @return
-	 */
-	@Transactional
-	public List<Long> handleReturning(TradeDetailInputWrapperDto input, Long userId) {
-		if (input == null || userId == null || input.getTradeDetailInputList().isEmpty() || input.getStatus() == null) {
-			throw new TraceBusinessException("参数错误");
-		}
-		TradeDetailStatusEnum statusEnum = TradeDetailStatusEnum.fromCode(input.getStatus()).orElseThrow(() -> {
-			return new TraceBusinessException("参数错误");
-		});
-		if (TradeDetailStatusEnum.REFUSE == statusEnum || TradeDetailStatusEnum.RETURNED == statusEnum) {
-			// donothing
-		} else {
-			throw new TraceBusinessException("参数错误");
-		}
-
-		List<Long> tradeDetailIdList = StreamEx.of(input.getTradeDetailInputList()).nonNull()
-				.map(TradeDetailInputDto::getTradeDetailId).nonNull().map(tradeDetailId -> {
-					return this.get(tradeDetailId);
-				}).filter(item -> {
-					return item.getSellerId().equals(userId);
-				}).filter(item -> {
-					return TradeDetailStatusEnum.RETURNING.equalsToCode(item.getStatus());
-				}).map(item -> {
-
-					TradeDetail data = new TradeDetail();
-					data.setId(item.getId());
-					data.setStatus(statusEnum.getCode());
-					this.updateSelective(data);
-
-					return item.getId();
-				}).toList();
-		if (tradeDetailIdList.isEmpty()) {
-			throw new TraceBusinessException("没有可以进行处理的退货申请");
-		}
-		return tradeDetailIdList;
 	}
 
 	/**

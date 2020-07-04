@@ -54,8 +54,8 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`trade_type`")
 	private Integer tradeType;
 
-	@Column(name = "`status`")
-	private Integer status;
+	// @Column(name = "`status`")
+	// private Integer status;
 
 	@ApiModelProperty(value = "买家ID")
 	@Column(name = "`buyer_id`")
@@ -103,13 +103,13 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`modified`")
 	private Date modified;
 
-	public Integer getStatus() {
-		return status;
-	}
+	// public Integer getStatus() {
+	// 	return status;
+	// }
 
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
+	// public void setStatus(Integer status) {
+	// 	this.status = status;
+	// }
 
 	public Long getId() {
 		return id;

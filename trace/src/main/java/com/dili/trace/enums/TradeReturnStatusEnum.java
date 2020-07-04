@@ -10,7 +10,7 @@ import java.util.Optional;
  * @author wangguofeng
  * @createTime 2018/11/8 18:43
  */
-public enum TradeDetailStatusEnum {
+public enum TradeReturnStatusEnum {
 	/**
 	 * 正常
 	 */
@@ -34,13 +34,13 @@ public enum TradeDetailStatusEnum {
     private String name;
     private Integer code ;
 
-    TradeDetailStatusEnum(Integer code, String name){
+    TradeReturnStatusEnum(Integer code, String name){
         this.code = code;
         this.name = name;
     }
 
-    public static Optional<TradeDetailStatusEnum> fromCode(Integer code) {
-        for (TradeDetailStatusEnum anEnum : TradeDetailStatusEnum.values()) {
+    public static Optional<TradeReturnStatusEnum> fromCode(Integer code) {
+        for (TradeReturnStatusEnum anEnum : TradeReturnStatusEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return Optional.of(anEnum);
             }

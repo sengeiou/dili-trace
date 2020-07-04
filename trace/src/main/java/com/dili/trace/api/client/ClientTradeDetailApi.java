@@ -74,43 +74,5 @@ public class ClientTradeDetailApi {
 		
 	}
 
-	/**
-	 * 发起退货
-	 */
-	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/doReturning.api", method = { RequestMethod.POST })
-	public BaseOutput<CheckInApiDetailOutput> doReturning(@RequestBody TradeDetailInputWrapperDto inputDto) {
-		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			List<Long> idList = this.tradeDetailService.doReturning(inputDto, userId);
-			return BaseOutput.success().setData(idList);
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("服务端出错");
-		}
-
-	}
-	/**
-	 * 确认退货
-	 */
-	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/handleReturning.api", method = { RequestMethod.POST })
-	public BaseOutput<CheckInApiDetailOutput> handleReturning(@RequestBody TradeDetailInputWrapperDto inputDto) {
-
-		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			List<Long> idList = this.tradeDetailService.handleReturning(inputDto, userId);
-			return BaseOutput.success().setData(idList);
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("服务端出错");
-		}
-
-	}
-
 
 }

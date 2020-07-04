@@ -11,12 +11,14 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.input.TradeRequestWrapperDto;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
+import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -173,6 +175,49 @@ public class ClientTradeRequestApi {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			return BaseOutput.failure("查询数据出错");
+		}
+
+	}
+
+	
+	/**
+	 * 发起退货
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/createReturning.api", method = { RequestMethod.POST })
+	public BaseOutput<Long> createReturning(@RequestBody TradeRequestWrapperDto inputDto) {
+		try {
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			Long id= this.tradeRequestService.createReturning(inputDto.getTradeRequestId(), userId);
+			return BaseOutput.success().setData(id);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+
+	}
+	/**
+	 * 确认退货
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/handleReturning.api", method = { RequestMethod.POST })
+	public BaseOutput<Long> handleReturning(@RequestBody TradeRequestWrapperDto inputDto) {
+		
+		try {
+			TradeReturnStatusEnum returnStatus=	TradeReturnStatusEnum.fromCode(inputDto.getReturnStatus()).orElse(null);
+			if(returnStatus==null||inputDto.getTradeRequestId()==null){
+				return BaseOutput.failure("参数错误");
+			}
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			Long id=  this.tradeRequestService.handleReturning(inputDto.getTradeRequestId(), userId,returnStatus,inputDto.getReason());
+			return BaseOutput.success().setData(id);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
 		}
 
 	}

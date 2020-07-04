@@ -54,9 +54,18 @@ public class TradeRequest extends BaseDomain {
 	@Column(name = "`trade_request_type`")
     private Integer tradeRequestType;
 
-    @ApiModelProperty(value = "状态")
-	@Column(name = "`trade_request_status`")
-    private Integer tradeRequestStatus;
+    @ApiModelProperty(value = "交易状态")
+	@Column(name = "`trade_status`")
+    private Integer tradeStatus;
+
+    
+    @ApiModelProperty(value = "退货状态")
+	@Column(name = "`return_status`")
+    private Integer returnStatus;
+
+    @ApiModelProperty(value = "原因")
+	@Column(name = "`reason`")
+    private String reason;
 
 	@Column(name = "`created`")
 	private Date created;
@@ -209,18 +218,50 @@ public class TradeRequest extends BaseDomain {
         this.tradeRequestType = tradeRequestType;
     }
 
+
+
+
     /**
-     * @return Integer return the tradeRequestStatus
+     * @return Integer return the tradeStatus
      */
-    public Integer getTradeRequestStatus() {
-        return tradeRequestStatus;
+    public Integer getTradeStatus() {
+        return tradeStatus;
     }
 
     /**
-     * @param tradeRequestStatus the tradeRequestStatus to set
+     * @param tradeStatus the tradeStatus to set
      */
-    public void setTradeRequestStatus(Integer tradeRequestStatus) {
-        this.tradeRequestStatus = tradeRequestStatus;
+    public void setTradeStatus(Integer tradeStatus) {
+        this.tradeStatus = tradeStatus;
+    }
+
+    /**
+     * @return Integer return the returnStatus
+     */
+    public Integer getReturnStatus() {
+        return returnStatus;
+    }
+
+    /**
+     * @param returnStatus the returnStatus to set
+     */
+    public void setReturnStatus(Integer returnStatus) {
+        this.returnStatus = returnStatus;
+    }
+
+
+    /**
+     * @return String return the reason
+     */
+    public String getReason() {
+        return reason;
+    }
+
+    /**
+     * @param reason the reason to set
+     */
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
 }
