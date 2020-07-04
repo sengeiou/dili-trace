@@ -180,10 +180,11 @@ public class RegisterBillHistory extends BaseDomain {
 	@ApiModelProperty(value = "品牌ID")
 	@Column(name = "`brand_id`")
 	private Long brandId;
+	
+	@ApiModelProperty(value = "是否进门")
+	@Column(name = "`is_checkin`")
+	private Integer isCheckin;
 
-	@ApiModelProperty(value = "是否有效")
-	@Column(name = "`yn`")
-	private Integer yn;
 
 	@ApiModelProperty(value = "原因")
 	@Column(name = "`reason`")
@@ -528,19 +529,7 @@ public class RegisterBillHistory extends BaseDomain {
 		this.brandName = brandName;
 	}
 
-	/**
-	 * @return Integer return the yn
-	 */
-	public Integer getYn() {
-		return yn;
-	}
 
-	/**
-	 * @param yn the yn to set
-	 */
-	public void setYn(Integer yn) {
-		this.yn = yn;
-	}
 
 	/**
 	 * @return Integer return the truckType
@@ -590,5 +579,27 @@ public class RegisterBillHistory extends BaseDomain {
 	public void setBillId(Long billId) {
 		this.billId = billId;
 	}
+
+
+    /**
+     * @return Long return the billId
+     */
+    public Long getBillId() {
+        return billId;
+    }
+
+    /**
+     * @return Integer return the isCheckin
+     */
+    public Integer getIsCheckin() {
+        return isCheckin;
+    }
+
+    /**
+     * @param isCheckin the isCheckin to set
+     */
+    public void setIsCheckin(Integer isCheckin) {
+        this.isCheckin = isCheckin;
+    }
 
 }

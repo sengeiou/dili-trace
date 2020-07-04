@@ -407,8 +407,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			// bill_type="+BillTypeEnum.SUPPLEMENT.getCode()+" OR (verify_type is not null)
 			// )");
 		} else if (VerifyTypeEnum.VERIFY_AFTER_CHECKIN.equalsToCode(query.getVerifyType())) {
-			query.setMetadata(IDTO.AND_CONDITION_EXPR, "( bill_type<>" + BillTypeEnum.SUPPLEMENT.getCode()
-					+ " and ((verify_type="+VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode()+" and verify_status <>" + BillVerifyStatusEnum.PASSED.getCode()+ ") or verify_type="+VerifyTypeEnum.VERIFY_AFTER_CHECKIN.getCode()+") and not exists ( select 1 from trade_detail where bill_id=register_bill.id) )");
+			query.setMetadata(IDTO.AND_CONDITION_EXPR, "(not ( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode()
+					+ " or (verify_type="+VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode()+" and verify_status =" + BillVerifyStatusEnum.PASSED.getCode()+ ") or is_checkin="+YnEnum.NO.getCode()+"))");
 		}
 		query.setVerifyType(null);
 		return query;
