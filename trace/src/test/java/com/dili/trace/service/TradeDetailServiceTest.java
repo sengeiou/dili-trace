@@ -24,18 +24,18 @@ public class TradeDetailServiceTest extends AutoWiredBaseTest {
 	@Autowired
 	TradeDetailService tradeDetailService;
 
-	@Test
-	public void doReturning() {
-		TradeDetailInputWrapperDto input = new TradeDetailInputWrapperDto();
-		input.setTradeDetailInputList(new ArrayList<TradeDetailInputDto>());
+	// @Test
+	// public void doReturning() {
+	// 	TradeDetailInputWrapperDto input = new TradeDetailInputWrapperDto();
+	// 	input.setTradeDetailInputList(new ArrayList<TradeDetailInputDto>());
 
-		TradeDetailInputDto dto = new TradeDetailInputDto();
-		dto.setTradeDetailId(1L);
+	// 	TradeDetailInputDto dto = new TradeDetailInputDto();
+	// 	dto.setTradeDetailId(1L);
 
-		input.getTradeDetailInputList().add(dto);
-		Long userId = 1L;
-		this.tradeDetailService.doReturning(input, userId);
-	}
+	// 	input.getTradeDetailInputList().add(dto);
+	// 	Long userId = 1L;
+	// 	this.tradeDetailService.doReturning(input, userId);
+	// }
 
 	@Test
 	public void selectTradeDetailAndBill() {
