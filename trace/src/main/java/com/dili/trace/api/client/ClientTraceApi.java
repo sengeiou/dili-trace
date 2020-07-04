@@ -1,9 +1,21 @@
 package com.dili.trace.api.client;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
+
+import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.LoginSessionContext;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.output.TraceDetailOutputDto;
+import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.service.CheckinOutRecordService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.TradeDetailService;
+import com.dili.trace.service.UpStreamService;
+import com.dili.trace.service.UserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,27 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTO;
-import com.dili.trace.api.output.CheckInApiDetailOutput;
-import com.dili.trace.api.output.CheckInApiListOutput;
-import com.dili.trace.api.output.CheckoutApiDetailOutput;
-import com.dili.trace.api.output.CheckoutApiListQuery;
-import com.dili.trace.api.output.TraceDetailOutputDto;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.service.CheckinOutRecordService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
-import com.dili.trace.service.TradeDetailService;
-import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
 
 import io.swagger.annotations.Api;
 

@@ -319,7 +319,7 @@ ALTER TABLE `register_bill` ADD COLUMN  `truck_type` int(11)  NOT NULL  default 
 ALTER TABLE `register_bill` ADD COLUMN  `brand_id` bigint(20)    NULL   COMMENT '品牌ID';
 ALTER TABLE `register_bill` ADD COLUMN  `brand_name` varchar(50)   NULL   COMMENT '品牌名称';
 ALTER TABLE `register_bill` ADD COLUMN  `reason` varchar(100)   NULL   COMMENT '原因';
-ALTER TABLE `register_bill` ADD COLUMN  `yn` int(11)  NOT NULL  default 1 COMMENT '是否有效';
+ALTER TABLE `register_bill` ADD COLUMN  `is_checkin` int(11)  NOT NULL  default -1 COMMENT '是否进门';
 ALTER TABLE `register_bill` MODIFY COLUMN `weight` decimal(10,3)  NOT NULL default 0 COMMENT '重量';
 ALTER TABLE `register_bill` MODIFY COLUMN plate varchar(15) NULL COMMENT '车牌';
 
@@ -423,7 +423,7 @@ CREATE TABLE `register_bill_history` (
   `bill_type` int(11) NOT NULL DEFAULT '10' COMMENT '报备类型',
   `brand_id` bigint(20) DEFAULT NULL COMMENT '品牌ID',
   `brand_name` varchar(50) DEFAULT NULL COMMENT '品牌名称',
-  `yn` int(11) NOT NULL DEFAULT '1' COMMENT '是否有效',
+  `is_checkin` int(11) NOT NULL DEFAULT '-1' COMMENT '是进门',
   `truck_type` int(11) NOT NULL DEFAULT '10' COMMENT '车类型',
   `tally_area_no` varchar(60) DEFAULT NULL COMMENT '摊位号',
   `reason` varchar(100) DEFAULT NULL COMMENT '原因',

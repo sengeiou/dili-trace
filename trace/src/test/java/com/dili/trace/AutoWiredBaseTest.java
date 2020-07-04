@@ -140,7 +140,6 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		RegisterBill billItem = this.billService.get(billId);
 		assertNotNull(billItem);
 		assertTrue(BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus()));
-		assertTrue(YnEnum.YES.equalsToCode(billItem.getYn()));
 		return billItem;
 	}
 

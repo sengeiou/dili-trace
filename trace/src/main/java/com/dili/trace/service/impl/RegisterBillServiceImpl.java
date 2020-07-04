@@ -107,7 +107,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
-		registerBill.setYn(YnEnum.YES.getCode());
+		registerBill.setIsCheckin(YnEnum.NO.getCode());
 
 		registerBill.setOperatorName(operatorUser.getName());
 		registerBill.setOperatorId(operatorUser.getId());
@@ -393,7 +393,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		bill.setVerifyType(verifyType.getCode());
 		bill.setOperatorId(operatorUser.getId());
 		bill.setOperatorName(operatorUser.getName());
-		bill.setYn(YnEnum.YES.getCode());
 		bill.setReason(StringUtils.trimToNull(returnedReason));
 		this.updateSelective(bill);
 		return bill.getId();

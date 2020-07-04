@@ -40,6 +40,7 @@ import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.util.BasePageUtil;
 import com.dili.trace.util.BeanMapUtil;
 
@@ -173,6 +174,12 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			updatableRecord.setId(tradeInfoItem.getId());
 			updatableRecord.setCheckinRecordId(checkinRecord.getId());
 			updatableRecord.setCheckinStatus(checkinStatusEnum.getCode());
+			if(CheckinStatusEnum.ALLOWED==checkinStatusEnum){
+				RegisterBill bill=new RegisterBill();
+				bill.setId(registerBillItem.getId());
+				bill.setIsCheckin(YnEnum.YES.getCode());
+				this.registerBillService.updateSelective(bill);
+			}
 
 			this.tradeInfoService.updateSelective(updatableRecord);
 			this.tradeInfoService.doUpdateTradeDetailSaleStatus(operateUser, registerBillItem.getId());
