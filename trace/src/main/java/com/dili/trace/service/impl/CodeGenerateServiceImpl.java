@@ -1,5 +1,10 @@
 package com.dili.trace.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
@@ -8,35 +13,22 @@ import com.dili.trace.domain.CodeGenerate;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.RegisterBillService;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
 @Service
 public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
-		implements CodeGenerateService, ApplicationContextAware {
+		implements CodeGenerateService, CommandLineRunner {
 	private static final String SAMPLE_CODE_TYPE = "SAMPLE_CODE";
 	private static final String CHECKSHEET_CODE_TYPE = "CHECKSHEET_CODE";
 
 	@Autowired
 	RegisterBillService registerBillService;
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-
-		this.checkAndInitSampleCode();
-		this.checkAndInitCheckSheetCode();
-	}
 
 	private boolean checkAndInitSampleCode() {
 		RegisterBill domain = new RegisterBill();
@@ -132,6 +124,7 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 		return StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
 				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), 5, "0"));
 	}
+
 	@Transactional(propagation = Propagation.REQUIRED)
 	public String nextCheckSheetCode() {
 
@@ -140,7 +133,7 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 		if (codeGenerate == null) {
 			throw new AppException("生成打印报告编号错误");
 		}
-		
+
 		// 时间比较
 		LocalDateTime now = LocalDateTime.now();
 
@@ -164,5 +157,10 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), 6, "0"));
 	}
 
+	@Override
+	public void run(String... args) throws Exception {
+		this.checkAndInitSampleCode();
+		this.checkAndInitCheckSheetCode();
+	}
 
 }
