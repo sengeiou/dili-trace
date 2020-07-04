@@ -75,6 +75,7 @@ public class ManagerVerifyApi {
 			RegisterBill input = new RegisterBill();
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
+			input.setReason(inputDto.getReason());
 			Long id = this.registerBillService.doVerifyBeforeCheckIn(input,operatorUser);
 			return BaseOutput.success().setData(id);
 		} catch (TraceBusinessException e) {

@@ -388,7 +388,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	private Long createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,
-			String returnedReason, VerifyTypeEnum verifyType, OperatorUser operatorUser) {
+			String reason, VerifyTypeEnum verifyType, OperatorUser operatorUser) {
 		this.registerBillHistoryService.createHistory(item);
 		RegisterBill bill = new RegisterBill();
 		bill.setId(item.getId());
@@ -396,7 +396,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		bill.setVerifyType(verifyType.getCode());
 		bill.setOperatorId(operatorUser.getId());
 		bill.setOperatorName(operatorUser.getName());
-		bill.setReason(StringUtils.trimToNull(returnedReason));
+		bill.setReason(StringUtils.trimToNull(reason));
 		this.updateSelective(bill);
 		return bill.getId();
 	}
