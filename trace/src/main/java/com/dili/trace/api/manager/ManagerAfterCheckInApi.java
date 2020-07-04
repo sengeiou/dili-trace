@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(value = "/api/manager/managerAfterCheckInApi")
 @Api(value = "/api/manager/managerAfterCheckInApi", description = "登记单相关接口")
 public class ManagerAfterCheckInApi {
-	private static final Logger logger = LoggerFactory.getLogger(ManagerRegisterBillApi.class);
+	private static final Logger logger = LoggerFactory.getLogger(ManagerAfterCheckInApi.class);
 	@Autowired
 	private RegisterBillService registerBillService;
 	@Resource
@@ -64,7 +64,7 @@ public class ManagerAfterCheckInApi {
 	@ApiOperation(value = "场内审核登记单")
 	@RequestMapping(value = "/doVerify.api", method = RequestMethod.POST)
 	public BaseOutput<Long> doVerify(@RequestBody VerifyBillInputDto inputDto) {
-		logger.info("场内审核登记单:{}", inputDto);
+		logger.info("场内审核登记单:{}", inputDto.getBillId());
 		try {
 			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
 				return BaseOutput.failure("参数错误");

@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(value = "/api/manager/managerVerifyApi")
 @Api(value = "/api/manager/managerVerifyApi", description = "登记单相关接口")
 public class ManagerVerifyApi {
-	private static final Logger logger = LoggerFactory.getLogger(ManagerRegisterBillApi.class);
+	private static final Logger logger = LoggerFactory.getLogger(ManagerVerifyApi.class);
 	@Autowired
 	private RegisterBillService registerBillService;
 	@Resource
