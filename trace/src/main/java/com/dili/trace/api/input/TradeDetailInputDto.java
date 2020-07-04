@@ -1,50 +1,42 @@
 package com.dili.trace.api.input;
 
-import javax.persistence.Column;
-
-import com.dili.ss.domain.annotation.Operator;
-import com.dili.trace.domain.TradeDetail;
+import java.math.BigDecimal;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class TradeDetailInputDto extends TradeDetail {
-    @ApiModelProperty(value = "查询登记开始时间")
-    @Column(name = "`created`")
-    @Operator(Operator.GREAT_EQUAL_THAN)
-    private String createdStart;
+public class TradeDetailInputDto {
 
-    @ApiModelProperty(value = "查询登记结束时间")
-    @Column(name = "`created`")
-    @Operator(Operator.LITTLE_EQUAL_THAN)
-    private String createdEnd;
-    
+    @ApiModelProperty(value = "购买重量")
+    private BigDecimal tradeWeight;
+    @ApiModelProperty(value = "订单ID")
+    private Long tradeDetailId;
 
     /**
-     * @return String return the createdStart
+     * @return BigDecimal return the tradeWeight
      */
-    public String getCreatedStart() {
-        return createdStart;
+    public BigDecimal getTradeWeight() {
+        return tradeWeight;
     }
 
     /**
-     * @param createdStart the createdStart to set
+     * @param tradeWeight the tradeWeight to set
      */
-    public void setCreatedStart(String createdStart) {
-        this.createdStart = createdStart;
+    public void setTradeWeight(BigDecimal tradeWeight) {
+        this.tradeWeight = tradeWeight;
     }
 
     /**
-     * @return String return the createdEnd
+     * @return Long return the tradeDetailId
      */
-    public String getCreatedEnd() {
-        return createdEnd;
+    public Long getTradeDetailId() {
+        return tradeDetailId;
     }
 
     /**
-     * @param createdEnd the createdEnd to set
+     * @param tradeDetailId the tradeDetailId to set
      */
-    public void setCreatedEnd(String createdEnd) {
-        this.createdEnd = createdEnd;
+    public void setTradeDetailId(Long tradeDetailId) {
+        this.tradeDetailId = tradeDetailId;
     }
 
 }

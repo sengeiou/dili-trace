@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.api.input.BatchStockInput;
-import com.dili.trace.api.input.TradeRequestInputDto;
+import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
@@ -111,13 +111,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             request.setBuyerId(buyerId);
             request.setBatchStockId(input.getBatchStockId());
             request.setTradeWeight(input.getTradeWeight());
-            return this.createSellRequest(request,input.getTradeRequestList());
+            return this.createSellRequest(request,input.getTradeDetailInputList());
         }).toList();
         return list;
 
     }
 
-    private TradeRequest createSellRequest(TradeRequest request, List<TradeRequestInputDto> tradeRequestInputDtoList) {
+    private TradeRequest createSellRequest(TradeRequest request, List<TradeDetailInputDto> tradeRequestInputDtoList) {
         if (request.getBuyerId() == null) {
             throw new TraceBusinessException("买家ID不能为空");
         }

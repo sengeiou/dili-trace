@@ -10,7 +10,7 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.api.input.TradeDetailInputDto;
+import com.dili.trace.api.input.TradeDetailQueryDto;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.TradeDetailInputWrapperDto;
@@ -55,14 +55,14 @@ public class ClientTradeDetailApi {
 
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST})
-	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetailInputDto condition) {
+	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetailQueryDto query) {
 
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			if(!userId.equals(condition.getBuyerId())&&!userId.equals(condition.getSellerId())){
+			if(!userId.equals(query.getBuyerId())&&!userId.equals(query.getSellerId())){
 				return BaseOutput.failure("参数错误");
 			}
-			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(condition);
+			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
 	
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {

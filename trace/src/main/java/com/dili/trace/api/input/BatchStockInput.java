@@ -8,7 +8,7 @@ public class BatchStockInput {
 
     private BigDecimal tradeWeight;
 
-    private List<TradeRequestInputDto> tradeRequestList;
+    private List<TradeDetailInputDto> tradeDetailInputList;
     
 
     /**
@@ -41,18 +41,21 @@ public class BatchStockInput {
     }
 
 
+  
+
+
     /**
-     * @return List<TradeRequestInputDto> return the tradeRequestList
+     * @return List<TradeDetailInputDto> return the tradeDetailInputList
      */
-    public List<TradeRequestInputDto> getTradeRequestList() {
-        return tradeRequestList;
+    public List<TradeDetailInputDto> getTradeDetailInputList() {
+        return tradeDetailInputList;
     }
 
     /**
-     * @param tradeRequestList the tradeRequestList to set
+     * @param tradeDetailInputList the tradeDetailInputList to set
      */
-    public void setTradeRequestList(List<TradeRequestInputDto> tradeRequestList) {
-        this.tradeRequestList = tradeRequestList;
+    public void setTradeDetailInputList(List<TradeDetailInputDto> tradeDetailInputList) {
+        this.tradeDetailInputList = tradeDetailInputList;
     }
 
 }

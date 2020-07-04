@@ -134,7 +134,7 @@ batchStockList:[
     {
     batchStockId:1,//库存ID
     tradeWeight:33,//重量
-    tradeRequestList:[
+    tradeDetailInputList:[
         {
           tradeWeight:11,//每批次销售重量
           tradeDetailId:345//订单ID
@@ -161,7 +161,7 @@ batchStockList:[
       {
       batchStockId:1,//库存ID
       tradeWeight:33,//重量
-      tradeRequestList:[
+      tradeDetailInputList:[
           {
             tradeWeight:11,//每批次销售重量
             tradeDetailId:345//订单ID

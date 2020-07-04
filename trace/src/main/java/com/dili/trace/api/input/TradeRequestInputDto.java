@@ -1,50 +1,11 @@
 package com.dili.trace.api.input;
 
-import java.math.BigDecimal;
-
-import io.swagger.annotations.ApiModelProperty;
-
-public class TradeRequestInputDto {
+public class TradeRequestInputDto extends TradeRequestListInput {
 
     private Long tradeRequestId;
     private Integer tradeStatus;
     private Integer returnStatus;
     private String reason;
-    
-    
-    @ApiModelProperty(value = "购买重量")
-    private BigDecimal tradeWeight;
-    @ApiModelProperty(value = "订单ID")
-    private Long tradeDetailId;
-
-    /**
-     * @return BigDecimal return the tradeWeight
-     */
-    public BigDecimal getTradeWeight() {
-        return tradeWeight;
-    }
-
-    /**
-     * @param tradeWeight the tradeWeight to set
-     */
-    public void setTradeWeight(BigDecimal tradeWeight) {
-        this.tradeWeight = tradeWeight;
-    }
-
-    /**
-     * @return Long return the tradeDetailId
-     */
-    public Long getTradeDetailId() {
-        return tradeDetailId;
-    }
-
-    /**
-     * @param tradeDetailId the tradeDetailId to set
-     */
-    public void setTradeDetailId(Long tradeDetailId) {
-        this.tradeDetailId = tradeDetailId;
-    }
-
 
     /**
      * @return Long return the tradeRequestId
@@ -58,6 +19,20 @@ public class TradeRequestInputDto {
      */
     public void setTradeRequestId(Long tradeRequestId) {
         this.tradeRequestId = tradeRequestId;
+    }
+
+    /**
+     * @return Integer return the tradeStatus
+     */
+    public Integer getTradeStatus() {
+        return tradeStatus;
+    }
+
+    /**
+     * @param tradeStatus the tradeStatus to set
+     */
+    public void setTradeStatus(Integer tradeStatus) {
+        this.tradeStatus = tradeStatus;
     }
 
     /**
@@ -86,21 +61,6 @@ public class TradeRequestInputDto {
      */
     public void setReason(String reason) {
         this.reason = reason;
-    }
-
-
-    /**
-     * @return Integer return the tradeStatus
-     */
-    public Integer getTradeStatus() {
-        return tradeStatus;
-    }
-
-    /**
-     * @param tradeStatus the tradeStatus to set
-     */
-    public void setTradeStatus(Integer tradeStatus) {
-        this.tradeStatus = tradeStatus;
     }
 
 }
