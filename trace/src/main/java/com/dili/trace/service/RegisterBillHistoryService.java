@@ -19,7 +19,6 @@ public class RegisterBillHistoryService extends BaseServiceImpl<RegisterBillHist
             BeanUtils.copyProperties(historyBill, bill);
             historyBill.setId(null);
             historyBill.setBillId(bill.getId());
-            historyBill.setYn(YnEnum.NO.getCode());
             this.insertSelective(historyBill);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new TraceBusinessException("创建历史数据出错");
