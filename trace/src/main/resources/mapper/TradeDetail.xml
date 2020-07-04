@@ -10,7 +10,7 @@
     trade_detail.product_name
     from trade_detail 
     left join register_bill on trade_detail.bill_id =register_bill.id 
-    where and buyer_id=#{userId}
+    where buyer_id=#{userId}
     <if test="createdStart != null  and createdStart != ''">
       <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
     </if>
