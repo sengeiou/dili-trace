@@ -47,7 +47,7 @@ public class ManagerRegisterBillApiTest extends AutoWiredBaseTest {
         RegisterBillDto input = new RegisterBillDto();
         input.setCreatedStart("2010-01-01 00:00:00");
         input.setCreatedEnd("2020-12-31 23:59:59");
-        input.setVerifyType(VerifyTypeEnum.VERIFY_AFTER_CHECKIN.getCode());
+        // input.setVerifyType(VerifyTypeEnum.VERIFY_AFTER_CHECKIN.getCode());
         BaseOutput<List<VerifyStatusCountOutputDto>> out=this.managerRegisterBillApi.countByVerifyStatus(input);
         assertNotNull(out);
         List<VerifyStatusCountOutputDto>list=out.getData();

@@ -12,9 +12,9 @@ import one.util.streamex.StreamEx;
 public enum TradeRequestStatusEnum {
 
 	/**
-	 * 待同意
+	 * 待完成
 	 */
-	NONE(0, "待同意"),
+	NONE(0, "待完成"),
 	/**
 	 * 完成
 	 */

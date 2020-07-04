@@ -26,8 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import one.util.streamex.StreamEx;
 
 @Service
+@Transactional
 public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
-    private static final Logger logger=LoggerFactory.getLogger(TradeRequestService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TradeRequestService.class);
     @Autowired
     UserService userService;
     @Autowired
@@ -102,7 +103,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         request.setSellerName(seller.getName());
         request.setSellerId(seller.getId());
         request.setBuyerName(buyer.getName());
-        logger.info("buyer id:{},seller id:{}",request.getBuyerId(),request.getSellerId());
+        logger.info("buyer id:{},seller id:{}", request.getBuyerId(), request.getSellerId());
         List<MutablePair<Long, BigDecimal>> tradeDetailIdList = StreamEx
                 .of(CollectionUtils.emptyIfNull(tradeRequestInputDtoList)).nonNull().map(tr -> {
                     if (tr.getTradeWeight() == null || BigDecimal.ZERO.compareTo(tr.getTradeWeight()) >= 0) {
@@ -168,18 +169,28 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * 
      * @return
      */
-    public Long handleBuyRequest(Long tradeRequestId) {
+    public Long handleBuyRequest(Long tradeRequestId, TradeRequestStatusEnum tradeRequestStatus) {
 
-        //request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
-        //request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
-
-        TradeRequest tradeRequest=this.get(tradeRequestId);
-        if(tradeRequest==null){
+        // request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
+        // request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
+        if (tradeRequestId == null || tradeRequestStatus == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        TradeRequest tradeRequestItem = this.get(tradeRequestId);
+        if (tradeRequestItem == null) {
             throw new TraceBusinessException("交易请求不存在");
         }
-        if(!TradeRequestStatusEnum.NONE.equalsToCode(tradeRequest.getTradeRequestStatus())){
+        if (TradeRequestStatusEnum.NONE == tradeRequestStatus) {
+            throw new TraceBusinessException("参数错误");
+        }
+        if (!TradeRequestStatusEnum.NONE.equalsToCode(tradeRequestItem.getTradeRequestStatus())) {
             throw new TraceBusinessException("不能对当前状态交易请求进行处理");
         }
-        return null;
+        TradeRequest tradeRequest = new TradeRequest();
+        tradeRequest.setId(tradeRequestItem.getId());
+        tradeRequestItem.setTradeRequestStatus(tradeRequestStatus.getCode());
+        this.updateSelective(tradeRequest);
+
+        return tradeRequest.getId();
     }
 }
