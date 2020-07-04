@@ -11,14 +11,11 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.BatchStockQueryDto;
-import com.dili.trace.api.input.TradeRequestWrapperDto;
-import com.dili.trace.api.output.CheckInApiDetailOutput;
-import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.service.BatchStockService;
 import com.dili.trace.service.BrandService;
 import com.dili.trace.service.TradeDetailService;
@@ -65,9 +62,9 @@ public class ClientBatchStockApi {
 			condition.setUserId(userId);
 			BasePage<BatchStock> source = this.batchStockService.listPageByExample(condition);
 			List<Long> brandIdList = StreamEx.of(source.getDatas()).nonNull().map(BatchStock::getBrandId).toList();
-			Map<Long,Brand>idBrandMap=this.brandService.findBrandMapByIdList(brandIdList);
-			BasePage<BatchStock> page=	BasePageUtil.convert(source, bs->{
-				bs.setBrandName(idBrandMap.getOrDefault(bs.getBrandId(),new Brand()).getBrandName());
+			Map<Long, Brand> idBrandMap = this.brandService.findBrandMapByIdList(brandIdList);
+			BasePage<BatchStock> page = BasePageUtil.convert(source, bs -> {
+				bs.setBrandName(idBrandMap.getOrDefault(bs.getBrandId(), new Brand()).getBrandName());
 				return bs;
 			});
 			return BaseOutput.success().setData(page);
@@ -97,34 +94,27 @@ public class ClientBatchStockApi {
 	}
 
 	/**
-	 * 详细列表
+	 * 获得批次列表
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/listTradeDetailByBatchId.api", method = { RequestMethod.POST })
-	public BaseOutput<CheckInApiDetailOutput> listTradeDetailByBatchId(@RequestBody TradeRequestWrapperDto inputDto) {
+	public BaseOutput<List<TradeDetail>> listTradeDetailByBatchId(@RequestBody BatchStockInput inputDto) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		if (inputDto == null || inputDto.getTradeRequestId() == null) {
+		if (inputDto == null || inputDto.getBatchStockId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-
-			TradeRequest tradeRequestItem = this.tradeRequestService.get(inputDto.getTradeRequestId());
-			if (tradeRequestItem == null) {
+			BatchStock batchStockItem = this.batchStockService.get(inputDto.getBatchStockId());
+			if (batchStockItem == null) {
 				return BaseOutput.failure("数据不存在");
 			}
-			if (!tradeRequestItem.getBuyerId().equals(userId) && !tradeRequestItem.getSellerId().equals(userId)) {
-				return BaseOutput.failure("没有权限查看数据");
-			}
-			TradeRequestOutputDto out = new TradeRequestOutputDto();
 			TradeDetail tradeDetailQuery = new TradeDetail();
-			tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
+			tradeDetailQuery.setBatchStockId(inputDto.getBatchStockId());
 			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
-			out.setTradeRequest(tradeRequestItem);
-			out.setTradeDetailList(tradeDetailList);
-			return BaseOutput.success().setData(out);
+			return BaseOutput.success().setData(tradeDetailList);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

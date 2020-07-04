@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 
 @SuppressWarnings("deprecation")
-@Api(value = "/api/client/clientTrace")
+@Api(value = "/api/client/clientBillTraceApi")
 @RestController
 @InterceptConfiguration
-@RequestMapping(value = "/api/client/clientTrace")
-public class ClientTraceApi {
-	private static final Logger logger = LoggerFactory.getLogger(ClientTraceApi.class);
+@RequestMapping(value = "/api/client/clientBillTraceApi")
+public class ClientBillTraceApi {
+	private static final Logger logger = LoggerFactory.getLogger(ClientBillTraceApi.class);
 	@Resource
 	private UserService userService;
 	@Resource

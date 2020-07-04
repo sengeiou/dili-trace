@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -26,6 +27,7 @@ public class BatchStock extends BaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
+    @JSONField(serialize =false)
     private Long id;
 
     @ApiModelProperty(value = "业户姓名")
@@ -76,6 +78,11 @@ public class BatchStock extends BaseDomain {
 
     @Transient
     private String brandName;
+
+    @Transient
+    public Long getBatchStockId(){
+        return this.id;
+    }
 
     /**
      * @return Long return the id
