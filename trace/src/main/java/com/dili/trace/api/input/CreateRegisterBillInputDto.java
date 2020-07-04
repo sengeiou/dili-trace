@@ -53,6 +53,8 @@ public class CreateRegisterBillInputDto {
 	private Long brandId;
 	@ApiModelProperty(value = "车牌")
 	private String plate;
+	@ApiModelProperty(value = "上游企业ID")
+	private Long upStreamId;
 
 	/**
 	 * 图片证明列表
@@ -82,6 +84,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setBrandId(this.getBrandId());
 		registerBill.setBrandName(StringUtils.trim(this.getBrandName()));
 		registerBill.setPlate(this.getPlate());
+		registerBill.setUpStreamId(this.getUpStreamId());
 		return registerBill;
 	}
 
@@ -256,6 +259,21 @@ public class CreateRegisterBillInputDto {
      */
     public void setPlate(String plate) {
         this.plate = plate;
+    }
+
+
+    /**
+     * @return Long return the upStreamId
+     */
+    public Long getUpStreamId() {
+        return upStreamId;
+    }
+
+    /**
+     * @param upStreamId the upStreamId to set
+     */
+    public void setUpStreamId(Long upStreamId) {
+        this.upStreamId = upStreamId;
     }
 
 }
