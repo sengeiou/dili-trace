@@ -23,6 +23,8 @@ public class RegisterBillOutput {
     private Integer verifyType;
     private Integer billType;
     private Date created;
+    private String reason;
+    private Integer isCheckIn;
 
     private String userName;
     private String tallyAreaNo;
@@ -59,6 +61,8 @@ public class RegisterBillOutput {
         out.setCode(bill.getCode());
         out.setBillType(bill.getBillType());
         out.setVerifyType(bill.getVerifyType());
+        out.setReason(bill.getReason());
+        out.setIsCheckIn(bill.getIsCheckin());
         return out;
     }
 
@@ -324,6 +328,36 @@ public class RegisterBillOutput {
      */
     public void setBillType(Integer billType) {
         this.billType = billType;
+    }
+
+
+    /**
+     * @return String return the reason
+     */
+    public String getReason() {
+        return reason;
+    }
+
+    /**
+     * @param reason the reason to set
+     */
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+
+    /**
+     * @return Integer return the isCheckIn
+     */
+    public Integer getIsCheckIn() {
+        return isCheckIn;
+    }
+
+    /**
+     * @param isCheckIn the isCheckIn to set
+     */
+    public void setIsCheckIn(Integer isCheckIn) {
+        this.isCheckIn = isCheckIn;
     }
 
 }
