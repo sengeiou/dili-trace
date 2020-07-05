@@ -18,7 +18,7 @@ import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.enums.TradeReturnStatusEnum;
-import com.dili.trace.enums.TradeStatusEnum;
+import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -172,7 +172,7 @@ public class ClientTradeRequestApi {
 		if (inputDto == null || inputDto.getTradeRequestId()==null||inputDto.getTradeStatus()==null) {
 			return BaseOutput.failure("参数错误");
 		}
-		TradeStatusEnum tradeRequestStatus=TradeStatusEnum.fromCode(inputDto.getTradeStatus()).orElse(null);
+		TradeOrderStatusEnum tradeRequestStatus=TradeOrderStatusEnum.fromCode(inputDto.getTradeStatus()).orElse(null);
 		if(tradeRequestStatus==null){
 			return BaseOutput.failure("参数错误");
 		}

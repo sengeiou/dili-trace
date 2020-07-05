@@ -27,7 +27,11 @@ public class TradeRequest extends BaseDomain {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
     @JSONField(serialize = false)
-	private Long id;
+    private Long id;
+    
+    @Column(name = "`trade_order_Id`")
+	private Long tradeOrderId;
+	
 	
 	@ApiModelProperty(value = "买家ID")
 	@Column(name = "`buyer_id`")
@@ -53,13 +57,13 @@ public class TradeRequest extends BaseDomain {
 	@Column(name = "`batch_stock_id`")
     private Long batchStockId;
     
-    @ApiModelProperty(value = "类型")
-	@Column(name = "`trade_request_type`")
-    private Integer tradeRequestType;
+    // @ApiModelProperty(value = "类型")
+	// @Column(name = "`trade_request_type`")
+    // private Integer tradeRequestType;
 
-    @ApiModelProperty(value = "交易状态")
-	@Column(name = "`trade_status`")
-    private Integer tradeStatus;
+    // @ApiModelProperty(value = "交易状态")
+	// @Column(name = "`trade_status`")
+    // private Integer tradeStatus;
 
     
     @ApiModelProperty(value = "退货状态")
@@ -211,36 +215,36 @@ public class TradeRequest extends BaseDomain {
    
 
 
-    /**
-     * @return Integer return the tradeRequestType
-     */
-    public Integer getTradeRequestType() {
-        return tradeRequestType;
-    }
+    // /**
+    //  * @return Integer return the tradeRequestType
+    //  */
+    // public Integer getTradeRequestType() {
+    //     return tradeRequestType;
+    // }
 
-    /**
-     * @param tradeRequestType the tradeRequestType to set
-     */
-    public void setTradeRequestType(Integer tradeRequestType) {
-        this.tradeRequestType = tradeRequestType;
-    }
-
-
+    // /**
+    //  * @param tradeRequestType the tradeRequestType to set
+    //  */
+    // public void setTradeRequestType(Integer tradeRequestType) {
+    //     this.tradeRequestType = tradeRequestType;
+    // }
 
 
-    /**
-     * @return Integer return the tradeStatus
-     */
-    public Integer getTradeStatus() {
-        return tradeStatus;
-    }
 
-    /**
-     * @param tradeStatus the tradeStatus to set
-     */
-    public void setTradeStatus(Integer tradeStatus) {
-        this.tradeStatus = tradeStatus;
-    }
+
+    // /**
+    //  * @return Integer return the tradeStatus
+    //  */
+    // public Integer getTradeStatus() {
+    //     return tradeStatus;
+    // }
+
+    // /**
+    //  * @param tradeStatus the tradeStatus to set
+    //  */
+    // public void setTradeStatus(Integer tradeStatus) {
+    //     this.tradeStatus = tradeStatus;
+    // }
 
     /**
      * @return Integer return the returnStatus
@@ -269,6 +273,21 @@ public class TradeRequest extends BaseDomain {
      */
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+
+    /**
+     * @return Long return the tradeOrderId
+     */
+    public Long getTradeOrderId() {
+        return tradeOrderId;
+    }
+
+    /**
+     * @param tradeOrderId the tradeOrderId to set
+     */
+    public void setTradeOrderId(Long tradeOrderId) {
+        this.tradeOrderId = tradeOrderId;
     }
 
 }

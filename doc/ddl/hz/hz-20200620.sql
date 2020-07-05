@@ -22,6 +22,19 @@ CREATE TABLE `image_cert` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `trade_order` (
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`order_status` int(11) NOT NULL COMMENT '订单状态',
+	`order_type` int(11) NOT NULL COMMENT '订单类型',
+	`buyer_id` bigint(20) NOT NULL COMMENT '买家ID',
+	`buyer_name` varchar(20) NOT NULL COMMENT '买家姓名',
+	`seller_id` bigint(20)  NULL COMMENT '卖家ID',
+	`seller_name` varchar(20)  NULL COMMENT '卖家姓名',
+	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 CREATE TABLE `trade_detail` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`parent_id` bigint(20)  NULL COMMENT '分销来源ID',
@@ -437,8 +450,7 @@ CREATE TABLE `trade_request` (
 	`seller_name` varchar(20)  NULL COMMENT '卖家姓名',
 	`trade_weight` decimal(10,3) NOT NULL  COMMENT '交易重量',
 	`batch_stock_id` bigint(20) NOT NULL COMMENT '商品库存ID',
-	`trade_request_type` int(11) NOT NULL  COMMENT '交易类型',
-	`trade_status` int(11) NOT NULL  COMMENT '交易状态',
+	`trade_order_Id` bigint(20)  NULL  COMMENT '订单ID',
 	`return_status` int(11) NOT NULL  COMMENT '退货状态',
 	`reason` varchar(200)  NULL  COMMENT '原因',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

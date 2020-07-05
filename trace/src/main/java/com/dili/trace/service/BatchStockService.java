@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import com.dili.ss.base.BaseServiceImpl;
@@ -9,11 +10,13 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
 import com.dili.trace.enums.SaleStatusEnum;
+import com.google.common.collect.Lists;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import one.util.streamex.StreamEx;
+import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
@@ -23,6 +26,15 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
     TradeDetailService tradeDetailService;
     @Autowired
     UserService userService;
+
+    public List<BatchStock> findByIdList(List<Long> idList) {
+        if (idList == null || idList.isEmpty()) {
+            return Lists.newArrayList();
+        }
+        Example e = new Example(BatchStock.class);
+        e.and().andIn("id", idList);
+        return this.getDao().selectByExample(e);
+    }
 
     private Optional<Long> addBatchStock(TradeDetail tradeDetail) {
         Long userId = tradeDetail.getBuyerId();
@@ -86,25 +98,25 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
     }
 
     public Optional<Long> createOrUpdateBatchStock(Long tradeDetailId) {
-        TradeDetail tradeDetail=this.tradeDetailService.get(tradeDetailId);
-        if(tradeDetail==null){
+        TradeDetail tradeDetail = this.tradeDetailService.get(tradeDetailId);
+        if (tradeDetail == null) {
             return Optional.empty();
         }
-		if(tradeDetail.getBatchStockId()==null){
-			if(SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetail.getSaleStatus())){
-                 return this.addBatchStock(tradeDetail).map(batchStockId->{
+        if (tradeDetail.getBatchStockId() == null) {
+            if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetail.getSaleStatus())) {
+                return this.addBatchStock(tradeDetail).map(batchStockId -> {
                     TradeDetail domain = new TradeDetail();
                     domain.setBatchStockId(batchStockId);
                     domain.setId(tradeDetail.getId());
                     this.tradeDetailService.updateSelective(domain);
                     return batchStockId;
                 });
-			}
-		}else{
-			if(SaleStatusEnum.NOT_FOR_SALE.equalsToCode(tradeDetail.getSaleStatus())){
+            }
+        } else {
+            if (SaleStatusEnum.NOT_FOR_SALE.equalsToCode(tradeDetail.getSaleStatus())) {
                 return this.substractBatchStock(tradeDetail);
-			}
-		}
+            }
+        }
         return Optional.empty();
     }
 }

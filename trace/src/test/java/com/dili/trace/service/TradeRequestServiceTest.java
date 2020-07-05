@@ -20,8 +20,7 @@ import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeRequestTypeEnum;
-import com.dili.trace.enums.TradeStatusEnum;
+import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 
 import org.junit.jupiter.api.Test;
@@ -99,8 +98,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         input.setBatchStockId(batchStock.getId());
         input.setTradeWeight(BigDecimal.valueOf(77));
 
-        TradeRequest request = this.tradeRequestService.createTradeRequest(null, buyer.getId(),
-                TradeRequestTypeEnum.BUY, input);
+        TradeRequest request = this.tradeRequestService.createTradeRequest(null,null, buyer.getId(),input);
         assertNotNull(request);
         return request;
 
@@ -109,7 +107,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Test
     public void createAndCancelTradeRequest() {
         TradeRequest request = this.createBuyTradeRequest(this.createBatchStock());
-        this.tradeRequestService.hanleRequest(request, TradeStatusEnum.CANCELLED, Lists.newArrayList());
+        this.tradeRequestService.hanleRequest(request, TradeOrderStatusEnum.CANCELLED, Lists.newArrayList());
     }
     @Test
     public void createAndFinishTradeRequest() {
@@ -120,7 +118,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         TradeDetailInputDto input=new TradeDetailInputDto();
         input.setTradeDetailId(tradeDetail.getId());
         input.setTradeWeight(request.getTradeWeight());
-        this.tradeRequestService.hanleRequest(request, TradeStatusEnum.FINISHED, Lists.newArrayList(input));
+        this.tradeRequestService.hanleRequest(request, TradeOrderStatusEnum.FINISHED, Lists.newArrayList(input));
     }
 
     @Test

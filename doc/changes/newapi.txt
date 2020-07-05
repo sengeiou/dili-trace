@@ -149,7 +149,7 @@ batchStockList:[
     }
   ]
 }
-9：处理购买请求:
+/*9：处理购买请求:
 /api/client/clientTradeRequestApi/handleBuyRequest.api
    
 {
@@ -176,7 +176,7 @@ batchStockList:[
       }
     ]
 
-}
+}*/
 车牌查询:
 /api/client/clientUserPlateApi/listPage.api
 {
@@ -189,16 +189,20 @@ verifyType: 10// (10, "报备预审"),(20, "场内审核"),;
 }
  
 
-9:扫码交易
-/api/client/clientTradeDetail/createTradeDetail.api
+
 10:溯源列表
 /api/client/clientTrace/listPage.api
 11：溯源详情
 /api/client/clientTrace/viewTrace.api
-12: 交易列表：
+12: 订单列表：
 /api/client/clientTradeRequestApi/listPage.api
 {
-
+  buyerId:456,
+  sellerId:123
+}
+13:分销列表
+/api/client/clientTradeDetail/listPage.api
+{
   buyerId:456,
   sellerId:123
 }

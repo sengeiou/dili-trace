@@ -3,7 +3,6 @@ package com.dili.trace.service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.dili.common.exception.TraceBusinessException;
@@ -12,12 +11,13 @@ import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.domain.TradeOrder;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeRequestTypeEnum;
+import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
-import com.dili.trace.enums.TradeStatusEnum;
+import com.dili.trace.enums.TradeOrderStatusEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -41,17 +41,22 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     @Autowired
     TradeDetailService tradeDetailService;
+    @Autowired
+    TradeOrderService tradeOrderService;
 
     /**
      * 创建销售请求并处理为完成
      */
     public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
             List<BatchStockInput> batchStockInputList) {
-        return EntryStream
-                .of(this.createTradeRequestList(sellerId, buyerId, TradeRequestTypeEnum.SELL, batchStockInputList))
+        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId,TradeOrderTypeEnum.BUY);
+        List<TradeRequest> list = EntryStream
+                .of(this.createTradeRequestList(tradeOrderItem,sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    return this.hanleRequest(request, TradeStatusEnum.FINISHED, tradeDetailInputList);
+                    return this.hanleRequest(request, TradeOrderStatusEnum.FINISHED, tradeDetailInputList);
                 }).toList();
+        this.tradeOrderService.handleTradeOrder(tradeOrderItem, TradeOrderStatusEnum.FINISHED);
+        return list;
 
     }
 
@@ -63,12 +68,20 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      */
     @Transactional
     public List<TradeRequest> createBuyRequest(Long buyerId, List<BatchStockInput> batchStockInputList) {
-
+        if (batchStockInputList == null || batchStockInputList.isEmpty()) {
+            throw new TraceBusinessException("参数错误");
+        }
+        List<Long> batchStockId = StreamEx.of(batchStockInputList).nonNull().map(BatchStockInput::getBatchStockId)
+                .toList();
+        List<Long> sellerUserIdList = StreamEx.of(this.batchStockService.findByIdList(batchStockId))
+                .map(BatchStock::getUserId).nonNull().distinct().toList();
+        if (sellerUserIdList.size() != 1) {
+            throw new TraceBusinessException("参数错误");
+        }
+        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerUserIdList.get(0), buyerId,TradeOrderTypeEnum.SELL);
         return EntryStream
-                .of(this.createTradeRequestList(null, buyerId, TradeRequestTypeEnum.SELL, batchStockInputList))
+                .of(this.createTradeRequestList(tradeOrderItem,null, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    // return this.hanleRequest(request, TradeStatusEnum.FINISHED,
-                    // tradeDetailInputList);
                     return request;
                 }).toList();
 
@@ -83,7 +96,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param input
      * @return
      */
-     TradeRequest createTradeRequest(Long sellerId, Long buyerId, TradeRequestTypeEnum tradeRequestType,
+    TradeRequest createTradeRequest(TradeOrder tradeOrderItem,Long sellerId, Long buyerId,
             BatchStockInput input) {
         if (input.getTradeWeight() == null || BigDecimal.ZERO.compareTo(input.getTradeWeight()) >= 0) {
             throw new TraceBusinessException("购买重量不能小于0");
@@ -91,16 +104,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (input.getBatchStockId() == null) {
             throw new TraceBusinessException("购买商品ID不能为空");
         }
-        if (tradeRequestType == null) {
-            throw new TraceBusinessException("交易类型不能为空");
-        }
-        // if(TradeRequestTypeEnum.BUY==tradeRequestType){
-
-        // }else if(TradeRequestTypeEnum.SELL==tradeRequestType){
-
-        // }else{
-
-        // }
 
         if (input.getTradeWeight() == null || input.getTradeWeight().compareTo(BigDecimal.ZERO) <= 0) {
             throw new TraceBusinessException("购买总重量不能为空或小于0");
@@ -130,31 +133,30 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         request.setSellerId(seller.getId());
         request.setBuyerName(buyer.getName());
         request.setBuyerId(buyer.getId());
-        request.setTradeRequestType(tradeRequestType.getCode());
-        request.setTradeStatus(TradeStatusEnum.NONE.getCode());
+        request.setTradeOrderId(tradeOrderItem.getId());
         logger.info("buyer id:{},seller id:{}", request.getBuyerId(), request.getSellerId());
         this.insertSelective(request);
         return request;
     }
 
+
     /**
      * 处理请求
      */
-     TradeRequest hanleRequest(TradeRequest requestItem, TradeStatusEnum tradeStatusEnum,
+    TradeRequest hanleRequest(TradeRequest requestItem, TradeOrderStatusEnum tradeStatusEnum,
             List<TradeDetailInputDto> tradeDetailInputList) {
         if (tradeStatusEnum == null) {
             throw new TraceBusinessException("交易状态不能为空");
         }
-        if (tradeStatusEnum == TradeStatusEnum.NONE) {
+        if (tradeStatusEnum == TradeOrderStatusEnum.NONE) {
             throw new TraceBusinessException("不支持的交易状态变更");
         }
         TradeRequest request = new TradeRequest();
         request.setId(requestItem.getId());
-        request.setTradeStatus(tradeStatusEnum.getCode());
-        if (TradeStatusEnum.CANCELLED == tradeStatusEnum) {
+        if (TradeOrderStatusEnum.CANCELLED == tradeStatusEnum) {
             this.updateSelective(request);
             return this.get(requestItem.getId());
-        } else if (TradeStatusEnum.FINISHED == tradeStatusEnum) {
+        } else if (TradeOrderStatusEnum.FINISHED == tradeStatusEnum) {
             List<MutablePair<Long, BigDecimal>> tradeDetailIdWeightList = StreamEx
                     .of(CollectionUtils.emptyIfNull(tradeDetailInputList)).nonNull().map(tr -> {
                         if (tr.getTradeWeight() == null || BigDecimal.ZERO.compareTo(tr.getTradeWeight()) >= 0) {
@@ -205,7 +207,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 }).toList();
             }
             this.updateSelective(request);
-            BatchStock batchStock=new BatchStock();
+            BatchStock batchStock = new BatchStock();
             batchStock.setId(batchStockItem.getId());
             batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
             this.batchStockService.updateSelective(batchStock);
@@ -219,17 +221,17 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 创建批量交易请求
+     * 
      * @param sellerId
      * @param buyerId
      * @param tradeRequestType
      * @param batchStockInputList
      * @return
      */
-     Map<TradeRequest, List<TradeDetailInputDto>> createTradeRequestList(Long sellerId, Long buyerId,
-            TradeRequestTypeEnum tradeRequestType, List<BatchStockInput> batchStockInputList) {
+    Map<TradeRequest, List<TradeDetailInputDto>> createTradeRequestList(TradeOrder tradeOrderItem,Long sellerId, Long buyerId, List<BatchStockInput> batchStockInputList) {
         Map<TradeRequest, List<TradeDetailInputDto>> map = StreamEx.of(batchStockInputList).nonNull()
                 .mapToEntry(input -> {
-                    TradeRequest request = this.createTradeRequest(sellerId, buyerId, tradeRequestType, input);
+                    TradeRequest request = this.createTradeRequest(tradeOrderItem,sellerId, buyerId, input);
                     return request;
                 }, input -> {
                     return StreamEx.of(CollectionUtils.emptyIfNull(input.getTradeDetailInputList())).nonNull().toList();
@@ -238,14 +240,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     }
 
-
     /**
      * 处理购买请求
      * 
      * @return
      */
-    public Long handleBuyRequest(Long tradeRequestId, TradeStatusEnum tradeRequestStatus,
-    List<TradeDetailInputDto> tradeDetailInputList) {
+    public Long handleBuyRequest(Long tradeRequestId, TradeOrderStatusEnum tradeRequestStatus,
+            List<TradeDetailInputDto> tradeDetailInputList) {
 
         // request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
         // request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
@@ -256,14 +257,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (tradeRequestItem == null) {
             throw new TraceBusinessException("交易请求不存在");
         }
-        if (TradeStatusEnum.NONE == tradeRequestStatus) {
+        if (TradeOrderStatusEnum.NONE == tradeRequestStatus) {
             throw new TraceBusinessException("参数错误");
         }
-        if (!TradeStatusEnum.NONE.equalsToCode(tradeRequestItem.getTradeStatus())) {
-            throw new TraceBusinessException("不能对当前状态交易请求进行处理");
-        }
 
-        return this.hanleRequest(tradeRequestItem, tradeRequestStatus,tradeDetailInputList).getId();
+        return this.hanleRequest(tradeRequestItem, tradeRequestStatus, tradeDetailInputList).getId();
     }
 
     /**
@@ -285,9 +283,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (!tradeRequestItem.getBuyerId().equals(userId)) {
             throw new TraceBusinessException("没有权限访问当前数据");
         }
-        if (!TradeStatusEnum.FINISHED.equalsToCode(tradeRequestItem.getTradeStatus())) {
-            throw new TraceBusinessException("交易状态错误");
-        }
+
         if (!TradeReturnStatusEnum.NONE.equalsToCode(tradeRequestItem.getReturnStatus())) {
             throw new TraceBusinessException("退货状态错误");
         }
