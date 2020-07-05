@@ -28,6 +28,7 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
+import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
@@ -87,6 +88,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser) {
+		if(!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())){
+			throw new TraceBusinessException("用户未审核通过不能创建报备单");
+		}
+
 		return StreamEx.of(registerBills).nonNull().map(dto -> {
 			logger.info("循环保存登记单:" + JSON.toJSONString(dto));
 			RegisterBill registerBill = dto.build(user);

@@ -80,17 +80,13 @@ public class ClientRegisterBillApi {
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
 
-			User user = userService.get(operatorUser.getId());
-			if (user == null) {
-				return BaseOutput.failure("未登陆用户");
-			}
 			List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills())
 					.nonNull().toList();
 			if (registerBills == null) {
 				return BaseOutput.failure("没有登记单");
 			}
-			logger.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
-			List<Long> idList = this.registerBillService.createBillList(registerBills, user, operatorUser);
+			logger.info("保存多个登记单 操作用户:{}" ,operatorUser.getId());
+			List<Long> idList = this.registerBillService.createBillList(registerBills, userService.get(operatorUser.getId()), operatorUser);
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
