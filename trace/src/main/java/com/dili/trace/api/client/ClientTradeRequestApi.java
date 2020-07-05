@@ -139,6 +139,7 @@ public class ClientTradeRequestApi {
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("查询数据出错");
 		}
 
@@ -160,6 +161,7 @@ public class ClientTradeRequestApi {
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("查询数据出错");
 		}
 
@@ -182,6 +184,7 @@ public class ClientTradeRequestApi {
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("查询数据出错");
 		}
 

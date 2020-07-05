@@ -308,7 +308,7 @@ public class UserApi {
 //        if(StrUtil.isBlank(user.getTallyAreaNos()) || !ReUtil.isMatch(PatternConstants.TALLY_AREA_NO,user.getTallyAreaNos())){
 //            throw new TraceBusinessException("理货区号为空或格式错误");
 //        }
-        if(Arrays.asList(user.getTallyAreaNos().split(",")).size()>15){
+        if(Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")).size()>15){
             throw new TraceBusinessException("用户最多添加15个摊位号");
         }
         if(StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20){
