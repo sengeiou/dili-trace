@@ -5,13 +5,13 @@ import java.util.stream.Stream;
 public enum VerifyTypeEnum {
     NONE(0, "无"),
     /**
-     * 报备预审
+     * 预审通过
      */
-    PASSED_BEFORE_CHECKIN(10, "报备预审"),
+    PASSED_BEFORE_CHECKIN(10, "预审通过"),
     /**
-     * 场内审核
+     * 场内通过8
      */
-    PASSED_AFTER_CHECKIN(20, "场内审核"),;
+    PASSED_AFTER_CHECKIN(20, "场内通过"),;
 
     private Integer code;
     private String desc;

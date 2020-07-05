@@ -67,6 +67,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     UsualAddressService usualAddressService;
     @Resource
     EventMessageService eventMessageService;
+    @Resource
+    RegisterBillService registerBillService;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -450,8 +452,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         eventMessageService.addMessage(eventMessage);
     }
 
-    public void updateUserQrItem(Long userId) {
-        
+    private void updateUserQrItem(Long userId) {
+        this.registerBillService.updateUserQrStatusByUserId(userId);
     }
 
     
