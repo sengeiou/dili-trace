@@ -208,6 +208,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             BatchStock batchStock=new BatchStock();
             batchStock.setId(batchStockItem.getId());
             batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
+            this.batchStockService.updateSelective(batchStock);
+
             return this.get(requestItem.getId());
         } else {
             throw new TraceBusinessException("交易状态错误");
