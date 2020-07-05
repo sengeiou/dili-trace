@@ -149,40 +149,40 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			throw new TraceBusinessException("库存不足不能销售");
 		}
 
-		TradeDetail selleTradeDetail = new TradeDetail();
+		TradeDetail sellerTradeDetail = new TradeDetail();
 
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
-		selleTradeDetail.setId(tradeDetailItem.getId());
-		selleTradeDetail.setStockWeight(stockWeight);
-		this.updateSelective(selleTradeDetail);
+		sellerTradeDetail.setId(tradeDetailItem.getId());
+		sellerTradeDetail.setStockWeight(stockWeight);
+		this.updateSelective(sellerTradeDetail);
 
-		TradeDetail tradeDetail = new TradeDetail();
-		tradeDetail.setBatchStockId(tradeDetailItem.getBatchStockId());
-		tradeDetail.setBillId(tradeDetailItem.getBillId());
+		TradeDetail buyerTradeDetail = new TradeDetail();
+		buyerTradeDetail.setBatchStockId(tradeDetailItem.getBatchStockId());
+		buyerTradeDetail.setBillId(tradeDetailItem.getBillId());
 
-		tradeDetail.setBuyerId(buyer.getId());
-		tradeDetail.setBuyerName(buyer.getName());
+		buyerTradeDetail.setBuyerId(buyer.getId());
+		buyerTradeDetail.setBuyerName(buyer.getName());
 
-		tradeDetail.setSellerId(tradeDetailItem.getBuyerId());
-		tradeDetail.setSellerName(tradeDetailItem.getBuyerName());
+		buyerTradeDetail.setSellerId(tradeDetailItem.getBuyerId());
+		buyerTradeDetail.setSellerName(tradeDetailItem.getBuyerName());
 
-		tradeDetail.setStockWeight(tradeWeight);
-		tradeDetail.setTotalWeight(tradeWeight);
-		tradeDetail.setCheckinRecordId(tradeDetailItem.getCheckinRecordId());
-		tradeDetail.setCheckinStatus(tradeDetailItem.getCheckinStatus());
-		tradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
-		tradeDetail.setCheckoutRecordId(null);
-		tradeDetail.setCreated(new Date());
-		tradeDetail.setModified(new Date());
-		tradeDetail.setParentId(tradeDetailItem.getId());
-		tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-		tradeDetail.setProductName(tradeDetailItem.getProductName());
-		tradeDetail.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());
+		buyerTradeDetail.setStockWeight(tradeWeight);
+		buyerTradeDetail.setTotalWeight(tradeWeight);
+		buyerTradeDetail.setCheckinRecordId(tradeDetailItem.getCheckinRecordId());
+		buyerTradeDetail.setCheckinStatus(tradeDetailItem.getCheckinStatus());
+		buyerTradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
+		buyerTradeDetail.setCheckoutRecordId(null);
+		buyerTradeDetail.setCreated(new Date());
+		buyerTradeDetail.setModified(new Date());
+		buyerTradeDetail.setParentId(tradeDetailItem.getId());
+		buyerTradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+		buyerTradeDetail.setProductName(tradeDetailItem.getProductName());
+		buyerTradeDetail.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());
 		// tradeDetail.setStatus(TradeDetailStatusEnum.NONE.getCode());
-		tradeDetail.setWeightUnit(tradeDetailItem.getWeightUnit());
-		tradeDetail.setTradeRequestId(tradeRequestId);
-		this.insertSelective(tradeDetail);
-		return tradeDetail;
+		buyerTradeDetail.setWeightUnit(tradeDetailItem.getWeightUnit());
+		buyerTradeDetail.setTradeRequestId(tradeRequestId);
+		this.insertSelective(buyerTradeDetail);
+		return buyerTradeDetail;
 	}
 
 	@Transactional
