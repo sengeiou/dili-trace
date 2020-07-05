@@ -53,7 +53,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem,sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    return this.hanleRequest(request, TradeOrderStatusEnum.FINISHED, tradeDetailInputList);
+                    return this.hanleRequest(request, tradeDetailInputList);
                 }).toList();
         this.tradeOrderService.handleTradeOrder(tradeOrderItem, TradeOrderStatusEnum.FINISHED);
         return list;
@@ -143,20 +143,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 处理请求
      */
-    TradeRequest hanleRequest(TradeRequest requestItem, TradeOrderStatusEnum tradeStatusEnum,
+    TradeRequest hanleRequest(TradeRequest requestItem,
             List<TradeDetailInputDto> tradeDetailInputList) {
-        if (tradeStatusEnum == null) {
-            throw new TraceBusinessException("交易状态不能为空");
-        }
-        if (tradeStatusEnum == TradeOrderStatusEnum.NONE) {
-            throw new TraceBusinessException("不支持的交易状态变更");
-        }
-        TradeRequest request = new TradeRequest();
-        request.setId(requestItem.getId());
-        if (TradeOrderStatusEnum.CANCELLED == tradeStatusEnum) {
-            this.updateSelective(request);
-            return this.get(requestItem.getId());
-        } else if (TradeOrderStatusEnum.FINISHED == tradeStatusEnum) {
+
             List<MutablePair<TradeDetail, BigDecimal>> tradeDetailIdWeightList = StreamEx
                     .of(CollectionUtils.emptyIfNull(tradeDetailInputList)).nonNull().map(tr -> {
                         if (tr.getTradeWeight() == null || BigDecimal.ZERO.compareTo(tr.getTradeWeight()) >= 0) {
@@ -210,16 +199,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
                 }).toList();
             }
-            this.updateSelective(request);
             BatchStock batchStock = new BatchStock();
             batchStock.setId(batchStockItem.getId());
             batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
             this.batchStockService.updateSelective(batchStock);
 
             return this.get(requestItem.getId());
-        } else {
-            throw new TraceBusinessException("交易状态错误");
-        }
 
     }
 
@@ -244,29 +229,29 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     }
 
-    /**
-     * 处理购买请求
-     * 
-     * @return
-     */
-    public Long handleBuyRequest(Long tradeRequestId, TradeOrderStatusEnum tradeRequestStatus,
-            List<TradeDetailInputDto> tradeDetailInputList) {
+    // /**
+    //  * 处理购买请求
+    //  * 
+    //  * @return
+    //  */
+    // public Long handleBuyRequest(Long tradeRequestId, TradeOrderStatusEnum tradeRequestStatus,
+    //         List<TradeDetailInputDto> tradeDetailInputList) {
 
-        // request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
-        // request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
-        if (tradeRequestId == null || tradeRequestStatus == null) {
-            throw new TraceBusinessException("参数错误");
-        }
-        TradeRequest tradeRequestItem = this.get(tradeRequestId);
-        if (tradeRequestItem == null) {
-            throw new TraceBusinessException("交易请求不存在");
-        }
-        if (TradeOrderStatusEnum.NONE == tradeRequestStatus) {
-            throw new TraceBusinessException("参数错误");
-        }
+    //     // request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
+    //     // request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
+    //     if (tradeRequestId == null || tradeRequestStatus == null) {
+    //         throw new TraceBusinessException("参数错误");
+    //     }
+    //     TradeRequest tradeRequestItem = this.get(tradeRequestId);
+    //     if (tradeRequestItem == null) {
+    //         throw new TraceBusinessException("交易请求不存在");
+    //     }
+    //     if (TradeOrderStatusEnum.NONE == tradeRequestStatus) {
+    //         throw new TraceBusinessException("参数错误");
+    //     }
 
-        return this.hanleRequest(tradeRequestItem, tradeRequestStatus, tradeDetailInputList).getId();
-    }
+    //     return this.hanleRequest(tradeRequestItem, tradeDetailInputList).getId();
+    // }
 
     /**
      * 申请退货
