@@ -382,7 +382,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (toVerifyState == BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElse(null)) {
 			throw new TraceBusinessException("状态不能相同");
 		}
-		if (BillVerifyStatusEnum.PASSED != toVerifyState) {
+		if (BillVerifyStatusEnum.NONE == toVerifyState) {
 			throw new TraceBusinessException("不支持的操作");
 		}
 		logger.info("场内审核: billId: {} from {} to {}", billId, fromVerifyState, toVerifyState);
