@@ -69,6 +69,9 @@ public class UserApiTest extends AutoWiredBaseTest {
 		object.put("business_license_url", "/image/DETECT_REPORT/202005/9b7c78f4979049ab9c634b1fea9dcbd0.jpg");
 		object.put("operation_license_url", "经营许可证");
 		object.put("addr", "四川成都青羊区人民路9号");
+
+		object.put("businessCategories", "高档海鲜");
+		object.put("businessCategoryIds", "3");
 		User user = JSONObject.parseObject(object.toJSONString(),User.class);
 
 		userApi.realNameCertificationReq(user);
@@ -149,4 +152,9 @@ public class UserApiTest extends AutoWiredBaseTest {
 		System.out.println(pageUpstream.getCode());
 	}
 
+	@Test
+	public void getUserInfo(){
+		BaseOutput<User> out = userApi.get();
+		System.out.println(out);
+	}
 }

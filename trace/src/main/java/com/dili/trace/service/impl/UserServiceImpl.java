@@ -124,8 +124,18 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         // 验证身份证号是否已注册
-        if (existsCardNo(user.getCardNo())) {
-            throw new TraceBusinessException("身份证号已注册");
+        if (StringUtils.isNotBlank(user.getCardNo())) {
+            User query = DTOUtils.newDTO(User.class);
+            query.setCardNo(user.getCardNo());
+            query.setYn(YnEnum.YES.getCode());
+            List<User> users = listByExample(query);
+            if (CollectionUtils.isNotEmpty(users)) {
+                users.forEach(o -> {
+                    if (!o.getId().equals(user.getId()) && o.getCardNo().equals(user.getCardNo())) {
+                        throw new TraceBusinessException("身份证号已注册");
+                    }
+                });
+            }
         }
 
         User userPO = get(user.getId());
@@ -253,21 +263,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public boolean existsAccount(String phone) {
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(phone);
-        query.setYn(YnEnum.YES.getCode());
-        return !CollUtil.isEmpty(listByExample(query));
-    }
-
- 
-
-    /**
-     * 检测身份证号是否存在
-     * 
-     * @param cardNo
-     * @return true 存在 false 不存在
-     */
-    public boolean existsCardNo(String cardNo) {
-        User query = DTOUtils.newDTO(User.class);
-        query.setCardNo(cardNo);
         query.setYn(YnEnum.YES.getCode());
         return !CollUtil.isEmpty(listByExample(query));
     }

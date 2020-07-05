@@ -47,7 +47,11 @@ public class UpStreamApi {
      */
     @RequestMapping(value = "/listPagedUpStream.api", method = { RequestMethod.POST, RequestMethod.GET })
     public BaseOutput<BasePage<UpStream>> listPagedUpStream(@RequestBody UpStream query) {
-        User user = userService.get(sessionContext.getAccountId());
+        Long userId = sessionContext.getAccountId();
+        if (userId == null){
+            return BaseOutput.failure("未登陆用户");
+        }
+        User user = userService.get(userId);
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }
