@@ -96,7 +96,7 @@ public class UserApi {
             userService.updateUser(user);
             return BaseOutput.success().setData(user.getId());
         }catch (TraceBusinessException e){
-            LOGGER.error("realNameCertificationReq",e);
+            // LOGGER.error("realNameCertificationReq",e);
             return BaseOutput.failure(e.getMessage());
         }catch (Exception e){
             LOGGER.error("realNameCertificationReq",e);
