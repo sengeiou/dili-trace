@@ -3,8 +3,8 @@ package com.dili.trace.api.input;
 public class TradeRequestInputDto extends TradeRequestListInput {
 
     private Long tradeRequestId;
-    private Integer tradeStatus;
-    private Integer returnStatus;
+    private Long traderOrderId;
+
     private String reason;
 
     /**
@@ -21,33 +21,6 @@ public class TradeRequestInputDto extends TradeRequestListInput {
         this.tradeRequestId = tradeRequestId;
     }
 
-    /**
-     * @return Integer return the tradeStatus
-     */
-    public Integer getTradeStatus() {
-        return tradeStatus;
-    }
-
-    /**
-     * @param tradeStatus the tradeStatus to set
-     */
-    public void setTradeStatus(Integer tradeStatus) {
-        this.tradeStatus = tradeStatus;
-    }
-
-    /**
-     * @return Integer return the returnStatus
-     */
-    public Integer getReturnStatus() {
-        return returnStatus;
-    }
-
-    /**
-     * @param returnStatus the returnStatus to set
-     */
-    public void setReturnStatus(Integer returnStatus) {
-        this.returnStatus = returnStatus;
-    }
 
     /**
      * @return String return the reason
@@ -61,6 +34,21 @@ public class TradeRequestInputDto extends TradeRequestListInput {
      */
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+
+    /**
+     * @return Long return the traderOrderId
+     */
+    public Long getTraderOrderId() {
+        return traderOrderId;
+    }
+
+    /**
+     * @param traderOrderId the traderOrderId to set
+     */
+    public void setTraderOrderId(Long traderOrderId) {
+        this.traderOrderId = traderOrderId;
     }
 
 }

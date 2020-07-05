@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
 
@@ -39,13 +40,12 @@ public class TradeOrder extends BaseDomain {
     @Column(name = "`seller_name`")
     private String sellerName;
 
-    
     @ApiModelProperty(value = "交易状态")
-	@Column(name = "`order_status`")
+    @Column(name = "`order_status`")
     private Integer orderStatus;
 
     @ApiModelProperty(value = "交易类型")
-	@Column(name = "`order_type`")
+    @Column(name = "`order_type`")
     private Integer orderType;
 
     @Column(name = "`created`")
@@ -53,6 +53,11 @@ public class TradeOrder extends BaseDomain {
 
     @Column(name = "`modified`")
     private Date modified;
+
+    @Transient
+    public Long getTradeOrderId() {
+        return this.id;
+    }
 
     /**
      * @return Long return the id
@@ -166,7 +171,6 @@ public class TradeOrder extends BaseDomain {
         this.modified = modified;
     }
 
-
     /**
      * @return Integer return the orderStatus
      */
@@ -180,7 +184,6 @@ public class TradeOrder extends BaseDomain {
     public void setOrderStatus(Integer orderStatus) {
         this.orderStatus = orderStatus;
     }
-
 
     /**
      * @return Integer return the orderType

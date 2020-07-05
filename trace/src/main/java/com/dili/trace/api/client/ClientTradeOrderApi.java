@@ -58,4 +58,27 @@ public class ClientTradeOrderApi {
         }
 
     }
+    
+    @ApiOperation(value = "获取订单列表")
+    @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
+    @RequestMapping(value = "/viewTradeOrder.api", method = RequestMethod.POST)
+    public BaseOutput<BasePage<TradeOrder>> viewTradeOrder(@RequestBody TradeOrder inputDto) {
+        try {
+            Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            logger.info("订单列表 操作用户:{}", userId);
+            inputDto.setBuyerId(userId);
+            if (StringUtils.isBlank(inputDto.getOrder())) {
+                inputDto.setOrder("desc");
+                inputDto.setSort("created");
+            }
+            BasePage<TradeOrder> page = tradeOrderService.listPageByExample(inputDto);
+            return BaseOutput.success().setData(page);
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("查询数据出错");
+        }
+
+    }
 }

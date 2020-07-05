@@ -134,7 +134,7 @@ public class ClientTradeRequestApi {
 		try {
 			Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			inputDto.setBuyerId(buyerId);
-			List<TradeRequest>list=this.tradeRequestService.createBuyRequest(buyerId,inputDto.getBatchStockList());
+			List<TradeRequest> list = this.tradeRequestService.createBuyRequest(buyerId, inputDto.getBatchStockList());
 			return BaseOutput.success();
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -156,7 +156,8 @@ public class ClientTradeRequestApi {
 		try {
 			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 
-			List<TradeRequest>list= this.tradeRequestService.createSellRequest(sellerId,inputDto.getBuyerId(),inputDto.getBatchStockList());
+			List<TradeRequest> list = this.tradeRequestService.createSellRequest(sellerId, inputDto.getBuyerId(),
+					inputDto.getBatchStockList());
 			return BaseOutput.success();
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -166,21 +167,18 @@ public class ClientTradeRequestApi {
 		}
 
 	}
-	@ApiOperation(value = "处理购买请求")
-	@RequestMapping(value = "/handleBuyRequest.api", method = RequestMethod.POST)
-	public BaseOutput<?> handleBuyRequest(@RequestBody TradeRequestInputDto inputDto) {
-		if (inputDto == null || inputDto.getTradeRequestId()==null||inputDto.getTradeStatus()==null) {
-			return BaseOutput.failure("参数错误");
-		}
-		TradeOrderStatusEnum tradeRequestStatus=TradeOrderStatusEnum.fromCode(inputDto.getTradeStatus()).orElse(null);
-		if(tradeRequestStatus==null){
+
+	@ApiOperation(value = "通过订单ID查询交易请求详情")
+	@RequestMapping(value = "/listPageTradeRequestByTraderOrderId.api", method = RequestMethod.POST)
+	public BaseOutput<?> listPageTradeRequestByTraderOrderId(@RequestBody TradeRequestInputDto inputDto) {
+		if (inputDto == null || inputDto.getTraderOrderId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
 			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-
-			Long id= 1L;//this.tradeRequestService.handleBuyRequest(inputDto.getTradeRequestId(),tradeRequestStatus,inputDto.getBatchStockList());
-			return BaseOutput.success().setData(id);
+			TradeRequest request=new TradeRequest();
+			request.setTradeOrderId(inputDto.getTraderOrderId());
+			return BaseOutput.success().setData(this.tradeRequestService.listPageByExample(request));
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -209,30 +207,30 @@ public class ClientTradeRequestApi {
 
 	}
 
-	/**
-	 * 确认退货
-	 */
-	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/handleReturning.api", method = { RequestMethod.POST })
-	public BaseOutput<Long> handleReturning(@RequestBody TradeRequestInputDto inputDto) {
+	// /**
+	//  * 确认退货
+	//  */
+	// @SuppressWarnings("unchecked")
+	// @RequestMapping(value = "/handleReturning.api", method = { RequestMethod.POST })
+	// public BaseOutput<Long> handleReturning(@RequestBody TradeRequestInputDto inputDto) {
 
-		try {
-			TradeReturnStatusEnum returnStatus = TradeReturnStatusEnum.fromCode(inputDto.getReturnStatus())
-					.orElse(null);
-			if (returnStatus == null || inputDto.getTradeRequestId() == null) {
-				return BaseOutput.failure("参数错误");
-			}
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			Long id = this.tradeRequestService.handleReturning(inputDto.getTradeRequestId(), userId, returnStatus,
-					inputDto.getReason());
-			return BaseOutput.success().setData(id);
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("服务端出错");
-		}
+	// 	try {
+	// 		TradeReturnStatusEnum returnStatus = TradeReturnStatusEnum.fromCode(inputDto.getReturnStatus())
+	// 				.orElse(null);
+	// 		if (returnStatus == null || inputDto.getTradeRequestId() == null) {
+	// 			return BaseOutput.failure("参数错误");
+	// 		}
+	// 		Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+	// 		Long id = this.tradeRequestService.handleReturning(inputDto.getTradeRequestId(), userId, returnStatus,
+	// 				inputDto.getReason());
+	// 		return BaseOutput.success().setData(id);
+	// 	} catch (TraceBusinessException e) {
+	// 		return BaseOutput.failure(e.getMessage());
+	// 	} catch (Exception e) {
+	// 		logger.error(e.getMessage(), e);
+	// 		return BaseOutput.failure("服务端出错");
+	// 	}
 
-	}
+	// }
 
 }
