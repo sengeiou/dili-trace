@@ -8,7 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -23,7 +25,8 @@ import io.swagger.annotations.ApiModelProperty;
 public class TradeRequest extends BaseDomain {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "`id`")
+    @Column(name = "`id`")
+    @JSONField(serialize = false)
 	private Long id;
 	
 	@ApiModelProperty(value = "买家ID")
@@ -71,8 +74,12 @@ public class TradeRequest extends BaseDomain {
 	private Date created;
 
 	@Column(name = "`modified`")
-	private Date modified;
-
+    private Date modified;
+    
+    @Transient
+    public Long getTradeRequestId(){
+        return this.id;
+    }
     /**
      * @return Long return the id
      */

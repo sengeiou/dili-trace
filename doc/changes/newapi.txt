@@ -197,6 +197,11 @@ verifyType: 10// (10, "报备预审"),(20, "场内审核"),;
 /api/client/clientTrace/viewTrace.api
 12: 交易列表：
 /api/client/clientTradeRequestApi/listPage.api
+{
+
+  buyerId:456,
+  sellerId:123
+}
 13:交易详情
 /api/client/clientTradeRequestApi/viewTradeDetail.api
 {

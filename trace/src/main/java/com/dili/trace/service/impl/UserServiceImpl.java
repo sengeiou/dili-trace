@@ -67,7 +67,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     UsualAddressService usualAddressService;
     @Resource
     EventMessageService eventMessageService;
-    @Resource
+        @Resource
     RegisterBillService registerBillService;
 
 
