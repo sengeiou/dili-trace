@@ -42,6 +42,7 @@ public class ManagerUserApi {
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
 	}
@@ -56,6 +57,7 @@ public class ManagerUserApi {
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
 	}
@@ -75,6 +77,7 @@ public class ManagerUserApi {
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
 	}
@@ -88,6 +91,7 @@ public class ManagerUserApi {
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
 

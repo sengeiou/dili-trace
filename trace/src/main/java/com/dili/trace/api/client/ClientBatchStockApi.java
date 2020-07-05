@@ -60,6 +60,8 @@ public class ClientBatchStockApi {
 		try {
 			Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			condition.setUserId(userId);
+			condition.setSort("created");
+			condition.setOrder("desc");
 			BasePage<BatchStock> source = this.batchStockService.listPageByExample(condition);
 			List<Long> brandIdList = StreamEx.of(source.getDatas()).nonNull().map(BatchStock::getBrandId).toList();
 			Map<Long, Brand> idBrandMap = this.brandService.findBrandMapByIdList(brandIdList);
