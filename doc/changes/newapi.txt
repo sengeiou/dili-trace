@@ -98,14 +98,7 @@ billId:123, //报备单ID
 tradeDetailId:456 //交易单ID(tradeDetailId优先级高于billId,即当两个都存在的时候，可以只传递tradeDetailId，如果没有就可以只传递billId)
 }
 
-5:订单列表
-/api/client/clientTradeDetail/listPage.api
-{
-  createdStart:'2010-01-01 00:00:00',
-  createdEnd:'2019-12-31 23:59:59',
-  buyerId:123, //买家ID(查询买家订单)
-  sellerId:456 //卖家ID(查询卖家订单>>这两个ID只传递一个)
-}
+
 6:品牌查询
 /api/client/clientBrand/listPage.api
 {
@@ -195,22 +188,22 @@ verifyType: 10// (10, "报备预审"),(20, "场内审核"),;
 11：溯源详情
 /api/client/clientTrace/viewTrace.api
 12: 订单列表：
-/api/client/clientTradeRequestApi/listPage.api
+/api/client/clientTradeOrderApi/listPage.api
 {
-  buyerId:456,
-  sellerId:123
+
 }
-13:分销列表
+13:商品交易详情
+/api/client/clientTradeRequestApi/viewTradeDetail.api
+{
+  tradeRequestId:234// 交易ID
+}
+14:详情列表
 /api/client/clientTradeDetail/listPage.api
 {
   buyerId:456,
   sellerId:123
 }
-13:交易详情
-/api/client/clientTradeRequestApi/viewTradeDetail.api
-{
-  tradeRequestId:234// 交易ID
-}
+
 14获得当前用户的进门数据:
 /api/manager/managerCheckinRecord/listPageCheckInData.api
 {
