@@ -126,7 +126,7 @@ public class ClientTradeRequestApi {
 
 	@ApiOperation(value = "创建购买请求")
 	@RequestMapping(value = "/createBuyProductRequest.api", method = RequestMethod.POST)
-	public BaseOutput<?> createBuyProductRequest(@RequestBody TradeRequestListInput inputDto) {
+	public BaseOutput<?> createBuyProductRequest(@RequestBody TradeRequestInputDto inputDto) {
 		if (inputDto == null || inputDto.getBatchStockList() == null || inputDto.getBatchStockList().isEmpty()) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -177,7 +177,7 @@ public class ClientTradeRequestApi {
 		try {
 			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 
-			Long id= this.tradeRequestService.handleBuyRequest(inputDto.getTradeRequestId(),tradeRequestStatus);
+			Long id= 1L;//this.tradeRequestService.handleBuyRequest(inputDto.getTradeRequestId(),tradeRequestStatus,inputDto.getBatchStockList());
 			return BaseOutput.success().setData(id);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

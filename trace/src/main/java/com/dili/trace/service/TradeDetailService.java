@@ -91,15 +91,15 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			}
 
 		} else {
-			//报备审核没有通过或者没有被允许进门
+			// 报备审核没有通过或者没有被允许进门
 			if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeInfoItem.getSaleStatus())) {
 				// 报备审核通过当前为可进行销售状态，允许出门之后，变为不可销售状态
 				updatableRecord.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
 				this.updateSelective(updatableRecord);
 			}
 		}
-		
-        this.batchStockService.createOrUpdateBatchStock(tradeInfoItem.getId());
+
+		this.batchStockService.createOrUpdateBatchStock(tradeInfoItem.getId());
 		return billItem.getId();
 
 	}
@@ -151,9 +151,13 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		}
 		logger.info("id:{},stockWeight:{},tradeWeight:{}", tradeDetailItem.getId(), tradeDetailItem.getStockWeight(),
 				tradeWeight);
+
+		TradeDetail selleTradeDetail = new TradeDetail();
+
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
-		tradeDetailItem.setStockWeight(stockWeight);
-		this.updateSelective(tradeDetailItem);
+		selleTradeDetail.setId(tradeDetailItem.getId());
+		selleTradeDetail.setStockWeight(stockWeight);
+		this.updateSelective(selleTradeDetail);
 
 		TradeDetail tradeDetail = new TradeDetail();
 		tradeDetail.setBatchStockId(tradeDetailItem.getBatchStockId());

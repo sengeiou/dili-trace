@@ -17,7 +17,7 @@
     <logger name="org.zalando.logbook.Logbook" level="trace" />
     <logger name="springfox.documentation.spring.web.readers.operation" level="warn"/>
     <logger name="tk.mybatis.mapper.autoconfigure.MapperCacheDisabler" level="warn"/>
-    <!-- <logger name="org.springframework.test.context.transaction" level="warn"/> -->
+    <logger name="org.springframework.test.context.transaction.TransactionContext " level="error"/>
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="appender"/>
