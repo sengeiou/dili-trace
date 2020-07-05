@@ -157,12 +157,16 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             this.updateSelective(request);
             return this.get(requestItem.getId());
         } else if (TradeOrderStatusEnum.FINISHED == tradeStatusEnum) {
-            List<MutablePair<Long, BigDecimal>> tradeDetailIdWeightList = StreamEx
+            List<MutablePair<TradeDetail, BigDecimal>> tradeDetailIdWeightList = StreamEx
                     .of(CollectionUtils.emptyIfNull(tradeDetailInputList)).nonNull().map(tr -> {
                         if (tr.getTradeWeight() == null || BigDecimal.ZERO.compareTo(tr.getTradeWeight()) >= 0) {
                             throw new TraceBusinessException("购买批次重量不能为空或小于0");
                         }
-                        return MutablePair.of(tr.getTradeDetailId(), tr.getTradeWeight());
+                        TradeDetail tradeDetail=this.tradeDetailService.get(tr.getTradeDetailId());
+                        if(tradeDetail==null){
+                            throw new TraceBusinessException("数据不存在");
+                        }
+                        return MutablePair.of(tradeDetail, tr.getTradeWeight());
                     }).toList();
             BatchStock batchStockItem = this.batchStockService.get(requestItem.getBatchStockId());
             User buyer = this.userService.get(requestItem.getBuyerId());
@@ -192,16 +196,16 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     if (tradeWeight.compareTo(BigDecimal.ZERO) <= 0) {
                         return null;
                     }
-                    TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td.getId(),
+                    TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td,
                             tradeWeight, seller.getId(), buyer);
                     return tradeDetail;
                 }).toList();
             } else {
                 List<TradeDetail> resultList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
-                    Long tradeDetailId = p.getKey();
+                    TradeDetail tradeDetaiItem = p.getKey();
                     BigDecimal tradeWeight = p.getValue();
                     TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(),
-                            tradeDetailId, tradeWeight, seller.getId(), buyer);
+                    tradeDetaiItem, tradeWeight, seller.getId(), buyer);
                     return tradeDetail;
 
                 }).toList();

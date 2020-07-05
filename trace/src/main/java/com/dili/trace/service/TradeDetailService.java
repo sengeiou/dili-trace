@@ -131,14 +131,13 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	/**
 	 * 创建单个交易信息
 	 */
-	public TradeDetail createTradeDetail(Long tradeRequestId, Long tradeDetailId, BigDecimal tradeWeight, Long sellerId,
+	public TradeDetail createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight, Long sellerId,
 			User buyer) {
-		TradeDetail tradeDetailItem = this.get(tradeDetailId);
 		if (tradeDetailItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
 		
-		logger.info("sellerId:{},buyerId:{},tradeDetail.Id:{},stockweight:{},tradeWeight:{}",sellerId, buyer.getId(),tradeDetailId,tradeDetailItem.getStockWeight(),tradeWeight);
+		logger.info("sellerId:{},buyerId:{},tradeDetail.Id:{},stockweight:{},tradeWeight:{}",sellerId, buyer.getId(),tradeDetailItem.getId(),tradeDetailItem.getStockWeight(),tradeWeight);
 
 		if (!tradeDetailItem.getBuyerId().equals(sellerId)) {
 			throw new TraceBusinessException("没有权限销售");
