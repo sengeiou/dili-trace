@@ -162,19 +162,19 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                         }
                         return MutablePair.of(tr.getTradeDetailId(), tr.getTradeWeight());
                     }).toList();
-            BatchStock batchStock = this.batchStockService.get(requestItem.getBatchStockId());
+            BatchStock batchStockItem = this.batchStockService.get(requestItem.getBatchStockId());
             User buyer = this.userService.get(requestItem.getBuyerId());
             User seller = this.userService.get(requestItem.getSellerId());
 
             TradeDetail tradeDetailQuery = new TradeDetail();
             tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-            tradeDetailQuery.setBatchStockId(batchStock.getId());
+            tradeDetailQuery.setBatchStockId(batchStockItem.getId());
 
             List<TradeDetail> tradeDetailList = StreamEx.of(this.tradeDetailService.listByExample(tradeDetailQuery))
                     .filter(td -> {
                         return td.getStockWeight().compareTo(BigDecimal.ZERO) > 0;
                     }).sortedBy(TradeDetail::getCreated).toList();
-            if (batchStock.getStockWeight().compareTo(requestItem.getTradeWeight()) < 0) {
+            if (batchStockItem.getStockWeight().compareTo(requestItem.getTradeWeight()) < 0) {
                 throw new TraceBusinessException("购买重量不能超过总库存重量");
             }
             if (tradeDetailIdWeightList.isEmpty()) {
@@ -205,6 +205,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 }).toList();
             }
             this.updateSelective(request);
+            BatchStock batchStock=new BatchStock();
+            batchStock.setId(batchStockItem.getId());
+            batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
             return this.get(requestItem.getId());
         } else {
             throw new TraceBusinessException("交易状态错误");
