@@ -48,7 +48,11 @@
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
-
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>查询用户</label>
+                    <input type="text" class="form-control input-sm" name="queryUser" id="queryUser" tabindex="-1" required readonly/>
+                </div>
                 
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -144,6 +148,51 @@
         filter: false ,
     });
    appendCachedPlate([],'#plate');
+
+
+    	$('#queryUser').keydown(function (e){
+    	    if(e.keyCode == 13){
+    	    	// $(selector).data('keycode',e.keyCode);
+    	    	// console.info('keydown')
+    	    }
+    	});
+    	$('#queryUser').data('oldvalue','');
+    	// $(selector).data('keycode','');
+        $(selector).on('change',function () {
+        	var oldvalue=$('#queryUser').data('oldvalue');
+        	var val=$(this).val();
+        	if(oldvalue!=val){
+        		$(this).siblings('input').val('');
+        	}
+        });
+        // 产地联系输入
+        /listByCondition.action 
+        likeName
+        $('#queryUser').devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl:"${contextPath}/registerBill/listPage.action",  // 数据地址
+            // lookup: countries, 本地测试模拟数据使用结合上面的var countries
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            	// console.info(2)
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            onSelect: function (suggestion) {
+            	console.info('onSelect')
+                var self = this;
+                var idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value.trim());
+                // var keycode=$(selector).data('keycode');
+                // console.info(keycode)
+                $('#queryUser').data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
+        });
+    
 </script>
 
 <script id="goodsItem" type="text/html">
