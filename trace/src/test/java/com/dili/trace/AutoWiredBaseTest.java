@@ -176,7 +176,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		RegisterBill billItem = this.billService.get(billId);
 		assertNotNull(billItem);
 		assertTrue(verifyStatusEnum.equalsToCode(billItem.getVerifyStatus()));
-		assertTrue(VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.equalsToCode(billItem.getVerifyType()));
+		assertTrue(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.equalsToCode(billItem.getVerifyType()));
 
 		return billId;
 	}
@@ -189,7 +189,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		RegisterBill billItem = this.billService.get(billId);
 		assertNotNull(billItem);
 		assertTrue(verifyStatusEnum.equalsToCode(billItem.getVerifyStatus()));
-		assertTrue(VerifyTypeEnum.VERIFY_AFTER_CHECKIN.equalsToCode(billItem.getVerifyType()));
+		assertTrue(VerifyTypeEnum.PASSED_AFTER_CHECKIN.equalsToCode(billItem.getVerifyType()));
 
 		return billId;
 	}

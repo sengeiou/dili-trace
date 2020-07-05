@@ -7,11 +7,11 @@ public enum VerifyTypeEnum {
     /**
      * 报备预审
      */
-    VERIFY_BEFORE_CHECKIN(10, "报备预审"),
+    PASSED_BEFORE_CHECKIN(10, "报备预审"),
     /**
      * 场内审核
      */
-    VERIFY_AFTER_CHECKIN(20, "场内审核"),;
+    PASSED_AFTER_CHECKIN(20, "场内审核"),;
 
     private Integer code;
     private String desc;

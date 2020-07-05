@@ -75,7 +75,17 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser);
 
-	public BasePage<RegisterBill> listPageVerifyBill(RegisterBillDto query);
+			
+	public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query);
+
+	public BasePage<RegisterBill> listPageAfterCheckinVerifyBill(RegisterBillDto query);
+	/**
+	 * 统计不同审核状态报备单数据
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public List<VerifyStatusCountOutputDto> countByVerifyStatuseBeforeCheckin(RegisterBillDto query);
 
 	/**
 	 * 统计不同审核状态报备单数据
@@ -83,7 +93,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param query
 	 * @return
 	 */
-	public List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBillDto query);
+	public List<VerifyStatusCountOutputDto> countByVerifyStatuseAfterCheckin(RegisterBillDto query);
 
 	/**
 	 * 根据用户最新报备单审核状态更新颜色码

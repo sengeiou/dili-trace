@@ -1,5 +1,7 @@
 package com.dili.trace.api.manager;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import com.dili.common.entity.LoginSessionContext;
@@ -9,11 +11,10 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.api.output.VerifyBillInputDto;
+import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
@@ -48,9 +49,7 @@ public class ManagerVerifyApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			// input.setBillType(BillTypeEnum.NONE.getCode());
-			input.setVerifyType(VerifyTypeEnum.VERIFY_BEFORE_CHECKIN.getCode());
-			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageVerifyBill(input),
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageBeforeCheckinVerifyBill(input),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						dto.setColor(ColorEnum.GREEN.getCode());
@@ -62,6 +61,26 @@ public class ManagerVerifyApi {
 		} catch (Exception e) {
 			return BaseOutput.failure("操作失败：服务端出错");
 		}
+	}
+	/**
+	 * 不同审核状态数据统计
+	 */
+	@RequestMapping(value = "/countByVerifyStatus.api", method = { RequestMethod.POST })
+	public BaseOutput<List<VerifyStatusCountOutputDto>> countByVerifyStatus(@RequestBody RegisterBillDto query) {
+
+		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
+			return BaseOutput.success().setData(list);
+
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
+	
+
 	}
 	@ApiOperation(value = "报备审核登记单")
 	@RequestMapping(value = "/doVerify.api", method = RequestMethod.POST)

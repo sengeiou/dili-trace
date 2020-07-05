@@ -7,11 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -25,7 +20,6 @@ import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.CheckInApiListOutput;
 import com.dili.trace.api.output.CheckoutApiDetailOutput;
 import com.dili.trace.api.output.CheckoutApiListQuery;
-import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
@@ -33,7 +27,6 @@ import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
@@ -43,6 +36,11 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.util.BasePageUtil;
 import com.dili.trace.util.BeanMapUtil;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.StreamEx;
 
@@ -174,12 +172,10 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			updatableRecord.setId(tradeInfoItem.getId());
 			updatableRecord.setCheckinRecordId(checkinRecord.getId());
 			updatableRecord.setCheckinStatus(checkinStatusEnum.getCode());
-			if(CheckinStatusEnum.ALLOWED==checkinStatusEnum){
-				RegisterBill bill=new RegisterBill();
-				bill.setId(registerBillItem.getId());
-				bill.setIsCheckin(YnEnum.YES.getCode());
-				this.registerBillService.updateSelective(bill);
-			}
+
+			RegisterBill bill = new RegisterBill();
+			bill.setId(registerBillItem.getId());
+			this.registerBillService.updateSelective(bill);
 
 			this.tradeInfoService.updateSelective(updatableRecord);
 			this.tradeInfoService.doUpdateTradeDetailSaleStatus(operateUser, registerBillItem.getId());
@@ -189,8 +185,6 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}).toList();
 
 	}
-
-	
 
 	public Optional<CheckInApiDetailOutput> getCheckInDetail(Long billId) {
 		RegisterBill registerBill = this.registerBillService.get(billId);
