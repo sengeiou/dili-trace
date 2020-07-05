@@ -193,7 +193,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                         return null;
                     }
                     TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td.getId(),
-                            tradeWeight, seller, buyer);
+                            tradeWeight, seller.getId(), buyer);
                     return tradeDetail;
                 }).toList();
             } else {
@@ -201,7 +201,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     Long tradeDetailId = p.getKey();
                     BigDecimal tradeWeight = p.getValue();
                     TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(),
-                            tradeDetailId, tradeWeight, buyer, buyer);
+                            tradeDetailId, tradeWeight, seller.getId(), buyer);
                     return tradeDetail;
 
                 }).toList();

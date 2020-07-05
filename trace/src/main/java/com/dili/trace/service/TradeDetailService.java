@@ -127,20 +127,20 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return item;
 
 	}
-
+//1->2 苹果 100 （卖:1->）
 	/**
 	 * 创建单个交易信息
 	 */
-	public TradeDetail createTradeDetail(Long tradeRequestId, Long tradeDetailId, BigDecimal tradeWeight, User seller,
+	public TradeDetail createTradeDetail(Long tradeRequestId, Long tradeDetailId, BigDecimal tradeWeight, Long sellerId,
 			User buyer) {
 		TradeDetail tradeDetailItem = this.get(tradeDetailId);
 		if (tradeDetailItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-		logger.info("detail item :stockweight:{},seller id:{}, owner user id:{}", tradeDetailItem.getStockWeight(),
-				tradeDetailItem.getSellerId(), tradeDetailItem.getBuyerId());
-		logger.info("trade>tradeWeight:{}, seller id:{}, buyer id:{}", tradeWeight, seller.getId(), buyer.getId());
-		if (!tradeDetailItem.getBuyerId().equals(seller.getId())) {
+		
+		logger.info("sellerId:{},buyerId:{},tradeDetail.Id:{},stockweight:{},tradeWeight:{}",sellerId, buyer.getId(),tradeDetailId,tradeDetailItem.getStockWeight(),tradeWeight);
+
+		if (!tradeDetailItem.getBuyerId().equals(sellerId)) {
 			throw new TraceBusinessException("没有权限销售");
 		}
 		if (!SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetailItem.getSaleStatus())) {
@@ -149,8 +149,6 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (tradeDetailItem.getStockWeight().compareTo(tradeWeight) < 0) {
 			throw new TraceBusinessException("库存不足不能销售");
 		}
-		logger.info("id:{},stockWeight:{},tradeWeight:{}", tradeDetailItem.getId(), tradeDetailItem.getStockWeight(),
-				tradeWeight);
 
 		TradeDetail selleTradeDetail = new TradeDetail();
 
@@ -166,8 +164,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		tradeDetail.setBuyerId(buyer.getId());
 		tradeDetail.setBuyerName(buyer.getName());
 
-		tradeDetail.setSellerId(seller.getId());
-		tradeDetail.setSellerName(seller.getName());
+		tradeDetail.setSellerId(tradeDetailItem.getBuyerId());
+		tradeDetail.setSellerName(tradeDetailItem.getBuyerName());
 
 		tradeDetail.setStockWeight(tradeWeight);
 		tradeDetail.setTotalWeight(tradeWeight);
