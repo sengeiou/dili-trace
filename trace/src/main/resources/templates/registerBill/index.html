@@ -122,7 +122,7 @@
                         <th width="4%" data-options="field:'verifyStatus',  _provider:'verifyStatusProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            审核状态
                         </th>
-                        <th width="4%" data-options="field:'isCheckin',  _provider:'ynEnumStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="4%" data-options="field:'isCheckin',  formatter:formatIsCheckIn ,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             是否进门
                          </th>
 
@@ -202,7 +202,12 @@
      function multipleSelectOnChange(n,o){
     	
      }
-     
+     function formatIsCheckIn(val,row){
+        if(val==-1){
+            return "否";
+        }
+        return "是";
+    }
      function queryProduct(param,success,error){
   	   var productName=$('#productCombobox').combotree('getText');
   	   var data=[];
