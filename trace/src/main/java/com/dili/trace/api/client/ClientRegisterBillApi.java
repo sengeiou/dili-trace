@@ -73,7 +73,7 @@ public class ClientRegisterBillApi {
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
 	public BaseOutput<List<Long>> createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
-		logger.info("保存多个登记单:");
+		logger.info("保存多个登记单:{}",JSON.toJSONString(createListBillParam));
 		if (createListBillParam == null || createListBillParam.getRegisterBills() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -99,7 +99,7 @@ public class ClientRegisterBillApi {
 	@ApiOperation("修改报备单")
 	@RequestMapping(value = "/doEditRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput doEditRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
-		logger.info("修改报备单:");
+		logger.info("修改报备单:{}",JSON.toJSONString(dto));
 		if (dto == null || dto.getBillId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -128,7 +128,7 @@ public class ClientRegisterBillApi {
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
 	public BaseOutput<BasePage<TradeDetailBillOutput>> listPage(@RequestBody RegisterBillDto input) {
-		logger.info("获取登记单列表:" + JSON.toJSON(input).toString());
+		logger.info("获取登记单列表:{}", JSON.toJSONString(input));
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			User user = userService.get(userId);
@@ -160,7 +160,7 @@ public class ClientRegisterBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 
-		logger.info("获取登记单:" + inputDto.getBillId());
+		logger.info("获取登记单详细信息->billId:{},tradeDetailId:{}",inputDto.getBillId(),inputDto.getTradeDetailId() );
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			User user = userService.get(userId);
