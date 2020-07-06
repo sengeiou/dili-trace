@@ -16,6 +16,7 @@ import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
@@ -35,6 +36,7 @@ import com.dili.trace.service.CategoryService;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
+import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
 import com.google.common.collect.Lists;
@@ -60,6 +62,8 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 	CategoryService categoryService;
 	@Autowired
 	TradeDetailService tradeDetailService;
+	@Autowired
+    TradeRequestService tradeRequestService;
 
 	@BeforeEach
 	public void mockInit() {
@@ -75,6 +79,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		 */
 
 	}
+
 
 	@Test
 	public void test() {
