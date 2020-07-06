@@ -54,8 +54,8 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`trade_type`")
 	private Integer tradeType;
 
-	// @Column(name = "`status`")
-	// private Integer status;
+	@Column(name = "`is_batched`")
+	private Integer isBatched;
 
 	@ApiModelProperty(value = "买家ID")
 	@Column(name = "`buyer_id`")
@@ -296,6 +296,21 @@ public class TradeDetail extends BaseDomain {
      */
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+
+    /**
+     * @return Integer return the isBatched
+     */
+    public Integer getIsBatched() {
+        return isBatched;
+    }
+
+    /**
+     * @param isBatched the isBatched to set
+     */
+    public void setIsBatched(Integer isBatched) {
+        this.isBatched = isBatched;
     }
 
 }

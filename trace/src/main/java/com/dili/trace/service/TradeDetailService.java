@@ -10,6 +10,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.dao.TradeDetailMapper;
+import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.UpStream;
@@ -23,6 +24,7 @@ import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.service.impl.SeparateSalesRecordServiceImpl;
@@ -54,90 +56,66 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	@Autowired
 	BatchStockService batchStockService;
 
-	public Long doUpdateTradeDetailSaleStatus(OperatorUser operateUser, Long billId) {
-
+	public Long updateTradeDetailSaleStatus(OperatorUser operateUser, Long billId, TradeDetail tradeDetailItem) {
 		RegisterBill billItem = this.registerBillService.get(billId);
-		if (billItem == null) {
-			throw new TraceBusinessException("没有找到登记单");
+		if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeDetailItem.getCheckinStatus())
+				&& BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
+				&& SaleStatusEnum.NONE.equalsToCode(tradeDetailItem.getSaleStatus())) {
+			TradeDetail updatableRecord = new TradeDetail();
+			updatableRecord.setId(tradeDetailItem.getId());
+			updatableRecord.setModified(new Date());
+			updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+			this.updateSelective(updatableRecord);
 		}
 
-		TradeDetail queryCondition = new TradeDetail();
-		queryCondition.setBillId(billId);
-		queryCondition.setTradeType(TradeTypeEnum.NONE.getCode());
-		TradeDetail tradeInfoItem = this.listByExample(queryCondition).stream().findFirst().orElse(null);
-
-		if (tradeInfoItem == null) {
-			return billItem.getId();
-		}
-		TradeDetail updatableRecord = new TradeDetail();
-		updatableRecord.setId(tradeInfoItem.getId());
-		updatableRecord.setModified(new Date());
-
-		if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeInfoItem.getCheckinStatus())
-				&& BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())) {
-
-			if (CheckoutStatusEnum.NONE.equalsToCode(tradeInfoItem.getCheckoutStatus())) {
-				if (!SaleStatusEnum.FOR_SALE.equalsToCode(tradeInfoItem.getSaleStatus())) {
-					// 报备审核通过，允许进门之后，变为可销售状态
-					updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-					this.updateSelective(updatableRecord);
-				}
-			} else if (CheckoutStatusEnum.ALLOWED.equalsToCode(tradeInfoItem.getCheckoutStatus())) {
-				if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeInfoItem.getSaleStatus())) {
-					// 报备审核通过当前为可进行销售状态，允许出门之后，变为不可销售状态
-					updatableRecord.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
-					this.updateSelective(updatableRecord);
-				}
-			}
-
-		} else {
-			// 报备审核没有通过或者没有被允许进门
-			if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeInfoItem.getSaleStatus())) {
-				// 报备审核通过当前为可进行销售状态，允许出门之后，变为不可销售状态
-				updatableRecord.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
-				this.updateSelective(updatableRecord);
-			}
-		}
-
-		this.batchStockService.createOrUpdateBatchStock(tradeInfoItem.getId());
-		return billItem.getId();
+		return tradeDetailItem.getId();
 
 	}
 
-	public TradeDetail createTradeDetailForBill(RegisterBill registerBill) {
+	public TradeDetail createTradeDetailAndBatstockForBill(RegisterBill billItem) {
+		BatchStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
+		TradeDetail buyerTradeDetail = new TradeDetail();
+		buyerTradeDetail.setBatchStockId(batchStock.getId());
 
 		TradeDetail item = new TradeDetail();
 		item.setParentId(null);
-		item.setBillId(registerBill.getId());
+		item.setIsBatched(TFEnum.TRUE.getCode());
+		item.setBillId(billItem.getId());
 		item.setTradeType(TradeTypeEnum.NONE.getCode());
 		item.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
 		item.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
 		item.setSaleStatus(SaleStatusEnum.NONE.getCode());
-		item.setStockWeight(registerBill.getWeight());
-		item.setTotalWeight(registerBill.getWeight());
-		item.setWeightUnit(registerBill.getWeightUnit());
-		item.setBuyerId(registerBill.getUserId());
-		item.setBuyerName(registerBill.getName());
-		item.setProductName(registerBill.getProductName());
+		item.setStockWeight(billItem.getWeight());
+		item.setTotalWeight(billItem.getWeight());
+		item.setWeightUnit(billItem.getWeightUnit());
+		item.setBuyerId(billItem.getUserId());
+		item.setBuyerName(billItem.getName());
+		item.setProductName(billItem.getProductName());
 
 		item.setModified(new Date());
 		item.setCreated(new Date());
 		this.insertSelective(item);
 
+		batchStock.setStockWeight(billItem.getWeight());
+		batchStock.setTotalWeight(billItem.getWeight());
+		this.batchStockService.updateSelective(batchStock);
 		return item;
 
 	}
-//1->2 苹果 100 （卖:1->）
+
+	// 1->2 苹果 100 （卖:1->）
 	/**
 	 * 创建单个交易信息
 	 */
-	public TradeDetail createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight, Long sellerId,
-			User buyer) {
+	public TradeDetail createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
+			Long sellerId, User buyer) {
 		if (tradeDetailItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-		
-		logger.info("sellerId:{},buyerId:{},tradeDetail.Id:{},stockweight:{},tradeWeight:{}",sellerId, buyer.getId(),tradeDetailItem.getId(),tradeDetailItem.getStockWeight(),tradeWeight);
+		RegisterBill billItem = this.registerBillService.get(tradeDetailItem.getBillId());
+
+		logger.info("sellerId:{},buyerId:{},tradeDetail.Id:{},stockweight:{},tradeWeight:{}", sellerId, buyer.getId(),
+				tradeDetailItem.getId(), tradeDetailItem.getStockWeight(), tradeWeight);
 
 		if (!tradeDetailItem.getBuyerId().equals(sellerId)) {
 			throw new TraceBusinessException("没有权限销售");
@@ -149,15 +127,30 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			throw new TraceBusinessException("库存不足不能销售");
 		}
 
-		TradeDetail sellerTradeDetail = new TradeDetail();
-
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
+
+
+		BatchStock sellerBatchStock = this.batchStockService.findOrCreateBatchStock(sellerId, billItem);
+		TradeDetail sellerTradeDetail = new TradeDetail();
 		sellerTradeDetail.setId(tradeDetailItem.getId());
 		sellerTradeDetail.setStockWeight(stockWeight);
 		this.updateSelective(sellerTradeDetail);
+		sellerBatchStock.setStockWeight(sellerBatchStock.getStockWeight().subtract(tradeWeight));
+		this.batchStockService.updateSelective(sellerBatchStock);
 
+		BatchStock buyerBatchStock = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem);
+		TradeDetail buyerTradeDetail = this.createTradeDetailByTrade(billItem, buyerBatchStock, tradeDetailItem, buyer,
+				tradeWeight, tradeRequestId);
+
+
+		return buyerTradeDetail;
+	}
+
+	private TradeDetail createTradeDetailByTrade(RegisterBill billItem, BatchStock buyerBatchStock,
+			TradeDetail tradeDetailItem, User buyer, BigDecimal tradeWeight, Long tradeRequestId) {
 		TradeDetail buyerTradeDetail = new TradeDetail();
-		buyerTradeDetail.setBatchStockId(tradeDetailItem.getBatchStockId());
+		buyerTradeDetail.setBatchStockId(buyerBatchStock.getId());
+		buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
 		buyerTradeDetail.setBillId(tradeDetailItem.getBillId());
 
 		buyerTradeDetail.setBuyerId(buyer.getId());
@@ -182,6 +175,10 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		buyerTradeDetail.setWeightUnit(tradeDetailItem.getWeightUnit());
 		buyerTradeDetail.setTradeRequestId(tradeRequestId);
 		this.insertSelective(buyerTradeDetail);
+
+		buyerBatchStock.setStockWeight(buyerBatchStock.getStockWeight().add(tradeWeight));
+		this.batchStockService.updateSelective(buyerBatchStock);
+
 		return buyerTradeDetail;
 	}
 

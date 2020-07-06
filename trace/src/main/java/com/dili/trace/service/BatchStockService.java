@@ -119,4 +119,34 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
         }
         return Optional.empty();
     }
+
+    public BatchStock findOrCreateBatchStock(Long buyerId, RegisterBill billItem) {
+
+        BatchStock query = new BatchStock();
+        query.setUserId(buyerId);
+        // query.setPreserveType(tradeDetailItem.getPreserveType());
+        query.setProductId(billItem.getProductId());
+        query.setWeightUnit(billItem.getWeightUnit());
+        query.setSpecName(billItem.getSpecName());
+        query.setBrandId(billItem.getBrandId());
+        BatchStock batchStockItem = StreamEx.of(this.listByExample(query)).findFirst().orElseGet(() -> {
+            // 创建初始BatchStock
+            User userItem = this.userService.get(buyerId);
+
+            BatchStock batchStock = new BatchStock();
+            batchStock.setUserId(userItem.getId());
+            batchStock.setUserName(userItem.getName());
+            batchStock.setPreserveType(billItem.getPreserveType());
+            batchStock.setProductId(billItem.getProductId());
+            batchStock.setProductName(billItem.getProductName());
+            batchStock.setStockWeight(BigDecimal.ZERO);
+            batchStock.setTotalWeight(BigDecimal.ZERO);
+            batchStock.setWeightUnit(billItem.getWeightUnit());
+            batchStock.setSpecName(billItem.getSpecName());
+            batchStock.setBrandId(billItem.getBrandId());
+            this.insertSelective(batchStock);
+            return batchStock;
+        });
+        return batchStockItem;
+    }
 }

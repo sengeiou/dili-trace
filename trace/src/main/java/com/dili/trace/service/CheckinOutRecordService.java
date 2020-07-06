@@ -57,7 +57,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	@Autowired
 	CodeGenerateService codeGenerateService;
 	@Autowired
-	TradeDetailService tradeInfoService;
+	TradeDetailService tradeDetailService;
 
 	@Transactional
 	public List<CheckinOutRecord> doCheckout(OperatorUser operateUser, CheckOutApiInput checkOutApiInput) {
@@ -71,7 +71,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			throw new TraceBusinessException("参数错误");
 		}
 		return StreamEx.of(checkOutApiInput.getTradeDetailIdList()).nonNull().map(id -> {
-			TradeDetail tradeDetailItem = this.tradeInfoService.get(id);
+			TradeDetail tradeDetailItem = this.tradeDetailService.get(id);
 			if (tradeDetailItem == null) {
 				throw new TraceBusinessException("请求出门的数据不存在");
 			}
@@ -113,7 +113,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			updatable.setCheckoutRecordId(checkoutRecord.getId());
 
 			updatable.setCheckoutStatus(checkoutStatusEnum.getCode());
-			this.tradeInfoService.updateSelective(updatable);
+			this.tradeDetailService.updateSelective(updatable);
 			return checkoutRecord;
 		}).toList();
 
@@ -145,15 +145,10 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			}
 			return true;
 		}).mapToEntry(bill -> {
-			TradeDetail tradeDetail = this.tradeInfoService.createTradeDetailForBill(bill);
+			TradeDetail tradeDetail = this.tradeDetailService.createTradeDetailAndBatstockForBill(bill);
 			return tradeDetail;
 
-		}).map(e -> {
-			RegisterBill registerBillItem = e.getKey();
-			TradeDetail tradeInfoItem = e.getValue();
-			User user = this.getUser(registerBillItem.getUserId())
-					.orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
-
+		}).mapKeyValue((registerBillItem,tradeDetailItem)-> {
 			CheckinOutRecord checkinRecord = new CheckinOutRecord();
 			checkinRecord.setStatus(checkinStatusEnum.getCode());
 			checkinRecord.setInout(CheckinOutTypeEnum.IN.getCode());
@@ -164,25 +159,28 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			checkinRecord.setModified(new Date());
 			checkinRecord.setProductName(registerBillItem.getProductName());
 			checkinRecord.setInoutWeight(registerBillItem.getWeight());
-			checkinRecord.setUserName(user.getName());
-			checkinRecord.setTradeDetailId(tradeInfoItem.getId());
+			checkinRecord.setUserName(registerBillItem.getName());
+			checkinRecord.setTradeDetailId(tradeDetailItem.getId());
 			this.insertSelective(checkinRecord);
 
+			//更新报备单进门状态
+			RegisterBill bill = new RegisterBill();
+			bill.setId(registerBillItem.getId());
+			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
+				bill.setIsCheckin(YnEnum.YES.getCode());
+			} else {
+				bill.setIsCheckin(YnEnum.NO.getCode());
+			}
+			this.registerBillService.updateSelective(bill);
+
+			
 			TradeDetail updatableRecord = new TradeDetail();
-			updatableRecord.setId(tradeInfoItem.getId());
+			updatableRecord.setId(tradeDetailItem.getId());
 			updatableRecord.setCheckinRecordId(checkinRecord.getId());
 			updatableRecord.setCheckinStatus(checkinStatusEnum.getCode());
+			this.tradeDetailService.updateSelective(updatableRecord);
 
-			if(CheckinStatusEnum.ALLOWED==checkinStatusEnum){
-				RegisterBill bill = new RegisterBill();
-				bill.setId(registerBillItem.getId());
-				bill.setIsCheckin(YnEnum.YES.getCode());
-				this.registerBillService.updateSelective(bill);
-			}
-			
-
-			this.tradeInfoService.updateSelective(updatableRecord);
-			this.tradeInfoService.doUpdateTradeDetailSaleStatus(operateUser, registerBillItem.getId());
+			this.tradeDetailService.updateTradeDetailSaleStatus(operateUser, registerBillItem.getId(), tradeDetailItem);
 
 			return checkinRecord;
 
@@ -274,7 +272,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (tradeDetailId == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		TradeDetail tradeDetailItem = this.tradeInfoService.get(tradeDetailId);
+		TradeDetail tradeDetailItem = this.tradeDetailService.get(tradeDetailId);
 		if (tradeDetailItem == null) {
 			throw new TraceBusinessException("没有数据");
 		}
@@ -292,7 +290,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			UpStream upStream = this.upStreamService.get(bill.getUpStreamId());
 			output.setUpStream(upStream);
 		} else if (tradeDetailItem.getParentId() != null) {
-			TradeDetail parentSalesRecord = this.tradeInfoService.get(tradeDetailItem.getParentId());
+			TradeDetail parentSalesRecord = this.tradeDetailService.get(tradeDetailItem.getParentId());
 			if (parentSalesRecord != null && parentSalesRecord.getBuyerId() != null) {
 				UpStream upStream = this.upStreamService.queryUpStreamBySourceUserId(parentSalesRecord.getBuyerId());
 				output.setUpStream(upStream);
@@ -326,7 +324,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		separateSalesRecord.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
 
-		BasePage<TradeDetail> page = this.tradeInfoService.listPageByExample(separateSalesRecord);
+		BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(separateSalesRecord);
 		List<DTO> dataList = page.getDatas().stream().map(sp -> {
 			Long id = sp.getId();
 			Long billId = sp.getBillId();
@@ -374,7 +372,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			TradeDetail separateSalesRecordQuery = new TradeDetail();
 			separateSalesRecordQuery.setMetadata(IDTO.AND_CONDITION_EXPR,
 					"  ( checkin_record_id =" + cr.getId() + " or checkout_record_id=" + cr.getId() + ") ");
-			TradeDetail separateSalesRecordItem = this.tradeInfoService.listByExample(separateSalesRecordQuery).stream()
+			TradeDetail separateSalesRecordItem = this.tradeDetailService.listByExample(separateSalesRecordQuery).stream()
 					.findFirst().orElse(new TradeDetail());
 			Map<String, Object> dto = BeanMapUtil.beanToMap(cr);
 			// Map<String,Object>dto=BeanMapUtil.beanToMap(cr);

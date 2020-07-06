@@ -344,7 +344,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		this.createHistoryRegisterBillForVerify(billItem, toVerifyState, input.getReason(),
 				VerifyTypeEnum.PASSED_BEFORE_CHECKIN, operatorUser);
-		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
 		this.updateUserQrStatusByUserId(billItem.getUserId());
 		return billId;
 	}
@@ -363,11 +362,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (billItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
-		// if
-		// (!VerifyTypeEnum.VERIFY_AFTER_CHECKIN.equalsToCode(billItem.getVerifyType()))
-		// {
-		// throw new TraceBusinessException("当前报备单只能预审核");
-		// }
+
 		TradeDetail query = new TradeDetail();
 		query.setBillId(billId);
 		query.setBuyerId(billItem.getUserId());
@@ -388,7 +383,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		logger.info("场内审核: billId: {} from {} to {}", billId, fromVerifyState, toVerifyState);
 		this.createHistoryRegisterBillForVerify(billItem, toVerifyState, input.getReason(),
 				VerifyTypeEnum.PASSED_AFTER_CHECKIN, operatorUser);
-		this.tradeDetailService.doUpdateTradeDetailSaleStatus(operatorUser, billId);
+		this.tradeDetailService.updateTradeDetailSaleStatus(operatorUser, billItem.getId(),tradeDetailItem);
 		this.updateUserQrStatusByUserId(billItem.getUserId());
 		return billId;
 

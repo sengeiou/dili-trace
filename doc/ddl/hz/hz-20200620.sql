@@ -54,6 +54,7 @@ CREATE TABLE `trade_detail` (
 	`total_weight` decimal(10,3) NOT NULL default 0 COMMENT '总重量',
 	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',
 	`batch_stock_id` bigint(20)  NULL COMMENT '批ID',
+	`is_batched` int(11) NOT NULL default 0 COMMENT '是否计算入BatchStock',
 	`trade_request_id` bigint(20)  NULL COMMENT '交易请求ID',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
