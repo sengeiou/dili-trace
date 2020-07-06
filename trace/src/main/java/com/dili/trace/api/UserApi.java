@@ -185,6 +185,10 @@ public class UserApi {
             if(user==null){
                 return BaseOutput.failure("用户不存在");
             }
+            //初始状态获取个人信息不展示名称
+            if (user.getValidateState() == ValidateStateEnum.CERTREQ.getCode()){
+                user.setName("");
+            }
             return BaseOutput.success().setData(user);
         }catch (Exception e){
             LOGGER.error("get",e);
