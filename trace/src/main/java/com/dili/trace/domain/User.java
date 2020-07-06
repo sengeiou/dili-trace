@@ -1,5 +1,6 @@
 package com.dili.trace.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
@@ -121,6 +122,7 @@ public interface User extends IBaseDomain {
     @Column(name = "`password`")
     @FieldDef(label = "password", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
+    @JSONField(serialize = false)
     String getPassword();
 
     void setPassword(String password);
