@@ -72,6 +72,8 @@ public class ClientTradeRequestApi {
 					&& !sessionContext.getAccountId().equals(condition.getSellerId())) {
 				return BaseOutput.failure("参数错误");
 			}
+			condition.setSort("created");
+			condition.setOrder("desc");
 			BasePage<TradeRequest> page = this.tradeRequestService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {

@@ -62,6 +62,8 @@ public class ClientTradeDetailApi {
 			if(!userId.equals(query.getBuyerId())&&!userId.equals(query.getSellerId())){
 				return BaseOutput.failure("参数错误");
 			}
+			query.setSort("created");
+			query.setOrder("desc");
 			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
 	
 			return BaseOutput.success().setData(page);
