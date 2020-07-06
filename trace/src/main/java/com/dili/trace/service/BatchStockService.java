@@ -42,7 +42,7 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
 
         BatchStock query = new BatchStock();
         query.setUserId(userId);
-        query.setPreserveType(billItem.getPreserveType());
+        // query.setPreserveType(billItem.getPreserveType());
         query.setProductId(billItem.getProductId());
         query.setWeightUnit(billItem.getWeightUnit());
         query.setSpecName(billItem.getSpecName());
