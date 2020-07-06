@@ -59,4 +59,18 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         this.tradeDetailService.updateSellerTradeDetail(billItem, tradeDetailItem, BigDecimal.TEN);
     }
 
+    
+    @Test
+    public void updateBuyerTradeDetail() {
+        RegisterBill bill = super.buildBill();
+        bill.setUpStreamId(1L);
+        RegisterBill billItem = super.createRegisterBill(bill);
+        Long billId = super.doVerifyBeforeCheckIn(billItem.getBillId(), BillVerifyStatusEnum.PASSED);
+        Pair<CheckinOutRecord, TradeDetail> p = super.doCheckIn(billId, CheckinStatusEnum.ALLOWED);
+        TradeDetail tradeDetailItem = p.getValue();
+        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem, new OperatorUser(1L, ""));
+
+        this.tradeDetailService.updateBuyerTradeDetail(billItem, tradeDetailItem, BigDecimal.TEN,super.findUser(),1L);
+    }
+
 }
