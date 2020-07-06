@@ -7,6 +7,15 @@ public class UserOutput {
 	private String tallyAreaNos;
 	private String name;
 	private String numbers;
+	private Integer qrStatus;
+
+	public Integer getQrStatus() {
+		return qrStatus;
+	}
+
+	public void setQrStatus(Integer qrStatus) {
+		this.qrStatus = qrStatus;
+	}
 
 	public String getNumbers() {
 		return numbers;

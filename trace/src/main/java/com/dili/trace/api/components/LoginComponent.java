@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSONObject;
+import com.dili.trace.api.output.UserOutput;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,39 +68,40 @@ public class LoginComponent {
 		if (StrUtil.isBlank(loginInput.getPassword())) {
 			throw new TraceBusinessException("密码不能为空");
 		}
-		if (LoginIdentityTypeEnum.USER.equalsToCode(loginInput.getLoginIdentityType())) {
-			OperatorUser operatorUser = this.userLogin(loginInput.getUsername(), loginInput.getPassword());
-			return this.responseData(operatorUser);
-		} else if (LoginIdentityTypeEnum.SYS_MANAGER.equalsToCode(loginInput.getLoginIdentityType())) {
+		Map<String, Object> result = new HashMap<>();
 
+		if (LoginIdentityTypeEnum.USER.equalsToCode(loginInput.getLoginIdentityType())) {
+			User operatorUser = this.userLogin(loginInput.getUsername(), loginInput.getPassword());
+			prepareSessionId(operatorUser.getId(),operatorUser.getName());
+			result.put("userId", operatorUser.getId());
+			result.put("userName", operatorUser.getName());
+			result.put("tallyAreaNos",operatorUser.getTallyAreaNos());
+			result.put("validateState",operatorUser.getValidateState());
+			result.put("qrStatus",operatorUser.getQrStatus());
+			result.put("marketName",operatorUser.getMarketName());
+		} else if (LoginIdentityTypeEnum.SYS_MANAGER.equalsToCode(loginInput.getLoginIdentityType())) {
 			OperatorUser operatorUser = this.sysManagerLogin(loginInput.getUsername(), loginInput.getPassword(),
 					LoginIdentityTypeEnum.SYS_MANAGER);
-			return this.responseData(operatorUser);
-
+			prepareSessionId(operatorUser.getId(),operatorUser.getName());
+			result.put("userId", operatorUser.getId());
+			result.put("userName", operatorUser.getName());
 		} else {
 			throw new TraceBusinessException("登录参数出错");
 		}
-	}
 
-	private Map<String, Object> responseData(OperatorUser operatorUser) {
-		Map<String, Object> result = new HashMap<>();
-
-		sessionContext.setSessionId(UUIDUtil.get());
-		sessionContext.setAccountId(operatorUser.getId());
-		sessionContext.setUserName(operatorUser.getName());
-		result.put("userId", operatorUser.getId());
-		result.put("userName", operatorUser.getName());
 		result.put("sessionId", sessionContext.getSessionId());
-		return result;
 
+		return result;
 	}
 
-	private OperatorUser userLogin(String phone, String password) {
-		User po = userService.login(phone, MD5Util.md5(password));
+	private void prepareSessionId(Long id,String name){
+		sessionContext.setSessionId(UUIDUtil.get());
+		sessionContext.setAccountId(id);
+		sessionContext.setUserName(name);
+	}
 
-		OperatorUser operatorUser = new OperatorUser(po.getId(), po.getName());
-
-		return operatorUser;
+	private User userLogin(String phone, String password) {
+		return userService.login(phone, MD5Util.md5(password));
 	}
 
 	private OperatorUser sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
