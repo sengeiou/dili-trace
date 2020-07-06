@@ -194,7 +194,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			}
 			this.registerBillService.updateSelective(bill);
 
-			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),tradeDetailItem, operateUser);
+			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),tradeDetailItem.getId(), operateUser);
 			return checkinRecord;
 		}
 		return null;

@@ -34,14 +34,14 @@ public class TradeService {
     @Autowired
     TradeDetailService tradeDetailService;
 
-    public Long createBatchStockAfterVerifiedAndCheckin(Long billId, TradeDetail tradeDetailItem,
+    public Long createBatchStockAfterVerifiedAndCheckin(Long billId, Long tradeDetailId,
             OperatorUser operateUser) {
         RegisterBill billItem = this.billService.get(billId);
         if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
             // 还没有进门，不对TradeDetaile及BatchStock进行任何操作
             return billId;
         }
-
+        TradeDetail tradeDetailItem=this.tradeDetailService.get(tradeDetailId);
         logger.info("billid:{},billI.verifyStatus:{}", billId, billItem.getVerifyStatusName());
         logger.info("TradeDetail.checkinStatus:{},TradeDetail.saleStatus:{}", tradeDetailItem.getCheckinStatus(),
                 tradeDetailItem.getSaleStatus());

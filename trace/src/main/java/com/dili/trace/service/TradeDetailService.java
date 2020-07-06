@@ -145,12 +145,13 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		// buyerTradeDetail.setBatchStockId(buyerBatchStock.getId());
 		// buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
 		// this.updateSelective(buyerTradeDetail);
-		TradeDetail buyerTradeDetail =	this.updateBuyerTradeDetail(billItem, tradeDetailItem, tradeWeight, buyer, tradeRequestId);
+		TradeDetail buyerTradeDetail = this.updateBuyerTradeDetail(billItem, tradeDetailItem, tradeWeight, buyer,
+				tradeRequestId);
 
 		return buyerTradeDetail;
 	}
 
-	 Long updateSellerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight) {
+	TradeDetail updateSellerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight) {
 		Long sellerId = tradeDetailItem.getBuyerId();
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
 
@@ -162,11 +163,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		sellerTradeDetail.setId(tradeDetailItem.getId());
 		sellerTradeDetail.setStockWeight(stockWeight);
 		this.updateSelective(sellerTradeDetail);
-		return sellerTradeDetail.getId();
+		return this.get(sellerTradeDetail.getId());
 
 	}
 
-	 TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
+	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			User buyer, Long tradeRequestId) {
 		BatchStock buyerBatchStock = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem);
 		buyerBatchStock.setStockWeight(buyerBatchStock.getStockWeight().add(tradeWeight));
@@ -182,11 +183,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		buyerTradeDetail.setBatchStockId(buyerBatchStock.getId());
 		buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
 		this.updateSelective(buyerTradeDetail);
-		return buyerTradeDetail;
+		return this.get(buyerTradeDetailId);
 
 	}
 
-	 Long createTradeDetailByTrade(TradeDetail tradeDetailItem, User buyer) {
+	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, User buyer) {
 		TradeDetail buyerTradeDetail = new TradeDetail();
 		buyerTradeDetail.setBatchStockId(null);
 		buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
