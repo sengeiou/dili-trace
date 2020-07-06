@@ -374,6 +374,7 @@ ALTER TABLE `user` MODIFY COLUMN business_license_url varchar(100) CHARACTER SET
 ALTER TABLE `user` ADD vocation_type TINYINT(2) NULL COMMENT '批发 10 农贸 20 团体 30 个人40 餐饮50 配送商 60';
 ALTER TABLE hztrace.`user` MODIFY COLUMN user_type TINYINT NULL COMMENT '用户类型 个人 10 企业 20';
 ALTER TABLE hztrace.`user` DROP KEY unique_tailly_area_no;
+ALTER TABLE hztrace.`user` MODIFY COLUMN qr_status int(11) DEFAULT 0 NULL COMMENT '二维码状态(默认红色)';
 
 #2020年7月1日
 ALTER TABLE upstream ADD upORdown TINYINT(2) DEFAULT 10 NULL COMMENT '上游企业10 下游企业20';
