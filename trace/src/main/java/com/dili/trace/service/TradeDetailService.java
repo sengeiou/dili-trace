@@ -65,6 +65,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			updatableRecord.setId(tradeDetailItem.getId());
 			updatableRecord.setModified(new Date());
 			updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+			updatableRecord.setIsBatched(TFEnum.TRUE.getCode());
+
+			BatchStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
+			batchStock.setStockWeight(batchStock.getStockWeight().add(billItem.getWeight()));
+			batchStock.setTotalWeight(batchStock.getTotalWeight().add(billItem.getWeight()));
 			this.updateSelective(updatableRecord);
 		}
 
@@ -79,7 +84,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 		TradeDetail item = new TradeDetail();
 		item.setParentId(null);
-		item.setIsBatched(TFEnum.TRUE.getCode());
+		item.setIsBatched(TFEnum.FALSE.getCode());
 		item.setBillId(billItem.getId());
 		item.setTradeType(TradeTypeEnum.NONE.getCode());
 		item.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
@@ -95,10 +100,6 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		item.setModified(new Date());
 		item.setCreated(new Date());
 		this.insertSelective(item);
-
-		batchStock.setStockWeight(billItem.getWeight());
-		batchStock.setTotalWeight(billItem.getWeight());
-		this.batchStockService.updateSelective(batchStock);
 		return item;
 
 	}
