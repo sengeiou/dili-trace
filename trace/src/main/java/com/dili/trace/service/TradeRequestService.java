@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.beust.jcommander.internal.Lists;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
@@ -55,6 +54,28 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      */
     public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
             List<BatchStockInput> batchStockInputList) {
+
+        StreamEx.of(CollectionUtils.emptyIfNull(batchStockInputList)).nonNull().map(batchStockInput -> {
+            BatchStock batchStock = this.batchStockService.get(batchStockInput.getBatchStockId());
+            if (batchStock == null) {
+                throw new TraceBusinessException("数据不存在");
+            }
+            if(batchStock.getUserId().equals(sellerId)){
+                throw new TraceBusinessException("卖家参数错误");
+            }
+            List<Long> tradeDetailIdList = StreamEx
+                    .of(CollectionUtils.emptyIfNull(batchStockInput.getTradeDetailInputList())).nonNull().map(item -> {
+                        return item.getTradeDetailId();
+                    }).toList();
+            List<TradeDetail> tradeDetailList = this.tradeDetailService.findTradeDetailByIdList(tradeDetailIdList);
+            boolean notMatch = StreamEx.of(tradeDetailList)
+                    .anyMatch(td -> !td.getBatchStockId().equals(batchStock.getId()));
+            if (notMatch) {
+                throw new TraceBusinessException("参数不匹配");
+            }
+            return batchStockInput;
+        }).toList();
+
         TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY);
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
@@ -329,6 +350,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
     public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequest tradeRequest) {
+        if(tradeRequest.getPage()==null){
+            tradeRequest.setPage(1);
+        }
+        if(tradeRequest.getRows()==null){
+            tradeRequest.setRows(10);
+        }
+
         if (tradeRequest == null || (tradeRequest.getBuyerId() == null && tradeRequest.getSellerId() == null)) {
             return BasePageUtil.empty(tradeRequest.getPage(), tradeRequest.getRows());
         }

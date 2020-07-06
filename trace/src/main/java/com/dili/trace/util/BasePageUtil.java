@@ -3,8 +3,8 @@ package com.dili.trace.util;
 import java.util.List;
 import java.util.function.Function;
 
-import com.beust.jcommander.internal.Lists;
 import com.dili.ss.domain.BasePage;
+import com.google.common.collect.Lists;
 
 import one.util.streamex.StreamEx;
 

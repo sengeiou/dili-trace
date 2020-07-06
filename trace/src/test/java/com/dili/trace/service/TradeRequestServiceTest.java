@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.beust.jcommander.internal.Lists;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.TradeDetailInputDto;
@@ -22,6 +21,7 @@ import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
+import com.google.common.collect.Lists;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +39,9 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Autowired
     TradeDetailService tradeDetailService;
 
-    private TradeDetail  createTradeDetail(BatchStock batchStock){
+    private TradeDetail createTradeDetail(BatchStock batchStock) {
 
-        TradeDetail tradeDetail=new TradeDetail();
+        TradeDetail tradeDetail = new TradeDetail();
         tradeDetail.setStockWeight(BigDecimal.valueOf(120));
         tradeDetail.setTotalWeight(BigDecimal.valueOf(120));
         tradeDetail.setTradeType(TradeTypeEnum.NONE.getCode());
@@ -56,6 +56,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         this.tradeDetailService.insertSelective(tradeDetail);
         return tradeDetail;
     }
+
     private BatchStock createBatchStock() {
         List<User> userList = super.findUsers();
         assertNotNull(userList);
@@ -81,7 +82,6 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         batchStock.setBrandId(brand.getId());
         this.batchStockService.insertSelective(batchStock);
 
-
         assertNotNull(batchStock);
         return batchStock;
 
@@ -98,7 +98,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         input.setBatchStockId(batchStock.getId());
         input.setTradeWeight(BigDecimal.valueOf(77));
 
-        TradeRequest request = this.tradeRequestService.createTradeRequest(null,null, buyer.getId(),input);
+        TradeRequest request = this.tradeRequestService.createTradeRequest(null, null, buyer.getId(), input);
         assertNotNull(request);
         return request;
 
@@ -107,15 +107,16 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Test
     public void createAndCancelTradeRequest() {
         TradeRequest request = this.createBuyTradeRequest(this.createBatchStock());
-        this.tradeRequestService.hanleRequest(request,  Lists.newArrayList());
+        this.tradeRequestService.hanleRequest(request, Lists.newArrayList());
     }
+
     @Test
     public void createAndFinishTradeRequest() {
-        BatchStock batchStock=  this.createBatchStock();
+        BatchStock batchStock = this.createBatchStock();
         TradeRequest request = this.createBuyTradeRequest(batchStock);
-        TradeDetail tradeDetail=this.createTradeDetail(batchStock);
+        TradeDetail tradeDetail = this.createTradeDetail(batchStock);
 
-        TradeDetailInputDto input=new TradeDetailInputDto();
+        TradeDetailInputDto input = new TradeDetailInputDto();
         input.setTradeDetailId(tradeDetail.getId());
         input.setTradeWeight(request.getTradeWeight());
         this.tradeRequestService.hanleRequest(request, Lists.newArrayList(input));
@@ -222,11 +223,20 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         BatchStockInput input = new BatchStockInput();
         input.setBatchStockId(batchStock.getId());
         input.setTradeWeight(BigDecimal.valueOf(77));
-        this.tradeRequestService.createSellRequest(ownedUser.getId(),buyer.getId(),Lists.newArrayList(input));
+        this.tradeRequestService.createSellRequest(ownedUser.getId(), buyer.getId(), Lists.newArrayList(input));
 
         // Long requestId =
         // this.tradeRequestService.createSellRequest(request,Lists.newArrayList());
         // assertNotNull(requestId);
+
+    }
+
+    @Test
+    public void listPageTradeRequestByBuyerIdOrSellerId() {
+        TradeRequest request = new TradeRequest();
+        request.setSellerId(1L);
+        request.setBuyerId(2L);
+        this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(request);
 
     }
 }

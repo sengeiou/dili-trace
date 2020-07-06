@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
-import com.beust.jcommander.internal.Lists;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
@@ -30,6 +29,7 @@ import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
+import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

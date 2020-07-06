@@ -1,7 +1,6 @@
 package com.dili.trace.service;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,31 +13,25 @@ import com.dili.trace.dao.TradeDetailMapper;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
-import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.TradeDetailInputWrapperDto;
-import com.dili.trace.dto.UpStreamDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
-import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.service.impl.SeparateSalesRecordServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.Lists;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.StreamEx;
+import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
@@ -246,6 +239,16 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		result.setTotalPage(page.getPages());
 		result.setStartIndex(page.getStartRow());
 		return result;
+
+	}
+
+	public List<TradeDetail> findTradeDetailByIdList(List<Long> idList) {
+		if (idList == null || idList.isEmpty()) {
+			return Lists.newArrayList();
+		}
+		Example e = new Example(TradeDetail.class);
+		e.and().andIn("id", idList);
+		return this.getDao().selectByExample(e);
 
 	}
 
