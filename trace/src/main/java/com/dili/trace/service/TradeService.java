@@ -34,13 +34,14 @@ public class TradeService {
     @Autowired
     TradeDetailService tradeDetailService;
 
-    public Long createBatchStockAfterVerifiedAndCheckin(Long billId,TradeDetail tradeDetailItem , OperatorUser operateUser) {
+    public Long createBatchStockAfterVerifiedAndCheckin(Long billId, TradeDetail tradeDetailItem,
+            OperatorUser operateUser) {
         RegisterBill billItem = this.billService.get(billId);
         if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
             // 还没有进门，不对TradeDetaile及BatchStock进行任何操作
             return billId;
         }
-      
+
         logger.info("billid:{},billI.verifyStatus:{}", billId, billItem.getVerifyStatusName());
         logger.info("TradeDetail.checkinStatus:{},TradeDetail.saleStatus:{}", tradeDetailItem.getCheckinStatus(),
                 tradeDetailItem.getSaleStatus());
@@ -49,17 +50,20 @@ public class TradeService {
                 && CheckoutStatusEnum.NONE.equalsToCode(tradeDetailItem.getCheckoutStatus())
                 && BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
                 && SaleStatusEnum.NONE.equalsToCode(tradeDetailItem.getSaleStatus())) {
-            TradeDetail updatableRecord = new TradeDetail();
-            updatableRecord.setId(tradeDetailItem.getId());
-            updatableRecord.setModified(new Date());
-            updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-            updatableRecord.setIsBatched(TFEnum.TRUE.getCode());
-            this.tradeDetailService.updateSelective(updatableRecord);
 
             BatchStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
             batchStock.setStockWeight(batchStock.getStockWeight().add(billItem.getWeight()));
             batchStock.setTotalWeight(batchStock.getTotalWeight().add(billItem.getWeight()));
             this.batchStockService.updateSelective(batchStock);
+
+            TradeDetail updatableRecord = new TradeDetail();
+            updatableRecord.setId(tradeDetailItem.getId());
+            updatableRecord.setModified(new Date());
+            updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+            updatableRecord.setIsBatched(TFEnum.TRUE.getCode());
+            updatableRecord.setBatchStockId(batchStock.getId());
+            this.tradeDetailService.updateSelective(updatableRecord);
+
         }
         return billId;
 

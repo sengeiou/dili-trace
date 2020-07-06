@@ -150,7 +150,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return buyerTradeDetail;
 	}
 
-	 void updateSellerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight) {
+	 Long updateSellerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight) {
 		Long sellerId = tradeDetailItem.getBuyerId();
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
 
@@ -162,6 +162,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		sellerTradeDetail.setId(tradeDetailItem.getId());
 		sellerTradeDetail.setStockWeight(stockWeight);
 		this.updateSelective(sellerTradeDetail);
+		return sellerTradeDetail.getId();
 
 	}
 
