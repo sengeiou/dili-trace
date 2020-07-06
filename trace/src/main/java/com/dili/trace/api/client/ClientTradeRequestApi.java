@@ -11,14 +11,11 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.TradeRequestInputDto;
-import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.input.TradeRequestListInput;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
-import com.dili.trace.enums.TradeReturnStatusEnum;
-import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -155,7 +152,7 @@ public class ClientTradeRequestApi {
 
 		try {
 			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-
+			logger.info("seller id in session:{}",sellerId);
 			List<TradeRequest> list = this.tradeRequestService.createSellRequest(sellerId, inputDto.getBuyerId(),
 					inputDto.getBatchStockList());
 			return BaseOutput.success();
