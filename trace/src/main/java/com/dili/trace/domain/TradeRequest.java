@@ -29,6 +29,9 @@ public class TradeRequest extends BaseDomain {
     @JSONField(serialize = false)
     private Long id;
     
+    @Column(name = "`code`")
+    private String code;
+    
     @Column(name = "`trade_order_Id`")
 	private Long tradeOrderId;
 	
@@ -288,6 +291,21 @@ public class TradeRequest extends BaseDomain {
      */
     public void setTradeOrderId(Long tradeOrderId) {
         this.tradeOrderId = tradeOrderId;
+    }
+
+
+    /**
+     * @return Long return the code
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * @param code the code to set
+     */
+    public void setCode(String code) {
+        this.code = code;
     }
 
 }

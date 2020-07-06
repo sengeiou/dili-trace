@@ -446,6 +446,7 @@ CREATE TABLE `register_bill_history` (
 
 CREATE TABLE `trade_request` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`code` varchar(50)  NULL COMMENT '编号',
 	`buyer_id` bigint(20) NOT NULL COMMENT '买家ID',
 	`buyer_name` varchar(20) NOT NULL COMMENT '买家姓名',
 	`seller_id` bigint(20)  NULL COMMENT '卖家ID',

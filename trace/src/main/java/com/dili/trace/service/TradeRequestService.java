@@ -49,9 +49,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      */
     public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
             List<BatchStockInput> batchStockInputList) {
-        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId,TradeOrderTypeEnum.BUY);
+        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY);
         List<TradeRequest> list = EntryStream
-                .of(this.createTradeRequestList(tradeOrderItem,sellerId, buyerId, batchStockInputList))
+                .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return this.hanleRequest(request, tradeDetailInputList);
                 }).toList();
@@ -78,9 +78,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (sellerUserIdList.size() != 1) {
             throw new TraceBusinessException("参数错误");
         }
-        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerUserIdList.get(0), buyerId,TradeOrderTypeEnum.SELL);
-        return EntryStream
-                .of(this.createTradeRequestList(tradeOrderItem,null, buyerId, batchStockInputList))
+        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerUserIdList.get(0), buyerId,
+                TradeOrderTypeEnum.SELL);
+        return EntryStream.of(this.createTradeRequestList(tradeOrderItem, null, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return request;
                 }).toList();
@@ -96,8 +96,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param input
      * @return
      */
-    TradeRequest createTradeRequest(TradeOrder tradeOrderItem,Long sellerId, Long buyerId,
-            BatchStockInput input) {
+    TradeRequest createTradeRequest(TradeOrder tradeOrderItem, Long sellerId, Long buyerId, BatchStockInput input) {
         if (input.getTradeWeight() == null || BigDecimal.ZERO.compareTo(input.getTradeWeight()) >= 0) {
             throw new TraceBusinessException("购买重量不能小于0");
         }
@@ -134,77 +133,81 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         request.setBuyerName(buyer.getName());
         request.setBuyerId(buyer.getId());
         request.setTradeOrderId(tradeOrderItem.getId());
+        request.setCode(this.getNextCode());
         logger.info("buyer id:{},seller id:{}", request.getBuyerId(), request.getSellerId());
         this.insertSelective(request);
         return request;
     }
 
+    private String getNextCode() {
+        return String.valueOf(System.currentTimeMillis());
+
+    }
 
     /**
      * 处理请求
      */
-    TradeRequest hanleRequest(TradeRequest requestItem,
-            List<TradeDetailInputDto> tradeDetailInputList) {
+    TradeRequest hanleRequest(TradeRequest requestItem, List<TradeDetailInputDto> tradeDetailInputList) {
 
-            List<MutablePair<TradeDetail, BigDecimal>> tradeDetailIdWeightList = StreamEx
-                    .of(CollectionUtils.emptyIfNull(tradeDetailInputList)).nonNull().map(tr -> {
-                        if (tr.getTradeWeight() == null || BigDecimal.ZERO.compareTo(tr.getTradeWeight()) >= 0) {
-                            throw new TraceBusinessException("购买批次重量不能为空或小于0");
-                        }
-                        TradeDetail tradeDetail=this.tradeDetailService.get(tr.getTradeDetailId());
-                        if(tradeDetail==null){
-                            throw new TraceBusinessException("数据不存在");
-                        }
-                        return MutablePair.of(tradeDetail, tr.getTradeWeight());
-                    }).toList();
-            BatchStock batchStockItem = this.batchStockService.get(requestItem.getBatchStockId());
-            User buyer = this.userService.get(requestItem.getBuyerId());
-            User seller = this.userService.get(requestItem.getSellerId());
-
-            TradeDetail tradeDetailQuery = new TradeDetail();
-            tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-            tradeDetailQuery.setBatchStockId(batchStockItem.getId());
-
-            List<TradeDetail> tradeDetailList = StreamEx.of(this.tradeDetailService.listByExample(tradeDetailQuery))
-                    .filter(td -> {
-                        return td.getStockWeight().compareTo(BigDecimal.ZERO) > 0;
-                    }).sortedBy(TradeDetail::getCreated).toList();
-            if (batchStockItem.getStockWeight().compareTo(requestItem.getTradeWeight()) < 0) {
-                throw new TraceBusinessException("购买重量不能超过总库存重量");
-            }
-            if (tradeDetailIdWeightList.isEmpty()) {
-
-                AtomicReference<BigDecimal> totalTradeWeightAt = new AtomicReference<BigDecimal>(
-                        requestItem.getTradeWeight());
-                List<TradeDetail> resultList = StreamEx.of(tradeDetailList).map(td -> {
-                    BigDecimal tradeWeight = totalTradeWeightAt.get();
-                    if (tradeWeight.compareTo(td.getStockWeight()) >= 0) {
-                        tradeWeight = td.getStockWeight();
-                        totalTradeWeightAt.set(totalTradeWeightAt.get().subtract(td.getStockWeight()));
+        List<MutablePair<TradeDetail, BigDecimal>> tradeDetailIdWeightList = StreamEx
+                .of(CollectionUtils.emptyIfNull(tradeDetailInputList)).nonNull().map(tr -> {
+                    if (tr.getTradeWeight() == null || BigDecimal.ZERO.compareTo(tr.getTradeWeight()) >= 0) {
+                        throw new TraceBusinessException("购买批次重量不能为空或小于0");
                     }
-                    if (tradeWeight.compareTo(BigDecimal.ZERO) <= 0) {
-                        return null;
+                    TradeDetail tradeDetail = this.tradeDetailService.get(tr.getTradeDetailId());
+                    if (tradeDetail == null) {
+                        throw new TraceBusinessException("数据不存在");
                     }
-                    TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td,
-                            tradeWeight, seller.getId(), buyer);
-                    return tradeDetail;
+                    return MutablePair.of(tradeDetail, tr.getTradeWeight());
                 }).toList();
-            } else {
-                List<TradeDetail> resultList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
-                    TradeDetail tradeDetaiItem = p.getKey();
-                    BigDecimal tradeWeight = p.getValue();
-                    TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(),
-                    tradeDetaiItem, tradeWeight, seller.getId(), buyer);
-                    return tradeDetail;
+        BatchStock batchStockItem = this.batchStockService.get(requestItem.getBatchStockId());
+        User buyer = this.userService.get(requestItem.getBuyerId());
+        User seller = this.userService.get(requestItem.getSellerId());
 
-                }).toList();
-            }
-            BatchStock batchStock = new BatchStock();
-            batchStock.setId(batchStockItem.getId());
-            batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
-            this.batchStockService.updateSelective(batchStock);
+        TradeDetail tradeDetailQuery = new TradeDetail();
+        tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+        tradeDetailQuery.setBatchStockId(batchStockItem.getId());
 
-            return this.get(requestItem.getId());
+        List<TradeDetail> tradeDetailList = StreamEx.of(this.tradeDetailService.listByExample(tradeDetailQuery))
+                .filter(td -> {
+                    return td.getStockWeight().compareTo(BigDecimal.ZERO) > 0;
+                }).sortedBy(TradeDetail::getCreated).toList();
+        if (batchStockItem.getStockWeight().compareTo(requestItem.getTradeWeight()) < 0) {
+            throw new TraceBusinessException("购买重量不能超过总库存重量");
+        }
+        if (tradeDetailIdWeightList.isEmpty()) {
+
+            AtomicReference<BigDecimal> totalTradeWeightAt = new AtomicReference<BigDecimal>(
+                    requestItem.getTradeWeight());
+            List<TradeDetail> resultList = StreamEx.of(tradeDetailList).map(td -> {
+                BigDecimal tradeWeight = totalTradeWeightAt.get();
+                if (tradeWeight.compareTo(td.getStockWeight()) >= 0) {
+                    tradeWeight = td.getStockWeight();
+                    totalTradeWeightAt.set(totalTradeWeightAt.get().subtract(td.getStockWeight()));
+                }
+                if (tradeWeight.compareTo(BigDecimal.ZERO) <= 0) {
+                    return null;
+                }
+                TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td,
+                        tradeWeight, seller.getId(), buyer);
+                return tradeDetail;
+            }).toList();
+        } else {
+            List<TradeDetail> resultList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
+                TradeDetail tradeDetaiItem = p.getKey();
+                BigDecimal tradeWeight = p.getValue();
+                TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), tradeDetaiItem,
+                        tradeWeight, seller.getId(), buyer);
+                return tradeDetail;
+
+            }).toList();
+        }
+        BatchStock batchStock = new BatchStock();
+        batchStock.setId(batchStockItem.getId());
+        batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
+        this.batchStockService.updateSelective(batchStock);
+
+        return this.get(requestItem.getId());
 
     }
 
@@ -217,10 +220,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param batchStockInputList
      * @return
      */
-    Map<TradeRequest, List<TradeDetailInputDto>> createTradeRequestList(TradeOrder tradeOrderItem,Long sellerId, Long buyerId, List<BatchStockInput> batchStockInputList) {
+    Map<TradeRequest, List<TradeDetailInputDto>> createTradeRequestList(TradeOrder tradeOrderItem, Long sellerId,
+            Long buyerId, List<BatchStockInput> batchStockInputList) {
         Map<TradeRequest, List<TradeDetailInputDto>> map = StreamEx.of(batchStockInputList).nonNull()
                 .mapToEntry(input -> {
-                    TradeRequest request = this.createTradeRequest(tradeOrderItem,sellerId, buyerId, input);
+                    TradeRequest request = this.createTradeRequest(tradeOrderItem, sellerId, buyerId, input);
                     return request;
                 }, input -> {
                     return StreamEx.of(CollectionUtils.emptyIfNull(input.getTradeDetailInputList())).nonNull().toList();
@@ -230,27 +234,28 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
     // /**
-    //  * 处理购买请求
-    //  * 
-    //  * @return
-    //  */
-    // public Long handleBuyRequest(Long tradeRequestId, TradeOrderStatusEnum tradeRequestStatus,
-    //         List<TradeDetailInputDto> tradeDetailInputList) {
+    // * 处理购买请求
+    // *
+    // * @return
+    // */
+    // public Long handleBuyRequest(Long tradeRequestId, TradeOrderStatusEnum
+    // tradeRequestStatus,
+    // List<TradeDetailInputDto> tradeDetailInputList) {
 
-    //     // request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
-    //     // request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
-    //     if (tradeRequestId == null || tradeRequestStatus == null) {
-    //         throw new TraceBusinessException("参数错误");
-    //     }
-    //     TradeRequest tradeRequestItem = this.get(tradeRequestId);
-    //     if (tradeRequestItem == null) {
-    //         throw new TraceBusinessException("交易请求不存在");
-    //     }
-    //     if (TradeOrderStatusEnum.NONE == tradeRequestStatus) {
-    //         throw new TraceBusinessException("参数错误");
-    //     }
+    // // request.setTradeRequestStatus(TradeRequestStatusEnum.NONE.getCode());
+    // // request.setTradeRequestType(TradeRequestTypeEnum.BUY.getCode());
+    // if (tradeRequestId == null || tradeRequestStatus == null) {
+    // throw new TraceBusinessException("参数错误");
+    // }
+    // TradeRequest tradeRequestItem = this.get(tradeRequestId);
+    // if (tradeRequestItem == null) {
+    // throw new TraceBusinessException("交易请求不存在");
+    // }
+    // if (TradeOrderStatusEnum.NONE == tradeRequestStatus) {
+    // throw new TraceBusinessException("参数错误");
+    // }
 
-    //     return this.hanleRequest(tradeRequestItem, tradeDetailInputList).getId();
+    // return this.hanleRequest(tradeRequestItem, tradeDetailInputList).getId();
     // }
 
     /**
