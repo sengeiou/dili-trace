@@ -56,8 +56,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	@Autowired
 	BatchStockService batchStockService;
 
-	public Long updateTradeDetailSaleStatus(OperatorUser operateUser, Long billId, TradeDetail tradeDetailItem) {
+	public Long updateTradeDetailSaleStatus(OperatorUser operateUser, Long billId,Long tradeDetailId) {
 		RegisterBill billItem = this.registerBillService.get(billId);
+		TradeDetail tradeDetailItem=this.get(tradeDetailId);
+		logger.info("billid:{},billI.verifyStatus:{}",billId,billItem.getVerifyStatusName());
+		logger.info("TradeDetail.checkinStatus:{},TradeDetail.saleStatus:{}",tradeDetailItem.getCheckinStatus(),tradeDetailItem.getSaleStatus());
 		if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeDetailItem.getCheckinStatus())
 				&& BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
 				&& SaleStatusEnum.NONE.equalsToCode(tradeDetailItem.getSaleStatus())) {

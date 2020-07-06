@@ -383,7 +383,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		logger.info("场内审核: billId: {} from {} to {}", billId, fromVerifyState, toVerifyState);
 		this.createHistoryRegisterBillForVerify(billItem, toVerifyState, input.getReason(),
 				VerifyTypeEnum.PASSED_AFTER_CHECKIN, operatorUser);
-		this.tradeDetailService.updateTradeDetailSaleStatus(operatorUser, billItem.getId(),tradeDetailItem);
+		this.tradeDetailService.updateTradeDetailSaleStatus(operatorUser, billItem.getId(),tradeDetailItem.getId());
 		this.updateUserQrStatusByUserId(billItem.getUserId());
 		return billId;
 
