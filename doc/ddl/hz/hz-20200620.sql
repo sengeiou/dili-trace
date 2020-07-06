@@ -447,6 +447,9 @@ CREATE TABLE `register_bill_history` (
 CREATE TABLE `trade_request` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`code` varchar(50)  NULL COMMENT '编号',
+	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',
+	`spec_name` varchar(20)  NULL  COMMENT '规格',
+	`product_name` varchar(20) NOT NULL COMMENT '商品名称',
 	`buyer_id` bigint(20) NOT NULL COMMENT '买家ID',
 	`buyer_name` varchar(20) NOT NULL COMMENT '买家姓名',
 	`seller_id` bigint(20)  NULL COMMENT '卖家ID',

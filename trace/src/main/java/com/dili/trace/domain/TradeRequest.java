@@ -23,70 +23,74 @@ import io.swagger.annotations.ApiModelProperty;
 @SuppressWarnings("serial")
 @Table(name = "`trade_request`")
 public class TradeRequest extends BaseDomain {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
     @JSONField(serialize = false)
     private Long id;
-    
+
     @Column(name = "`code`")
     private String code;
-    
+
+    @Column(name = "`product_name`")
+    private String productName;
+    @Column(name = "`weight_unit`")
+    private Integer weightUnit;
+
     @Column(name = "`trade_order_Id`")
-	private Long tradeOrderId;
-	
-	
-	@ApiModelProperty(value = "买家ID")
-	@Column(name = "`buyer_id`")
-	private Long buyerId;
+    private Long tradeOrderId;
 
-	@ApiModelProperty(value = "买家姓名")
-	@Column(name = "`buyer_name`")
-	private String buyerName;
+    @ApiModelProperty(value = "买家ID")
+    @Column(name = "`buyer_id`")
+    private Long buyerId;
 
-	@ApiModelProperty(value = "卖家ID")
-	@Column(name = "`seller_id`")
-	private Long sellerId;
+    @ApiModelProperty(value = "买家姓名")
+    @Column(name = "`buyer_name`")
+    private String buyerName;
 
-	@ApiModelProperty(value = "卖家姓名")
-	@Column(name = "`seller_name`")
-	private String sellerName;
+    @ApiModelProperty(value = "卖家ID")
+    @Column(name = "`seller_id`")
+    private Long sellerId;
 
-	@ApiModelProperty(value = "交易重量")
-	@Column(name = "`trade_weight`")
-	private BigDecimal tradeWeight;
-	
-	@ApiModelProperty(value = "批次库存ID")
-	@Column(name = "`batch_stock_id`")
+    @ApiModelProperty(value = "卖家姓名")
+    @Column(name = "`seller_name`")
+    private String sellerName;
+
+    @ApiModelProperty(value = "交易重量")
+    @Column(name = "`trade_weight`")
+    private BigDecimal tradeWeight;
+
+    @ApiModelProperty(value = "批次库存ID")
+    @Column(name = "`batch_stock_id`")
     private Long batchStockId;
-    
+
     // @ApiModelProperty(value = "类型")
-	// @Column(name = "`trade_request_type`")
+    // @Column(name = "`trade_request_type`")
     // private Integer tradeRequestType;
 
     // @ApiModelProperty(value = "交易状态")
-	// @Column(name = "`trade_status`")
+    // @Column(name = "`trade_status`")
     // private Integer tradeStatus;
 
-    
     @ApiModelProperty(value = "退货状态")
-	@Column(name = "`return_status`")
+    @Column(name = "`return_status`")
     private Integer returnStatus;
 
     @ApiModelProperty(value = "原因")
-	@Column(name = "`reason`")
+    @Column(name = "`reason`")
     private String reason;
 
-	@Column(name = "`created`")
-	private Date created;
+    @Column(name = "`created`")
+    private Date created;
 
-	@Column(name = "`modified`")
+    @Column(name = "`modified`")
     private Date modified;
-    
+
     @Transient
-    public Long getTradeRequestId(){
+    public Long getTradeRequestId() {
         return this.id;
     }
+
     /**
      * @return Long return the id
      */
@@ -199,7 +203,6 @@ public class TradeRequest extends BaseDomain {
         this.modified = modified;
     }
 
-
     /**
      * @return Long return the batchStockId
      */
@@ -214,39 +217,32 @@ public class TradeRequest extends BaseDomain {
         this.batchStockId = batchStockId;
     }
 
-
-   
-
-
     // /**
-    //  * @return Integer return the tradeRequestType
-    //  */
+    // * @return Integer return the tradeRequestType
+    // */
     // public Integer getTradeRequestType() {
-    //     return tradeRequestType;
+    // return tradeRequestType;
     // }
 
     // /**
-    //  * @param tradeRequestType the tradeRequestType to set
-    //  */
+    // * @param tradeRequestType the tradeRequestType to set
+    // */
     // public void setTradeRequestType(Integer tradeRequestType) {
-    //     this.tradeRequestType = tradeRequestType;
+    // this.tradeRequestType = tradeRequestType;
     // }
 
-
-
-
     // /**
-    //  * @return Integer return the tradeStatus
-    //  */
+    // * @return Integer return the tradeStatus
+    // */
     // public Integer getTradeStatus() {
-    //     return tradeStatus;
+    // return tradeStatus;
     // }
 
     // /**
-    //  * @param tradeStatus the tradeStatus to set
-    //  */
+    // * @param tradeStatus the tradeStatus to set
+    // */
     // public void setTradeStatus(Integer tradeStatus) {
-    //     this.tradeStatus = tradeStatus;
+    // this.tradeStatus = tradeStatus;
     // }
 
     /**
@@ -263,7 +259,6 @@ public class TradeRequest extends BaseDomain {
         this.returnStatus = returnStatus;
     }
 
-
     /**
      * @return String return the reason
      */
@@ -277,7 +272,6 @@ public class TradeRequest extends BaseDomain {
     public void setReason(String reason) {
         this.reason = reason;
     }
-
 
     /**
      * @return Long return the tradeOrderId
@@ -293,7 +287,6 @@ public class TradeRequest extends BaseDomain {
         this.tradeOrderId = tradeOrderId;
     }
 
-
     /**
      * @return Long return the code
      */
@@ -306,6 +299,35 @@ public class TradeRequest extends BaseDomain {
      */
     public void setCode(String code) {
         this.code = code;
+    }
+
+    /**
+     * @return String return the productName
+     */
+    public String getProductName() {
+        return productName;
+    }
+
+    /**
+     * @param productName the productName to set
+     */
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+
+    /**
+     * @return Integer return the weightUnit
+     */
+    public Integer getWeightUnit() {
+        return weightUnit;
+    }
+
+    /**
+     * @param weightUnit the weightUnit to set
+     */
+    public void setWeightUnit(Integer weightUnit) {
+        this.weightUnit = weightUnit;
     }
 
 }

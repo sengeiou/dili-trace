@@ -2,35 +2,100 @@ package com.dili.trace.api.output;
 
 import java.util.List;
 
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.TradeDetail;
 
 public class TraceDetailOutputDto {
-	private TradeDetail traceUp;
-	private TradeDetail traceItem;
-	private List<TradeDetail> traceDownList;
+	private List<ImageCert> imageCertList;
+	// private List<String> originNameList;
+	private String productName;
+	private String specName;
+	private String brandName;
+	private List<TradeDetail> tradeDetailList;
 
-	public TradeDetail getTraceUp() {
-		return traceUp;
+	/**
+	 * @return List<ImageCert> return the imageCertList
+	 */
+	public List<ImageCert> getImageCertList() {
+		return imageCertList;
 	}
 
-	public void setTraceUp(TradeDetail traceUp) {
-		this.traceUp = traceUp;
+	/**
+	 * @param imageCertList the imageCertList to set
+	 */
+	public void setImageCertList(List<ImageCert> imageCertList) {
+		this.imageCertList = imageCertList;
 	}
 
-	public TradeDetail getTraceItem() {
-		return traceItem;
+	// /**
+	// * @return List<String> return the originNameList
+	// */
+	// public List<String> getOriginNameList() {
+	// return originNameList;
+	// }
+
+	// /**
+	// * @param originNameList the originNameList to set
+	// */
+	// public void setOriginNameList(List<String> originNameList) {
+	// this.originNameList = originNameList;
+	// }
+
+	/**
+	 * @return String return the productName
+	 */
+	public String getProductName() {
+		return productName;
 	}
 
-	public void setTraceItem(TradeDetail traceItem) {
-		this.traceItem = traceItem;
+	/**
+	 * @param productName the productName to set
+	 */
+	public void setProductName(String productName) {
+		this.productName = productName;
 	}
 
-	public List<TradeDetail> getTraceDownList() {
-		return traceDownList;
+	/**
+	 * @return String return the specName
+	 */
+	public String getSpecName() {
+		return specName;
 	}
 
-	public void setTraceDownList(List<TradeDetail> traceDownList) {
-		this.traceDownList = traceDownList;
+	/**
+	 * @param specName the specName to set
+	 */
+	public void setSpecName(String specName) {
+		this.specName = specName;
 	}
+
+	/**
+	 * @return String return the brandName
+	 */
+	public String getBrandName() {
+		return brandName;
+	}
+
+	/**
+	 * @param brandName the brandName to set
+	 */
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
+
+
+    /**
+     * @return List<TradeDetail> return the tradeDetailList
+     */
+    public List<TradeDetail> getTradeDetailList() {
+        return tradeDetailList;
+    }
+
+    /**
+     * @param tradeDetailList the tradeDetailList to set
+     */
+    public void setTradeDetailList(List<TradeDetail> tradeDetailList) {
+        this.tradeDetailList = tradeDetailList;
+    }
 
 }

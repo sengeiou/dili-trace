@@ -2,7 +2,10 @@ package com.dili.trace.api.input;
 
 import java.util.List;
 
-public class TradeRequestListInput {
+import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.domain.TradeRequest;
+
+public class TradeRequestListInput extends TradeRequest{
     private Long buyerId;
     private List<BatchStockInput> batchStockList;
 

@@ -10,15 +10,22 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
+import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.dto.TradeDetailInputDto;
+import com.dili.trace.domain.TradeRequest;
+import com.dili.trace.service.BatchStockService;
 import com.dili.trace.service.CheckinOutRecordService;
+import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.TradeDetailService;
+import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
+import com.google.common.collect.Lists;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
+import one.util.streamex.StreamEx;
 
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientBillTraceApi")
@@ -51,21 +59,24 @@ public class ClientBillTraceApi {
 	UpStreamService upStreamService;
 	@Autowired
 	TradeDetailService tradeDetailService;
+	@Autowired
+	TradeRequestService tradeRequestService;
+	@Autowired
+	BatchStockService batchStockService;
+	@Autowired
+	ImageCertService imageCertService;
 
 	@SuppressWarnings({ "unchecked" })
-	// @RequestMapping(value = "/listPage.api", method = { RequestMethod.POST})
-	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetail query) {
-
+	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
+	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequestInputDto query) {
+		if (query == null) {
+			return BaseOutput.failure("参数错误");
+		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-
-			TradeDetail condition = new TradeDetail();
-			condition.setBuyerId(userId);
-			condition.setPage(query.getPage());
-			condition.setRows(query.getRows());
-
-			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(condition);
-
+			query.setBuyerId(userId);
+			query.setSellerId(userId);
+			BasePage<TradeRequest> page = this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(query);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -76,38 +87,56 @@ public class ClientBillTraceApi {
 
 	}
 
+	
 	/**
 	 * 分页查询需要被进场查询的信息
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewBillTrace.api", method = { RequestMethod.POST })
-	public BaseOutput<TraceDetailOutputDto> viewBillTrace(@RequestBody TradeDetailInputDto query) {
-		if (query == null || query.getTradeDetailId() == null) {
+	public BaseOutput<TraceDetailOutputDto> viewBillTrace(@RequestBody TradeRequestInputDto inputDto) {
+		if (inputDto == null || inputDto.getTradeRequestId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-
-			TradeDetail tradeDetailItem = this.tradeDetailService.get(query.getTradeDetailId());
-			if (tradeDetailItem == null) {
+			TradeRequest tradeRequestItem = this.tradeRequestService.get(inputDto.getTradeRequestId());
+			if (tradeRequestItem == null) {
 				return BaseOutput.failure("没有查找到详情");
 			}
-			if(!tradeDetailItem.getBuyerId().equals(userId)){
-				return BaseOutput.failure("没有权限查看数据详情");
-			}
-			TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
-			traceDetailOutputDto.setTraceItem(tradeDetailItem);
-			if (tradeDetailItem.getParentId() != null) {
-				TradeDetail parentTradeDetailItem = this.tradeDetailService.get(tradeDetailItem.getParentId());
-				traceDetailOutputDto.setTraceUp(parentTradeDetailItem);
+			TradeDetail tradeDetailQuery = new TradeDetail();
+			if (tradeRequestItem.getBuyerId().equals(userId)) {
+				tradeDetailQuery.setBuyerId(userId);
+			} else if (tradeRequestItem.getSellerId().equals(userId)) {
+				 tradeDetailQuery.setSellerId(userId);
 			} else {
-				traceDetailOutputDto.setTraceUp(null);
+				return BaseOutput.success().setData(Lists.newArrayList());
 			}
-			TradeDetail condition = new TradeDetail();
-			condition.setParentId(tradeDetailItem.getId());
-			List<TradeDetail> childrenTradeDetail = this.tradeDetailService.listByExample(condition);
-			traceDetailOutputDto.setTraceDownList(childrenTradeDetail);
+			tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
+			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+
+
+			TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
+			traceDetailOutputDto.setTradeDetailList(tradeDetailList);
+			BatchStock batchStockItem = this.batchStockService.get(tradeRequestItem.getBatchStockId());
+			traceDetailOutputDto.setBrandName(batchStockItem.getBrandName());
+			traceDetailOutputDto.setSpecName(batchStockItem.getSpecName());
+			traceDetailOutputDto.setProductName(batchStockItem.getProductName());
+
+			TradeDetail query = new TradeDetail();
+			query.setTradeRequestId(tradeRequestItem.getId());
+			List<TradeDetail> traceList = this.tradeDetailService.listByExample(query);
+			List<Long> billIdList = StreamEx.of(traceList).map(TradeDetail::getBillId).distinct().toList();
+
+			// RegisterBillDto registerBillDto = new RegisterBillDto();
+			// registerBillDto.setIdList(billIdList);
+			// List<String> originNameList = StreamEx.of(this.registerBillService.listByExample(registerBillDto))
+			// 		.map(RegisterBill::getOriginName).distinct().toList();
+			List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillIdList(billIdList);
+			// traceDetailOutputDto.setOriginNameList(originNameList);
+			traceDetailOutputDto.setImageCertList(imageCertList);
+
 			return BaseOutput.success().setData(traceDetailOutputDto);
+
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -116,4 +145,5 @@ public class ClientBillTraceApi {
 		}
 
 	}
+
 }
