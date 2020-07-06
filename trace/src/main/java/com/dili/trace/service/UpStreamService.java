@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -15,6 +16,7 @@ import com.dili.trace.dao.RUserUpStreamMapper;
 import com.dili.trace.dao.UpStreamMapper;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.glossary.UpStreamTypeEnum;
@@ -35,6 +37,9 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	@Autowired
 	RUserUpStreamService rUserUpStreamService;
+
+	@Autowired
+	UserService userService;
 
 	/**
 	 * 分页查询上游信息
@@ -92,7 +97,28 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	public BaseOutput addUpstream(UpStreamDto upStreamDto, OperatorUser operatorUser) {
 		insertSelective(upStreamDto);
 		addUpstreamUsers(upStreamDto, operatorUser);
+		//增加下游企业时创建用户
+		if (upStreamDto.getUpORdown() == UpStream.DOWN_USER_FLAG){
+			doAddUser(upStreamDto);
+		}
 		return BaseOutput.success();
+	}
+
+	private void doAddUser(UpStreamDto upStreamDto){
+		boolean existsFlag = userService.existsAccount(upStreamDto.getTelphone());
+		if (!existsFlag){
+			JSONObject object = new JSONObject();
+			object.put("phone", upStreamDto.getTelphone());
+			object.put("name", upStreamDto.getName());
+			if (upStreamDto.getUpstreamType() == UpStreamTypeEnum.CORPORATE.getCode()){//企业
+				object.put("legal_person", upStreamDto.getLegalPerson());
+				object.put("license", upStreamDto.getLicense());
+			}
+
+			User user = JSONObject.parseObject(object.toJSONString(),User.class);
+			userService.register(user,false);
+		}
+
 	}
 
 	/**
