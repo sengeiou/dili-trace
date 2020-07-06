@@ -64,10 +64,7 @@ public class UserApi {
     public BaseOutput<Long> register(@RequestBody User user){
         try{
             checkRegisterParams(user);
-            user.setPassword(MD5Util.md5(user.getPassword()));
             user.setState(EnabledStateEnum.ENABLED.getCode());
-            user.setAddr("");
-            user.setCardNo("");
             userService.register(user,true);
             return BaseOutput.success().setData(user.getId());
         }catch (TraceBusinessException e){

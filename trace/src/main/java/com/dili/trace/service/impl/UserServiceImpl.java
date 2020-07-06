@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
@@ -82,6 +83,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         // 验证手机号是否已注册
         if (existsAccount(user.getPhone())) {
             throw new TraceBusinessException("手机号已注册");
+        }
+
+        if (StringUtils.isEmpty(user.getPassword())){
+            user.setPassword("123456");//TODO 默认密码
+        }
+        user.setPassword(MD5Util.md5(user.getPassword()));
+
+        if (StringUtils.isEmpty(user.getCardNo())){
+            user.setCardNo("");
+        }
+
+        if (StringUtils.isEmpty(user.getAddr())){
+            user.setAddr("");
         }
 
 //        // 验证身份证号是否已注册
