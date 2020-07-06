@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,13 +69,14 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         Long sellerTradeDetailId = this.tradeDetailService.updateSellerTradeDetail(billItem, tradeDetailItem,
                 tradeWeight);
         TradeDetail sellerTradeDetailItem = this.tradeDetailService.get(sellerTradeDetailId);
-        BatchStock batchStock = batchStockService.get(sellerTradeDetailItem.getBatchStockId());
         assertNotNull(sellerTradeDetailItem);
+        BatchStock batchStock = batchStockService.get(sellerTradeDetailItem.getBatchStockId());
         assertNotNull(batchStock);
     }
 
     @Test
     public void updateBuyerTradeDetail() {
+        BigDecimal tradeWeight = BigDecimal.TEN;
         RegisterBill bill = super.buildBill();
         bill.setUpStreamId(1L);
         RegisterBill billItem = super.createRegisterBill(bill);
@@ -83,7 +85,12 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         TradeDetail tradeDetailItem = p.getValue();
         this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem, new OperatorUser(1L, ""));
 
-        this.tradeDetailService.updateBuyerTradeDetail(billItem, tradeDetailItem, BigDecimal.TEN, super.findUser(), 1L);
+        TradeDetail buyerTradeDetailItem = this.tradeDetailService.updateBuyerTradeDetail(billItem, tradeDetailItem,
+                tradeWeight, super.findUser(), 1L);
+        assertNotNull(buyerTradeDetailItem);
+        BatchStock batchStock = batchStockService.get(buyerTradeDetailItem.getBatchStockId());
+        assertNotNull(batchStock);
+        assertEquals(buyerTradeDetailItem.getStockWeight().compareTo(tradeWeight), 0);
     }
 
 }
