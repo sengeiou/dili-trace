@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
@@ -56,35 +57,18 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	@Autowired
 	BatchStockService batchStockService;
 
-	public Long updateTradeDetailSaleStatus(OperatorUser operateUser, Long billId,Long tradeDetailId) {
-		RegisterBill billItem = this.registerBillService.get(billId);
-		TradeDetail tradeDetailItem=this.get(tradeDetailId);
-		logger.info("billid:{},billI.verifyStatus:{}",billId,billItem.getVerifyStatusName());
-		logger.info("TradeDetail.checkinStatus:{},TradeDetail.saleStatus:{}",tradeDetailItem.getCheckinStatus(),tradeDetailItem.getSaleStatus());
-		if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeDetailItem.getCheckinStatus())
-				&& BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
-				&& SaleStatusEnum.NONE.equalsToCode(tradeDetailItem.getSaleStatus())) {
-			TradeDetail updatableRecord = new TradeDetail();
-			updatableRecord.setId(tradeDetailItem.getId());
-			updatableRecord.setModified(new Date());
-			updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-			updatableRecord.setIsBatched(TFEnum.TRUE.getCode());
+	public Optional<TradeDetail> findBilledTradeDetailByBillId(Long billId) {
 
-			BatchStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
-			batchStock.setStockWeight(batchStock.getStockWeight().add(billItem.getWeight()));
-			batchStock.setTotalWeight(batchStock.getTotalWeight().add(billItem.getWeight()));
-			this.updateSelective(updatableRecord);
-		}
+		// 查找报备相关的TradeDetail信息
+		TradeDetail query = new TradeDetail();
+		query.setBillId(billId);
+		query.setTradeType(TradeTypeEnum.NONE.getCode());
 
-		return tradeDetailItem.getId();
+		return StreamEx.of(this.listByExample(query)).findFirst();
 
 	}
 
-	public TradeDetail createTradeDetailAndBatstockForBill(RegisterBill billItem) {
-		BatchStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
-		TradeDetail buyerTradeDetail = new TradeDetail();
-		buyerTradeDetail.setBatchStockId(batchStock.getId());
-
+	public TradeDetail createTradeDetailForCheckInBill(RegisterBill billItem) {
 		TradeDetail item = new TradeDetail();
 		item.setParentId(null);
 		item.setIsBatched(TFEnum.FALSE.getCode());
@@ -132,20 +116,19 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		}
 
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
-
-
-		BatchStock sellerBatchStock = this.batchStockService.findOrCreateBatchStock(sellerId, billItem);
 		TradeDetail sellerTradeDetail = new TradeDetail();
 		sellerTradeDetail.setId(tradeDetailItem.getId());
 		sellerTradeDetail.setStockWeight(stockWeight);
 		this.updateSelective(sellerTradeDetail);
+
+		
+		BatchStock sellerBatchStock = this.batchStockService.findOrCreateBatchStock(sellerId, billItem);
 		sellerBatchStock.setStockWeight(sellerBatchStock.getStockWeight().subtract(tradeWeight));
 		this.batchStockService.updateSelective(sellerBatchStock);
 
 		BatchStock buyerBatchStock = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem);
 		TradeDetail buyerTradeDetail = this.createTradeDetailByTrade(billItem, buyerBatchStock, tradeDetailItem, buyer,
 				tradeWeight, tradeRequestId);
-
 
 		return buyerTradeDetail;
 	}
@@ -184,118 +167,6 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		this.batchStockService.updateSelective(buyerBatchStock);
 
 		return buyerTradeDetail;
-	}
-
-	@Transactional
-	public List<Long> createTradeList(TradeDetailInputWrapperDto input, Long sellerId) {
-		if (input == null || sellerId == null || input.getBuyerId() == null) {
-			throw new TraceBusinessException("参数错误");
-		}
-		User seller = this.userService.get(sellerId);
-		User buyer = this.userService.get(input.getBuyerId());
-
-		Long buyerId = input.getBuyerId();
-		logger.info("seller userid={}", sellerId);
-		logger.info("buyer userid={}", buyerId);
-
-		return StreamEx.of(input.getTradeDetailInputList()).nonNull().map(record -> {
-			// 理货区分销校验
-			logger.info("tradedetail id={}", record.getTradeDetailId());
-			logger.info("salesWeight={}", record.getTradeWeight());
-			if (record.getTradeWeight() == null || BigDecimal.ZERO.compareTo(record.getTradeWeight()) <= 0) {
-				throw new TraceBusinessException("分销重量输入错误");
-			}
-			Long parentTradeId = record.getTradeDetailId();
-
-			if (parentTradeId == null) {
-				throw new TraceBusinessException("没有需要分销的登记单");
-			}
-
-			TradeDetail parentTradeInfo = this.get(parentTradeId);
-			if (parentTradeInfo == null) {
-				throw new TraceBusinessException("没有需要分销的数据");
-			}
-
-			if (!SaleStatusEnum.FOR_SALE.equalsToCode(parentTradeInfo.getSaleStatus())) {
-				throw new TraceBusinessException("当前状态不能进行分销");
-			}
-
-			if (!parentTradeInfo.getBuyerId().equals(sellerId)) {
-				throw new TraceBusinessException("没有权限分销");
-			}
-			BigDecimal tradeWeight = record.getTradeWeight();
-			BigDecimal stockWeight = parentTradeInfo.getStockWeight();
-			logger.info(">>>inventoryWeight={},tradeWeight={}", stockWeight, tradeWeight);
-			if (stockWeight.compareTo(tradeWeight) < 0) {
-				throw new TraceBusinessException("分销重量超过可分销重量");
-			}
-			logger.info("扫码分销，判断是否增加上游：salesUserId:{}", buyerId);
-			User buyerUserItem = this.userService.get(buyerId);
-			if (buyerUserItem == null) {
-				throw new TraceBusinessException("买家用户不存在");
-			}
-			boolean hasUpStream = this.upStreamService.queryUpStreamByUserId(buyerId).stream()
-					.anyMatch(up -> buyerUserItem.getId().equals(up.getSourceUserId()));
-
-			// 扫码分销
-			if (!hasUpStream) {
-				UpStream upStream = this.upStreamService.queryUpStreamBySourceUserId(buyerUserItem.getId());
-				UpStreamDto upStreamDto = new UpStreamDto();
-				if (upStream == null) {
-					if (UserTypeEnum.USER.getCode().equals(buyerUserItem.getUserType())) {
-						upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
-					} else {
-						upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
-					}
-
-					upStreamDto.setIdCard(buyerUserItem.getCardNo());
-					upStreamDto.setManufacturingLicenseUrl(buyerUserItem.getManufacturingLicenseUrl());
-					upStreamDto.setOperationLicenseUrl(buyerUserItem.getOperationLicenseUrl());
-					upStreamDto.setCardNoFrontUrl(buyerUserItem.getCardNoFrontUrl());
-					upStreamDto.setCardNoBackUrl(buyerUserItem.getCardNoBackUrl());
-					upStreamDto.setName(buyerUserItem.getName());
-					upStreamDto.setSourceUserId(buyerUserItem.getId());
-					upStreamDto.setLicense(buyerUserItem.getLicense());
-					upStreamDto.setTelphone(buyerUserItem.getPhone());
-					upStreamDto.setBusinessLicenseUrl(buyerUserItem.getBusinessLicenseUrl());
-					upStreamDto.setUserIds(Arrays.asList(buyerId));
-					upStreamDto.setCreated(new Date());
-					upStreamDto.setModified(new Date());
-					this.upStreamService.addUpstream(upStreamDto,
-							new OperatorUser(buyerUserItem.getId(), buyerUserItem.getName()));
-				} else {
-					upStreamDto.setUserIds(Arrays.asList(buyerId));
-					upStreamDto.setId(upStream.getId());
-					this.upStreamService.addUpstreamUsers(upStreamDto,
-							new OperatorUser(buyerUserItem.getId(), buyerUserItem.getName()));
-				}
-
-			}
-
-			logger.info(">>>change tradeId:{} salesWeiht:{} as: {}", parentTradeInfo.getId(),
-					parentTradeInfo.getStockWeight(), stockWeight.subtract(tradeWeight).intValue());
-
-			// 更新被分销记录的剩余重量
-			TradeDetail updatableRecord = new TradeDetail();
-			updatableRecord.setStockWeight(stockWeight.subtract(tradeWeight));
-			updatableRecord.setModified(new Date());
-			updatableRecord.setId(parentTradeInfo.getId());
-			this.updateSelective(updatableRecord);
-
-			TradeDetail insertRecord = new TradeDetail();
-
-			insertRecord.setBillId(parentTradeInfo.getBillId());
-			insertRecord.setCreated(new Date());
-			insertRecord.setModified(new Date());
-			insertRecord.setStockWeight(tradeWeight);
-			insertRecord.setTotalWeight(tradeWeight);
-
-			insertRecord.setCheckinRecordId(parentTradeInfo.getCheckinRecordId());
-			insertRecord.setTradeType(TradeTypeEnum.SEPARATE_SALES.getCode());
-			this.saveOrUpdate(insertRecord);
-
-			return insertRecord.getId();
-		}).toList();
 	}
 
 	/**

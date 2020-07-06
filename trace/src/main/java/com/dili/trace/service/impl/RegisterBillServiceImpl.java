@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBusinessException;
@@ -40,6 +41,7 @@ import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillHistoryService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
+import com.dili.trace.service.TradeService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
@@ -79,6 +81,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	RegisterBillHistoryService registerBillHistoryService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	TradeService tradeService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -88,7 +92,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser) {
-		if(!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())){
+		if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
 			throw new TraceBusinessException("用户未审核通过不能创建报备单");
 		}
 
@@ -311,41 +315,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		Long billId = input.getId();
-		BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
-				.orElseThrow(() -> new TraceBusinessException("参数错误"));
+		RegisterBill billItem = Optional.ofNullable(this.get(input.getId())).orElseThrow(() -> {
+			return new TraceBusinessException("数据不存在");
+		});
 
-		RegisterBill billItem = this.get(billId);
-		if (billItem == null) {
-			throw new TraceBusinessException("数据不存在");
-		}
-		
-		// if (!VerifyTypeEnum.PASSED_BEFORE_CHECKIN.equalsToCode(billItem.getVerifyType())) {
-		// 	throw new TraceBusinessException("当前报备单只能场内审核");
-		// }
-		TradeDetail query = new TradeDetail();
-		query.setBillId(billId);
-		query.setBuyerId(billItem.getUserId());
-		query.setTradeType(TradeTypeEnum.NONE.getCode());
-		TradeDetail tradeDetailItem = this.tradeDetailService.listByExample(query).stream().findFirst().orElse(null);
-		if (tradeDetailItem != null) {
+		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
 			throw new TraceBusinessException("当前报备单已进门,不能预审核");
 		}
-
-		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
-				.orElseThrow(() -> new TraceBusinessException("数据错误"));
-
-		logger.info("预审核: billId: {} from {} to {}", billId, fromVerifyState, toVerifyState);
-		if (fromVerifyState == toVerifyState) {
-			throw new TraceBusinessException("状态不能相同");
-		}
-		if (!BillVerifyStatusEnum.canDoVerify(billItem.getVerifyStatus())) {
-			throw new TraceBusinessException("当前状态不能进行数据操作");
-		}
-		this.createHistoryRegisterBillForVerify(billItem, toVerifyState, input.getReason(),
-				VerifyTypeEnum.PASSED_BEFORE_CHECKIN, operatorUser);
-		this.updateUserQrStatusByUserId(billItem.getUserId());
-		return billId;
+		this.doVerify(billItem, input, operatorUser);
+		return billItem.getId();
 	}
 
 	@Transactional
@@ -354,53 +332,66 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		Long billId = input.getId();
-		BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
-				.orElseThrow(() -> new TraceBusinessException("参数错误"));
 
-		RegisterBill billItem = this.get(billId);
-		if (billItem == null) {
-			throw new TraceBusinessException("数据不存在");
-		}
+		RegisterBill billItem = Optional.ofNullable(this.get(input.getId())).orElseThrow(() -> {
+			return new TraceBusinessException("数据不存在");
+		});
 
-		TradeDetail query = new TradeDetail();
-		query.setBillId(billId);
-		query.setBuyerId(billItem.getUserId());
-		query.setTradeType(TradeTypeEnum.NONE.getCode());
-		TradeDetail tradeDetailItem = this.tradeDetailService.listByExample(query).stream().findFirst().orElse(null);
-		if (tradeDetailItem == null) {
+		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
 			throw new TraceBusinessException("当前报备单未进门,不能场内审核");
 		}
-		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
-				.orElseThrow(() -> new TraceBusinessException("数据错误"));
-
-		if (toVerifyState == BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElse(null)) {
-			throw new TraceBusinessException("状态不能相同");
-		}
-		if (BillVerifyStatusEnum.NONE == toVerifyState) {
-			throw new TraceBusinessException("不支持的操作");
-		}
-		logger.info("场内审核: billId: {} from {} to {}", billId, fromVerifyState, toVerifyState);
-		this.createHistoryRegisterBillForVerify(billItem, toVerifyState, input.getReason(),
-				VerifyTypeEnum.PASSED_AFTER_CHECKIN, operatorUser);
-		this.tradeDetailService.updateTradeDetailSaleStatus(operatorUser, billItem.getId(),tradeDetailItem.getId());
-		this.updateUserQrStatusByUserId(billItem.getUserId());
-		return billId;
+		this.doVerify(billItem, input, operatorUser);
+		return billItem.getId();
 
 	}
 
-	private Long createHistoryRegisterBillForVerify(RegisterBill item, BillVerifyStatusEnum toVerifyState,
-			String reason, VerifyTypeEnum verifyType, OperatorUser operatorUser) {
-		this.registerBillHistoryService.createHistory(item);
+	private void doVerify(RegisterBill billItem, RegisterBill input, OperatorUser operatorUser) {
+		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
+				.orElseThrow(() -> new TraceBusinessException("数据错误"));
+
+		BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(input.getVerifyStatus())
+				.orElseThrow(() -> new TraceBusinessException("参数错误"));
+
+		logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
+				toVerifyState.getName());
+		if (BillVerifyStatusEnum.NONE == toVerifyState) {
+			throw new TraceBusinessException("不支持的操作");
+		}
+		if (fromVerifyState == toVerifyState) {
+			throw new TraceBusinessException("状态不能相同");
+		}
+		if (!BillVerifyStatusEnum.canDoVerify(billItem.getVerifyStatus())) {
+			throw new TraceBusinessException("当前状态不能进行数据操作");
+		}
+
+		// 创建审核历史数据
+		this.registerBillHistoryService.createHistory(billItem);
+
+		// 更新当前报务单数据
 		RegisterBill bill = new RegisterBill();
-		bill.setId(item.getId());
+		bill.setId(billItem.getId());
 		bill.setVerifyStatus(toVerifyState.getCode());
-		bill.setVerifyType(verifyType.getCode());
+
 		bill.setOperatorId(operatorUser.getId());
 		bill.setOperatorName(operatorUser.getName());
-		bill.setReason(StringUtils.trimToNull(reason));
+		bill.setReason(StringUtils.trimToNull(input.getReason()));
+		if (BillVerifyStatusEnum.PASSED == toVerifyState) {
+			if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+				bill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
+			} else {
+				bill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
+			}
+		}
 		this.updateSelective(bill);
-		return bill.getId();
+
+		// 创建相关的tradeDetail及batchStock数据
+		this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(tradeDetailItem->{
+			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),tradeDetailItem, operatorUser);
+		});
+		
+		// 更新用户颜色码
+		this.updateUserQrStatusByUserId(billItem.getUserId());
+
 	}
 
 	/**

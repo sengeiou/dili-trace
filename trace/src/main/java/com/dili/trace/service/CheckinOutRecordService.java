@@ -58,6 +58,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	CodeGenerateService codeGenerateService;
 	@Autowired
 	TradeDetailService tradeDetailService;
+	@Autowired
+	TradeService tradeService;
 
 	@Transactional
 	public List<CheckinOutRecord> doCheckout(OperatorUser operateUser, CheckOutApiInput checkOutApiInput) {
@@ -124,6 +126,12 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return Optional.ofNullable(user);
 	}
 
+	/**
+	 * 批量进门
+	 * @param operateUser
+	 * @param checkInApiInput
+	 * @return
+	 */
 	@Transactional
 	public List<CheckinOutRecord> doCheckin(OperatorUser operateUser, CheckInApiInput checkInApiInput) {
 		if (checkInApiInput == null || checkInApiInput.getBillIdList() == null) {
@@ -136,36 +144,44 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}
 
 		return StreamEx.of(checkInApiInput.getBillIdList()).nonNull().map(billId -> {
-
 			return this.registerBillService.get(billId);
+		}).map(billId -> {
+			return this.checkin(null, checkinStatusEnum, operateUser);
 
-		}).filter(bill -> {
-			if (bill == null) {
-				throw new TraceBusinessException("没有查找到报备数据");
-			}
-			return true;
-		}).mapToEntry(bill -> {
-			TradeDetail tradeDetail = this.tradeDetailService.createTradeDetailAndBatstockForBill(bill);
-			return tradeDetail;
+		}).nonNull().toList();
 
-		}).mapKeyValue((registerBillItem,tradeDetailItem)-> {
-			CheckinOutRecord checkinRecord = new CheckinOutRecord();
-			checkinRecord.setStatus(checkinStatusEnum.getCode());
-			checkinRecord.setInout(CheckinOutTypeEnum.IN.getCode());
-			checkinRecord.setOperatorId(operateUser.getId());
-			checkinRecord.setOperatorName(operateUser.getName());
-			checkinRecord.setRemark(checkInApiInput.getRemark());
-			checkinRecord.setCreated(new Date());
-			checkinRecord.setModified(new Date());
-			checkinRecord.setProductName(registerBillItem.getProductName());
-			checkinRecord.setInoutWeight(registerBillItem.getWeight());
-			checkinRecord.setUserName(registerBillItem.getName());
-			checkinRecord.setTradeDetailId(tradeDetailItem.getId());
-			this.insertSelective(checkinRecord);
+	}
 
-			//更新报备单进门状态
+	/**
+	 * 单个进门
+	 * @param billId
+	 * @param checkinStatusEnum
+	 * @param operateUser
+	 * @return
+	 */
+	private CheckinOutRecord checkin(Long billId, CheckinStatusEnum checkinStatusEnum, OperatorUser operateUser) {
+		RegisterBill billItem = StreamEx.ofNullable(this.registerBillService.get(billId)).findFirst()
+				.orElseThrow(() -> {
+					return new TraceBusinessException("没有找到数据");
+				});
+		if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+			throw new TraceBusinessException("当前报备单已进门");
+		}
+
+		if (CheckinStatusEnum.NONE == checkinStatusEnum) {
+			throw new TraceBusinessException("参数错误");
+		}
+		if (CheckinStatusEnum.NOTALLOWED == checkinStatusEnum) {
+			return null;
+		}
+
+		if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
+			TradeDetail tradeDetail = this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
+			CheckinOutRecord checkinRecord = this.createRecordForCheckin(billItem, checkinStatusEnum, operateUser);
+
+			// 更新报备单进门状态
 			RegisterBill bill = new RegisterBill();
-			bill.setId(registerBillItem.getId());
+			bill.setId(billItem.getId());
 			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
 				bill.setIsCheckin(YnEnum.YES.getCode());
 			} else {
@@ -173,19 +189,32 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			}
 			this.registerBillService.updateSelective(bill);
 
-			
-			TradeDetail updatableRecord = new TradeDetail();
-			updatableRecord.setId(tradeDetailItem.getId());
-			updatableRecord.setCheckinRecordId(checkinRecord.getId());
-			updatableRecord.setCheckinStatus(checkinStatusEnum.getCode());
-			this.tradeDetailService.updateSelective(updatableRecord);
-
-			this.tradeDetailService.updateTradeDetailSaleStatus(operateUser, registerBillItem.getId(), tradeDetailItem.getId());
-
+			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),tradeDetail, operateUser);
 			return checkinRecord;
+		}
+		return null;
 
-		}).toList();
+	}
 
+	/**
+	 * 创建进门数据
+	 */
+	private CheckinOutRecord createRecordForCheckin(RegisterBill billItem, CheckinStatusEnum checkinStatusEnum,
+			OperatorUser operateUser) {
+		CheckinOutRecord checkinRecord = new CheckinOutRecord();
+		checkinRecord.setStatus(checkinStatusEnum.getCode());
+		checkinRecord.setInout(CheckinOutTypeEnum.IN.getCode());
+		checkinRecord.setOperatorId(operateUser.getId());
+		checkinRecord.setOperatorName(operateUser.getName());
+		// checkinRecord.setRemark(checkInApiInput.getRemark());
+		checkinRecord.setCreated(new Date());
+		checkinRecord.setModified(new Date());
+		checkinRecord.setProductName(billItem.getProductName());
+		checkinRecord.setInoutWeight(billItem.getWeight());
+		checkinRecord.setUserName(billItem.getName());
+		checkinRecord.setTradeDetailId(billItem.getId());
+		this.insertSelective(checkinRecord);
+		return checkinRecord;
 	}
 
 	public Optional<CheckInApiDetailOutput> getCheckInDetail(Long billId) {
@@ -372,8 +401,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			TradeDetail separateSalesRecordQuery = new TradeDetail();
 			separateSalesRecordQuery.setMetadata(IDTO.AND_CONDITION_EXPR,
 					"  ( checkin_record_id =" + cr.getId() + " or checkout_record_id=" + cr.getId() + ") ");
-			TradeDetail separateSalesRecordItem = this.tradeDetailService.listByExample(separateSalesRecordQuery).stream()
-					.findFirst().orElse(new TradeDetail());
+			TradeDetail separateSalesRecordItem = this.tradeDetailService.listByExample(separateSalesRecordQuery)
+					.stream().findFirst().orElse(new TradeDetail());
 			Map<String, Object> dto = BeanMapUtil.beanToMap(cr);
 			// Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
 			// dto.remove("id");
