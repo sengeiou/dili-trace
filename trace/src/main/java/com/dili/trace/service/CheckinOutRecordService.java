@@ -145,8 +145,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		return StreamEx.of(checkInApiInput.getBillIdList()).nonNull().map(billId -> {
 			return this.registerBillService.get(billId);
-		}).map(billId -> {
-			return this.checkin(null, checkinStatusEnum, operateUser);
+		}).nonNull().map(bill -> {
+			return this.checkin(bill.getId(), checkinStatusEnum, operateUser);
 
 		}).nonNull().toList();
 
@@ -176,9 +176,14 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}
 
 		if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-			TradeDetail tradeDetail = this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
+			TradeDetail tradeDetailItem = this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
 			CheckinOutRecord checkinRecord = this.createRecordForCheckin(billItem, checkinStatusEnum, operateUser);
 
+			TradeDetail  tradeDetail=new TradeDetail();
+			tradeDetail.setId(tradeDetailItem.getId());
+			tradeDetail.setCheckinStatus(checkinStatusEnum.getCode());
+			tradeDetail.setCheckinRecordId(checkinRecord.getId());
+			this.tradeDetailService.updateSelective(tradeDetail);
 			// 更新报备单进门状态
 			RegisterBill bill = new RegisterBill();
 			bill.setId(billItem.getId());
@@ -189,7 +194,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			}
 			this.registerBillService.updateSelective(bill);
 
-			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),tradeDetail, operateUser);
+			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),tradeDetailItem, operateUser);
 			return checkinRecord;
 		}
 		return null;

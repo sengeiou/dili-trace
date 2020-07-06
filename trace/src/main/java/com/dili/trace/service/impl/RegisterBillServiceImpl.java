@@ -319,7 +319,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return new TraceBusinessException("数据不存在");
 		});
 
-		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+		if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
 			throw new TraceBusinessException("当前报备单已进门,不能预审核");
 		}
 		this.doVerify(billItem, input, operatorUser);
