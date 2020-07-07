@@ -114,7 +114,7 @@ public class ManagerCheckinOutRecordApi {
 		if (query == null || query.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
-		// query.setIsCheckin(YnEnum.NO.getCode());
+
 		query.setTruckType(TruckTypeEnum.FULL.getCode());
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, " bill_type <>" + BillTypeEnum.SUPPLEMENT.getCode());
 		List<RegisterBill> list = this.registerBillService.listByExample(query);
@@ -122,6 +122,7 @@ public class ManagerCheckinOutRecordApi {
 		RegisterBillDto poolQuery = new RegisterBillDto();
 		poolQuery.setUserId(query.getUserId());
 		poolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
+		poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR, " bill_type <>" + BillTypeEnum.SUPPLEMENT.getCode());
 		List<RegisterBill> userPoolList = this.registerBillService.listByExample(poolQuery);
 
 		List<String> plateList = StreamEx.of(userPoolList).filter(bill -> {
@@ -133,6 +134,7 @@ public class ManagerCheckinOutRecordApi {
 					RegisterBillDto otherPoolQuery = new RegisterBillDto();
 					otherPoolQuery.setPlateList(plateList);
 					otherPoolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
+					poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR, " bill_type <>" + BillTypeEnum.SUPPLEMENT.getCode());
 					return StreamEx.of(this.registerBillService.listByExample(otherPoolQuery));
 				}).toList();
 
