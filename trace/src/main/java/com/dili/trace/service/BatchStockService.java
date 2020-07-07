@@ -36,7 +36,6 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
         return this.getDao().selectByExample(e);
     }
 
-
     public BatchStock findOrCreateBatchStock(Long buyerId, RegisterBill billItem) {
 
         BatchStock query = new BatchStock();
@@ -61,6 +60,7 @@ public class BatchStockService extends BaseServiceImpl<BatchStock, Long> {
             batchStock.setWeightUnit(billItem.getWeightUnit());
             batchStock.setSpecName(billItem.getSpecName());
             batchStock.setBrandId(billItem.getBrandId());
+            batchStock.setBrandName(billItem.getBrandName());
             batchStock.setTradeDetailNum(0);
             this.insertSelective(batchStock);
             return batchStock;
