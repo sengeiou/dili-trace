@@ -69,19 +69,26 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 });
 
         List<Long> batchStockIdList = StreamEx.of(batchIdDetailIdMap.keySet()).nonNull().toList();
+        if (batchStockIdList.isEmpty()) {
+            throw new TraceBusinessException("参数错误");
+        }
         List<Long> tradeDetailIdList = StreamEx.of(batchIdDetailIdMap.values()).flatMap(List::stream).toList();
-
-        List<TradeDetail> tradeDetailList = this.tradeDetailService.findTradeDetailByIdList(tradeDetailIdList);
-        // 判断是否全部是卖家的商品
-        boolean notBelongToSeller = StreamEx.of(tradeDetailList).map(TradeDetail::getBuyerId).distinct()
-                .anyMatch(uid -> !uid.equals(sellerId));
+        if (!tradeDetailIdList.isEmpty()) {
+            List<TradeDetail> tradeDetailList = this.tradeDetailService.findTradeDetailByIdList(tradeDetailIdList);
+            // 判断是否全部是卖家的商品
+            boolean notBelongToSeller = StreamEx.of(tradeDetailList).map(TradeDetail::getBuyerId).distinct()
+                    .anyMatch(uid -> !uid.equals(sellerId));
+            if (notBelongToSeller) {
+                throw new TraceBusinessException("参数不匹配:有批次不属于当前卖家");
+            }
+        }
         // 判断是否全部是卖家的库存信息
-        boolean notBelongToBatchStock = StreamEx.of(tradeDetailList).map(TradeDetail::getBatchStockId).distinct()
-                .anyMatch(bsid -> {
+        boolean notBelongToBatchStock = StreamEx.of(this.batchStockService.findByIdList(batchStockIdList))
+                .map(BatchStock::getUserId).distinct().anyMatch(bsid -> {
                     return batchStockIdList.contains(bsid);
                 });
-        if (!notBelongToSeller || !notBelongToBatchStock) {
-            throw new TraceBusinessException("参数不匹配");
+        if (notBelongToBatchStock) {
+            throw new TraceBusinessException("参数不匹配:有库存不属于当前卖家");
         }
 
     }
