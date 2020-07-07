@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -96,7 +97,10 @@ public class TradeRequest extends BaseDomain {
     public String getWeightUnitName(){
         return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
     }
-
+    @Transient
+    public String getReturnStatusName(){
+        return TradeReturnStatusEnum.fromCode(this.getReturnStatus()).map(TradeReturnStatusEnum::getName).orElse("");
+    }
     /**
      * @return Long return the id
      */
