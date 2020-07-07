@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
 
@@ -110,7 +111,10 @@ public class TradeDetail extends BaseDomain {
 	// public void setStatus(Integer status) {
 	// 	this.status = status;
 	// }
-
+	@Transient
+	public Long getTradeDetailId() {
+		return id;
+	}
 	public Long getId() {
 		return id;
 	}

@@ -72,29 +72,6 @@ public class ClientTradeDetailApi {
 		}
 		
 	}
-	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listPagedTradeDetailForSale.api", method = { RequestMethod.POST})
-	public BaseOutput<BasePage<TradeDetail>> listPagedTradeDetailForSale(@RequestBody TradeDetailQueryDto query) {
-
-		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			if(!userId.equals(query.getBuyerId())&&!userId.equals(query.getSellerId())){
-				return BaseOutput.failure("参数错误");
-			}
-			query.setSort("created");
-			query.setOrder("desc");
-			query.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
-	
-			return BaseOutput.success().setData(page);
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("服务端出错");
-		}
-		
-	}
 
 
 

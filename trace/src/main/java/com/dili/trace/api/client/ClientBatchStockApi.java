@@ -16,6 +16,7 @@ import com.dili.trace.api.input.BatchStockQueryDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.service.BatchStockService;
 import com.dili.trace.service.BrandService;
 import com.dili.trace.service.TradeDetailService;
@@ -101,8 +102,8 @@ public class ClientBatchStockApi {
 	 * 获得批次列表
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/listTradeDetailByBatchId.api", method = { RequestMethod.POST })
-	public BaseOutput<List<TradeDetail>> listTradeDetailByBatchId(@RequestBody BatchStockInput inputDto) {
+	@RequestMapping(value = "/listTradeDetailForSaleByBatchId.api", method = { RequestMethod.POST })
+	public BaseOutput<List<TradeDetail>> listTradeDetailForSaleByBatchId(@RequestBody BatchStockInput inputDto) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
@@ -116,6 +117,7 @@ public class ClientBatchStockApi {
 				return BaseOutput.failure("数据不存在");
 			}
 			TradeDetail tradeDetailQuery = new TradeDetail();
+			tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
 			tradeDetailQuery.setBatchStockId(inputDto.getBatchStockId());
 			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
 			return BaseOutput.success().setData(tradeDetailList);
@@ -127,5 +129,7 @@ public class ClientBatchStockApi {
 		}
 
 	}
+
+	
 
 }
