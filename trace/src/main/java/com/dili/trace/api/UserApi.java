@@ -56,7 +56,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping(value = "/api/userApi")
 public class UserApi {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserApi.class);
     @Resource
     private UserService userService;
     @Resource
@@ -81,7 +81,7 @@ public class UserApi {
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
-            LOGGER.error("register", e);
+            logger.error("register", e);
             return BaseOutput.failure(e.getMessage());
         }
     }
@@ -107,7 +107,7 @@ public class UserApi {
             // LOGGER.error("realNameCertificationReq",e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
-            LOGGER.error("realNameCertificationReq", e);
+            logger.error("realNameCertificationReq", e);
             return BaseOutput.failure(e.getMessage());
         }
     }
@@ -124,7 +124,7 @@ public class UserApi {
     public BaseOutput<Boolean> sendVerificationCode(@RequestBody JSONObject object) {
         String phone = object.getString("phone");
         if (StringUtils.isBlank(phone)) {
-            LOGGER.error("参数为空" + JSON.toJSONString(object));
+            logger.error("参数为空" + JSON.toJSONString(object));
             return BaseOutput.failure("参数为空").setCode(ResultCode.PARAMS_ERROR);
         }
 
@@ -148,10 +148,10 @@ public class UserApi {
         if (msgOutput.isSuccess()) {
             redisUtil.set(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone, verificationCode,
                     defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);
-            LOGGER.info("短信验证码发送成功：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
+            logger.info("短信验证码发送成功：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
         } else {
-            LOGGER.error("发送失败,错误信息：" + msgOutput.getMessage());
-            LOGGER.info("短信验证码发送失败：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
+            logger.error("发送失败,错误信息：" + msgOutput.getMessage());
+            logger.info("短信验证码发送失败：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
             return BaseOutput.failure(msgOutput.getMessage());
         }
         return BaseOutput.success();
@@ -179,7 +179,7 @@ public class UserApi {
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
-            LOGGER.error("resetPassword", e);
+            logger.error("resetPassword", e);
             return BaseOutput.failure();
         }
     }
@@ -199,7 +199,7 @@ public class UserApi {
             // }
             return BaseOutput.success().setData(user);
         } catch (Exception e) {
-            LOGGER.error("get", e);
+            logger.error("get", e);
             return BaseOutput.failure();
         }
     }
@@ -216,7 +216,7 @@ public class UserApi {
             List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(user.getId());
             return BaseOutput.success().setData(userPlateList);
         } catch (Exception e) {
-            LOGGER.error("查询车牌信息错误", e);
+            logger.error("查询车牌信息错误", e);
             return BaseOutput.failure();
         }
     }
@@ -246,7 +246,7 @@ public class UserApi {
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
-            LOGGER.error("changePassword", e);
+            logger.error("changePassword", e);
             return BaseOutput.failure();
         }
     }
@@ -261,7 +261,7 @@ public class UserApi {
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
-            LOGGER.error("quit", e);
+            logger.error("quit", e);
             return BaseOutput.failure();
         }
     }
@@ -273,7 +273,7 @@ public class UserApi {
         try {
             return BaseOutput.success();
         } catch (Exception e) {
-            LOGGER.error("isLogin", e);
+            logger.error("isLogin", e);
             return BaseOutput.failure();
         }
     }
@@ -334,20 +334,25 @@ public class UserApi {
     @ApiOperation(value = "通过姓名关键字查询用户信息", notes = "通过姓名关键字查询用户信息")
     @RequestMapping(value = "/findUserByLikeName.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<User>> findUserByLikeName(UserListDto input) {
+        try {
+            if (input == null || StringUtils.isBlank(input.getLikeName())) {
+                return BaseOutput.success().setData(BasePageUtil.empty(input.getPage(), input.getRows()));
+            }
+            BasePage<User> source = this.userService.listPageByExample(input);
+            BasePage<User> page = BasePageUtil.convert(source, (u) -> {
+                User user = DTOUtils.newDTO(User.class);
+                user.setId(u.getId());
+                user.setName(u.getName());
+                user.setLegalPerson(u.getLegalPerson());
+                user.setUserType(u.getUserType());
+                return user;
+            });
+            return BaseOutput.success().setData(page);
 
-        if (input == null || StringUtils.isBlank(input.getLikeName())) {
-            return BaseOutput.success().setData(BasePageUtil.empty(input.getPage(), input.getRows()));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("查询出错");
         }
-        BasePage<User> source = this.userService.listPageByExample(input);
-        BasePage<User> page = BasePageUtil.convert(source, (u) -> {
-            User user = DTOUtils.newDTO(User.class);
-            user.setId(u.getId());
-            user.setName(u.getName());
-            user.setLegalPerson(u.getLegalPerson());
-            user.setUserType(u.getUserType());
-            return user;
-        });
-        return BaseOutput.success().setData(page);
 
     }
 

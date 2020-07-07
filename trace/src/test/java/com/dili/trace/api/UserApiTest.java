@@ -2,11 +2,13 @@ package com.dili.trace.api;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.manager.ManagerUserApi;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.enums.VocationTypeEnum;
 import org.junit.jupiter.api.Test;
@@ -156,5 +158,12 @@ public class UserApiTest extends AutoWiredBaseTest {
 	public void getUserInfo(){
 		BaseOutput<User> out = userApi.get();
 		System.out.println(out);
+	}
+	@Test
+	public void findUserByLikeName(){
+		UserListDto input=DTOUtils.newDTO(UserListDto.class);
+		// input.setLikeName("abc");
+		this.userApi.findUserByLikeName(input);
+
 	}
 }
