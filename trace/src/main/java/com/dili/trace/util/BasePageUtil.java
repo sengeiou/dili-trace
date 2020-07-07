@@ -21,7 +21,7 @@ public class BasePageUtil {
 		return result;
 
 	}
-	public static <T, S> BasePage<T> empty(int page,int rows) {
+	public static <T, S> BasePage<T> empty(Integer page,Integer rows) {
 
 		BasePage<T> result = new BasePage<>();
 		result.setDatas(Lists.newArrayList());

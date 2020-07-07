@@ -334,10 +334,34 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (!TradeReturnStatusEnum.NONE.equalsToCode(tradeRequestItem.getReturnStatus())) {
             throw new TraceBusinessException("退货状态错误");
         }
+
         TradeRequest tradeRequest = new TradeRequest();
         tradeRequest.setId(tradeRequestItem.getId());
         tradeRequest.setReturnStatus(TradeReturnStatusEnum.RETURNING.getCode());
         this.updateSelective(tradeRequest);
+
+        TradeDetail tradeDetailQuery = new TradeDetail();
+        tradeDetailQuery.setTradeRequestId(tradeRequestId);
+        List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+        StreamEx.of(tradeDetailList).forEach(td -> {
+            boolean changed = td.getTotalWeight().compareTo(td.getStockWeight()) != 0;
+            if (changed) {
+                throw new TraceBusinessException("不能对已销售的商品申请退货");
+            }
+            BatchStock batchStockItem = this.batchStockService.get(td.getBatchStockId());
+            BatchStock batchStock = new BatchStock();
+            batchStock.setId(batchStockItem.getId());
+            batchStock.setTradeDetailNum(batchStock.getTradeDetailNum() - 1);
+            batchStock.setStockWeight(batchStock.getStockWeight().subtract(td.getStockWeight()));
+            this.batchStockService.updateSelective(batchStock);
+
+            TradeDetail tradeDetail = new TradeDetail();
+            tradeDetail.setId(td.getId());
+            tradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+            this.tradeDetailService.updateSelective(tradeDetail);
+
+        });
+
         return tradeRequest.getId();
     }
 
@@ -370,6 +394,27 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         tradeRequest.setReturnStatus(returnStatus.getCode());
         tradeRequest.setReason(reason);
         this.updateSelective(tradeRequest);
+        if (TradeReturnStatusEnum.REFUSE == returnStatus) {
+
+            TradeDetail tradeDetailQuery = new TradeDetail();
+            tradeDetailQuery.setTradeRequestId(tradeRequestId);
+            List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+            StreamEx.of(tradeDetailList).forEach(td -> {
+
+                BatchStock batchStockItem = this.batchStockService.get(td.getBatchStockId());
+                BatchStock batchStock = new BatchStock();
+                batchStock.setId(batchStockItem.getId());
+                batchStock.setTradeDetailNum(batchStock.getTradeDetailNum() + 1);
+                batchStock.setStockWeight(batchStock.getStockWeight().add(td.getStockWeight()));
+                this.batchStockService.updateSelective(batchStock);
+
+                TradeDetail tradeDetail = new TradeDetail();
+                tradeDetail.setId(td.getId());
+                tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                this.tradeDetailService.updateSelective(tradeDetail);
+            });
+        }
+
         return tradeRequest.getId();
     }
 
