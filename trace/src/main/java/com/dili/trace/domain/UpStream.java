@@ -17,10 +17,6 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Table(name = "`upstream`")
 public class UpStream extends BaseDomain {
-    /**
-     * 下游企业标志 20
-     */
-    public static final Integer DOWN_USER_FLAG = 20;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,7 +2,6 @@ package com.dili.trace.api.input;
 
 import java.util.List;
 
-import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.domain.TradeRequest;
 
 public class TradeRequestListInput extends TradeRequest{

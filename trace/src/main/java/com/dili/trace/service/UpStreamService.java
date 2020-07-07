@@ -31,6 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
+	    /**
+     * 下游企业标志 20
+     */
+	public static final Integer DOWN_USER_FLAG = 20;
+	
 	public UpStreamMapper getActualDao() {
 		return (UpStreamMapper) getDao();
 	}
@@ -98,7 +103,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		insertSelective(upStreamDto);
 		addUpstreamUsers(upStreamDto, operatorUser);
 		//增加下游企业时创建用户
-		if (upStreamDto.getUpORdown() == UpStream.DOWN_USER_FLAG){
+		if (upStreamDto.getUpORdown() == DOWN_USER_FLAG){
 			doAddUser(upStreamDto);
 		}
 		return BaseOutput.success();

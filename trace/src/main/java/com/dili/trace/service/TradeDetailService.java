@@ -251,5 +251,14 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return this.getDao().selectByExample(e);
 
 	}
+	public List<TradeDetail> findTradeDetailByParentIdList(List<Long> parentIdList) {
+		if (parentIdList == null || parentIdList.isEmpty()) {
+			return Lists.newArrayList();
+		}
+		Example e = new Example(TradeDetail.class);
+		e.and().andIn("parentId", parentIdList);
+		return this.getDao().selectByExample(e);
+
+	}
 
 }

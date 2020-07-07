@@ -1,5 +1,6 @@
 package com.dili.trace.api.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -87,7 +88,6 @@ public class ClientBillTraceApi {
 
 	}
 
-	
 	/**
 	 * 分页查询需要被进场查询的信息
 	 */
@@ -103,20 +103,32 @@ public class ClientBillTraceApi {
 			if (tradeRequestItem == null) {
 				return BaseOutput.failure("没有查找到详情");
 			}
+
+			TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
+			traceDetailOutputDto.setTradeDetailList(new ArrayList<>());
 			TradeDetail tradeDetailQuery = new TradeDetail();
 			if (tradeRequestItem.getBuyerId().equals(userId)) {
 				tradeDetailQuery.setBuyerId(userId);
+				tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
+				List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+				List<Long> parentIdList = StreamEx.of(tradeDetailList).map(TradeDetail::getId).toList();
+				List<TradeDetail> buyerTradeDetailList = this.tradeDetailService.findTradeDetailByParentIdList(parentIdList);
+				traceDetailOutputDto.getTradeDetailList().addAll(tradeDetailList);
+				traceDetailOutputDto.getTradeDetailList().addAll(buyerTradeDetailList);
 			} else if (tradeRequestItem.getSellerId().equals(userId)) {
-				 tradeDetailQuery.setSellerId(userId);
+				tradeDetailQuery.setSellerId(userId);
+				tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
+				List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+				List<Long> idList = StreamEx.of(tradeDetailList).map(TradeDetail::getParentId).toList();
+				List<TradeDetail> sellerTradeDetailList =this.tradeDetailService.findTradeDetailByIdList(idList);
+
+				traceDetailOutputDto.getTradeDetailList().addAll(tradeDetailList);
+				traceDetailOutputDto.getTradeDetailList().addAll(sellerTradeDetailList);
 			} else {
 				return BaseOutput.success().setData(Lists.newArrayList());
 			}
-			tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
-			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
 
 
-			TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
-			traceDetailOutputDto.setTradeDetailList(tradeDetailList);
 			BatchStock batchStockItem = this.batchStockService.get(tradeRequestItem.getBatchStockId());
 			traceDetailOutputDto.setBrandName(batchStockItem.getBrandName());
 			traceDetailOutputDto.setSpecName(batchStockItem.getSpecName());
@@ -129,8 +141,9 @@ public class ClientBillTraceApi {
 
 			// RegisterBillDto registerBillDto = new RegisterBillDto();
 			// registerBillDto.setIdList(billIdList);
-			// List<String> originNameList = StreamEx.of(this.registerBillService.listByExample(registerBillDto))
-			// 		.map(RegisterBill::getOriginName).distinct().toList();
+			// List<String> originNameList =
+			// StreamEx.of(this.registerBillService.listByExample(registerBillDto))
+			// .map(RegisterBill::getOriginName).distinct().toList();
 			List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillIdList(billIdList);
 			// traceDetailOutputDto.setOriginNameList(originNameList);
 			traceDetailOutputDto.setImageCertList(imageCertList);

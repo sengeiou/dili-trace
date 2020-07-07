@@ -4,7 +4,6 @@ public class TradeRequestInputDto extends TradeRequestListInput {
 
     private Long tradeRequestId;
     private Long traderOrderId;
-
     private String reason;
 
     /**
