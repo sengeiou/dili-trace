@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 
 public class RegisterBillOutput {
@@ -20,8 +22,11 @@ public class RegisterBillOutput {
     private Integer weightUnit;
     private String weightUnitName;
     private Integer truckType;
+    private String truckTypeName;
     private Integer verifyType;
     private Integer billType;
+    private String billTypeName;
+    private String specName;
     private Date created;
     private String reason;
     private Integer isCheckIn;
@@ -53,6 +58,7 @@ public class RegisterBillOutput {
         out.setWeightUnit(bill.getWeightUnit());
         out.setCreated(bill.getCreated());
         out.setTruckType(bill.getTruckType());
+        out.setTruckTypeName(TruckTypeEnum.fromCode(bill.getTruckType()).map(TruckTypeEnum::getName).orElse(""));
         out.setUserName(bill.getName());
         out.setOriginName(bill.getOriginName());
         out.setTallyAreaNo(bill.getTallyAreaNo());
@@ -60,6 +66,8 @@ public class RegisterBillOutput {
         out.setBrandName(bill.getBrandName());
         out.setCode(bill.getCode());
         out.setBillType(bill.getBillType());
+        out.setBillTypeName(BillTypeEnum.fromCode(bill.getBillType()).map(BillTypeEnum::getName).orElse(""));
+        out.setSpecName(bill.getSpecName());
         out.setVerifyType(bill.getVerifyType());
         out.setReason(bill.getReason());
         out.setIsCheckIn(bill.getIsCheckin());
@@ -358,6 +366,49 @@ public class RegisterBillOutput {
      */
     public void setIsCheckIn(Integer isCheckIn) {
         this.isCheckIn = isCheckIn;
+    }
+
+
+    /**
+     * @return String return the truckTypeName
+     */
+    public String getTruckTypeName() {
+        return truckTypeName;
+    }
+
+    /**
+     * @param truckTypeName the truckTypeName to set
+     */
+    public void setTruckTypeName(String truckTypeName) {
+        this.truckTypeName = truckTypeName;
+    }
+
+    /**
+     * @return String return the billTypeName
+     */
+    public String getBillTypeName() {
+        return billTypeName;
+    }
+
+    /**
+     * @param billTypeName the billTypeName to set
+     */
+    public void setBillTypeName(String billTypeName) {
+        this.billTypeName = billTypeName;
+    }
+
+    /**
+     * @return String return the specName
+     */
+    public String getSpecName() {
+        return specName;
+    }
+
+    /**
+     * @param specName the specName to set
+     */
+    public void setSpecName(String specName) {
+        this.specName = specName;
     }
 
 }
