@@ -74,8 +74,7 @@ public class BillTraceService {
                     .findTradeDetailByParentIdList(parentIdList);
 
             List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
-                    .distinct().map(requestId -> {
-
+                    .nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
                         User buyer = this.userService.get(tr.getBuyerId());
                         TraceDataDto downTrace = new TraceDataDto();
@@ -100,24 +99,18 @@ public class BillTraceService {
                     .map(TradeDetail::getTradeRequestId).nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
                         User buyer = this.userService.get(tr.getBuyerId());
-                        TraceDataDto downTrace = new TraceDataDto();
-                        downTrace.setCreated(tr.getCreated());
-                        downTrace.setBuyerName(tr.getBuyerName());
-                        downTrace.setSellerName(tr.getSellerName());
-                        downTrace.setMarketName(buyer.getMarketName());
-                        downTrace.setTallyAreaNo(buyer.getTallyAreaNos());
-                        return downTrace;
+                        TraceDataDto upTraceDto = new TraceDataDto();
+                        upTraceDto.setCreated(tr.getCreated());
+                        upTraceDto.setBuyerName(tr.getBuyerName());
+                        upTraceDto.setSellerName(tr.getSellerName());
+                        upTraceDto.setMarketName(buyer.getMarketName());
+                        upTraceDto.setTallyAreaNo(buyer.getTallyAreaNos());
+                        return upTraceDto;
                     }).nonNull().toList();
 
             User seller = this.userService.get(tradeRequestItem.getSellerId());
             // BatchStock
             // batchStock=this.batchStockService.get(tradeRequestItem.getBatchStockId());
-            TraceDataDto upTrace = new TraceDataDto();
-            upTrace.setCreated(tradeRequestItem.getCreated());
-            upTrace.setBuyerName(tradeRequestItem.getBuyerName());
-            upTrace.setSellerName(tradeRequestItem.getSellerName());
-            upTrace.setMarketName(seller.getMarketName());
-            upTrace.setTallyAreaNo(seller.getTallyAreaNos());
 
             TradeDetail tradeDetailQuery = new TradeDetail();
             tradeDetailQuery.setSellerId(userId);
@@ -129,10 +122,10 @@ public class BillTraceService {
 
             List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
                     .distinct().map(requestId -> {
-                        
+
                         TradeRequest tr = this.tradeRequestService.get(requestId);
                         User buyer = this.userService.get(tr.getBuyerId());
-                        if(requestId==null||tr==null||buyer==null){
+                        if (requestId == null || tr == null || buyer == null) {
                             return null;
                         }
                         TraceDataDto downTrace = new TraceDataDto();
