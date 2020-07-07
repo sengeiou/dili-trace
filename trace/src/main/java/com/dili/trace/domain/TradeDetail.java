@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.WeightUnitEnum;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -104,6 +105,13 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`modified`")
 	private Date modified;
 
+	@Transient
+	private String plate;
+	
+	@Transient
+	public String getWeightUnitName() {
+		return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+	}
 	// public Integer getStatus() {
 	// 	return status;
 	// }
@@ -315,6 +323,21 @@ public class TradeDetail extends BaseDomain {
      */
     public void setIsBatched(Integer isBatched) {
         this.isBatched = isBatched;
+    }
+
+
+    /**
+     * @return String return the plate
+     */
+    public String getPlate() {
+        return plate;
+    }
+
+    /**
+     * @param plate the plate to set
+     */
+    public void setPlate(String plate) {
+        this.plate = plate;
     }
 
 }

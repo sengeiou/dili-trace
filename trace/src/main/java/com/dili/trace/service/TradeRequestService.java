@@ -349,10 +349,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 throw new TraceBusinessException("不能对已销售的商品申请退货");
             }
             BatchStock batchStockItem = this.batchStockService.get(td.getBatchStockId());
+            
             BatchStock batchStock = new BatchStock();
             batchStock.setId(batchStockItem.getId());
-            batchStock.setTradeDetailNum(batchStock.getTradeDetailNum() - 1);
-            batchStock.setStockWeight(batchStock.getStockWeight().subtract(td.getStockWeight()));
+            batchStock.setTradeDetailNum(batchStockItem.getTradeDetailNum() - 1);
+            batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(td.getStockWeight()));
             this.batchStockService.updateSelective(batchStock);
 
             TradeDetail tradeDetail = new TradeDetail();

@@ -2,6 +2,7 @@ package com.dili.trace.api.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
@@ -17,9 +18,12 @@ import com.dili.trace.api.output.TraceDataDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.ImageCert;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.service.BatchStockService;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.ImageCertService;
@@ -244,6 +248,21 @@ public class ClientBillTraceApi {
 			TradeDetail tradeDetail = new TradeDetail();
 			tradeDetail.setTradeRequestId(tradeRequestItem.getTradeRequestId());
 			List<TradeDetail> list = this.tradeDetailService.listByExample(tradeDetail);
+			List<Long> billIdList = StreamEx.of(list).filter(td -> {
+				return TradeTypeEnum.NONE.equalsToCode(td.getTradeType());
+			}).map(TradeDetail::getBillId).distinct().toList();
+
+			Map<Long, String> billIdPlateMap = StreamEx.ofNullable(billIdList).filter(li -> !li.isEmpty())
+					.flatMap(li -> {
+						RegisterBillDto dto = new RegisterBillDto();
+						dto.setIdList(li);
+						return StreamEx.of(this.registerBillService.listByExample(dto));
+					}).toMap(RegisterBill::getId, RegisterBill::getPlate);
+			StreamEx.of(list).filter(td -> {
+				return TradeTypeEnum.NONE.equalsToCode(td.getTradeType());
+			}).forEach(td -> {
+				td.setPlate(billIdPlateMap.getOrDefault(td.getBillId(), ""));
+			});
 			return BaseOutput.success().setData(list);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
