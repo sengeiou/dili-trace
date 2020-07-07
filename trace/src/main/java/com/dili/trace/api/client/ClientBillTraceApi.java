@@ -109,7 +109,8 @@ public class ClientBillTraceApi {
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			TraceDetailOutputDto traceDetailOutputDto = this.billTraceService.viewBillTrace(inputDto.getTradeRequestId(), userId);
+			TraceDetailOutputDto traceDetailOutputDto = this.billTraceService
+					.viewBillTrace(inputDto.getTradeRequestId(), userId);
 			return BaseOutput.success().setData(traceDetailOutputDto);
 
 		} catch (TraceBusinessException e) {
@@ -133,28 +134,7 @@ public class ClientBillTraceApi {
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			TradeRequest tradeRequestItem = this.tradeRequestService.get(inputDto.getTradeRequestId());
-			if (tradeRequestItem == null) {
-				return BaseOutput.failure("没有查找到详情");
-			}
-			TradeDetail tradeDetail = new TradeDetail();
-			tradeDetail.setTradeRequestId(tradeRequestItem.getTradeRequestId());
-			List<TradeDetail> list = this.tradeDetailService.listByExample(tradeDetail);
-			List<Long> billIdList = StreamEx.of(list).filter(td -> {
-				return TradeTypeEnum.NONE.equalsToCode(td.getTradeType());
-			}).map(TradeDetail::getBillId).distinct().toList();
-
-			Map<Long, String> billIdPlateMap = StreamEx.ofNullable(billIdList).filter(li -> !li.isEmpty())
-					.flatMap(li -> {
-						RegisterBillDto dto = new RegisterBillDto();
-						dto.setIdList(li);
-						return StreamEx.of(this.registerBillService.listByExample(dto));
-					}).toMap(RegisterBill::getId, RegisterBill::getPlate);
-			StreamEx.of(list).filter(td -> {
-				return TradeTypeEnum.NONE.equalsToCode(td.getTradeType());
-			}).forEach(td -> {
-				td.setPlate(billIdPlateMap.getOrDefault(td.getBillId(), ""));
-			});
+			List<TradeDetail> list = this.billTraceService.viewTradeDetailList(inputDto.getTradeRequestId(), userId);
 			return BaseOutput.success().setData(list);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

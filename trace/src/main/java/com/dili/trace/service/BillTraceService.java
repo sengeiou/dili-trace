@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -9,9 +10,12 @@ import com.dili.trace.api.output.TraceDataDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.ImageCert;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.TradeTypeEnum;
 import com.google.common.collect.Lists;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,9 +130,12 @@ public class BillTraceService {
 
             List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
                     .distinct().map(requestId -> {
-
+                        
                         TradeRequest tr = this.tradeRequestService.get(requestId);
                         User buyer = this.userService.get(tr.getBuyerId());
+                        if(requestId==null||tr==null||buyer==null){
+                            return null;
+                        }
                         TraceDataDto downTrace = new TraceDataDto();
                         downTrace.setCreated(tr.getCreated());
                         downTrace.setBuyerName(tr.getBuyerName());
@@ -136,7 +143,7 @@ public class BillTraceService {
                         downTrace.setMarketName(buyer.getMarketName());
                         downTrace.setTallyAreaNo(buyer.getTallyAreaNos());
                         return downTrace;
-                    }).toList();
+                    }).nonNull().toList();
             traceDetailOutputDto.setUpTraceList(upTraceList);
             traceDetailOutputDto.setDownTraceList(downTraceList);
         } else {
@@ -154,6 +161,33 @@ public class BillTraceService {
         traceDetailOutputDto.setImageCertList(imageCertList);
 
         return traceDetailOutputDto;
+
+    }
+
+    public List<TradeDetail> viewTradeDetailList(Long tradeRequestId, Long userId) {
+
+        TradeRequest tradeRequestItem = this.tradeRequestService.get(tradeRequestId);
+        if (tradeRequestItem == null) {
+            throw new TraceBusinessException("没有查找到详情");
+        }
+        TradeDetail tradeDetail = new TradeDetail();
+        tradeDetail.setTradeRequestId(tradeRequestItem.getTradeRequestId());
+        List<TradeDetail> list = this.tradeDetailService.listByExample(tradeDetail);
+        List<Long> billIdList = StreamEx.of(list).filter(td -> {
+            return TradeTypeEnum.NONE.equalsToCode(td.getTradeType());
+        }).map(TradeDetail::getBillId).distinct().toList();
+
+        Map<Long, String> billIdPlateMap = StreamEx.ofNullable(billIdList).filter(li -> !li.isEmpty()).flatMap(li -> {
+            RegisterBillDto dto = new RegisterBillDto();
+            dto.setIdList(li);
+            return StreamEx.of(this.registerBillService.listByExample(dto));
+        }).toMap(RegisterBill::getId, RegisterBill::getPlate);
+        StreamEx.of(list).filter(td -> {
+            return TradeTypeEnum.NONE.equalsToCode(td.getTradeType());
+        }).forEach(td -> {
+            td.setPlate(billIdPlateMap.getOrDefault(td.getBillId(), ""));
+        });
+        return list;
 
     }
 }
