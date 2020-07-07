@@ -408,6 +408,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		query.setRows(1);
 		query.setSort("created");
 		query.setOrder("desc");
+		query.setUserId(userId);
 		RegisterBill billItem = this.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
 		if (billItem == null) {
 			return;
