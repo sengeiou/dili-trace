@@ -11,8 +11,9 @@ public class TraceDetailOutputDto {
 	private String productName;
 	private String specName;
 	private String brandName;
-	private List<TradeDetail> tradeDetailList;
-
+	private List<TraceDataDto> upTraceList;
+	private List<TraceDataDto> downTraceList;
+	
 	/**
 	 * @return List<ImageCert> return the imageCertList
 	 */
@@ -84,18 +85,34 @@ public class TraceDetailOutputDto {
 	}
 
 
+
+
     /**
-     * @return List<TradeDetail> return the tradeDetailList
+     * @return List<TraceDataDto> return the upTraceList
      */
-    public List<TradeDetail> getTradeDetailList() {
-        return tradeDetailList;
+    public List<TraceDataDto> getUpTraceList() {
+        return upTraceList;
     }
 
     /**
-     * @param tradeDetailList the tradeDetailList to set
+     * @param upTraceList the upTraceList to set
      */
-    public void setTradeDetailList(List<TradeDetail> tradeDetailList) {
-        this.tradeDetailList = tradeDetailList;
+    public void setUpTraceList(List<TraceDataDto> upTraceList) {
+        this.upTraceList = upTraceList;
+    }
+
+    /**
+     * @return List<TraceDataDto> return the downTraceList
+     */
+    public List<TraceDataDto> getDownTraceList() {
+        return downTraceList;
+    }
+
+    /**
+     * @param downTraceList the downTraceList to set
+     */
+    public void setDownTraceList(List<TraceDataDto> downTraceList) {
+        this.downTraceList = downTraceList;
     }
 
 }

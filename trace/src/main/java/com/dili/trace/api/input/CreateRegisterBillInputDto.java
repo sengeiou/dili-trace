@@ -80,7 +80,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setSpecName(StringUtils.trim(this.getSpecName()));
 		registerBill.setPreserveType(this.getPreserveType());
 		registerBill.setBillType(this.getBillType());
-		registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
+		registerBill.setTruckType(this.getTruckType());
 		registerBill.setBrandId(this.getBrandId());
 		registerBill.setBrandName(StringUtils.trim(this.getBrandName()));
 		registerBill.setPlate(this.getPlate());

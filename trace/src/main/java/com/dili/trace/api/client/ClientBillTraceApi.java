@@ -105,29 +105,24 @@ public class ClientBillTraceApi {
 			}
 
 			TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
-			traceDetailOutputDto.setTradeDetailList(new ArrayList<>());
 			TradeDetail tradeDetailQuery = new TradeDetail();
 			if (tradeRequestItem.getBuyerId().equals(userId)) {
 				tradeDetailQuery.setBuyerId(userId);
 				tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
 				List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
 				List<Long> parentIdList = StreamEx.of(tradeDetailList).map(TradeDetail::getId).toList();
-				List<TradeDetail> buyerTradeDetailList = this.tradeDetailService.findTradeDetailByParentIdList(parentIdList);
-				traceDetailOutputDto.getTradeDetailList().addAll(tradeDetailList);
-				traceDetailOutputDto.getTradeDetailList().addAll(buyerTradeDetailList);
+				List<TradeDetail> buyerTradeDetailList = this.tradeDetailService
+						.findTradeDetailByParentIdList(parentIdList);
 			} else if (tradeRequestItem.getSellerId().equals(userId)) {
 				tradeDetailQuery.setSellerId(userId);
 				tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
 				List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
 				List<Long> idList = StreamEx.of(tradeDetailList).map(TradeDetail::getParentId).toList();
-				List<TradeDetail> sellerTradeDetailList =this.tradeDetailService.findTradeDetailByIdList(idList);
+				List<TradeDetail> sellerTradeDetailList = this.tradeDetailService.findTradeDetailByIdList(idList);
 
-				traceDetailOutputDto.getTradeDetailList().addAll(tradeDetailList);
-				traceDetailOutputDto.getTradeDetailList().addAll(sellerTradeDetailList);
 			} else {
-				return BaseOutput.success().setData(Lists.newArrayList());
+				return BaseOutput.success();
 			}
-
 
 			BatchStock batchStockItem = this.batchStockService.get(tradeRequestItem.getBatchStockId());
 			traceDetailOutputDto.setBrandName(batchStockItem.getBrandName());
