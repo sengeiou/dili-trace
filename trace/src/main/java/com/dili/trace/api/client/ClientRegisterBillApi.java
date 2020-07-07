@@ -189,12 +189,13 @@ public class ClientRegisterBillApi {
 				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
 				outputdto.setImageCertList(imageCertList);
 				outputdto.setUpStream(upStream);
-				outputdto.setWeight(tradeDetailItem.getStockWeight());
+				outputdto.setWeight(tradeDetailItem.getTotalWeight());
 				return BaseOutput.success().setData(outputdto);
 			} else if (registerBill.getId() != null) {
 				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
 				outputdto.setUpStream(upStream);
 				outputdto.setImageCertList(imageCertList);
+				outputdto.setWeight(registerBill.getWeight());
 				return BaseOutput.success().setData(outputdto);
 			} else {
 				return BaseOutput.failure("没有数据");
