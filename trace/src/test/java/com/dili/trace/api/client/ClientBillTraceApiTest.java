@@ -1,6 +1,7 @@
 package com.dili.trace.api.client;
 
 import com.dili.trace.AutoWiredBaseTest;
+import com.dili.trace.api.input.TradeRequestInputDto;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,9 @@ public class ClientBillTraceApiTest extends AutoWiredBaseTest {
     ClientBillTraceApi clientBillTraceApi;
 
     @Test
-    public void dd(){
-        TradeRequestInputDto inputDto=new TradeRequestInputDto();
-
-        this.clientBillTraceApi.viewBillTrace(null)
+    public void viewBillTrace() {
+        TradeRequestInputDto inputDto = new TradeRequestInputDto();
+        inputDto.setTradeRequestId(1L);
+        this.clientBillTraceApi.viewBillTrace(inputDto);
     }
 }
