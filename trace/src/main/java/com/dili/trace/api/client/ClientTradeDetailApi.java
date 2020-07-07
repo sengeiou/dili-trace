@@ -1,7 +1,5 @@
 package com.dili.trace.api.client;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 
 import com.dili.common.annotation.InterceptConfiguration;
@@ -11,9 +9,8 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.TradeDetailQueryDto;
-import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.dto.TradeDetailInputWrapperDto;
+import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -75,6 +72,30 @@ public class ClientTradeDetailApi {
 		}
 		
 	}
+	@SuppressWarnings({ "unchecked" })
+	@RequestMapping(value = "/listPagedTradeDetailForSale.api", method = { RequestMethod.POST})
+	public BaseOutput<BasePage<TradeDetail>> listPagedTradeDetailForSale(@RequestBody TradeDetailQueryDto query) {
+
+		try {
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			if(!userId.equals(query.getBuyerId())&&!userId.equals(query.getSellerId())){
+				return BaseOutput.failure("参数错误");
+			}
+			query.setSort("created");
+			query.setOrder("desc");
+			query.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
+	
+			return BaseOutput.success().setData(page);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+		
+	}
+
 
 
 }
