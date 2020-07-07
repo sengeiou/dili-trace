@@ -63,13 +63,7 @@ public class ClientBatchStockApi {
 			condition.setUserId(userId);
 			condition.setSort("created");
 			condition.setOrder("desc");
-			BasePage<BatchStock> source = this.batchStockService.listPageByExample(condition);
-			List<Long> brandIdList = StreamEx.of(source.getDatas()).nonNull().map(BatchStock::getBrandId).toList();
-			Map<Long, Brand> idBrandMap = this.brandService.findBrandMapByIdList(brandIdList);
-			BasePage<BatchStock> page = BasePageUtil.convert(source, bs -> {
-				bs.setBrandName(idBrandMap.getOrDefault(bs.getBrandId(), new Brand()).getBrandName());
-				return bs;
-			});
+			BasePage<BatchStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

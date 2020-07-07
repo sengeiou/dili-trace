@@ -109,6 +109,7 @@ public class ClientBillTraceApi {
 
 			TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
 			traceDetailOutputDto.setTradeRequestId(tradeRequestItem.getTradeRequestId());
+			traceDetailOutputDto.setCreated(tradeRequestItem.getCreated());
 			if (tradeRequestItem.getBuyerId().equals(userId)) {
 
 				User seller = this.userService.get(tradeRequestItem.getSellerId());

@@ -79,7 +79,8 @@ public class BatchStock extends BaseDomain {
     @Column(name = "`trade_detail_num`")
     private Integer tradeDetailNum;
 
-    @Transient
+    @ApiModelProperty(value = "品牌名称")
+    @Column(name = "`brand_name`")
     private String brandName;
 
     @Transient

@@ -299,6 +299,7 @@ CREATE TABLE `batch_stock` (
    	`user_name` varchar(50) DEFAULT NULL COMMENT '业户姓名',
   	`user_id` bigint(20) DEFAULT NULL COMMENT '理货区用户ID',
 	`brand_id` bigint(20) DEFAULT NULL COMMENT '品牌ID',
+	`brand_name` varchar(50)   NULL   COMMENT '品牌名称',
 	`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

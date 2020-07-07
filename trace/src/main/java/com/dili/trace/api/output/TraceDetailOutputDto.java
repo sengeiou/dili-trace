@@ -1,5 +1,6 @@
 package com.dili.trace.api.output;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dili.trace.domain.ImageCert;
@@ -12,6 +13,7 @@ public class TraceDetailOutputDto {
 	private String productName;
 	private String specName;
 	private String brandName;
+	private Date created;
 	private List<TraceDataDto> upTraceList;
 	private List<TraceDataDto> downTraceList;
 	
@@ -130,6 +132,21 @@ public class TraceDetailOutputDto {
      */
     public void setTradeRequestId(Long tradeRequestId) {
         this.tradeRequestId = tradeRequestId;
+    }
+
+
+    /**
+     * @return Date return the created
+     */
+    public Date getCreated() {
+        return created;
+    }
+
+    /**
+     * @param created the created to set
+     */
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
 }
