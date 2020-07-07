@@ -116,19 +116,27 @@ public class ManagerCheckinOutRecordApi {
 		}
 		// query.setIsCheckin(YnEnum.NO.getCode());
 		query.setTruckType(TruckTypeEnum.FULL.getCode());
-		query.setMetadata(IDTO.AND_CONDITION_EXPR," bill_type <>"+BillTypeEnum.SUPPLEMENT.getCode());
-		List<RegisterBill>list =  this.registerBillService.listByExample(query);
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, " bill_type <>" + BillTypeEnum.SUPPLEMENT.getCode());
+		List<RegisterBill> list = this.registerBillService.listByExample(query);
 
+		RegisterBillDto poolQuery = new RegisterBillDto();
+		poolQuery.setUserId(query.getUserId());
+		poolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
+		List<RegisterBill> userPoolList = this.registerBillService.listByExample(poolQuery);
 
-		List<String>plateList=StreamEx.of(list).filter(bill->{
+		List<String> plateList = StreamEx.of(userPoolList).filter(bill -> {
 			return TruckTypeEnum.POOL.equalsToCode(bill.getTruckType());
 		}).map(RegisterBill::getPlate).distinct().toList();
-		query.setPlateList(plateList);
-		query.setUserId(null);
-		query.setTruckType(TruckTypeEnum.POOL.getCode());
-		List<RegisterBill>samePlatePoolTruckTypeBillList =  this.registerBillService.listByExample(query);
 
-		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(samePlatePoolTruckTypeBillList)
+		List<RegisterBill> samePlatePoolTruckTypeBillList = StreamEx.ofNullable(plateList).filter(l -> !l.isEmpty())
+				.flatMap(l -> {
+					RegisterBillDto otherPoolQuery = new RegisterBillDto();
+					otherPoolQuery.setPlateList(plateList);
+					otherPoolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
+					return StreamEx.of(this.registerBillService.listByExample(otherPoolQuery));
+				}).toList();
+
+		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList).append(samePlatePoolTruckTypeBillList)
 				.groupingBy(RegisterBill::getTruckType);
 		Map<Integer, Object> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
 			if (TruckTypeEnum.FULL.equalsToCode(k)) {
