@@ -114,15 +114,15 @@ public class ManagerCheckinOutRecordApi {
 		if (query == null || query.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
-
+		String dynaWhere=" is_checkin="+YnEnum.NO.getCode()+" and bill_type =" + BillTypeEnum.NONE.getCode();
 		query.setTruckType(TruckTypeEnum.FULL.getCode());
-		query.setMetadata(IDTO.AND_CONDITION_EXPR, " bill_type <>" + BillTypeEnum.SUPPLEMENT.getCode());
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
 		List<RegisterBill> list = this.registerBillService.listByExample(query);
 
 		RegisterBillDto poolQuery = new RegisterBillDto();
 		poolQuery.setUserId(query.getUserId());
 		poolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
-		poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR, " bill_type <>" + BillTypeEnum.SUPPLEMENT.getCode());
+		poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR,dynaWhere);
 		List<RegisterBill> userPoolList = this.registerBillService.listByExample(poolQuery);
 
 		List<String> plateList = StreamEx.of(userPoolList).filter(bill -> {
@@ -134,7 +134,7 @@ public class ManagerCheckinOutRecordApi {
 					RegisterBillDto otherPoolQuery = new RegisterBillDto();
 					otherPoolQuery.setPlateList(plateList);
 					otherPoolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
-					poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR, " bill_type <>" + BillTypeEnum.SUPPLEMENT.getCode());
+					poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
 					return StreamEx.of(this.registerBillService.listByExample(otherPoolQuery));
 				}).toList();
 
