@@ -49,6 +49,9 @@ public class ManagerVerifyApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			input.setSort("created");
+			input.setOrder("desc");
+
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageBeforeCheckinVerifyBill(input),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);

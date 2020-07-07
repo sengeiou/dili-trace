@@ -114,6 +114,8 @@ public class ManagerCheckinOutRecordApi {
 		if (query == null || query.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
+		query.setSort("created");
+		query.setOrder("desc");
 		String dynaWhere=" is_checkin="+YnEnum.NO.getCode()+" and bill_type =" + BillTypeEnum.NONE.getCode();
 		query.setTruckType(TruckTypeEnum.FULL.getCode());
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
@@ -123,6 +125,8 @@ public class ManagerCheckinOutRecordApi {
 		poolQuery.setUserId(query.getUserId());
 		poolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
 		poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR,dynaWhere);
+		poolQuery.setSort("created");
+		poolQuery.setOrder("desc");
 		List<RegisterBill> userPoolList = this.registerBillService.listByExample(poolQuery);
 
 		List<String> plateList = StreamEx.of(userPoolList).filter(bill -> {
