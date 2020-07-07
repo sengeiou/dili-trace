@@ -97,8 +97,7 @@ public class BillTraceService {
                     .map(TradeDetail::getParentId).nonNull().distinct().toList();
             List<TraceDataDto> upTraceList = StreamEx
                     .of(this.tradeDetailService.findTradeDetailByIdList(upTradeDetailIdList))
-                    .map(TradeDetail::getTradeRequestId).distinct().map(requestId -> {
-
+                    .map(TradeDetail::getTradeRequestId).nonNull().distinct().map(requestId -> {
                         TradeRequest tr = this.tradeRequestService.get(requestId);
                         User buyer = this.userService.get(tr.getBuyerId());
                         TraceDataDto downTrace = new TraceDataDto();
@@ -108,7 +107,7 @@ public class BillTraceService {
                         downTrace.setMarketName(buyer.getMarketName());
                         downTrace.setTallyAreaNo(buyer.getTallyAreaNos());
                         return downTrace;
-                    }).toList();
+                    }).nonNull().toList();
 
             User seller = this.userService.get(tradeRequestItem.getSellerId());
             // BatchStock

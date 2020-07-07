@@ -9,6 +9,7 @@ import java.util.List;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.TradeDetailInputDto;
+import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.Category;
@@ -19,7 +20,6 @@ import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.google.common.collect.Lists;
 
@@ -233,9 +233,11 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
     @Test
     public void listPageTradeRequestByBuyerIdOrSellerId() {
-        TradeRequest request = new TradeRequest();
+        TradeRequestInputDto request = new TradeRequestInputDto();
         request.setSellerId(1L);
         request.setBuyerId(2L);
+        request.setLikeProductName("abc");
+
         this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(request);
 
     }

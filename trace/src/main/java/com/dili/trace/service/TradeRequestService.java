@@ -10,6 +10,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.TradeDetailInputDto;
+import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeOrder;
@@ -24,6 +25,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -349,7 +351,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 throw new TraceBusinessException("不能对已销售的商品申请退货");
             }
             BatchStock batchStockItem = this.batchStockService.get(td.getBatchStockId());
-            
+
             BatchStock batchStock = new BatchStock();
             batchStock.setId(batchStockItem.getId());
             batchStock.setTradeDetailNum(batchStockItem.getTradeDetailNum() - 1);
@@ -419,7 +421,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return tradeRequest.getId();
     }
 
-    public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequest tradeRequest) {
+    public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest) {
         if (tradeRequest.getPage() == null) {
             tradeRequest.setPage(1);
         }
@@ -433,7 +435,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         PageHelper.startPage(tradeRequest.getPage(), tradeRequest.getRows());
 
         Example e = new Example(TradeRequest.class);
-        e.or().orEqualTo("buyerId", tradeRequest.getBuyerId()).orEqualTo("sellerId", tradeRequest.getSellerId());
+        e.and().orEqualTo("buyerId", tradeRequest.getBuyerId()).orEqualTo("sellerId", tradeRequest.getSellerId());
+        if (StringUtils.isNotBlank(tradeRequest.getLikeProductName())) {
+            e.and().andLike("productName", tradeRequest.getLikeProductName().trim());
+        }
         List<TradeRequest> list = getDao().selectByExample(e);
         Page<TradeRequest> page = (Page) list;
         BasePage<TradeRequest> result = new BasePage<TradeRequest>();
