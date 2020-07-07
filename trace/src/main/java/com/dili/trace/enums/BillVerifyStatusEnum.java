@@ -45,10 +45,6 @@ public enum BillVerifyStatusEnum {
 		return this.getCode().equals(code);
 	}
 
-	public static boolean canDoVerify(Integer code) {
-		return BillVerifyStatusEnum.NONE.equalsToCode(code) || BillVerifyStatusEnum.RETURNED.equalsToCode(code);
-	}
-
 	public Integer getCode() {
 		return code;
 	}
