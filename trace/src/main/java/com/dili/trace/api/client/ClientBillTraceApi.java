@@ -25,6 +25,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.service.BatchStockService;
+import com.dili.trace.service.BillTraceService;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
@@ -73,6 +74,8 @@ public class ClientBillTraceApi {
 	BatchStockService batchStockService;
 	@Autowired
 	ImageCertService imageCertService;
+	@Autowired
+	BillTraceService billTraceService;
 
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
@@ -106,118 +109,7 @@ public class ClientBillTraceApi {
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			TradeRequest tradeRequestItem = this.tradeRequestService.get(inputDto.getTradeRequestId());
-			if (tradeRequestItem == null) {
-				return BaseOutput.failure("没有查找到详情");
-			}
-
-			TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
-			traceDetailOutputDto.setTradeRequestId(tradeRequestItem.getTradeRequestId());
-			traceDetailOutputDto.setCreated(tradeRequestItem.getCreated());
-			if (tradeRequestItem.getBuyerId().equals(userId)) {
-
-				User seller = this.userService.get(tradeRequestItem.getSellerId());
-				// BatchStock
-				// batchStock=this.batchStockService.get(tradeRequestItem.getBatchStockId());
-				TraceDataDto upTrace = new TraceDataDto();
-				upTrace.setCreated(tradeRequestItem.getCreated());
-				upTrace.setBuyerName(tradeRequestItem.getBuyerName());
-				upTrace.setSellerName(tradeRequestItem.getSellerName());
-				upTrace.setMarketName(seller.getMarketName());
-				upTrace.setTallyAreaNo(seller.getTallyAreaNos());
-
-				TradeDetail tradeDetailQuery = new TradeDetail();
-				tradeDetailQuery.setBuyerId(userId);
-				tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
-				List<Long> parentIdList = StreamEx.of(this.tradeDetailService.listByExample(tradeDetailQuery))
-						.map(TradeDetail::getId).toList();
-				List<TradeDetail> buyerTradeDetailList = this.tradeDetailService
-						.findTradeDetailByParentIdList(parentIdList);
-
-				List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
-						.distinct().map(requestId -> {
-
-							TradeRequest tr = this.tradeRequestService.get(requestId);
-							User buyer = this.userService.get(tr.getBuyerId());
-							TraceDataDto downTrace = new TraceDataDto();
-							downTrace.setCreated(tr.getCreated());
-							downTrace.setBuyerName(tr.getBuyerName());
-							downTrace.setSellerName(tr.getSellerName());
-							downTrace.setMarketName(buyer.getMarketName());
-							downTrace.setTallyAreaNo(buyer.getTallyAreaNos());
-							return downTrace;
-						}).toList();
-				traceDetailOutputDto.setUpTraceList(Lists.newArrayList(upTrace));
-				traceDetailOutputDto.setDownTraceList(downTraceList);
-			} else if (tradeRequestItem.getSellerId().equals(userId)) {
-
-				TradeDetail condition = new TradeDetail();
-				condition.setSellerId(userId);
-				condition.setTradeRequestId(tradeRequestItem.getId());
-				List<Long> upTradeDetailIdList = StreamEx.of(this.tradeDetailService.listByExample(condition))
-						.map(TradeDetail::getParentId).nonNull().distinct().toList();
-				List<TraceDataDto> upTraceList = StreamEx
-						.of(this.tradeDetailService.findTradeDetailByIdList(upTradeDetailIdList))
-						.map(TradeDetail::getTradeRequestId).distinct().map(requestId -> {
-
-							TradeRequest tr = this.tradeRequestService.get(requestId);
-							User buyer = this.userService.get(tr.getBuyerId());
-							TraceDataDto downTrace = new TraceDataDto();
-							downTrace.setCreated(tr.getCreated());
-							downTrace.setBuyerName(tr.getBuyerName());
-							downTrace.setSellerName(tr.getSellerName());
-							downTrace.setMarketName(buyer.getMarketName());
-							downTrace.setTallyAreaNo(buyer.getTallyAreaNos());
-							return downTrace;
-						}).toList();
-
-				User seller = this.userService.get(tradeRequestItem.getSellerId());
-				// BatchStock
-				// batchStock=this.batchStockService.get(tradeRequestItem.getBatchStockId());
-				TraceDataDto upTrace = new TraceDataDto();
-				upTrace.setCreated(tradeRequestItem.getCreated());
-				upTrace.setBuyerName(tradeRequestItem.getBuyerName());
-				upTrace.setSellerName(tradeRequestItem.getSellerName());
-				upTrace.setMarketName(seller.getMarketName());
-				upTrace.setTallyAreaNo(seller.getTallyAreaNos());
-
-				TradeDetail tradeDetailQuery = new TradeDetail();
-				tradeDetailQuery.setBuyerId(userId);
-				tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
-				List<Long> parentIdList = StreamEx.of(this.tradeDetailService.listByExample(tradeDetailQuery))
-						.map(TradeDetail::getId).toList();
-				List<TradeDetail> buyerTradeDetailList = this.tradeDetailService
-						.findTradeDetailByParentIdList(parentIdList);
-
-				List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
-						.distinct().map(requestId -> {
-
-							TradeRequest tr = this.tradeRequestService.get(requestId);
-							User buyer = this.userService.get(tr.getBuyerId());
-							TraceDataDto downTrace = new TraceDataDto();
-							downTrace.setCreated(tr.getCreated());
-							downTrace.setBuyerName(tr.getBuyerName());
-							downTrace.setSellerName(tr.getSellerName());
-							downTrace.setMarketName(buyer.getMarketName());
-							downTrace.setTallyAreaNo(buyer.getTallyAreaNos());
-							return downTrace;
-						}).toList();
-				traceDetailOutputDto.setUpTraceList(upTraceList);
-				traceDetailOutputDto.setDownTraceList(downTraceList);
-			} else {
-				return BaseOutput.failure("没有查询到数据");
-			}
-			BatchStock batchStockItem = this.batchStockService.get(tradeRequestItem.getBatchStockId());
-			traceDetailOutputDto.setBrandName(batchStockItem.getBrandName());
-			traceDetailOutputDto.setSpecName(batchStockItem.getSpecName());
-			traceDetailOutputDto.setProductName(batchStockItem.getProductName());
-			TradeDetail query = new TradeDetail();
-			query.setTradeRequestId(tradeRequestItem.getId());
-			List<TradeDetail> traceList = this.tradeDetailService.listByExample(query);
-			List<Long> billIdList = StreamEx.of(traceList).map(TradeDetail::getBillId).distinct().toList();
-			List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillIdList(billIdList);
-			traceDetailOutputDto.setImageCertList(imageCertList);
-
+			TraceDetailOutputDto traceDetailOutputDto = this.billTraceService.viewBillTrace(inputDto.getTradeRequestId(), userId);
 			return BaseOutput.success().setData(traceDetailOutputDto);
 
 		} catch (TraceBusinessException e) {
