@@ -20,6 +20,7 @@ import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
@@ -112,7 +113,7 @@ public class ManagerCheckinOutRecordApi {
 		if (query == null || query.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
-		query.setMetadata(IDTO.AND_CONDITION_EXPR," id not in (select bill_id from trade_detail where buyer_id="+query.getUserId()+" and checkin_status="+CheckinStatusEnum.ALLOWED.getCode()+" and trade_type="+TradeTypeEnum.NONE.getCode()+")");
+		query.setMetadata(IDTO.AND_CONDITION_EXPR," bill_type <>"+BillTypeEnum.SUPPLEMENT.getCode()+" and id not in (select bill_id from trade_detail where buyer_id="+query.getUserId()+" and checkin_status="+CheckinStatusEnum.ALLOWED.getCode()+" and trade_type="+TradeTypeEnum.NONE.getCode()+")");
 		List<RegisterBill>list =  this.registerBillService.listByExample(query);
 
 
