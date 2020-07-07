@@ -10,6 +10,8 @@ public class TradeDetailBillOutput {
     private Long tradeDetailId;
     private Integer verifyStatus;
     private BigDecimal stockWeight;
+    private BigDecimal totalWeight;
+    
     private Integer weightUnit;
     private Integer tradeType;
     private Date created;
@@ -130,6 +132,21 @@ public class TradeDetailBillOutput {
      */
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+
+    /**
+     * @return BigDecimal return the totalWeight
+     */
+    public BigDecimal getTotalWeight() {
+        return totalWeight;
+    }
+
+    /**
+     * @param totalWeight the totalWeight to set
+     */
+    public void setTotalWeight(BigDecimal totalWeight) {
+        this.totalWeight = totalWeight;
     }
 
 }

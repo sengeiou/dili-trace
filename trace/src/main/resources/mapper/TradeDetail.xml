@@ -3,7 +3,7 @@
 <mapper namespace="com.dili.trace.dao.TradeDetailMapper">
   <select id="selectTradeDetailAndBill" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.api.output.TradeDetailBillOutput">
     select bill_id,trade_detail.id as trade_detail_id,
-    register_bill.verify_status,trade_detail.stock_weight,
+    register_bill.verify_status,trade_detail.stock_weight,trade_detail.total_weight,
     trade_detail.weight_unit ,
     trade_detail.trade_type,
     trade_detail.created,
@@ -22,7 +22,7 @@
     </if>
     union 
     select id as bill_id,null as trade_detail_id,
-    register_bill.verify_status,weight,
+    register_bill.verify_status,weight,weight,
     weight_unit,
     null as trade_type,
     register_bill.created,
