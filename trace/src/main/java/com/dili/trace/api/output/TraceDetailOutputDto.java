@@ -9,7 +9,7 @@ public class TraceDetailOutputDto {
 	private Long tradeRequestId;
 	
 	private List<ImageCert> imageCertList;
-	// private List<String> originNameList;
+
 	private String productName;
 	private String specName;
 	private String brandName;
@@ -106,21 +106,6 @@ public class TraceDetailOutputDto {
 
 
     /**
-     * @return List<TraceDataDto> return the upTraceList
-     */
-    public List<TraceDataDto> getUpTraceList() {
-        return upTraceList;
-    }
-
-    /**
-     * @param upTraceList the upTraceList to set
-     */
-    public void setUpTraceList(List<TraceDataDto> upTraceList) {
-        this.upTraceList = upTraceList;
-    }
-
-
-    /**
      * @return Long return the tradeRequestId
      */
     public Long getTradeRequestId() {
@@ -147,6 +132,22 @@ public class TraceDetailOutputDto {
      */
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+
+
+    /**
+     * @return List<TraceDataDto> return the upTraceList
+     */
+    public List<TraceDataDto> getUpTraceList() {
+        return upTraceList;
+    }
+
+    /**
+     * @param upTraceList the upTraceList to set
+     */
+    public void setUpTraceList(List<TraceDataDto> upTraceList) {
+        this.upTraceList = upTraceList;
     }
 
 }
