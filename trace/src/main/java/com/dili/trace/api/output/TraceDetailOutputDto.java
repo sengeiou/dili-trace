@@ -3,9 +3,10 @@ package com.dili.trace.api.output;
 import java.util.List;
 
 import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.TradeDetail;
 
 public class TraceDetailOutputDto {
+	private Long tradeRequestId;
+	
 	private List<ImageCert> imageCertList;
 	// private List<String> originNameList;
 	private String productName;
@@ -86,6 +87,21 @@ public class TraceDetailOutputDto {
 
 
 
+    /**
+     * @return List<TraceDataDto> return the downTraceList
+     */
+    public List<TraceDataDto> getDownTraceList() {
+        return downTraceList;
+    }
+
+    /**
+     * @param downTraceList the downTraceList to set
+     */
+    public void setDownTraceList(List<TraceDataDto> downTraceList) {
+        this.downTraceList = downTraceList;
+    }
+
+
 
     /**
      * @return List<TraceDataDto> return the upTraceList
@@ -101,18 +117,19 @@ public class TraceDetailOutputDto {
         this.upTraceList = upTraceList;
     }
 
+
     /**
-     * @return List<TraceDataDto> return the downTraceList
+     * @return Long return the tradeRequestId
      */
-    public List<TraceDataDto> getDownTraceList() {
-        return downTraceList;
+    public Long getTradeRequestId() {
+        return tradeRequestId;
     }
 
     /**
-     * @param downTraceList the downTraceList to set
+     * @param tradeRequestId the tradeRequestId to set
      */
-    public void setDownTraceList(List<TraceDataDto> downTraceList) {
-        this.downTraceList = downTraceList;
+    public void setTradeRequestId(Long tradeRequestId) {
+        this.tradeRequestId = tradeRequestId;
     }
 
 }
