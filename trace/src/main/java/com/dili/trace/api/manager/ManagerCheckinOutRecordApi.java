@@ -114,7 +114,7 @@ public class ManagerCheckinOutRecordApi {
 		if (query == null || query.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
-		query.setIsCheckin(YnEnum.NO.getCode());
+		// query.setIsCheckin(YnEnum.NO.getCode());
 		query.setTruckType(TruckTypeEnum.FULL.getCode());
 		query.setMetadata(IDTO.AND_CONDITION_EXPR," bill_type <>"+BillTypeEnum.SUPPLEMENT.getCode());
 		List<RegisterBill>list =  this.registerBillService.listByExample(query);
