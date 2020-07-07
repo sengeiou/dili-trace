@@ -50,29 +50,32 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     TradeOrderService tradeOrderService;
 
     /**
-     * 创建销售请求并处理为完成
+     * 检查参数是否正确
+     * 
+     * @param sellerId
+     * @param batchStockInputList
      */
-    public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
-            List<BatchStockInput> batchStockInputList) {
-        List<Long> batchStockIdList = StreamEx.of(CollectionUtils.emptyIfNull(batchStockInputList)).nonNull()
-                .map(batchStockInput -> {
+    private void checkInput(Long sellerId, List<BatchStockInput> batchStockInputList) {
+
+        Map<Long, List<Long>> batchIdDetailIdMap = StreamEx.of(CollectionUtils.emptyIfNull(batchStockInputList))
+                .nonNull().toMap(batchStockInput -> {
                     return batchStockInput.getBatchStockId();
 
-                }).nonNull().toList();
-
-        List<Long> tradeDetailIdList = StreamEx.of(CollectionUtils.emptyIfNull(batchStockInputList)).nonNull()
-                .flatMap(batchStockInput -> {
+                }, batchStockInput -> {
                     return StreamEx.of(CollectionUtils.emptyIfNull(batchStockInput.getTradeDetailInputList())).nonNull()
                             .map(item -> {
                                 return item.getTradeDetailId();
-                            });
+                            }).toList();
+                });
 
-                }).toList();
+        List<Long> batchStockIdList = StreamEx.of(batchIdDetailIdMap.keySet()).nonNull().toList();
+        List<Long> tradeDetailIdList = StreamEx.of(batchIdDetailIdMap.values()).flatMap(List::stream).toList();
+
         List<TradeDetail> tradeDetailList = this.tradeDetailService.findTradeDetailByIdList(tradeDetailIdList);
-        //判断是否全部是卖家的商品
+        // 判断是否全部是卖家的商品
         boolean notBelongToSeller = StreamEx.of(tradeDetailList).map(TradeDetail::getBuyerId).distinct()
                 .anyMatch(uid -> !uid.equals(sellerId));
-         //判断是否全部是卖家的库存信息
+        // 判断是否全部是卖家的库存信息
         boolean notBelongToBatchStock = StreamEx.of(tradeDetailList).map(TradeDetail::getBatchStockId).distinct()
                 .anyMatch(bsid -> {
                     return batchStockIdList.contains(bsid);
@@ -81,7 +84,15 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             throw new TraceBusinessException("参数不匹配");
         }
 
+    }
 
+    /**
+     * 创建销售请求并处理为完成
+     */
+    public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
+            List<BatchStockInput> batchStockInputList) {
+        // 检查提交参数
+        this.checkInput(sellerId, batchStockInputList);
         TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY);
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
