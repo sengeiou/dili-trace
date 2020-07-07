@@ -322,6 +322,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
 			throw new TraceBusinessException("当前报备单已进门,不能预审核");
 		}
+		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())) {
+			throw new TraceBusinessException("当前状态不能进行数据操作");
+		}
 		this.doVerify(billItem, input, operatorUser);
 		return billItem.getId();
 	}
@@ -339,6 +342,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
 			throw new TraceBusinessException("当前报备单未进门,不能场内审核");
+		}
+		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())&&!BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
+			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
 		this.doVerify(billItem, input, operatorUser);
 		return billItem.getId();
@@ -360,9 +366,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (fromVerifyState == toVerifyState) {
 			throw new TraceBusinessException("状态不能相同");
 		}
-		if (!BillVerifyStatusEnum.canDoVerify(billItem.getVerifyStatus())) {
-			throw new TraceBusinessException("当前状态不能进行数据操作");
-		}
+
 
 		// 创建审核历史数据
 		this.registerBillHistoryService.createHistory(billItem);
