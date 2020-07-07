@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.beust.jcommander.internal.Lists;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.RedisService;
@@ -46,6 +47,7 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.glossary.YnEnum;
 
 import cn.hutool.core.collection.CollUtil;
+import tk.mybatis.mapper.entity.Example;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -469,6 +471,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     private void updateUserQrItem(Long userId) {
         this.registerBillService.updateUserQrStatusByUserId(userId);
     }
-
+    @Override
+    public List<User> findUserByNameOrPhoneOrTallyNo(String keyword) {
+        if(StringUtils.isBlank(keyword)){
+            return Lists.newArrayList();
+        }
+        Example e=new Example(User.class);
+        e.or().orLike("tallyAreaNos", "%"+keyword.trim()+"%").orLike("name", "%"+keyword.trim()+"%").orLike("phone", "%"+keyword.trim()+"%");
+        return this.getDao().selectByExample(e);
+    }
     
 }

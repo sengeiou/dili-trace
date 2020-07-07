@@ -88,4 +88,6 @@ public interface UserService extends BaseService<User, Long> {
 	BasePage<UserOutput> pageUserByQuery(UserInput user);
 
 	BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser);
+
+	public List<User> findUserByNameOrPhoneOrTallyNo(String keyword);
 }

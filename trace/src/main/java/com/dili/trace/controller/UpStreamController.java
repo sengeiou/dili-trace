@@ -42,6 +42,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.swagger.annotations.Api;
@@ -181,12 +182,11 @@ public class UpStreamController {
 		}
 	}
 
-	@RequestMapping(value = "/queryUpStream.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/listByKeyWord.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public BaseOutput queryUpStream(UpStream input) {
+	public BaseOutput queryUpStream(@RequestParam(required = true,name = "userId")Long userId,@RequestParam(required = true,name = "query")String keyword) {
 		try {
-			input.setId(2L);
-			List<UpStream> list = this.upStreamService.listByExample(input);
+			List<UpStream> list = this.upStreamService.queryUpStreamByKeyword(userId,keyword);
 			return BaseOutput.success().setData(list);
 
 		} catch (Exception e) {

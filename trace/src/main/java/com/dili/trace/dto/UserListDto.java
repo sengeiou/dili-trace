@@ -1,17 +1,14 @@
 package com.dili.trace.dto;
 
-import com.dili.ss.domain.annotation.Like;
-import com.dili.ss.domain.annotation.Operator;
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.trace.domain.User;
-import io.swagger.annotations.ApiModelProperty;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Transient;
+
+import com.dili.ss.domain.annotation.Like;
+import com.dili.ss.domain.annotation.Operator;
+import com.dili.trace.domain.User;
 
 /**
  * 由MyBatis Generator工具自动生成

@@ -211,7 +211,22 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	}
 	
-	
+	public List<UpStream> queryUpStreamByKeyword(Long userId,String keyword) {
+		if (userId == null||StringUtils.isBlank(keyword)) {
+			return new ArrayList<>();
+		}
+		RUserUpstream rUpstreamQuery = new RUserUpstream();
+		rUpstreamQuery.setUserId(userId);
+		List<Long> upStreamIdList = this.rUserUpStreamService.listByExample(rUpstreamQuery).stream()
+				.map(RUserUpstream::getUpstreamId).collect(Collectors.toList());
+		if (upStreamIdList.isEmpty()) {
+			return new ArrayList<>();
+		}
+		Example example = new Example(UpStream.class);
+		example.and().andIn("id", upStreamIdList).andLike("name", "%"+keyword+"%");
+		return this.getActualDao().selectByExample(example);
+
+	}
 	
 
 

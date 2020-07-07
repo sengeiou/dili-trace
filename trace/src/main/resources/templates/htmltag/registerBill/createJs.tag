@@ -329,15 +329,13 @@ var currentUser={"depId":"${user.depId!}"
         $("#goodsTable").find("tbody").find("tr").each(function(){
             var registerBill = new Object();
             registerBill.registerSource=registerSource;
-            if(registerBill.registerSource==1){
-                registerBill.tallyAreaNo=$("#tallyAreaNo").val();
-                registerBill.userId = $("#userId").val();
-            }else{
-                registerBill.tradeAccount=$("#tradeAccount").val();
-                registerBill.tradePrintingCard=$("#tradePrintingCard").val();
-               // registerBill.tradeTypeName=$("#tradeTypeName").val();
-                registerBill.tradeTypeId=$("#tradeTypeId").val();
-            }
+            registerBill.tallyAreaNo=$("#tallyAreaNo").val();
+
+            registerBill.billType = $("#billType").val();
+            registerBill.truckType = $("#truckType").val();
+            registerBill.preserveType = $("#preserveType").val();
+
+            registerBill.userId = $("#userId").val();
             registerBill.plate=$("input[name='plate']").val();
             registerBill.name=$("#name").val();
             registerBill.idCardNo=$("#idCardNo").val();

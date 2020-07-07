@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.swagger.annotations.Api;
@@ -145,6 +146,16 @@ public class UserController {
 	@RequestMapping(value = "/listByCondition.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput listByCondition(UserListDto userListDto) {
 		return BaseOutput.success().setData(userService.listByExample(userListDto));
+	}
+
+		/**
+	 * 业户keyword查询
+	 * @param userListDto
+	 * @return
+	 */
+	@RequestMapping(value = "/listByKeyword.action", method = { RequestMethod.GET, RequestMethod.POST })
+	public @ResponseBody BaseOutput listByCondition(@RequestParam(name = "query")String keyword) {
+		return BaseOutput.success().setData(userService.findUserByNameOrPhoneOrTallyNo(keyword));
 	}
 
 	/**

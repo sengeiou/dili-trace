@@ -41,6 +41,9 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.UserInfoDto;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.PreserveTypeEnum;
+import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
@@ -58,6 +61,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -184,7 +188,11 @@ public class RegisterBillController {
 	public String create(ModelMap modelMap) {
 
 		modelMap.put("citys", this.queryCitys());
-
+		modelMap.put("billTypes", StreamEx.of(BillTypeEnum.values()).mapToEntry(BillTypeEnum::getName, BillTypeEnum::getCode).toList());
+		modelMap.put("truckTypes", StreamEx.of(TruckTypeEnum.values()).mapToEntry(TruckTypeEnum::getName, TruckTypeEnum::getCode).toList());
+		modelMap.put("preserveTypes", StreamEx.of(PreserveTypeEnum.values()).mapToEntry(PreserveTypeEnum::getName, PreserveTypeEnum::getCode).toList());
+		String str=String.valueOf(System.currentTimeMillis());
+		modelMap.put("plate", "川A"+str.substring(str.length()-5));
 		return "registerBill/create";
 	}
 
