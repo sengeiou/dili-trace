@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.WeightUnitEnum;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -34,6 +35,7 @@ public class TradeRequest extends BaseDomain {
 
     @Column(name = "`product_name`")
     private String productName;
+
     @Column(name = "`weight_unit`")
     private Integer weightUnit;
 
@@ -89,6 +91,10 @@ public class TradeRequest extends BaseDomain {
     @Transient
     public Long getTradeRequestId() {
         return this.id;
+    }
+    @Transient
+    public String getWeightUnitName(){
+        return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
     }
 
     /**
