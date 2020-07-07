@@ -49,7 +49,7 @@ public class ClientBrandApi {
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			logger.info("获取品牌列表 操作用户:{}", userId);
-			inputDto.setUserId(userId);
+			// inputDto.setUserId(userId);
 			if (StringUtils.isBlank(inputDto.getOrder())) {
 				inputDto.setOrder("desc");
 				inputDto.setSort("created");
@@ -74,7 +74,7 @@ public class ClientBrandApi {
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			Brand query=new Brand();
-			query.setUserId(userId);
+			// query.setUserId(userId);
 			query.setBrandName(StringUtils.trimToNull(inputDto.getBrandName()));
 			boolean exists=this.brandService.listByExample(query).size()>0;
 			if(exists){
