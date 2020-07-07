@@ -29,34 +29,5 @@ public class BatchStockServiceTest extends AutoWiredBaseTest {
     @Autowired
     TradeDetailService tradeDetailService;
 
-    @Test
-    public void createOrUpdateBatchStock() {
-        User userQuery = DTOUtils.newDTO(User.class);
-        userQuery.setPage(1);
-        userQuery.setRows(1);
-        User userItem = StreamEx.of(this.userService.listPageByExample(userQuery).getDatas()).findFirst().orElse(null);
-        assertNotNull(userItem);
-        RegisterBill billQuery = new RegisterBill();
-        billQuery.setPage(1);
-        billQuery.setRows(1);
-        RegisterBill billItem = StreamEx.of(this.registerBillService.listPageByExample(billQuery).getDatas())
-                .findFirst().orElse(null);
-        assertNotNull(billItem);
-        TradeDetail tradeDetail = new TradeDetail();
-        tradeDetail.setBillId(billItem.getId());
-        tradeDetail.setTradeType(TradeTypeEnum.NONE.getCode());
-        tradeDetail.setCheckinStatus(CheckinStatusEnum.NONE.getCode());
-        tradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
-        tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-        tradeDetail.setBuyerId(userItem.getId());
-        tradeDetail.setBuyerName(userItem.getName());
-        tradeDetail.setProductName("test product");
-        tradeDetail.setStockWeight(BigDecimal.TEN);
-        tradeDetail.setTotalWeight(BigDecimal.valueOf(20L));
-        this.tradeDetailService.insertSelective(tradeDetail);
-
-        Long batchStockId=this.batchStockService.createOrUpdateBatchStock(tradeDetail.getId()).orElse(null);
-        assertNotNull(batchStockId);
-    }
 
 }

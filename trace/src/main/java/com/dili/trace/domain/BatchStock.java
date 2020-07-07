@@ -76,6 +76,9 @@ public class BatchStock extends BaseDomain {
     @Column(name = "`modified`")
     private Date modified;
 
+    @Column(name = "`trade_detail_num`")
+    private Integer tradeDetailNum;
+
     @Transient
     private String brandName;
 
@@ -279,6 +282,21 @@ public class BatchStock extends BaseDomain {
      */
     public void setBrandName(String brandName) {
         this.brandName = brandName;
+    }
+
+
+    /**
+     * @return Integer return the tradeDetailNum
+     */
+    public Integer getTradeDetailNum() {
+        return tradeDetailNum;
+    }
+
+    /**
+     * @param tradeDetailNum the tradeDetailNum to set
+     */
+    public void setTradeDetailNum(Integer tradeDetailNum) {
+        this.tradeDetailNum = tradeDetailNum;
     }
 
 }

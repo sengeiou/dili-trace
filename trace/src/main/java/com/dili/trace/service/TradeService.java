@@ -54,6 +54,7 @@ public class TradeService {
             BatchStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
             batchStock.setStockWeight(batchStock.getStockWeight().add(billItem.getWeight()));
             batchStock.setTotalWeight(batchStock.getTotalWeight().add(billItem.getWeight()));
+            batchStock.setTradeDetailNum(batchStock.getTradeDetailNum()+1);
             this.batchStockService.updateSelective(batchStock);
 
             TradeDetail updatableRecord = new TradeDetail();

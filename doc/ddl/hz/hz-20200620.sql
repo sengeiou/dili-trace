@@ -292,6 +292,7 @@ CREATE TABLE `batch_stock` (
 	`stock_weight` decimal(10,3) NOT NULL default 0 COMMENT '库存重量',
 	`total_weight` decimal(10,3) NOT NULL default 0 COMMENT '总重量',
 	`weight_unit` int(11) NOT NULL default 10 COMMENT '重量单位',
+	`trade_detail_num` int(11) NOT NULL default 0 COMMENT '可用批次数量',
 	`spec_name` varchar(20)  NULL  COMMENT '规格',
 	`product_name` varchar(20) NOT NULL COMMENT '商品名称',
   	`product_id` bigint(20) NOT NULL,
