@@ -1,7 +1,5 @@
 package com.dili.trace.api;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 
 import com.dili.common.annotation.InterceptConfiguration;
@@ -10,18 +8,8 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.UpStream;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.TradeDetailService;
-import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
-import com.google.common.collect.Lists;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
 
 @RestController
 @RequestMapping(value = "/api/registerBillApi")
@@ -55,8 +42,10 @@ public class RegisterBillApi {
 
 		logger.info("获取登记单详细信息->billId:{},tradeDetailId:{}", inputDto.getBillId(), inputDto.getTradeDetailId());
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-
+			Long userId = this.sessionContext.getAccountId();
+			if(userId==null){
+				return BaseOutput.failure("你还未登录");
+			}
 			RegisterBillOutputDto outputdto = this.registerBillService.viewTradeDetailBill(inputDto.getBillId(),
 					inputDto.getTradeDetailId());
 

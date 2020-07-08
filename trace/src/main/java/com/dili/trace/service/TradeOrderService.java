@@ -27,11 +27,23 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         if(buyer==null){
             throw new TraceBusinessException("买家不存在");
         }
-        return this.createTradeOrder(seller, buyer,orderType);
+        return this.createTradeOrder(seller, buyer,orderType,TradeOrderStatusEnum.NONE);
+
+    }
+    public TradeOrder createTradeOrder(Long sellerId, Long buyerId,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum) {
+        User seller = this.userService.get(sellerId);
+        User buyer = this.userService.get(buyerId);
+        if(seller==null){
+            throw new TraceBusinessException("卖家不存在");
+        }
+        if(buyer==null){
+            throw new TraceBusinessException("买家不存在");
+        }
+        return this.createTradeOrder(seller, buyer,orderType,tradeOrderStatusEnum);
 
     }
 
-    public TradeOrder createTradeOrder(User seller, User buyer,TradeOrderTypeEnum orderType) {
+    public TradeOrder createTradeOrder(User seller, User buyer,TradeOrderTypeEnum orderType,TradeOrderStatusEnum tradeOrderStatusEnum) {
 
         TradeOrder tradeOrder = new TradeOrder();
         tradeOrder.setBuyerId(buyer.getId());
@@ -39,7 +51,7 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
 
         tradeOrder.setSellerId(seller.getId());
         tradeOrder.setSellerName(seller.getName());
-        tradeOrder.setOrderStatus(TradeOrderStatusEnum.NONE.getCode());
+        tradeOrder.setOrderStatus(tradeOrderStatusEnum.getCode());
         tradeOrder.setOrderType(orderType.getCode());
         this.insertSelective(tradeOrder);
         return tradeOrder;

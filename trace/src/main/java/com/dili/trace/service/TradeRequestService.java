@@ -95,17 +95,15 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 创建销售请求并处理为完成
      */
-    public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
-            List<BatchStockInput> batchStockInputList) {
+    public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,List<BatchStockInput> batchStockInputList) {
         // 检查提交参数
         this.checkInput(sellerId, batchStockInputList);
-        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY);
+        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY,TradeOrderStatusEnum.FINISHED);
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return this.hanleRequest(request, tradeDetailInputList);
                 }).toList();
-        this.tradeOrderService.handleTradeOrder(tradeOrderItem, TradeOrderStatusEnum.FINISHED);
         return list;
 
     }
