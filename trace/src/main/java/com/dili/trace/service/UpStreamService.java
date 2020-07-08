@@ -1,10 +1,7 @@
 package com.dili.trace.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
@@ -104,14 +101,15 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		this.addUserForDownStream(upStreamDto).ifPresent(sourceuserId -> {
 			upStreamDto.setSourceUserId(sourceuserId);
 		});
-
 		try {
-			this.insertSelective(upStreamDto);
+			if (CollUtil.isEmpty(listByExample(upStreamDto))) {
+				insertSelective(upStreamDto);
+				addUpstreamUsers(upStreamDto, operatorUser);
+			}
 		} catch (DuplicateKeyException e) {
 			throw new TraceBusinessException("已存在手机号:" + upStreamDto.getTelphone() + "的企业/个人");
 		}
 
-		addUpstreamUsers(upStreamDto, operatorUser);
 		return BaseOutput.success();
 	}
 

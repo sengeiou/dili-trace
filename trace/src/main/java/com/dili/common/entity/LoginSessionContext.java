@@ -3,7 +3,6 @@ package com.dili.common.entity;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -156,11 +155,11 @@ public class LoginSessionContext implements Serializable {
 
 	}
 
-	public Optional<OperatorUser> getCurrentLoginUser(LoginIdentityTypeEnum identityType) {
-		if (this.getAccountId() != null || this.getUserName() != null) {
-			return Optional.of(new OperatorUser(this.getAccountId(), this.getUserName()));
-		}
-		return Optional.empty();
-
-	}
+//	public Optional<OperatorUser> getCurrentLoginUser(LoginIdentityTypeEnum identityType) {
+//		if (this.getAccountId() != null || this.getUserName() != null) {
+//			return Optional.of(new OperatorUser(this.getAccountId(), this.getUserName()));
+//		}
+//		return Optional.empty();
+//
+//	}
 }
