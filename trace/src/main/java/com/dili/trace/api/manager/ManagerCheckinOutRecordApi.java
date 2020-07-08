@@ -107,14 +107,23 @@ public class ManagerCheckinOutRecordApi {
 	 */
 	@RequestMapping(value = "/listPageCheckInData.api", method = { RequestMethod.POST })
 	public BaseOutput<Map<Integer, Object>> listPageCheckInData(@RequestBody RegisterBillDto query) {
+		try {
+			if (query == null || query.getUserId() == null) {
+				return BaseOutput.failure("参数错误");
+			}
+			Long operatorUserId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
+			Map<Integer, Object> resultMap = this.listCheckInData(query);
+			return BaseOutput.success().setData(resultMap);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+	}
 
-		if (sessionContext.getAccountId() == null) {
-			return BaseOutput.failure("未登陆用户");
-		}
-		if (query == null || query.getUserId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
-		String dynaWhere=" is_checkin="+YnEnum.NO.getCode()+" and bill_type =" + BillTypeEnum.NONE.getCode();
+	private Map<Integer, Object> listCheckInData(RegisterBillDto query) {
+		String dynaWhere = " is_checkin=" + YnEnum.NO.getCode() + " and bill_type =" + BillTypeEnum.NONE.getCode();
 
 		query.setSort("created");
 		query.setOrder("desc");
@@ -137,7 +146,8 @@ public class ManagerCheckinOutRecordApi {
 					return StreamEx.of(this.registerBillService.listByExample(query));
 				}).toList();
 
-		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList).append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
+		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList)
+				.append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
 				.groupingBy(RegisterBill::getTruckType);
 		Map<Integer, Object> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
 			if (TruckTypeEnum.FULL.equalsToCode(k)) {
@@ -148,25 +158,8 @@ public class ManagerCheckinOutRecordApi {
 			}
 			return StreamEx.empty();
 		}).toMap();
-
-		return BaseOutput.success().setData(resultMap);
+		return resultMap;
 
 	}
 
-	// /**
-	// * 分页查询需要出场查询的信息
-	// */
-	// @RequestMapping(value = "/listPageCheckOutData.api", method = {
-	// RequestMethod.POST })
-	// public BaseOutput<BasePage<Map<String, Object>>>
-	// listPageCheckOutData(@RequestBody CheckoutApiListQuery query) {
-
-	// if (sessionContext.getAccountId() == null) {
-	// return BaseOutput.failure("未登陆用户");
-	// }
-
-	// return this.checkinOutRecordService.listPagedData(query,
-	// sessionContext.getAccountId());
-
-	// }
 }
