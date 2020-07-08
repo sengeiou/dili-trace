@@ -91,10 +91,10 @@ public class UserApi {
     public BaseOutput<Long> realNameCertificationReq(@RequestBody User user) {
         try {
             Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-            User currentUser = userService.get(id);
-            if (ValidateStateEnum.PASSED.equalsToCode(currentUser.getValidateState())) {// 已通过
-                return BaseOutput.success().setData(id);
-            }
+//            User currentUser = userService.get(id);
+//            if (ValidateStateEnum.PASSED.equalsToCode(currentUser.getValidateState())) {// 已通过
+//                return BaseOutput.success().setData(id).setMessage("已经通过审核，请勿反复提交");
+//            }
 
             checkRealNameCertificationParams(user);
             user.setId(id);

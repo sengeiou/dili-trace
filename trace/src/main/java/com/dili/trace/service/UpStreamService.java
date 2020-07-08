@@ -1,11 +1,10 @@
 package com.dili.trace.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
@@ -21,6 +20,7 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 
+import org.springframework.dao.DuplicateKeyException;
 import tk.mybatis.mapper.entity.Example;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -100,17 +100,25 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	 */
 	@Transactional
 	public BaseOutput addUpstream(UpStreamDto upStreamDto, OperatorUser operatorUser) {
-		insertSelective(upStreamDto);
-		addUpstreamUsers(upStreamDto, operatorUser);
 		//增加下游企业时创建用户
 		if (upStreamDto.getUpORdown() == DOWN_USER_FLAG){
-			doAddUser(upStreamDto);
+			Long userId = doAddUser(upStreamDto);
+			upStreamDto.setSourceUserId(userId);
 		}
+
+		try {
+			insertSelective(upStreamDto);
+		}catch (DuplicateKeyException e){
+			throw new TraceBusinessException("已存在手机号:"+upStreamDto.getTelphone()+"的企业/个人");
+		}
+
+		addUpstreamUsers(upStreamDto, operatorUser);
 		return BaseOutput.success();
 	}
 
-	private void doAddUser(UpStreamDto upStreamDto){
-		boolean existsFlag = userService.existsAccount(upStreamDto.getTelphone());
+	private Long doAddUser(UpStreamDto upStreamDto){
+		List<User> users = userService.getUserByExistsAccount(upStreamDto.getTelphone());
+		boolean existsFlag = !CollUtil.isEmpty(users);
 		if (!existsFlag){
 			JSONObject object = new JSONObject();
 			object.put("phone", upStreamDto.getTelphone());
@@ -122,7 +130,9 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 			User user = JSONObject.parseObject(object.toJSONString(),User.class);
 			userService.register(user,false);
+			return user.getId();
 		}
+		return users.get(0).getId();
 
 	}
 
