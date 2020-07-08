@@ -1,41 +1,43 @@
 package com.dili.trace.service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.dao.RUserUpStreamMapper;
 import com.dili.trace.dao.UpStreamMapper;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.enums.UserFlagEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
-
-import org.springframework.dao.DuplicateKeyException;
-import tk.mybatis.mapper.entity.Example;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.hutool.core.collection.CollUtil;
+import tk.mybatis.mapper.entity.Example;
+
 @Service
 public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
-	    /**
-     * 下游企业标志 20
-     */
-	public static final Integer DOWN_USER_FLAG = 20;
-	
+	/**
+	 * 下游企业标志 20
+	 */
+
 	public UpStreamMapper getActualDao() {
 		return (UpStreamMapper) getDao();
 	}
@@ -67,8 +69,6 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		return page;
 	}
 
-	
-
 	/**
 	 * 删除用户上游关系
 	 * 
@@ -86,7 +86,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		rUserUpstream.setUpstreamId(upstreamId);
 		RUserUpstream item = this.rUserUpStreamService.listByExample(rUserUpstream).stream().findFirst().orElse(null);
 		if (item != null) {
-			int value= this.rUserUpStreamService.delete(item.getId());
+			int value = this.rUserUpStreamService.delete(item.getId());
 			return value;
 		}
 		return 0;
@@ -100,36 +100,46 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	 */
 	@Transactional
 	public BaseOutput addUpstream(UpStreamDto upStreamDto, OperatorUser operatorUser) {
-		//增加下游企业时创建用户
-		if (upStreamDto.getUpORdown() == DOWN_USER_FLAG){
-			Long userId = doAddUser(upStreamDto);
-			upStreamDto.setSourceUserId(userId);
-		}
+		// 增加下游企业时创建用户
+		this.addUserForDownStream(upStreamDto).ifPresent(sourceuserId -> {
+			upStreamDto.setSourceUserId(sourceuserId);
+		});
 
 		try {
-			insertSelective(upStreamDto);
-		}catch (DuplicateKeyException e){
-			throw new TraceBusinessException("已存在手机号:"+upStreamDto.getTelphone()+"的企业/个人");
+			this.insertSelective(upStreamDto);
+		} catch (DuplicateKeyException e) {
+			throw new TraceBusinessException("已存在手机号:" + upStreamDto.getTelphone() + "的企业/个人");
 		}
 
 		addUpstreamUsers(upStreamDto, operatorUser);
 		return BaseOutput.success();
 	}
 
-	private Long doAddUser(UpStreamDto upStreamDto){
+	// 增加下游企业时创建用户
+	public Optional<Long> addUserForDownStream(UpStreamDto upStreamDto) {
+
+		if (UserFlagEnum.DOWN.equalsToCode(upStreamDto.getUpORdown())) {
+			Long sourceuserId = doAddUser(upStreamDto);
+			return Optional.ofNullable(sourceuserId);
+		}
+
+		return Optional.empty();
+	}
+
+	private Long doAddUser(UpStreamDto upStreamDto) {
 		List<User> users = userService.getUserByExistsAccount(upStreamDto.getTelphone());
 		boolean existsFlag = !CollUtil.isEmpty(users);
-		if (!existsFlag){
+		if (!existsFlag) {
 			JSONObject object = new JSONObject();
 			object.put("phone", upStreamDto.getTelphone());
 			object.put("name", upStreamDto.getName());
-			if (upStreamDto.getUpstreamType() == UpStreamTypeEnum.CORPORATE.getCode()){//企业
+			if (upStreamDto.getUpstreamType() == UpStreamTypeEnum.CORPORATE.getCode()) {// 企业
 				object.put("legal_person", upStreamDto.getLegalPerson());
 				object.put("license", upStreamDto.getLicense());
 			}
 
-			User user = JSONObject.parseObject(object.toJSONString(),User.class);
-			userService.register(user,false);
+			User user = JSONObject.parseObject(object.toJSONString(), User.class);
+			userService.register(user, false);
 			return user.getId();
 		}
 		return users.get(0).getId();
@@ -156,7 +166,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			});
 			rUserUpStreamService.batchInsert(rUserUpstreams);
 		}
-		
+
 	}
 
 	/**
@@ -171,14 +181,13 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 		RUserUpstream rUserUpstreamDelCondition = new RUserUpstream();
 		rUserUpstreamDelCondition.setUpstreamId(upStreamDto.getId());
-		
-		
-		List<Long>changedUserId=this.rUserUpStreamService.list(rUserUpstreamDelCondition).stream().map(RUserUpstream::getUserId).collect(Collectors.toList());
-		
+
+		List<Long> changedUserId = this.rUserUpStreamService.list(rUserUpstreamDelCondition).stream()
+				.map(RUserUpstream::getUserId).collect(Collectors.toList());
 
 		rUserUpStreamService.deleteByExample(rUserUpstreamDelCondition);
 		addUpstreamUsers(upStreamDto, operatorUser);
-		
+
 		return BaseOutput.success();
 
 	}
@@ -209,20 +218,20 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		return this.getActualDao().selectByExample(example);
 
 	}
-	
+
 	public UpStream queryUpStreamBySourceUserId(Long sourceUserId) {
 		if (sourceUserId == null) {
 			return null;
 		}
-		UpStream query=new UpStream();
+		UpStream query = new UpStream();
 		query.setSourceUserId(sourceUserId);
-		UpStream upStream=this.listByExample(query).stream().findFirst().orElse(null);
-		 return upStream;
+		UpStream upStream = this.listByExample(query).stream().findFirst().orElse(null);
+		return upStream;
 
 	}
-	
-	public List<UpStream> queryUpStreamByKeyword(Long userId,String keyword) {
-		if (userId == null||StringUtils.isBlank(keyword)) {
+
+	public List<UpStream> queryUpStreamByKeyword(Long userId, String keyword) {
+		if (userId == null || StringUtils.isBlank(keyword)) {
 			return new ArrayList<>();
 		}
 		RUserUpstream rUpstreamQuery = new RUserUpstream();
@@ -233,11 +242,9 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			return new ArrayList<>();
 		}
 		Example example = new Example(UpStream.class);
-		example.and().andIn("id", upStreamIdList).andLike("name", "%"+keyword+"%");
+		example.and().andIn("id", upStreamIdList).andLike("name", "%" + keyword + "%");
 		return this.getActualDao().selectByExample(example);
 
 	}
-	
-
 
 }

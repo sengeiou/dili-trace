@@ -1,10 +1,10 @@
 package com.dili.trace.service;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
@@ -17,11 +17,17 @@ import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeOrder;
 import com.dili.trace.domain.TradeRequest;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
+import com.dili.trace.enums.UserFlagEnum;
+import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.trace.glossary.UserTypeEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -47,6 +53,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     TradeDetailService tradeDetailService;
     @Autowired
     TradeOrderService tradeOrderService;
+    @Autowired
+    UpStreamService upStreamService;
 
     /**
      * 检查参数是否正确
@@ -95,15 +103,18 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 创建销售请求并处理为完成
      */
-    public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,List<BatchStockInput> batchStockInputList) {
+    public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
+            List<BatchStockInput> batchStockInputList) {
         // 检查提交参数
         this.checkInput(sellerId, batchStockInputList);
-        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY,TradeOrderStatusEnum.FINISHED);
+        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY,
+                TradeOrderStatusEnum.FINISHED);
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return this.hanleRequest(request, tradeDetailInputList);
                 }).toList();
+        this.createUpStreamAndDownStream(sellerId, buyerId);
         return list;
 
     }
@@ -423,12 +434,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             });
         } else {
 
-            StreamEx.of(tradeDetailList).mapToEntry(buyerTd->buyerTd, buyerTd->{
-                Long parentId=buyerTd.getParentId();
+            StreamEx.of(tradeDetailList).mapToEntry(buyerTd -> buyerTd, buyerTd -> {
+                Long parentId = buyerTd.getParentId();
                 return this.tradeDetailService.get(parentId);
-            }).forKeyValue((buyertd,sellertd)->{
+            }).forKeyValue((buyertd, sellertd) -> {
 
-                
                 BatchStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(sellertd.getBatchStockId())
                         .orElseThrow(() -> {
                             return new TraceBusinessException("操作库存失败");
@@ -454,6 +464,64 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
 
         return tradeRequest.getId();
+    }
+
+    void createUpStreamAndDownStream(Long sellerId, Long buyerId) {
+
+        UpStream uStream = this.upStreamService.queryUpStreamBySourceUserId(sellerId);
+        UpStream dStream = this.upStreamService.queryUpStreamBySourceUserId(buyerId);
+        if (dStream == null) {
+            User buyer = this.userService.get(buyerId);
+            if (buyer == null) {
+                throw new TraceBusinessException("买家信息不存在");
+            }
+            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(buyer);
+            upStreamDto.setUpORdown(UserFlagEnum.DOWN.getCode());
+            upStreamDto.setUserIds(Arrays.asList(sellerId));
+            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
+            Long dStreamId = upStreamDto.getId();
+            dStream = this.upStreamService.get(dStreamId);
+        } else {
+            if (!UserFlagEnum.DOWN.equalsToCode(dStream.getUpORdown())) {
+                throw new TraceBusinessException("下游信息类型错误");
+            }
+        }
+        if (uStream == null) {
+            User seller = this.userService.get(sellerId);
+            if (seller == null) {
+                throw new TraceBusinessException("卖家信息不存在");
+            }
+            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(seller);
+            upStreamDto.setUpORdown(UserFlagEnum.UP.getCode());
+            upStreamDto.setUserIds(Arrays.asList(buyerId));
+            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
+            Long uStreamId = upStreamDto.getId();
+            uStream = this.upStreamService.get(uStreamId);
+        } else {
+            if (!UserFlagEnum.UP.equalsToCode(dStream.getUpORdown())) {
+                throw new TraceBusinessException("上游信息类型错误");
+            }
+        }
+
+    }
+
+    private UpStreamDto createUpStreamDtoFromUser(User user) {
+        UpStreamDto upStreamDto = new UpStreamDto();
+        upStreamDto.setName(user.getName());
+        upStreamDto.setIdCard(user.getCardNo());
+        upStreamDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
+        upStreamDto.setCardNoBackUrl(user.getCardNoBackUrl());
+        upStreamDto.setCardNoFrontUrl(user.getCardNoFrontUrl());
+        upStreamDto.setLegalPerson(user.getLegalPerson());
+        upStreamDto.setLicense(user.getLicense());
+        upStreamDto.setManufacturingLicenseUrl(user.getManufacturingLicenseUrl());
+        upStreamDto.setTelphone(user.getPhone());
+        if (UserTypeEnum.USER.equalsCode(user.getUserType())) {
+            upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
+        } else {
+            upStreamDto.setUpstreamType(UpStreamTypeEnum.CORPORATE.getCode());
+        }
+        return upStreamDto;
     }
 
     public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest,
