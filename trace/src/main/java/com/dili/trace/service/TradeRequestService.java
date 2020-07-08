@@ -414,8 +414,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
                 BatchStock batchStock = new BatchStock();
                 batchStock.setId(batchStockItem.getId());
-                batchStock.setTradeDetailNum(batchStock.getTradeDetailNum() + 1);
-                batchStock.setStockWeight(batchStock.getStockWeight().add(td.getStockWeight()));
+                batchStock.setTradeDetailNum(batchStockItem.getTradeDetailNum() + 1);
+                batchStock.setStockWeight(batchStockItem.getStockWeight().add(td.getStockWeight()));
                 this.batchStockService.updateSelective(batchStock);
 
                 TradeDetail tradeDetail = new TradeDetail();

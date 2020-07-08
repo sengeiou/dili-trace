@@ -114,36 +114,30 @@ public class ManagerCheckinOutRecordApi {
 		if (query == null || query.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
+		String dynaWhere=" is_checkin="+YnEnum.NO.getCode()+" and bill_type =" + BillTypeEnum.NONE.getCode();
+
 		query.setSort("created");
 		query.setOrder("desc");
-		String dynaWhere = " is_checkin=" + YnEnum.NO.getCode() + " and bill_type =" + BillTypeEnum.NONE.getCode();
-		query.setTruckType(TruckTypeEnum.FULL.getCode());
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
+
+		query.setTruckType(TruckTypeEnum.FULL.getCode());
 		List<RegisterBill> list = this.registerBillService.listByExample(query);
 
-		RegisterBillDto poolQuery = new RegisterBillDto();
-		poolQuery.setUserId(query.getUserId());
-		poolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
-		poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
-		poolQuery.setSort("created");
-		poolQuery.setOrder("desc");
-		List<RegisterBill> userPoolList = this.registerBillService.listByExample(poolQuery);
+		query.setTruckType(TruckTypeEnum.POOL.getCode());
+		List<RegisterBill> userPoolList = this.registerBillService.listByExample(query);
 
 		List<String> plateList = StreamEx.of(userPoolList).filter(bill -> {
 			return TruckTypeEnum.POOL.equalsToCode(bill.getTruckType());
 		}).map(RegisterBill::getPlate).distinct().toList();
-
 		List<RegisterBill> samePlatePoolTruckTypeBillList = StreamEx.ofNullable(plateList).filter(l -> !l.isEmpty())
 				.flatMap(l -> {
-					RegisterBillDto otherPoolQuery = new RegisterBillDto();
-					otherPoolQuery.setPlateList(plateList);
-					otherPoolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
-					poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
-					return StreamEx.of(this.registerBillService.listByExample(otherPoolQuery));
+					query.setPlateList(plateList);
+					query.setTruckType(TruckTypeEnum.POOL.getCode());
+					query.setUserId(null);
+					return StreamEx.of(this.registerBillService.listByExample(query));
 				}).toList();
 
-		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList)
-				.append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
+		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList).append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
 				.groupingBy(RegisterBill::getTruckType);
 		Map<Integer, Object> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
 			if (TruckTypeEnum.FULL.equalsToCode(k)) {
