@@ -148,14 +148,16 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		Long sellerId = tradeDetailItem.getBuyerId();
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
 		Long batchStockId = this.batchStockService.findOrCreateBatchStock(sellerId, billItem).getId();
-		BatchStock sellerBatchStock = this.batchStockService.selectByIdForUpdate(batchStockId).orElseThrow(() -> {
+		BatchStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(batchStockId).orElseThrow(() -> {
 			return new TraceBusinessException("操作库存失败");
 		});
 		TradeDetail sellerTradeDetail = new TradeDetail();
 
-		sellerBatchStock.setStockWeight(sellerBatchStock.getStockWeight().subtract(tradeWeight));
-		if (sellerBatchStock.getStockWeight().compareTo(BigDecimal.ZERO) <= 0) {
-			sellerBatchStock.setTradeDetailNum(sellerBatchStock.getTradeDetailNum() - 1);
+		BatchStock sellerBatchStock=new BatchStock();
+		sellerBatchStock.setId(batchStockId);
+		sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().subtract(tradeWeight));
+		if (stockWeight.compareTo(BigDecimal.ZERO) <= 0) {
+			sellerBatchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() - 1);
 			sellerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
 		}
 		this.batchStockService.updateSelective(sellerBatchStock);
