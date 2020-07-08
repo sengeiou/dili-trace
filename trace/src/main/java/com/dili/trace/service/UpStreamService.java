@@ -1,6 +1,5 @@
 package com.dili.trace.service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,7 +10,6 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.dao.RUserUpStreamMapper;
 import com.dili.trace.dao.UpStreamMapper;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
@@ -107,12 +105,14 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		}
 
 		try {
-			insertSelective(upStreamDto);
+			if(CollUtil.isEmpty(listByExample(upStreamDto))){
+				insertSelective(upStreamDto);
+				addUpstreamUsers(upStreamDto, operatorUser);
+			}
 		}catch (DuplicateKeyException e){
 			throw new TraceBusinessException("已存在手机号:"+upStreamDto.getTelphone()+"的企业/个人");
 		}
 
-		addUpstreamUsers(upStreamDto, operatorUser);
 		return BaseOutput.success();
 	}
 
