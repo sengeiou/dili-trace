@@ -135,13 +135,8 @@ public class ClientRegisterBillApi {
 			if (user == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			logger.info("获取登记单列表 操作用户:" + JSON.toJSONString(user));
+			logger.info("获取登记单列表 操作用户:{}", JSON.toJSONString(user));
 			input.setUserId(userId);
-			if (StringUtils.isBlank(input.getOrder())) {
-				input.setOrder("desc");
-				input.setSort("id");
-			}
-
 			BasePage basePage = this.tradeDetailService.selectTradeDetailAndBill(input);
 			return BaseOutput.success().setData(basePage);
 		} catch (TraceBusinessException e) {

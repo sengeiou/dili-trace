@@ -2,45 +2,46 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.trace.dao.TradeDetailMapper">
   <select id="selectTradeDetailAndBill" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.api.output.TradeDetailBillOutput">
-    select bill_id,trade_detail.id as trade_detail_id,
-    register_bill.verify_status,trade_detail.stock_weight,trade_detail.total_weight,
-    trade_detail.weight_unit ,
-    trade_detail.trade_type,
-    trade_detail.created,
-    trade_detail.product_name
-    from trade_detail 
-    left join register_bill on trade_detail.bill_id =register_bill.id 
-    where buyer_id=#{userId}
-    <if test="createdStart != null  and createdStart != ''">
-      <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
-    </if>
-    <if test="createdEnd != null  and createdEnd != ''">
-      <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
-    </if>
-    <if test="likeProductName != null  and likeProductName != ''">
-      AND trade_detail.product_name like '%${likeProductName}%'
-    </if>
-    union 
-    select id as bill_id,null as trade_detail_id,
-    register_bill.verify_status,weight,weight,
-    weight_unit,
-    null as trade_type,
-    register_bill.created,
-    register_bill.product_name
-    from register_bill
-    where user_id=#{userId} and id not in(
-        select bill_id from trade_detail
-    	where buyer_id=#{userId}
-    )
-    <if test="createdStart != null  and createdStart != ''">
-      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
-    </if>
-    <if test="createdEnd != null  and createdEnd != ''">
-      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
-    </if>
-    <if test="likeProductName != null  and likeProductName != ''">
-      AND register_bill.product_name  like '%${likeProductName}%'
-    </if>
+    SELECT * FROM (select bill_id,trade_detail.id as trade_detail_id,
+      register_bill.verify_status,trade_detail.stock_weight,trade_detail.total_weight,
+      trade_detail.weight_unit ,
+      trade_detail.trade_type,
+      trade_detail.created,
+      trade_detail.product_name
+      from trade_detail 
+      left join register_bill on trade_detail.bill_id =register_bill.id 
+      where buyer_id=#{userId}
+      <if test="createdStart != null  and createdStart != ''">
+        <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
+      </if>
+      <if test="createdEnd != null  and createdEnd != ''">
+        <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
+      </if>
+      <if test="likeProductName != null  and likeProductName != ''">
+        AND trade_detail.product_name like '%${likeProductName}%'
+      </if>
+      union 
+      select id as bill_id,null as trade_detail_id,
+      register_bill.verify_status,weight,weight,
+      weight_unit,
+      null as trade_type,
+      register_bill.created,
+      register_bill.product_name
+      from register_bill
+      where user_id=#{userId} and id not in(
+          select bill_id from trade_detail
+        where buyer_id=#{userId}
+      )
+      <if test="createdStart != null  and createdStart != ''">
+        <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+      </if>
+      <if test="createdEnd != null  and createdEnd != ''">
+        <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+      </if>
+      <if test="likeProductName != null  and likeProductName != ''">
+        AND register_bill.product_name  like '%${likeProductName}%'
+      </if>
+    ) t order by created desc
   </select>
   
 </mapper>
