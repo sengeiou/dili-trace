@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
@@ -229,7 +230,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             throw new TraceBusinessException("购买重量不能超过总库存重量");
         }
         if (tradeDetailIdWeightList.isEmpty()) {
-            AtomicReference<BigDecimal> totalTradeWeightAt = new AtomicReference<BigDecimal>(requestItem.getTradeWeight());
+            AtomicReference<BigDecimal> totalTradeWeightAt = new AtomicReference<BigDecimal>(
+                    requestItem.getTradeWeight());
             List<TradeDetail> resultList = StreamEx.of(tradeDetailList).map(td -> {
                 BigDecimal tradeWeight = totalTradeWeightAt.get();
                 if (tradeWeight.compareTo(td.getStockWeight()) >= 0) {
@@ -396,11 +398,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         tradeRequest.setReturnStatus(returnStatus.getCode());
         tradeRequest.setReason(reason);
         this.updateSelective(tradeRequest);
+
+        TradeDetail tradeDetailQuery = new TradeDetail();
+        tradeDetailQuery.setTradeRequestId(tradeRequestId);
+        List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+
         if (TradeReturnStatusEnum.REFUSE == returnStatus) {
 
-            TradeDetail tradeDetailQuery = new TradeDetail();
-            tradeDetailQuery.setTradeRequestId(tradeRequestId);
-            List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
             StreamEx.of(tradeDetailList).forEach(td -> {
 
                 BatchStock batchStockItem = this.batchStockService.selectByIdForUpdate(td.getBatchStockId())
@@ -419,6 +423,36 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
                 this.tradeDetailService.updateSelective(tradeDetail);
             });
+        } else {
+
+            StreamEx.of(tradeDetailList).mapToEntry(buyerTd->buyerTd, buyerTd->{
+                Long parentId=buyerTd.getParentId();
+                return this.tradeDetailService.get(parentId);
+            }).forKeyValue((buyertd,sellertd)->{
+
+                
+                BatchStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(sellertd.getBatchStockId())
+                        .orElseThrow(() -> {
+                            return new TraceBusinessException("操作库存失败");
+                        });
+
+                BatchStock batchStock = new BatchStock();
+                batchStock.setId(sellerBatchStockItem.getId());
+                batchStock.setStockWeight(sellerBatchStockItem.getStockWeight().add(buyertd.getStockWeight()));
+
+                TradeDetail tradeDetail = new TradeDetail();
+                tradeDetail.setId(sellertd.getId());
+                tradeDetail.setStockWeight(sellertd.getStockWeight().add(buyertd.getStockWeight()));
+
+                if (SaleStatusEnum.FOR_SALE.equalsToCode(sellertd.getSaleStatus())) {
+                    // do nothing
+                } else {
+                    batchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() + 1);
+                    tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                }
+                this.batchStockService.updateSelective(batchStock);
+                this.tradeDetailService.updateSelective(tradeDetail);
+            });
         }
 
         return tradeRequest.getId();
@@ -426,7 +460,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest,
             Long userId) {
-        tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR, "(buyer_id=" + userId + " OR seller_id=" + userId+")");
+        tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR, "(buyer_id=" + userId + " OR seller_id=" + userId + ")");
         return this.listPageByExample(tradeRequest);
 
     }
