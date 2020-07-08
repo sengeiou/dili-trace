@@ -23,7 +23,7 @@ public class BrandService extends BaseServiceImpl<Brand, Long> {
             return Optional.empty();
         }
         Brand query = new Brand();
-        query.setUserId(userId);
+        // query.setUserId(userId);
         query.setBrandName(brandName);
         Brand brandItem = StreamEx.of(this.listByExample(query)).findFirst().orElseGet(() -> {
             Brand brand = new Brand();
