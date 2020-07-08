@@ -116,7 +116,7 @@ public class ManagerCheckinOutRecordApi {
 		}
 		query.setSort("created");
 		query.setOrder("desc");
-		String dynaWhere=" is_checkin="+YnEnum.NO.getCode()+" and bill_type =" + BillTypeEnum.NONE.getCode();
+		String dynaWhere = " is_checkin=" + YnEnum.NO.getCode() + " and bill_type =" + BillTypeEnum.NONE.getCode();
 		query.setTruckType(TruckTypeEnum.FULL.getCode());
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
 		List<RegisterBill> list = this.registerBillService.listByExample(query);
@@ -124,7 +124,7 @@ public class ManagerCheckinOutRecordApi {
 		RegisterBillDto poolQuery = new RegisterBillDto();
 		poolQuery.setUserId(query.getUserId());
 		poolQuery.setTruckType(TruckTypeEnum.POOL.getCode());
-		poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR,dynaWhere);
+		poolQuery.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
 		poolQuery.setSort("created");
 		poolQuery.setOrder("desc");
 		List<RegisterBill> userPoolList = this.registerBillService.listByExample(poolQuery);
@@ -142,7 +142,8 @@ public class ManagerCheckinOutRecordApi {
 					return StreamEx.of(this.registerBillService.listByExample(otherPoolQuery));
 				}).toList();
 
-		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList).append(samePlatePoolTruckTypeBillList)
+		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList)
+				.append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
 				.groupingBy(RegisterBill::getTruckType);
 		Map<Integer, Object> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
 			if (TruckTypeEnum.FULL.equalsToCode(k)) {
