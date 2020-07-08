@@ -3,6 +3,7 @@ package com.dili.trace.api.input;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
@@ -17,19 +18,19 @@ public class TradeRequestListInput extends TradeRequest {
     private String likeProductName;
 
     @ApiModelProperty(value = "查询登记开始时间")
-	@Column(name = "`created`")
-	@Operator(Operator.GREAT_EQUAL_THAN)
-	private String createdStart;
+    @Column(name = "`created`")
+    @Operator(Operator.GREAT_EQUAL_THAN)
+    private String createdStart;
 
-	@ApiModelProperty(value = "查询登记结束时间")
-	@Column(name = "`created`")
-	@Operator(Operator.LITTLE_EQUAL_THAN)
+    @ApiModelProperty(value = "查询登记结束时间")
+    @Column(name = "`created`")
+    @Operator(Operator.LITTLE_EQUAL_THAN)
     private String createdEnd;
-    
+
+    @Transient
     private Long buyerId;
+    @Transient
     private List<BatchStockInput> batchStockList;
-
-
 
     /**
      * @return Long return the buyerId
@@ -59,7 +60,6 @@ public class TradeRequestListInput extends TradeRequest {
         this.batchStockList = batchStockList;
     }
 
-
     /**
      * @return String return the likeProductName
      */
@@ -73,7 +73,6 @@ public class TradeRequestListInput extends TradeRequest {
     public void setLikeProductName(String likeProductName) {
         this.likeProductName = likeProductName;
     }
-
 
     /**
      * @return String return the createdStart
