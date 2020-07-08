@@ -62,7 +62,7 @@ public class ClientTradeRequestApi {
 
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
-	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequest condition) {
+	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequestListInput condition) {
 
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
