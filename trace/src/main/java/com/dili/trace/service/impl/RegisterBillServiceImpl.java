@@ -61,6 +61,7 @@ import one.util.streamex.StreamEx;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
 @Service
+@Transactional
 public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
 	private static final Logger logger = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
 	@Autowired
@@ -87,8 +88,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
 	}
-
 	@Transactional
+	@Override
+	public Optional<RegisterBill> selectByIdForUpdate(Long id) {
+		return this.getActualDao().selectByIdForUpdate(id);
+	}
 	@Override
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser) {
@@ -343,7 +347,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
 			throw new TraceBusinessException("当前报备单未进门,不能场内审核");
 		}
-		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())&&!BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
+		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
+				&& !BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
 		this.doVerify(billItem, input, operatorUser);
@@ -367,7 +372,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("状态不能相同");
 		}
 
-
 		// 创建审核历史数据
 		this.registerBillHistoryService.createHistory(billItem);
 
@@ -389,10 +393,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.updateSelective(bill);
 
 		// 创建相关的tradeDetail及batchStock数据
-		this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(tradeDetailItem->{
-			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),tradeDetailItem.getId(), operatorUser);
+		this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(tradeDetailItem -> {
+			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(), tradeDetailItem.getId(),
+					operatorUser);
 		});
-		
+
 		// 更新用户颜色码
 		this.updateUserQrStatusByUserId(billItem.getUserId());
 

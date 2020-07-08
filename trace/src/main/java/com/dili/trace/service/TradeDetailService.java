@@ -147,17 +147,19 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	TradeDetail updateSellerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight) {
 		Long sellerId = tradeDetailItem.getBuyerId();
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
-
-		BatchStock sellerBatchStock = this.batchStockService.findOrCreateBatchStock(sellerId, billItem);
+		Long batchStockId = this.batchStockService.findOrCreateBatchStock(sellerId, billItem).getId();
+		BatchStock sellerBatchStock = this.batchStockService.selectByIdForUpdate(batchStockId).orElseThrow(() -> {
+			return new TraceBusinessException("操作库存失败");
+		});
 		TradeDetail sellerTradeDetail = new TradeDetail();
 
 		sellerBatchStock.setStockWeight(sellerBatchStock.getStockWeight().subtract(tradeWeight));
-		if(sellerBatchStock.getStockWeight().compareTo(BigDecimal.ZERO)<=0){
-			sellerBatchStock.setTradeDetailNum(sellerBatchStock.getTradeDetailNum()-1);
+		if (sellerBatchStock.getStockWeight().compareTo(BigDecimal.ZERO) <= 0) {
+			sellerBatchStock.setTradeDetailNum(sellerBatchStock.getTradeDetailNum() - 1);
 			sellerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
 		}
 		this.batchStockService.updateSelective(sellerBatchStock);
-	
+
 		sellerTradeDetail.setId(tradeDetailItem.getId());
 		sellerTradeDetail.setStockWeight(stockWeight);
 
@@ -168,9 +170,12 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			User buyer, Long tradeRequestId) {
-		BatchStock buyerBatchStock = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem);
+		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
+		BatchStock buyerBatchStock = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
+			return new TraceBusinessException("操作库存失败");
+		});
 		buyerBatchStock.setStockWeight(buyerBatchStock.getStockWeight().add(tradeWeight));
-		buyerBatchStock.setTradeDetailNum(buyerBatchStock.getTradeDetailNum()+1);
+		buyerBatchStock.setTradeDetailNum(buyerBatchStock.getTradeDetailNum() + 1);
 		this.batchStockService.updateSelective(buyerBatchStock);
 
 		Long buyerTradeDetailId = this.createTradeDetailByTrade(tradeDetailItem, buyer);
@@ -258,6 +263,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return this.getDao().selectByExample(e);
 
 	}
+
 	public List<TradeDetail> findTradeDetailByParentIdList(List<Long> parentIdList) {
 		if (parentIdList == null || parentIdList.isEmpty()) {
 			return Lists.newArrayList();

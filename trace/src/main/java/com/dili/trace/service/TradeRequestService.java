@@ -215,7 +215,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     }
                     return MutablePair.of(tradeDetail, tr.getTradeWeight());
                 }).toList();
-        BatchStock batchStockItem = this.batchStockService.get(requestItem.getBatchStockId());
+        BatchStock batchStockItem = this.batchStockService.selectByIdForUpdate(requestItem.getBatchStockId())
+                .orElseThrow(() -> {
+                    return new TraceBusinessException("操作库存失败");
+                });
+
         User buyer = this.userService.get(requestItem.getBuyerId());
         User seller = this.userService.get(requestItem.getSellerId());
 
@@ -257,10 +261,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
             }).toList();
         }
-        BatchStock batchStock = new BatchStock();
-        batchStock.setId(batchStockItem.getId());
-        batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
-        this.batchStockService.updateSelective(batchStock);
+        // BatchStock batchStock = new BatchStock();
+        // batchStock.setId(batchStockItem.getId());
+        // batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(requestItem.getTradeWeight()));
+        // this.batchStockService.updateSelective(batchStock);
 
         return this.get(requestItem.getId());
 
@@ -350,7 +354,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             if (changed) {
                 throw new TraceBusinessException("不能对已销售的商品申请退货");
             }
-            BatchStock batchStockItem = this.batchStockService.get(td.getBatchStockId());
+            BatchStock batchStockItem = this.batchStockService.selectByIdForUpdate(td.getBatchStockId())
+                    .orElseThrow(() -> {
+                        return new TraceBusinessException("操作库存失败");
+                    });
 
             BatchStock batchStock = new BatchStock();
             batchStock.setId(batchStockItem.getId());
@@ -404,7 +411,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
             StreamEx.of(tradeDetailList).forEach(td -> {
 
-                BatchStock batchStockItem = this.batchStockService.get(td.getBatchStockId());
+                BatchStock batchStockItem = this.batchStockService.selectByIdForUpdate(td.getBatchStockId())
+                        .orElseThrow(() -> {
+                            return new TraceBusinessException("操作库存失败");
+                        });
+
                 BatchStock batchStock = new BatchStock();
                 batchStock.setId(batchStockItem.getId());
                 batchStock.setTradeDetailNum(batchStock.getTradeDetailNum() + 1);

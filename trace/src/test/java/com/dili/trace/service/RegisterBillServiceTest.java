@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.StreamEx;
 
@@ -63,6 +64,14 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
         Long billId = this.billService.doVerifyAfterCheckIn(input, operatorUser);
         assertNotNull(billId);
 
+    }
+
+    @Test
+    @Transactional
+    public void selectByIdForUpdate() {
+        this.billService.selectByIdForUpdate(5L).ifPresent(bill -> {
+            System.out.println(bill);
+        });
     }
 
 }

@@ -15,7 +15,7 @@ public class BillTraceServiceTest extends AutoWiredBaseTest {
     @Test
     public void viewBillTrace() {
 
-        TraceDetailOutputDto out = this.billTraceService.viewBillTrace(10005L, 45L);
+        TraceDetailOutputDto out = this.billTraceService.viewBillTrace(10025L, 29L);
         assertNotNull(out);
     }
 

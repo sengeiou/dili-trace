@@ -108,18 +108,20 @@ public class BillTraceService {
                         return upTraceDto;
                     }).nonNull().toList();
 
-            User seller = this.userService.get(tradeRequestItem.getSellerId());
+            // User seller = this.userService.get(tradeRequestItem.getSellerId());
             // BatchStock
             // batchStock=this.batchStockService.get(tradeRequestItem.getBatchStockId());
 
             TradeDetail tradeDetailQuery = new TradeDetail();
             tradeDetailQuery.setSellerId(userId);
             tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
-            List<Long> parentIdList = StreamEx.of(this.tradeDetailService.listByExample(tradeDetailQuery))
-                    .map(TradeDetail::getId).toList();
-            List<TradeDetail> buyerTradeDetailList = this.tradeDetailService
-                    .findTradeDetailByParentIdList(parentIdList);
+            // List<Long> parentIdList =
+            // StreamEx.of(this.tradeDetailService.listByExample(tradeDetailQuery))
+            // .map(TradeDetail::getId).toList();
+            // List<TradeDetail> buyerTradeDetailList = this.tradeDetailService
+            // .findTradeDetailByParentIdList(parentIdList);
 
+            List<TradeDetail> buyerTradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
             List<TraceDataDto> downTraceList = StreamEx.of(buyerTradeDetailList).map(TradeDetail::getTradeRequestId)
                     .distinct().map(requestId -> {
 

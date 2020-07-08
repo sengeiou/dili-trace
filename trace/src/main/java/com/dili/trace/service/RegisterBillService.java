@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BasePage;
@@ -17,6 +18,10 @@ import com.dili.trace.dto.RegisterBillDto;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
 public interface RegisterBillService extends BaseService<RegisterBill, Long> {
+    /**
+     * 通过ID悲观锁定数据
+     */
+	public Optional<RegisterBill> selectByIdForUpdate(Long id);
 
 	public RegisterBill findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto dto) throws Exception;
 
@@ -75,10 +80,10 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser);
 
-			
 	public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query);
 
 	public BasePage<RegisterBill> listPageAfterCheckinVerifyBill(RegisterBillDto query);
+
 	/**
 	 * 统计不同审核状态报备单数据
 	 * 
