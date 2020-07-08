@@ -48,34 +48,34 @@ public class ManagerRegisterBillApi {
 	@Autowired
 	ImageCertService imageCertService;
 
-	@ApiOperation(value = "获得登记单详情")
-	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> viewRegisterBill(@RequestBody RegisterBillDto input) {
-		if (input == null || input.getBillId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
-		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			RegisterBill billItem = this.registerBillService.get(input.getBillId());
-			if(billItem==null){
-				return BaseOutput.failure("数据不存在");
-			}
+	// @ApiOperation(value = "获得登记单详情")
+	// @RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
+	// public BaseOutput<BasePage<RegisterBill>> viewRegisterBill(@RequestBody RegisterBillDto input) {
+	// 	if (input == null || input.getBillId() == null) {
+	// 		return BaseOutput.failure("参数错误");
+	// 	}
+	// 	try {
+	// 		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+	// 		RegisterBill billItem = this.registerBillService.get(input.getBillId());
+	// 		if(billItem==null){
+	// 			return BaseOutput.failure("数据不存在");
+	// 		}
 
-			RegisterBillOutput dto = RegisterBillOutput.build(billItem);
+	// 		RegisterBillOutput dto = RegisterBillOutput.build(billItem);
 			
-			String upStreamName=StreamEx.ofNullable(billItem.getUpStreamId()).nonNull()
-			.map(upId->{return this.upStreamService.get(upId);})
-			.nonNull().map(UpStream::getName).findFirst().orElse("");
-			dto.setUpStreamName(upStreamName);
-			dto.setImageCertList(this.imageCertService.findImageCertListByBillId(billItem.getId()));
-			return BaseOutput.success().setData(dto);
+	// 		String upStreamName=StreamEx.ofNullable(billItem.getUpStreamId()).nonNull()
+	// 		.map(upId->{return this.upStreamService.get(upId);})
+	// 		.nonNull().map(UpStream::getName).findFirst().orElse("");
+	// 		dto.setUpStreamName(upStreamName);
+	// 		dto.setImageCertList(this.imageCertService.findImageCertListByBillId(billItem.getId()));
+	// 		return BaseOutput.success().setData(dto);
 
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("操作失败：服务端出错");
-		}
-	}
+	// 	} catch (TraceBusinessException e) {
+	// 		return BaseOutput.failure(e.getMessage());
+	// 	} catch (Exception e) {
+	// 		logger.error(e.getMessage(), e);
+	// 		return BaseOutput.failure("操作失败：服务端出错");
+	// 	}
+	// }
 
 }

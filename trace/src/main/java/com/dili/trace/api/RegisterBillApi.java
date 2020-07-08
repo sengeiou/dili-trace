@@ -4,79 +4,103 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
+import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.exception.TraceBusinessException;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.input.RegisterBillApiInputDto;
+import com.dili.trace.domain.ImageCert;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.domain.UpStream;
+import com.dili.trace.domain.User;
+import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.service.ImageCertService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.TradeDetailService;
+import com.dili.trace.service.UpStreamService;
+import com.dili.trace.service.UserService;
+import com.google.common.collect.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.LoginSessionContext;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
-import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
-
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 
-/**
- * Created by laikui on 2019/7/26.
- */
 @RestController
-@RequestMapping(value = "/api/bill")
-@Api(value = "/api/bill", description = "登记单相关接口")
+@RequestMapping(value = "/api/registerBillApi")
+@Api(value = "/api/registerBillApi", description = "登记单相关接口")
 @InterceptConfiguration
 public class RegisterBillApi {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillApi.class);
+	private static final Logger logger = LoggerFactory.getLogger(RegisterBillApi.class);
 	@Autowired
 	private RegisterBillService registerBillService;
-	@Autowired
-	private SeparateSalesRecordService separateSalesRecordService;
 	@Resource
 	private LoginSessionContext sessionContext;
 	@Autowired
-	UserService userService;
-
-
+	private ImageCertService imageCertService;
 	@Autowired
-	UpStreamService upStreamService;
-
-	
-
-	@ApiOperation(value = "获取登记单列表")
-	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
-	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	// @InterceptConfiguration(loginRequired=false)
-	public BaseOutput<EasyuiPageOutput> list(@RequestBody RegisterBillDto registerBill) throws Exception {
-		LOGGER.info("获取登记单列表:" + JSON.toJSON(registerBill).toString());
-		User user = userService.get(sessionContext.getAccountId());
-		if (user == null) {
-			return BaseOutput.failure("未登陆用户");
+	private TradeDetailService tradeDetailService;
+	@Autowired
+	private UpStreamService upStreamService;
+	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
+	@RequestMapping(value = "/viewTradeDetailBill.api", method = RequestMethod.POST)
+	public BaseOutput<RegisterBillOutputDto> viewTradeDetailBill(@RequestBody RegisterBillApiInputDto inputDto) {
+		if (inputDto == null || (inputDto.getBillId() == null && inputDto.getTradeDetailId() == null)) {
+			return BaseOutput.failure("参数错误");
 		}
-		LOGGER.info("获取登记单列表 操作用户:" + JSON.toJSONString(user));
-		registerBill.setUserId(user.getId());
-		if (StringUtils.isBlank(registerBill.getOrder())) {
-			registerBill.setOrder("desc");
-			registerBill.setSort("id");
+
+		logger.info("获取登记单详细信息->billId:{},tradeDetailId:{}", inputDto.getBillId(), inputDto.getTradeDetailId());
+		try {
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			TradeDetail tradeDetailItem = StreamEx.ofNullable(inputDto.getTradeDetailId()).nonNull()
+					.map(tradeDetailId -> {
+						return this.tradeDetailService.get(tradeDetailId);
+					}).findFirst().orElse(new TradeDetail());
+
+			RegisterBill registerBill = StreamEx.ofNullable(inputDto.getBillId()).append(tradeDetailItem.getBillId())
+					.nonNull().map(billId -> {
+						return this.registerBillService.get(billId);
+					}).findFirst().orElse(new RegisterBill());
+
+			List<ImageCert> imageCertList = StreamEx.ofNullable(registerBill.getId()).nonNull().flatMap(billId -> {
+				return this.imageCertService.findImageCertListByBillId(billId).stream();
+			}).toList();
+
+			UpStream upStream = StreamEx.ofNullable(registerBill.getUpStreamId()).nonNull().map(upStreamId -> {
+				return this.upStreamService.get(upStreamId);
+			}).nonNull().findAny().orElse(null);
+
+			if (tradeDetailItem.getId() != null && registerBill.getId() != null) {
+				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
+				outputdto.setImageCertList(imageCertList);
+				outputdto.setUpStream(upStream);
+				outputdto.setWeight(tradeDetailItem.getTotalWeight());
+				return BaseOutput.success().setData(outputdto);
+			} else if (registerBill.getId() != null) {
+				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
+				outputdto.setUpStream(upStream);
+				outputdto.setImageCertList(imageCertList);
+				outputdto.setWeight(registerBill.getWeight());
+				return BaseOutput.success().setData(outputdto);
+			} else {
+				return BaseOutput.failure("没有数据");
+			}
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("查询数据出错");
 		}
-		EasyuiPageOutput easyuiPageOutput = registerBillService.listEasyuiPageByExample(registerBill, true);
-		return BaseOutput.success().setData(easyuiPageOutput);
+
 	}
 
-	
 }
