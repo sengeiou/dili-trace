@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.input.TradeRequestInputDto;
@@ -20,12 +21,8 @@ import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
-import com.dili.trace.util.BasePageUtil;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
-import tk.mybatis.mapper.entity.Example;
 
 @Service
 @Transactional
@@ -432,34 +428,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return tradeRequest.getId();
     }
 
-    public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest) {
-        if (tradeRequest.getPage() == null) {
-            tradeRequest.setPage(1);
-        }
-        if (tradeRequest.getRows() == null) {
-            tradeRequest.setRows(10);
-        }
-
-        if (tradeRequest == null || (tradeRequest.getBuyerId() == null && tradeRequest.getSellerId() == null)) {
-            return BasePageUtil.empty(tradeRequest.getPage(), tradeRequest.getRows());
-        }
-        PageHelper.startPage(tradeRequest.getPage(), tradeRequest.getRows());
-
-        Example e = new Example(TradeRequest.class);
-        e.and().orEqualTo("buyerId", tradeRequest.getBuyerId()).orEqualTo("sellerId", tradeRequest.getSellerId());
-        if (StringUtils.isNotBlank(tradeRequest.getLikeProductName())) {
-            e.and().andLike("productName", tradeRequest.getLikeProductName().trim());
-        }
-        List<TradeRequest> list = getDao().selectByExample(e);
-        Page<TradeRequest> page = (Page) list;
-        BasePage<TradeRequest> result = new BasePage<TradeRequest>();
-        result.setDatas(list);
-        result.setPage(page.getPageNum());
-        result.setRows(page.getPageSize());
-        result.setTotalItem(Integer.parseInt(String.valueOf(page.getTotal())));
-        result.setTotalPage(page.getPages());
-        result.setStartIndex(page.getStartRow());
-        return result;
+    public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest,
+            Long userId) {
+        tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR, "(buyer_id=" + userId + " OR seller_id=" + userId+")");
+        return this.listPageByExample(tradeRequest);
 
     }
 }

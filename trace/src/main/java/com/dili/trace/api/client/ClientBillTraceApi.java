@@ -85,9 +85,7 @@ public class ClientBillTraceApi {
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			query.setBuyerId(userId);
-			query.setSellerId(userId);
-			BasePage<TradeRequest> page = this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(query);
+			BasePage<TradeRequest> page = this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(query,userId);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>trace</artifactId>
 	<description>trace</description>
@@ -100,11 +98,11 @@
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>**/mapper/*.xml</exclude>
-				</excludes> 
+				</excludes>
 			</testResource>
 		</testResources>
 		<plugins>
-	
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -118,7 +116,7 @@
 			</plugin>
 
 
-<!-- 			<plugin>
+			<!-- 			<plugin>
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq-codegen-maven</artifactId>
 				<version>3.12.3</version>
@@ -163,6 +161,11 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>easyexcel</artifactId>
+			<version>2.2.6</version>
+		</dependency>
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
@@ -406,7 +409,6 @@
 		</dependency>
 
 	</dependencies>
-
 
 
 </project>

@@ -234,11 +234,9 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Test
     public void listPageTradeRequestByBuyerIdOrSellerId() {
         TradeRequestInputDto request = new TradeRequestInputDto();
-        request.setSellerId(1L);
-        request.setBuyerId(2L);
         request.setLikeProductName("abc");
-
-        this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(request);
+        request.setCreatedStart("2020-12-12 12:12:12");
+        this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(request,2L);
 
     }
 }
