@@ -25,6 +25,7 @@ import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.QrItemTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.jobs.UpdateUserQrStatusJob;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
@@ -140,6 +141,7 @@ public class UserController {
 
 	/**
 	 * 业户条件查询
+	 * 
 	 * @param userListDto
 	 * @return
 	 */
@@ -148,13 +150,14 @@ public class UserController {
 		return BaseOutput.success().setData(userService.listByExample(userListDto));
 	}
 
-		/**
+	/**
 	 * 业户keyword查询
+	 * 
 	 * @param userListDto
 	 * @return
 	 */
 	@RequestMapping(value = "/listByKeyword.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput listByCondition(@RequestParam(name = "query")String keyword) {
+	public @ResponseBody BaseOutput listByCondition(@RequestParam(name = "query") String keyword) {
 		return BaseOutput.success().setData(userService.findUserByNameOrPhoneOrTallyNo(keyword));
 	}
 
@@ -206,8 +209,6 @@ public class UserController {
 
 	}
 
-	
-
 	@ApiOperation("跳转到User页面")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap, @PathVariable Long id) {
@@ -218,10 +219,10 @@ public class UserController {
 			userItem.setAddr(MaskUserInfo.maskAddr(userItem.getAddr()));
 			userItem.setCardNo(MaskUserInfo.maskIdNo(userItem.getCardNo()));
 			userItem.setPhone(MaskUserInfo.maskPhone(userItem.getPhone()));
-			
+
 		}
-		UserTypeEnum userType=UserTypeEnum.fromCode(userItem.getUserType());
-		modelMap.put("userTypeDesc", userType==null?"":userType.getDesc());
+		UserTypeEnum userType = UserTypeEnum.fromCode(userItem.getUserType());
+		modelMap.put("userTypeDesc", userType == null ? "" : userType.getDesc());
 		modelMap.put("userItem", userItem);
 		modelMap.put("userPlates", userPlateStr);
 
@@ -232,21 +233,25 @@ public class UserController {
 	@RequestMapping(value = "/qrstatus.html", method = RequestMethod.GET)
 	public String qrstatus(ModelMap modelMap, Long id) {
 		List<UserQrItem> userQrItemlist = Collections.emptyList();
-//		List<UserQrItemDetail>userQrItemDetailList= this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
-//		Map<Long,String>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId,Collectors.mapping(UserQrItemDetail::getObjectId,Collectors.joining(","))));
+		// List<UserQrItemDetail>userQrItemDetailList=
+		// this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
+		// Map<Long,String>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId,Collectors.mapping(UserQrItemDetail::getObjectId,Collectors.joining(","))));
 		modelMap.put("userQrItemlist", userQrItemlist);
-//		modelMap.put("itemIdDetailListMap", itemIdDetailListMap);
-//		
-		Map<Integer,String>qrItemTypeMap=Stream.of(QrItemTypeEnum.values()).collect(Collectors.toMap(QrItemTypeEnum::getCode, QrItemTypeEnum::getDesc));
+		// modelMap.put("itemIdDetailListMap", itemIdDetailListMap);
+		//
+		Map<Integer, String> qrItemTypeMap = Stream.of(QrItemTypeEnum.values())
+				.collect(Collectors.toMap(QrItemTypeEnum::getCode, QrItemTypeEnum::getDesc));
 		modelMap.put("qrItemTypeMap", qrItemTypeMap);
-//
-//		Map<Integer,String>qrItemStatusMap=Stream.of(QrItemStatusEnum.values()).collect(Collectors.toMap(QrItemStatusEnum::getCode, QrItemStatusEnum::getDesc));
-//		modelMap.put("qrItemStatusMap", qrItemStatusMap);
-//		
+		//
+		// Map<Integer,String>qrItemStatusMap=Stream.of(QrItemStatusEnum.values()).collect(Collectors.toMap(QrItemStatusEnum::getCode,
+		// QrItemStatusEnum::getDesc));
+		// modelMap.put("qrItemStatusMap", qrItemStatusMap);
+		//
 		modelMap.put("userId", id);
 
 		return "user/qrstatus";
 	}
+
 	@ApiOperation("跳转到qrstatus页面")
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap, Long id) {
@@ -255,7 +260,8 @@ public class UserController {
 			User user = this.userService.get(id);
 			modelMap.put("item", user);
 		}
-		modelMap.put("userTypeMap", Stream.of(UserTypeEnum.values()).collect(Collectors.toMap(UserTypeEnum::getCode, UserTypeEnum::getDesc)));
+		modelMap.put("userTypeMap", Stream.of(UserTypeEnum.values())
+				.collect(Collectors.toMap(UserTypeEnum::getCode, UserTypeEnum::getDesc)));
 
 		String userPlateStr = this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate)
 				.collect(Collectors.joining(","));
@@ -266,5 +272,14 @@ public class UserController {
 		return "user/edit";
 	}
 
-	
+	@Autowired
+	UpdateUserQrStatusJob job;
+
+	@RequestMapping(value = "/triggerJob.html", method = RequestMethod.GET)
+	@ResponseBody
+	public BaseOutput triggerJob(ModelMap modelMap, Long id) {
+		job.execute();
+		return BaseOutput.success();
+	}
+
 }
