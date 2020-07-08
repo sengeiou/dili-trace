@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<configuration>
+<configuration scan="true" scanPeriod="3 seconds" debug="true">
 
     <!-- 测试环境 -->
-    <springProfile name="test">
-        <!-- 控制台输出 -->
-        <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-                <pattern>[hz-trace-test]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
-            </encoder>
-        </appender>
-    </springProfile>
+
+    <!-- 控制台输出 -->
+    <appender name="appender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>[hz-trace-test]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
 
    <!-- SQL输出 -->
     <logger name="p6spy" level="debug"/>
@@ -19,7 +19,7 @@
     <logger name="tk.mybatis.mapper.autoconfigure.MapperCacheDisabler" level="warn"/>
     <logger name="org.springframework.test.context.transaction.TransactionContext " level="error"/>
     <!-- 日志输出级别 -->
-    <root level="INFO">
+    <root level="info">
         <appender-ref ref="appender"/>
     </root>
 </configuration>

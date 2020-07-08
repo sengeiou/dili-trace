@@ -1,19 +1,19 @@
 package com.dili.trace.excel;
 
-import com.alibaba.excel.annotation.ExcelProperty;
+// import com.alibaba.excel.annotation.ExcelProperty;
 
 public class IndexOrNameData {
 
     /**
      * value: 表头名称 index: 列的号, 0表示第一列
      */
-    @ExcelProperty(value = "姓名", index = 0)
+    // @ExcelProperty(value = "姓名", index = 0)
     private String name;
 
-    @ExcelProperty(value = "年龄", index = 1)
+    // @ExcelProperty(value = "年龄", index = 1)
     private Integer age;
 
-    @ExcelProperty(value = "学校", index = 2)
+    // @ExcelProperty(value = "学校", index = 2)
     private String school;
 
     /**
