@@ -13,6 +13,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -114,4 +115,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param createdEnd
 	 */
 	public void updateAllUserQrStatusByRegisterBillNum(Date createdStart, Date createdEnd);
+
+
+	public RegisterBillOutputDto viewTradeDetailBill(Long billId,Long tradeDetailId);
 }

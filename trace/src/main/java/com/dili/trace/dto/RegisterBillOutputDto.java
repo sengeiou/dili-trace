@@ -18,7 +18,7 @@ public class RegisterBillOutputDto extends RegisterBill {
 	private static final long serialVersionUID = 1L;
 	private List<TradeDetail> tradeDetailList;
 	private List<ImageCert> imageCertList;
-	private UpStream upStream;
+	private String upStreamName;
 
 	public List<TradeDetail> getTradeDetailList() {
 		return tradeDetailList;
@@ -57,17 +57,17 @@ public class RegisterBillOutputDto extends RegisterBill {
 
 
     /**
-     * @return UpStream return the upStream
+     * @return String return the upStreamName
      */
-    public UpStream getUpStream() {
-        return upStream;
+    public String getUpStreamName() {
+        return upStreamName;
     }
 
     /**
-     * @param upStream the upStream to set
+     * @param upStreamName the upStreamName to set
      */
-    public void setUpStream(UpStream upStream) {
-        this.upStream = upStream;
+    public void setUpStreamName(String upStreamName) {
+        this.upStreamName = upStreamName;
     }
 
 }

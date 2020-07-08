@@ -45,12 +45,7 @@ public class RegisterBillApi {
 	private RegisterBillService registerBillService;
 	@Resource
 	private LoginSessionContext sessionContext;
-	@Autowired
-	private ImageCertService imageCertService;
-	@Autowired
-	private TradeDetailService tradeDetailService;
-	@Autowired
-	private UpStreamService upStreamService;
+
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")
 	@RequestMapping(value = "/viewTradeDetailBill.api", method = RequestMethod.POST)
 	public BaseOutput<RegisterBillOutputDto> viewTradeDetailBill(@RequestBody RegisterBillApiInputDto inputDto) {
@@ -61,39 +56,12 @@ public class RegisterBillApi {
 		logger.info("获取登记单详细信息->billId:{},tradeDetailId:{}", inputDto.getBillId(), inputDto.getTradeDetailId());
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			TradeDetail tradeDetailItem = StreamEx.ofNullable(inputDto.getTradeDetailId()).nonNull()
-					.map(tradeDetailId -> {
-						return this.tradeDetailService.get(tradeDetailId);
-					}).findFirst().orElse(new TradeDetail());
 
-			RegisterBill registerBill = StreamEx.ofNullable(inputDto.getBillId()).append(tradeDetailItem.getBillId())
-					.nonNull().map(billId -> {
-						return this.registerBillService.get(billId);
-					}).findFirst().orElse(new RegisterBill());
+			RegisterBillOutputDto outputdto = this.registerBillService.viewTradeDetailBill(inputDto.getBillId(),
+					inputDto.getTradeDetailId());
 
-			List<ImageCert> imageCertList = StreamEx.ofNullable(registerBill.getId()).nonNull().flatMap(billId -> {
-				return this.imageCertService.findImageCertListByBillId(billId).stream();
-			}).toList();
+			return BaseOutput.success().setData(outputdto);
 
-			UpStream upStream = StreamEx.ofNullable(registerBill.getUpStreamId()).nonNull().map(upStreamId -> {
-				return this.upStreamService.get(upStreamId);
-			}).nonNull().findAny().orElse(null);
-
-			if (tradeDetailItem.getId() != null && registerBill.getId() != null) {
-				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
-				outputdto.setImageCertList(imageCertList);
-				outputdto.setUpStream(upStream);
-				outputdto.setWeight(tradeDetailItem.getTotalWeight());
-				return BaseOutput.success().setData(outputdto);
-			} else if (registerBill.getId() != null) {
-				RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
-				outputdto.setUpStream(upStream);
-				outputdto.setImageCertList(imageCertList);
-				outputdto.setWeight(registerBill.getWeight());
-				return BaseOutput.success().setData(outputdto);
-			} else {
-				return BaseOutput.failure("没有数据");
-			}
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

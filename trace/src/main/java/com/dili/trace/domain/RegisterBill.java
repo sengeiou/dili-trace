@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
@@ -198,6 +199,10 @@ public class RegisterBill extends BaseDomain {
 	@Transient
 	public String getWeightUnitName() {
 		return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+	}
+	@Transient
+	public String getBillTypeName() {
+		return BillTypeEnum.fromCode(this.getBillType()).map(BillTypeEnum::getName).orElse("");
 	}
 	@Transient
 	public Long getBillId() {

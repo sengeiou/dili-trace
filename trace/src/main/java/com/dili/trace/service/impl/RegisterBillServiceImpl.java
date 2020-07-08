@@ -15,19 +15,21 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
-import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
@@ -42,11 +44,13 @@ import com.dili.trace.service.RegisterBillHistoryService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.TradeService;
+import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -54,6 +58,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import one.util.streamex.StreamEx;
 
@@ -84,15 +89,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	UserService userService;
 	@Autowired
 	TradeService tradeService;
+	@Autowired
+	UpStreamService upStreamService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
 	}
+
 	@Transactional
 	@Override
 	public Optional<RegisterBill> selectByIdForUpdate(Long id) {
 		return this.getActualDao().selectByIdForUpdate(id);
 	}
+
 	@Override
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
 			OperatorUser operatorUser) {
@@ -486,6 +495,46 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn());
 		return this.countByVerifyStatus(query);
+	}
+
+	public RegisterBillOutputDto viewTradeDetailBill(Long billId, Long tradeDetailId) {
+		if (billId == null && tradeDetailId == null) {
+			throw new TraceBusinessException("参数错误");
+		}
+
+		TradeDetail tradeDetailItem = StreamEx.ofNullable(tradeDetailId).nonNull().map(tdId -> {
+			return this.tradeDetailService.get(tdId);
+		}).findFirst().orElse(new TradeDetail());
+
+		RegisterBill registerBill = StreamEx.ofNullable(billId).append(tradeDetailItem.getBillId()).nonNull()
+				.map(bId -> {
+					return this.get(bId);
+				}).findFirst().orElse(new RegisterBill());
+
+		List<ImageCert> imageCertList = StreamEx.ofNullable(registerBill.getId()).nonNull().flatMap(bid -> {
+			return this.imageCertService.findImageCertListByBillId(bid).stream();
+		}).toList();
+
+		String upStreamName = StreamEx.ofNullable(registerBill.getUpStreamId()).nonNull().map(upStreamId -> {
+			return this.upStreamService.get(upStreamId);
+		}).nonNull().findAny().map(UpStream::getName).orElse("");
+
+		if (tradeDetailItem.getId() != null && registerBill.getId() != null) {
+			RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
+			outputdto.setImageCertList(imageCertList);
+			outputdto.setUpStreamName(upStreamName);
+			outputdto.setWeight(tradeDetailItem.getTotalWeight());
+			return outputdto;
+		} else if (registerBill.getId() != null) {
+			RegisterBillOutputDto outputdto = RegisterBillOutputDto.build(registerBill, Lists.newArrayList());
+			outputdto.setUpStreamName(upStreamName);
+			outputdto.setImageCertList(imageCertList);
+			outputdto.setWeight(registerBill.getWeight());
+			return outputdto;
+		} else {
+			throw new TraceBusinessException("没有数据");
+		}
+
 	}
 
 	private String dynamicSQLAfterCheckIn() {

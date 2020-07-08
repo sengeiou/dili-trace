@@ -74,4 +74,10 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
         });
     }
 
+    
+    @Test
+    public void viewTradeDetailBill() {
+        this.billService.viewTradeDetailBill(182L,5071L);
+    }
+
 }
