@@ -125,13 +125,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Override
     public void updateUser(User user) {
-
         // 手机号验重
         if (StringUtils.isNotBlank(user.getPhone())) {
-            User condition = DTOUtils.newDTO(User.class);
-            condition.setPhone(user.getPhone());
-            condition.setYn(YnEnum.YES.getCode());
-            List<User> users = listByExample(condition);
+            List<User> users = getUserByExistsAccount(user.getPhone());
             if (CollectionUtils.isNotEmpty(users)) {
                 users.forEach(o -> {
                     if (!o.getId().equals(user.getId()) && o.getPhone().equals(user.getPhone())) {
@@ -279,10 +275,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
      */
     @Override
     public boolean existsAccount(String phone) {
+        return !CollUtil.isEmpty(getUserByExistsAccount(phone));
+    }
+
+    @Override
+    public List<User> getUserByExistsAccount(String phone){
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(phone);
         query.setYn(YnEnum.YES.getCode());
-        return !CollUtil.isEmpty(listByExample(query));
+        return listByExample(query);
     }
 
     @Override

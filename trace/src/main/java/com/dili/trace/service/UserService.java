@@ -64,6 +64,15 @@ public interface UserService extends BaseService<User, Long> {
 	 */
 	boolean existsAccount(String phone);
 
+
+	/**
+	 * 根据手机号查询用户
+	 *
+	 * @param phone
+	 * @return
+	 */
+	List<User> getUserByExistsAccount(String phone);
+
 	/**
 	 * 根据用户ID，操作启禁用
 	 * 
