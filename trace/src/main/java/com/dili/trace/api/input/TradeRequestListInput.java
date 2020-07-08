@@ -27,24 +27,9 @@ public class TradeRequestListInput extends TradeRequest {
     @Operator(Operator.LITTLE_EQUAL_THAN)
     private String createdEnd;
 
-    @Transient
-    private Long buyerId;
+
     @Transient
     private List<BatchStockInput> batchStockList;
-
-    /**
-     * @return Long return the buyerId
-     */
-    public Long getBuyerId() {
-        return buyerId;
-    }
-
-    /**
-     * @param buyerId the buyerId to set
-     */
-    public void setBuyerId(Long buyerId) {
-        this.buyerId = buyerId;
-    }
 
     /**
      * @return List<BatchStockInput> return the batchStockList
