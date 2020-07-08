@@ -222,18 +222,14 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         TradeDetail tradeDetailQuery = new TradeDetail();
         tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
         tradeDetailQuery.setBatchStockId(batchStockItem.getId());
-
-        List<TradeDetail> tradeDetailList = StreamEx.of(this.tradeDetailService.listByExample(tradeDetailQuery))
-                .filter(td -> {
-                    return td.getStockWeight().compareTo(BigDecimal.ZERO) > 0;
-                }).sortedBy(TradeDetail::getCreated).toList();
+        tradeDetailQuery.setSort("created");
+        tradeDetailQuery.setOrder("asc");
+        List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         if (batchStockItem.getStockWeight().compareTo(requestItem.getTradeWeight()) < 0) {
             throw new TraceBusinessException("购买重量不能超过总库存重量");
         }
         if (tradeDetailIdWeightList.isEmpty()) {
-
-            AtomicReference<BigDecimal> totalTradeWeightAt = new AtomicReference<BigDecimal>(
-                    requestItem.getTradeWeight());
+            AtomicReference<BigDecimal> totalTradeWeightAt = new AtomicReference<BigDecimal>(requestItem.getTradeWeight());
             List<TradeDetail> resultList = StreamEx.of(tradeDetailList).map(td -> {
                 BigDecimal tradeWeight = totalTradeWeightAt.get();
                 if (tradeWeight.compareTo(td.getStockWeight()) >= 0) {
