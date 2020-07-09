@@ -5,9 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionConstants;
 import com.dili.common.service.RedisService;
-import com.dili.ss.redis.service.RedisUtil;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,6 +23,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 			+ ".CONTEXT_INITIALIZED";
 	// SESSION KEY
 	private static final String SESSION_PREFIX = "TRACE_SESSION_";
+	private static final String SESSION_PREFIX_ACCOUNT = "TRACE_SESSION_ACCOUNT_";
 	@Resource
 	private LoginSessionContext sessionContext;
 	@Resource
@@ -82,6 +82,9 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 		if (!StrUtil.isBlank(sessionId)) {
 			redisService.set(SESSION_PREFIX + sessionId, sessionContext.getMap(),
 					defaultConfiguration.getSessionExpire());
+			//增加account-session存储
+			redisService.set(SESSION_PREFIX_ACCOUNT + sessionContext.getLoginType() + sessionContext.getAccountId(),
+					sessionContext.getSessionId(),defaultConfiguration.getSessionExpire());
 		}
 	}
 
@@ -96,6 +99,13 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 		sessionContext.setSessionId(sessionId);
 		Map<String, Object> map = (Map<String, Object>) redisService.get(SESSION_PREFIX + sessionId);
 		if (MapUtil.isEmpty(map)) {
+			return;
+		}
+		//判断account-session
+		String redisAccountPrefix = SESSION_PREFIX_ACCOUNT + String.valueOf(map.get(SessionConstants.SESSION_LOGINTYPE)) + String.valueOf(map.get(SessionConstants.SESSION_ACCOUNT_ID));
+		String accountSessionId = (String)redisService.get(redisAccountPrefix);
+		if (!sessionId.equals(accountSessionId)){
+			redisService.del(SESSION_PREFIX + sessionId);
 			return;
 		}
 

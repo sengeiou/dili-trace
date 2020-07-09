@@ -15,7 +15,17 @@ public class LoginSessionContext implements Serializable {
 	private boolean invalidate;
 	private long millis;
 	private boolean changed;
+	private Integer loginType;
 	private Map<String, Object> map = new HashMap<String, Object>();
+
+	public Integer getLoginType() {
+		return loginType;
+	}
+
+	public void setLoginType(Integer loginType) {
+		this.loginType = loginType;
+		this.map.put(SessionConstants.SESSION_LOGINTYPE,loginType);
+	}
 
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
