@@ -96,18 +96,25 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	 * @return
 	 */
 	@Transactional
-	public BaseOutput addUpstream(UpStreamDto upStreamDto, OperatorUser operatorUser) {
+	public BaseOutput addUpstream(UpStreamDto upStreamDto, OperatorUser operatorUser,Boolean ... noticeException) {
 		// 增加下游企业时创建用户
 		this.addUserForDownStream(upStreamDto).ifPresent(sourceuserId -> {
 			upStreamDto.setSourceUserId(sourceuserId);
 		});
 		try {
-			if (CollUtil.isEmpty(listByExample(upStreamDto))) {
+			UpStreamDto query = new UpStreamDto();
+			query.setSourceUserId(upStreamDto.getSourceUserId());
+			query.setTelphone(upStreamDto.getTelphone());
+			query.setUpORdown(upStreamDto.getUpORdown());
+
+			if (CollUtil.isEmpty(listByExample(query))) {
 				insertSelective(upStreamDto);
 				addUpstreamUsers(upStreamDto, operatorUser);
 			}
 		} catch (DuplicateKeyException e) {
-			throw new TraceBusinessException("已存在手机号:" + upStreamDto.getTelphone() + "的企业/个人");
+			if (noticeException != null && noticeException[0]){
+				throw new TraceBusinessException("已存在手机号:" + upStreamDto.getTelphone() + "的企业/个人");
+			}
 		}
 
 		return BaseOutput.success();
@@ -153,6 +160,9 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		if (CollectionUtils.isNotEmpty(upStreamDto.getUserIds())) {
 			List<RUserUpstream> rUserUpstreams = new ArrayList<>();
 			upStreamDto.getUserIds().forEach(o -> {
+				if (upStreamDto.getId() == null){
+					return;
+				}
 				RUserUpstream rUserUpstream = new RUserUpstream();
 				rUserUpstream.setUpstreamId(upStreamDto.getId());
 				rUserUpstream.setUserId(o);
