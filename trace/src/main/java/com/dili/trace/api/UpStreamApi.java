@@ -98,7 +98,7 @@ public class UpStreamApi {
         try {
             input.setUserIds(Arrays.asList(user.getId()));
             input.setSourceUserId(user.getId());
-            return this.upStreamService.addUpstream(input,new OperatorUser(user.getId(),user.getName()));
+            return this.upStreamService.addUpstream(input,new OperatorUser(user.getId(),user.getName()),true);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
