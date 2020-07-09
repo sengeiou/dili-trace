@@ -281,6 +281,7 @@ public interface User extends IBaseDomain {
 
     void setBusinessCategories(String businessCategories);
 
+    @Transient
     default String getVocationTypeName() {
         return VocationTypeEnum.getNameFromCode(this.getVocationType());
     }
