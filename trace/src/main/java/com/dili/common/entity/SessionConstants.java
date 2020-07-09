@@ -7,4 +7,5 @@ public class SessionConstants {
     public static final String SESSION_MARKET_ID="marketId";
     public static final String SESSION_USER_TYPE="userType";
     public static final String SESSION_RELATION_ID="relationId";
+    public static final String SESSION_LOGINTYPE="loginType";
 }

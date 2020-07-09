@@ -72,7 +72,7 @@ public class LoginComponent {
 
 		if (LoginIdentityTypeEnum.USER.equalsToCode(loginInput.getLoginIdentityType())) {
 			User operatorUser = this.userLogin(loginInput.getUsername(), loginInput.getPassword());
-			prepareSessionId(operatorUser.getId(),operatorUser.getName());
+			prepareSessionId(operatorUser.getId(),operatorUser.getName(),loginInput.getLoginIdentityType());
 			result.put("userId", operatorUser.getId());
 			result.put("userName", operatorUser.getName());
 			result.put("tallyAreaNos",operatorUser.getTallyAreaNos());
@@ -82,7 +82,7 @@ public class LoginComponent {
 		} else if (LoginIdentityTypeEnum.SYS_MANAGER.equalsToCode(loginInput.getLoginIdentityType())) {
 			OperatorUser operatorUser = this.sysManagerLogin(loginInput.getUsername(), loginInput.getPassword(),
 					LoginIdentityTypeEnum.SYS_MANAGER);
-			prepareSessionId(operatorUser.getId(),operatorUser.getName());
+			prepareSessionId(operatorUser.getId(),operatorUser.getName(),loginInput.getLoginIdentityType());
 			result.put("userId", operatorUser.getId());
 			result.put("userName", operatorUser.getName());
 		} else {
@@ -94,10 +94,11 @@ public class LoginComponent {
 		return result;
 	}
 
-	private void prepareSessionId(Long id,String name){
+	private void prepareSessionId(Long id,String name,Integer loginType){
 		sessionContext.setSessionId(UUIDUtil.get());
 		sessionContext.setAccountId(id);
 		sessionContext.setUserName(name);
+		sessionContext.setLoginType(loginType);
 	}
 
 	private User userLogin(String phone, String password) {
