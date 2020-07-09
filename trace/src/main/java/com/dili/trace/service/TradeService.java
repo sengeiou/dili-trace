@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.dili.common.exception.TraceBusinessException;
@@ -37,6 +38,7 @@ public class TradeService {
     public Long createBatchStockAfterVerifiedAndCheckin(Long billId, Long tradeDetailId,
             OperatorUser operateUser) {
         RegisterBill billItem = this.billService.get(billId);
+        BigDecimal weight=billItem.getWeight();
         if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
             // 还没有进门，不对TradeDetaile及BatchStock进行任何操作
             return billId;
@@ -52,8 +54,8 @@ public class TradeService {
                 && SaleStatusEnum.NONE.equalsToCode(tradeDetailItem.getSaleStatus())) {
 
             BatchStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
-            batchStock.setStockWeight(batchStock.getStockWeight().add(billItem.getWeight()));
-            batchStock.setTotalWeight(batchStock.getTotalWeight().add(billItem.getWeight()));
+            batchStock.setStockWeight(batchStock.getStockWeight().add(weight));
+            batchStock.setTotalWeight(batchStock.getTotalWeight().add(weight));
             batchStock.setTradeDetailNum(batchStock.getTradeDetailNum()+1);
             this.batchStockService.updateSelective(batchStock);
 
@@ -63,6 +65,8 @@ public class TradeService {
             updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
             updatableRecord.setIsBatched(TFEnum.TRUE.getCode());
             updatableRecord.setBatchStockId(batchStock.getId());
+            updatableRecord.setStockWeight(weight);
+            updatableRecord.setTotalWeight(weight);
             this.tradeDetailService.updateSelective(updatableRecord);
 
         }

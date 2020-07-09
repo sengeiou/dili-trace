@@ -256,7 +256,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("当前状态不能修改数据");
 		}
 		input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+		input.setModified(new Date());
 		this.updateSelective(input);
+
+		this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(td->{
+			TradeDetail updatableRecord = new TradeDetail();
+			updatableRecord.setId(td.getId());
+			updatableRecord.setModified(new Date());
+			updatableRecord.setStockWeight(input.getWeight());
+			updatableRecord.setTotalWeight(input.getWeight());
+			this.tradeDetailService.updateSelective(updatableRecord);
+		});
+
 		this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
 		this.updateUserQrStatusByUserId(billItem.getUserId());
 		return input.getId();
