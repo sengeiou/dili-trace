@@ -467,40 +467,35 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
     void createUpStreamAndDownStream(Long sellerId, Long buyerId) {
-
-        UpStream uStream = this.upStreamService.queryUpStreamBySourceUserId(sellerId);
-        UpStream dStream = this.upStreamService.queryUpStreamBySourceUserId(buyerId);
-        if (dStream == null) {
-            User buyer = this.userService.get(buyerId);
-            if (buyer == null) {
-                throw new TraceBusinessException("买家信息不存在");
-            }
-            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(buyer);
-            upStreamDto.setUpORdown(UserFlagEnum.DOWN.getCode());
-            upStreamDto.setUserIds(Arrays.asList(sellerId));
-            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
-            Long dStreamId = upStreamDto.getId();
-            dStream = this.upStreamService.get(dStreamId);
-        } else {
-            if (!UserFlagEnum.DOWN.equalsToCode(dStream.getUpORdown())) {
-                throw new TraceBusinessException("下游信息类型错误");
-            }
+        User seller = this.userService.get(sellerId);
+        if (seller == null) {
+            throw new TraceBusinessException("卖家信息不存在");
         }
-        if (uStream == null) {
-            User seller = this.userService.get(sellerId);
-            if (seller == null) {
-                throw new TraceBusinessException("卖家信息不存在");
-            }
+
+        User buyer = this.userService.get(buyerId);
+        if (buyer == null) {
+            throw new TraceBusinessException("买家信息不存在");
+        }
+
+        UpStream buyersUStream = StreamEx
+                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(buyerId, UserFlagEnum.UP, sellerId)).findFirst()
+                .orElse(null);
+
+        UpStream sellersDStream = StreamEx
+                .of(this.upStreamService.queryUpStreamByUserIdAndFlag(sellerId, UserFlagEnum.DOWN, buyerId)).findFirst()
+                .orElse(null);
+        if (buyersUStream == null) {
             UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(seller);
             upStreamDto.setUpORdown(UserFlagEnum.UP.getCode());
             upStreamDto.setUserIds(Arrays.asList(buyerId));
             this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
-            Long uStreamId = upStreamDto.getId();
-            uStream = this.upStreamService.get(uStreamId);
-        } else {
-            if (!UserFlagEnum.UP.equalsToCode(dStream.getUpORdown())) {
-                throw new TraceBusinessException("上游信息类型错误");
-            }
+        }
+
+        if (sellersDStream == null) {
+            UpStreamDto upStreamDto = this.createUpStreamDtoFromUser(buyer);
+            upStreamDto.setUpORdown(UserFlagEnum.DOWN.getCode());
+            upStreamDto.setUserIds(Arrays.asList(sellerId));
+            this.upStreamService.addUpstream(upStreamDto, new OperatorUser(null, null));
         }
 
     }
