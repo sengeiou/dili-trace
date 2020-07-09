@@ -111,9 +111,9 @@ public class ClientRegisterBillApi {
 				return BaseOutput.failure("未登陆用户");
 			}
 
-			logger.info("保存登记单:" + JSON.toJSONString(dto));
+			
 			RegisterBill registerBill = dto.build(user);
-
+			logger.info("保存登记单:{}", JSON.toJSONString(registerBill));
 			this.registerBillService.doEdit(registerBill);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
