@@ -24,7 +24,7 @@
     <result column="market_id" jdbcType="BIGINT" property="marketId" />
     <result column="market_name" jdbcType="VARCHAR" property="marketName" />
     <result column="business_category_ids" jdbcType="VARCHAR" property="businessCategoryIds" />
-    <result column="business_categories" jdbcType="VARCHAR" property="marketName" />
+    <result column="business_categories" jdbcType="VARCHAR" property="businessCategories" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
   </resultMap>
