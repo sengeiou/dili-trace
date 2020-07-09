@@ -50,7 +50,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param input
 	 * @return
 	 */
-	public Long doEdit(RegisterBill input);
+	public Long doEdit(RegisterBill registerBill,List<ImageCert> imageCertList);
 
 	/**
 	 * 进门前审核

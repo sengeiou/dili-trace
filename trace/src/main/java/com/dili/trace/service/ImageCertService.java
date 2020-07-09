@@ -23,6 +23,7 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
 			// 增加新的图片
 			return StreamEx.of(imageCertList).nonNull().map(cert -> {
 				cert.setBillId(billId);
+				cert.setId(null);
 				this.insertSelective(cert);
 				return cert;
 			}).toList();

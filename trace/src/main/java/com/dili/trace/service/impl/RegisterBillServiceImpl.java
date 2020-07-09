@@ -15,7 +15,6 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
-import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ImageCert;
@@ -58,7 +57,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import one.util.streamex.StreamEx;
 
@@ -241,7 +239,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Transactional
 	@Override
-	public Long doEdit(RegisterBill input) {
+	public Long doEdit(RegisterBill input,List<ImageCert> imageCertList) {
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -255,11 +253,21 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} else {
 			throw new TraceBusinessException("当前状态不能修改数据");
 		}
+		// 车牌转大写
+		String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
+				.findFirst().orElse(null);
+		input.setPlate(plate);
+		// 保存车牌
+		this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
 		input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 		input.setModified(new Date());
 		this.updateSelective(input);
+		// 保存图片
+		if (imageCertList != null) {
+			this.imageCertService.insertImageCert(imageCertList, input.getId());
+		}
 
-		this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(td->{
+		this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(td -> {
 			TradeDetail updatableRecord = new TradeDetail();
 			updatableRecord.setId(td.getId());
 			updatableRecord.setModified(new Date());

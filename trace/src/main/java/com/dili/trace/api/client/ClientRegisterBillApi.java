@@ -114,7 +114,7 @@ public class ClientRegisterBillApi {
 			
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存登记单:{}", JSON.toJSONString(registerBill));
-			this.registerBillService.doEdit(registerBill);
+			this.registerBillService.doEdit(registerBill,dto.getImageCertList());
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

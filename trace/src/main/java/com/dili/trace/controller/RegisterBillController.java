@@ -56,6 +56,7 @@ import com.dili.trace.service.UsualAddressService;
 import com.dili.trace.util.MaskUserInfo;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -420,8 +421,7 @@ public class RegisterBillController {
 	@ResponseBody
 	public BaseOutput<?> doEdit(RegisterBill input) {
 		try {
-
-			Long id = this.registerBillService.doEdit(input);
+			Long id = this.registerBillService.doEdit(input,Lists.newArrayList());
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
 			logger.error(e.getMessage(), e);
