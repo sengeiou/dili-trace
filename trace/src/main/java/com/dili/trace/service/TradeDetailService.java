@@ -159,6 +159,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (stockWeight.compareTo(BigDecimal.ZERO) <= 0) {
 			sellerBatchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() - 1);
 			sellerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+			sellerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
 		}
 		this.batchStockService.updateSelective(sellerBatchStock);
 

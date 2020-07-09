@@ -26,6 +26,7 @@ import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeOrderTypeEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.enums.UserFlagEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 
@@ -441,27 +442,33 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 return this.tradeDetailService.get(parentId);
             }).forKeyValue((buyertd, sellertd) -> {
 
+                TradeDetail buyerTradeDetail = new TradeDetail();
+                buyerTradeDetail.setId(buyertd.getId());
+                buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
+                this.tradeDetailService.updateSelective(buyerTradeDetail);
+
                 BatchStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(sellertd.getBatchStockId())
                         .orElseThrow(() -> {
                             return new TraceBusinessException("操作库存失败");
                         });
 
-                BatchStock batchStock = new BatchStock();
-                batchStock.setId(sellerBatchStockItem.getId());
-                batchStock.setStockWeight(sellerBatchStockItem.getStockWeight().add(buyertd.getStockWeight()));
+                BatchStock sellerBatchStock = new BatchStock();
+                sellerBatchStock.setId(sellerBatchStockItem.getId());
+                sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().add(buyertd.getStockWeight()));
 
-                TradeDetail tradeDetail = new TradeDetail();
-                tradeDetail.setId(sellertd.getId());
-                tradeDetail.setStockWeight(sellertd.getStockWeight().add(buyertd.getStockWeight()));
+                TradeDetail sellerTradeDetail = new TradeDetail();
+                sellerTradeDetail.setId(sellertd.getId());
+                sellerTradeDetail.setStockWeight(sellertd.getStockWeight().add(buyertd.getStockWeight()));
 
                 if (SaleStatusEnum.FOR_SALE.equalsToCode(sellertd.getSaleStatus())) {
                     // do nothing
                 } else {
-                    batchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() + 1);
-                    tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                    sellerBatchStock.setTradeDetailNum(sellerBatchStockItem.getTradeDetailNum() + 1);
+                    sellerTradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                    sellerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
                 }
-                this.batchStockService.updateSelective(batchStock);
-                this.tradeDetailService.updateSelective(tradeDetail);
+                this.batchStockService.updateSelective(sellerBatchStock);
+                this.tradeDetailService.updateSelective(sellerTradeDetail);
             });
         }
 
