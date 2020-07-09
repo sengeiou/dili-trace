@@ -85,7 +85,7 @@ public class ClientRegisterBillApi {
 			if (registerBills == null) {
 				return BaseOutput.failure("没有登记单");
 			}
-			logger.info("保存多个登记单 操作用户:{}" ,operatorUser.getId());
+			logger.info("保存多个登记单操作用户:{}，{}" ,operatorUser.getId(),operatorUser.getName());
 			List<Long> idList = this.registerBillService.createBillList(registerBills, userService.get(operatorUser.getId()), operatorUser);
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBusinessException e) {
