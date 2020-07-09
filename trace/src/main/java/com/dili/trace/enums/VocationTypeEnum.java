@@ -33,6 +33,14 @@ public enum VocationTypeEnum {
         }
         return null;
     }
+    public static String getNameFromCode(Integer code) {
+        for (VocationTypeEnum anEnum : VocationTypeEnum.values()) {
+            if (anEnum.getCode().equals(code)) {
+                return anEnum.getName();
+            }
+        }
+        return "";
+    }
 
     public Integer getCode() {
         return code;

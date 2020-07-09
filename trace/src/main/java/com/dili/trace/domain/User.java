@@ -5,6 +5,8 @@ import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
+import com.dili.trace.enums.VocationTypeEnum;
+
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
@@ -172,8 +174,9 @@ public interface User extends IBaseDomain {
      */
     @ApiModelProperty(value = "法人姓名")
     @Column(name = "`legal_person`")
-   
-    public String getLegalPerson() ;
+
+    public String getLegalPerson();
+
     public void setLegalPerson(String legalPerson);
 
     /**
@@ -181,16 +184,17 @@ public interface User extends IBaseDomain {
      */
     @ApiModelProperty(value = "统一信用代码")
     @Column(name = "`license`")
-    public String getLicense() ;
+    public String getLicense();
+
     public void setLicense(String license);
 
     /**
-     * 用户类型
-     * {@link com.dili.trace.glossary.UserTypeEnum} 
+     * 用户类型 {@link com.dili.trace.glossary.UserTypeEnum}
      */
     @Column(name = "`user_type`")
     @EditMode(editor = FieldEditor.Number, required = true)
     Integer getUserType();
+
     void setUserType(Integer userType);
 
     /**
@@ -198,40 +202,40 @@ public interface User extends IBaseDomain {
      */
     @ApiModelProperty(value = "所属市场")
     @Column(name = "`market_id`")
-    public Long getMarketId() ;
+    public Long getMarketId();
+
     public void setMarketId(Long marketId);
 
     @ApiModelProperty(value = "所属市场名称")
     @Column(name = "`market_name`")
     public String getMarketName();
-    public void setMarketName(String marketName);
 
+    public void setMarketName(String marketName);
 
     @ApiModelProperty(value = "生产许可证URL")
     @Column(name = "`manufacturing_license_url`")
     @FieldDef(label = "manufacturing_license_url", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getManufacturingLicenseUrl();
-    public void setManufacturingLicenseUrl(String manufacturingLicenseUrl);
 
+    public void setManufacturingLicenseUrl(String manufacturingLicenseUrl);
 
     @ApiModelProperty(value = "经营许可证URL")
     @Column(name = "`operation_license_url`")
     @FieldDef(label = "operation_license_url", maxLength = 50)
     @EditMode(editor = FieldEditor.Text, required = false)
     public String getOperationLicenseUrl();
+
     public void setOperationLicenseUrl(String operationLicenseUrl);
 
-
     /**
-     * {@link  com.dili.trace.glossary.UserQrStatusEnum}
+     * {@link com.dili.trace.glossary.UserQrStatusEnum}
      */
     @ApiModelProperty(value = "二维码状态")
     @Column(name = "`qr_status`")
     Integer getQrStatus();
 
     void setQrStatus(Integer qrStatus);
-
 
     @ApiModelProperty(value = "验证码")
     @Transient
@@ -256,7 +260,6 @@ public interface User extends IBaseDomain {
 
     void setPlates(String plates);
 
-
     @ApiModelProperty(value = "审核状态")
     @Column(name = "`validate_state`")
     Integer getValidateState();
@@ -268,12 +271,17 @@ public interface User extends IBaseDomain {
 
     void setVocationType(Integer type);
 
-
     @Column(name = "business_category_ids")
     String getBusinessCategoryIds();
+
     void setBusinessCategoryIds(String businessCategoryIds);
 
     @Column(name = "business_categories")
     String getBusinessCategories();
+
     void setBusinessCategories(String businessCategories);
+
+    default String getVocationTypeName() {
+        return VocationTypeEnum.getNameFromCode(this.getVocationType());
+    }
 }
