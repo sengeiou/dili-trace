@@ -156,13 +156,14 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 				RUserUpstream rUserUpstream = new RUserUpstream();
 				rUserUpstream.setUpstreamId(upStreamDto.getId());
 				rUserUpstream.setUserId(o);
-				rUserUpstream.setOperatorId(operatorUser.getId());
-				rUserUpstream.setOperatorName(operatorUser.getName());
-//				rUserUpstream.setCreated(new Date());
-//				rUserUpstream.setModified(new Date());
 				if (CollUtil.isEmpty(rUserUpStreamService.listByExample(rUserUpstream))){
+					rUserUpstream.setOperatorId(operatorUser.getId());
+					rUserUpstream.setOperatorName(operatorUser.getName());
 					rUserUpstreams.add(rUserUpstream);
 				}
+//				rUserUpstream.setCreated(new Date());
+//				rUserUpstream.setModified(new Date());
+
 
 			});
 			rUserUpStreamService.batchInsert(rUserUpstreams);
