@@ -9,13 +9,6 @@ public interface CodeGenerateService extends BaseService<CodeGenerate, Long> {
 	 * 
 	 * @return
 	 */
-	public String nextSampleCode();
+	public String nextTradeRequestCode();
 
-	/**
-	 * 生成打印报告编号
-	 * 
-	 * @return
-	 */
-
-	public String nextCheckSheetCode();
 }

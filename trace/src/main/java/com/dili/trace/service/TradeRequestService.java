@@ -48,6 +48,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     UserService userService;
     @Autowired
     BatchStockService batchStockService;
+    @Autowired
+    CodeGenerateService codeGenerateService;
 
     @Autowired
     TradeDetailService tradeDetailService;
@@ -201,7 +203,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
     private String getNextCode() {
-        return String.valueOf(System.currentTimeMillis());
+        return this.codeGenerateService.nextTradeRequestCode();
 
     }
 

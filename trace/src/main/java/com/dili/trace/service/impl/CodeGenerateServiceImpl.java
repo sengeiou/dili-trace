@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
@@ -24,57 +25,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 		implements CodeGenerateService, CommandLineRunner {
-	private static final String SAMPLE_CODE_TYPE = "SAMPLE_CODE";
-	private static final String CHECKSHEET_CODE_TYPE = "CHECKSHEET_CODE";
-
-	@Autowired
-	RegisterBillService registerBillService;
-
-	private boolean checkAndInitSampleCode() {
-		RegisterBill domain = new RegisterBill();
-		domain.setOrder("desc");
-		domain.setSort("sample_code");
-		domain.setPage(1);
-		domain.setRows(1);
-		RegisterBill registerBill = this.registerBillService.listByExample(domain).stream().findFirst()
-				.orElse(new RegisterBill());
-		String maxSampleCode = registerBill.getSampleCode();
-		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst()
-				.orElse(DTOUtils.newDTO(CodeGenerate.class));
-		codeGenerate.setPattern("yyyyMMdd");
-		codeGenerate.setType(SAMPLE_CODE_TYPE);
-		codeGenerate.setPrefix("c");
-
-		if (codeGenerate.getId() == null) {
-			if (StringUtils.isNotBlank(maxSampleCode)) {
-				codeGenerate.setSegment(maxSampleCode.substring(1, 9));
-				codeGenerate.setSeq(Long.valueOf(maxSampleCode.substring(9, 14)));
-			}
-			this.insertSelective(codeGenerate);
-		} else {
-			if (StringUtils.isNotBlank(maxSampleCode)) {
-				String segment = maxSampleCode.substring(1, 9);
-				Long seq = Long.valueOf(maxSampleCode.substring(9, 14));
-				if (!segment.equals(codeGenerate.getSegment()) || !seq.equals(codeGenerate.getSeq())) {
-					codeGenerate.setSegment(segment);
-					codeGenerate.setSeq(seq);
-					this.updateSelective(codeGenerate);
-				}
-
-			}
-
-		}
-		return true;
+	private static final String TRADE_REQUEST_CODE_TYPE = "TRADE_REQUEST_CODE";
+	private CodeGenerateMapper getMapper() {
+		return (CodeGenerateMapper) this.getDao();
 	}
 
-	private boolean checkAndInitCheckSheetCode() {
 
-		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(CHECKSHEET_CODE_TYPE).stream().findFirst()
+
+	private boolean checkAndInitTradeRequestCode() {
+
+		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(TRADE_REQUEST_CODE_TYPE).stream().findFirst()
 				.orElse(DTOUtils.newDTO(CodeGenerate.class));
-		codeGenerate.setPattern("yyyyMMdd");
-		codeGenerate.setType(CHECKSHEET_CODE_TYPE);
-		codeGenerate.setPrefix("SGJC");
-
+		codeGenerate.setPattern("yyyyMMddHH");
+		codeGenerate.setType(TRADE_REQUEST_CODE_TYPE);
+		codeGenerate.setPrefix("HZSY");
 		if (codeGenerate.getId() == null) {
 			LocalDateTime now = LocalDateTime.now();
 
@@ -83,55 +47,22 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 			codeGenerate.setSeq(0L);
 			this.insertSelective(codeGenerate);
 		}
-
 		return true;
-
 	}
 
-	private CodeGenerateMapper getMapper() {
 
-		return (CodeGenerateMapper) this.getDao();
-	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public String nextSampleCode() {
+	public String nextTradeRequestCode() {
 
-		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(SAMPLE_CODE_TYPE).stream().findFirst()
-				.orElse(null);
-		if (codeGenerate == null) {
-			throw new AppException("生成采样单编号错误");
-		}
-		;
-		// 时间比较
-		LocalDateTime now = LocalDateTime.now();
-
-		String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
-		if (!nextSegment.equals(codeGenerate.getSegment())) {
-
-			codeGenerate.setSeq(1L);
-			codeGenerate.setSegment(nextSegment);
-			codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
-
-		} else {
-
-			codeGenerate.setSeq(codeGenerate.getSeq() + 1);
-			codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
-
-		}
-
-		this.updateSelective(codeGenerate);
-
-		return StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
-				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), 5, "0"));
+		return this.nextCode(TRADE_REQUEST_CODE_TYPE, 5);
 	}
+	private String nextCode(String codeType,int paddingSize) {
 
-	@Transactional(propagation = Propagation.REQUIRED)
-	public String nextCheckSheetCode() {
-
-		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(CHECKSHEET_CODE_TYPE).stream().findFirst()
+		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(TRADE_REQUEST_CODE_TYPE).stream().findFirst()
 				.orElse(null);
 		if (codeGenerate == null) {
-			throw new AppException("生成打印报告编号错误");
+			throw new TraceBusinessException("生成编号错误");
 		}
 
 		// 时间比较
@@ -154,13 +85,12 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 		this.updateSelective(codeGenerate);
 
 		return StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
-				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), 6, "0"));
+				.concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), paddingSize, "0"));
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		this.checkAndInitSampleCode();
-		this.checkAndInitCheckSheetCode();
+		this.checkAndInitTradeRequestCode();
 	}
 
 }
