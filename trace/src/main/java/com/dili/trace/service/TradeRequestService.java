@@ -32,6 +32,7 @@ import com.dili.trace.glossary.UserTypeEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.nutz.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,11 +67,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param batchStockInputList
      */
     private void checkInput(Long sellerId, List<BatchStockInput> batchStockInputList) {
-
+        
         Map<Long, List<Long>> batchIdDetailIdMap = StreamEx.of(CollectionUtils.emptyIfNull(batchStockInputList))
                 .nonNull().toMap(batchStockInput -> {
                     return batchStockInput.getBatchStockId();
-
                 }, batchStockInput -> {
                     return StreamEx.of(CollectionUtils.emptyIfNull(batchStockInput.getTradeDetailInputList())).nonNull()
                             .map(item -> {
@@ -93,11 +93,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             }
         }
         // 判断是否全部是卖家的库存信息
-        boolean notBelongToBatchStock = StreamEx.of(this.batchStockService.findByIdList(batchStockIdList))
-                .map(BatchStock::getUserId).distinct().anyMatch(bsid -> {
-                    return batchStockIdList.contains(bsid);
-                });
-        if (notBelongToBatchStock) {
+        boolean notSellerOwnedBatchBlock = StreamEx.of(this.batchStockService.findByIdList(batchStockIdList))
+                .map(BatchStock::getUserId).distinct().anyMatch(uid -> !uid.equals(sellerId));
+        if (notSellerOwnedBatchBlock) {
             throw new TraceBusinessException("参数不匹配:有库存不属于当前卖家");
         }
 
@@ -108,6 +106,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      */
     public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
             List<BatchStockInput> batchStockInputList) {
+        logger.info("sellerId:{},buyerId:{},checkinput:{}",sellerId,buyerId,Json.toJson(batchStockInputList));
         // 检查提交参数
         this.checkInput(sellerId, batchStockInputList);
         TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY,
