@@ -236,26 +236,35 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         tradeDetailQuery.setBatchStockId(batchStockItem.getId());
         tradeDetailQuery.setSort("created");
         tradeDetailQuery.setOrder("asc");
+        BigDecimal totalTradeWeight=requestItem.getTradeWeight();
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
-        if (batchStockItem.getStockWeight().compareTo(requestItem.getTradeWeight()) < 0) {
+        if (batchStockItem.getStockWeight().compareTo(totalTradeWeight) < 0) {
             throw new TraceBusinessException("购买重量不能超过总库存重量");
         }
         if (tradeDetailIdWeightList.isEmpty()) {
-            AtomicReference<BigDecimal> totalTradeWeightAt = new AtomicReference<BigDecimal>(
-                    requestItem.getTradeWeight());
+            AtomicReference<BigDecimal> sumTradeWeightAt = new AtomicReference<BigDecimal>(BigDecimal.ZERO);
             List<TradeDetail> resultList = StreamEx.of(tradeDetailList).map(td -> {
-                BigDecimal tradeWeight = totalTradeWeightAt.get();
-                if (tradeWeight.compareTo(td.getStockWeight()) >= 0) {
-                    tradeWeight = td.getStockWeight();
-                    totalTradeWeightAt.set(totalTradeWeightAt.get().subtract(td.getStockWeight()));
+                BigDecimal stockWeight=td.getStockWeight();
+                sumTradeWeightAt.set(sumTradeWeightAt.get().add(stockWeight));
+                logger.info("stockWeight={}",stockWeight);
+                logger.info("sumTradeWeightAt={}",sumTradeWeightAt.get());
+                logger.info("totalTradeWeight={}",totalTradeWeight);
+                BigDecimal tradeWeight=BigDecimal.ZERO;
+                if(sumTradeWeightAt.get().compareTo(totalTradeWeight)<=0){
+                    tradeWeight=stockWeight;
+                }else{
+                    if(sumTradeWeightAt.get().subtract(stockWeight).compareTo(totalTradeWeight)<0){
+                        tradeWeight=totalTradeWeight.subtract(sumTradeWeightAt.get().subtract(stockWeight));
+                    }else{
+                        return null;
+                    }
                 }
-                if (tradeWeight.compareTo(BigDecimal.ZERO) <= 0) {
-                    return null;
-                }
+
+                logger.info("tradeWeight={}",tradeWeight);
                 TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td,
                         tradeWeight, seller.getId(), buyer);
                 return tradeDetail;
-            }).toList();
+            }).nonNull().toList();
         } else {
             List<TradeDetail> resultList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
                 TradeDetail tradeDetaiItem = p.getKey();
