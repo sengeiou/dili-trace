@@ -88,177 +88,21 @@
                 <% } %>
             </div>
             
-
-            <div class="form-item-group">
-                <h4 class="form-item-title">检测信息</h4>
-                <div class="table-showlist" style="width: 1200px">
-                    <table class="table table-bordered">
-                        <thead>
-                            <th><span class="red">&lowast;</span>检测时间</th>
-                            <th><span class="red">&lowast;</span>检测结果</th>
-                            <th><span class="red">&lowast;</span>检测数值</th>
- 							<th><span class="red">&lowast;</span>检测人员</th>
-                        </tr>
-                        </thead>
-                       <% for(detectRecord in detectRecordList){%>
-                        <tr>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" value="${detectRecord.detectTime,'yyyy-MM-dd HH:mm:ss'}" required readonly/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required readonly />
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text" name="weight" class="form-control" value="${detectRecord.pdResult}" required readonly/>
-                                </div>
-                            </td>
-
-                             <td>
-                                <div class="input-group">
-                                    <input type="text" name="weight" class="form-control input-sm" value="${detectRecord.detectOperator}" required readonly/>
-                                </div>
-                            </td>
-                        </tr>
-                        <%}%>
-                    </table>
-                    <!-- 表格后的统计 end -->
-                </div>
-            </div>
+  
+	      <% for(imageCert in imageList){%>
+	      		<div class="form-item-group" style="float:left; display:inline;width:180px">
+	            		<h4 class="form-item-title">${imageCert.certTypeName}</h4>
+	                   <div class="fileimg-box"  style="margin: 5px;width:120px;">
+	                 		<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}${imageCert.url}" >
+					    </div>
+	            </div>
+	           <%if(imageCertLP.index%5==0){%>
+	      		<div class="form-item-group" style="float:left; display:inline;width:100%;marging:0px;padding:0px;">
+	            </div>
+				<%}%>
+	      <%}%>
             
-			 
-            <%if( !isEmpty(registerBill.detectState)
-                            && (registerBill.detectState == 1 || registerBill.detectState == 3)){%>
-                <div class="form-item-group">
-                    <h4 class="form-item-title">溯源二维码</h4>
-                    <div class="imageUploadWrap">
-                        <div class="form-group">
-                            <div class="imageUpload rectangle">
-                                <img id="registerBillQRCode"  alt="" class="show-image">
-                                <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="https://hz.trace.nong12.com/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <% } %>
-            <%
-            if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
-            <div class="form-item-group">
-                <h4 class="form-item-title">分销信息</h4>
-                <div class="table-showlist" style="width: 1200px">
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th><span class="red">&lowast;</span>分销客户</th>
-                            <th><span class="red">&lowast;</span>分销地</th>
-                            <th><span class="red">&lowast;</span>分销重量/KG</th>
-                            <th><span class="red">&lowast;</span>车牌号</th>
-                            <th>溯源二维码</th>
-                        </tr>
-                        </thead>
-                        <%for(record in separateSalesRecords){
-                        %>
-                        <tr>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text" class="form-control input-sm" value="${record.salesUserName!}" required readonly/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text"  class="form-control input-sm" value="${record.salesCityName!}" required readonly />
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text" name="weight" class="form-control input-sm" value="${record.salesWeight}" required readonly/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="text" name="salesPlate" class="form-control input-sm" value="${record.salesPlate}" required readonly/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="imageUploadWrap">
-                                    <div class="form-group">
-                                        <div class="imageUpload rectangle">
-                                            <img id="separateSalesRecordQR${recordLP.index}" alt="" class="show-image">
-                                            <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="https://hz.trace.nong12.com/registerBill/separateSalesRecordQRCode.html?id=${record.id!}"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <% } %>
-                    </table>
-                    <!-- 表格后的统计 end -->
-                </div>
-            </div>
-            <%
-                }else{ %>
-
-                        <%
-                        if(isNotEmpty(qualityTraceTradeBills) && qualityTraceTradeBills.~size>0){
-                        %>
-                        <div class="form-item-group">
-                            <h4 class="form-item-title">交易单</h4>
-                            <div class="table-showlist" style="width: 1200px">
-                                <table class="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>交易单号</th>
-                                        <th>结算时间</th>
-                                        <th>重量/KG</th>
-                                        <th>卖家</th>
-                                        <th>买家</th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                        <%
-                            for(qttb in qualityTraceTradeBills){
-                        %>
-                        <tr>
-                            <td>${qttb.orderId!}</td>
-                            <td>${qttb.orderPayDate,dateFormat='yyyy-MM-dd HH:mm:ss'}</td>
-                            <td>${qttb.netWeight!}</td>
-                            <td>${qttb.sellerName!}</td>
-                            <td>${qttb.buyerName!}</td>
-                            <td>
-                                <% if(!isEmpty(qttb.salesType)) {
-                                    if(qttb.salesType == 1){
-                                %>
-                                <a href="javascript:void(0)" data-trade-id="${qttb.id!}" class="ssr-view">分销记录</a></td>
-                                <% }else{ %>
-                                <a href="javascript:void(0)" ><img id="tradeBillQR${qttbLP.index}" alt="" width="30px" height="30px" class="show-image"></a>
-                                <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="https://hz.trace.nong12.com/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
-                                <% } } %>
-                        </tr>
-                        <% } %>
-                                </table>
-                            </div>
-                        </div>
-                            <%} }  %>
-            <div class="form-item-group">
-            		<h4 class="form-item-title">产地证明</h4>
-                     
-                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}" >
-							</div>
-                        
-            </div>
-            <div class="form-item-group">
-            		<h4 class="form-item-title">检测报告</h4>
-                          
-                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="${contextPath!}" >
-							</div>
-                       
-            </div>
+ 
             
         </form>
     </div>

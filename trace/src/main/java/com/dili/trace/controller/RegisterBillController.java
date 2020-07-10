@@ -47,6 +47,7 @@ import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UpStreamService;
@@ -62,6 +63,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 
 /**
@@ -87,6 +89,8 @@ public class RegisterBillController {
 	UsualAddressService usualAddressService;
 	@Autowired
 	UpStreamService upStreamService;
+	@Autowired
+	ImageCertService imageCertService;
 
 	@ApiOperation("跳转到RegisterBill页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
@@ -189,11 +193,14 @@ public class RegisterBillController {
 	public String create(ModelMap modelMap) {
 
 		modelMap.put("citys", this.queryCitys());
-		modelMap.put("billTypes", StreamEx.of(BillTypeEnum.values()).mapToEntry(BillTypeEnum::getName, BillTypeEnum::getCode).toList());
-		modelMap.put("truckTypes", StreamEx.of(TruckTypeEnum.values()).mapToEntry(TruckTypeEnum::getName, TruckTypeEnum::getCode).toList());
-		modelMap.put("preserveTypes", StreamEx.of(PreserveTypeEnum.values()).mapToEntry(PreserveTypeEnum::getName, PreserveTypeEnum::getCode).toList());
-		String str=String.valueOf(System.currentTimeMillis());
-		modelMap.put("plate", "川A"+str.substring(str.length()-5));
+		modelMap.put("billTypes",
+				StreamEx.of(BillTypeEnum.values()).mapToEntry(BillTypeEnum::getName, BillTypeEnum::getCode).toList());
+		modelMap.put("truckTypes", StreamEx.of(TruckTypeEnum.values())
+				.mapToEntry(TruckTypeEnum::getName, TruckTypeEnum::getCode).toList());
+		modelMap.put("preserveTypes", StreamEx.of(PreserveTypeEnum.values())
+				.mapToEntry(PreserveTypeEnum::getName, PreserveTypeEnum::getCode).toList());
+		String str = String.valueOf(System.currentTimeMillis());
+		modelMap.put("plate", "川A" + str.substring(str.length() - 5));
 		return "registerBill/create";
 	}
 
@@ -217,7 +224,9 @@ public class RegisterBillController {
 		if (displayWeight == null) {
 			displayWeight = false;
 		}
+		List<ImageCert> imageList = StreamEx.of(this.imageCertService.findImageCertListByBillId(registerBill.getBillId())).sortedBy(ImageCert::getCertType).toList();
 
+		modelMap.put("imageList", imageList);
 		modelMap.put("separateSalesRecords", Collections.emptyList());
 
 		modelMap.put("qualityTraceTradeBills", CollectionUtils.emptyCollection());
@@ -300,9 +309,6 @@ public class RegisterBillController {
 
 		return "registerBill/upload-origincertifiy";
 	}
-
-
-	
 
 	/**
 	 * 交易区订单溯源页面（二维码）
@@ -421,7 +427,7 @@ public class RegisterBillController {
 	@ResponseBody
 	public BaseOutput<?> doEdit(RegisterBill input) {
 		try {
-			Long id = this.registerBillService.doEdit(input,Lists.newArrayList());
+			Long id = this.registerBillService.doEdit(input, Lists.newArrayList());
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
 			logger.error(e.getMessage(), e);
