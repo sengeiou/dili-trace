@@ -20,34 +20,25 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
                     <input type="text" class="form-control input-sm"  value="${registerBill.code!}"  readonly/>
                 </div>
-                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>采样编号</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.sampleCode!}"  readonly/>
-                </div>
-
-                <br>
 
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
                     <input type="text" class="form-control input-sm" value="${registerBill.name!}" required readonly/>
                 </div>
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>身份证号</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.idCardNo}" required readonly/>
-                </div>
+               
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>身份证地址</label>
                     <textarea name="addr" id="addr" class="form-control" cols="82" rows="1" required readonly>${registerBill.addr!}</textarea>
                 </div>
-                <div class="form-group">
+                               <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
                     <input type="text" class="form-control input-sm"  value="${registerBill.plate}" required readonly/>
                 </div>
+
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -72,8 +63,8 @@
                     <input type="text" class="form-control input-sm"  value="${registerBill.operatorName!}"  readonly/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>状态</label>
-                    <input type="text" class="form-control input-sm"value="${registerBill.stateName}" required readonly/>
+                    <label class="label-title text-right"><span class="red">&lowast;</span>审核状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.verifyStatusName}" required readonly/>
                 </div>
                 
           		<br/>
