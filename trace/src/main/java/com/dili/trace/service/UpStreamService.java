@@ -107,10 +107,14 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			query.setTelphone(upStreamDto.getTelphone());
 			query.setUpORdown(upStreamDto.getUpORdown());
 
-			if (CollUtil.isEmpty(listByExample(query))) {
+			List<UpStream> upStreamList = listByExample(query);
+			if (CollUtil.isEmpty(upStreamList)) {
 				insertSelective(upStreamDto);
-				addUpstreamUsers(upStreamDto, operatorUser);
 			}
+			if (upStreamDto.getId() == null){
+				upStreamDto.setId(upStreamList.get(0).getId());
+			}
+			addUpstreamUsers(upStreamDto, operatorUser);
 		} catch (DuplicateKeyException e) {
 			if (noticeException != null && noticeException[0]){
 				throw new TraceBusinessException("已存在手机号:" + upStreamDto.getTelphone() + "的企业/个人");
@@ -176,7 +180,10 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 
 			});
-			rUserUpStreamService.batchInsert(rUserUpstreams);
+			if (rUserUpstreams.size() > 0){
+				rUserUpStreamService.batchInsert(rUserUpstreams);
+			}
+
 		}
 
 	}
