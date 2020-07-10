@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -192,6 +193,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         request.setSellerName(seller.getName());
         request.setSellerId(seller.getId());
         request.setBuyerName(buyer.getName());
+        request.setCreated(new Date());
+        request.setModified(new Date());
         request.setBuyerId(buyer.getId());
         request.setTradeOrderId(tradeOrderItem.getId());
         request.setCode(this.getNextCode());
