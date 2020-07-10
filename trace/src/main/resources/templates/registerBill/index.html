@@ -49,11 +49,6 @@
                             }"></select>
                         </div>
                         <div class="search-item">
-                            <input  name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'"  panelWidth="auto" panelHeight="auto"/>
-                            <#comboProvider _id="detectState" _provider='billDetectStateProvider' _queryParams='{emptyText:"全部"}' />
-                        </div>
-
-                        <div class="search-item">
                             <select class="easyui-combobox" name="likePlate" id="likePlate" style="width:100%;" editable="false" panelHeight="auto" 
                             data-options="label:'车牌号',editable:true, valueField:'plate',textField:'plate',onChange:onPlateChange,prompt:'请选择或输入'"  labelAlign="right">
                             </select>

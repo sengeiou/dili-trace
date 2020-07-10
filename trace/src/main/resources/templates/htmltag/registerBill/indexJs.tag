@@ -247,7 +247,18 @@ var currentUser={"depId":"${user.depId!}"
             </#resource>
             ]
         _registerBillGrid.datagrid({
-            toolbar:toolbar
+            toolbar:[
+            	
+            	{
+                    iconCls:'icon-detail',
+                    id:'detail-btn',
+                    text:'查看',
+                    disabled :true,
+                    handler:function(){
+                        doDetail();
+                    }
+                }
+            ]
         });
         pager.pagination({
             <#controls_paginationOpts/>,

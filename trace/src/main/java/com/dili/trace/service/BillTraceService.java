@@ -164,9 +164,35 @@ public class BillTraceService {
         if (tradeRequestItem == null) {
             throw new TraceBusinessException("没有查找到详情");
         }
+        List<TradeDetail> list =Lists.newArrayList();
+        if (tradeRequestItem.getBuyerId().equals(userId)) {
+
+            TradeDetail tradeDetailQuery = new TradeDetail();
+            tradeDetailQuery.setBuyerId(userId);
+            tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
+            List<TradeDetail> downTraceList = this.tradeDetailService.listByExample(tradeDetailQuery);
+            list.addAll(downTraceList);
+        } else if (tradeRequestItem.getSellerId().equals(userId)) {
+
+            TradeDetail condition = new TradeDetail();
+            condition.setSellerId(userId);
+            condition.setTradeRequestId(tradeRequestItem.getId());
+            List<Long> upTradeDetailIdList = StreamEx.of(this.tradeDetailService.listByExample(condition))
+                    .map(TradeDetail::getParentId).nonNull().distinct().toList();
+
+            TradeDetail tradeDetailQuery = new TradeDetail();
+            tradeDetailQuery.setSellerId(userId);
+            tradeDetailQuery.setTradeRequestId(tradeRequestItem.getId());
+
+            List<TradeDetail> buyerTradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+            list.addAll(buyerTradeDetailList); ;
+           
+        } else {
+            throw new TraceBusinessException("没有查询到数据");
+        }
+        
         TradeDetail tradeDetail = new TradeDetail();
         tradeDetail.setTradeRequestId(tradeRequestItem.getTradeRequestId());
-        List<TradeDetail> list = this.tradeDetailService.listByExample(tradeDetail);
         List<Long> billIdList = StreamEx.of(list).filter(td -> {
             return TradeTypeEnum.NONE.equalsToCode(td.getTradeType());
         }).map(TradeDetail::getBillId).distinct().toList();
