@@ -15,8 +15,8 @@
                     <div class="search-wrap">
 
                         <div class="search-item">
-                            <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"  value="${state}"/>
-                            <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部"}' />
+                            <input  name="verifyStatus" id="verifyStatus" style="width:100%" labelAlign="right" data-options="label:'审核状态' "  panelWidth="auto" panelHeight="auto"/>
+                            <#comboProvider _id="verifyStatus" _provider='billVerifyStatusEnumProvider' _queryParams='{emptyText:"全部"}' />
                         </div>
                         <div class="search-item">
 								<div class="search-item">
