@@ -272,7 +272,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			input.setOperatorName(op.getName());
 			input.setOperatorId(op.getId());
 		});
-		this.updateSelective(input);
+		this.update(input);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
 		// 保存图片
 		if (imageCertList != null) {
