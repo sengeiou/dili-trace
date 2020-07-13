@@ -63,6 +63,7 @@ public class ClientBatchStockApi {
 			condition.setUserId(userId);
 			condition.setSort("created");
 			condition.setOrder("desc");
+			condition.setMinTradeDetailNum(1);
 			BasePage<BatchStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
@@ -82,6 +83,9 @@ public class ClientBatchStockApi {
 		}
 		try {
 			Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			condition.setSort("created");
+			condition.setOrder("desc");
+			condition.setMinTradeDetailNum(1);
 			BasePage<BatchStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {

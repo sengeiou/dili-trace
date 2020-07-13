@@ -23,6 +23,10 @@ public class BatchStockQueryDto extends BatchStock{
 	@Column(name = "`product_name`")
 	@Like(value = "RIGHT")
     private String likeProductName;
+
+    @Column(name = "`trade_detail_num`")
+    @Operator(Operator.GREAT_EQUAL_THAN)
+    private Integer minTradeDetailNum;
     
 
     /**
@@ -65,6 +69,21 @@ public class BatchStockQueryDto extends BatchStock{
      */
     public void setLikeProductName(String likeProductName) {
         this.likeProductName = likeProductName;
+    }
+
+
+    /**
+     * @return Integer return the minTradeDetailNum
+     */
+    public Integer getMinTradeDetailNum() {
+        return minTradeDetailNum;
+    }
+
+    /**
+     * @param minTradeDetailNum the minTradeDetailNum to set
+     */
+    public void setMinTradeDetailNum(Integer minTradeDetailNum) {
+        this.minTradeDetailNum = minTradeDetailNum;
     }
 
 }
