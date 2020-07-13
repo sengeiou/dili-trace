@@ -16,9 +16,18 @@ public class TradeDetailBillOutput {
     private Integer tradeType;
     private Date created;
     private String productName;
+	private Integer isCheckin;
 
 
-    /**
+    public Integer getIsCheckin() {
+		return isCheckin;
+	}
+
+	public void setIsCheckin(Integer isCheckin) {
+		this.isCheckin = isCheckin;
+	}
+
+	/**
      * @return Long return the billId
      */
     public Long getBillId() {
