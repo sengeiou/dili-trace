@@ -285,4 +285,9 @@ public interface User extends IBaseDomain {
     default String getVocationTypeName() {
         return VocationTypeEnum.getNameFromCode(this.getVocationType());
     }
+
+    @Column(name = "`source`")
+    Integer getSource();
+
+    void setSource(Integer source);
 }
