@@ -460,3 +460,64 @@ code:200
 返回数据
 无
 -----------------------------
+添加经营品类
+/api/categoryApi/addUserCategory.api
+请求：
+{
+    [{
+    	"categoryId": 82,
+    	"categoryName": "鲜活-白条",
+    	"categoryType": 10
+    }, {
+    	"categoryId": 79,
+    	"categoryName": "鲜活-鲈鱼",
+    	"categoryType": 10
+    }]
+}
+返回
+{"code":"200","message":"OK","result":"OK","success":true}
+
+删除经营品类
+/api/categoryApi/delUserCategory.api
+请求：
+{
+    [78, 82]
+}
+返回
+{"code":"200","message":"OK","result":"OK","success":true}
+
+查询经营品类
+/api/categoryApi/userCategory.api
+请求
+{
+"page": 1
+}
+返回
+{
+	"code": "200",
+	"data": {
+		"datas": [{
+			"categoryId": 82,
+			"categoryName": "鲜活-白条",
+			"categoryType": 10,
+			"id": 3,
+			"userId": 29
+		}, {
+			"categoryId": 79,
+			"categoryName": "鲜活-鲈鱼",
+			"categoryType": 10,
+			"id": 4,
+			"userId": 29
+		}],
+		"nextPageAvailable": false,
+		"orderFieldNextType": "ASC",
+		"page": 1,
+		"previousPageAvailable": false,
+		"rows": 2,
+		"totalItem": 2,
+		"totalPage": 1
+	},
+	"message": "OK",
+	"result": "OK",
+	"success": true
+}
