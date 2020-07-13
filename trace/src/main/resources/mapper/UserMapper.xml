@@ -20,6 +20,7 @@
     <result column="validate_state" jdbcType="BIT" property="validateState" />
     <result column="vocation_type" jdbcType="BIT" property="vocationType" />
     <result column="qr_status" jdbcType="BIT" property="qrStatus" />
+    <result column="source" jdbcType="BIT" property="source" />
     <result column="pwd" jdbcType="VARCHAR" property="pwd" />
     <result column="market_id" jdbcType="BIGINT" property="marketId" />
     <result column="market_name" jdbcType="VARCHAR" property="marketName" />
@@ -32,7 +33,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    id, user_name, phone, card_no, addr, card_no_url, tally_area_nos, business_license_url,market_id,market_name,qr_status,
+    id, user_name, phone, card_no, addr, card_no_url, tally_area_nos, business_license_url,market_id,market_name,qr_status,source,
     sales_city_id, sales_city_name, state, pwd, created, modified,name,validate_state,vocation_type,business_category_ids,business_categories
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">

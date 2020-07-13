@@ -18,7 +18,7 @@ import com.dili.trace.domain.EventMessage;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.ValidateStateEnum;
-import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -42,9 +42,6 @@ import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
-import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.glossary.YnEnum;
 
 import cn.hutool.core.collection.CollUtil;
 import tk.mybatis.mapper.entity.Example;
@@ -70,9 +67,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     UsualAddressService usualAddressService;
     @Resource
     EventMessageService eventMessageService;
-        @Resource
+    @Resource
     RegisterBillService registerBillService;
-
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -80,6 +76,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         // 验证验证码是否正确
         if (flag) {
             checkVerificationCode(user.getPhone(), user.getCheckCode());
+            user.setSource(UpStreamSourceEnum.REGISTER.getCode());
+        }else {
+            user.setSource(UpStreamSourceEnum.DOWN.getCode());
         }
 
         // 验证手机号是否已注册
