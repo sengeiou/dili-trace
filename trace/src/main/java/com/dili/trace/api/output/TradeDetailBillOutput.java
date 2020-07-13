@@ -3,6 +3,8 @@ package com.dili.trace.api.output;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.TruckTypeEnum;
 
 public class TradeDetailBillOutput {
 
@@ -11,23 +13,32 @@ public class TradeDetailBillOutput {
     private Integer verifyStatus;
     private BigDecimal stockWeight;
     private BigDecimal totalWeight;
-    
+
     private Integer weightUnit;
     private Integer tradeType;
     private Date created;
     private String productName;
-	private Integer isCheckin;
+    private Integer isCheckin;
+    private Integer truckType;
+    private Integer billType;
 
+    public String getBillTypeName() {
+        return BillTypeEnum.fromCode(this.getBillType()).map(BillTypeEnum::getName).orElse("");
+    }
+
+    public String getTruckTypeName() {
+        return TruckTypeEnum.fromCode(this.getTruckType()).map(TruckTypeEnum::getName).orElse("");
+    }
 
     public Integer getIsCheckin() {
-		return isCheckin;
-	}
+        return isCheckin;
+    }
 
-	public void setIsCheckin(Integer isCheckin) {
-		this.isCheckin = isCheckin;
-	}
+    public void setIsCheckin(Integer isCheckin) {
+        this.isCheckin = isCheckin;
+    }
 
-	/**
+    /**
      * @return Long return the billId
      */
     public Long getBillId() {
@@ -69,7 +80,6 @@ public class TradeDetailBillOutput {
         this.verifyStatus = verifyStatus;
     }
 
-
     /**
      * @return BigDecimal return the stockWeight
      */
@@ -98,7 +108,6 @@ public class TradeDetailBillOutput {
         this.weightUnit = weightUnit;
     }
 
-
     /**
      * @return Integer return the tradeType
      */
@@ -112,7 +121,6 @@ public class TradeDetailBillOutput {
     public void setTradeType(Integer tradeType) {
         this.tradeType = tradeType;
     }
-
 
     /**
      * @return Date return the created
@@ -128,7 +136,6 @@ public class TradeDetailBillOutput {
         this.created = created;
     }
 
-
     /**
      * @return String return the productName
      */
@@ -143,7 +150,6 @@ public class TradeDetailBillOutput {
         this.productName = productName;
     }
 
-
     /**
      * @return BigDecimal return the totalWeight
      */
@@ -156,6 +162,37 @@ public class TradeDetailBillOutput {
      */
     public void setTotalWeight(BigDecimal totalWeight) {
         this.totalWeight = totalWeight;
+    }
+
+
+
+
+    /**
+     * @param truckType the truckType to set
+     */
+    public void setTruckType(Integer truckType) {
+        this.truckType = truckType;
+    }
+
+    /**
+     * @param billType the billType to set
+     */
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+    }
+
+    /**
+     * @return the truckType
+     */
+    public Integer getTruckType() {
+        return truckType;
+    }
+
+    /**
+     * @return the billType
+     */
+    public Integer getBillType() {
+        return billType;
     }
 
 }
