@@ -137,6 +137,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		String plate = StreamEx.ofNullable(registerBill.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
 				.map(String::toUpperCase).findFirst().orElse(null);
 		registerBill.setPlate(plate);
+		registerBill.setModified(new Date());
 		// 保存车牌
 		this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
@@ -420,6 +421,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				bill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
 			}
 		}
+		bill.setModified(new Date());
 		this.updateSelective(bill);
 		// 创建审核历史数据
 		this.registerBillHistoryService.createHistory(billItem.getId());
