@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class RegisterBillHistoryServiceTest extends AutoWiredBaseTest {
 
-    @Autowired
-    RegisterBillHistoryService registerBillHistoryService;
+	@Autowired
+	RegisterBillHistoryService registerBillHistoryService;
 
-    @Test
-    public void createHistory() {
-        RegisterBill bill=super.billService.listByExample(new RegisterBill()).stream().findAny().orElse(null);
-        this.registerBillHistoryService.createHistory(bill);
-    }
+	@Test
+	public void createHistory() {
+		RegisterBill bill = super.billService.listByExample(new RegisterBill()).stream().findAny().orElse(null);
+		this.registerBillHistoryService.createHistory(bill.getBillId());
+	}
 
 }
