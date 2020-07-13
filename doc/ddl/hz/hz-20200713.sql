@@ -9,3 +9,5 @@ CREATE TABLE `r_user_category` (
   `category_type` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE hztrace.`user` ADD source TINYINT(2) NULL COMMENT '来源 下游企业：10，注册：20';
