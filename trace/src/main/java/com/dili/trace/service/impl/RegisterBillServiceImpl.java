@@ -423,7 +423,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			bill.setOperatorName(op.getName());
 		});
 
-		bill.setReason(StringUtils.trimToNull(input.getReason()));
+		bill.setReason(StringUtils.trimToEmpty(input.getReason()));
 		if (BillVerifyStatusEnum.PASSED == toVerifyState) {
 			if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
 				bill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
