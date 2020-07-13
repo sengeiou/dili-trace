@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.domain.BatchStock;
@@ -40,7 +41,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         Long billId = super.doVerifyBeforeCheckIn(billItem.getBillId(), BillVerifyStatusEnum.PASSED);
         Pair<CheckinOutRecord, TradeDetail> p = super.doCheckIn(billId, CheckinStatusEnum.ALLOWED);
         TradeDetail tradeDetailItem = p.getValue();
-        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), new OperatorUser(1L, ""));
+        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), Optional.ofNullable(new OperatorUser(1L, "")));
     }
 
     @Test
@@ -53,7 +54,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         Long billId = super.doVerifyAfterCheckIn(billItem.getBillId(), BillVerifyStatusEnum.PASSED);
 
         TradeDetail tradeDetailItem = p.getValue();
-        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), new OperatorUser(1L, ""));
+        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), Optional.ofNullable(new OperatorUser(1L, "")));
     }
 
     @Test
@@ -67,7 +68,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         Long billId = super.doVerifyBeforeCheckIn(billItem.getBillId(), BillVerifyStatusEnum.PASSED);
         Pair<CheckinOutRecord, TradeDetail> p = super.doCheckIn(billId, CheckinStatusEnum.ALLOWED);
         TradeDetail tradeDetailItem = p.getValue();
-        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), new OperatorUser(1L, ""));
+        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), Optional.ofNullable(new OperatorUser(1L, "")));
         TradeDetail sellerTradeDetailItem = this.tradeDetailService.updateSellerTradeDetail(billItem, tradeDetailItem,
                 tradeWeight);
         assertNotNull(sellerTradeDetailItem);
@@ -85,7 +86,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         Long billId = super.doVerifyBeforeCheckIn(billItem.getBillId(), BillVerifyStatusEnum.PASSED);
         Pair<CheckinOutRecord, TradeDetail> p = super.doCheckIn(billId, CheckinStatusEnum.ALLOWED);
         TradeDetail tradeDetailItem = p.getValue();
-        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), new OperatorUser(1L, ""));
+        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), Optional.ofNullable(new OperatorUser(1L, "")));
 
         TradeDetail buyerTradeDetailItem = this.tradeDetailService.updateBuyerTradeDetail(billItem, tradeDetailItem,
                 tradeWeight, super.findUser(), 1L);
@@ -113,7 +114,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         Long billId = super.doVerifyBeforeCheckIn(billItem.getBillId(), BillVerifyStatusEnum.PASSED);
         Pair<CheckinOutRecord, TradeDetail> p = super.doCheckIn(billId, CheckinStatusEnum.ALLOWED);
         TradeDetail tradeDetailItem = p.getValue();
-        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), new OperatorUser(1L, ""));
+        this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), Optional.ofNullable(new OperatorUser(1L, "")));
 
         TradeDetail sellerTradeDetailItem = this.tradeDetailService.updateSellerTradeDetail(billItem, tradeDetailItem,
                 tradeWeight);

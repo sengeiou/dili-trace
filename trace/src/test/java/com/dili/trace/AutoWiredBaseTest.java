@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.input.CheckInApiInput;
@@ -140,7 +141,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
 		List<ImageCert> imageList = Lists.newArrayList(imageCert);
 
-		Long billId = this.billService.createRegisterBill(bill, imageList, new OperatorUser(1L, "test"));
+		Long billId = this.billService.createRegisterBill(bill, imageList, Optional.ofNullable(new OperatorUser(1L, "test")));
 		assertNotNull(billId);
 		RegisterBill billItem = this.billService.get(billId);
 		assertNotNull(billItem);
@@ -152,7 +153,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		CheckInApiInput input = new CheckInApiInput();
 		input.setBillIdList(Lists.newArrayList(billId));
 		input.setCheckinStatus(checkinStatusEnum.getCode());
-		List<CheckinOutRecord> list = this.checkinOutRecordService.doCheckin(new OperatorUser(1L, "test"), input);
+		List<CheckinOutRecord> list = this.checkinOutRecordService.doCheckin(Optional.ofNullable(new OperatorUser(1L, "test")), input);
 		assertNotNull(list);
 		assertTrue(list.size() == 1);
 		CheckinOutRecord record=list.get(0);
@@ -176,7 +177,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		RegisterBill bill = new RegisterBill();
 		bill.setId(billId);
 		bill.setVerifyStatus(verifyStatusEnum.getCode());
-		this.billService.doVerifyBeforeCheckIn(bill, new OperatorUser(1L, "test"));
+		this.billService.doVerifyBeforeCheckIn(bill, Optional.ofNullable(new OperatorUser(1L, "test")));
 
 		RegisterBill billItem = this.billService.get(billId);
 		assertNotNull(billItem);
@@ -190,7 +191,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		RegisterBill bill = new RegisterBill();
 		bill.setId(billId);
 		bill.setVerifyStatus(verifyStatusEnum.getCode());
-		this.billService.doVerifyAfterCheckIn(bill, new OperatorUser(1L, "test"));
+		this.billService.doVerifyAfterCheckIn(bill, Optional.ofNullable(new OperatorUser(1L, "test")));
 		RegisterBill billItem = this.billService.get(billId);
 		assertNotNull(billItem);
 		assertTrue(verifyStatusEnum.equalsToCode(billItem.getVerifyStatus()));

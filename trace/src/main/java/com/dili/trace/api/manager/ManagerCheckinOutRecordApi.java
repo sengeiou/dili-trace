@@ -2,6 +2,7 @@ package com.dili.trace.api.manager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
@@ -72,7 +73,7 @@ public class ManagerCheckinOutRecordApi {
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
-					.doCheckin(new OperatorUser(sessionContext.getAccountId(), ""), input);
+					.doCheckin(Optional.ofNullable(operatorUser), input);
 			return BaseOutput.success();
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

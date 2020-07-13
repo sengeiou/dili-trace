@@ -1,6 +1,7 @@
 package com.dili.trace.api.client;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
@@ -86,7 +87,7 @@ public class ClientRegisterBillApi {
 				return BaseOutput.failure("没有登记单");
 			}
 			logger.info("保存多个登记单操作用户:{}，{}" ,operatorUser.getId(),operatorUser.getName());
-			List<Long> idList = this.registerBillService.createBillList(registerBills, userService.get(operatorUser.getId()), operatorUser);
+			List<Long> idList = this.registerBillService.createBillList(registerBills, userService.get(operatorUser.getId()), Optional.empty());
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -114,7 +115,7 @@ public class ClientRegisterBillApi {
 			
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存登记单:{}", JSON.toJSONString(registerBill));
-			this.registerBillService.doEdit(registerBill,dto.getImageCertList());
+			this.registerBillService.doEdit(registerBill,dto.getImageCertList(),Optional.empty());
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

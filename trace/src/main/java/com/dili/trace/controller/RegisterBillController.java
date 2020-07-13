@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -151,7 +152,7 @@ public class RegisterBillController {
 			registerBill.setUserId(user.getId());
 			try {
 				Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
-						new OperatorUser(userTicket.getId(), userTicket.getRealName()));
+						Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
 
 			} catch (TraceBusinessException e) {
 				return BaseOutput.failure(e.getMessage());
@@ -427,7 +428,10 @@ public class RegisterBillController {
 	@ResponseBody
 	public BaseOutput<?> doEdit(RegisterBill input) {
 		try {
-			Long id = this.registerBillService.doEdit(input, Lists.newArrayList());
+
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+							
+			Long id = this.registerBillService.doEdit(input, Lists.newArrayList(),Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
 			return BaseOutput.success().setData(id);
 		} catch (AppException e) {
 			logger.error(e.getMessage(), e);

@@ -6,13 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BizNumberFunction;
@@ -58,6 +51,13 @@ import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import one.util.streamex.StreamEx;
 
 /**
@@ -102,7 +102,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
-			OperatorUser operatorUser) {
+	Optional<OperatorUser> operatorUser) {
 		if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
 			throw new TraceBusinessException("用户未审核通过不能创建报备单");
 		}
@@ -118,7 +118,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Transactional
 	@Override
 	public Long createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList,
-			OperatorUser operatorUser) {
+			Optional<OperatorUser> operatorUser) {
 		this.checkBill(registerBill);
 
 		registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
@@ -128,10 +128,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
 		registerBill.setIsCheckin(YnEnum.NO.getCode());
-
-		registerBill.setOperatorName(operatorUser.getName());
-		registerBill.setOperatorId(operatorUser.getId());
-
+		operatorUser.ifPresent(op->{
+			registerBill.setOperatorName(op.getName());
+			registerBill.setOperatorId(op.getId());
+		});
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
 		String plate = StreamEx.ofNullable(registerBill.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
@@ -242,7 +242,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Transactional
 	@Override
-	public Long doEdit(RegisterBill input,List<ImageCert> imageCertList) {
+	public Long doEdit(RegisterBill input,List<ImageCert> imageCertList,Optional<OperatorUser> operatorUser) {
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -264,6 +264,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
 		input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 		input.setModified(new Date());
+
+		input.setOperatorName(null);
+		input.setOperatorId(null);
+		operatorUser.ifPresent(op->{
+			input.setOperatorName(op.getName());
+			input.setOperatorId(op.getId());
+		});
 		this.updateSelective(input);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
 		// 保存图片
@@ -347,7 +354,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Transactional
 	@Override
-	public Long doVerifyBeforeCheckIn(RegisterBill input, OperatorUser operatorUser) {
+	public Long doVerifyBeforeCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser) {
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -367,7 +374,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Transactional
 	@Override
-	public Long doVerifyAfterCheckIn(RegisterBill input, OperatorUser operatorUser) {
+	public Long doVerifyAfterCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser) {
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -388,7 +395,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	}
 
-	private void doVerify(RegisterBill billItem, RegisterBill input, OperatorUser operatorUser) {
+	private void doVerify(RegisterBill billItem, RegisterBill input,Optional<OperatorUser> operatorUser) {
 		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
 				.orElseThrow(() -> new TraceBusinessException("数据错误"));
 
@@ -410,9 +417,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBill bill = new RegisterBill();
 		bill.setId(billItem.getId());
 		bill.setVerifyStatus(toVerifyState.getCode());
+		operatorUser.ifPresent(op->{
+			bill.setOperatorId(op.getId());
+			bill.setOperatorName(op.getName());
+		});
 
-		bill.setOperatorId(operatorUser.getId());
-		bill.setOperatorName(operatorUser.getName());
 		bill.setReason(StringUtils.trimToNull(input.getReason()));
 		if (BillVerifyStatusEnum.PASSED == toVerifyState) {
 			if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {

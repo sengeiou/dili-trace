@@ -42,7 +42,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param registerBill
 	 * @return
 	 */
-	Long createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList, OperatorUser operatorUser);
+	Long createRegisterBill(RegisterBill registerBill, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser);
 
 	/**
 	 * 修改单个报备单
@@ -50,7 +50,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param input
 	 * @return
 	 */
-	public Long doEdit(RegisterBill registerBill,List<ImageCert> imageCertList);
+	public Long doEdit(RegisterBill registerBill,List<ImageCert> imageCertList,Optional<OperatorUser> operatorUser);
 
 	/**
 	 * 进门前审核
@@ -59,7 +59,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param operatorUser
 	 * @return
 	 */
-	public Long doVerifyBeforeCheckIn(RegisterBill input, OperatorUser operatorUser);
+	public Long doVerifyBeforeCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser);
 
 	/**
 	 * 进门后审核
@@ -68,7 +68,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param operatorUser
 	 * @return
 	 */
-	public Long doVerifyAfterCheckIn(RegisterBill input, OperatorUser operatorUser);
+	public Long doVerifyAfterCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser);
 
 	/**
 	 * 创建多个报备单
@@ -79,7 +79,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
-			OperatorUser operatorUser);
+	Optional<OperatorUser> operatorUser);
 
 	public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query);
 

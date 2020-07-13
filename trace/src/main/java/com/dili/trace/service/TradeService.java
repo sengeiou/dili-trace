@@ -2,8 +2,8 @@ package com.dili.trace.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Optional;
 
-import com.dili.common.exception.TraceBusinessException;
 import com.dili.trace.domain.BatchStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
@@ -12,7 +12,6 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.YnEnum;
 
@@ -21,8 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import one.util.streamex.StreamEx;
 
 @Service
 @Transactional
@@ -36,7 +33,7 @@ public class TradeService {
     TradeDetailService tradeDetailService;
 
     public Long createBatchStockAfterVerifiedAndCheckin(Long billId, Long tradeDetailId,
-            OperatorUser operateUser) {
+    Optional<OperatorUser> operatorUser) {
         RegisterBill billItem = this.billService.get(billId);
         BigDecimal weight=billItem.getWeight();
         if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {

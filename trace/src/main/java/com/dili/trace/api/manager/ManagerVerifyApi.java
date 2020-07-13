@@ -1,6 +1,7 @@
 package com.dili.trace.api.manager;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
@@ -99,7 +100,7 @@ public class ManagerVerifyApi {
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
 			input.setReason(inputDto.getReason());
-			Long id = this.registerBillService.doVerifyBeforeCheckIn(input,operatorUser);
+			Long id = this.registerBillService.doVerifyBeforeCheckIn(input,Optional.ofNullable(operatorUser));
 			return BaseOutput.success().setData(id);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

@@ -128,12 +128,13 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	/**
 	 * 批量进门
+	 * 
 	 * @param operateUser
 	 * @param checkInApiInput
 	 * @return
 	 */
 	@Transactional
-	public List<CheckinOutRecord> doCheckin(OperatorUser operateUser, CheckInApiInput checkInApiInput) {
+	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, CheckInApiInput checkInApiInput) {
 		if (checkInApiInput == null || checkInApiInput.getBillIdList() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -154,12 +155,14 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 	/**
 	 * 单个进门
+	 * 
 	 * @param billId
 	 * @param checkinStatusEnum
 	 * @param operateUser
 	 * @return
 	 */
-	private CheckinOutRecord checkin(Long billId, CheckinStatusEnum checkinStatusEnum, OperatorUser operateUser) {
+	private CheckinOutRecord checkin(Long billId, CheckinStatusEnum checkinStatusEnum,
+			Optional<OperatorUser> operateUser) {
 		RegisterBill billItem = StreamEx.ofNullable(this.registerBillService.get(billId)).findFirst()
 				.orElseThrow(() -> {
 					return new TraceBusinessException("没有找到数据");
@@ -179,7 +182,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			TradeDetail tradeDetailItem = this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
 			CheckinOutRecord checkinRecord = this.createRecordForCheckin(billItem, checkinStatusEnum, operateUser);
 
-			TradeDetail  tradeDetail=new TradeDetail();
+			TradeDetail tradeDetail = new TradeDetail();
 			tradeDetail.setId(tradeDetailItem.getId());
 			tradeDetail.setCheckinStatus(checkinStatusEnum.getCode());
 			tradeDetail.setCheckinRecordId(checkinRecord.getId());
@@ -194,7 +197,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			}
 			this.registerBillService.updateSelective(bill);
 
-			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(),tradeDetailItem.getId(), operateUser);
+			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(), tradeDetailItem.getId(),
+					operateUser);
 			return checkinRecord;
 		}
 		return null;
@@ -205,12 +209,15 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 * 创建进门数据
 	 */
 	private CheckinOutRecord createRecordForCheckin(RegisterBill billItem, CheckinStatusEnum checkinStatusEnum,
-			OperatorUser operateUser) {
+			Optional<OperatorUser> operateUser) {
 		CheckinOutRecord checkinRecord = new CheckinOutRecord();
 		checkinRecord.setStatus(checkinStatusEnum.getCode());
 		checkinRecord.setInout(CheckinOutTypeEnum.IN.getCode());
-		checkinRecord.setOperatorId(operateUser.getId());
-		checkinRecord.setOperatorName(operateUser.getName());
+		operateUser.ifPresent(op->{
+			checkinRecord.setOperatorId(op.getId());
+			checkinRecord.setOperatorName(op.getName());
+		});
+
 		// checkinRecord.setRemark(checkInApiInput.getRemark());
 		checkinRecord.setCreated(new Date());
 		checkinRecord.setModified(new Date());

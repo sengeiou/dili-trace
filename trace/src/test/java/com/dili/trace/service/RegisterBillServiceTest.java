@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.CheckInApiInput;
@@ -37,7 +38,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
         assertNotNull(input);
         OperatorUser operatorUser = new OperatorUser(1L, "test");
         input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-        Long billId = this.billService.doVerifyBeforeCheckIn(input, operatorUser);
+        Long billId = this.billService.doVerifyBeforeCheckIn(input, Optional.ofNullable(operatorUser));
         assertNotNull(billId);
     }
 
@@ -52,7 +53,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
         CheckInApiInput checkInApiInput = new CheckInApiInput();
         checkInApiInput.setBillIdList(Lists.newArrayList(input.getId()));
         checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
-        List<CheckinOutRecord> checkInList = this.checkinOutRecordService.doCheckin(new OperatorUser(1L, "test"),
+        List<CheckinOutRecord> checkInList = this.checkinOutRecordService.doCheckin(Optional.ofNullable(new OperatorUser(1L, "test")),
                 checkInApiInput);
         assertTrue(checkInList.size() == 1);
         CheckinOutRecord recordItem = checkInList.get(0);
@@ -61,7 +62,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
 
         OperatorUser operatorUser = new OperatorUser(1L, "test");
         input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-        Long billId = this.billService.doVerifyAfterCheckIn(input, operatorUser);
+        Long billId = this.billService.doVerifyAfterCheckIn(input, Optional.ofNullable(operatorUser));
         assertNotNull(billId);
 
     }
