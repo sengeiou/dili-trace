@@ -44,14 +44,14 @@ public class ClientRegisterBillHistoryApi {
 	@ApiOperation(value = "获取报备单历史列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/list.api", method = RequestMethod.POST)
-	public BaseOutput<List<BrandOutputDto>> list(@RequestBody RegisterBillHistory inputDto) {
+	public BaseOutput<List<RegisterBillHistory>> list(@RequestBody RegisterBillHistory inputDto) {
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			logger.info("获取报备单历史列表操作用户:{}", userId);
 			inputDto.setUserId(userId);
 			if (StringUtils.isBlank(inputDto.getOrder())) {
 				inputDto.setOrder("desc");
-				inputDto.setSort("created");
+				inputDto.setSort("modified");
 			}
 			List<RegisterBillHistory> page = this.billHistoryService.listByExample(inputDto);
 			return BaseOutput.success().setData(page);
