@@ -1,9 +1,6 @@
 package com.dili.trace.api.client;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
@@ -14,16 +11,9 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.TradeRequestInputDto;
-import com.dili.trace.api.output.TraceDataDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
-import com.dili.trace.domain.BatchStock;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.service.BatchStockService;
 import com.dili.trace.service.BillTraceService;
 import com.dili.trace.service.CheckinOutRecordService;
@@ -34,7 +24,6 @@ import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
-import com.google.common.collect.Lists;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
-import one.util.streamex.StreamEx;
 
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientBillTraceApi")
