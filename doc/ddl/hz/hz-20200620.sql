@@ -474,18 +474,3 @@ ALTER TABLE event_message MODIFY COLUMN source_business_type tinyint(2) NOT NULL
 ALTER TABLE hztrace.event_message ADD receiver_type TINYINT(2) NOT NULL COMMENT '接收者角色 普通用户10 管理员20';
 ALTER TABLE hztrace.event_message MODIFY COLUMN read_flag tinyint(1) DEFAULT 0 NOT NULL COMMENT '已读标志 未读0 已读 1';
 ALTER TABLE hztrace.event_message MODIFY COLUMN create_time timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL;
-
-CREATE TABLE hztrace.r_user_category (
-	id BIGINT auto_increment NOT NULL,
-	user_id BIGINT NULL,
-	category_id BIGINT NULL,
-	category_name varchar(100) NULL,
-	create_time TIMESTAMP DEFAULT now() NULL,
-	CONSTRAINT r_user_category_PK PRIMARY KEY (id)
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_general_ci;
-ALTER TABLE hztrace.r_user_category ADD category_type BIGINT NULL;
-
-
