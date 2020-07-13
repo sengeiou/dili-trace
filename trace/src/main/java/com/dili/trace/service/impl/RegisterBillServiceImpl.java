@@ -267,6 +267,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		input.setOperatorName(null);
 		input.setOperatorId(null);
+		input.setReason(null);
 		operatorUser.ifPresent(op->{
 			input.setOperatorName(op.getName());
 			input.setOperatorId(op.getId());
