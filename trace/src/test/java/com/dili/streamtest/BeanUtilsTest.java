@@ -35,8 +35,7 @@ public class BeanUtilsTest {
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        System.out.println(Json.toJson(src));
-        System.out.println(Json.toJson(target));
+        System.out.println(Json.toJson(targetbm));
 
 
     }
