@@ -43,8 +43,8 @@ public class ClientRegisterBillHistoryApi {
 
 	@ApiOperation(value = "获取报备单历史列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
-	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<List<BrandOutputDto>> listPage(@RequestBody RegisterBillHistory inputDto) {
+	@RequestMapping(value = "/list.api", method = RequestMethod.POST)
+	public BaseOutput<List<BrandOutputDto>> list(@RequestBody RegisterBillHistory inputDto) {
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			logger.info("获取报备单历史列表操作用户:{}", userId);
@@ -53,7 +53,7 @@ public class ClientRegisterBillHistoryApi {
 				inputDto.setOrder("desc");
 				inputDto.setSort("created");
 			}
-			BasePage<RegisterBillHistory> page = this.billHistoryService.listPageByExample(inputDto);
+			List<RegisterBillHistory> page = this.billHistoryService.listByExample(inputDto);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
