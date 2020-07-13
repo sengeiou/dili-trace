@@ -9,6 +9,7 @@ import java.util.Optional;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BizNumberFunction;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -259,39 +260,54 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// 车牌转大写
 		String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
 				.findFirst().orElse(null);
-		input.setPlate(plate);
+				billItem.setPlate(plate);
 		// 保存车牌
 		this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
-		input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-		input.setModified(new Date());
+	
 
-		input.setOperatorName(null);
-		input.setOperatorId(null);
-		input.setReason(null);
-		input.setCode(billItem.getCode());
+		billItem.setOperatorName(null);
+		billItem.setOperatorId(null);
+		billItem.setReason(null);
+		billItem.setModified(new Date());
+
+		billItem.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+		billItem.setWeight(input.getWeight());
+		billItem.setWeightUnit(input.getWeightUnit());
+		billItem.setProductId(input.getProductId());
+		billItem.setProductName(input.getProductName());
+		billItem.setOriginId(input.getOriginId());
+		billItem.setOriginName(input.getOriginName());
+		billItem.setUpStreamId(input.getUpStreamId());
+		billItem.setPreserveType(input.getPreserveType());
+		billItem.setSpecName(input.getSpecName());
+		billItem.setBillType(input.getBillType());
+		billItem.setTruckType(input.getTruckType());
+		billItem.setBrandName(input.getBrandName());
+		billItem.setBrandId(input.getBrandId());
+		
 		operatorUser.ifPresent(op->{
-			input.setOperatorName(op.getName());
-			input.setOperatorId(op.getId());
+			billItem.setOperatorName(op.getName());
+			billItem.setOperatorId(op.getId());
 		});
-		this.update(input);
+		this.update(billItem);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
 		// 保存图片
 		if (imageCertList != null) {
-			this.imageCertService.insertImageCert(imageCertList, input.getId());
+			this.imageCertService.insertImageCert(imageCertList, billItem.getId());
 		}
 
 		this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(td -> {
 			TradeDetail updatableRecord = new TradeDetail();
 			updatableRecord.setId(td.getId());
 			updatableRecord.setModified(new Date());
-			updatableRecord.setStockWeight(input.getWeight());
-			updatableRecord.setTotalWeight(input.getWeight());
+			updatableRecord.setStockWeight(billItem.getWeight());
+			updatableRecord.setTotalWeight(billItem.getWeight());
 			this.tradeDetailService.updateSelective(updatableRecord);
 		});
 
-		this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
+		this.brandService.createOrUpdateBrand(billItem.getBrandName(), billItem.getUserId());
 		this.updateUserQrStatusByUserId(billItem.getUserId());
-		return input.getId();
+		return billItem.getId();
 	}
 
 	private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
