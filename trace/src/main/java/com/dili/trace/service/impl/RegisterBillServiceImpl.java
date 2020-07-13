@@ -264,6 +264,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
 		input.setModified(new Date());
 		this.updateSelective(input);
+		this.registerBillHistoryService.createHistory(billItem.getBillId());
 		// 保存图片
 		if (imageCertList != null) {
 			this.imageCertService.insertImageCert(imageCertList, input.getId());
