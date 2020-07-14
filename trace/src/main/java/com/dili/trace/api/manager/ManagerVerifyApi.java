@@ -17,7 +17,6 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
@@ -112,33 +111,33 @@ public class ManagerVerifyApi {
 
 	}
 
-	@ApiOperation(value = "获得登记单详情")
-	@RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> viewRegisterBill(@RequestBody RegisterBill input) {
-		if (input == null || input.getUserId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
-		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			RegisterBillDto query = new RegisterBillDto();
-			query.setSort("modified");
-			query.setOrder("desc");
-			query.setUserId(input.getUserId());
+	// @ApiOperation(value = "获得登记单详情")
+	// @RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
+	// public BaseOutput<BasePage<RegisterBill>> viewRegisterBill(@RequestBody RegisterBill input) {
+	// 	if (input == null || input.getUserId() == null) {
+	// 		return BaseOutput.failure("参数错误");
+	// 	}
+	// 	try {
+	// 		OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+	// 		RegisterBillDto query = new RegisterBillDto();
+	// 		query.setSort("modified");
+	// 		query.setOrder("desc");
+	// 		query.setUserId(input.getUserId());
 
-			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
-					rb -> {
-						RegisterBillOutput dto = RegisterBillOutput.build(rb);
-						return dto;
-					});
-			return BaseOutput.success().setData(data);
+	// 		BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
+	// 				rb -> {
+	// 					RegisterBillOutput dto = RegisterBillOutput.build(rb);
+	// 					return dto;
+	// 				});
+	// 		return BaseOutput.success().setData(data);
 
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("操作失败：服务端出错");
-		}
-	}
+	// 	} catch (TraceBusinessException e) {
+	// 		return BaseOutput.failure(e.getMessage());
+	// 	} catch (Exception e) {
+	// 		logger.error(e.getMessage(), e);
+	// 		return BaseOutput.failure("操作失败：服务端出错");
+	// 	}
+	// }
 
 	
 	// @ApiOperation(value = "场内审核登记单")
