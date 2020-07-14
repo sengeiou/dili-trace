@@ -17,7 +17,6 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
@@ -52,9 +51,7 @@ public class ManagerAfterCheckInApi {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			query.setSort("created");
 			query.setOrder("desc");
-			query.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
-
-			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageAfterCheckinVerifyBill(query),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						return dto;
@@ -75,7 +72,6 @@ public class ManagerAfterCheckInApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			query.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
 			List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatuseAfterCheckin(query);
 			return BaseOutput.success().setData(list);
 
