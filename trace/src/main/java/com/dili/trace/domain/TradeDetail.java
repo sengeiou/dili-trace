@@ -92,8 +92,8 @@ public class TradeDetail extends BaseDomain {
 	private Integer weightUnit;
 
 	@ApiModelProperty(value = "批次库存ID")
-	@Column(name = "`batch_stock_id`")
-	private Long batchStockId;
+	@Column(name = "`product_stock_id`")
+	private Long productStockId;
 
 	@ApiModelProperty(value = "批次交易ID")
 	@Column(name = "`trade_request_id`")
@@ -267,18 +267,14 @@ public class TradeDetail extends BaseDomain {
 		this.totalWeight = totalWeight;
 	}
 
-	/**
-	 * @return Long return the batchStockId
-	 */
-	public Long getBatchStockId() {
-		return batchStockId;
+
+
+	public Long getProductStockId() {
+		return productStockId;
 	}
 
-	/**
-	 * @param batchStockId the batchStockId to set
-	 */
-	public void setBatchStockId(Long batchStockId) {
-		this.batchStockId = batchStockId;
+	public void setProductStockId(Long productStockId) {
+		this.productStockId = productStockId;
 	}
 
 	/**

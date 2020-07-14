@@ -25,319 +25,315 @@ import io.swagger.annotations.ApiModelProperty;
 @SuppressWarnings("serial")
 @Table(name = "`trade_request`")
 public class TradeRequest extends BaseDomain {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "`id`")
-    @JSONField(serialize = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "`id`")
+	@JSONField(serialize = false)
+	private Long id;
 
-    @Column(name = "`code`")
-    private String code;
+	@Column(name = "`code`")
+	private String code;
 
-    @Column(name = "`product_name`")
-    private String productName;
+	@Column(name = "`product_name`")
+	private String productName;
 
-    @Column(name = "`weight_unit`")
-    private Integer weightUnit;
+	@Column(name = "`weight_unit`")
+	private Integer weightUnit;
 
-    @Column(name = "`trade_order_Id`")
-    private Long tradeOrderId;
+	@Column(name = "`trade_order_Id`")
+	private Long tradeOrderId;
 
-    @ApiModelProperty(value = "买家ID")
-    @Column(name = "`buyer_id`")
-    private Long buyerId;
+	@ApiModelProperty(value = "买家ID")
+	@Column(name = "`buyer_id`")
+	private Long buyerId;
 
-    @ApiModelProperty(value = "买家姓名")
-    @Column(name = "`buyer_name`")
-    private String buyerName;
+	@ApiModelProperty(value = "买家姓名")
+	@Column(name = "`buyer_name`")
+	private String buyerName;
 
-    @ApiModelProperty(value = "卖家ID")
-    @Column(name = "`seller_id`")
-    private Long sellerId;
+	@ApiModelProperty(value = "卖家ID")
+	@Column(name = "`seller_id`")
+	private Long sellerId;
 
-    @ApiModelProperty(value = "卖家姓名")
-    @Column(name = "`seller_name`")
-    private String sellerName;
+	@ApiModelProperty(value = "卖家姓名")
+	@Column(name = "`seller_name`")
+	private String sellerName;
 
-    @ApiModelProperty(value = "交易重量")
-    @Column(name = "`trade_weight`")
-    private BigDecimal tradeWeight;
+	@ApiModelProperty(value = "交易重量")
+	@Column(name = "`trade_weight`")
+	private BigDecimal tradeWeight;
 
-    @ApiModelProperty(value = "批次库存ID")
-    @Column(name = "`batch_stock_id`")
-    private Long batchStockId;
+	@ApiModelProperty(value = "批次库存ID")
+	@Column(name = "`product_stock_id`")
+	private Long productStockId;
 
-    // @ApiModelProperty(value = "类型")
-    // @Column(name = "`trade_request_type`")
-    // private Integer tradeRequestType;
+	// @ApiModelProperty(value = "类型")
+	// @Column(name = "`trade_request_type`")
+	// private Integer tradeRequestType;
 
-    // @ApiModelProperty(value = "交易状态")
-    // @Column(name = "`trade_status`")
-    // private Integer tradeStatus;
+	// @ApiModelProperty(value = "交易状态")
+	// @Column(name = "`trade_status`")
+	// private Integer tradeStatus;
 
-    @ApiModelProperty(value = "退货状态")
-    @Column(name = "`return_status`")
-    private Integer returnStatus;
+	@ApiModelProperty(value = "退货状态")
+	@Column(name = "`return_status`")
+	private Integer returnStatus;
 
-    @ApiModelProperty(value = "原因")
-    @Column(name = "`reason`")
-    private String reason;
+	@ApiModelProperty(value = "原因")
+	@Column(name = "`reason`")
+	private String reason;
 
-    @Column(name = "`created`")
-    private Date created;
+	@Column(name = "`created`")
+	private Date created;
 
-    @Column(name = "`modified`")
-    private Date modified;
+	@Column(name = "`modified`")
+	private Date modified;
 
-    @Transient
-    public Long getTradeRequestId() {
-        return this.id;
-    }
-    @Transient
-    public String getWeightUnitName(){
-        return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
-    }
-    @Transient
-    public String getReturnStatusName(){
-        return TradeReturnStatusEnum.fromCode(this.getReturnStatus()).map(TradeReturnStatusEnum::getName).orElse("");
-    }
-    /**
-     * @return Long return the id
-     */
-    public Long getId() {
-        return id;
-    }
+	@Transient
+	public Long getTradeRequestId() {
+		return this.id;
+	}
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Transient
+	public String getWeightUnitName() {
+		return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+	}
 
-    /**
-     * @return Long return the buyerId
-     */
-    public Long getBuyerId() {
-        return buyerId;
-    }
+	@Transient
+	public String getReturnStatusName() {
+		return TradeReturnStatusEnum.fromCode(this.getReturnStatus()).map(TradeReturnStatusEnum::getName).orElse("");
+	}
 
-    /**
-     * @param buyerId the buyerId to set
-     */
-    public void setBuyerId(Long buyerId) {
-        this.buyerId = buyerId;
-    }
+	/**
+	 * @return Long return the id
+	 */
+	public Long getId() {
+		return id;
+	}
 
-    /**
-     * @return String return the buyerName
-     */
-    public String getBuyerName() {
-        return buyerName;
-    }
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    /**
-     * @param buyerName the buyerName to set
-     */
-    public void setBuyerName(String buyerName) {
-        this.buyerName = buyerName;
-    }
+	/**
+	 * @return Long return the buyerId
+	 */
+	public Long getBuyerId() {
+		return buyerId;
+	}
 
-    /**
-     * @return Long return the sellerId
-     */
-    public Long getSellerId() {
-        return sellerId;
-    }
+	/**
+	 * @param buyerId the buyerId to set
+	 */
+	public void setBuyerId(Long buyerId) {
+		this.buyerId = buyerId;
+	}
 
-    /**
-     * @param sellerId the sellerId to set
-     */
-    public void setSellerId(Long sellerId) {
-        this.sellerId = sellerId;
-    }
+	/**
+	 * @return String return the buyerName
+	 */
+	public String getBuyerName() {
+		return buyerName;
+	}
 
-    /**
-     * @return String return the sellerName
-     */
-    public String getSellerName() {
-        return sellerName;
-    }
+	/**
+	 * @param buyerName the buyerName to set
+	 */
+	public void setBuyerName(String buyerName) {
+		this.buyerName = buyerName;
+	}
 
-    /**
-     * @param sellerName the sellerName to set
-     */
-    public void setSellerName(String sellerName) {
-        this.sellerName = sellerName;
-    }
+	/**
+	 * @return Long return the sellerId
+	 */
+	public Long getSellerId() {
+		return sellerId;
+	}
 
-    /**
-     * @return BigDecimal return the tradeWeight
-     */
-    public BigDecimal getTradeWeight() {
-        return tradeWeight;
-    }
+	/**
+	 * @param sellerId the sellerId to set
+	 */
+	public void setSellerId(Long sellerId) {
+		this.sellerId = sellerId;
+	}
 
-    /**
-     * @param tradeWeight the tradeWeight to set
-     */
-    public void setTradeWeight(BigDecimal tradeWeight) {
-        this.tradeWeight = tradeWeight;
-    }
+	/**
+	 * @return String return the sellerName
+	 */
+	public String getSellerName() {
+		return sellerName;
+	}
 
-    /**
-     * @return Date return the created
-     */
-    public Date getCreated() {
-        return created;
-    }
+	/**
+	 * @param sellerName the sellerName to set
+	 */
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
+	}
 
-    /**
-     * @param created the created to set
-     */
-    public void setCreated(Date created) {
-        this.created = created;
-    }
+	/**
+	 * @return BigDecimal return the tradeWeight
+	 */
+	public BigDecimal getTradeWeight() {
+		return tradeWeight;
+	}
 
-    /**
-     * @return Date return the modified
-     */
-    public Date getModified() {
-        return modified;
-    }
+	/**
+	 * @param tradeWeight the tradeWeight to set
+	 */
+	public void setTradeWeight(BigDecimal tradeWeight) {
+		this.tradeWeight = tradeWeight;
+	}
 
-    /**
-     * @param modified the modified to set
-     */
-    public void setModified(Date modified) {
-        this.modified = modified;
-    }
+	/**
+	 * @return Date return the created
+	 */
+	public Date getCreated() {
+		return created;
+	}
 
-    /**
-     * @return Long return the batchStockId
-     */
-    public Long getBatchStockId() {
-        return batchStockId;
-    }
+	/**
+	 * @param created the created to set
+	 */
+	public void setCreated(Date created) {
+		this.created = created;
+	}
 
-    /**
-     * @param batchStockId the batchStockId to set
-     */
-    public void setBatchStockId(Long batchStockId) {
-        this.batchStockId = batchStockId;
-    }
+	/**
+	 * @return Date return the modified
+	 */
+	public Date getModified() {
+		return modified;
+	}
 
-    // /**
-    // * @return Integer return the tradeRequestType
-    // */
-    // public Integer getTradeRequestType() {
-    // return tradeRequestType;
-    // }
+	/**
+	 * @param modified the modified to set
+	 */
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
 
-    // /**
-    // * @param tradeRequestType the tradeRequestType to set
-    // */
-    // public void setTradeRequestType(Integer tradeRequestType) {
-    // this.tradeRequestType = tradeRequestType;
-    // }
+	// /**
+	// * @return Integer return the tradeRequestType
+	// */
+	// public Integer getTradeRequestType() {
+	// return tradeRequestType;
+	// }
 
-    // /**
-    // * @return Integer return the tradeStatus
-    // */
-    // public Integer getTradeStatus() {
-    // return tradeStatus;
-    // }
+	// /**
+	// * @param tradeRequestType the tradeRequestType to set
+	// */
+	// public void setTradeRequestType(Integer tradeRequestType) {
+	// this.tradeRequestType = tradeRequestType;
+	// }
 
-    // /**
-    // * @param tradeStatus the tradeStatus to set
-    // */
-    // public void setTradeStatus(Integer tradeStatus) {
-    // this.tradeStatus = tradeStatus;
-    // }
+	// /**
+	// * @return Integer return the tradeStatus
+	// */
+	// public Integer getTradeStatus() {
+	// return tradeStatus;
+	// }
 
-    /**
-     * @return Integer return the returnStatus
-     */
-    public Integer getReturnStatus() {
-        return returnStatus;
-    }
+	// /**
+	// * @param tradeStatus the tradeStatus to set
+	// */
+	// public void setTradeStatus(Integer tradeStatus) {
+	// this.tradeStatus = tradeStatus;
+	// }
 
-    /**
-     * @param returnStatus the returnStatus to set
-     */
-    public void setReturnStatus(Integer returnStatus) {
-        this.returnStatus = returnStatus;
-    }
+	public Long getProductStockId() {
+		return productStockId;
+	}
 
-    /**
-     * @return String return the reason
-     */
-    public String getReason() {
-        return reason;
-    }
+	public void setProductStockId(Long productStockId) {
+		this.productStockId = productStockId;
+	}
 
-    /**
-     * @param reason the reason to set
-     */
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
+	/**
+	 * @return Integer return the returnStatus
+	 */
+	public Integer getReturnStatus() {
+		return returnStatus;
+	}
 
-    /**
-     * @return Long return the tradeOrderId
-     */
-    public Long getTradeOrderId() {
-        return tradeOrderId;
-    }
+	/**
+	 * @param returnStatus the returnStatus to set
+	 */
+	public void setReturnStatus(Integer returnStatus) {
+		this.returnStatus = returnStatus;
+	}
 
-    /**
-     * @param tradeOrderId the tradeOrderId to set
-     */
-    public void setTradeOrderId(Long tradeOrderId) {
-        this.tradeOrderId = tradeOrderId;
-    }
+	/**
+	 * @return String return the reason
+	 */
+	public String getReason() {
+		return reason;
+	}
 
-    /**
-     * @return Long return the code
-     */
-    public String getCode() {
-        return code;
-    }
+	/**
+	 * @param reason the reason to set
+	 */
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
 
-    /**
-     * @param code the code to set
-     */
-    public void setCode(String code) {
-        this.code = code;
-    }
+	/**
+	 * @return Long return the tradeOrderId
+	 */
+	public Long getTradeOrderId() {
+		return tradeOrderId;
+	}
 
-    /**
-     * @return String return the productName
-     */
-    public String getProductName() {
-        return productName;
-    }
+	/**
+	 * @param tradeOrderId the tradeOrderId to set
+	 */
+	public void setTradeOrderId(Long tradeOrderId) {
+		this.tradeOrderId = tradeOrderId;
+	}
 
-    /**
-     * @param productName the productName to set
-     */
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
+	/**
+	 * @return Long return the code
+	 */
+	public String getCode() {
+		return code;
+	}
 
+	/**
+	 * @param code the code to set
+	 */
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    /**
-     * @return Integer return the weightUnit
-     */
-    public Integer getWeightUnit() {
-        return weightUnit;
-    }
+	/**
+	 * @return String return the productName
+	 */
+	public String getProductName() {
+		return productName;
+	}
 
-    /**
-     * @param weightUnit the weightUnit to set
-     */
-    public void setWeightUnit(Integer weightUnit) {
-        this.weightUnit = weightUnit;
-    }
+	/**
+	 * @param productName the productName to set
+	 */
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	/**
+	 * @return Integer return the weightUnit
+	 */
+	public Integer getWeightUnit() {
+		return weightUnit;
+	}
+
+	/**
+	 * @param weightUnit the weightUnit to set
+	 */
+	public void setWeightUnit(Integer weightUnit) {
+		this.weightUnit = weightUnit;
+	}
 
 }

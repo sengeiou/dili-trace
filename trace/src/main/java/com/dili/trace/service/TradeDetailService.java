@@ -10,7 +10,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.dao.TradeDetailMapper;
-import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ProductStore;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
@@ -148,12 +148,12 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		Long sellerId = tradeDetailItem.getBuyerId();
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
 		Long batchStockId = this.batchStockService.findOrCreateBatchStock(sellerId, billItem).getId();
-		BatchStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(batchStockId).orElseThrow(() -> {
+		ProductStore sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(batchStockId).orElseThrow(() -> {
 			return new TraceBusinessException("操作库存失败");
 		});
 		TradeDetail sellerTradeDetail = new TradeDetail();
 
-		BatchStock sellerBatchStock=new BatchStock();
+		ProductStore sellerBatchStock=new ProductStore();
 		sellerBatchStock.setId(batchStockId);
 		sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().subtract(tradeWeight));
 		if (stockWeight.compareTo(BigDecimal.ZERO) <= 0) {
@@ -174,7 +174,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			User buyer, Long tradeRequestId) {
 		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
-		BatchStock buyerBatchStock = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
+		ProductStore buyerBatchStock = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
 			return new TraceBusinessException("操作库存失败");
 		});
 		buyerBatchStock.setStockWeight(buyerBatchStock.getStockWeight().add(tradeWeight));
@@ -188,7 +188,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		buyerTradeDetail.setTotalWeight(tradeWeight);
 		buyerTradeDetail.setTradeRequestId(tradeRequestId);
 
-		buyerTradeDetail.setBatchStockId(buyerBatchStock.getId());
+		buyerTradeDetail.setProductStockId(buyerBatchStock.getId());
 		buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
 		this.updateSelective(buyerTradeDetail);
 		return this.get(buyerTradeDetailId);
@@ -197,7 +197,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, User buyer) {
 		TradeDetail buyerTradeDetail = new TradeDetail();
-		buyerTradeDetail.setBatchStockId(null);
+		buyerTradeDetail.setProductStockId(null);
 		buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
 		buyerTradeDetail.setBillId(tradeDetailItem.getBillId());
 

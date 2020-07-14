@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.trace.api.output.TraceDataDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
-import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ProductStore;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
@@ -56,8 +56,6 @@ public class BillTraceService {
         if (tradeRequestItem.getBuyerId().equals(userId)) {
 
             User seller = this.userService.get(tradeRequestItem.getSellerId());
-            // BatchStock
-            // batchStock=this.batchStockService.get(tradeRequestItem.getBatchStockId());
             TraceDataDto upTrace = new TraceDataDto();
             upTrace.setCreated(tradeRequestItem.getCreated());
             upTrace.setBuyerName(tradeRequestItem.getBuyerName());
@@ -109,8 +107,6 @@ public class BillTraceService {
                     }).nonNull().toList();
 
             // User seller = this.userService.get(tradeRequestItem.getSellerId());
-            // BatchStock
-            // batchStock=this.batchStockService.get(tradeRequestItem.getBatchStockId());
 
             TradeDetail tradeDetailQuery = new TradeDetail();
             tradeDetailQuery.setSellerId(userId);
@@ -143,7 +139,7 @@ public class BillTraceService {
         } else {
             throw new TraceBusinessException("没有查询到数据");
         }
-        BatchStock batchStockItem = this.batchStockService.get(tradeRequestItem.getBatchStockId());
+        ProductStore batchStockItem = this.batchStockService.get(tradeRequestItem.getProductStockId());
         traceDetailOutputDto.setBrandName(batchStockItem.getBrandName());
         traceDetailOutputDto.setSpecName(batchStockItem.getSpecName());
         traceDetailOutputDto.setProductName(batchStockItem.getProductName());

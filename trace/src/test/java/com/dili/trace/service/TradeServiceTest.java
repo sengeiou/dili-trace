@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dili.trace.AutoWiredBaseTest;
-import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ProductStore;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
@@ -72,7 +72,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         TradeDetail sellerTradeDetailItem = this.tradeDetailService.updateSellerTradeDetail(billItem, tradeDetailItem,
                 tradeWeight);
         assertNotNull(sellerTradeDetailItem);
-        BatchStock batchStock = batchStockService.get(sellerTradeDetailItem.getBatchStockId());
+        ProductStore batchStock = batchStockService.get(sellerTradeDetailItem.getProductStockId());
         assertNotNull(batchStock);
         assertEquals(bill.getWeight().subtract(tradeWeight).compareTo(batchStock.getStockWeight()), 0);
     }
@@ -91,7 +91,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         TradeDetail buyerTradeDetailItem = this.tradeDetailService.updateBuyerTradeDetail(billItem, tradeDetailItem,
                 tradeWeight, super.findUser(), 1L);
         assertNotNull(buyerTradeDetailItem);
-        BatchStock batchStock = batchStockService.get(buyerTradeDetailItem.getBatchStockId());
+        ProductStore batchStock = batchStockService.get(buyerTradeDetailItem.getProductStockId());
         assertNotNull(batchStock);
         assertEquals(buyerTradeDetailItem.getStockWeight().compareTo(tradeWeight), 0);
     }
@@ -119,13 +119,13 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         TradeDetail sellerTradeDetailItem = this.tradeDetailService.updateSellerTradeDetail(billItem, tradeDetailItem,
                 tradeWeight);
         assertNotNull(sellerTradeDetailItem);
-        BatchStock sellerBatchStock = batchStockService.get(sellerTradeDetailItem.getBatchStockId());
+        ProductStore sellerBatchStock = batchStockService.get(sellerTradeDetailItem.getProductStockId());
         assertNotNull(sellerBatchStock);
 
         TradeDetail buyerTradeDetailItem = this.tradeDetailService.updateBuyerTradeDetail(billItem, tradeDetailItem,
                 tradeWeight, buyer, 1L);
         assertNotNull(buyerTradeDetailItem);
-        BatchStock buyerBatchStock = batchStockService.get(buyerTradeDetailItem.getBatchStockId());
+        ProductStore buyerBatchStock = batchStockService.get(buyerTradeDetailItem.getProductStockId());
         assertNotNull(buyerBatchStock);
         // assertEquals(buyerTradeDetailItem.getStockWeight().compareTo(tradeWeight),
         // 0);

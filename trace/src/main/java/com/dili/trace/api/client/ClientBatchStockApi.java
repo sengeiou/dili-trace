@@ -13,7 +13,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.BatchStockQueryDto;
-import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ProductStore;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.enums.SaleStatusEnum;
@@ -57,14 +57,14 @@ public class ClientBatchStockApi {
 
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listMyBatchStock.api", method = { RequestMethod.POST })
-	public BaseOutput<BasePage<BatchStock>> listMyBatchStock(@RequestBody BatchStockQueryDto condition) {
+	public BaseOutput<BasePage<ProductStore>> listMyBatchStock(@RequestBody BatchStockQueryDto condition) {
 		try {
 			Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			condition.setUserId(userId);
 			condition.setSort("created");
 			condition.setOrder("desc");
 			condition.setMinTradeDetailNum(1);
-			BasePage<BatchStock> page = this.batchStockService.listPageByExample(condition);
+			BasePage<ProductStore> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -77,7 +77,7 @@ public class ClientBatchStockApi {
 
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listSellersBatchStock.api", method = { RequestMethod.POST })
-	public BaseOutput<BasePage<BatchStock>> listSellersBatchStock(@RequestBody BatchStockQueryDto condition) {
+	public BaseOutput<BasePage<ProductStore>> listSellersBatchStock(@RequestBody BatchStockQueryDto condition) {
 		if (condition == null || condition.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -86,7 +86,7 @@ public class ClientBatchStockApi {
 			condition.setSort("created");
 			condition.setOrder("desc");
 			condition.setMinTradeDetailNum(1);
-			BasePage<BatchStock> page = this.batchStockService.listPageByExample(condition);
+			BasePage<ProductStore> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -105,18 +105,18 @@ public class ClientBatchStockApi {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
-		if (inputDto == null || inputDto.getBatchStockId() == null) {
+		if (inputDto == null || inputDto.getProductStockId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			BatchStock batchStockItem = this.batchStockService.get(inputDto.getBatchStockId());
+			ProductStore batchStockItem = this.batchStockService.get(inputDto.getProductStockId());
 			if (batchStockItem == null) {
 				return BaseOutput.failure("数据不存在");
 			}
 			TradeDetail tradeDetailQuery = new TradeDetail();
 			tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-			tradeDetailQuery.setBatchStockId(inputDto.getBatchStockId());
+			tradeDetailQuery.setProductStockId(inputDto.getProductStockId());
 			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
 			return BaseOutput.success().setData(tradeDetailList);
 		} catch (TraceBusinessException e) {

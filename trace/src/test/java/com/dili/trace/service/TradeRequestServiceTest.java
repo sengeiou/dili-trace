@@ -10,7 +10,7 @@ import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.input.TradeRequestInputDto;
-import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ProductStore;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.TradeDetail;
@@ -39,7 +39,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Autowired
     TradeDetailService tradeDetailService;
 
-    private TradeDetail createTradeDetail(BatchStock batchStock) {
+    private TradeDetail createTradeDetail(ProductStore batchStock) {
 
         TradeDetail tradeDetail = new TradeDetail();
         tradeDetail.setStockWeight(BigDecimal.valueOf(120));
@@ -49,7 +49,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         tradeDetail.setBuyerId(batchStock.getUserId());
         tradeDetail.setBuyerName(batchStock.getUserName());
         tradeDetail.setProductName(batchStock.getProductName());
-        tradeDetail.setBatchStockId(batchStock.getId());
+        tradeDetail.setProductStockId(batchStock.getId());
         tradeDetail.setBillId(1L);
         tradeDetail.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
         tradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
@@ -57,7 +57,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         return tradeDetail;
     }
 
-    private BatchStock createBatchStock() {
+    private ProductStore createBatchStock() {
         List<User> userList = super.findUsers();
         assertNotNull(userList);
         assertTrue(userList.size() >= 2);
@@ -71,7 +71,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
         Category category = super.findCategory();
         assertNotNull(category);
-        BatchStock batchStock = new BatchStock();
+        ProductStore batchStock = new ProductStore();
         batchStock.setUserId(seller.getId());
         batchStock.setUserName(seller.getName());
         batchStock.setProductId(category.getId());
@@ -87,7 +87,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
     }
 
-    private TradeRequest createBuyTradeRequest(BatchStock batchStock) {
+    private TradeRequest createBuyTradeRequest(ProductStore batchStock) {
         List<User> userList = super.findUsers();
         assertNotNull(userList);
         assertTrue(userList.size() >= 2);
@@ -95,7 +95,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         User buyer = userList.get(1);
 
         BatchStockInput input = new BatchStockInput();
-        input.setBatchStockId(batchStock.getId());
+        input.setProductStockId(batchStock.getId());
         input.setTradeWeight(BigDecimal.valueOf(77));
 
         TradeRequest request = this.tradeRequestService.createTradeRequest(null, null, buyer.getId(), input);
@@ -112,7 +112,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
     @Test
     public void createAndFinishTradeRequest() {
-        BatchStock batchStock = this.createBatchStock();
+        ProductStore batchStock = this.createBatchStock();
         TradeRequest request = this.createBuyTradeRequest(batchStock);
         TradeDetail tradeDetail = this.createTradeDetail(batchStock);
 
@@ -137,7 +137,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
         Category category = super.findCategory();
         assertNotNull(category);
-        BatchStock batchStock = new BatchStock();
+        ProductStore batchStock = new ProductStore();
         batchStock.setUserId(seller.getId());
         batchStock.setUserName(seller.getName());
         batchStock.setProductId(category.getId());
@@ -150,14 +150,14 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
         TradeRequest request = new TradeRequest();
         request.setBuyerId(buyer.getId());
-        request.setBatchStockId(batchStock.getId());
+        request.setProductStockId(batchStock.getId());
         request.setTradeWeight(BigDecimal.TEN);
         TradeRequest tradeRequestItem = ReflectionTestUtils.invokeMethod(this.tradeRequestService, "createBuyRequest",
                 request);
         assertNotNull(tradeRequestItem);
 
         TradeDetail tradeDetail = new TradeDetail();
-        tradeDetail.setBatchStockId(batchStock.getId());
+        tradeDetail.setProductStockId(batchStock.getId());
         tradeDetail.setBuyerId(batchStock.getUserId());
         tradeDetail.setBuyerName(batchStock.getUserName());
         tradeDetail.setBillId(1L);
@@ -188,7 +188,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
 
         Category category = super.findCategory();
         assertNotNull(category);
-        BatchStock batchStock = new BatchStock();
+        ProductStore batchStock = new ProductStore();
         batchStock.setUserId(ownedUser.getId());
         batchStock.setUserName(ownedUser.getName());
         batchStock.setProductId(category.getId());
@@ -200,7 +200,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         this.batchStockService.insertSelective(batchStock);
 
         TradeDetail tradeDetail = new TradeDetail();
-        tradeDetail.setBatchStockId(batchStock.getId());
+        tradeDetail.setProductStockId(batchStock.getId());
         tradeDetail.setBuyerId(ownedUser.getId());
         tradeDetail.setBuyerName(ownedUser.getName());
         tradeDetail.setBillId(1L);
@@ -217,11 +217,11 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         TradeRequest request = new TradeRequest();
         request.setBuyerId(buyer.getId());
         request.setBuyerName(buyer.getName());
-        request.setBatchStockId(batchStock.getId());
+        request.setProductStockId(batchStock.getId());
         request.setTradeWeight(BigDecimal.TEN);
 
         BatchStockInput input = new BatchStockInput();
-        input.setBatchStockId(1010L);
+        input.setProductStockId(1010L);
         input.setTradeWeight(BigDecimal.valueOf(88));
 
         // TradeDetailInputDto tdinput=new TradeDetailInputDto();

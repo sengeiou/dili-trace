@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Optional;
 
-import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ProductStore;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
@@ -50,7 +50,7 @@ public class TradeService {
                 && BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
                 && SaleStatusEnum.NONE.equalsToCode(tradeDetailItem.getSaleStatus())) {
 
-            BatchStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
+            ProductStore batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
             batchStock.setStockWeight(batchStock.getStockWeight().add(weight));
             batchStock.setTotalWeight(batchStock.getTotalWeight().add(weight));
             batchStock.setTradeDetailNum(batchStock.getTradeDetailNum()+1);
@@ -61,7 +61,7 @@ public class TradeService {
             updatableRecord.setModified(new Date());
             updatableRecord.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
             updatableRecord.setIsBatched(TFEnum.TRUE.getCode());
-            updatableRecord.setBatchStockId(batchStock.getId());
+            updatableRecord.setProductStockId(batchStock.getId());
             updatableRecord.setStockWeight(weight);
             updatableRecord.setTotalWeight(weight);
             this.tradeDetailService.updateSelective(updatableRecord);

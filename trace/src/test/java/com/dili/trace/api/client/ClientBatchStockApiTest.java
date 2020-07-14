@@ -9,7 +9,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.BatchStockQueryDto;
-import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ProductStore;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -25,10 +25,10 @@ public class ClientBatchStockApiTest extends AutoWiredBaseTest {
     public void listSellersBatchStock() {
         BatchStockQueryDto input = new BatchStockQueryDto();
         input.setUserId(2L);
-        BaseOutput<BasePage<BatchStock>> out = this.clientBatchStockApi.listSellersBatchStock(input);
+        BaseOutput<BasePage<ProductStore>> out = this.clientBatchStockApi.listSellersBatchStock(input);
         assertNotNull(out);
         assertTrue(out.isSuccess());
-        List<BatchStock> list = out.getData().getDatas();
+        List<ProductStore> list = out.getData().getDatas();
         assertNotNull(list);
         assertTrue(list.size()>0);
     }

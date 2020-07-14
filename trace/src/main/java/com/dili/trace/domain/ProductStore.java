@@ -21,8 +21,8 @@ import io.swagger.annotations.ApiModelProperty;
  * This file was generated on 2019-07-26 09:20:34.
  */
 @SuppressWarnings("serial")
-@Table(name = "`batch_stock`")
-public class BatchStock extends BaseDomain {
+@Table(name = "`product_store`")
+public class ProductStore extends BaseDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,7 +84,7 @@ public class BatchStock extends BaseDomain {
     private String brandName;
 
     @Transient
-    public Long getBatchStockId(){
+    public Long getProductStockId(){
         return this.id;
     }
 

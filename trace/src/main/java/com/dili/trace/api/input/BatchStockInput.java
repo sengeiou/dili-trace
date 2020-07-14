@@ -4,29 +4,23 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class BatchStockInput {
-    private Long batchStockId;
+    private Long productStockId;
 
     private BigDecimal tradeWeight;
 
     private List<TradeDetailInputDto> tradeDetailInputList;
     
 
-    /**
-     * @return Long return the batchStockId
-     */
-    public Long getBatchStockId() {
-        return batchStockId;
-    }
 
-    /**
-     * @param batchStockId the batchStockId to set
-     */
-    public void setBatchStockId(Long batchStockId) {
-        this.batchStockId = batchStockId;
-    }
+    public Long getProductStockId() {
+		return productStockId;
+	}
 
+	public void setProductStockId(Long productStockId) {
+		this.productStockId = productStockId;
+	}
 
-    /**
+	/**
      * @return BigDecimal return the tradeWeight
      */
     public BigDecimal getTradeWeight() {

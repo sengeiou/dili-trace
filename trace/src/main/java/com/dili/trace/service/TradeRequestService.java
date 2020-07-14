@@ -14,7 +14,7 @@ import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.BatchStockInput;
 import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.input.TradeRequestInputDto;
-import com.dili.trace.domain.BatchStock;
+import com.dili.trace.domain.ProductStore;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeOrder;
 import com.dili.trace.domain.TradeRequest;
@@ -71,7 +71,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         
         Map<Long, List<Long>> batchIdDetailIdMap = StreamEx.of(CollectionUtils.emptyIfNull(batchStockInputList))
                 .nonNull().toMap(batchStockInput -> {
-                    return batchStockInput.getBatchStockId();
+                    return batchStockInput.getProductStockId();
                 }, batchStockInput -> {
                     return StreamEx.of(CollectionUtils.emptyIfNull(batchStockInput.getTradeDetailInputList())).nonNull()
                             .map(item -> {
@@ -95,7 +95,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
         // 判断是否全部是卖家的库存信息
         boolean notSellerOwnedBatchBlock = StreamEx.of(this.batchStockService.findByIdList(batchStockIdList))
-                .map(BatchStock::getUserId).distinct().anyMatch(uid -> !uid.equals(sellerId));
+                .map(ProductStore::getUserId).distinct().anyMatch(uid -> !uid.equals(sellerId));
         if (notSellerOwnedBatchBlock) {
             throw new TraceBusinessException("参数不匹配:有库存不属于当前卖家");
         }
@@ -133,10 +133,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (batchStockInputList == null || batchStockInputList.isEmpty()) {
             throw new TraceBusinessException("参数错误");
         }
-        List<Long> batchStockId = StreamEx.of(batchStockInputList).nonNull().map(BatchStockInput::getBatchStockId)
+        List<Long> batchStockId = StreamEx.of(batchStockInputList).nonNull().map(BatchStockInput::getProductStockId)
                 .toList();
         List<Long> sellerUserIdList = StreamEx.of(this.batchStockService.findByIdList(batchStockId))
-                .map(BatchStock::getUserId).nonNull().distinct().toList();
+                .map(ProductStore::getUserId).nonNull().distinct().toList();
         if (sellerUserIdList.size() != 1) {
             throw new TraceBusinessException("参数错误");
         }
@@ -162,7 +162,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (input.getTradeWeight() == null || BigDecimal.ZERO.compareTo(input.getTradeWeight()) >= 0) {
             throw new TraceBusinessException("购买重量不能小于0");
         }
-        if (input.getBatchStockId() == null) {
+        if (input.getProductStockId() == null) {
             throw new TraceBusinessException("购买商品ID不能为空");
         }
 
@@ -174,7 +174,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (buyer == null) {
             throw new TraceBusinessException("买家信息不存在");
         }
-        BatchStock batchStock = this.batchStockService.get(input.getBatchStockId());
+        ProductStore batchStock = this.batchStockService.get(input.getProductStockId());
         if (batchStock == null) {
             throw new TraceBusinessException("购买商品不存在");
         }
@@ -187,7 +187,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
 
         TradeRequest request = new TradeRequest();
-        request.setBatchStockId(input.getBatchStockId());
+        request.setProductStockId(input.getProductStockId());
         request.setTradeWeight(input.getTradeWeight());
         request.setReturnStatus(TradeReturnStatusEnum.NONE.getCode());
         request.setSellerName(seller.getName());
@@ -226,7 +226,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     }
                     return MutablePair.of(tradeDetail, tr.getTradeWeight());
                 }).toList();
-        BatchStock batchStockItem = this.batchStockService.selectByIdForUpdate(requestItem.getBatchStockId())
+        ProductStore batchStockItem = this.batchStockService.selectByIdForUpdate(requestItem.getProductStockId())
                 .orElseThrow(() -> {
                     return new TraceBusinessException("操作库存失败");
                 });
@@ -236,7 +236,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
         TradeDetail tradeDetailQuery = new TradeDetail();
         tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
-        tradeDetailQuery.setBatchStockId(batchStockItem.getId());
+        tradeDetailQuery.setProductStockId(batchStockItem.getId());
         tradeDetailQuery.setSort("created");
         tradeDetailQuery.setOrder("asc");
         BigDecimal totalTradeWeight=requestItem.getTradeWeight();
@@ -371,12 +371,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             if (changed) {
                 throw new TraceBusinessException("不能对已销售的商品申请退货");
             }
-            BatchStock batchStockItem = this.batchStockService.selectByIdForUpdate(td.getBatchStockId())
+            ProductStore batchStockItem = this.batchStockService.selectByIdForUpdate(td.getProductStockId())
                     .orElseThrow(() -> {
                         return new TraceBusinessException("操作库存失败");
                     });
 
-            BatchStock batchStock = new BatchStock();
+            ProductStore batchStock = new ProductStore();
             batchStock.setId(batchStockItem.getId());
             batchStock.setTradeDetailNum(batchStockItem.getTradeDetailNum() - 1);
             batchStock.setStockWeight(batchStockItem.getStockWeight().subtract(td.getStockWeight()));
@@ -430,12 +430,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
             StreamEx.of(tradeDetailList).forEach(td -> {
 
-                BatchStock batchStockItem = this.batchStockService.selectByIdForUpdate(td.getBatchStockId())
+                ProductStore batchStockItem = this.batchStockService.selectByIdForUpdate(td.getProductStockId())
                         .orElseThrow(() -> {
                             return new TraceBusinessException("操作库存失败");
                         });
 
-                BatchStock batchStock = new BatchStock();
+                ProductStore batchStock = new ProductStore();
                 batchStock.setId(batchStockItem.getId());
                 batchStock.setTradeDetailNum(batchStockItem.getTradeDetailNum() + 1);
                 batchStock.setStockWeight(batchStockItem.getStockWeight().add(td.getStockWeight()));
@@ -458,12 +458,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
                 this.tradeDetailService.updateSelective(buyerTradeDetail);
 
-                BatchStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(sellertd.getBatchStockId())
+                ProductStore sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(sellertd.getProductStockId())
                         .orElseThrow(() -> {
                             return new TraceBusinessException("操作库存失败");
                         });
 
-                BatchStock sellerBatchStock = new BatchStock();
+                ProductStore sellerBatchStock = new ProductStore();
                 sellerBatchStock.setId(sellerBatchStockItem.getId());
                 sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().add(buyertd.getStockWeight()));
 
