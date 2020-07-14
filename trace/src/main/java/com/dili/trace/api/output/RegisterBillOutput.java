@@ -29,7 +29,7 @@ public class RegisterBillOutput {
     private String specName;
     private Date created;
     private String reason;
-    private Integer isCheckIn;
+    private Integer isCheckin;
 
     private String userName;
     private String tallyAreaNo;
@@ -70,7 +70,7 @@ public class RegisterBillOutput {
         out.setSpecName(bill.getSpecName());
         out.setVerifyType(bill.getVerifyType());
         out.setReason(bill.getReason());
-        out.setIsCheckIn(bill.getIsCheckin());
+        out.setIsCheckin(bill.getIsCheckin());
         return out;
     }
 
@@ -348,20 +348,6 @@ public class RegisterBillOutput {
     }
 
 
-    /**
-     * @return Integer return the isCheckIn
-     */
-    public Integer getIsCheckIn() {
-        return isCheckIn;
-    }
-
-    /**
-     * @param isCheckIn the isCheckIn to set
-     */
-    public void setIsCheckIn(Integer isCheckIn) {
-        this.isCheckIn = isCheckIn;
-    }
-
 
     /**
      * @return String return the truckTypeName
@@ -403,6 +389,14 @@ public class RegisterBillOutput {
      */
     public void setSpecName(String specName) {
         this.specName = specName;
+    }
+
+
+    /**
+     * @param isCheckin the isCheckin to set
+     */
+    public void setIsCheckin(Integer isCheckin) {
+        this.isCheckin = isCheckin;
     }
 
 }

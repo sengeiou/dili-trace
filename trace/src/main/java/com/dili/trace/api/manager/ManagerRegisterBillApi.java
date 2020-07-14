@@ -1,20 +1,8 @@
 package com.dili.trace.api.manager;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.api.output.RegisterBillOutput;
-import com.dili.trace.api.output.VerifyStatusCountOutputDto;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.UpStream;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UpStreamService;
@@ -23,14 +11,10 @@ import com.dili.trace.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
 
 @RestController
 @RequestMapping(value = "/api/manager/managerRegisterBill")
