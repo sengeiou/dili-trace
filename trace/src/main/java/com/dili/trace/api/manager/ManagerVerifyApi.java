@@ -52,8 +52,8 @@ public class ManagerVerifyApi {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			query.setSort("created");
 			query.setOrder("desc");
-			query.setBillType(BillTypeEnum.NONE.getCode());
-			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
+
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageBeforeCheckinVerifyBill(query),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
 						return dto;

@@ -141,9 +141,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 				.map(String::toUpperCase).findFirst().orElse(null);
 		registerBill.setPlate(plate);
 		registerBill.setModified(new Date());
-		
-		//补单直接进门状态
-		if(BillTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getBillType())){
+
+		// 补单直接进门状态
+		if (BillTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getBillType())) {
 			registerBill.setIsCheckin(YnEnum.YES.getCode());
 		}
 
@@ -372,8 +372,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return new TraceBusinessException("数据不存在");
 		});
 
-
-		if(YnEnum.YES.equalsToCode(billItem.getIsCheckin())||BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
+		if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())
+				|| BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
 			throw new TraceBusinessException("补单或已进门报备单,只能场内审核");
 		}
 
@@ -392,10 +392,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBill billItem = Optional.ofNullable(this.get(billId)).orElseThrow(() -> {
 			return new TraceBusinessException("数据不存在");
 		});
-		if(!YnEnum.YES.equalsToCode(billItem.getIsCheckin())&&!BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
+		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())
+				&& !BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
 			throw new TraceBusinessException("补单或已进门报备单,才能场内审核");
 		}
-		if(BillVerifyStatusEnum.PASSED.equalsToCode(verifyStatus)){
+		if (BillVerifyStatusEnum.PASSED.equalsToCode(verifyStatus)) {
 			this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billItem.getBillId()));
 		}
 		this.doVerify(billItem, verifyStatus, reason, operatorUser);
@@ -413,7 +414,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
 				toVerifyState.getName());
-		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())||!BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
+				|| !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
 		if (BillVerifyStatusEnum.NONE == toVerifyState) {
@@ -515,14 +517,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query) {
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn());
 		return this.listPageByExample(query);
 	}
-	
+
 	@Override
 	public List<VerifyStatusCountOutputDto> countByVerifyStatuseBeforeCheckin(RegisterBillDto query) {
 		if (query == null) {
 			throw new TraceBusinessException("参数错误");
 		}
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn());
 		return this.countByVerifyStatus(query);
 	}
 
@@ -580,9 +584,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		}
 
 	}
+	private String dynamicSQLBeforeCheckIn() {
+		return "( bill_type=" + BillTypeEnum.NONE.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode() + " AND bill_type="+BillTypeEnum.NONE.getCode()+") )";
+	}
 
 	private String dynamicSQLAfterCheckIn() {
-		return "( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + "  is_checkin=" + YnEnum.YES.getCode() + ")";
+		return "( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode() + " AND bill_type="+BillTypeEnum.NONE.getCode()+") )";
 	}
 
 	private List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBillDto query) {
