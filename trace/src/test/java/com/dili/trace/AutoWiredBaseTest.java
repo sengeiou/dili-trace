@@ -191,7 +191,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		RegisterBill bill = new RegisterBill();
 		bill.setId(billId);
 		bill.setVerifyStatus(verifyStatusEnum.getCode());
-		this.billService.doVerifyAfterCheckIn(bill, Optional.ofNullable(new OperatorUser(1L, "test")));
+		this.billService.doVerifyAfterCheckIn(bill.getId(),bill.getVerifyStatus(),bill.getReason(), Optional.ofNullable(new OperatorUser(1L, "test")));
 		RegisterBill billItem = this.billService.get(billId);
 		assertNotNull(billItem);
 		assertTrue(verifyStatusEnum.equalsToCode(billItem.getVerifyStatus()));

@@ -68,7 +68,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param operatorUser
 	 * @return
 	 */
-	public Long doVerifyAfterCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser);
+	public Long doVerifyAfterCheckIn(Long billId,Integer verifyStatus,String reason,Optional<OperatorUser> operatorUser);
 
 	/**
 	 * 创建多个报备单

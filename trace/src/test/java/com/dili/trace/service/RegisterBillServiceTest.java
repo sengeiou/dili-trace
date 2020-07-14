@@ -62,7 +62,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
 
         OperatorUser operatorUser = new OperatorUser(1L, "test");
         input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-        Long billId = this.billService.doVerifyAfterCheckIn(input, Optional.ofNullable(operatorUser));
+        Long billId = this.billService.doVerifyAfterCheckIn(input.getId(),input.getVerifyStatus(),input.getReason(), Optional.ofNullable(operatorUser));
         assertNotNull(billId);
 
     }

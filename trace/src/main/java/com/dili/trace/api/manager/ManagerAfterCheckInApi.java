@@ -16,6 +16,7 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
@@ -46,15 +47,16 @@ public class ManagerAfterCheckInApi {
 
 	@ApiOperation(value = "获得场内审核列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto input) {
+	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto query) {
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			input.setSort("created");
-			input.setOrder("desc");
-			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageAfterCheckinVerifyBill(input),
+			query.setSort("created");
+			query.setOrder("desc");
+			query.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
+
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
-						dto.setColor(ColorEnum.GREEN.getCode());
 						return dto;
 					});
 			return BaseOutput.success().setData(data);
@@ -73,6 +75,7 @@ public class ManagerAfterCheckInApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			query.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
 			List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatuseAfterCheckin(query);
 			return BaseOutput.success().setData(list);
 
@@ -98,7 +101,7 @@ public class ManagerAfterCheckInApi {
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
 			input.setReason(inputDto.getReason());
-			Long id = this.registerBillService.doVerifyAfterCheckIn(input, Optional.ofNullable(operatorUser));
+			Long id = this.registerBillService.doVerifyAfterCheckIn(input.getBillId(),input.getVerifyStatus(),input.getReason(), Optional.ofNullable(operatorUser));
 			return BaseOutput.success().setData(id);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

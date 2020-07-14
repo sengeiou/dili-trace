@@ -43,7 +43,7 @@ public class RegisterBillOutput {
     // 图片列表
     private List<ImageCert> imageCertList;
 
-    private Integer color;
+    // private Integer color;
 
     public static RegisterBillOutput build(RegisterBill bill) {
         RegisterBillOutput out = new RegisterBillOutput();
@@ -74,13 +74,7 @@ public class RegisterBillOutput {
         return out;
     }
 
-    public Integer getColor() {
-        return color;
-    }
 
-    public void setColor(Integer color) {
-        this.color = color;
-    }
 
     public String getProductName() {
         return productName;

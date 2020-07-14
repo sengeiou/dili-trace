@@ -16,6 +16,7 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
@@ -46,17 +47,16 @@ public class ManagerVerifyApi {
 
 	@ApiOperation(value = "获得报备审核列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto input) {
+	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto query) {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			input.setSort("created");
-			input.setOrder("desc");
-
-			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageBeforeCheckinVerifyBill(input),
+			query.setSort("created");
+			query.setOrder("desc");
+			query.setBillType(BillTypeEnum.NONE.getCode());
+			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
-						dto.setColor(ColorEnum.GREEN.getCode());
 						return dto;
 					});
 			return BaseOutput.success().setData(data);
@@ -75,6 +75,7 @@ public class ManagerVerifyApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			query.setBillType(BillTypeEnum.NONE.getCode());
 			List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
 			return BaseOutput.success().setData(list);
 
@@ -127,7 +128,6 @@ public class ManagerVerifyApi {
 			BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageByExample(query),
 					rb -> {
 						RegisterBillOutput dto = RegisterBillOutput.build(rb);
-						dto.setColor(ColorEnum.GREEN.getCode());
 						return dto;
 					});
 			return BaseOutput.success().setData(data);
