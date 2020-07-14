@@ -1,38 +1,46 @@
 package com.dili.trace.util;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import com.google.common.collect.Maps;
 
 import org.apache.commons.beanutils.BeanMap;
-import org.apache.commons.lang3.StringUtils;
-
-import one.util.streamex.StreamEx;
+import org.apache.commons.lang3.tuple.MutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 
 public class MergeBeanUtils {
-    public static <T> T merge(Object src, T target) {
-        return merge(src, target, null);
+    public static <T> T merge(Object src, T target, boolean ignoreSrcBlankValue) {
+        return merge(src, target, p -> {
+            // Object key = p.getLeft();
+            Object srcValue = p.getMiddle();
+            // Object targetValue = p.getRight();
+            if (ignoreSrcBlankValue == true) {
+                if (srcValue == null) {
+                    return false;
+                } else if (srcValue instanceof String) {
+                    String value = String.valueOf(srcValue);
+                    if (value.trim().length() == 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
     }
-    public static <T> T merge(Object src, T target, String[] ignoreProperties) {
-        List<String> keyList = StreamEx.ofNullable(ignoreProperties).nonNull().flatArray(item -> item).nonNull()
-                .distinct().toList();
+
+    public static <T> T merge(Object src, T target) {
+        return merge(src, target, p -> true);
+    }
+
+    public static <T> T merge(Object src, T target, Predicate<Triple<Object, Object, Object>> keyValuesFilter) {
         Map<Object, Object> srcbm = Maps.newHashMap(new BeanMap(src));
         Map<Object, Object> targetbm = Maps.newHashMap(new BeanMap(target));
         for (Object key : srcbm.keySet()) {
-            if (keyList.contains(key)) {
-                continue;
-            }
             Object srcValue = srcbm.get(key);
-            if (srcValue instanceof String) {
-                srcValue = StringUtils.trimToNull(srcValue.toString());
-            }
             Object targetValue = targetbm.get(key);
-            if (targetValue instanceof String) {
-                targetValue = StringUtils.trimToNull(targetValue.toString());
-            }
-            if (targetValue == null && srcValue != null) {
+            if (keyValuesFilter.test(MutableTriple.of(key, srcValue, targetValue))) {
                 targetbm.put(key, srcValue);
             }
         }
