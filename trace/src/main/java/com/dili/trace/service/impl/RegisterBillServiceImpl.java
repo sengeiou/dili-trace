@@ -37,6 +37,7 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.BrandService;
+import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillHistoryService;
@@ -89,6 +90,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	TradeService tradeService;
 	@Autowired
 	UpStreamService upStreamService;
+	@Autowired
+	CheckinOutRecordService checkinOutRecordService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -363,8 +366,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return new TraceBusinessException("数据不存在");
 		});
 
-		if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
-			throw new TraceBusinessException("当前报备单已进门,不能预审核");
+		if(!BillTypeEnum.NONE.equalsToCode(billItem.getBillType())){
+			throw new TraceBusinessException("当前报备单是补单,只能场内审核");
 		}
 		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
@@ -383,14 +386,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBill billItem = Optional.ofNullable(this.get(billId)).orElseThrow(() -> {
 			return new TraceBusinessException("数据不存在");
 		});
-
-		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
-			throw new TraceBusinessException("当前报备单未进门,不能场内审核");
+		if(!BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())){
+			throw new TraceBusinessException("当前报备单不是补单,不能场内审核");
 		}
-		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
-				&& !BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
+		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
+		this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billItem.getBillId()));
 		this.doVerify(billItem,verifyStatus,reason, operatorUser);
 		return billItem.getId();
 

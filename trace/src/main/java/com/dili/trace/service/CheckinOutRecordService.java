@@ -125,7 +125,31 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		User user = this.userService.get(userId);
 		return Optional.ofNullable(user);
 	}
+/**
+	 * 批量进门
+	 * 
+	 * @param operateUser
+	 * @param checkInApiInput
+	 * @return
+	 */
+	@Transactional
+	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long>billIdList) {
+		if (billIdList == null) {
+			throw new TraceBusinessException("参数错误");
+		}
+		CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.ALLOWED;// .fromCode(checkInApiInput.getCheckinStatus());
 
+		if (checkinStatusEnum == null) {
+			throw new TraceBusinessException("参数错误");
+		}
+
+		return StreamEx.of(billIdList).nonNull().map(billId -> {
+			return this.registerBillService.get(billId);
+		}).nonNull().map(bill -> {
+			return this.checkin(bill.getId(), checkinStatusEnum, operateUser);
+
+		}).nonNull().toList();
+	}
 	/**
 	 * 批量进门
 	 * 
@@ -138,18 +162,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		if (checkInApiInput == null || checkInApiInput.getBillIdList() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.ALLOWED;// .fromCode(checkInApiInput.getCheckinStatus());
-
-		if (checkinStatusEnum == null) {
-			throw new TraceBusinessException("参数错误");
-		}
-
-		return StreamEx.of(checkInApiInput.getBillIdList()).nonNull().map(billId -> {
-			return this.registerBillService.get(billId);
-		}).nonNull().map(bill -> {
-			return this.checkin(bill.getId(), checkinStatusEnum, operateUser);
-
-		}).nonNull().toList();
+		return this.doCheckin(operateUser, checkInApiInput.getBillIdList());
 
 	}
 
