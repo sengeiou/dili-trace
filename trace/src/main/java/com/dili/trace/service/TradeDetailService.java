@@ -76,7 +76,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		item.setBuyerId(billItem.getUserId());
 		item.setBuyerName(billItem.getName());
 		item.setProductName(billItem.getProductName());
-
+		item.setBatchNo(billItem.getCode());
 		item.setModified(new Date());
 		item.setCreated(new Date());
 		this.insertSelective(item);
@@ -197,6 +197,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, User buyer) {
 		TradeDetail buyerTradeDetail = new TradeDetail();
+		buyerTradeDetail.setBatchNo(tradeDetailItem.getBatchNo());
 		buyerTradeDetail.setProductStockId(null);
 		buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
 		buyerTradeDetail.setBillId(tradeDetailItem.getBillId());
