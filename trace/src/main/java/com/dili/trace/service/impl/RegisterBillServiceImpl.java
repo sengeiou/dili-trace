@@ -105,7 +105,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Override
 	public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
-	Optional<OperatorUser> operatorUser) {
+			Optional<OperatorUser> operatorUser) {
 		if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
 			throw new TraceBusinessException("用户未审核通过不能创建报备单");
 		}
@@ -131,7 +131,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
 		registerBill.setIsCheckin(YnEnum.NO.getCode());
-		operatorUser.ifPresent(op->{
+		operatorUser.ifPresent(op -> {
 			registerBill.setOperatorName(op.getName());
 			registerBill.setOperatorId(op.getId());
 		});
@@ -245,7 +245,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	@Transactional
 	@Override
-	public Long doEdit(RegisterBill input,List<ImageCert> imageCertList,Optional<OperatorUser> operatorUser) {
+	public Long doEdit(RegisterBill input, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser) {
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -271,7 +271,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		input.setOperatorName(null);
 		input.setOperatorId(null);
 		input.setReason("");
-		operatorUser.ifPresent(op->{
+		operatorUser.ifPresent(op -> {
 			input.setOperatorName(op.getName());
 			input.setOperatorId(op.getId());
 		});
@@ -366,19 +366,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			return new TraceBusinessException("数据不存在");
 		});
 
-		if(!BillTypeEnum.NONE.equalsToCode(billItem.getBillType())){
+		if (!BillTypeEnum.NONE.equalsToCode(billItem.getBillType())) {
 			throw new TraceBusinessException("当前报备单是补单,只能场内审核");
 		}
-		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())) {
-			throw new TraceBusinessException("当前状态不能进行数据操作");
-		}
-		this.doVerify(billItem, input.getVerifyStatus(),input.getReason(), operatorUser);
+
+		this.doVerify(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
 		return billItem.getId();
 	}
 
 	@Transactional
 	@Override
-	public Long doVerifyAfterCheckIn(Long billId,Integer verifyStatus,String reason,Optional<OperatorUser> operatorUser) {
+	public Long doVerifyAfterCheckIn(Long billId, Integer verifyStatus, String reason,
+			Optional<OperatorUser> operatorUser) {
 		if (billId == null || verifyStatus == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -386,19 +385,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBill billItem = Optional.ofNullable(this.get(billId)).orElseThrow(() -> {
 			return new TraceBusinessException("数据不存在");
 		});
-		if(!BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())){
+		if (!BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
 			throw new TraceBusinessException("当前报备单不是补单,不能场内审核");
 		}
-		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())) {
-			throw new TraceBusinessException("当前状态不能进行数据操作");
-		}
+
 		this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billItem.getBillId()));
-		this.doVerify(billItem,verifyStatus,reason, operatorUser);
+		this.doVerify(billItem, verifyStatus, reason, operatorUser);
 		return billItem.getId();
 
 	}
 
-	private void doVerify(RegisterBill billItem,Integer verifyStatus, String reason,Optional<OperatorUser> operatorUser) {
+	private void doVerify(RegisterBill billItem, Integer verifyStatus, String reason,
+			Optional<OperatorUser> operatorUser) {
 		BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
 				.orElseThrow(() -> new TraceBusinessException("数据错误"));
 
@@ -407,6 +405,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
 				toVerifyState.getName());
+		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())) {
+			throw new TraceBusinessException("当前状态不能进行数据操作");
+		}
 		if (BillVerifyStatusEnum.NONE == toVerifyState) {
 			throw new TraceBusinessException("不支持的操作");
 		}
@@ -414,13 +415,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("状态不能相同");
 		}
 
-
-
 		// 更新当前报务单数据
 		RegisterBill bill = new RegisterBill();
 		bill.setId(billItem.getId());
 		bill.setVerifyStatus(toVerifyState.getCode());
-		operatorUser.ifPresent(op->{
+		operatorUser.ifPresent(op -> {
 			bill.setOperatorId(op.getId());
 			bill.setOperatorName(op.getName());
 		});
