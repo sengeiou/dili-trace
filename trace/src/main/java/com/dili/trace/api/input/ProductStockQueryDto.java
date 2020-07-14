@@ -5,11 +5,11 @@ import javax.persistence.Column;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 
-import com.dili.trace.domain.ProductStore;
+import com.dili.trace.domain.ProductStock;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class BatchStockQueryDto extends ProductStore{
+public class ProductStockQueryDto extends ProductStock{
     @ApiModelProperty(value = "查询登记开始时间")
 	@Column(name = "`created`")
 	@Operator(Operator.GREAT_EQUAL_THAN)

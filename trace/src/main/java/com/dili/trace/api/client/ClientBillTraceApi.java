@@ -14,7 +14,7 @@ import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
-import com.dili.trace.service.BatchStockService;
+import com.dili.trace.service.ProductStockService;
 import com.dili.trace.service.BillTraceService;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.ImageCertService;
@@ -59,7 +59,7 @@ public class ClientBillTraceApi {
 	@Autowired
 	TradeRequestService tradeRequestService;
 	@Autowired
-	BatchStockService batchStockService;
+	ProductStockService batchStockService;
 	@Autowired
 	ImageCertService imageCertService;
 	@Autowired

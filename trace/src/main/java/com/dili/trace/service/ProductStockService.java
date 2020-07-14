@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.dao.BatchStockMapper;
-import com.dili.trace.domain.ProductStore;
+import com.dili.trace.dao.ProductStockMapper;
+import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.google.common.collect.Lists;
@@ -20,7 +20,7 @@ import one.util.streamex.StreamEx;
 import tk.mybatis.mapper.entity.Example;
 
 @Service
-public class BatchStockService extends BaseServiceImpl<ProductStore, Long> {
+public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
     @Autowired
     RegisterBillService registerBillService;
     @Autowired
@@ -29,34 +29,34 @@ public class BatchStockService extends BaseServiceImpl<ProductStore, Long> {
     UserService userService;
 
     @Transactional
-    public Optional<ProductStore> selectByIdForUpdate(Long id) {
-        return ((BatchStockMapper) this.getDao()).selectByIdForUpdate(id);
+    public Optional<ProductStock> selectByIdForUpdate(Long id) {
+        return ((ProductStockMapper) this.getDao()).selectByIdForUpdate(id);
     }
 
-    public List<ProductStore> findByIdList(List<Long> idList) {
+    public List<ProductStock> findByIdList(List<Long> idList) {
         if (idList == null || idList.isEmpty()) {
             return Lists.newArrayList();
         }
-        Example e = new Example(ProductStore.class);
+        Example e = new Example(ProductStock.class);
         e.and().andIn("id", idList);
         return this.getDao().selectByExample(e);
     }
 
     @Transactional
-    public ProductStore findOrCreateBatchStock(Long buyerId, RegisterBill billItem) {
+    public ProductStock findOrCreateBatchStock(Long buyerId, RegisterBill billItem) {
 
-        ProductStore query = new ProductStore();
+        ProductStock query = new ProductStock();
         query.setUserId(buyerId);
         // query.setPreserveType(tradeDetailItem.getPreserveType());
         query.setProductId(billItem.getProductId());
         query.setWeightUnit(billItem.getWeightUnit());
         query.setSpecName(billItem.getSpecName());
         query.setBrandId(billItem.getBrandId());
-        ProductStore batchStockItem = StreamEx.of(this.listByExample(query)).findFirst().orElseGet(() -> {
+        ProductStock batchStockItem = StreamEx.of(this.listByExample(query)).findFirst().orElseGet(() -> {
             // 创建初始BatchStock
             User userItem = this.userService.get(buyerId);
             return this.registerBillService.selectByIdForUpdate(billItem.getId()).map(bill -> {
-                ProductStore batchStock = new ProductStore();
+                ProductStock batchStock = new ProductStock();
                 batchStock.setUserId(userItem.getId());
                 batchStock.setUserName(userItem.getName());
                 batchStock.setPreserveType(bill.getPreserveType());

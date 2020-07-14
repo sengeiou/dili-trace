@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.trace.api.output.TraceDataDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
-import com.dili.trace.domain.ProductStore;
+import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
@@ -40,7 +40,7 @@ public class BillTraceService {
     @Autowired
     TradeRequestService tradeRequestService;
     @Autowired
-    BatchStockService batchStockService;
+    ProductStockService batchStockService;
     @Autowired
     ImageCertService imageCertService;
 
@@ -139,7 +139,7 @@ public class BillTraceService {
         } else {
             throw new TraceBusinessException("没有查询到数据");
         }
-        ProductStore batchStockItem = this.batchStockService.get(tradeRequestItem.getProductStockId());
+        ProductStock batchStockItem = this.batchStockService.get(tradeRequestItem.getProductStockId());
         traceDetailOutputDto.setBrandName(batchStockItem.getBrandName());
         traceDetailOutputDto.setSpecName(batchStockItem.getSpecName());
         traceDetailOutputDto.setProductName(batchStockItem.getProductName());

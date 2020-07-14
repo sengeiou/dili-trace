@@ -8,8 +8,8 @@ import java.util.List;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.AutoWiredBaseTest;
-import com.dili.trace.api.input.BatchStockQueryDto;
-import com.dili.trace.domain.ProductStore;
+import com.dili.trace.api.input.ProductStockQueryDto;
+import com.dili.trace.domain.ProductStock;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -19,16 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 @TestInstance(Lifecycle.PER_CLASS)
 public class ClientBatchStockApiTest extends AutoWiredBaseTest {
     @Autowired
-    ClientBatchStockApi clientBatchStockApi;
+    ClientProductStockApi clientBatchStockApi;
 
     @Test
-    public void listSellersBatchStock() {
-        BatchStockQueryDto input = new BatchStockQueryDto();
+    public void listSellersProductStock() {
+        ProductStockQueryDto input = new ProductStockQueryDto();
         input.setUserId(2L);
-        BaseOutput<BasePage<ProductStore>> out = this.clientBatchStockApi.listSellersBatchStock(input);
+        BaseOutput<BasePage<ProductStock>> out = this.clientBatchStockApi.listSellersProductStock(input);
         assertNotNull(out);
         assertTrue(out.isSuccess());
-        List<ProductStore> list = out.getData().getDatas();
+        List<ProductStock> list = out.getData().getDatas();
         assertNotNull(list);
         assertTrue(list.size()>0);
     }

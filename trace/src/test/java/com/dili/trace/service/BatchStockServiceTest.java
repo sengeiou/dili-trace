@@ -21,7 +21,7 @@ import one.util.streamex.StreamEx;
 
 public class BatchStockServiceTest extends AutoWiredBaseTest {
     @Autowired
-    BatchStockService batchStockService;
+    ProductStockService batchStockService;
     @Autowired
     UserService userService;
     @Autowired

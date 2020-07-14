@@ -10,7 +10,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.dao.TradeDetailMapper;
-import com.dili.trace.domain.ProductStore;
+import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
@@ -48,7 +48,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	@Autowired
 	TradeDetailMapper tradeDetailMapper;
 	@Autowired
-	BatchStockService batchStockService;
+	ProductStockService batchStockService;
 
 	public Optional<TradeDetail> findBilledTradeDetailByBillId(Long billId) {
 
@@ -148,12 +148,12 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		Long sellerId = tradeDetailItem.getBuyerId();
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
 		Long batchStockId = this.batchStockService.findOrCreateBatchStock(sellerId, billItem).getId();
-		ProductStore sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(batchStockId).orElseThrow(() -> {
+		ProductStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(batchStockId).orElseThrow(() -> {
 			return new TraceBusinessException("操作库存失败");
 		});
 		TradeDetail sellerTradeDetail = new TradeDetail();
 
-		ProductStore sellerBatchStock=new ProductStore();
+		ProductStock sellerBatchStock=new ProductStock();
 		sellerBatchStock.setId(batchStockId);
 		sellerBatchStock.setStockWeight(sellerBatchStockItem.getStockWeight().subtract(tradeWeight));
 		if (stockWeight.compareTo(BigDecimal.ZERO) <= 0) {
@@ -174,7 +174,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			User buyer, Long tradeRequestId) {
 		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
-		ProductStore buyerBatchStock = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
+		ProductStock buyerBatchStock = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
 			return new TraceBusinessException("操作库存失败");
 		});
 		buyerBatchStock.setStockWeight(buyerBatchStock.getStockWeight().add(tradeWeight));

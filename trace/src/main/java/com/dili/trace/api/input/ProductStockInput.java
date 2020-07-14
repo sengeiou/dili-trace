@@ -3,7 +3,7 @@ package com.dili.trace.api.input;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class BatchStockInput {
+public class ProductStockInput {
     private Long productStockId;
 
     private BigDecimal tradeWeight;

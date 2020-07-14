@@ -1,7 +1,6 @@
 package com.dili.trace.api.client;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -11,18 +10,16 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.api.input.BatchStockInput;
-import com.dili.trace.api.input.BatchStockQueryDto;
-import com.dili.trace.domain.ProductStore;
-import com.dili.trace.domain.Brand;
+import com.dili.trace.api.input.ProductStockInput;
+import com.dili.trace.api.input.ProductStockQueryDto;
+import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.service.BatchStockService;
+import com.dili.trace.service.ProductStockService;
 import com.dili.trace.service.BrandService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UserService;
-import com.dili.trace.util.BasePageUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,21 +30,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
-import one.util.streamex.StreamEx;
 
 @SuppressWarnings("deprecation")
-@Api(value = "/api/client/clientBatchStockApi")
+@Api(value = "/api/client/clientProductStockApi")
 @RestController
 @InterceptConfiguration
-@RequestMapping(value = "/api/client/clientBatchStockApi")
-public class ClientBatchStockApi {
+@RequestMapping(value = "/api/client/clientProductStockApi")
+public class ClientProductStockApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);
 	@Resource
 	private UserService userService;
 	@Resource
 	private LoginSessionContext sessionContext;
 	@Autowired
-	BatchStockService batchStockService;
+	ProductStockService batchStockService;
 	@Autowired
 	TradeDetailService tradeDetailService;
 	@Autowired
@@ -56,15 +52,15 @@ public class ClientBatchStockApi {
 	BrandService brandService;
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listMyBatchStock.api", method = { RequestMethod.POST })
-	public BaseOutput<BasePage<ProductStore>> listMyBatchStock(@RequestBody BatchStockQueryDto condition) {
+	@RequestMapping(value = "/listMyProductStock.api", method = { RequestMethod.POST })
+	public BaseOutput<BasePage<ProductStock>> listMyProductStock(@RequestBody ProductStockQueryDto condition) {
 		try {
 			Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			condition.setUserId(userId);
 			condition.setSort("created");
 			condition.setOrder("desc");
 			condition.setMinTradeDetailNum(1);
-			BasePage<ProductStore> page = this.batchStockService.listPageByExample(condition);
+			BasePage<ProductStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -76,8 +72,8 @@ public class ClientBatchStockApi {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	@RequestMapping(value = "/listSellersBatchStock.api", method = { RequestMethod.POST })
-	public BaseOutput<BasePage<ProductStore>> listSellersBatchStock(@RequestBody BatchStockQueryDto condition) {
+	@RequestMapping(value = "/listSellersProductStock.api", method = { RequestMethod.POST })
+	public BaseOutput<BasePage<ProductStock>> listSellersProductStock(@RequestBody ProductStockQueryDto condition) {
 		if (condition == null || condition.getUserId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -86,7 +82,7 @@ public class ClientBatchStockApi {
 			condition.setSort("created");
 			condition.setOrder("desc");
 			condition.setMinTradeDetailNum(1);
-			BasePage<ProductStore> page = this.batchStockService.listPageByExample(condition);
+			BasePage<ProductStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -100,8 +96,8 @@ public class ClientBatchStockApi {
 	 * 获得批次列表
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/listTradeDetailForSaleByBatchId.api", method = { RequestMethod.POST })
-	public BaseOutput<List<TradeDetail>> listTradeDetailForSaleByBatchId(@RequestBody BatchStockInput inputDto) {
+	@RequestMapping(value = "/listTradeDetailForSaleByProductStoreId.api", method = { RequestMethod.POST })
+	public BaseOutput<List<TradeDetail>> listTradeDetailForSaleByProductStoreId(@RequestBody ProductStockInput inputDto) {
 		if (sessionContext.getAccountId() == null) {
 			return BaseOutput.failure("未登陆用户");
 		}
@@ -110,7 +106,7 @@ public class ClientBatchStockApi {
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			ProductStore batchStockItem = this.batchStockService.get(inputDto.getProductStockId());
+			ProductStock batchStockItem = this.batchStockService.get(inputDto.getProductStockId());
 			if (batchStockItem == null) {
 				return BaseOutput.failure("数据不存在");
 			}

@@ -29,19 +29,19 @@ public class TradeRequestListInput extends TradeRequest {
 
 
     @Transient
-    private List<BatchStockInput> batchStockList;
+    private List<ProductStockInput> batchStockList;
 
     /**
      * @return List<BatchStockInput> return the batchStockList
      */
-    public List<BatchStockInput> getBatchStockList() {
+    public List<ProductStockInput> getBatchStockList() {
         return batchStockList;
     }
 
     /**
      * @param batchStockList the batchStockList to set
      */
-    public void setBatchStockList(List<BatchStockInput> batchStockList) {
+    public void setBatchStockList(List<ProductStockInput> batchStockList) {
         this.batchStockList = batchStockList;
     }
 

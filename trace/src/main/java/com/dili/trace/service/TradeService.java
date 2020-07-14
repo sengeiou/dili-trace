@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Optional;
 
-import com.dili.trace.domain.ProductStore;
+import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.dto.OperatorUser;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TradeService {
     private static final Logger logger = LoggerFactory.getLogger(TradeService.class);
     @Autowired
-    BatchStockService batchStockService;
+    ProductStockService batchStockService;
     @Autowired
     RegisterBillService billService;
     @Autowired
@@ -50,7 +50,7 @@ public class TradeService {
                 && BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
                 && SaleStatusEnum.NONE.equalsToCode(tradeDetailItem.getSaleStatus())) {
 
-            ProductStore batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
+            ProductStock batchStock = this.batchStockService.findOrCreateBatchStock(billItem.getUserId(), billItem);
             batchStock.setStockWeight(batchStock.getStockWeight().add(weight));
             batchStock.setTotalWeight(batchStock.getTotalWeight().add(weight));
             batchStock.setTradeDetailNum(batchStock.getTradeDetailNum()+1);
