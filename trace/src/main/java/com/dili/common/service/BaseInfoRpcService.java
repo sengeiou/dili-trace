@@ -4,21 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Category;
 import com.dili.trace.domain.City;
 import com.dili.trace.domain.Department;
-import com.dili.trace.dto.CategoryListInput;
 import com.dili.trace.dto.CityListInput;
 import com.dili.trace.rpc.BaseInfoRpc;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class BaseInfoRpcService {
