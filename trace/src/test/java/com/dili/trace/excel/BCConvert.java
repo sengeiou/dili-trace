@@ -116,10 +116,14 @@ public class BCConvert {
 	public static void main(String[] args) {
 		System.out.println(StringUtils.trimToEmpty(" a。,b ,c "));
 		String s = "nihaoｈｋ　｜　　　ｎｉｈｅｈｅ　，　７８　　７　。";
-		System.out.println(s);
-		s = ToDBC(s);
-		s = ToDBC(s);
-		System.out.println(s);
+		System.out.println(s.replaceAll("\\p{Punct}", ""));
+		System.out.println(s.replaceAll("\\pP", ""));
+
+		// System.out.println(s);
+		// s=StringUtils.trimToEmpty(s).replaceAll("。", ".").replaceAll("　", "");
+		// System.out.println(s);
+		// s = fullWidth2halfWidth(s);
+		// System.out.println(s);
 	}
 
 	public static String ToDBC(String input) {

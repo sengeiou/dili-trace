@@ -338,7 +338,7 @@ public class UserApi {
         if (Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")).size() > 15) {
             throw new TraceBusinessException("用户最多添加15个摊位号");
         }
-        if (StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20) {
+        if (StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 30) {
             throw new TraceBusinessException("姓名为空或格式错误");
         }
 
