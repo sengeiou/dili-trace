@@ -16,3 +16,5 @@ ALTER TABLE `trade_request` MODIFY COLUMN buyer_name varchar(30)  NULL COMMENT '
 ALTER TABLE `trade_request` MODIFY COLUMN seller_name varchar(30)  NULL COMMENT '卖家姓名';
 
 ALTER TABLE `upstream` MODIFY COLUMN operator_name varchar(30)  NULL COMMENT '操作人ID';
+
+ALTER TABLE `user` MODIFY COLUMN tally_area_nos varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
