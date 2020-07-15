@@ -23,3 +23,5 @@ CREATE TABLE `user_login_history` (
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1;
+
+ALTER TABLE hztrace.`user` MODIFY COLUMN tally_area_nos varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;

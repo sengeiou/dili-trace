@@ -84,6 +84,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         // 验证手机号是否已注册
         if (existsAccount(user.getPhone())) {
             throw new TraceBusinessException("手机号已注册");
+//            return;
         }
 
         if (StringUtils.isEmpty(user.getPassword())){
@@ -116,7 +117,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 //            }
 //            this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
 //        }
-        this.userHistoryService.insertUserHistoryForNewUser(user.getId());
+//        this.userHistoryService.insertUserHistoryForNewUser(user.getId());
         this.updateUserQrItem(user.getId());
     }
 

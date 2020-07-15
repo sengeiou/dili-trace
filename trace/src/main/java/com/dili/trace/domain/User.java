@@ -50,7 +50,7 @@ public interface User extends IBaseDomain {
 
     @ApiModelProperty(value = "理货区号")
     @Column(name = "`tally_area_nos`")
-    @FieldDef(label = "tallyAreaNos", maxLength = 50)
+    @FieldDef(label = "tallyAreaNos")
     @EditMode(editor = FieldEditor.Text, required = false)
     String getTallyAreaNos();
 

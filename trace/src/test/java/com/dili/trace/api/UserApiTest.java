@@ -138,7 +138,6 @@ public class UserApiTest extends AutoWiredBaseTest {
 		upStream.setName("个体户一");
 		upStream.setUpORdown(20);
 		Long [] ids = {29l};
-		upStream.setUserIds(Arrays.asList(ids));
 		upStreamService.addUpstream(upStream,new OperatorUser(29l,"田波光"),true);
 	}
 
