@@ -66,7 +66,7 @@ import one.util.streamex.StreamEx;
  */
 @Service
 @Transactional
-public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
+public class  extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
 	private static final Logger logger = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
 	@Autowired
 	BizNumberFunction bizNumberFunction;
@@ -469,8 +469,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		RegisterBill query = new RegisterBill();
 		query.setPage(1);
 		query.setRows(1);
-		query.setSort("created");
-		query.setOrder("desc");
+		query.setSort("created,id");
+		query.setOrder("desc,desc");
 		query.setUserId(userId);
 		RegisterBill billItem = this.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
 		if (billItem == null) {
