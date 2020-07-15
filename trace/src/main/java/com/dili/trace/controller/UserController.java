@@ -229,30 +229,13 @@ public class UserController {
 		return "user/view";
 	}
 
-	@ApiOperation("跳转到qrstatus页面")
-	@RequestMapping(value = "/qrstatus.html", method = RequestMethod.GET)
-	public String qrstatus(ModelMap modelMap, Long id) {
-		List<UserQrHistory> userQrItemlist = Collections.emptyList();
-		// List<UserQrItemDetail>userQrItemDetailList=
-		// this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
-		// Map<Long,String>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId,Collectors.mapping(UserQrItemDetail::getObjectId,Collectors.joining(","))));
-		modelMap.put("userQrItemlist", userQrItemlist);
-		// modelMap.put("itemIdDetailListMap", itemIdDetailListMap);
-		//
-		Map<Integer, String> qrItemTypeMap = Stream.of(QrItemTypeEnum.values())
-				.collect(Collectors.toMap(QrItemTypeEnum::getCode, QrItemTypeEnum::getDesc));
-		modelMap.put("qrItemTypeMap", qrItemTypeMap);
-		//
-		// Map<Integer,String>qrItemStatusMap=Stream.of(QrItemStatusEnum.values()).collect(Collectors.toMap(QrItemStatusEnum::getCode,
-		// QrItemStatusEnum::getDesc));
-		// modelMap.put("qrItemStatusMap", qrItemStatusMap);
-		//
-		modelMap.put("userId", id);
-
-		return "user/qrstatus";
+	@ApiOperation("跳转到updateUser页面")
+	@RequestMapping(value = "/updateUser.html", method = RequestMethod.GET)
+	public String updateUser(ModelMap modelMap, Long id) {
+		return "user/updateUser";
 	}
 
-	@ApiOperation("跳转到qrstatus页面")
+	@ApiOperation("跳转到edit页面")
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap, Long id) {
 		modelMap.put("item", DTOUtils.newDTO(User.class));

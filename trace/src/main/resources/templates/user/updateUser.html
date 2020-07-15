@@ -1,0 +1,44 @@
+<#bodyOrigin>
+<style>
+    .form-control {
+        display: inline-block;
+    }
+    .form-inline .label-title {
+        width: auto;
+    }
+</style>
+<div class="main-container">
+    <div class="form-box border"  style="width: 100%;">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <table>
+                <tr>
+                  <td>a</td><td>b</td><td>c</td><td>d</td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+</div>
+</#bodyOrigin>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script type="text/javascript">
+var layer=parent.window.layer;
+$('.fileimg-view').on('click', function () {
+    var url = $(this).parent().siblings(".magnifying").attr('src');
+    if(url){
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    }
+});
+function redirectTo(url){
+	parent.window.location.href=url
+}
+</script>
+
