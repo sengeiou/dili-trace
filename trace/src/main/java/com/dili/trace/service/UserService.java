@@ -100,4 +100,6 @@ public interface UserService extends BaseService<User, Long> {
 	public List<User> findUserByNameOrPhoneOrTallyNo(String keyword);
 
 	public UserQrOutput getUserQrCode(Long userId) throws Exception;
+
+	public List<User> findUserQrStatusChangedList();
 }

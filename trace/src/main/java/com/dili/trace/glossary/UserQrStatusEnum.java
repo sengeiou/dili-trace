@@ -1,24 +1,25 @@
 package com.dili.trace.glossary;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public enum UserQrStatusEnum {
     /**
      * 黑色
      */
-    BLACK(0, "黑色", 0xFF000000),
+    BLACK(0, "黑", 0xFF000000),
     /**
      * 绿色
      */
-    GREEN(10, "绿色", 0xFF17a365),
+    GREEN(10, "绿", 0xFF17a365),
     /**
      * 黄色
      */
-    YELLOW(20, "黄色", 0xFFFFA500),
+    YELLOW(20, "黄", 0xFFFFA500),
     /**
      * 红色
      */
-    RED(30, "红色", 0xFFFF0000),;
+    RED(30, "红", 0xFFFF0000),;
 
     private Integer code;
     private String desc;
@@ -29,8 +30,8 @@ public enum UserQrStatusEnum {
             this.argb = argb;
         }
     
-    public static UserQrStatusEnum fromCode(Integer code) {
-        return Stream.of(UserQrStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
+    public static Optional<UserQrStatusEnum> fromCode(Integer code) {
+        return Stream.of(UserQrStatusEnum.values()).filter(e -> e.getCode().equals(code)).findFirst();
     }
 
     public boolean equalsCode(Integer code) {

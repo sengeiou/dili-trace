@@ -237,6 +237,16 @@ public interface User extends IBaseDomain {
 
     void setQrStatus(Integer qrStatus);
 
+       /**
+     * {@link com.dili.trace.glossary.UserQrStatusEnum}
+     */
+    @ApiModelProperty(value = "前一次二维码状态")
+    @Column(name = "`pre_qr_status`")
+    Integer getPreQrStatus();
+
+    void setPreQrStatus(Integer preQrStatus);
+
+
     @ApiModelProperty(value = "验证码")
     @Transient
     String getCheckCode();

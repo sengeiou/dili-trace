@@ -45,6 +45,7 @@ import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserQrHistoryService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.github.pagehelper.Page;
@@ -86,6 +87,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     QrCodeService qrCodeService;
     @Value("${current.baseWebPath}")
     private String baseWebPath;
+    @Autowired
+    UserQrHistoryService userQrHistoryService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -189,7 +192,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         updateSelective(user);
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
                 user.getSalesCityId());
-        this.updateUserQrItem(user.getId());
+        // this.updateUserQrItem(user.getId());
 
     }
 
@@ -482,7 +485,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     private void updateUserQrItem(Long userId) {
-        this.registerBillService.updateUserQrStatusByUserId(userId);
+        if (userId == null) {
+            return;
+        }
+        User u = DTOUtils.newDTO(User.class);
+        u.setId(userId);
+        u.setQrStatus(UserQrStatusEnum.BLACK.getCode());
+        this.updateSelective(u);
+        this.userQrHistoryService.createUserQrHistoryForUserRegist(u);
+
     }
 
     @Override
@@ -495,6 +506,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 .orLike("phone", "%" + keyword.trim() + "%");
         return this.getDao().selectByExample(e);
     }
+
     @Override
     public UserQrOutput getUserQrCode(Long userId) throws Exception {
         User userItem = this.get(userId);
@@ -502,14 +514,23 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             throw new TraceBusinessException("数据不存在");
         }
         String content = this.baseWebPath + "/user?userId=" + userId;
-        Integer getARgb = Optional.ofNullable(UserQrStatusEnum.fromCode(userItem.getQrStatus()))
-                .map(UserQrStatusEnum::getARgb).orElse(UserQrStatusEnum.BLACK.getARgb());
+
+        Integer getARgb = UserQrStatusEnum.fromCode(userItem.getQrStatus()).map(UserQrStatusEnum::getARgb)
+                .orElse(UserQrStatusEnum.BLACK.getARgb());
         String base64Img = this.qrCodeService.getBase64QrCode(content, 400, 400, getARgb);
         UserQrOutput qrOutput = new UserQrOutput();
         qrOutput.setBase64QRImg(base64Img);
         qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         qrOutput.setUserId(userId);
-        return  qrOutput;
+        return qrOutput;
+    }
+    
+    @Override
+    public List<User> findUserQrStatusChangedList() {
+
+        Example e = new Example(User.class);
+        e.and().andCondition("pre_qr_status<>qr_status");
+        return this.getDao().selectByExample(e);
     }
 
 }

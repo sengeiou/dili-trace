@@ -46,6 +46,7 @@ import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.TradeService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserQrHistoryService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.diligrp.manage.sdk.domain.UserTicket;
@@ -66,7 +67,7 @@ import one.util.streamex.StreamEx;
  */
 @Service
 @Transactional
-public class  RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
+public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
 	private static final Logger logger = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
 	@Autowired
 	BizNumberFunction bizNumberFunction;
@@ -92,6 +93,8 @@ public class  RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long
 	UpStreamService upStreamService;
 	@Autowired
 	CheckinOutRecordService checkinOutRecordService;
+	@Autowired
+	UserQrHistoryService userQrHistoryService;
 
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
@@ -498,6 +501,7 @@ public class  RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long
 		user.setId(userId);
 		user.setQrStatus(userQrStatus.getCode());
 		this.userService.updateSelective(user);
+		this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem);
 	}
 
 	/**
@@ -512,6 +516,10 @@ public class  RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long
 		dto.setCreatedStart(createdStart);
 		dto.setCreatedEnd(createdEnd);
 		this.getActualDao().updateAllUserQrStatusByRegisterBillNum(dto);
+		this.userService.findUserQrStatusChangedList().forEach(u->{
+			this.userQrHistoryService.createUserQrHistoryForWithousBills(u);
+		});
+	
 	}
 
 	@Override
@@ -583,12 +591,16 @@ public class  RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long
 		}
 
 	}
+
 	private String dynamicSQLBeforeCheckIn() {
-		return "( bill_type=" + BillTypeEnum.NONE.getCode() + " and (is_checkin="+YnEnum.NO.getCode()+" OR (is_checkin=" + YnEnum.YES.getCode() + " AND verify_status="+BillVerifyStatusEnum.PASSED.getCode()+") ) )";
+		return "( bill_type=" + BillTypeEnum.NONE.getCode() + " and (is_checkin=" + YnEnum.NO.getCode()
+				+ " OR (is_checkin=" + YnEnum.YES.getCode() + " AND verify_status="
+				+ BillVerifyStatusEnum.PASSED.getCode() + ") ) )";
 	}
 
 	private String dynamicSQLAfterCheckIn() {
-		return "( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode() + " AND verify_status<>"+BillVerifyStatusEnum.PASSED.getCode()+") )";
+		return "( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode()
+				+ " AND verify_status<>" + BillVerifyStatusEnum.PASSED.getCode() + ") )";
 	}
 
 	private List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBillDto query) {

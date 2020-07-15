@@ -46,7 +46,7 @@ public class UserQrStatusEnumProvider implements ValueProvider {
             return "";
         }
         try{
-            return UserQrStatusEnum.fromCode(Integer.parseInt(object.toString())).getDesc();
+            return UserQrStatusEnum.fromCode(Integer.parseInt(object.toString())).map(UserQrStatusEnum::getDesc).orElse("");
         }catch(Exception e){
             return null;
         }

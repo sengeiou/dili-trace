@@ -3,6 +3,10 @@ alter table `batch_stock` rename to `product_stock`;
 alter table `trade_detail` change `batch_stock_id`  `product_stock_id` bigint(20) NULL COMMENT '商品库存ID';
 alter table `trade_request` change `batch_stock_id`  `product_stock_id` bigint(20) NULL COMMENT '商品库存ID';
 
+
+ALTER TABLE `user` ADD `pre_qr_status`int(11) NULL COMMENT '前一次二维码值';
+update `user` set pre_qr_status=qr_status;
+
 ALTER TABLE `trade_detail` ADD `batch_no` varchar(60) NULL COMMENT '批次号';
 ALTER TABLE `trade_detail` ADD `parent_batch_no` varchar(60) NULL COMMENT '父批次号';
 

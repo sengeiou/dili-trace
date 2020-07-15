@@ -26,42 +26,20 @@ public class UserQrHistory extends BaseDomain {
 
     @Column(name = "`user_id`")
     private Long userId;
-
-    /**
-     * 二维码条目类型
-     * {@link com.dili.trace.glossary.QrItemTypeEnum}
-     */
-    @Column(name = "`qr_item_type`")
-    private Integer qrItemType;
-    
-    @Column(name = "`has_data`")
-    private Integer hasData;
-    
-    @Column(name = "`valid`")
-    private Integer valid;
-
     /**
      * 二维码条目参数值
      */
-    @Column(name = "`objects`")
-    private String objects;
-    
+    @Column(name = "`user_name`")
+    private String userName;
+
     /**
-     * 
-     * 二维码条目状态
-     * {@link com.dili.trace.glossary.ColorEnum}
+     * 二维码条目类型 {@link com.dili.trace.glossary.QrItemTypeEnum}
      */
-    @Column(name = "`color`")
-    private Integer color;
-    
-    /**
-     * 
-     * 二维码条目操作
-     * {@link com.dili.trace.glossary.QrItemActionEnum}
-     */
-    @Column(name = "`action`")
-    private Integer action;
-    
+    @Column(name = "`qr_status`")
+    private Integer qrStatus;
+
+    @Column(name = "`content`")
+    private String content;
 
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`modified`")
@@ -100,38 +78,6 @@ public class UserQrHistory extends BaseDomain {
     }
 
     /**
-     * @return Integer return the qrItemType
-     */
-    public Integer getQrItemType() {
-        return qrItemType;
-    }
-
-    /**
-     * @param qrItemType the qrItemType to set
-     */
-    public void setQrItemType(Integer qrItemType) {
-        this.qrItemType = qrItemType;
-    }
-
-
-
-    public Integer getColor() {
-		return color;
-	}
-
-	public void setColor(Integer color) {
-		this.color = color;
-	}
-
-	public Integer getAction() {
-		return action;
-	}
-
-	public void setAction(Integer action) {
-		this.action = action;
-	}
-
-	/**
      * @return Date return the created
      */
     public Date getCreated() {
@@ -159,28 +105,46 @@ public class UserQrHistory extends BaseDomain {
         this.modified = modified;
     }
 
-	public String getObjects() {
-		return objects;
-	}
+    /**
+     * @return String return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
 
-	public void setObjects(String objects) {
-		this.objects = objects;
-	}
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public Integer getHasData() {
-		return hasData;
-	}
+    /**
+     * @return Integer return the qrStatus
+     */
+    public Integer getQrStatus() {
+        return qrStatus;
+    }
 
-	public void setHasData(Integer hasData) {
-		this.hasData = hasData;
-	}
+    /**
+     * @param qrStatus the qrStatus to set
+     */
+    public void setQrStatus(Integer qrStatus) {
+        this.qrStatus = qrStatus;
+    }
 
-	public Integer getValid() {
-		return valid;
-	}
+    /**
+     * @return String return the content
+     */
+    public String getContent() {
+        return content;
+    }
 
-	public void setValid(Integer valid) {
-		this.valid = valid;
-	}
+    /**
+     * @param content the content to set
+     */
+    public void setContent(String content) {
+        this.content = content;
+    }
 
 }
