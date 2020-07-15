@@ -39,6 +39,20 @@
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/xlsx.full.min.js"></script>
 <script type="text/javascript">
+var columns=[
+    {index:0,name:'序号',key:'orderNum'},
+    {index:1,name:'姓名',key:'name'},
+    {index:2,name:'手机号',key:'phone'},
+    {index:3,name:'身份证',key:'cardNo'},
+    {index:4,name:'统一信用代码',key:'license'},
+    {index:5,name:'法人姓名',key:'legalPerson'},
+    {index:6,name:'用户类型',key:'vocationTypeName'},
+    {index:7,name:'市场名称',key:'marketName'},
+    {index:8,name:'营业执照',key:'businessLicenseUrl'},
+    {index:9,name:'摊位号',key:'tallyAreaNo'},
+    {index:10,name:'品类类型',key:'preserveTypeName'},
+    {index:11,name:'产品名称',key:'categoryName'},
+];
 
 $('#uploadExcelBtn').click(function(){
     // xlf.addEventListener('change', handleFile, false);
