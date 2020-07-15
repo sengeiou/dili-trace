@@ -414,8 +414,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
 				toVerifyState.getName());
-		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
-				|| !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行数据操作");
 		}
 		if (BillVerifyStatusEnum.NONE == toVerifyState) {

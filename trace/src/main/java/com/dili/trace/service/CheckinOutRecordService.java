@@ -27,6 +27,7 @@ import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
@@ -125,7 +126,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		User user = this.userService.get(userId);
 		return Optional.ofNullable(user);
 	}
-/**
+
+	/**
 	 * 批量进门
 	 * 
 	 * @param operateUser
@@ -133,7 +135,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 * @return
 	 */
 	@Transactional
-	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long>billIdList) {
+	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long> billIdList) {
 		if (billIdList == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -150,6 +152,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 		}).nonNull().toList();
 	}
+
 	/**
 	 * 批量进门
 	 * 
@@ -180,10 +183,20 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				.orElseThrow(() -> {
 					return new TraceBusinessException("没有找到数据");
 				});
-		if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
-			throw new TraceBusinessException("当前报备单已进门");
-		}
+		//补报单已经是进门状态(但是没有进门数据)，所以此处放弃用isCheckin来判断，而是用tradedetail来做判断
+		// if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+		// 	throw new TraceBusinessException("当前报备单已进门");
+		// }
+		this.tradeDetailService.findBilledTradeDetailByBillId(billId).ifPresent(td->{
+			if(CheckinStatusEnum.ALLOWED.equalsToCode(td.getCheckinStatus())){
+				throw new TraceBusinessException("当前报备单已进门");
+			}
+		});
 
+		if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
+				|| !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+			throw new TraceBusinessException("当前状态不能进行进门操作");
+		}
 		if (CheckinStatusEnum.NONE == checkinStatusEnum) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -226,7 +239,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		CheckinOutRecord checkinRecord = new CheckinOutRecord();
 		checkinRecord.setStatus(checkinStatusEnum.getCode());
 		checkinRecord.setInout(CheckinOutTypeEnum.IN.getCode());
-		operateUser.ifPresent(op->{
+		operateUser.ifPresent(op -> {
 			checkinRecord.setOperatorId(op.getId());
 			checkinRecord.setOperatorName(op.getName());
 		});

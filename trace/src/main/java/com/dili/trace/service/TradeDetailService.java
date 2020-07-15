@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.hutool.core.date.DateUtil;
 import one.util.streamex.StreamEx;
 import tk.mybatis.mapper.entity.Example;
 
@@ -60,9 +61,19 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return StreamEx.of(this.listByExample(query)).findFirst();
 
 	}
+	
+	private String buildParentBatchNo(RegisterBill billItem){
+		return DateUtil.format(billItem.getCreated(), "yyyy-MM-dd HH:mm:ss");
+	}
+
+	private String buildParentBatchNo(TradeDetail tradeDetailItem){
+		return tradeDetailItem.getBatchNo();
+	}
 
 	public TradeDetail createTradeDetailForCheckInBill(RegisterBill billItem) {
 		TradeDetail item = new TradeDetail();
+		Date now=new Date();
+
 		item.setParentId(null);
 		item.setIsBatched(TFEnum.FALSE.getCode());
 		item.setBillId(billItem.getId());
@@ -76,9 +87,10 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		item.setBuyerId(billItem.getUserId());
 		item.setBuyerName(billItem.getName());
 		item.setProductName(billItem.getProductName());
-		item.setBatchNo(billItem.getCode());
-		item.setModified(new Date());
-		item.setCreated(new Date());
+		item.setBatchNo(DateUtil.format(now, "yyyy-MM-dd HH:mm:ss"));
+		item.setParentBatchNo(this.buildParentBatchNo(billItem));
+		item.setModified(now);
+		item.setCreated(now);
 		this.insertSelective(item);
 		return item;
 
@@ -197,7 +209,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, User buyer) {
 		TradeDetail buyerTradeDetail = new TradeDetail();
-		buyerTradeDetail.setBatchNo(tradeDetailItem.getBatchNo());
+		Date now=new Date();
+
+		buyerTradeDetail.setBatchNo(DateUtil.format(now, "yyyy-MM-dd HH:mm:ss"));
+		buyerTradeDetail.setParentBatchNo(this.buildParentBatchNo(tradeDetailItem));
+
 		buyerTradeDetail.setProductStockId(null);
 		buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
 		buyerTradeDetail.setBillId(tradeDetailItem.getBillId());
@@ -214,8 +230,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		buyerTradeDetail.setCheckinStatus(tradeDetailItem.getCheckinStatus());
 		buyerTradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
 		buyerTradeDetail.setCheckoutRecordId(null);
-		buyerTradeDetail.setCreated(new Date());
-		buyerTradeDetail.setModified(new Date());
+		buyerTradeDetail.setCreated(now);
+		buyerTradeDetail.setModified(now);
 		buyerTradeDetail.setParentId(tradeDetailItem.getId());
 		buyerTradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
 		buyerTradeDetail.setProductName(tradeDetailItem.getProductName());

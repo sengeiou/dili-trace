@@ -36,6 +36,10 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`batch_no`")
 	private String batchNo;
 
+	@ApiModelProperty(value = "父批次号")
+	@Column(name = "`parent_batch_no`")
+	private String parentBatchNo;
+
 	@ApiModelProperty(value = "最初登记单ID")
 	@Column(name = "`bill_id`")
 	private Long billId;
@@ -351,6 +355,21 @@ public class TradeDetail extends BaseDomain {
      */
     public void setBatchNo(String batchNo) {
         this.batchNo = batchNo;
+    }
+
+
+    /**
+     * @return String return the parentBatchNo
+     */
+    public String getParentBatchNo() {
+        return parentBatchNo;
+    }
+
+    /**
+     * @param parentBatchNo the parentBatchNo to set
+     */
+    public void setParentBatchNo(String parentBatchNo) {
+        this.parentBatchNo = parentBatchNo;
     }
 
 }

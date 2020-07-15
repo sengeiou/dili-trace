@@ -4,6 +4,7 @@ alter table `trade_detail` change `batch_stock_id`  `product_stock_id` bigint(20
 alter table `trade_request` change `batch_stock_id`  `product_stock_id` bigint(20) NULL COMMENT '商品库存ID';
 
 ALTER TABLE `trade_detail` ADD `batch_no` varchar(20) NULL COMMENT '批次号';
+ALTER TABLE `trade_detail` ADD `parent_batch_no` varchar(20) NULL COMMENT '父批次号';
 
 update `trade_detail`  set `batch_no`=(select code from register_bill where trade_detail.bill_id=register_bill.id );
 
