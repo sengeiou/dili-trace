@@ -8,4 +8,3 @@ ALTER TABLE `trade_detail` ADD `parent_batch_no` varchar(20) NULL COMMENT 'çˆ¶æ‰
 
 update `trade_detail`  set `batch_no`=(select code from register_bill where trade_detail.bill_id=register_bill.id );
 
-/*batchStockId:productStockId*/
