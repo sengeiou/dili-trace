@@ -6,27 +6,27 @@ public enum UserQrStatusEnum {
     /**
      * 黑色
      */
-    BLACK(0, "黑色", "000000"),
+    BLACK(0, "黑色", 0xFF000000),
     /**
      * 绿色
      */
-    GREEN(10, "绿色", "17a365"),
+    GREEN(10, "绿色", 0xFF17a365),
     /**
      * 黄色
      */
-    YELLOW(20, "黄色", "FFA500"),
+    YELLOW(20, "黄色", 0xFFFFA500),
     /**
      * 红色
      */
-    RED(30, "红色", "FF0000"),;
+    RED(30, "红色", 0xFFFF0000),;
 
     private Integer code;
     private String desc;
-    private String rgb;
-    UserQrStatusEnum(Integer code, String desc, String rgb) {
+    private Integer argb;
+    UserQrStatusEnum(Integer code, String desc, Integer argb) {
             this.code = code;
             this.desc = desc;
-            this.rgb = rgb;
+            this.argb = argb;
         }
     
     public static UserQrStatusEnum fromCode(Integer code) {
@@ -53,7 +53,7 @@ public enum UserQrStatusEnum {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-    public String getRgb() {
-        return rgb;
+    public Integer getARgb() {
+        return this.argb;
     }
 }

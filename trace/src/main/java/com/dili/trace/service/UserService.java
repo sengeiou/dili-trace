@@ -1,18 +1,17 @@
 package com.dili.trace.service;
 
+import java.util.List;
+
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.domain.PageOutput;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
+import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -99,4 +98,6 @@ public interface UserService extends BaseService<User, Long> {
 	BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser);
 
 	public List<User> findUserByNameOrPhoneOrTallyNo(String keyword);
+
+	public UserQrOutput getUserQrCode(Long userId) throws Exception;
 }

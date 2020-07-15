@@ -77,10 +77,6 @@ public class UserApi {
     private RedisUtil redisUtil;
     @Resource
     UserPlateService userPlateService;
-    @Autowired
-    QrCodeService qrCodeService;
-    @Value("${current.baseWebPath}")
-    private String baseWebPath;
 
     @ApiOperation(value = "注册", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
@@ -378,18 +374,8 @@ public class UserApi {
                 return BaseOutput.failure("参数错误");
             }
             Long userId = input.getUserId();
-            User userItem = this.userService.get(userId);
-            if (userItem == null) {
-                return BaseOutput.failure("数据不存在");
-            }
-            String content = this.baseWebPath+"/user?userId=" + userId;
-            String rgbHex=Optional.ofNullable(UserQrStatusEnum.fromCode(userItem.getQrStatus())).map(UserQrStatusEnum::getRgb).orElse(UserQrStatusEnum.BLACK.getRgb());
-            String base64Img = this.qrCodeService.getBase64QrCode(content, 400, 400,rgbHex);
-            UserQrOutput qrOutput = new UserQrOutput();
-            qrOutput.setBase64QRImg(base64Img);
-            qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
-            qrOutput.setUserId(userId);
-            return BaseOutput.success().setData(base64Img);
+            UserQrOutput qrOutput = this.userService.getUserQrCode(userId);
+            return BaseOutput.success().setData(qrOutput);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

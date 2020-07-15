@@ -2,6 +2,7 @@ package com.dili.trace.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -10,40 +11,54 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import com.dili.common.util.MD5Util;
-import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.input.UserInput;
-import com.dili.trace.api.output.UserOutput;
-import com.dili.trace.domain.EventMessage;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.MessageStateEnum;
-import com.dili.trace.enums.ValidateStateEnum;
-import com.dili.trace.glossary.*;
-import com.dili.trace.service.*;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSON;
 import com.beust.jcommander.internal.Lists;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.RedisService;
+import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.api.input.UserInput;
+import com.dili.trace.api.output.UserOutput;
+import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
+import com.dili.trace.domain.EventMessage;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.enums.MessageStateEnum;
+import com.dili.trace.enums.ValidateStateEnum;
+import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.UpStreamSourceEnum;
+import com.dili.trace.glossary.UserQrStatusEnum;
+import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.glossary.YnEnum;
+import com.dili.trace.service.EventMessageService;
+import com.dili.trace.service.QrCodeService;
+import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserService;
+import com.dili.trace.service.UsualAddressService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import tk.mybatis.mapper.entity.Example;
 
 /**
@@ -67,6 +82,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     EventMessageService eventMessageService;
     @Resource
     RegisterBillService registerBillService;
+    @Autowired
+    QrCodeService qrCodeService;
+    @Value("${current.baseWebPath}")
+    private String baseWebPath;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -75,51 +94,51 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (flag) {
             checkVerificationCode(user.getPhone(), user.getCheckCode());
             user.setSource(UpStreamSourceEnum.REGISTER.getCode());
-        }else {
+        } else {
             user.setSource(UpStreamSourceEnum.DOWN.getCode());
         }
 
         // 验证手机号是否已注册
         if (existsAccount(user.getPhone())) {
             throw new TraceBusinessException("手机号已注册");
-//            return;
+            // return;
         }
 
-        if (StringUtils.isEmpty(user.getPassword())){
-            user.setPassword("123456");//TODO 默认密码
+        if (StringUtils.isEmpty(user.getPassword())) {
+            user.setPassword("123456");// TODO 默认密码
         }
         user.setPassword(MD5Util.md5(user.getPassword()));
 
-        if (StringUtils.isEmpty(user.getCardNo())){
+        if (StringUtils.isEmpty(user.getCardNo())) {
             user.setCardNo("");
         }
 
-        if (StringUtils.isEmpty(user.getAddr())){
+        if (StringUtils.isEmpty(user.getAddr())) {
             user.setAddr("");
         }
 
-//        // 验证身份证号是否已注册
-//        if (existsCardNo(user.getCardNo())) {
-//            throw new TraceBusinessException("身份证号已注册");
-//        }
-//        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
+        // // 验证身份证号是否已注册
+        // if (existsCardNo(user.getCardNo())) {
+        // throw new TraceBusinessException("身份证号已注册");
+        // }
+        // this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER,
+        // user.getSalesCityId());
         insertSelective(user);
-//        // 增加车牌信息
-//        // LOGGER.info("输入车牌:{}",user.getPlates());
-//        List<String> plateList = this.parsePlate(user.getPlates());
-//        // LOGGER.info("解析车牌:{}",plateList.toString());
-//        if (!plateList.isEmpty()) {
-//            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
-//            if (up != null) {
-//                throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
-//            }
-//            this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
-//        }
-//        this.userHistoryService.insertUserHistoryForNewUser(user.getId());
+        // // 增加车牌信息
+        // // LOGGER.info("输入车牌:{}",user.getPlates());
+        // List<String> plateList = this.parsePlate(user.getPlates());
+        // // LOGGER.info("解析车牌:{}",plateList.toString());
+        // if (!plateList.isEmpty()) {
+        // UserPlate up =
+        // this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
+        // if (up != null) {
+        // throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
+        // }
+        // this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
+        // }
+        // this.userHistoryService.insertUserHistoryForNewUser(user.getId());
         this.updateUserQrItem(user.getId());
     }
-
-    
 
     @Override
     public void updateUser(User user) {
@@ -276,7 +295,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public List<User> getUserByExistsAccount(String phone){
+    public List<User> getUserByExistsAccount(String phone) {
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(phone);
         query.setYn(YnEnum.YES.getCode());
@@ -299,7 +318,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
 
-            
             redisService.setRemove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         } else {
             user.setState(EnabledStateEnum.DISABLED.getCode());
@@ -308,7 +326,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         return BaseOutput.success("操作成功");
     }
-
 
     private Optional<String> andCondition(UserListDto dto) {
         List<String> strList = new ArrayList<String>();
@@ -396,9 +413,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Override
     public BaseOutput<List<UserOutput>> countGroupByValidateState(User user) {
-//        if (user == null) {
-//			return BaseOutput.failure("参数错误");
-//		}
+        // if (user == null) {
+        // return BaseOutput.failure("参数错误");
+        // }
         return BaseOutput.success().setData(getActualDao().countGroupByValidateState(user));
     }
 
@@ -406,7 +423,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public BasePage<UserOutput> pageUserByQuery(UserInput user) {
         PageHelper.startPage(user.getPage(), user.getRows());
         List<UserOutput> list = getActualDao().listUserByQuery(user);
-        Page<User> page = (Page)list;
+        Page<User> page = (Page) list;
         BasePage<UserOutput> result = new BasePage<UserOutput>();
         result.setDatas(list);
         result.setPage(page.getPageNum());
@@ -423,31 +440,31 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             return BaseOutput.failure("参数错误");
         }
         User user = get(input.getId());
-        if (ValidateStateEnum.UNCERT.getCode() != user.getValidateState()){
+        if (ValidateStateEnum.UNCERT.getCode() != user.getValidateState()) {
             return BaseOutput.failure("当前状态不能审核");
         }
-        String message ;
-        if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()){//审核通过
+        String message;
+        if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {// 审核通过
             message = "用户资料审核申请已通过";
-        }else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()){//审核不通过
+        } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {// 审核不通过
             message = "用户资料审核申请未通过";
-        }else {
+        } else {
             message = "系统出现异常";
             return BaseOutput.failure(message);
         }
 
         user.setValidateState(input.getValidateState());
         int retRows = update(user);
-        if (retRows > 0){
-            sendVerifyCertMessage(user,message,input.getRefuseReason(), operatorUser);
+        if (retRows > 0) {
+            sendVerifyCertMessage(user, message, input.getRefuseReason(), operatorUser);
             return BaseOutput.success(message);
-        }else {
+        } else {
             return BaseOutput.failure();
         }
     }
 
-    private void sendVerifyCertMessage(User user,String message,String operateReason,OperatorUser operatorUser){
-        //增加消息
+    private void sendVerifyCertMessage(User user, String message, String operateReason, OperatorUser operatorUser) {
+        // 增加消息
         EventMessage eventMessage = new EventMessage();
         eventMessage.setTitle(message);
         eventMessage.setOverview(operateReason);
@@ -467,14 +484,32 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     private void updateUserQrItem(Long userId) {
         this.registerBillService.updateUserQrStatusByUserId(userId);
     }
+
     @Override
     public List<User> findUserByNameOrPhoneOrTallyNo(String keyword) {
-        if(StringUtils.isBlank(keyword)){
+        if (StringUtils.isBlank(keyword)) {
             return Lists.newArrayList();
         }
-        Example e=new Example(User.class);
-        e.or().orLike("tallyAreaNos", "%"+keyword.trim()+"%").orLike("name", "%"+keyword.trim()+"%").orLike("phone", "%"+keyword.trim()+"%");
+        Example e = new Example(User.class);
+        e.or().orLike("tallyAreaNos", "%" + keyword.trim() + "%").orLike("name", "%" + keyword.trim() + "%")
+                .orLike("phone", "%" + keyword.trim() + "%");
         return this.getDao().selectByExample(e);
     }
-    
+    @Override
+    public UserQrOutput getUserQrCode(Long userId) throws Exception {
+        User userItem = this.get(userId);
+        if (userItem == null) {
+            throw new TraceBusinessException("数据不存在");
+        }
+        String content = this.baseWebPath + "/user?userId=" + userId;
+        Integer getARgb = Optional.ofNullable(UserQrStatusEnum.fromCode(userItem.getQrStatus()))
+                .map(UserQrStatusEnum::getARgb).orElse(UserQrStatusEnum.BLACK.getARgb());
+        String base64Img = this.qrCodeService.getBase64QrCode(content, 400, 400, getARgb);
+        UserQrOutput qrOutput = new UserQrOutput();
+        qrOutput.setBase64QRImg(base64Img);
+        qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+        qrOutput.setUserId(userId);
+        return  qrOutput;
+    }
+
 }
