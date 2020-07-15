@@ -63,11 +63,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	}
 	
 	private String buildParentBatchNo(RegisterBill billItem){
-		return DateUtil.format(billItem.getCreated(), "yyyy-MM-dd HH:mm:ss");
+		return billItem.getName()+" "+DateUtil.format(billItem.getCreated(), "yyyy-MM-dd HH:mm:ss");
 	}
 
 	private String buildParentBatchNo(TradeDetail tradeDetailItem){
-		return tradeDetailItem.getBatchNo();
+		return tradeDetailItem.getBuyerName()+" "+tradeDetailItem.getBatchNo();
 	}
 
 	public TradeDetail createTradeDetailForCheckInBill(RegisterBill billItem) {
