@@ -229,11 +229,7 @@ public class UserController {
 		return "user/view";
 	}
 
-	@ApiOperation("跳转到updateUser页面")
-	@RequestMapping(value = "/updateUser.html", method = RequestMethod.GET)
-	public String updateUser(ModelMap modelMap, Long id) {
-		return "user/updateUser";
-	}
+
 
 	@ApiOperation("跳转到edit页面")
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)

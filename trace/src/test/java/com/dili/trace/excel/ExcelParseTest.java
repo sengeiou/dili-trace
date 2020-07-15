@@ -28,7 +28,7 @@ public class ExcelParseTest {
 		FileInputStream fs = new FileInputStream(f);
 
 		// // 这里默认读取第一个sheet
-		EasyExcel.read(fs, IndexOrNameData.class, new IndexOrNameDataListener()).sheet().doRead();
+		EasyExcel.read(fs, ExcelUserData.class, new ExcelUserDataListener()).sheet().doRead();
 	}
 
 }

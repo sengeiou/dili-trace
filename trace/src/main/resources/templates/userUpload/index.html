@@ -1,0 +1,213 @@
+<#bodyOrigin>
+    <style>
+        .form-control {
+            display: inline-block;
+        }
+
+        .form-inline .label-title {
+            width: auto;
+        }
+    </style>
+    <div class="main-container">
+        <div class="form-box border" style="width: 100%;">
+            <form id="createRecordForm" class="form-inline" role="form">
+                <table id="userTable">
+                    <thead>
+                        <th>序号</th>
+                        <th> 姓名</th>
+                        <th>手机号</th>
+                        <th>身份证号</th>
+                        <th>统一信用代码</th>
+                        <th>法人姓名</th>
+                        <th>用户类型</th>
+                        <th>市场名称</th>
+                        <th>营业执照</th>
+                        <th>摊位号</th>
+                        <th>品类类型</th>
+                        <th>产品名称</th>
+                    </thead>
+                </table>
+            </form>
+        </div>
+        <form id="uploadExcelForm">
+            <input type="file" name="excelFile" id="excelFile">
+            <input type="button" id="uploadExcelBtn" value="上传Excel">
+        </form>
+    </div>
+</#bodyOrigin>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/xlsx.full.min.js"></script>
+<script type="text/javascript">
+
+$('#uploadExcelBtn').click(function(){
+    // xlf.addEventListener('change', handleFile, false);
+    
+        var excelFile = $('#excelFile')[0].files[0];
+        //console.info(excelFile);
+    var name = excelFile.name;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            var data = e.target.result;
+            var workbook = XLSX.read(data, { type: "binary" }); // 以二进制流方式读取得到整份excel表格对象
+            var persons = []; // 存储获取到的数据
+            // 表格的表格范围，可用于判断表头是否数量是否正确
+            var fromTo = '';
+            // 遍历每张表读取
+            for (var sheet in workbook.Sheets) {
+                if (workbook.Sheets.hasOwnProperty(sheet)) {
+
+                    var s=workbook.Sheets[sheet];
+                    $.each(s,function(k,v){
+                        if(k.indexOf("!")<0){
+                            console.info(k)
+                            console.info(v.v);
+                            var index =  k.replace(/[^0-9]/g, "");
+                           // var index = k.match(/\d+/);//price值为：200
+                            console.info(index)
+                            debugger;
+                            if(k=='序号'){
+                            
+                              
+                            }else if(k==''){}
+                        }
+                    });
+                  
+                    fromTo = workbook.Sheets[sheet]['!ref'];
+                    console.log(fromTo);
+                    persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
+                    // break; // 如果只取第一张表，就取消注释这行
+                }
+            }
+            //在控制台打印出来表格中的数据
+            console.log(persons);  
+            } catch (e) {
+                console.log('文件类型不正确');
+                return;
+            }
+
+    };
+    reader.readAsBinaryString(excelFile);
+
+});
+
+
+
+$('#uploadExcelBtn2').click(function(){
+       var url="${contextPath!}/userUpload/parseExcel.action";
+       var formData=new FormData(document.getElementById("uploadExcelForm"));
+     	$.ajax({
+		url: url,
+		type: "POST",
+	    	data: formData,
+	    	processData: false,  // 告诉jQuery不要去处理发送的数据
+	        contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+		    success: function(response,status,xhr){
+                if(response.code=='200'){
+                    var userTable=$('#userTable');
+                    $.each(response.data,function(i,v){
+                        console.info(v)
+                        var userdata="<tr><td>序号:<input name=''></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>"
+
+                        userTable.append(template('userItem', v));
+                        userTable.append();
+                       /* cardNo: "43098119891101511X"
+categoryId: 3
+categoryName: "高档海鲜"
+legalPerson: "易仕年"
+license: "92330110MA2CF0MC1Y"
+marketName: "杭州水产市场"
+name: "杭州农副产品物流中心水产品批发市场易丰水产商行"
+orderNum: "318"
+phone: "18867159406"
+preserveType: 10
+preserveTypeName: "鲜活"
+tallyAreaNo: "1-7-29"
+vocationType: 10
+vocationTypeName: "批发"*/
+                    });
+                }else{
+
+                }
+		     },
+		    error: function(response,status,xhr){	
+		        console.log("upload  error");
+		     }
+     	}); 
+});
+    var layer = parent.window.layer;
+    $('.fileimg-view').on('click', function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        if (url) {
+            layer.open({
+                title: '图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+    function redirectTo(url) {
+        parent.window.location.href = url
+    }
+</script>
+
+<script id="userItem" type="text/html">
+    <tr>
+        <td style="width:40px;">
+                <input type="text" class="form-control input-sm isSelected" style="width:40px;" name="orderNum" id="orderNum" required value="{{orderNum}}" />
+        </td>
+        <td>
+               <input type="text" class="form-control input-sm isSelected" name="name" id="name" required value="{{name}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" style="width:100px;" name="phone"  id="phone" required value="{{phone}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" style="width:120px;"  name="cardNo" id="cardNo" required value="{{cardNo}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" style="width:120px;"  name="license" id="license" required value="{{license}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" style="width:60px;"  name="legalPerson" id="legalPerson" required value="{{legalPerson}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" style="width:60px;"  name="vocationTypeName" id="vocationTypeName" required value="{{vocationTypeName}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" name="marketName" id="marketName" required value="{{marketName}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" name="businessLicenseUrl" id="businessLicenseUrl" required value="{{businessLicenseUrl}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" name="tallyAreaNo" id="tallyAreaNo" required value="{{tallyAreaNo}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected" style="width:60px;"  name="preserveTypeName" id="preserveTypeName" required value="{{preserveTypeName}}" />
+        </td>
+        <td>
+                <input type="text" class="form-control input-sm isSelected"  style="width:100px;"  name="categoryName" id="categoryName" required value="{{categoryName}}" />
+        </td>
+        <!--td>
+            <div class="upload-div">
+                <a href="javascript:;" class="a-upload" tabindex="-1">
+                    <input type="file" id="originCertifiyUrl_{{orderNum}}"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
+                    <span>上传</span>
+                    <input type="hidden" name="originCertifiyUrl_{{orderNum}}">
+                </a>
+            </div>
+            <div class="view-div" style="display: none;">
+                <span>已上传</span>
+                <a href="javascript:;" data-index="{{orderNum}}" class="img-view-a">查看图片</a>
+                <a href="javascript:$('#originCertifiyUrl_{{orderNum}}').trigger('click')">重新上传</a>
+            </div>
+        </td>
+        <td><a href="javascript:;" class="split-minus-btn">删除</a></td-->
+    </tr>
+
+</script>
