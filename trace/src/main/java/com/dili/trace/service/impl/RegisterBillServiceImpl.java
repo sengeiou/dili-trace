@@ -66,7 +66,7 @@ import one.util.streamex.StreamEx;
  */
 @Service
 @Transactional
-public class  extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
+public class  RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
 	private static final Logger logger = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
 	@Autowired
 	BizNumberFunction bizNumberFunction;
