@@ -1,6 +1,7 @@
 package com.dili.trace.api;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
@@ -31,6 +33,7 @@ import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.rpc.MessageRpc;
+import com.dili.trace.service.QrCodeService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
@@ -38,12 +41,14 @@ import com.dili.trace.util.BasePageUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
@@ -69,6 +74,8 @@ public class UserApi {
     private RedisUtil redisUtil;
     @Resource
     UserPlateService userPlateService;
+    @Autowired
+    QrCodeService qrCodeService;
 
     @ApiOperation(value = "注册", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
@@ -91,10 +98,11 @@ public class UserApi {
     public BaseOutput<Long> realNameCertificationReq(@RequestBody User user) {
         try {
             Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-//            User currentUser = userService.get(id);
-//            if (ValidateStateEnum.PASSED.equalsToCode(currentUser.getValidateState())) {// 已通过
-//                return BaseOutput.success().setData(id).setMessage("已经通过审核，请勿反复提交");
-//            }
+            // User currentUser = userService.get(id);
+            // if (ValidateStateEnum.PASSED.equalsToCode(currentUser.getValidateState()))
+            // {// 已通过
+            // return BaseOutput.success().setData(id).setMessage("已经通过审核，请勿反复提交");
+            // }
 
             checkRealNameCertificationParams(user);
             user.setId(id);
@@ -356,4 +364,32 @@ public class UserApi {
 
     }
 
+    @ApiOperation(value = "通过姓名关键字查询用户信息", notes = "通过姓名关键字查询用户信息")
+    @RequestMapping(value = "/getUserQrCode.api", method = RequestMethod.POST)
+    public BaseOutput<UserQrOutput> getUserQrCode(UserListDto input) {
+        try {
+            Long loginUserId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            if (input == null || input.getUserId() == null) {
+                return BaseOutput.failure("参数错误");
+            }
+            Long userId = input.getUserId();
+            User userItem = this.userService.get(userId);
+            if (userItem == null) {
+                return BaseOutput.failure("数据不存在");
+            }
+            String content = "https://hz.trace.nong12.com/user?userId=" + userId;
+            String base64Img = this.qrCodeService.getBase64QrCode(content, 400, 400);
+            UserQrOutput qrOutput = new UserQrOutput();
+            qrOutput.setBase64QRImg(base64Img);
+            qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            qrOutput.setUserId(userId);
+            return BaseOutput.success().setData(base64Img);
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("查询出错");
+        }
+
+    }
 }

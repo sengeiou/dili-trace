@@ -19,29 +19,35 @@ public interface UserListDto extends User {
     @Column(name = "`created`")
     @Operator(Operator.GREAT_EQUAL_THAN)
     Date getCreatedStart();
+
     void setCreatedStart(Date createdStart);
 
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
     Date getCreatedEnd();
+
     void setCreatedEnd(Date createdEnd);
 
     /**
      * 昵称模糊查询
+     * 
      * @return
      */
     @Column(name = "tally_area_nos")
     @Like
     String getLikeTallyAreaNos();
+
     void setLikeTallyAreaNos(String likeTallyAreaNos);
-    
+
     @Transient
     Boolean getHasBusinessLicense();
+
     void setHasBusinessLicense(Boolean hasBusinessLicense);
 
     @Column(name = "name")
     @Like
     String getLikeName();
+
     void setLikeName(String likeName);
 
     @Column(name = "`id`")
@@ -49,5 +55,10 @@ public interface UserListDto extends User {
     List<Long> getIds();
 
     void setIds(List<Long> ids);
+
+    @Transient
+    Long getUserId();
+
+    void setUserId(Long userId);
 
 }
