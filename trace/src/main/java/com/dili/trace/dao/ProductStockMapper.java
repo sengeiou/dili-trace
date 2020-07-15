@@ -11,6 +11,6 @@ public interface ProductStockMapper extends MyMapper<ProductStock>{
      /**
      * 通过ID悲观锁定数据
      */
-    @Select("select * from product_store where id = #{id} for update")
+    @Select("select * from product_stock where id = #{id} for update")
     public Optional<ProductStock> selectByIdForUpdate(Long id);
 }

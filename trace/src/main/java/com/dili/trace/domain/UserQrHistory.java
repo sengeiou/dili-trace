@@ -17,8 +17,8 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  * This file was generated on 2019-07-26 09:20:35.
  */
-@Table(name = "`user_qr_item`")
-public class UserQrItem extends BaseDomain {
+@Table(name = "`user_qr_history`")
+public class UserQrHistory extends BaseDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")

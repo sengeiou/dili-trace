@@ -26,3 +26,16 @@ CREATE TABLE `user_login_history` (
 
 
 DROP TABLE `user_history`;
+
+
+
+CREATE TABLE `user_qr_history` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20)  NULL COMMENT '用户(商户)ID',
+  `user_name` varchar(30)  NULL COMMENT '用户(商户)名称',
+  `qr_status` int(11) NOT NULL  COMMENT '二维码状态',
+  `content` varchar(200) NULL COMMENT '二维码转换信息内容',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

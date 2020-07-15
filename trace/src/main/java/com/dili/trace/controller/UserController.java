@@ -19,7 +19,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserQrItem;
+import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.QrItemTypeEnum;
@@ -232,7 +232,7 @@ public class UserController {
 	@ApiOperation("跳转到qrstatus页面")
 	@RequestMapping(value = "/qrstatus.html", method = RequestMethod.GET)
 	public String qrstatus(ModelMap modelMap, Long id) {
-		List<UserQrItem> userQrItemlist = Collections.emptyList();
+		List<UserQrHistory> userQrItemlist = Collections.emptyList();
 		// List<UserQrItemDetail>userQrItemDetailList=
 		// this.userQrItemDetailService.findByUserQrItemIdList(userQrItemlist.stream().map(UserQrItem::getId).collect(Collectors.toList()));
 		// Map<Long,String>itemIdDetailListMap=userQrItemDetailList.stream().collect(Collectors.groupingBy(UserQrItemDetail::getUserQrItemId,Collectors.mapping(UserQrItemDetail::getObjectId,Collectors.joining(","))));
