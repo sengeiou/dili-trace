@@ -194,7 +194,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		});
 
 		if (!BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
-				|| !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+				&& !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
 			throw new TraceBusinessException("当前状态不能进行进门操作");
 		}
 		if (CheckinStatusEnum.NONE == checkinStatusEnum) {
