@@ -13,26 +13,19 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
-import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.output.TradeDetailBillOutput;
-import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
 import com.dili.trace.service.TradeRequestService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
-import com.google.common.collect.Lists;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,11 +125,8 @@ public class ClientRegisterBillApi {
 		logger.info("获取登记单列表:{}", JSON.toJSONString(input));
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			User user = userService.get(userId);
-			if (user == null) {
-				return BaseOutput.failure("未登陆用户");
-			}
-			logger.info("获取登记单列表 操作用户:{}", JSON.toJSONString(user));
+
+			logger.info("获取登记单列表 操作用户:{}", userId);
 			input.setUserId(userId);
 			BasePage basePage = this.tradeDetailService.selectTradeDetailAndBill(input);
 			return BaseOutput.success().setData(basePage);

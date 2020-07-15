@@ -6,14 +6,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.trace.api.output.UserOutput;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.MD5Util;
@@ -22,12 +14,20 @@ import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.LoginInputDto;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.service.UserLoginHistoryService;
 import com.dili.trace.service.UserService;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
@@ -40,6 +40,8 @@ public class LoginComponent {
 	private UserService userService;
 	@Resource
 	private LoginSessionContext sessionContext;
+	@Autowired
+	UserLoginHistoryService userLoginHistoryService;
 	@Value("${manage.domain}")
 	private String manageDomainPath;
 
@@ -102,7 +104,9 @@ public class LoginComponent {
 	}
 
 	private User userLogin(String phone, String password) {
-		return userService.login(phone, MD5Util.md5(password));
+		User userItem= userService.login(phone, MD5Util.md5(password));
+		this.userLoginHistoryService.createLoginHistory(userItem);
+		return userItem;
 	}
 
 	private OperatorUser sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {

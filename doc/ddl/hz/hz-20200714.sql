@@ -12,3 +12,14 @@ update `trade_detail`  set `parent_batch_no`=(select CONCAT(name," ",created) fr
 
 update `trade_detail` t1,`trade_detail` t2 set t1.parent_batch_no=t2.batch_no 
     where t1.parent_id =t2.id and t1.trade_type=10;
+
+
+
+CREATE TABLE `user_login_history` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) DEFAULT NULL,
+  `user_name` varchar(30)  NULL COMMENT '姓名',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1;

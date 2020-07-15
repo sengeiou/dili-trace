@@ -1,6 +1,5 @@
 package com.dili.trace.api.client;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -8,29 +7,17 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
-import one.util.streamex.StreamEx;
-
-import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
-import com.dili.trace.api.output.RegisterBillOutput;
 import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
-import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
@@ -42,6 +29,17 @@ import com.dili.trace.service.BrandService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import one.util.streamex.StreamEx;
+
 public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 	@Autowired
 	ClientRegisterBillApi clientRegisterBillApi;
@@ -51,8 +49,8 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 	UserService userService;
 	@Autowired
 	BrandService brandService;
-	@MockBean
-	LoginSessionContext sessionContext;
+	// @MockBean
+	// LoginSessionContext sessionContext;
 	// private MockMvc mockMvc;
 	// @Injectable
 	private User userItem;
@@ -63,10 +61,11 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		userItem = this.userService.listPageByExample(DTOUtils.newDTO(User.class)).getDatas().stream().findFirst()
 				.orElse(null);
 		assertNotNull(userItem);
-		Mockito.doReturn(userItem.getId()).when(sessionContext).getAccountId();
-		Mockito.doReturn(userItem.getName()).when(sessionContext).getUserName();
-		Mockito.doReturn(new OperatorUser(userItem.getId(), userItem.getName())).when(this.sessionContext)
-				.getLoginUserOrException(Mockito.any());
+		// Mockito.doReturn(userItem.getId()).when(sessionContext).getAccountId();
+		// Mockito.doReturn(userItem.getName()).when(sessionContext).getUserName();
+		// Mockito.doReturn(new OperatorUser(userItem.getId(),
+		// userItem.getName())).when(this.sessionContext)
+		// .getLoginUserOrException(Mockito.any());
 	}
 
 	@Test
@@ -158,6 +157,20 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		assertNotNull(outBill);
 		assertNotNull(outBill.getVerifyStatus());
 		assertNotNull(outBill.getTradeType());
+	}
+
+	@Test
+	public void listPage_2() {
+		String sessionId="b9761afa0f1240e492ca369979f3a60e";
+		MockHttpSession session=new MockHttpSession(null,sessionId);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+		request.setSession(session);
+		RegisterBillDto queryDto = new RegisterBillDto();
+
+		BaseOutput<BasePage<TradeDetailBillOutput>> out = this.clientRegisterBillApi.listPage(queryDto);
+		assertNotNull(out);
+		assertTrue(out.isSuccess());
 	}
 
 }
