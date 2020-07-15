@@ -24,22 +24,23 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.springframework.stereotype.Service;
 
 import cn.hutool.core.img.ImgUtil;
+import cn.hutool.core.util.HexUtil;
 
 @Service
 public class QrCodeService {
 	private final String imageType = "png";
-	public String getBase64QrCode(String content, int qrWidth, int qrHeight) throws Exception {
+	public String getBase64QrCode(String content, int qrWidth, int qrHeight,String qrRgbHex) throws Exception {
 
-		byte[] bytes = this.getByteImage(content, qrWidth, qrHeight);
+		byte[] bytes = this.getByteImage(content, qrWidth, qrHeight,qrRgbHex);
 		return this.base64Image(bytes);
 	}
 
-	public String getBase64QrCode(String content, InputStream logoFileInputStream, int qrWidth, int qrHeight) throws Exception {
+	public String getBase64QrCode(String content, InputStream logoFileInputStream, int qrWidth, int qrHeight,String qrRgbHex) throws Exception {
 		if (logoFileInputStream==null ) {
-			byte[] bytes = this.getByteImage(content, qrWidth, qrHeight);
+			byte[] bytes = this.getByteImage(content, qrWidth, qrHeight,qrRgbHex);
 			return this.base64Image(bytes);
 		} else {
-			byte[] bytes = getByteImage(content, logoFileInputStream, qrWidth, qrHeight);
+			byte[] bytes = getByteImage(content, logoFileInputStream, qrWidth, qrHeight,qrRgbHex);
 			return this.base64Image(bytes);
 		}
 
@@ -54,7 +55,7 @@ public class QrCodeService {
 
 
 
-	private byte[] getByteImage(String content, int qrWidth, int qrHeight) throws Exception {
+	private byte[] getByteImage(String content, int qrWidth, int qrHeight,String qrRgbHex) throws Exception {
 		// Create new configuration that specifies the error correction
 
 		QRCodeWriter writer = new QRCodeWriter();
@@ -68,7 +69,7 @@ public class QrCodeService {
 		BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, qrWidth, qrHeight, hints);
 
 		// Load QR image
-		BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, getMatrixConfig());
+		BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, getMatrixConfig(qrRgbHex));
 
 		// Initialize combined image
 		BufferedImage combined = new BufferedImage(qrImage.getHeight(), qrImage.getWidth(),
@@ -88,7 +89,7 @@ public class QrCodeService {
 		return os.toByteArray();
 	}
 
-	public byte[] getByteImage(String content, InputStream logoFileInputStream, int qrWidth, int qrHeight)
+	public byte[] getByteImage(String content, InputStream logoFileInputStream, int qrWidth, int qrHeight,String qrRgbHex)
 			throws WriterException, IOException {
 		// Create new configuration that specifies the error correction
 
@@ -103,7 +104,7 @@ public class QrCodeService {
 		BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, qrWidth, qrHeight, hints);
 
 		// Load QR image
-		BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, getMatrixConfig());
+		BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, getMatrixConfig(qrRgbHex));
 
 		// Load logo image
 		BufferedImage overly = getOverly(logoFileInputStream, qrWidth, qrHeight);
@@ -143,10 +144,10 @@ public class QrCodeService {
 		return (BufferedImage) ImgUtil.scale(imageSrc, scale);
 	}
 
-	private MatrixToImageConfig getMatrixConfig() {
+	private MatrixToImageConfig getMatrixConfig(String qrRgbHex) {
 		// ARGB Colors
 		// Check Colors ENUM
-		return new MatrixToImageConfig(Colors.WHITE.getArgb(), Colors.BLACK.getArgb());
+		return new MatrixToImageConfig(Colors.WHITE.getArgb(), Integer.parseInt(qrRgbHex, 16));
 	}
 
 	public enum Colors {

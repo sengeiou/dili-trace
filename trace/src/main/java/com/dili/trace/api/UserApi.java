@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -31,6 +32,7 @@ import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.QrCodeService;
@@ -42,6 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -76,6 +79,8 @@ public class UserApi {
     UserPlateService userPlateService;
     @Autowired
     QrCodeService qrCodeService;
+    @Value("${current.baseWebPath}")
+    private String baseWebPath;
 
     @ApiOperation(value = "注册", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
@@ -377,8 +382,9 @@ public class UserApi {
             if (userItem == null) {
                 return BaseOutput.failure("数据不存在");
             }
-            String content = "https://hz.trace.nong12.com/user?userId=" + userId;
-            String base64Img = this.qrCodeService.getBase64QrCode(content, 400, 400);
+            String content = this.baseWebPath+"/user?userId=" + userId;
+            String rgbHex=Optional.ofNullable(UserQrStatusEnum.fromCode(userItem.getQrStatus())).map(UserQrStatusEnum::getRgb).orElse(UserQrStatusEnum.BLACK.getRgb());
+            String base64Img = this.qrCodeService.getBase64QrCode(content, 400, 400,rgbHex);
             UserQrOutput qrOutput = new UserQrOutput();
             qrOutput.setBase64QRImg(base64Img);
             qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
