@@ -115,9 +115,25 @@ public class BCConvert {
 
 	public static void main(String[] args) {
 		System.out.println(StringUtils.trimToEmpty(" a。,b ,c "));
-		String s = "nihaoｈｋ　｜　　　ｎｉｈｅｈｅ　，。　７８　　７　";
-		s = fullWidth2halfWidth(s);
+		String s = "nihaoｈｋ　｜　　　ｎｉｈｅｈｅ　，　７８　　７　。";
 		System.out.println(s);
-		System.out.println(BCConvert.bj2qj(s));
+		s = ToDBC(s);
+		s = ToDBC(s);
+		System.out.println(s);
 	}
+
+	public static String ToDBC(String input) {
+        char[] c = input.toCharArray();
+        for (int i = 0; i < c.length; i++) {
+            if (c[i] == 12288) {
+                //The full-width space is 12288, and the half-width space is 32.
+                c[i] = (char) 32;
+                continue;
+            }
+            if (c[i] > 65280 && c[i] < 65375)
+                //The correspondence between the other characters half angle (33-126) and the full angle (65281-65374) is: the average difference is 65248
+                c[i] = (char) (c[i] - 65248);
+        }
+        return new String(c);
+    }
 }

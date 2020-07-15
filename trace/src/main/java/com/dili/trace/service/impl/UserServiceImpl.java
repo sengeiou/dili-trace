@@ -62,8 +62,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Resource
     UserPlateService userPlateService;
     @Resource
-    UserHistoryService userHistoryService;
-    @Resource
     UsualAddressService usualAddressService;
     @Resource
     EventMessageService eventMessageService;
@@ -172,7 +170,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         updateSelective(user);
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
                 user.getSalesCityId());
-        this.userHistoryService.insertUserHistoryForUpdateUser(user.getId());
         this.updateUserQrItem(user.getId());
 
     }
@@ -309,7 +306,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             this.updateSelective(user);
             redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         }
-        this.userHistoryService.insertUserHistoryForUpdateUser(user.getId());
         return BaseOutput.success("操作成功");
     }
 
@@ -380,7 +376,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setIsDelete(user.getId());
         this.updateSelective(user);
 
-        this.userHistoryService.insertUserHistoryForDeleteUser(user.getId());
         redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
 
         // 删除用户车牌信息

@@ -24,4 +24,6 @@ CREATE TABLE `user_login_history` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1;
 
-ALTER TABLE hztrace.`user` MODIFY COLUMN tally_area_nos varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+ALTER TABLE `user` MODIFY COLUMN tally_area_nos varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+
+DROP TABLE `user_history`;
