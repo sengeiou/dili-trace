@@ -585,11 +585,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	}
 	private String dynamicSQLBeforeCheckIn() {
-		return "( bill_type=" + BillTypeEnum.NONE.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode() + " AND bill_type="+BillTypeEnum.NONE.getCode()+") )";
+		return "( bill_type=" + BillTypeEnum.NONE.getCode() + " and (is_checkin="+YnEnum.NO.getCode()+" OR (is_checkin=" + YnEnum.YES.getCode() + " AND verify_status="+BillVerifyStatusEnum.PASSED.getCode()+") ) )";
 	}
 
 	private String dynamicSQLAfterCheckIn() {
-		return "( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode() + " AND bill_type="+BillTypeEnum.NONE.getCode()+") )";
+		return "( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode() + " AND verify_status<>"+BillVerifyStatusEnum.PASSED.getCode()+") )";
 	}
 
 	private List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBillDto query) {
