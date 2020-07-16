@@ -57,7 +57,7 @@ public class SessionRedisService {
         Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisService.get(accountRedisKey);
         SessionData accountData = SessionData.fromMap(accountMapData);
         logger.info("loadFromRedis:accountData={}",accountData.toMap());
-        if (!sessionId.equals(accountData.getSessionId())) {
+        if (!sessionId.equals(accountData.getSessionId())&&accountData.getSessionId()!=null) {
             String oldSessionKey=this.getSessionRedisKey(accountData.getSessionId());
             logger.info("del:session={}",oldSessionKey);
             this.redisService.del(oldSessionKey);
