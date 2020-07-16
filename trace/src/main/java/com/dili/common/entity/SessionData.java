@@ -38,7 +38,7 @@ public class SessionData {
         data.validateState = (Integer) map.get("validateState");
         data.qrStatus = (Integer) map.get("qrStatus");
         data.marketName = (String) map.get("marketName");
-        return null;
+        return data;
     }
 
     public static SessionData fromUser(User user, Integer identityType) {
