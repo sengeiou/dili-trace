@@ -79,6 +79,9 @@ public class SessionRedisService {
     }
 
     public SessionData saveToRedis(SessionData sessionData) {
+        if(sessionData==null){
+            return sessionData;
+        }
         logger.info("saveToRedis:sessionData={}",sessionData.toMap());
         String sessionRedisKey = this.getSessionRedisKey(sessionData.getSessionId());
         this.redisService.set(sessionRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
