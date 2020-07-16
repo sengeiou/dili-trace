@@ -79,7 +79,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 			if (sessionContext.getInvalidate()) {
 				deleteSession(request,response);
 			} else {
-				saveSession(request,response);
+				//saveSession(request,response);
 			}
 		// }
 	}

@@ -54,8 +54,10 @@ public class SessionRedisService {
         
         SessionData sessionData = SessionData.fromMap(sessionMapData);
         logger.info("loadFromRedis:sessionData={}",sessionData.toMap());
-        sessionData.setSessionId(sessionId);
-        this.saveToRedis(sessionData);
+        if(StringUtils.isBlank(sessionData.getSessionId())){
+            sessionData.setSessionId(sessionId);
+            this.saveToRedis(sessionData);
+        }
 
         String accountRedisKey = this.getAccountRedisKey(sessionData);
         Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisService.get(accountRedisKey);
@@ -66,10 +68,11 @@ public class SessionRedisService {
                 String oldSessionKey=this.getSessionRedisKey(accountData.getSessionId());
                 logger.info("del:session={}",oldSessionKey);
                 this.redisService.del(oldSessionKey);
+                this.redisService.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
             }
         }
 
-        this.redisService.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
+        
         return Optional.of(sessionData);
     }
 
