@@ -28,6 +28,7 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
@@ -400,7 +401,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("补单或已进门报备单,才能场内审核");
 		}
 		if (BillVerifyStatusEnum.PASSED.equalsToCode(verifyStatus)) {
-			this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billItem.getBillId()));
+			this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billItem.getBillId()),CheckinStatusEnum.ALLOWED);
 		}
 		this.doVerify(billItem, verifyStatus, reason, operatorUser);
 		return billItem.getId();

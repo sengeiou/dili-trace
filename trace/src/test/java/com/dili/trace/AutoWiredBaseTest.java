@@ -153,7 +153,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		CheckInApiInput input = new CheckInApiInput();
 		input.setBillIdList(Lists.newArrayList(billId));
 		input.setCheckinStatus(checkinStatusEnum.getCode());
-		List<CheckinOutRecord> list = this.checkinOutRecordService.doCheckin(Optional.ofNullable(new OperatorUser(1L, "test")), input);
+		List<CheckinOutRecord> list = this.checkinOutRecordService.doCheckin(Optional.ofNullable(new OperatorUser(1L, "test")), input.getBillIdList(),CheckinStatusEnum.ALLOWED);
 		assertNotNull(list);
 		assertTrue(list.size() == 1);
 		CheckinOutRecord record=list.get(0);

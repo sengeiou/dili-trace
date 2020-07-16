@@ -11,7 +11,7 @@
     <div class="main-container">
         <div class="form-box border" style="width: 100%;">
             <form id="createRecordForm" class="form-inline" role="form">
-                <table id="userTable">
+                <table id="userTable" style="width: 100%;">
                     <thead>
                         <th>序号</th>
                         <th> 姓名</th>
@@ -39,117 +39,132 @@
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/xlsx.full.min.js"></script>
 <script type="text/javascript">
-var columns=[
-    {index:0,name:'序号',key:'orderNum'},
-    {index:1,name:'姓名',key:'name'},
-    {index:2,name:'手机号',key:'phone'},
-    {index:3,name:'身份证',key:'cardNo'},
-    {index:4,name:'统一信用代码',key:'license'},
-    {index:5,name:'法人姓名',key:'legalPerson'},
-    {index:6,name:'用户类型',key:'vocationTypeName'},
-    {index:7,name:'市场名称',key:'marketName'},
-    {index:8,name:'营业执照',key:'businessLicenseUrl'},
-    {index:9,name:'摊位号',key:'tallyAreaNo'},
-    {index:10,name:'品类类型',key:'preserveTypeName'},
-    {index:11,name:'产品名称',key:'categoryName'},
-];
+    var columns = [
+        { index: 'A', name: '序号', key: 'orderNum', headerRow: -1 },
+        { index: 'B', name: '企业名称', key: 'name', headerRow: -1 },
+        { index: 'C', name: '手机号', key: 'phone', headerRow: -1 },
+        { index: 'D', name: '法人身份证号', key: 'cardNo', headerRow: -1 },
+        { index: 'E', name: '统一信用代码', key: 'license', headerRow: -1 },
+        { index: 'F', name: '法人代表', key: 'legalPerson', headerRow: -1 },
+        { index: 'G', name: '用户类型', key: 'vocationTypeName', headerRow: -1 },
+        { index: 'H', name: '所属市场', key: 'marketName', headerRow: -1 },
+        { index: 'I', name: '营业执照', key: 'businessLicenseUrl', headerRow: -1 },
+        { index: 'J', name: '摊位号', key: 'tallyAreaNo', headerRow: -1 },
+        { index: 'K', name: '经营品种', key: 'preserveTypeName', headerRow: -1 },
+        { index: 'L', name: '', key: 'categoryName', headerRow: -1 },
+    ];
 
-$('#uploadExcelBtn').click(function(){
-    // xlf.addEventListener('change', handleFile, false);
-    
+    $('#uploadExcelBtn').click(function () {
+        // xlf.addEventListener('change', handleFile, false);
         var excelFile = $('#excelFile')[0].files[0];
-        //console.info(excelFile);
-    var name = excelFile.name;
-    var reader = new FileReader();
-    reader.onload = function (e) {
-        try {
-            var data = e.target.result;
-            var workbook = XLSX.read(data, { type: "binary" }); // 以二进制流方式读取得到整份excel表格对象
-            var persons = []; // 存储获取到的数据
-            // 表格的表格范围，可用于判断表头是否数量是否正确
-            var fromTo = '';
-            // 遍历每张表读取
-            for (var sheet in workbook.Sheets) {
-                if (workbook.Sheets.hasOwnProperty(sheet)) {
+        if ($.type(excelFile) == 'undefined') {
+            layer.alert('请选择文件');
+            return;
+        }
+        var name = excelFile.name;
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                var data = e.target.result;
+                var workbook = XLSX.read(data, { type: "binary" }); // 以二进制流方式读取得到整份excel表格对象
+                var persons = []; // 存储获取到的数据
+                // 表格的表格范围，可用于判断表头是否数量是否正确
+                var fromTo = '';
 
-                    var s=workbook.Sheets[sheet];
-                    $.each(s,function(k,v){
-                        if(k.indexOf("!")<0){
-                            console.info(k)
-                            console.info(v.v);
-                            var index =  k.replace(/[^0-9]/g, "");
-                           // var index = k.match(/\d+/);//price值为：200
-                            console.info(index)
-                            debugger;
-                            if(k=='序号'){
-                            
-                              
-                            }else if(k==''){}
+                var excelTableData=[];
+                // 遍历每张表读取
+                for (var sheet in workbook.Sheets) {
+                    if (workbook.Sheets.hasOwnProperty(sheet)) {
+                        var s = workbook.Sheets[sheet];
+                        var rows = s['!rows'];
+                        for (var rindex in rows) {
+                            var row = parseInt(rindex) + 1;
+                            var cells = columns.map(function (c, i) {
+                                var cell = c.index + row;
+                                var cellData = s[cell];
+                                if ($.type(cellData) == 'object') {
+                                    return { key: c.key, value: cellData.v };
+                                }
+                                return null;
+                            }).filter(function (v, i) {
+                                return v != null;
+                            });
+                            if(cells.length>0){
+                                var orderNumCell=cells[0];
+                                if((orderNumCell.key == 'orderNum') && $.type(orderNumCell.value) == 'number'){
+                                    var data=new Object();
+                                    $.each(cells,function(i,c){
+                                        data[c.key]=c.value;
+                                    })
+                                    excelTableData.push(data);
+                                    $('#userTable').append(template('userItem', data));
+                                }
+                            }
                         }
-                    });
-                  
-                    fromTo = workbook.Sheets[sheet]['!ref'];
-                    console.log(fromTo);
-                    persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
-                    // break; // 如果只取第一张表，就取消注释这行
+                        //fromTo = workbook.Sheets[sheet]['!ref'];
+                        //console.log(fromTo);
+                        //persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
+                        // break; // 如果只取第一张表，就取消注释这行
+                    }
                 }
-            }
-            //在控制台打印出来表格中的数据
-            console.log(persons);  
+                //在控制台打印出来表格中的数据
+                console.info(excelTableData.length);
+                //console.info(excelTableData);
+               
             } catch (e) {
                 console.log('文件类型不正确');
                 return;
             }
 
-    };
-    reader.readAsBinaryString(excelFile);
+        };
+        reader.readAsBinaryString(excelFile);
 
-});
+    });
 
 
 
-$('#uploadExcelBtn2').click(function(){
-       var url="${contextPath!}/userUpload/parseExcel.action";
-       var formData=new FormData(document.getElementById("uploadExcelForm"));
-     	$.ajax({
-		url: url,
-		type: "POST",
-	    	data: formData,
-	    	processData: false,  // 告诉jQuery不要去处理发送的数据
-	        contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
-		    success: function(response,status,xhr){
-                if(response.code=='200'){
-                    var userTable=$('#userTable');
-                    $.each(response.data,function(i,v){
+    $('#uploadExcelBtn2').click(function () {
+        var url = "${contextPath!}/userUpload/parseExcel.action";
+        var formData = new FormData(document.getElementById("uploadExcelForm"));
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            processData: false,  // 告诉jQuery不要去处理发送的数据
+            contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+            success: function (response, status, xhr) {
+                if (response.code == '200') {
+                    var userTable = $('#userTable');
+                    $.each(response.data, function (i, v) {
                         console.info(v)
-                        var userdata="<tr><td>序号:<input name=''></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>"
+                        var userdata = "<tr><td>序号:<input name=''></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>"
 
                         userTable.append(template('userItem', v));
                         userTable.append();
-                       /* cardNo: "43098119891101511X"
-categoryId: 3
-categoryName: "高档海鲜"
-legalPerson: "易仕年"
-license: "92330110MA2CF0MC1Y"
-marketName: "杭州水产市场"
-name: "杭州农副产品物流中心水产品批发市场易丰水产商行"
-orderNum: "318"
-phone: "18867159406"
-preserveType: 10
-preserveTypeName: "鲜活"
-tallyAreaNo: "1-7-29"
-vocationType: 10
-vocationTypeName: "批发"*/
+                        /* cardNo: "43098119891101511X"
+ categoryId: 3
+ categoryName: "高档海鲜"
+ legalPerson: "易仕年"
+ license: "92330110MA2CF0MC1Y"
+ marketName: "杭州水产市场"
+ name: "杭州农副产品物流中心水产品批发市场易丰水产商行"
+ orderNum: "318"
+ phone: "18867159406"
+ preserveType: 10
+ preserveTypeName: "鲜活"
+ tallyAreaNo: "1-7-29"
+ vocationType: 10
+ vocationTypeName: "批发"*/
                     });
-                }else{
+                } else {
 
                 }
-		     },
-		    error: function(response,status,xhr){	
-		        console.log("upload  error");
-		     }
-     	}); 
-});
+            },
+            error: function (response, status, xhr) {
+                console.log("upload  error");
+            }
+        });
+    });
     var layer = parent.window.layer;
     $('.fileimg-view').on('click', function () {
         var url = $(this).parent().siblings(".magnifying").attr('src');
@@ -171,11 +186,11 @@ vocationTypeName: "批发"*/
 
 <script id="userItem" type="text/html">
     <tr>
-        <td style="width:40px;">
-                <input type="text" class="form-control input-sm isSelected" style="width:40px;" name="orderNum" id="orderNum" required value="{{orderNum}}" />
+        <td>
+                <input type="text" class="form-control input-sm isSelected" style="width:60px;" name="orderNum" id="orderNum" required value="{{orderNum}}" />
         </td>
         <td>
-               <input type="text" class="form-control input-sm isSelected" name="name" id="name" required value="{{name}}" />
+               <input type="text" class="form-control input-sm isSelected"  style="width:250px;" name="name" id="name" required value="{{name}}" />
         </td>
         <td>
                 <input type="text" class="form-control input-sm isSelected" style="width:100px;" name="phone"  id="phone" required value="{{phone}}" />
@@ -193,7 +208,7 @@ vocationTypeName: "批发"*/
                 <input type="text" class="form-control input-sm isSelected" style="width:60px;"  name="vocationTypeName" id="vocationTypeName" required value="{{vocationTypeName}}" />
         </td>
         <td>
-                <input type="text" class="form-control input-sm isSelected" name="marketName" id="marketName" required value="{{marketName}}" />
+                <input type="text" class="form-control input-sm isSelected" style="width:120px;"  name="marketName" id="marketName" required value="{{marketName}}" />
         </td>
         <td>
                 <input type="text" class="form-control input-sm isSelected" name="businessLicenseUrl" id="businessLicenseUrl" required value="{{businessLicenseUrl}}" />

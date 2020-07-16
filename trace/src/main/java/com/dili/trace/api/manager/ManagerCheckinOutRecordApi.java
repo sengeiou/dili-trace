@@ -21,7 +21,9 @@ import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
@@ -69,11 +71,27 @@ public class ManagerCheckinOutRecordApi {
 	 */
 	@RequestMapping(value = "/doCheckin.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput<Long> doCheckin(@RequestBody CheckInApiInput input) {
-
+		if (input == null || input.getBillIdList() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		List<Long> billIdList = StreamEx.of(input.getBillIdList()).nonNull().toList();
+		if (billIdList.isEmpty()) {
+			return BaseOutput.failure("参数错误");
+		}
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+
+			RegisterBillDto query = new RegisterBillDto();
+			query.setIdList(billIdList);
+			StreamEx.of(this.registerBillService.listByExample(query)).forEach(billItem -> {
+				if (!BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
+						&& !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+					throw new TraceBusinessException("当前状态不能进行进门操作");
+				}
+			});
+
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
-					.doCheckin(Optional.ofNullable(operatorUser), input);
+					.doCheckin(Optional.ofNullable(operatorUser), billIdList, CheckinStatusEnum.ALLOWED);
 			return BaseOutput.success();
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

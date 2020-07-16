@@ -135,16 +135,14 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 * @return
 	 */
 	@Transactional
-	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long> billIdList) {
+	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long> billIdList,CheckinStatusEnum checkinStatusEnum) {
 		if (billIdList == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		CheckinStatusEnum checkinStatusEnum = CheckinStatusEnum.ALLOWED;// .fromCode(checkInApiInput.getCheckinStatus());
 
 		if (checkinStatusEnum == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-
 		return StreamEx.of(billIdList).nonNull().map(billId -> {
 			return this.registerBillService.get(billId);
 		}).nonNull().map(bill -> {
@@ -153,21 +151,6 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}).nonNull().toList();
 	}
 
-	/**
-	 * 批量进门
-	 * 
-	 * @param operateUser
-	 * @param checkInApiInput
-	 * @return
-	 */
-	@Transactional
-	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, CheckInApiInput checkInApiInput) {
-		if (checkInApiInput == null || checkInApiInput.getBillIdList() == null) {
-			throw new TraceBusinessException("参数错误");
-		}
-		return this.doCheckin(operateUser, checkInApiInput.getBillIdList());
-
-	}
 
 	/**
 	 * 单个进门
@@ -193,10 +176,6 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			}
 		});
 
-		if (!BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
-				&& !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
-			throw new TraceBusinessException("当前状态不能进行进门操作");
-		}
 		if (CheckinStatusEnum.NONE == checkinStatusEnum) {
 			throw new TraceBusinessException("参数错误");
 		}

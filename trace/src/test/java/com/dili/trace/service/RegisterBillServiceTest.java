@@ -54,7 +54,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
         checkInApiInput.setBillIdList(Lists.newArrayList(input.getId()));
         checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
         List<CheckinOutRecord> checkInList = this.checkinOutRecordService.doCheckin(Optional.ofNullable(new OperatorUser(1L, "test")),
-                checkInApiInput);
+                checkInApiInput.getBillIdList(),CheckinStatusEnum.ALLOWED);
         assertTrue(checkInList.size() == 1);
         CheckinOutRecord recordItem = checkInList.get(0);
         assertTrue(CheckinOutTypeEnum.IN.equalsToCode(recordItem.getInout()));
