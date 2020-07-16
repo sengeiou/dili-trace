@@ -18,6 +18,9 @@
     <logger name="springfox.documentation.spring.web.readers.operation" level="warn"/>
     <logger name="tk.mybatis.mapper.autoconfigure.MapperCacheDisabler" level="warn"/>
     <logger name="org.springframework.test.context.transaction.TransactionContext " level="error"/>
+    <logger name="com.dili.common.interceptor.LoginInterceptor" level="info">
+        <appender-ref ref="appender"/>
+    </logger>
     <!-- 日志输出级别 -->
     <root level="info">
         <appender-ref ref="appender"/>

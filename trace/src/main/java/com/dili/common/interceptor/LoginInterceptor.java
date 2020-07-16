@@ -5,6 +5,9 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -20,11 +23,28 @@ import java.lang.annotation.Annotation;
  *
  */
 public class LoginInterceptor extends HandlerInterceptorAdapter {
-	   
+		private static final Logger logger=LoggerFactory.getLogger(LoginInterceptor.class);
 	    @Resource
-	    private LoginSessionContext sessionContext;
+		private LoginSessionContext sessionContext;
+
+		private void logRequest(HttpServletRequest request){
+			Integer loginType=this.sessionContext.getLoginType();
+			Long accountId=this.sessionContext.getAccountId();
+			String requestUri=request.getRequestURI();
+			logger.info("loginType={},accountId={},requestUri={}",loginType,accountId,requestUri);
+		 
+		}
 	    @Override
 	    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+			
+			boolean value=this.preHandleCheck(request, response, handler);
+			if(value){
+				this.logRequest(request);
+			}
+			return value;
+		}
+		public boolean preHandleCheck(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+			
 	        if(!(handler instanceof HandlerMethod)){
 	        	return true;
 			}
@@ -45,7 +65,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
                 return false;
 			}
 			return true;
-	    }
+		}
 
 	    private <T extends Annotation> T findAnnotation(HandlerMethod handler, Class<T> annotationType) {
 	        T annotation = handler.getMethodAnnotation(annotationType);

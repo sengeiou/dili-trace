@@ -22,11 +22,30 @@
          </triggeringPolicy>-->
      </appender>
 
+     <appender name="accessAppender"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${log_file_path}/access-log-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>90</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>[hz-trace-prod]%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%line] - %msg%n</pattern>
+        </encoder>
+        <!--日志文件最大的大小-->
+        <!--<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>20MB</MaxFileSize>
+        </triggeringPolicy>-->
+    </appender>
+
    <!-- SQL输出 -->
     <logger name="p6spy" level="debug"/>
     <logger name="springfox.documentation.spring.web.readers.operation" level="warn"/>
     <logger name="tk.mybatis.mapper.autoconfigure.MapperCacheDisabler" level="warn"/>
-    
+    <logger name="com.dili.common.interceptor.LoginInterceptor" level="info" additivity="false">
+        <appender-ref ref="accessAppender"/>
+    </logger>
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="appender"/>

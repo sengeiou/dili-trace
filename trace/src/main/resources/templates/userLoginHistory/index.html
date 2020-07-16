@@ -1,0 +1,255 @@
+<#body head_title="用户登录列表">
+    <style>
+        .textbox-text[readonly] {
+            background: #ebebe4;
+        }
+    </style>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+            </div>
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="queryForm" class="easyui-form" method="post" fit="true">
+                    <div class="search-wrap">
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%"
+                                labelAlign="right" data-options="label:'登录时间:'" value="${createdStart}!" />
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"
+                                value="${createdEnd}!" />
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right"
+                                data-options="label:'姓名:'" />
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="phone" id="phone" style="width:100%" labelAlign="right"
+                                data-options="label:'手机号:'" />
+                        </div>
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                                onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                                onclick="clearQueryForm()">清除</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="客户列表" id="userGrid" fitColumns="true" noheader="true"
+                pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+                singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
+                fit="true" idField="id"
+                data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+                <thead>
+                    <tr>
+                        <th width="10%"
+                            data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            登录时间
+                        </th>
+                        <th width="6%"
+                            data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            名称
+                        </th>
+                        <th width="6%"
+                            data-options="field:'legalPerson',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            法人
+                        </th>
+                        <th width="8%"
+                            data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            手机号
+                        </th>
+                        <th width="10%"
+                            data-options="field:'cardNo',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            身份证号
+                        </th>
+                           <th width="5%"
+                            data-options="field:'userType',_provider:'userTypeEnumProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            类型
+                        </th>
+                        <th width="10%"
+                            data-options="field:'tallyAreaNos',formatter:blankFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            摊位号
+                        </th>
+                        <th width="5%"
+                            data-options="field:'state',_provider:'enabledStateProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            状态
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+
+     <script>
+
+    //表格查询
+    function queryUserGrid() {
+        var opts = _userGrid.datagrid("options");
+    
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/userLoginHistory/listPage.action";
+        }
+
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        _userGrid.datagrid("load", bindGridMeta2Form("userGrid", "queryForm"));
+
+    }
+
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+
+    //表格表头右键菜单
+    function headerContextMenu(e, field){
+        e.preventDefault();
+        if (!cmenu){
+            createColumnMenu("userGrid");
+        }
+        cmenu.menu('show', {
+            left:e.pageX,
+            top:e.pageY
+        });
+    }
+
+    /**
+     * 绑定页面回车事件，以及初始化页面时的光标定位
+     * @formId
+     *          表单ID
+     * @elementName
+     *          光标定位在指点表单元素的name属性的值
+     * @submitFun
+     *          表单提交需执行的任务
+     */
+    $(function () {
+        window._userGrid = $('#userGrid');
+        bindFormEvent("queryForm", "createdStart", queryUserGrid);
+        initUserGrid();
+        queryUserGrid();
+    })
+
+
+
+
+    /**
+     * 初始化用户列表组件
+     */
+    function initUserGrid() {
+        var pager = _userGrid.datagrid('getPager');
+        var toolbar=[
+           
+            {
+                iconCls:'icon-export',
+                text:'导出',
+                id:'stop_btn',
+                handler:function(){
+                    layer.confirm('确认导出数据?', {
+                        type: 0,
+                        title: '提示',
+                        btn: ['确定','取消'],
+                        yes:function(){
+                            layer.closeAll();
+                            doExport('userGrid');
+                        }
+                    });
+                }
+            }
+        ];
+        	_userGrid.datagrid({
+            toolbar:toolbar
+        });
+        pager.pagination({
+            <#controls_paginationOpts/>,
+            //buttons:toolbar
+
+        });
+        pager.pagination({
+            <#controls_paginationOpts/>,
+            
+        });
+    }
+
+ 
+    /**
+     * datagrid行点击事件
+     * 目前用于来判断 启禁用是否可点
+     */
+    function onClickRow(index,row) {
+        var state = row.$_state;
+        if (state == ${@com.dili.trace.glossary.EnabledStateEnum.DISABLED.getCode()}){
+            //当用户状态为 禁用，可操作 启用
+            $('#play_btn').linkbutton('enable');
+            $('#stop_btn').linkbutton('disable');
+        }else if(state == ${@com.dili.trace.glossary.EnabledStateEnum.ENABLED.getCode()}){
+            //当用户状态为正常时，则只能操作 禁用
+            $('#stop_btn').linkbutton('enable');
+            $('#play_btn').linkbutton('disable');
+        } else{
+            //其它情况，按钮不可用
+            $('#stop_btn').linkbutton('disable');
+            $('#play_btn').linkbutton('disable');
+        }
+    }
+
+    function blankFormatter(val,row){
+        if(!val){
+            return "-";
+        }
+        return val;
+    }
+
+    function phoneFormatter(val,row){
+        if(val){
+            return val.replace(val.substring(3,7), "****")
+        }
+        return val;
+    }
+
+    function cardNoFormatter(val,row){
+        if(val){
+            var val = val.substr(0,4)+'**************';
+        }
+        return val;
+    }
+
+    function closeLastWin(id){
+        $('#'+id).last().remove();
+    }
+    function closeWin(id){
+        $('#'+id).remove();
+        $('#grid').datagrid('reload');
+    }
+    function openWin(url){
+        $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
+    }
+
+
+        
+      
+    </script>
+</#body>

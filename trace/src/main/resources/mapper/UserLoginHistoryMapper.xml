@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.UserLoginHistoryMapper">
+  
+  <select id="queryUserLoginHistory" parameterType="com.dili.trace.dto.UserLoginHistoryQueryDto" resultType="com.dili.trace.dto.UserLoginHistoryDto">
+  SELECT  u_history.created,
+  u_history.id,
+  u.name,
+  u.phone,
+  u.legal_person,
+  u.license,
+  u.market_name,
+  u.state,
+  u.tally_area_nos
+  
+  FROM user_login_history u_history	left join `user` u on u_history.user_id=u.id
+  <if test="createdStart != null  and createdStart != ''">
+    <![CDATA[ AND #{createdStart}<=u_history.created ]]>
+  </if>
+  <if test="createdEnd != null  and createdEnd != ''">
+    <![CDATA[AND u_history.created <=#{createdEnd}]]>
+  </if>
+  <if test="likeName != null  and likeName != ''">
+    AND u.name like '%${likeName}%'
+  </if>
+  <if test="likePhone != null  and likePhone != ''">
+    AND u.phone like '${likePhone}%'
+  </if>
+  </select>
+</mapper>
