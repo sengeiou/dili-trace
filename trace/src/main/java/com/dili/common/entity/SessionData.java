@@ -171,8 +171,9 @@ public class SessionData {
     /**
      * @param sessionId the sessionId to set
      */
-    public void setSessionId(String sessionId) {
+    public SessionData setSessionId(String sessionId) {
         this.sessionId = sessionId;
+        return this;
     }
 
     /**

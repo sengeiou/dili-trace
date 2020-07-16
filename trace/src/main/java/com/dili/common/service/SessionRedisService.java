@@ -62,7 +62,7 @@ public class SessionRedisService {
         
         SessionData sessionData = SessionData.fromMap(sessionMapData);
         logger.info("loadFromRedis:sessionData={}",sessionData.toMap());
-        this.saveToRedis(sessionData);
+        this.saveToRedis(sessionData.setSessionId(sessionId));
 
         String accountRedisKey = this.getAccountRedisKey(sessionData);
         Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisService.get(accountRedisKey);
