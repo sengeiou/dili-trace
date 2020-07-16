@@ -42,7 +42,7 @@ public class UserQrHistory extends BaseDomain {
     private String content;
 
     @ApiModelProperty(value = "创建时间")
-    @Column(name = "`modified`")
+    @Column(name = "`created`")
     private Date created;
 
     @ApiModelProperty(value = "修改时间")
