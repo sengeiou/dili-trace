@@ -54,17 +54,21 @@ public class SessionRedisService {
         
         SessionData sessionData = SessionData.fromMap(sessionMapData);
         logger.info("loadFromRedis:sessionData={}",sessionData.toMap());
-        this.saveToRedis(sessionData.setSessionId(sessionId));
+        sessionData.setSessionId(sessionId);
+        this.saveToRedis(sessionData);
 
         String accountRedisKey = this.getAccountRedisKey(sessionData);
         Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisService.get(accountRedisKey);
-        SessionData accountData = SessionData.fromMap(accountMapData);
-        logger.info("loadFromRedis:accountData={}",accountData.toMap());
-        if (!sessionId.equals(accountData.getSessionId())&&accountData.getSessionId()!=null) {
-            String oldSessionKey=this.getSessionRedisKey(accountData.getSessionId());
-            logger.info("del:session={}",oldSessionKey);
-            this.redisService.del(oldSessionKey);
+        if(accountMapData!=null){
+            SessionData accountData = SessionData.fromMap(accountMapData);
+            logger.info("loadFromRedis:accountData={}",accountData.toMap());
+            if (!sessionId.equals(accountData.getSessionId())&&accountData.getSessionId()!=null) {
+                String oldSessionKey=this.getSessionRedisKey(accountData.getSessionId());
+                logger.info("del:session={}",oldSessionKey);
+                this.redisService.del(oldSessionKey);
+            }
         }
+
         this.redisService.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
         return Optional.of(sessionData);
     }
