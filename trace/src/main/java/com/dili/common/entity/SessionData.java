@@ -1,5 +1,6 @@
 package com.dili.common.entity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,8 +10,11 @@ import com.dili.trace.dto.OperatorUser;
 
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SessionData {
+    private static final Logger logger=LoggerFactory.getLogger(SessionData.class);
 
     private Integer identityType;
     private Long userId;
@@ -29,18 +33,13 @@ public class SessionData {
         return map;
     }
 
-
     public static SessionData fromMap(Map<Object, Object> map) {
-      
         SessionData data = new SessionData();
-        data.identityType = (Integer) map.get("identityType");
-        data.userId = (Long) map.get("userId");
-        data.userName = (String) map.get("userName");
-        data.tallyAreaNos = (String) map.get("tallyAreaNos");
-        data.validateState = (Integer) map.get("validateState");
-        data.qrStatus = (Integer) map.get("qrStatus");
-        data.marketName = (String) map.get("marketName");
-        data.sessionId = (String) map.get("sessionId");
+        try {
+            BeanUtils.copyProperties(data, map);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            logger.error(e.getMessage(), e);
+        }
         return data;
     }
 
