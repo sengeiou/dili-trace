@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.SessionData;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils.Null;
 import org.slf4j.Logger;
@@ -50,6 +51,15 @@ public class SessionRedisService {
         if (sessionMapData == null) {
             return Optional.empty();
         }
+
+        try{
+            SessionData data = new SessionData();
+            BeanUtils.copyProperties(data, sessionMapData);
+            logger.info("BeanUtils.copyProperties:sessionData={}",data.toMap());
+        }catch(Exception e){
+            logger.error(e.getMessage(),e);
+        }
+        
         SessionData sessionData = SessionData.fromMap(sessionMapData);
         logger.info("loadFromRedis:sessionData={}",sessionData.toMap());
         if(StringUtils.isBlank(sessionData.getSessionId())){

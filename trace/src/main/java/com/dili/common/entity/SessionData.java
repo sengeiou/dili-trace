@@ -8,6 +8,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 
 import org.apache.commons.beanutils.BeanMap;
+import org.apache.commons.beanutils.BeanUtils;
 
 public class SessionData {
 
@@ -30,6 +31,7 @@ public class SessionData {
 
 
     public static SessionData fromMap(Map<Object, Object> map) {
+      
         SessionData data = new SessionData();
         data.identityType = (Integer) map.get("identityType");
         data.userId = (Long) map.get("userId");
@@ -38,6 +40,7 @@ public class SessionData {
         data.validateState = (Integer) map.get("validateState");
         data.qrStatus = (Integer) map.get("qrStatus");
         data.marketName = (String) map.get("marketName");
+        data.sessionId = (String) map.get("sessionId");
         return data;
     }
 
