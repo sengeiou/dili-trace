@@ -55,7 +55,7 @@ public class SessionRedisService {
         String accountRedisKey = this.getAccountRedisKey(sessionData);
         Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisService.get(accountRedisKey);
         SessionData accountData = SessionData.fromMap(accountMapData);
-        if (!accountData.getSessionId().equals(sessionId)) {
+        if (!sessionId.equals(accountData.getSessionId())) {
             this.redisService.del(this.getSessionRedisKey(accountData.getSessionId()));
             this.redisService.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
         }
