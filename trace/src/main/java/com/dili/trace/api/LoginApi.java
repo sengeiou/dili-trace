@@ -2,6 +2,14 @@ package com.dili.trace.api;
 
 import java.util.Map;
 
+import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
+import com.dili.common.exception.TraceBusinessException;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.api.components.LoginComponent;
+import com.dili.trace.api.input.LoginInputDto;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.api.components.LoginComponent;
-import com.dili.trace.api.input.LoginInputDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,9 +37,9 @@ public class LoginApi {
 
 	@ApiOperation(value = "登录", notes = "登录")
 	@RequestMapping(value = "/login.api", method = RequestMethod.POST)
-	public BaseOutput<Map<String, Object>> login(@RequestBody LoginInputDto loginInput) {
+	public BaseOutput<SessionData> login(@RequestBody LoginInputDto loginInput) {
 		try {
-			Map<String, Object> data = this.loginComponent.login(loginInput);
+			SessionData data = this.loginComponent.login(loginInput);
 			return BaseOutput.success().setData(data);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

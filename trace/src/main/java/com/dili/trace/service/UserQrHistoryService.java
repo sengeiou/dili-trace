@@ -1,5 +1,7 @@
 package com.dili.trace.service;
 
+import java.util.Date;
+
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
@@ -35,6 +37,8 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		userQrHistory.setUserId(userItem.getId());
 		userQrHistory.setUserName(userItem.getName());
 		userQrHistory.setQrStatus(userItem.getQrStatus());
+		userQrHistory.setCreated(new Date());
+		userQrHistory.setModified(new Date());
 		userQrHistory.setContent("最近七天无报备"+",变为" + color + "码");
 		return userQrHistory;
 	}
@@ -52,6 +56,8 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		userQrHistory.setUserId(userItem.getId());
 		userQrHistory.setUserName(userItem.getName());
 		userQrHistory.setQrStatus(userItem.getQrStatus());
+		userQrHistory.setCreated(new Date());
+		userQrHistory.setModified(new Date());
 		userQrHistory.setContent("完成注册,默认为" + color + "码");
 		return userQrHistory;
 	}
@@ -81,6 +87,8 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		userQrHistory.setUserId(userItem.getId());
 		userQrHistory.setUserName(userItem.getName());
 		userQrHistory.setQrStatus(userItem.getQrStatus());
+		userQrHistory.setCreated(new Date());
+		userQrHistory.setModified(new Date());
 		userQrHistory.setContent("最新报备单当前审核状态是"+billVerifyStatusEnum.getName()+",变为" + color + "码");
 		this.insertSelective(userQrHistory);
 		return userQrHistory;

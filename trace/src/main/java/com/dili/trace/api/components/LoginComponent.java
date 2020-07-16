@@ -2,12 +2,15 @@ package com.dili.trace.api.components;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.service.SessionRedisService;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.UUIDUtil;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -42,6 +45,10 @@ public class LoginComponent {
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserLoginHistoryService userLoginHistoryService;
+
+	@Autowired
+	SessionRedisService sessionRedisService;
+
 	@Value("${manage.domain}")
 	private String manageDomainPath;
 
@@ -59,9 +66,9 @@ public class LoginComponent {
 				});
 	}
 
-	public Map<String, Object> login(LoginInputDto loginInput) {
+	public SessionData login(LoginInputDto loginInput) {
 
-		if (loginInput == null||loginInput.getLoginIdentityType() == null) {
+		if (loginInput == null || loginInput.getLoginIdentityType() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
 		if (StrUtil.isAllBlank(loginInput.getUsername())) {
@@ -70,41 +77,39 @@ public class LoginComponent {
 		if (StrUtil.isBlank(loginInput.getPassword())) {
 			throw new TraceBusinessException("密码不能为空");
 		}
-		Map<String, Object> result = new HashMap<>();
-
-		if (LoginIdentityTypeEnum.USER.equalsToCode(loginInput.getLoginIdentityType())) {
-			User operatorUser = this.userLogin(loginInput.getUsername(), loginInput.getPassword());
-			prepareSessionId(operatorUser.getId(),operatorUser.getName(),loginInput.getLoginIdentityType());
-			result.put("userId", operatorUser.getId());
-			result.put("userName", operatorUser.getName());
-			result.put("tallyAreaNos",operatorUser.getTallyAreaNos());
-			result.put("validateState",operatorUser.getValidateState());
-			result.put("qrStatus",operatorUser.getQrStatus());
-			result.put("marketName",operatorUser.getMarketName());
-		} else if (LoginIdentityTypeEnum.SYS_MANAGER.equalsToCode(loginInput.getLoginIdentityType())) {
-			OperatorUser operatorUser = this.sysManagerLogin(loginInput.getUsername(), loginInput.getPassword(),
-					LoginIdentityTypeEnum.SYS_MANAGER);
-			prepareSessionId(operatorUser.getId(),operatorUser.getName(),loginInput.getLoginIdentityType());
-			result.put("userId", operatorUser.getId());
-			result.put("userName", operatorUser.getName());
-		} else {
+		SessionData sessionData = LoginIdentityTypeEnum.fromCode(loginInput.getLoginIdentityType())
+				.map(identityType -> {
+					if (LoginIdentityTypeEnum.USER == identityType) {
+						User operatorUser = this.userLogin(loginInput.getUsername(), loginInput.getPassword());
+						// prepareSessionId(operatorUser.getId(), operatorUser.getName(),
+						// 		loginInput.getLoginIdentityType());
+						return SessionData.fromUser(operatorUser, loginInput.getLoginIdentityType());
+					} else if (LoginIdentityTypeEnum.SYS_MANAGER == identityType) {
+						OperatorUser operatorUser = this.sysManagerLogin(loginInput.getUsername(),
+								loginInput.getPassword(), LoginIdentityTypeEnum.SYS_MANAGER);
+						// prepareSessionId(operatorUser.getId(), operatorUser.getName(),
+						// 		loginInput.getLoginIdentityType());
+						return SessionData.fromUser(operatorUser, loginInput.getLoginIdentityType());
+					} else {
+						return null;
+					}
+				}).filter(Objects::nonNull).orElse(null);
+		if (sessionData == null) {
 			throw new TraceBusinessException("登录参数出错");
 		}
-
-		result.put("sessionId", sessionContext.getSessionId());
-
-		return result;
+		sessionData.setSessionId(sessionContext.getSessionId());
+		return this.sessionRedisService.saveToRedis(sessionData);
 	}
 
-	private void prepareSessionId(Long id,String name,Integer loginType){
-		sessionContext.setSessionId(UUIDUtil.get());
-		sessionContext.setAccountId(id);
-		sessionContext.setUserName(name);
-		sessionContext.setLoginType(loginType);
-	}
+	// private void prepareSessionId(Long id, String name, Integer loginType) {
+	// 	sessionContext.setSessionId(UUIDUtil.get());
+	// 	sessionContext.setAccountId(id);
+	// 	sessionContext.setUserName(name);
+	// 	sessionContext.setLoginType(loginType);
+	// }
 
 	private User userLogin(String phone, String password) {
-		User userItem= userService.login(phone, MD5Util.md5(password));
+		User userItem = userService.login(phone, MD5Util.md5(password));
 		this.userLoginHistoryService.createLoginHistory(userItem);
 		return userItem;
 	}
