@@ -1,19 +1,17 @@
 package com.dili.common.interceptor;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.entity.SessionConstants;
 import com.dili.common.service.RedisService;
 import com.dili.common.service.SessionRedisService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +21,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import cn.hutool.core.util.StrUtil;
 
 public class SessionInterceptor extends HandlerInterceptorAdapter {
+	private static final Logger logger=LoggerFactory.getLogger(SessionInterceptor.class);
+
 	private static final String ATTRIBUTE_CONTEXT_INITIALIZED = SessionInterceptor.class.getName()
 			+ ".CONTEXT_INITIALIZED";
 	// SESSION KEY
@@ -85,6 +85,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	private void saveSession(HttpServletRequest request, HttpServletResponse response) {
+		logger.info("sessionid:{}",this.getSessionId(request));
 		this.sessionRedisService.saveToRedis(this.sessionContext.getSessionData());
 	}
 
