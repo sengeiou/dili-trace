@@ -28,27 +28,29 @@ public class ExcelTest extends AutoWiredBaseTest {
     private UserService userService;
     @Test
     public void testReadExcel() {
-        String fileName = "D:\\前台信息组\\项目工作\\杭州溯源\\农溯安市场经营户预安装台账7月15日-import.xls";
+        String fileName = "D:\\前台信息组\\项目工作\\杭州溯源\\农溯安市场经营户预安装台账-登录与导入情况-import.xls";
         // // 这里默认读取第一个sheet
         try {
             List<List<Map<String, Object>>> datas = ExcelUtils.getSheetsDatas(new FileInputStream(fileName),0);
-            int len =0;
-            User user1= null;
+//            int len =0;
+//            User user1= null;
             for (Map<String,Object> data : datas.get(0) ) {
                 User user = JSONObject.parseObject(JSONObject.toJSONString(data),User.class);
+                user.setValidateState(40);
+                user.setPassword("123456");
                 userService.register(user,false);
-
-                int relen = StringUtils.length(user.getTallyAreaNos());
-                if (relen > len){
-                    len = relen;
-                    user1 = user;
-                }
+//
+//                int relen = StringUtils.length(user.getTallyAreaNos());
+//                if (relen > len){
+//                    len = relen;
+//                    user1 = user;
+//                }
 
 
 
             }
-            System.out.println("------------------------>"+len);
-            System.out.println(user1.getPhone());
+//            System.out.println("------------------------>"+len);
+//            System.out.println(user1.getPhone());
 
         } catch (Exception e) {
 
