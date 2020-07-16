@@ -51,14 +51,6 @@ public class SessionRedisService {
         if (sessionMapData == null) {
             return Optional.empty();
         }
-
-        try{
-            SessionData data = new SessionData();
-            BeanUtils.copyProperties(data, sessionMapData);
-            logger.info("BeanUtils.copyProperties:sessionData={}",data.toMap());
-        }catch(Exception e){
-            logger.error(e.getMessage(),e);
-        }
         
         SessionData sessionData = SessionData.fromMap(sessionMapData);
         logger.info("loadFromRedis:sessionData={}",sessionData.toMap());
@@ -100,6 +92,7 @@ public class SessionRedisService {
         }
         logger.info("saveToRedis:sessionData={}",sessionData.toMap());
         String sessionRedisKey = this.getSessionRedisKey(sessionData.getSessionId());
+        
         this.redisService.set(sessionRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
 
         String accountRedisKey = this.getAccountRedisKey(sessionData);
