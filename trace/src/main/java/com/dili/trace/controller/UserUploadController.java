@@ -1,6 +1,5 @@
 package com.dili.trace.controller;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
@@ -13,16 +12,16 @@ import com.dili.trace.enums.VocationTypeEnum;
 import com.dili.trace.excel.ExcelUserData;
 import com.dili.trace.excel.ExcelUserDataListener;
 import com.dili.trace.service.CategoryService;
+import com.dili.trace.util.ChineseStringUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
@@ -39,34 +38,57 @@ public class UserUploadController {
         return "userUpload/index";
     }
 
-    @RequestMapping(value = "/parseExcel.action", method = RequestMethod.POST)
+    @RequestMapping(value = "/checkData.action", method = RequestMethod.POST)
     @ResponseBody
-    public BaseOutput parseExcel(@RequestParam(name = "excel", required = true) MultipartFile excel) {
+    public BaseOutput checkData(@RequestBody ExcelUserData input) {
         try {
-            InputStream is = excel.getInputStream();
-            List<ExcelUserData> data = this.parse(is);
+            ExcelUserData data = this.feedData(input);
             return BaseOutput.success().setData(data);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return BaseOutput.failure("Excel解析出错");
         }
     }
 
-    private List<ExcelUserData> parse(InputStream is) {
-        ExcelUserDataListener userExcelDataListener = new ExcelUserDataListener();
-        EasyExcel.read(is, ExcelUserData.class, userExcelDataListener).sheet().doRead();
-        List<ExcelUserData> data = userExcelDataListener.getExcelUserDatas();
-        return StreamEx.of(data).map(eu -> {
-            this.findByName(eu.getCategoryName()).ifPresent(category -> {
-                eu.setCategoryId(category.getId());
-            });
-            this.findPreserveTypeByName(eu.getPreserveTypeName()).ifPresent(pt -> {
-                eu.setPreserveType(pt.getCode());
-            });
-            this.findVocationTypeByName(eu.getVocationTypeName()).ifPresent(vt->{
-                eu.setVocationType(vt.getCode());
-            });
-            return eu;
-        }).toList();
+    // @RequestMapping(value = "/parseExcel.action", method = RequestMethod.POST)
+    // @ResponseBody
+    // public BaseOutput parseExcel(@RequestParam(name = "excel", required = true)
+    // MultipartFile excel) {
+    // try {
+    // InputStream is = excel.getInputStream();
+    // List<ExcelUserData> data = this.parse(is);
+    // return BaseOutput.success().setData(data);
+    // } catch (IOException e) {
+    // return BaseOutput.failure("Excel解析出错");
+    // }
+    // }
+
+    // private List<ExcelUserData> parse(InputStream is) {
+    //     ExcelUserDataListener userExcelDataListener = new ExcelUserDataListener();
+    //     EasyExcel.read(is, ExcelUserData.class, userExcelDataListener).sheet().doRead();
+    //     List<ExcelUserData> data = userExcelDataListener.getExcelUserDatas();
+    //     return StreamEx.of(data).map(eu -> {
+    //         return this.feedData(eu);
+    //     }).toList();
+    // }
+
+    private ExcelUserData feedData(ExcelUserData eu) {
+
+        this.findByName(eu.getCategoryName()).ifPresent(category -> {
+            eu.setCategoryId(category.getId());
+        });
+        this.findPreserveTypeByName(eu.getPreserveTypeName()).ifPresent(pt -> {
+            eu.setPreserveType(pt.getCode());
+        });
+        this.findVocationTypeByName(eu.getVocationTypeName()).ifPresent(vt -> {
+            eu.setVocationType(vt.getCode());
+        });
+        String tallyAreaNo=StringUtils.trimToEmpty(eu.getTallyAreaNo());
+        tallyAreaNo=ChineseStringUtil.cToe(tallyAreaNo);
+        tallyAreaNo=ChineseStringUtil.full2Half(tallyAreaNo);
+
+        eu.setTallyAreaNo(tallyAreaNo);
+        return eu;
+
     }
 
     private Optional<PreserveTypeEnum> findPreserveTypeByName(String preserveTypeName) {
