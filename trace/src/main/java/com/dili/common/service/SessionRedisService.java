@@ -7,6 +7,7 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.SessionData;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -77,18 +77,18 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 			ModelAndView modelAndView) throws Exception {
 		// if (sessionContext.getChanged()) {
 			if (sessionContext.getInvalidate()) {
-				deleteSession(response, request);
+				deleteSession(request,response);
 			} else {
-				saveSession(response);
+				saveSession(request,response);
 			}
 		// }
 	}
 
-	private void saveSession(HttpServletResponse response) {
+	private void saveSession(HttpServletRequest request, HttpServletResponse response) {
 		this.sessionRedisService.saveToRedis(this.sessionContext.getSessionData());
 	}
 
-	private void deleteSession(HttpServletResponse response, HttpServletRequest request) {
+	private void deleteSession(HttpServletRequest request, HttpServletResponse response) {
 		String sessionId = sessionContext.getSessionId();
 		this.sessionRedisService.deleteFromRedis(sessionId);
 		// if (!StrUtil.isBlank(sessionId)) {

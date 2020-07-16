@@ -97,7 +97,7 @@ public class LoginComponent {
 		if (sessionData == null) {
 			throw new TraceBusinessException("登录参数出错");
 		}
-		sessionData.setSessionId(sessionContext.getSessionId());
+		sessionData.setSessionId(UUIDUtil.get());
 		return this.sessionRedisService.saveToRedis(sessionData);
 	}
 
