@@ -191,8 +191,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		});
 		ProductStock buyerBatchStock=new ProductStock();
 		buyerBatchStock.setId(buyerBatchStockItem.getId());
-		buyerBatchStock.setStockWeight(buyerBatchStock.getStockWeight().add(tradeWeight));
-		buyerBatchStock.setTradeDetailNum(buyerBatchStock.getTradeDetailNum() + 1);
+		buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
+		buyerBatchStock.setTradeDetailNum(buyerBatchStockItem.getTradeDetailNum() + 1);
 		this.batchStockService.updateSelective(buyerBatchStock);
 
 		Long buyerTradeDetailId = this.createTradeDetailByTrade(tradeDetailItem, buyer);
