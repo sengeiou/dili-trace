@@ -36,7 +36,7 @@ import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
-	private static final Logger logger = LoggerFactory.getLogger(SeparateSalesRecordServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(TradeDetailService.class);
 
 	@Autowired
 	RegisterBillService registerBillService;
@@ -186,9 +186,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			User buyer, Long tradeRequestId) {
 		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
-		ProductStock buyerBatchStock = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
+		ProductStock buyerBatchStockItem = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
 			return new TraceBusinessException("操作库存失败");
 		});
+		ProductStock buyerBatchStock=new ProductStock();
+		buyerBatchStock.setId(buyerBatchStockItem.getId());
 		buyerBatchStock.setStockWeight(buyerBatchStock.getStockWeight().add(tradeWeight));
 		buyerBatchStock.setTradeDetailNum(buyerBatchStock.getTradeDetailNum() + 1);
 		this.batchStockService.updateSelective(buyerBatchStock);
