@@ -61,6 +61,13 @@ public class CheckinOutRecord extends BaseDomain {
     @Column(name = "`product_name`")
     private String productName;
 
+    @ApiModelProperty(value = "查验状态值")
+	@Column(name = "`verify_status`")
+    private Integer verifyStatus;
+    
+    @Column(name = "`bill_type`")
+	private Integer billType;
+
 //    @ApiModelProperty(value = "商品重量")
 //    @Column(name = "`sales_weight`")
 //    private Integer salesWeight;
@@ -176,6 +183,34 @@ public class CheckinOutRecord extends BaseDomain {
 
     public void setModified(Date modified) {
         this.modified = modified;
+    }
+
+    /**
+     * @return the verifyStatus
+     */
+    public Integer getVerifyStatus() {
+        return verifyStatus;
+    }
+
+    /**
+     * @param verifyStatus the verifyStatus to set
+     */
+    public void setVerifyStatus(Integer verifyStatus) {
+        this.verifyStatus = verifyStatus;
+    }
+
+    /**
+     * @return the billType
+     */
+    public Integer getBillType() {
+        return billType;
+    }
+
+    /**
+     * @param billType the billType to set
+     */
+    public void setBillType(Integer billType) {
+        this.billType = billType;
     }
 
 }

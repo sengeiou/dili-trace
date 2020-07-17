@@ -192,7 +192,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}
 		if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
 			TradeDetail tradeDetailItem = this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
-			CheckinOutRecord checkinRecord = this.createRecordForCheckin(billItem, checkinStatusEnum, operateUser);
+			CheckinOutRecord checkinRecord = this.createRecordForCheckin(billItem,tradeDetailItem.getTradeDetailId(), checkinStatusEnum, operateUser);
 
 			TradeDetail tradeDetail = new TradeDetail();
 			tradeDetail.setId(tradeDetailItem.getId());
@@ -220,7 +220,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	/**
 	 * 创建进门数据
 	 */
-	private CheckinOutRecord createRecordForCheckin(RegisterBill billItem, CheckinStatusEnum checkinStatusEnum,
+	private CheckinOutRecord createRecordForCheckin(RegisterBill billItem,Long tradeDetailId, CheckinStatusEnum checkinStatusEnum,
 			Optional<OperatorUser> operateUser) {
 		CheckinOutRecord checkinRecord = new CheckinOutRecord();
 		checkinRecord.setStatus(checkinStatusEnum.getCode());
@@ -236,7 +236,9 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		checkinRecord.setProductName(billItem.getProductName());
 		checkinRecord.setInoutWeight(billItem.getWeight());
 		checkinRecord.setUserName(billItem.getName());
-		checkinRecord.setTradeDetailId(billItem.getId());
+		checkinRecord.setBillType(billItem.getBillType());
+		checkinRecord.setVerifyStatus(billItem.getVerifyStatus());
+		checkinRecord.setTradeDetailId(tradeDetailId);
 		this.insertSelective(checkinRecord);
 		return checkinRecord;
 	}

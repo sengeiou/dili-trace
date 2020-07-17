@@ -4,6 +4,10 @@ alter table `trade_detail` change `batch_stock_id`  `product_stock_id` bigint(20
 alter table `trade_request` change `batch_stock_id`  `product_stock_id` bigint(20) NULL COMMENT '商品库存ID';
 
 
+ALTER TABLE `checkinout_record` ADD COLUMN  `verify_status` int(11) not null default 0 COMMENT '查验状态';
+ALTER TABLE `checkinout_record` ADD COLUMN  `bill_type` int(11)  NOT NULL  default 10 COMMENT '报备类型';
+
+
 ALTER TABLE `user` ADD `pre_qr_status`int(11) NULL COMMENT '前一次二维码值';
 update `user` set pre_qr_status=qr_status;
 
