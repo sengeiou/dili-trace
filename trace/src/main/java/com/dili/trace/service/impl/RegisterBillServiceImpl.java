@@ -271,6 +271,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		} else {
 			throw new TraceBusinessException("当前状态不能修改数据");
 		}
+
+		TradeDetail tradeDetailItem=this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).orElse(null);
 		// 车牌转大写
 		String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
 				.findFirst().orElse(null);
@@ -287,12 +289,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			input.setOperatorName(op.getName());
 			input.setOperatorId(op.getId());
 		});
-		// 补单直接进门状态
-		if (BillTypeEnum.SUPPLEMENT.equalsToCode(input.getBillType())) {
+		if(tradeDetailItem==null){
+			// 补单直接进门状态
+			if (BillTypeEnum.SUPPLEMENT.equalsToCode(input.getBillType())) {
+				input.setIsCheckin(YnEnum.YES.getCode());
+			}else{
+				input.setIsCheckin(YnEnum.NO.getCode());
+			}
+		}else if(CheckinStatusEnum.ALLOWED.equalsToCode(tradeDetailItem.getCheckinStatus())){
 			input.setIsCheckin(YnEnum.YES.getCode());
 		}else{
 			input.setIsCheckin(YnEnum.NO.getCode());
 		}
+
 		this.updateSelective(input);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
 		// 保存图片
