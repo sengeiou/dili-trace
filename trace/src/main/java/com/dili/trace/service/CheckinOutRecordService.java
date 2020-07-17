@@ -238,6 +238,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		checkinRecord.setUserName(billItem.getName());
 		checkinRecord.setBillType(billItem.getBillType());
 		checkinRecord.setVerifyStatus(billItem.getVerifyStatus());
+		checkinRecord.setBillId(billItem.getBillId());
 		checkinRecord.setTradeDetailId(tradeDetailId);
 		this.insertSelective(checkinRecord);
 		return checkinRecord;

@@ -87,6 +87,9 @@ public class CheckinOutRecord extends BaseDomain {
     private Long tradeDetailId;
     
     
+    @ApiModelProperty(value = "报备单ID")
+    @Column(name = "`bill_id`")
+    private Long billId;
 
     public BigDecimal getInoutWeight() {
 		return inoutWeight;
@@ -211,6 +214,20 @@ public class CheckinOutRecord extends BaseDomain {
      */
     public void setBillType(Integer billType) {
         this.billType = billType;
+    }
+
+    /**
+     * @return the billId
+     */
+    public Long getBillId() {
+        return billId;
+    }
+
+    /**
+     * @param billId the billId to set
+     */
+    public void setBillId(Long billId) {
+        this.billId = billId;
     }
 
 }
