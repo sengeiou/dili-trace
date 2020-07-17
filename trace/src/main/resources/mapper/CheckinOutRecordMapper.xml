@@ -2,4 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.trace.dao.CheckinOutRecordMapper">
   
+
+        
+    <select id="queryBillReport" parameterType="com.dili.trace.dto.BillReportQueryDto" resultType="com.dili.trace.dto.UserLoginHistoryDto">
+
+        select 
+        register_bill.id
+        ,u.name
+        ,u.phone
+        ,u.tally_area_nos
+        ,u.legal_person
+        ,register_bill.product_name
+        ,register_bill.created AS 'bill_created'
+        ,checkinout_record.created AS 'checkin_created'
+        ,checkinout_record.status
+        from register_bill left join trade_detail on register_bill.id=trade_detail.bill_id
+        left join checkinout_record on checkinout_record.id=trade_detail.checkin_record_id
+        left join `user` u on register_bill.user_id=u.id
+        where trade_detail.parent_id is null
+        and (checkinout_record.`status` is null or checkinout_record.`status`=10)
+
+    <if test="createdStart != null  and createdStart != ''">
+        <![CDATA[ AND #{createdStart}<=u_history.created ]]>
+    </if>
+    <if test="createdEnd != null  and createdEnd != ''">
+        <![CDATA[AND u_history.created <=#{createdEnd}]]>
+    </if>
+    <if test="likeName != null  and likeName != ''">
+        AND u.name like '%${likeName}%'
+    </if>
+    <if test="likePhone != null  and likePhone != ''">
+        AND u.phone like '${likePhone}%'
+    </if>
+    </select>
 </mapper>
