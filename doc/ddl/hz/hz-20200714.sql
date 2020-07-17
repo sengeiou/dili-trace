@@ -68,3 +68,14 @@ CREATE TABLE `tally_area_no` (
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `r_user_tally_area` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tally_area_no_id` bigint(20)  NULL COMMENT '摊位号ID',
+  `user_id` bigint(20)  NULL COMMENT '用户ID',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

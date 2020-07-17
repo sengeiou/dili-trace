@@ -401,7 +401,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("补单或已进门报备单,才能场内审核");
 		}
 		if (BillVerifyStatusEnum.PASSED.equalsToCode(verifyStatus)) {
-			this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billItem.getBillId()),CheckinStatusEnum.ALLOWED);
+			this.checkinOutRecordService.doCheckin(operatorUser, Lists.newArrayList(billItem.getBillId()),
+					CheckinStatusEnum.ALLOWED);
 		}
 		this.doVerify(billItem, verifyStatus, reason, operatorUser);
 		return billItem.getId();
@@ -498,7 +499,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			default:
 				throw new TraceBusinessException("错误");
 		}
-		this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem,userQrStatus.getCode());
+		this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, userQrStatus.getCode());
 	}
 
 	/**
@@ -513,10 +514,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		dto.setCreatedStart(createdStart);
 		dto.setCreatedEnd(createdEnd);
 		this.getActualDao().updateAllUserQrStatusByRegisterBillNum(dto);
-		this.userService.findUserQrStatusChangedList().forEach(u->{
+		this.userService.findUserQrStatusChangedList().forEach(u -> {
 			this.userQrHistoryService.createUserQrHistoryForWithousBills(u);
 		});
-	
+
 	}
 
 	@Override
@@ -591,13 +592,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	private String dynamicSQLBeforeCheckIn() {
 		return "( bill_type=" + BillTypeEnum.NONE.getCode() + " and (is_checkin=" + YnEnum.NO.getCode()
-				+ " OR (is_checkin=" + YnEnum.YES.getCode() + " AND verify_status="
-				+ BillVerifyStatusEnum.PASSED.getCode() + " and  verify_type="+VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode()+") ) )";
+				+ " OR (is_checkin=" + YnEnum.YES.getCode() + " AND verify_status<>"
+				+ BillVerifyStatusEnum.PASSED.getCode() + ") OR(verify_status="+BillVerifyStatusEnum.PASSED.getCode()+" and verify_type="+VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode()+") ) )";
 	}
 
 	private String dynamicSQLAfterCheckIn() {
 		return "( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode()
-				+ " AND verify_status=" + BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="+VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode()+") )";
+				+ " AND verify_status<>" + BillVerifyStatusEnum.PASSED.getCode() + ") OR(verify_status="
+				+ BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
+				+ VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode() + ") )";
 	}
 
 	private List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBillDto query) {
