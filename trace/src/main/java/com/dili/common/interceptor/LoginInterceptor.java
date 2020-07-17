@@ -36,7 +36,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 			Long accountId=this.sessionContext.getAccountId();
 			String requestUri=request.getRequestURI();
 			logger.info("loginType={},accountId={},requestUri={}",loginType,accountId,requestUri);
-			this.userAccessLogService.createUserAccessLog(accountId, loginType, requestUri);
+			this.userAccessLogService.createUserAccessLog(this.sessionContext.getSessionData(), requestUri);
 		 
 		}
 	    @Override

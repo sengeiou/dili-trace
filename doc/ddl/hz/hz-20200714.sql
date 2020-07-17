@@ -49,6 +49,7 @@ CREATE TABLE `user_qr_history` (
 CREATE TABLE `user_access_log` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20)  NULL COMMENT '用户(商户)ID',
+  `user_name` varchar(30)  NULL COMMENT '用户(商户)名称',
   `login_type` int(11) NULL COMMENT '用户类型',
   `url` varchar(400) NOT NULL  COMMENT 'url',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -34,7 +34,11 @@ public class UserAccessLog extends BaseDomain {
     
 	@ApiModelProperty(value = "用户iD")
 	@Column(name = "`user_id`")
-	private Long userId;
+    private Long userId;
+    
+    @ApiModelProperty(value = "用户名称")
+	@Column(name = "`user_name`")
+	private String userName;
 
 	@ApiModelProperty(value = "url")
 	@Column(name = "`url`")
@@ -134,6 +138,21 @@ public class UserAccessLog extends BaseDomain {
      */
     public void setUrl(String url) {
         this.url = url;
+    }
+
+
+    /**
+     * @return Long return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
 }

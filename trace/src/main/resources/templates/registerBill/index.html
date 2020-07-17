@@ -14,6 +14,26 @@
                 <form id="queryForm" class="easyui-form" method="post" fit="true">
                     <div class="search-wrap">
 
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="billCreatedStart" id="billCreatedStart" style="width:58%" labelAlign="right" data-options="label:'报备时间'" value="${billCreatedStart!}"/>
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="billCreatedEnd" id="billCreatedEnd" style="width:39%;" value="${billCreatedEnd!}"/>
+                        </div>
+
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="checkinCreatedStart" id="checkinCreatedStart" style="width:58%" labelAlign="right" data-options="label:'进门时间'" value="${checkinCreatedStart!}"/>
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="checkinCreatedEnd" id="checkinCreatedEnd" style="width:39%;" value="${checkinCreatedEnd!}"/>
+                        </div>
+
+                        <div class="search-item" style="width: 200px;">
+                            <select class="easyui-combobox" name="includeUnCheckin" id="includeUnCheckin" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'包括未进门'"  labelAlign="right">
+                                <option value="">全部</option>
+                                <option value="true">是</option>
+                                <option value="false">否</option>
+                            </select>
+                        </div>
+
                         <div class="search-item">
                             <input  name="verifyStatus" id="verifyStatus" style="width:100%" labelAlign="right" data-options="label:'审核状态' "  panelWidth="auto" panelHeight="auto"/>
                             <#comboProvider _id="verifyStatus" _provider='billVerifyStatusEnumProvider' _queryParams='{emptyText:"全部"}' />
@@ -53,12 +73,7 @@
                             data-options="label:'车牌号',editable:true, valueField:'plate',textField:'plate',onChange:onPlateChange,prompt:'请选择或输入'"  labelAlign="right">
                             </select>
                         </div>
-                        
-                        <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'报备时间'" value="${createdStart!}"/>
-                            <span style="width: 2%;">-</span>
-                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;" value="${createdEnd!}"/>
-                        </div>
+
                         <div class="search-item long-item">
                             <select class="easyui-combobox" name="attr" id="attr" style="width:50%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'关键字'"  labelAlign="right">
                                 <option value="code">编号</option>
@@ -90,13 +105,13 @@
                 <thead>
                     <tr>
                     	<th field="ck" checkbox="true" data-options="field:'ck' "> </th>
-                        <th width="10%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="10%" data-options="field:'billCreated',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             报备时间
                         </th>
-                        <th width="8%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="8%" data-options="field:'billCode',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             编号
                         </th>
-                        <th width="5%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="5%" data-options="field:'userName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             业户姓名
                         </th>
                         <th width="5%" data-options="field:'plate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
@@ -105,14 +120,17 @@
                         <th width="5%" data-options="field:'brandName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             品牌
                          </th>
-                        <th width="5%" data-options="field:'preserveType',  _provider:'preserveTypeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="5%" data-options="field:'preserveTypeName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             商品类型
                          </th>
                         <th width="5%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             商品名称
                         </th>
                         <th width="5%" data-options="field:'weight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            重量/KG
+                            重量
+                        </th>
+                        <th width="5%" data-options="field:'weightUnitName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            重量单位
                         </th>
                         <th width="10%" data-options="field:'originName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             产地
@@ -120,10 +138,12 @@
                         <th width="5%" data-options="field:'verifyStatus',  _provider:'verifyStatusProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                            审核状态
                         </th>
-                        <th width="5%" data-options="field:'isCheckin',  formatter:formatIsCheckIn ,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        <th width="5%" data-options="field:'checkinStatusName',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             是否进门
                          </th>
-
+                        <th width="10%" data-options="field:'checkinCreated',  _provider:'datetimeProvider',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            进门时间
+                         </th>
                    </tr>
                 </thead>
             </table>

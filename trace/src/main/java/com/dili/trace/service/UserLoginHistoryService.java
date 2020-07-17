@@ -10,7 +10,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.UserLoginHistoryMapper;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserLoginHistory;
-import com.dili.trace.dto.UserLoginHistoryDto;
+import com.dili.trace.dto.BillReportDto;
 import com.dili.trace.dto.UserLoginHistoryQueryDto;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -36,10 +36,10 @@ public class UserLoginHistoryService extends BaseServiceImpl<UserLoginHistory, L
         UserLoginHistoryMapper dao = (UserLoginHistoryMapper) this.getDao();
 
         PageHelper.startPage(domain.getPage(), domain.getRows());
-        List<UserLoginHistoryDto> list = dao.queryUserLoginHistory(domain);
+        List<BillReportDto> list = dao.queryUserLoginHistory(domain);
         ;
-        Page<UserLoginHistoryDto> page = (Page) list;
-        BasePage<UserLoginHistoryDto> result = new BasePage<UserLoginHistoryDto>();
+        Page<BillReportDto> page = (Page) list;
+        BasePage<BillReportDto> result = new BasePage<BillReportDto>();
         result.setDatas(list);
         result.setPage(page.getPageNum());
         result.setRows(page.getPageSize());
