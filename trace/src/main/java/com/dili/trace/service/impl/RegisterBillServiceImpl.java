@@ -498,11 +498,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			default:
 				throw new TraceBusinessException("错误");
 		}
-		User user = DTOUtils.newDTO(User.class);
-		user.setId(userId);
-		user.setQrStatus(userQrStatus.getCode());
-		this.userService.updateSelective(user);
-		this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem);
+		this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem,userQrStatus.getCode());
 	}
 
 	/**

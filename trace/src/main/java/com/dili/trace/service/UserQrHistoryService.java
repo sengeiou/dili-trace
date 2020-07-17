@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import java.util.Date;
 
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserQrHistory;
@@ -33,6 +34,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		}
 		String color = UserQrStatusEnum.fromCode(userItem.getQrStatus()).map(UserQrStatusEnum::getDesc)
 				.orElse(UserQrStatusEnum.BLACK.getDesc());
+				
 		UserQrHistory userQrHistory = new UserQrHistory();
 		userQrHistory.setUserId(userItem.getId());
 		userQrHistory.setUserName(userItem.getName());
@@ -42,11 +44,11 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		userQrHistory.setContent("最近七天无报备"+",变为" + color + "码");
 		return userQrHistory;
 	}
-	public UserQrHistory createUserQrHistoryForUserRegist(User user) {
-		if (user == null || user.getId() == null) {
+	public UserQrHistory createUserQrHistoryForUserRegist(Long userId,Integer qrstatus) {
+		if (userId == null) {
 			return null;
 		}
-		User userItem = this.userService.get(user.getId());
+		User userItem = this.userService.get(userId);
 		if (userItem == null) {
 			return null;
 		}
@@ -62,7 +64,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		return userQrHistory;
 	}
 
-	public UserQrHistory createUserQrHistoryForVerifyBill(RegisterBill bill) {
+	public UserQrHistory createUserQrHistoryForVerifyBill(RegisterBill bill,Integer qrStatus) {
 		if (bill == null || bill.getBillId() == null) {
 			return null;
 		}
@@ -81,6 +83,19 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		if (userItem == null) {
 			return null;
 		}
+
+
+		if(qrStatus.equals(userItem.getPreQrStatus())){
+			return null;
+		}
+		User user = DTOUtils.newDTO(User.class);
+		user.setId(userItem.getId());
+		user.setQrStatus(qrStatus);
+		user.setPreQrStatus(userItem.getQrStatus());
+		this.userService.updateSelective(user);
+
+
+
 		String color = UserQrStatusEnum.fromCode(userItem.getQrStatus()).map(UserQrStatusEnum::getDesc)
 				.orElse(UserQrStatusEnum.BLACK.getDesc());
 		UserQrHistory userQrHistory = new UserQrHistory();

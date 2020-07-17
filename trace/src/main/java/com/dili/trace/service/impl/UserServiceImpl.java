@@ -488,12 +488,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (userId == null) {
             return;
         }
-        User u = DTOUtils.newDTO(User.class);
-        u.setId(userId);
-        u.setQrStatus(UserQrStatusEnum.BLACK.getCode());
-        this.updateSelective(u);
-        this.userQrHistoryService.createUserQrHistoryForUserRegist(u);
-
+        this.userQrHistoryService.createUserQrHistoryForUserRegist(userId,UserQrStatusEnum.BLACK.getCode());
     }
 
     @Override
