@@ -20,7 +20,6 @@ import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.service.impl.SeparateSalesRecordServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
@@ -87,7 +86,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		item.setBuyerId(billItem.getUserId());
 		item.setBuyerName(billItem.getName());
 		item.setProductName(billItem.getProductName());
-		item.setBatchNo(DateUtil.format(now, "yyyy-MM-dd HH:mm:ss"));
+		item.setBatchNo(this.buildParentBatchNo(billItem));
 		item.setParentBatchNo(this.buildParentBatchNo(billItem));
 		item.setModified(now);
 		item.setCreated(now);
