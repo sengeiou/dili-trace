@@ -5,9 +5,11 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.service.UserAccessLogService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -26,12 +28,15 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		private static final Logger logger=LoggerFactory.getLogger(LoginInterceptor.class);
 	    @Resource
 		private LoginSessionContext sessionContext;
+		@Autowired
+		UserAccessLogService userAccessLogService;
 
 		private void logRequest(HttpServletRequest request){
 			Integer loginType=this.sessionContext.getLoginType();
 			Long accountId=this.sessionContext.getAccountId();
 			String requestUri=request.getRequestURI();
 			logger.info("loginType={},accountId={},requestUri={}",loginType,accountId,requestUri);
+			this.userAccessLogService.createUserAccessLog(accountId, loginType, requestUri);
 		 
 		}
 	    @Override
