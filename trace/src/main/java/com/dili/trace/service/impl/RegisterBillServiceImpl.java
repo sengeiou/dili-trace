@@ -149,6 +149,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// 补单直接进门状态
 		if (BillTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getBillType())) {
 			registerBill.setIsCheckin(YnEnum.YES.getCode());
+		}else{
+			registerBill.setIsCheckin(YnEnum.NO.getCode());
 		}
 
 		// 保存车牌
@@ -288,6 +290,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// 补单直接进门状态
 		if (BillTypeEnum.SUPPLEMENT.equalsToCode(input.getBillType())) {
 			input.setIsCheckin(YnEnum.YES.getCode());
+		}else{
+			input.setIsCheckin(YnEnum.NO.getCode());
 		}
 		this.updateSelective(input);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
