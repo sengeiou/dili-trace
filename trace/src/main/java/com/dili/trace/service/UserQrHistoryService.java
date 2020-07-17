@@ -52,12 +52,18 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		if (userItem == null) {
 			return null;
 		}
-		String color = UserQrStatusEnum.fromCode(userItem.getQrStatus()).map(UserQrStatusEnum::getDesc)
+
+		User user = DTOUtils.newDTO(User.class);
+		user.setId(userItem.getId());
+		user.setQrStatus(qrstatus);
+		this.userService.updateSelective(user);
+
+		String color = UserQrStatusEnum.fromCode(qrstatus).map(UserQrStatusEnum::getDesc)
 				.orElse(UserQrStatusEnum.BLACK.getDesc());
 		UserQrHistory userQrHistory = new UserQrHistory();
 		userQrHistory.setUserId(userItem.getId());
 		userQrHistory.setUserName(userItem.getName());
-		userQrHistory.setQrStatus(userItem.getQrStatus());
+		userQrHistory.setQrStatus(qrstatus);
 		userQrHistory.setCreated(new Date());
 		userQrHistory.setModified(new Date());
 		userQrHistory.setContent("完成注册,默认为" + color + "码");
@@ -96,12 +102,12 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
 
 
-		String color = UserQrStatusEnum.fromCode(userItem.getQrStatus()).map(UserQrStatusEnum::getDesc)
+		String color = UserQrStatusEnum.fromCode(qrStatus).map(UserQrStatusEnum::getDesc)
 				.orElse(UserQrStatusEnum.BLACK.getDesc());
 		UserQrHistory userQrHistory = new UserQrHistory();
 		userQrHistory.setUserId(userItem.getId());
 		userQrHistory.setUserName(userItem.getName());
-		userQrHistory.setQrStatus(userItem.getQrStatus());
+		userQrHistory.setQrStatus(qrStatus);
 		userQrHistory.setCreated(new Date());
 		userQrHistory.setModified(new Date());
 		userQrHistory.setContent("最新报备单当前审核状态是"+billVerifyStatusEnum.getName()+",变为" + color + "码");

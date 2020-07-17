@@ -285,6 +285,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			input.setOperatorName(op.getName());
 			input.setOperatorId(op.getId());
 		});
+		// 补单直接进门状态
+		if (BillTypeEnum.SUPPLEMENT.equalsToCode(input.getBillType())) {
+			input.setIsCheckin(YnEnum.YES.getCode());
+		}
 		this.updateSelective(input);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
 		// 保存图片

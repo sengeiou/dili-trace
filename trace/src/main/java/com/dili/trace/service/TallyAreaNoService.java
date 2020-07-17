@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.RUserTallyArea;
 import com.dili.trace.domain.TallyAreaNo;
 import com.dili.trace.domain.User;
 import com.dili.trace.util.ChineseStringUtil;
@@ -51,18 +52,20 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> imple
                 return;
             }
             try {
-                // StreamEx.of(userList).nonNull().mapToEntry(u->u, u->u.getTallyAreaNos()).filterValues(StringUtils::isNotBlank)
-                // .mapValues(String::trim).mapValues(ChineseStringUtil::cToe).mapValues(ChineseStringUtil::full2Half)
-                // .mapValues(tallyAreaNos -> tallyAreaNos.split(","));
-
-
-
-                StreamEx.of(userList).nonNull().map(User::getTallyAreaNos).filter(StringUtils::isNotBlank)
-                        .map(String::trim).map(ChineseStringUtil::cToe).map(ChineseStringUtil::full2Half)
-                        .flatArray(tallyAreaNos -> tallyAreaNos.split(",")).filter(StringUtils::isNotBlank)
-                        .map(String::trim).forEach(tallyAreaNo -> {
-                            this.parseAndSave(tallyAreaNo);
-                        });
+                List<RUserTallyArea> list = StreamEx.of(userList).nonNull().mapToEntry(u -> u, u -> u.getTallyAreaNos())
+                        .filterValues(StringUtils::isNotBlank).mapValues(String::trim)
+                        .mapValues(ChineseStringUtil::cToe).mapValues(ChineseStringUtil::full2Half)
+                        .mapValues(tallyAreaNos -> StreamEx.of(tallyAreaNos.split(",")).filter(StringUtils::isNotBlank)
+                                .toList())
+                        .flatMapKeyValue((u, t) -> {
+                            return StreamEx.of(t).map(tallyAreaNo -> {
+                                TallyAreaNo tallyAreaItem = this.parseAndSave(tallyAreaNo);
+                                RUserTallyArea ruserTallyArea = this.ruserTallyAreaService
+                                        .saveOrUpdate(tallyAreaItem.getId(), u.getId());
+                                return ruserTallyArea;
+                            });
+                        }).toList();
+                logger.info("list.size={}",list.size());
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
