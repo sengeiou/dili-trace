@@ -13,6 +13,8 @@ import com.dili.trace.util.ChineseStringUtil;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,8 @@ import one.util.streamex.StreamEx;
 
 @Service
 public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> implements CommandLineRunner {
-    private Map<String, List<String>> areaAndNumMap=new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(TallyAreaNoService.class);
+    private Map<String, List<String>> areaAndNumMap = new HashMap<>();
 
     public TallyAreaNoService() {
         areaAndNumMap.put("A1", Lists.newArrayList("-6-", "-7-", "7街", "-8-", "-9-", "-XQ-", "虾区"));
@@ -39,21 +42,25 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> imple
     public void run(String... args) throws Exception {
         User uq = DTOUtils.newDTO(User.class);
         uq.setPage(1);
-        uq.setRows(20);
-        // while (true) {
-        //     List<User> userList = this.userService.listPageByExample(uq).getDatas();
-        //     if (userList.isEmpty()) {
-        //         return;
-        //     }
+        uq.setRows(100);
+        while (true) {
+            List<User> userList = this.userService.listPageByExample(uq).getDatas();
+            if (userList.isEmpty()) {
+                return;
+            }
+            try {
+                StreamEx.of(userList).nonNull().map(User::getTallyAreaNos).filter(StringUtils::isNotBlank)
+                        .map(String::trim).map(ChineseStringUtil::cToe).map(ChineseStringUtil::full2Half)
+                        .flatArray(tallyAreaNos -> tallyAreaNos.split(",")).filter(StringUtils::isNotBlank)
+                        .map(String::trim).forEach(tallyAreaNo -> {
+                            this.parseAndSave(tallyAreaNo);
+                        });
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
 
-        //     StreamEx.of(userList).nonNull().map(User::getTallyAreaNos).filter(StringUtils::isNotBlank).map(String::trim)
-        //             .map(ChineseStringUtil::cToe).map(ChineseStringUtil::full2Half)
-        //             .flatArray(tallyAreaNos -> tallyAreaNos.split(",")).filter(StringUtils::isNotBlank)
-        //             .map(String::trim).forEach(tallyAreaNo -> {
-        //                 this.parseAndSave(tallyAreaNo);
-        //             });
-        //     uq.setPage(uq.getPage() + 1);
-        // }
+            uq.setPage(uq.getPage() + 1);
+        }
     }
 
     private TallyAreaNo parseAndSave(String number) {
