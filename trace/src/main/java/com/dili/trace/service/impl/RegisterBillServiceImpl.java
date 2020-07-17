@@ -592,8 +592,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	private String dynamicSQLBeforeCheckIn() {
 		return "( bill_type=" + BillTypeEnum.NONE.getCode() + " and (is_checkin=" + YnEnum.NO.getCode()
-				+ " OR (is_checkin=" + YnEnum.YES.getCode() + " AND verify_status<>"
-				+ BillVerifyStatusEnum.PASSED.getCode() + ") OR(verify_status="+BillVerifyStatusEnum.PASSED.getCode()+" and verify_type="+VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode()+") ) )";
+				+ " OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
+				+ BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
+				+ VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode() + " ) )";
 	}
 
 	private String dynamicSQLAfterCheckIn() {

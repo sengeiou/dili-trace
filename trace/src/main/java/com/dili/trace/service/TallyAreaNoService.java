@@ -37,6 +37,8 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> imple
 
     @Autowired
     UserService userService;
+    @Autowired
+    RUserTallyAreaService ruserTallyAreaService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -49,6 +51,12 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> imple
                 return;
             }
             try {
+                // StreamEx.of(userList).nonNull().mapToEntry(u->u, u->u.getTallyAreaNos()).filterValues(StringUtils::isNotBlank)
+                // .mapValues(String::trim).mapValues(ChineseStringUtil::cToe).mapValues(ChineseStringUtil::full2Half)
+                // .mapValues(tallyAreaNos -> tallyAreaNos.split(","));
+
+
+
                 StreamEx.of(userList).nonNull().map(User::getTallyAreaNos).filter(StringUtils::isNotBlank)
                         .map(String::trim).map(ChineseStringUtil::cToe).map(ChineseStringUtil::full2Half)
                         .flatArray(tallyAreaNos -> tallyAreaNos.split(",")).filter(StringUtils::isNotBlank)
