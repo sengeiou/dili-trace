@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -135,7 +136,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 * @return
 	 */
 	@Transactional
-	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long> billIdList,CheckinStatusEnum checkinStatusEnum) {
+	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long> billIdList,
+			CheckinStatusEnum checkinStatusEnum) {
 		if (billIdList == null) {
 			throw new TraceBusinessException("参数错误");
 		}
@@ -151,7 +153,6 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		}).nonNull().toList();
 	}
 
-
 	/**
 	 * 单个进门
 	 * 
@@ -166,15 +167,6 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				.orElseThrow(() -> {
 					return new TraceBusinessException("没有找到数据");
 				});
-		//补报单已经是进门状态(但是没有进门数据)，所以此处放弃用isCheckin来判断，而是用tradedetail来做判断
-		// if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
-		// 	throw new TraceBusinessException("当前报备单已进门");
-		// }
-		this.tradeDetailService.findBilledTradeDetailByBillId(billId).ifPresent(td->{
-			if(CheckinStatusEnum.ALLOWED.equalsToCode(td.getCheckinStatus())){
-				throw new TraceBusinessException("当前报备单已进门");
-			}
-		});
 
 		if (CheckinStatusEnum.NONE == checkinStatusEnum) {
 			throw new TraceBusinessException("参数错误");
@@ -183,6 +175,21 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			return null;
 		}
 
+		// 补报单已经是进门状态(但是没有进门数据)，所以此处放弃用isCheckin来判断，而是用tradedetail来做判断
+		// if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+		// throw new TraceBusinessException("当前报备单已进门");
+		// }
+		CheckinOutRecord checkinOutRecordItem = this.tradeDetailService.findBilledTradeDetailByBillId(billId)
+				.map(td -> {
+					if (CheckinStatusEnum.ALLOWED.equalsToCode(td.getCheckinStatus())) {
+						return this.get(td.getCheckinRecordId());
+					}
+					return null;
+				}).filter(Objects::nonNull).orElse(null);
+
+		if (checkinOutRecordItem != null) {
+			return checkinOutRecordItem;
+		}
 		if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
 			TradeDetail tradeDetailItem = this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
 			CheckinOutRecord checkinRecord = this.createRecordForCheckin(billItem, checkinStatusEnum, operateUser);

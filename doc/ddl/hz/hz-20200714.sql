@@ -56,3 +56,15 @@ CREATE TABLE `user_access_log` (
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `tally_area_no` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `number` varchar(50)  NULL COMMENT '摊位号',
+  `street` varchar(30)  NULL COMMENT '街区号',
+  `area` varchar(30) NOT NULL  COMMENT '区域',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
