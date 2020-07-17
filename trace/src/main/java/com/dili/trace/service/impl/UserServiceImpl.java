@@ -119,6 +119,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (StringUtils.isEmpty(user.getAddr())) {
             user.setAddr("");
         }
+        user.setValidateState(ValidateStateEnum.UNCERT.getCode());
 
         // // 验证身份证号是否已注册
         // if (existsCardNo(user.getCardNo())) {
