@@ -36,6 +36,7 @@ import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.QrCodeService;
+import com.dili.trace.service.SMSService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
@@ -71,12 +72,16 @@ public class UserApi {
     private LoginSessionContext sessionContext;
     @Resource
     private DefaultConfiguration defaultConfiguration;
+
+
     @Resource
     private MessageRpc messageRpc;
     @Resource
     private RedisUtil redisUtil;
     @Resource
     UserPlateService userPlateService;
+    @Autowired
+    SMSService smsService;
 
     @ApiOperation(value = "注册", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
@@ -152,18 +157,7 @@ public class UserApi {
         Map<String, Object> content = new HashMap<>();
         content.put("code", verificationCode);
         params.put("parameters", content);
-
-        BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
-        if (msgOutput.isSuccess()) {
-            redisUtil.set(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone, verificationCode,
-                    defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);
-            logger.info("短信验证码发送成功：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
-        } else {
-            logger.error("发送失败,错误信息：" + msgOutput.getMessage());
-            logger.info("短信验证码发送失败：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
-            return BaseOutput.failure(msgOutput.getMessage());
-        }
-        return BaseOutput.success();
+        return this.smsService.sendVerificationCodeMsg(params, phone, verificationCode);
     }
 
     @ApiOperation(value = "找回密码【接口已通】", notes = "找回密码")
