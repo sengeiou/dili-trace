@@ -4,15 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.TradeDetail;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
+import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
@@ -25,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CheckinOutServiceTest extends AutoWiredBaseTest {
 	@Autowired
 	private TradeDetailService tradeDetailService;
+	@Autowired
+	CheckinOutRecordService checkinOutRecordService;
 
 	@Test
 	@Transactional
@@ -87,4 +94,14 @@ public class CheckinOutServiceTest extends AutoWiredBaseTest {
 		assertEquals(outrecord.getTradeDetailId(), tradeDetailItem.getId());
 
 	}
+
+	@Test
+	public void doCheckin() {
+		List<Long> billIdList = Lists.newArrayList(397L);
+		this.checkinOutRecordService.doCheckin(Optional.of(new OperatorUser(1L, "")), billIdList,
+				CheckinStatusEnum.ALLOWED);
+	}
+	
+		
+
 }

@@ -15,7 +15,6 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.api.input.CheckInApiInput;
 import com.dili.trace.api.input.CheckOutApiInput;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.CheckInApiListOutput;
@@ -28,7 +27,6 @@ import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
@@ -179,25 +177,63 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		// if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
 		// throw new TraceBusinessException("当前报备单已进门");
 		// }
-		CheckinOutRecord checkinOutRecordItem = this.tradeDetailService.findBilledTradeDetailByBillId(billId)
-				.map(td -> {
-					if (CheckinStatusEnum.ALLOWED.equalsToCode(td.getCheckinStatus())) {
-						return this.get(td.getCheckinRecordId());
-					}
-					return null;
-				}).filter(Objects::nonNull).orElse(null);
+		// CheckinOutRecord checkinOutRecordItem = this.tradeDetailService.findBilledTradeDetailByBillId(billId)
+		// 		.map(td -> {
+		// 			if (CheckinStatusEnum.ALLOWED.equalsToCode(td.getCheckinStatus())) {
+		// 				return this.get(td.getCheckinRecordId());
+		// 			}
+		// 			return null;
+		// 		}).filter(Objects::nonNull).orElse(null);
 
-		if (checkinOutRecordItem != null) {
-			return checkinOutRecordItem;
-		}
+		// if (checkinOutRecordItem != null) {
+		// 	return checkinOutRecordItem;
+		// }
 		if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-			TradeDetail tradeDetailItem = this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
-			CheckinOutRecord checkinRecord = this.createRecordForCheckin(billItem,tradeDetailItem.getTradeDetailId(), checkinStatusEnum, operateUser);
+			TradeDetail tradeDetailItem = this.tradeDetailService.findBilledTradeDetailByBillId(billId).map(td->{
+				TradeDetail item = new TradeDetail();
+				item.setId(td.getId());
+				item.setCheckinStatus(checkinStatusEnum.getCode());
+				item.setStockWeight(billItem.getWeight());
+				item.setTotalWeight(billItem.getWeight());
+				item.setWeightUnit(billItem.getWeightUnit());
+				item.setProductName(billItem.getProductName());
+				item.setModified(new Date());
+				this.tradeDetailService.updateSelective(item); 
+				return this.tradeDetailService.get(item.getId());
+			}).orElseGet(()->{
+			 	return this.tradeDetailService.createTradeDetailForCheckInBill(billItem);
+			});
+
+			CheckinOutRecord checkinRecordItem =Optional.ofNullable(tradeDetailItem.getCheckinRecordId()).map(cinId->{
+				return this.get(cinId);
+			}).map(cin->{
+				CheckinOutRecord item=new CheckinOutRecord();
+				item.setId(cin.getId());
+				item.setStatus(checkinStatusEnum.getCode());
+				operateUser.ifPresent(op -> {
+					item.setOperatorId(op.getId());
+					item.setOperatorName(op.getName());
+				});
+		
+				item.setModified(new Date());
+				item.setProductName(billItem.getProductName());
+				item.setInoutWeight(billItem.getWeight());
+				item.setUserName(billItem.getName());
+				item.setBillType(billItem.getBillType());
+				item.setVerifyStatus(billItem.getVerifyStatus());
+				item.setBillId(billItem.getBillId());
+				item.setTradeDetailId(tradeDetailItem.getId());
+				this.updateSelective(item);
+				return this.get(item.getId());
+			}).orElseGet(()->{
+				 return this.createRecordForCheckin(billItem,tradeDetailItem.getTradeDetailId(), checkinStatusEnum, operateUser);
+			});
+			
 
 			TradeDetail tradeDetail = new TradeDetail();
 			tradeDetail.setId(tradeDetailItem.getId());
 			tradeDetail.setCheckinStatus(checkinStatusEnum.getCode());
-			tradeDetail.setCheckinRecordId(checkinRecord.getId());
+			tradeDetail.setCheckinRecordId(checkinRecordItem.getId());
 			this.tradeDetailService.updateSelective(tradeDetail);
 			// 更新报备单进门状态
 			RegisterBill bill = new RegisterBill();
@@ -211,7 +247,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 
 			this.tradeService.createBatchStockAfterVerifiedAndCheckin(billItem.getId(), tradeDetailItem.getId(),
 					operateUser);
-			return checkinRecord;
+			return checkinRecordItem;
 		}
 		return null;
 
