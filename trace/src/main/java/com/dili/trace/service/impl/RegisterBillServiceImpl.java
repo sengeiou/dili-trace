@@ -61,6 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.hutool.core.date.DateUtil;
 import one.util.streamex.StreamEx;
 
 /**
@@ -149,7 +150,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// 补单直接进门状态
 		if (BillTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getBillType())) {
 			registerBill.setIsCheckin(YnEnum.YES.getCode());
-		}else{
+		} else {
 			registerBill.setIsCheckin(YnEnum.NO.getCode());
 		}
 
@@ -272,7 +273,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("当前状态不能修改数据");
 		}
 
-		TradeDetail tradeDetailItem=this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).orElse(null);
+		TradeDetail tradeDetailItem = this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId())
+				.orElse(null);
 		// 车牌转大写
 		String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
 				.findFirst().orElse(null);
@@ -289,16 +291,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			input.setOperatorName(op.getName());
 			input.setOperatorId(op.getId());
 		});
-		if(tradeDetailItem==null){
+		if (tradeDetailItem == null) {
 			// 补单直接进门状态
 			if (BillTypeEnum.SUPPLEMENT.equalsToCode(input.getBillType())) {
 				input.setIsCheckin(YnEnum.YES.getCode());
-			}else{
+			} else {
 				input.setIsCheckin(YnEnum.NO.getCode());
 			}
-		}else if(CheckinStatusEnum.ALLOWED.equalsToCode(tradeDetailItem.getCheckinStatus())){
+		} else if (CheckinStatusEnum.ALLOWED.equalsToCode(tradeDetailItem.getCheckinStatus())) {
 			input.setIsCheckin(YnEnum.YES.getCode());
-		}else{
+		} else {
 			input.setIsCheckin(YnEnum.NO.getCode());
 		}
 
@@ -530,11 +532,21 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		dto.setQrStatus(UserQrStatusEnum.BLACK.getCode());
 		dto.setCreatedStart(createdStart);
 		dto.setCreatedEnd(createdEnd);
-		this.getActualDao().updateAllUserQrStatusByRegisterBillNum(dto);
-		this.userService.findUserQrStatusChangedList().forEach(u -> {
-			this.userQrHistoryService.createUserQrHistoryForWithousBills(u);
+		List<Long>userIdList=this.getActualDao().selectUserIdWithouBill(dto);
+		StreamEx.of(userIdList).nonNull().forEach(uid -> {
+			this.userQrHistoryService.createUserQrHistoryForWithousBills(uid);
 		});
 
+		RegisterBillDto bq = new RegisterBillDto();
+		bq.setCreatedStart(DateUtil.format(createdStart, "yyyy-MM-dd HH:mm:ss"));
+		bq.setCreatedEnd(DateUtil.format(createdEnd, "yyyy-MM-dd HH:mm:ss"));
+		bq.setMetadata(IDTO.AND_CONDITION_EXPR,
+				"user_id in(select id from `user` where qr_status=" + UserQrStatusEnum.BLACK.getCode() + ")");
+		StreamEx.of(this.listByExample(bq)).map(RegisterBill::getUserId).distinct().map(uid -> {
+			return this.userService.get(uid);
+		}).nonNull().forEach(userItem -> {
+			this.updateUserQrStatusByUserId(userItem.getId());
+		});
 	}
 
 	@Override

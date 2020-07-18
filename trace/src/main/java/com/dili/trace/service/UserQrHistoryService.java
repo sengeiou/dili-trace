@@ -29,11 +29,11 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
 	}
 
-	public UserQrHistory createUserQrHistoryForWithousBills(User inputUser) {
-		if (inputUser == null || inputUser.getId() == null) {
+	public UserQrHistory createUserQrHistoryForWithousBills(Long userId) {
+		if (userId == null) {
 			return null;
 		}
-		User userItem = this.userService.get(inputUser.getId());
+		User userItem = this.userService.get(userId);
 		if (userItem == null) {
 			return null;
 		}

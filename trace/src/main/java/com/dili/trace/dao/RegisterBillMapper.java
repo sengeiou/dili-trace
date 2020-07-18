@@ -25,7 +25,7 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
      * @param dto
      * @return
      */
-    public int updateAllUserQrStatusByRegisterBillNum(UserListDto user);
+    public List<Long> selectUserIdWithouBill(UserListDto user);
 
     /**
      * 通过ID悲观锁定数据
