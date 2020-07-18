@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import java.util.Date;
+import java.util.Optional;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
@@ -9,10 +10,13 @@ import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
+import com.google.common.base.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
+
+import one.util.streamex.StreamEx;
 
 @Service
 public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> implements CommandLineRunner {
@@ -24,27 +28,32 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 	public void run(String... args) {
 
 	}
-	public UserQrHistory createUserQrHistoryForWithousBills(User user) {
-		if (user == null || user.getId() == null) {
+
+	public UserQrHistory createUserQrHistoryForWithousBills(User inputUser) {
+		if (inputUser == null || inputUser.getId() == null) {
 			return null;
 		}
-		User userItem = this.userService.get(user.getId());
+		User userItem = this.userService.get(inputUser.getId());
 		if (userItem == null) {
 			return null;
 		}
-		String color = UserQrStatusEnum.fromCode(userItem.getQrStatus()).map(UserQrStatusEnum::getDesc)
-				.orElse(UserQrStatusEnum.BLACK.getDesc());
-				
-		UserQrHistory userQrHistory = new UserQrHistory();
-		userQrHistory.setUserId(userItem.getId());
-		userQrHistory.setUserName(userItem.getName());
-		userQrHistory.setQrStatus(userItem.getQrStatus());
-		userQrHistory.setCreated(new Date());
-		userQrHistory.setModified(new Date());
-		userQrHistory.setContent("最近七天无报备"+",变为" + color + "码");
-		return userQrHistory;
+		Integer qrStatus = UserQrStatusEnum.BLACK.getCode();
+		this.updateUserQrStatus(userItem.getId(), qrStatus);
+		return this.findLatestUserQrHistoryByUserId(userItem.getId()).filter(qrhis -> {
+			return Objects.equal(qrhis.getQrStatus(), qrStatus);
+		}).orElseGet(() -> {
+			String color = UserQrStatusEnum.fromCode(qrStatus).map(UserQrStatusEnum::getDesc)
+					.orElse(UserQrStatusEnum.BLACK.getDesc());
+
+			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
+			userQrHistory.setContent("最近七天无报备" + ",变为" + color + "码");
+			this.insertSelective(userQrHistory);
+			return userQrHistory;
+		});
+
 	}
-	public UserQrHistory createUserQrHistoryForUserRegist(Long userId,Integer qrstatus) {
+
+	public UserQrHistory createUserQrHistoryForUserRegist(Long userId, Integer qrStatus) {
 		if (userId == null) {
 			return null;
 		}
@@ -53,24 +62,22 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 			return null;
 		}
 
-		User user = DTOUtils.newDTO(User.class);
-		user.setId(userItem.getId());
-		user.setQrStatus(qrstatus);
-		this.userService.updateSelective(user);
+		this.updateUserQrStatus(userItem.getId(), qrStatus);
 
-		String color = UserQrStatusEnum.fromCode(qrstatus).map(UserQrStatusEnum::getDesc)
-				.orElse(UserQrStatusEnum.BLACK.getDesc());
-		UserQrHistory userQrHistory = new UserQrHistory();
-		userQrHistory.setUserId(userItem.getId());
-		userQrHistory.setUserName(userItem.getName());
-		userQrHistory.setQrStatus(qrstatus);
-		userQrHistory.setCreated(new Date());
-		userQrHistory.setModified(new Date());
-		userQrHistory.setContent("完成注册,默认为" + color + "码");
-		return userQrHistory;
+		return this.findLatestUserQrHistoryByUserId(userItem.getId()).filter(qrhis -> {
+			return Objects.equal(qrhis.getQrStatus(), qrStatus);
+		}).orElseGet(() -> {
+			String color = UserQrStatusEnum.fromCode(qrStatus).map(UserQrStatusEnum::getDesc)
+					.orElse(UserQrStatusEnum.BLACK.getDesc());
+
+			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
+			userQrHistory.setContent("完成注册,默认为" + color + "码");
+			this.insertSelective(userQrHistory);
+			return userQrHistory;
+		});
 	}
 
-	public UserQrHistory createUserQrHistoryForVerifyBill(RegisterBill bill,Integer qrStatus) {
+	public UserQrHistory createUserQrHistoryForVerifyBill(RegisterBill bill, Integer qrStatus) {
 		if (bill == null || bill.getBillId() == null) {
 			return null;
 		}
@@ -90,29 +97,49 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 			return null;
 		}
 
+		this.updateUserQrStatus(userItem.getId(), qrStatus);
+		return this.findLatestUserQrHistoryByUserId(userItem.getId()).filter(qrhis -> {
+			return Objects.equal(qrhis.getQrStatus(), qrStatus);
+		}).orElseGet(() -> {
+			String color = UserQrStatusEnum.fromCode(qrStatus).map(UserQrStatusEnum::getDesc)
+					.orElse(UserQrStatusEnum.BLACK.getDesc());
+			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
+			userQrHistory.setContent("最新报备单当前审核状态是" + billVerifyStatusEnum.getName() + ",变为" + color + "码");
+			this.insertSelective(userQrHistory);
+			return userQrHistory;
+		});
+	}
 
-		if(qrStatus.equals(userItem.getPreQrStatus())){
-			return null;
-		}
+	private void updateUserQrStatus(Long userId, Integer qrStatus) {
+
 		User user = DTOUtils.newDTO(User.class);
-		user.setId(userItem.getId());
+		user.setId(userId);
 		user.setQrStatus(qrStatus);
-		user.setPreQrStatus(userItem.getQrStatus());
+		// user.setPreQrStatus(userItem.getQrStatus());
 		this.userService.updateSelective(user);
 
+	}
 
+	private UserQrHistory buildUserQrHistory(User userItem, Integer qrStatus) {
 
-		String color = UserQrStatusEnum.fromCode(qrStatus).map(UserQrStatusEnum::getDesc)
-				.orElse(UserQrStatusEnum.BLACK.getDesc());
 		UserQrHistory userQrHistory = new UserQrHistory();
 		userQrHistory.setUserId(userItem.getId());
 		userQrHistory.setUserName(userItem.getName());
 		userQrHistory.setQrStatus(qrStatus);
 		userQrHistory.setCreated(new Date());
 		userQrHistory.setModified(new Date());
-		userQrHistory.setContent("最新报备单当前审核状态是"+billVerifyStatusEnum.getName()+",变为" + color + "码");
-		this.insertSelective(userQrHistory);
 		return userQrHistory;
+
+	}
+
+	private Optional<UserQrHistory> findLatestUserQrHistoryByUserId(Long userId) {
+		UserQrHistory query = new UserQrHistory();
+		query.setUserId(userId);
+		query.setSort("id");
+		query.setOrder("desc");
+		query.setPage(1);
+		query.setRows(1);
+		return StreamEx.of(this.listPageByExample(query).getDatas()).findFirst();
 	}
 
 }
