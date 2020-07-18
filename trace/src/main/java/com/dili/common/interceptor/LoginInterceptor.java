@@ -35,7 +35,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	private void logRequest(HttpServletRequest request) {
 		if (this.sessionContext.getSessionData() != null && this.sessionContext.getSessionData().getUserId() != null) {
 			String requestUri = request.getRequestURI();
-			logger.info("loginType={},accountId={},requestUri={}", this.sessionContext.getLoginType(),
+			logger.info("loginType={},accountId={},requestUri={}", this.sessionContext.getSessionData().getIdentityType(),
 					this.sessionContext.getAccountId(), requestUri);
 			this.userAccessLogService.createUserAccessLog(this.sessionContext.getSessionData(), requestUri);
 		}

@@ -7,6 +7,9 @@ import java.util.Map;
 
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.BeanUtils;
@@ -14,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SessionData {
-    private static final Logger logger=LoggerFactory.getLogger(SessionData.class);
+    private static final Logger logger = LoggerFactory.getLogger(SessionData.class);
 
     private Integer identityType;
     private Long userId;
@@ -27,20 +30,44 @@ public class SessionData {
     private Date loginDateTime;
     private boolean invalidate;
     private String sessionId;
+    
+    private Map<Object, Object> mapData = new HashMap<>();
+
+    private SessionData() {
+    }
+
+    private Map<Object, Object> convertThisToMap() {
+        Map<Object, Object> map = new HashMap<>(new BeanMap(this));
+        map.remove("mapData");
+        return map;
+    }
 
     public Map<Object, Object> toMap() {
-        Map<Object, Object> map = new HashMap<>(new BeanMap(this));
-        return map;
+        return this.convertThisToMap();
     }
 
     public static SessionData fromMap(Map<Object, Object> map) {
         SessionData data = new SessionData();
         try {
             BeanUtils.copyProperties(data, map);
+            data.mapData = data.convertThisToMap();
         } catch (IllegalAccessException | InvocationTargetException e) {
             logger.error(e.getMessage(), e);
         }
         return data;
+    }
+    public boolean changed(){
+        Map<Object, Object> previousMapData=  this.mapData;
+        Map<Object, Object> currentMapData=  this.convertThisToMap();
+        for(Object key:previousMapData.keySet()){
+            Object preValue=previousMapData.get(key);
+            Object currentValue=currentMapData.get(key);
+            if(!Objects.equal(preValue, currentValue)){
+                return true;
+            }
+        }
+        return false;
+
     }
 
     public static SessionData fromUser(User user, Integer identityType) {
@@ -52,6 +79,7 @@ public class SessionData {
         data.validateState = user.getValidateState();
         data.qrStatus = user.getQrStatus();
         data.marketName = user.getMarketName();
+        data.mapData = data.convertThisToMap();
         return data;
     }
 
@@ -60,6 +88,7 @@ public class SessionData {
         data.identityType = identityType;
         data.userId = user.getId();
         data.userName = user.getName();
+        data.mapData = data.convertThisToMap();
         return data;
     }
 

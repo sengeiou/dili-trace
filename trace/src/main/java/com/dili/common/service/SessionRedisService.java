@@ -6,9 +6,7 @@ import java.util.Optional;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.SessionData;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +88,21 @@ public class SessionRedisService {
             this.redisService.del(accountRedisKey);
         }
 
+    }
+
+    public void refresh(SessionData sessionData) {
+        if(sessionData==null){
+            return;
+        }
+        logger.info("refresh:sessionId={}", sessionData.toMap());
+        if(sessionData.changed()){
+            if(sessionData.isInvalidate()){
+                this.deleteFromRedis(sessionData.getSessionId());
+            }else{
+                this.saveToRedis(sessionData);
+            }
+        }
+       
     }
 
     public SessionData saveToRedis(SessionData sessionData) {

@@ -21,13 +21,14 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import cn.hutool.core.util.StrUtil;
 
 public class SessionInterceptor extends HandlerInterceptorAdapter {
-	private static final Logger logger=LoggerFactory.getLogger(SessionInterceptor.class);
+	private static final Logger logger = LoggerFactory.getLogger(SessionInterceptor.class);
 
 	private static final String ATTRIBUTE_CONTEXT_INITIALIZED = SessionInterceptor.class.getName()
 			+ ".CONTEXT_INITIALIZED";
 	// SESSION KEY
 	// private static final String SESSION_PREFIX = "TRACE_SESSION_";
-	// private static final String SESSION_PREFIX_ACCOUNT = "TRACE_SESSION_ACCOUNT_";
+	// private static final String SESSION_PREFIX_ACCOUNT =
+	// "TRACE_SESSION_ACCOUNT_";
 	// private static final String PREFIX_GAP = "_";
 	@Resource
 	private LoginSessionContext sessionContext;
@@ -66,58 +67,25 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 	 * @param response
 	 */
 	private void checkDisableUsers(HttpServletRequest request, HttpServletResponse response) {
-		// if (redisService.sHasKey(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, sessionContext.getAccountId())) {
-		// 	deleteSession(response, request);
-		// 	sessionContext.setInvalidate(true);
+		// if (redisService.sHasKey(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,
+		// sessionContext.getAccountId())) {
+		// deleteSession(response, request);
+		// sessionContext.setInvalidate(true);
 		// }
 	}
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
-		// if (sessionContext.getChanged()) {
-			if (sessionContext.getInvalidate()) {
-				deleteSession(request,response);
-			} else {
-				//saveSession(request,response);
-			}
-		// }
-	}
-
-	private void saveSession(HttpServletRequest request, HttpServletResponse response) {
-		logger.info("sessionid:{}",this.getSessionId(request));
-		this.sessionRedisService.saveToRedis(this.sessionContext.getSessionData());
-	}
-
-	private void deleteSession(HttpServletRequest request, HttpServletResponse response) {
-		String sessionId = sessionContext.getSessionId();
-		this.sessionRedisService.deleteFromRedis(sessionId);
-		// if (!StrUtil.isBlank(sessionId)) {
-		// 	redisService.del(SESSION_PREFIX + sessionId);
-		// }
+		this.sessionRedisService.refresh(this.sessionContext.getSessionData());
+		
 	}
 
 	private void loadData(HttpServletRequest request, HttpServletResponse response, String sessionId) {
-		this.sessionRedisService.loadFromRedis(sessionId).ifPresent(sd->{
-		//   sd.setToLoginSessionContext(this.sessionContext);
-		  this.sessionContext.setSessionData(sd);
+		this.sessionRedisService.loadFromRedis(sessionId).ifPresent(sd -> {
+			// sd.setToLoginSessionContext(this.sessionContext);
+			this.sessionContext.setSessionData(sd);
 		});
-		// sessionContext.setSessionId(sessionId);
-		// Map<String, Object> map = (Map<String, Object>) redisService.get(SESSION_PREFIX + sessionId);
-		// if (MapUtil.isEmpty(map)) {
-		// 	return;
-		// }
-		// //判断account-session
-		// String redisAccountPrefix = SESSION_PREFIX_ACCOUNT + String.valueOf(map.get(SessionConstants.SESSION_LOGINTYPE))+ PREFIX_GAP + String.valueOf(map.get(SessionConstants.SESSION_ACCOUNT_ID));
-		// String accountSessionId = (String)redisService.get(redisAccountPrefix);
-		// if (!sessionId.equals(accountSessionId)){
-		// 	redisService.del(SESSION_PREFIX + sessionId);
-		// 	return;
-		// }
-
-		// long expire = redisService.getExpire(SESSION_PREFIX + sessionId) * 1000;
-		// sessionContext.setMillis(expire);
-		// sessionContext.setMap(map);
 
 	}
 
