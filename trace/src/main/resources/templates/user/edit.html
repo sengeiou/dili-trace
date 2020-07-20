@@ -20,7 +20,7 @@
                             <td style="padding:5px;width:50%">
                                 <input class="easyui-textbox" name="name" id="name" style="width:100%"
                                     value="${item.name}"
-                                    data-options="label:'姓名*:', validType:'length[2,20]',required:true" />
+                                    data-options="label:'姓名*:', validType:'length[2,30]',required:true" />
                             </td>
 
                             <td style="padding:5px;">
@@ -54,7 +54,7 @@
                             <td style="padding:5px;" class="usertype-${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}">
                                 <input class="easyui-tagbox" name="tallyAreaNos" id="tallyAreaNos" style="width:100%"
                                     value="${item.tallyAreaNos}" 
-                                    data-options="label:'理货区号:',prompt:'输入3位数字后回车',validType:['uniquetag','tagNum','tagLength[3]']" />
+                                    data-options="label:'理货区号:',prompt:'输入3位数字后回车',validType:['uniquetag','tagNum']" />
                             </td>
                         </tr>
                         <tr>
