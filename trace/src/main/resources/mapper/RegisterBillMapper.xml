@@ -163,17 +163,17 @@
   </select>
 
 
-  <update id="updateAllUserQrStatusByRegisterBillNum" parameterType="com.dili.trace.dto.UserListDto">
-    update `user` set `user`.pre_qr_status= `user`.qr_status,`user`.qr_status=#{qrStatus} where not exists(
-      select `user`.id from  register_bill where register_bill.user_id =`user`.id
+  <select id="selectUserIdWithouBill" parameterType="com.dili.trace.dto.UserListDto" resultType="java.lang.Long">
+select id from `user` where id not in(
+    select user_id from register_bill where 1=1
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=created ]]>
     </if>
     <if test="createdEnd != null">
       <![CDATA[AND created <=#{createdEnd}]]>
     </if>
-    )
-    <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
-  </update>
+)<![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
+
+  </select>
 
 </mapper>
