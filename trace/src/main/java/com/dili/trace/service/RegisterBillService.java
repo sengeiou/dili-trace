@@ -111,7 +111,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * 
 	 * @param userId
 	 */
-	public void updateUserQrStatusByUserId(Long userId);
+	public void updateUserQrStatusByUserId(Long billId,Long userId);
 
 	/**
 	 * 根据报备单数量更新用户状态到黑码

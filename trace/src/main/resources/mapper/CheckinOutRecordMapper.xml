@@ -51,13 +51,20 @@
         AND register_bill.plate like '%${likePlate}%'
     </if>
     
-    <if test="includeUnCheckin != null">
-        <if test="includeUnCheckin == true">
-            <![CDATA[AND (checkinout_record.`status` is null or checkinout_record.`status`<>10)]]>
-        </if>
-        <if test="includeUnCheckin == false">
-            AND checkinout_record.`status`=10
-        </if>
+    <if test="includeUnCheckin == true">
+        <![CDATA[AND (checkinout_record.`status` is null or checkinout_record.`status`<>10)]]>
     </if>
+    <if test="includeUnCheckin == false">
+        AND checkinout_record.`status`=10
+    </if>
+
+    <if test="checkinCreatedStart != null  and checkinCreatedStart != ''">
+        AND <![CDATA[  #{checkinCreatedStart}<=checkinout_record.created ]]>
+    </if>
+    <if test="checkinCreatedEnd != null  and checkinCreatedEnd != ''">
+        AND   <![CDATA[ checkinout_record.created <=#{checkinCreatedEnd}]]>
+    </if>
+
+
     </select>
 </mapper>

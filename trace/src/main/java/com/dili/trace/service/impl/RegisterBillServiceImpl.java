@@ -201,7 +201,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					bill.setId(registerBill.getId());
 					this.updateSelective(bill);
 				});
-		this.updateUserQrStatusByUserId(registerBill.getUserId());
+		this.updateUserQrStatusByUserId(registerBill.getBillId(),registerBill.getUserId());
 		return registerBill.getId();
 	}
 
@@ -343,7 +343,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		});
 
 		this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
-		this.updateUserQrStatusByUserId(billItem.getUserId());
+		this.updateUserQrStatusByUserId(billItem.getBillId(),billItem.getUserId());
 		return input.getId();
 	}
 
@@ -530,7 +530,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		});
 
 		// 更新用户颜色码
-		this.updateUserQrStatusByUserId(billItem.getUserId());
+		this.updateUserQrStatusByUserId(billItem.getBillId(),billItem.getUserId());
 
 	}
 
@@ -539,20 +539,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	 * 
 	 * @param userId
 	 */
-	public void updateUserQrStatusByUserId(Long userId) {
+	public void updateUserQrStatusByUserId(Long billId,Long userId) {
 		if (userId == null) {
 			return;
 		}
-		RegisterBill query = new RegisterBill();
-		query.setPage(1);
-		query.setRows(1);
-		query.setSort("created,id");
-		query.setOrder("desc,desc");
-		query.setUserId(userId);
-		RegisterBill billItem = this.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
-		if (billItem == null) {
-			return;
-		}
+		RegisterBill billItem = this.get(billId);
 		BillVerifyStatusEnum verifyStatus = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElse(null);
 		UserQrStatusEnum userQrStatus = UserQrStatusEnum.BLACK;
 		switch (verifyStatus) {
@@ -590,16 +581,16 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			this.userQrHistoryService.createUserQrHistoryForWithousBills(uid);
 		});
 
-		RegisterBillDto bq = new RegisterBillDto();
-		bq.setCreatedStart(DateUtil.format(createdStart, "yyyy-MM-dd HH:mm:ss"));
-		bq.setCreatedEnd(DateUtil.format(createdEnd, "yyyy-MM-dd HH:mm:ss"));
-		bq.setMetadata(IDTO.AND_CONDITION_EXPR,
-				"user_id in(select id from `user` where qr_status=" + UserQrStatusEnum.BLACK.getCode() + ")");
-		StreamEx.of(this.listByExample(bq)).map(RegisterBill::getUserId).distinct().map(uid -> {
-			return this.userService.get(uid);
-		}).nonNull().forEach(userItem -> {
-			this.updateUserQrStatusByUserId(userItem.getId());
-		});
+		// RegisterBillDto bq = new RegisterBillDto();
+		// bq.setCreatedStart(DateUtil.format(createdStart, "yyyy-MM-dd HH:mm:ss"));
+		// bq.setCreatedEnd(DateUtil.format(createdEnd, "yyyy-MM-dd HH:mm:ss"));
+		// bq.setMetadata(IDTO.AND_CONDITION_EXPR,
+		// 		"user_id in(select id from `user` where qr_status=" + UserQrStatusEnum.BLACK.getCode() + ")");
+		// StreamEx.of(this.listByExample(bq)).map(RegisterBill::getUserId).distinct().map(uid -> {
+		// 	return this.userService.get(uid);
+		// }).nonNull().forEach(userItem -> {
+		// 	this.updateUserQrStatusByUserId(userItem.getId());
+		// });
 	}
 
 	@Override

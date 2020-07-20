@@ -78,12 +78,8 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		});
 	}
 
-	public UserQrHistory createUserQrHistoryForVerifyBill(RegisterBill bill, Integer qrStatus) {
-		if (bill == null || bill.getBillId() == null) {
-			return null;
-		}
-		RegisterBill billItem = this.registerBillService.get(bill.getBillId());
-		if (billItem == null) {
+	public UserQrHistory createUserQrHistoryForVerifyBill(RegisterBill billItem, Integer qrStatus) {
+		if(billItem==null){
 			return null;
 		}
 		BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
@@ -107,7 +103,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
 			userQrHistory.setBillId(billItem.getId());
 			userQrHistory.setVerifyStatus(billVerifyStatusEnum.getCode());
-			userQrHistory.setContent("最新报备单当前审核状态是" + billVerifyStatusEnum.getName() + ",变为" + color + "码");
+			userQrHistory.setContent("最新操作报备单审核状态是" + billVerifyStatusEnum.getName() + ",变为" + color + "码");
 			this.insertSelective(userQrHistory);
 			return userQrHistory;
 		});
