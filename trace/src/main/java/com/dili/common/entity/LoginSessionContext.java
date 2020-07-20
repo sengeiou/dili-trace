@@ -28,7 +28,7 @@ public class LoginSessionContext implements Serializable {
 	}
 
 	public OperatorUser getLoginUserOrException(LoginIdentityTypeEnum identityType) {
-		if (this.getSessionData() == null && this.getSessionData().getIdentityType() == null
+		if (this.getSessionData() != null && this.getSessionData().getIdentityType() != null
 				&& this.getSessionData().getUserId() != null) {
 			return new OperatorUser(this.getSessionData().getUserId(), this.getSessionData().getUserName());
 		}
