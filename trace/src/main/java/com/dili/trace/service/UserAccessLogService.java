@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 public class UserAccessLogService extends BaseServiceImpl<UserAccessLog, Long> {
     private static final Logger logger = LoggerFactory.getLogger(UserAccessLogService.class);
     public Optional<UserAccessLog> createUserAccessLog(SessionData sessionData, String requestUri) {
-        if(sessionData==null){
+        // if(sessionData==null){
             return Optional.empty();
-        }
-        return this.createUserAccessLog(sessionData.getUserId(), sessionData.getUserName(), sessionData.getIdentityType(), requestUri);
+        // }
+        // return this.createUserAccessLog(sessionData.getUserId(), sessionData.getUserName(), sessionData.getIdentityType(), requestUri);
     }
     private Optional<UserAccessLog> createUserAccessLog(Long userId,String userName, Integer loginType, String requestUri) {
         if (userId == null && loginType == null) {
