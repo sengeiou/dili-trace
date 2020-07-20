@@ -376,7 +376,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.updateSelective(bill);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
 		this.userQrHistoryService.rollbackUserQrStatus(bill.getId(),billItem.getUserId());
-		return input.getId();
+		return billId;
 	}
 
 

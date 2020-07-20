@@ -43,7 +43,9 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.QrCodeService;
+import com.dili.trace.service.RUserTallyAreaService;
 import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.TallyAreaNoService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserQrHistoryService;
 import com.dili.trace.service.UserService;
@@ -89,6 +91,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     private String baseWebPath;
     @Autowired
     UserQrHistoryService userQrHistoryService;
+    @Autowired
+    TallyAreaNoService tallyAreaNoService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -127,7 +131,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         // }
         // this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER,
         // user.getSalesCityId());
+        String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
+        user.setTallyAreaNos(tallyAreaNos);
         insertSelective(user);
+        this.tallyAreaNoService.saveOrUpdateTallyAreaNo(user.getId(), tallyAreaNos);
         // // 增加车牌信息
         // // LOGGER.info("输入车牌:{}",user.getPlates());
         // List<String> plateList = this.parsePlate(user.getPlates());
@@ -189,8 +196,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
             }
         }
+
+        String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
+        user.setTallyAreaNos(tallyAreaNos);
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         updateSelective(user);
+        this.tallyAreaNoService.saveOrUpdateTallyAreaNo(userPO.getId(), tallyAreaNos);
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
                 user.getSalesCityId());
         // this.updateUserQrItem(user.getId());
@@ -317,7 +328,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (!YnEnum.YES.getCode().equals(user.getYn())) {
             return BaseOutput.failure("数据已被删除");
         }
-        List<String> tallyAreaNos = Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(","));
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
@@ -489,7 +499,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (userId == null) {
             return;
         }
-        this.userQrHistoryService.createUserQrHistoryForUserRegist(userId,UserQrStatusEnum.BLACK.getCode());
+        this.userQrHistoryService.createUserQrHistoryForUserRegist(userId, UserQrStatusEnum.BLACK.getCode());
     }
 
     @Override
@@ -520,7 +530,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         qrOutput.setUserId(userId);
         return qrOutput;
     }
-    
+
     @Override
     public List<User> findUserQrStatusChangedList() {
 

@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,13 +66,54 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> imple
                                 return ruserTallyArea;
                             });
                         }).toList();
-                logger.info("list.size={}",list.size());
+                logger.info("list.size={}", list.size());
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
 
             uq.setPage(uq.getPage() + 1);
         }
+    }
+
+    public String parseAndConvertTallyAreaNos(String tallyAreaNos) {
+        return StreamEx.of(this.parseAndConvert(tallyAreaNos)).joining(",");
+
+    }
+
+    private List<String> parseAndConvert(String tallyAreaNos) {
+        return StreamEx.ofNullable(tallyAreaNos).map(StringUtils::trimToNull).nonNull().flatArray(str -> str.split(","))
+                .map(StringUtils::trimToNull).nonNull().distinct().toList();
+
+    }
+
+    public List<TallyAreaNo> saveOrUpdateTallyAreaNo(Long userId, String tallyAreaNos) {
+        List<String> tallyAreaNoList = this.parseAndConvert(tallyAreaNos);
+        return this.saveOrUpdateTallyAreaNo(userId, tallyAreaNoList);
+
+    }
+
+    public List<TallyAreaNo> saveOrUpdateTallyAreaNo(Long userId, List<String> tallyAreaNoList) {
+        if (userId == null) {
+            return Lists.newArrayList();
+        }
+        RUserTallyArea deleteDomain = new RUserTallyArea();
+        deleteDomain.setUserId(userId);
+        this.ruserTallyAreaService.deleteByExample(deleteDomain);
+        if (tallyAreaNoList.isEmpty()) {
+            return Lists.newArrayList();
+        }
+        return StreamEx.of(tallyAreaNoList).map(number -> {
+            TallyAreaNo tallyAreaNoItem = this.parseAndSave(number);
+            RUserTallyArea rUserTallyArea = new RUserTallyArea();
+            rUserTallyArea.setUserId(userId);
+            rUserTallyArea.setTallyAreaNoId(tallyAreaNoItem.getId());
+            rUserTallyArea.setCreated(new Date());
+            rUserTallyArea.setModified(new Date());
+            this.ruserTallyAreaService.insertSelective(rUserTallyArea);
+            return tallyAreaNoItem;
+
+        }).toList();
+
     }
 
     private TallyAreaNo parseAndSave(String number) {
