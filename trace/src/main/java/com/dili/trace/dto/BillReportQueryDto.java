@@ -12,7 +12,7 @@ public class BillReportQueryDto extends BaseDomain {
     private String checkinCreatedEnd;
 
     private Boolean includeUnCheckin;
-    
+    private String likeCode;
 
     private String likeUserName;
     
@@ -208,6 +208,21 @@ public class BillReportQueryDto extends BaseDomain {
      */
     public void setLikePlate(String likePlate) {
         this.likePlate = likePlate;
+    }
+
+
+    /**
+     * @return String return the likeCode
+     */
+    public String getLikeCode() {
+        return likeCode;
+    }
+
+    /**
+     * @param likeCode the likeCode to set
+     */
+    public void setLikeCode(String likeCode) {
+        this.likeCode = likeCode;
     }
 
 }

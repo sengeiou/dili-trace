@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.dao.TallyAreaNoMapper;
 import com.dili.trace.domain.RUserTallyArea;
 import com.dili.trace.domain.TallyAreaNo;
 import com.dili.trace.domain.User;
@@ -28,6 +29,9 @@ import one.util.streamex.StreamEx;
 public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(TallyAreaNoService.class);
     private Map<String, List<String>> areaAndNumMap = new HashMap<>();
+
+    @Autowired
+    TallyAreaNoMapper tallyAreaNoMapper;
 
     public TallyAreaNoService() {
         areaAndNumMap.put("A1", Lists.newArrayList("-6-", "-7-", "7街", "-8-", "-9-", "-XQ-", "虾区"));
@@ -102,7 +106,9 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> imple
         if (tallyAreaNoList.isEmpty()) {
             return Lists.newArrayList();
         }
-        return StreamEx.of(tallyAreaNoList).map(number -> {
+        this.tallyAreaNoMapper.cleanUselessTallyAreaNo();
+
+        List<TallyAreaNo> list = StreamEx.of(tallyAreaNoList).map(number -> {
             TallyAreaNo tallyAreaNoItem = this.parseAndSave(number);
             RUserTallyArea rUserTallyArea = new RUserTallyArea();
             rUserTallyArea.setUserId(userId);
@@ -113,6 +119,8 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> imple
             return tallyAreaNoItem;
 
         }).toList();
+
+        return list;
 
     }
 
