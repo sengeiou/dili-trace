@@ -1,11 +1,13 @@
 package com.dili.common.config;
 
+import javax.annotation.Resource;
+
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.interceptor.LoginInterceptor;
 import com.dili.common.interceptor.SessionInterceptor;
 import com.dili.common.interceptor.SignInterceptor;
 import com.diligrp.manage.sdk.session.SessionFilter;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +18,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.annotation.Resource;
-
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 	@Bean
@@ -26,7 +26,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 	}
 
 	@Bean
-	public FilterRegistrationBean testFilterRegistration() {
+	public FilterRegistrationBean sessionFilterRegistration() {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 		registration.setFilter(sessionFilter());
 		registration.addUrlPatterns("/*");
@@ -39,7 +39,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/image/**")
-				.addResourceLocations("file:" + defaultConfiguration.getImageDirectory());
+				.addResourceLocations("file:" + defaultConfiguration.getImageDirectory()).setCachePeriod(3600 * 6).resourceChain(true);
 	}
 
 	@Resource
