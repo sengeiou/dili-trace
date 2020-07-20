@@ -13,7 +13,7 @@ public class RegisterBillHistoryServiceTest extends AutoWiredBaseTest {
 
 	@Test
 	public void createHistory() {
-		RegisterBill bill = super.billService.listByExample(new RegisterBill()).stream().findAny().orElse(null);
+		RegisterBill bill = super.registerBillService.listByExample(new RegisterBill()).stream().findAny().orElse(null);
 		this.registerBillHistoryService.createHistory(bill.getBillId());
 	}
 

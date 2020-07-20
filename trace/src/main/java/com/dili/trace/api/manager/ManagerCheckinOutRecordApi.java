@@ -27,6 +27,7 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
@@ -83,6 +84,7 @@ public class ManagerCheckinOutRecordApi {
 
 			RegisterBillDto query = new RegisterBillDto();
 			query.setIdList(billIdList);
+			query.setIsDeleted(TFEnum.FALSE.getCode());
 			StreamEx.of(this.registerBillService.listByExample(query)).forEach(billItem -> {
 				if (!BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
 						&& !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
@@ -147,7 +149,7 @@ public class ManagerCheckinOutRecordApi {
 		query.setSort("created");
 		query.setOrder("desc");
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
-
+		query.setIsDeleted(TFEnum.FALSE.getCode());
 		query.setTruckType(TruckTypeEnum.FULL.getCode());
 		List<RegisterBill> list = this.registerBillService.listByExample(query);
 

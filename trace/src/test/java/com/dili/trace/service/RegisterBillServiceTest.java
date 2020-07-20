@@ -24,7 +24,7 @@ import one.util.streamex.StreamEx;
 
 public class RegisterBillServiceTest extends AutoWiredBaseTest {
     @Autowired
-    RegisterBillService billService;
+    RegisterBillService registerBillService;
     @Autowired
     CheckinOutRecordService checkinOutRecordService;
     @Autowired
@@ -34,11 +34,11 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
     public void doVerifyBeforeCheckIn() {
         RegisterBill query = new RegisterBill();
         query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-        RegisterBill input = StreamEx.of(this.billService.listByExample(query)).findFirst().orElse(null);
+        RegisterBill input = StreamEx.of(this.registerBillService.listByExample(query)).findFirst().orElse(null);
         assertNotNull(input);
         OperatorUser operatorUser = new OperatorUser(1L, "test");
         input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-        Long billId = this.billService.doVerifyBeforeCheckIn(input, Optional.ofNullable(operatorUser));
+        Long billId = this.registerBillService.doVerifyBeforeCheckIn(input, Optional.ofNullable(operatorUser));
         assertNotNull(billId);
     }
 
@@ -47,7 +47,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
 
         RegisterBill query = new RegisterBill();
         query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-        RegisterBill input = StreamEx.of(this.billService.listByExample(query)).findFirst().orElse(null);
+        RegisterBill input = StreamEx.of(this.registerBillService.listByExample(query)).findFirst().orElse(null);
         assertNotNull(input);
         assertTrue(BillVerifyStatusEnum.NONE.equalsToCode(input.getVerifyStatus()));
         CheckInApiInput checkInApiInput = new CheckInApiInput();
@@ -62,7 +62,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
 
         OperatorUser operatorUser = new OperatorUser(1L, "test");
         input.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-        Long billId = this.billService.doVerifyAfterCheckIn(input.getId(),input.getVerifyStatus(),input.getReason(), Optional.ofNullable(operatorUser));
+        Long billId = this.registerBillService.doVerifyAfterCheckIn(input.getId(),input.getVerifyStatus(),input.getReason(), Optional.ofNullable(operatorUser));
         assertNotNull(billId);
 
     }
@@ -70,7 +70,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
     @Test
     @Transactional
     public void selectByIdForUpdate() {
-        this.billService.selectByIdForUpdate(5L).ifPresent(bill -> {
+        this.registerBillService.selectByIdForUpdate(5L).ifPresent(bill -> {
             System.out.println(bill);
         });
     }
@@ -78,7 +78,7 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
     
     @Test
     public void viewTradeDetailBill() {
-        this.billService.viewTradeDetailBill(182L,5071L);
+        this.registerBillService.viewTradeDetailBill(182L,5071L);
     }
 
 }

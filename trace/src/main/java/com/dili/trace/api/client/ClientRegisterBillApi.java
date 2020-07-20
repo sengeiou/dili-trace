@@ -19,6 +19,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
@@ -67,7 +68,7 @@ public class ClientRegisterBillApi {
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
 	public BaseOutput<List<Long>> createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
-		logger.info("保存多个登记单:{}",JSON.toJSONString(createListBillParam));
+		logger.info("保存多个登记单:{}", JSON.toJSONString(createListBillParam));
 		if (createListBillParam == null || createListBillParam.getRegisterBills() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -79,8 +80,9 @@ public class ClientRegisterBillApi {
 			if (registerBills == null) {
 				return BaseOutput.failure("没有登记单");
 			}
-			logger.info("保存多个登记单操作用户:{}，{}" ,operatorUser.getId(),operatorUser.getName());
-			List<Long> idList = this.registerBillService.createBillList(registerBills, userService.get(operatorUser.getId()), Optional.empty());
+			logger.info("保存多个登记单操作用户:{}，{}", operatorUser.getId(), operatorUser.getName());
+			List<Long> idList = this.registerBillService.createBillList(registerBills,
+					userService.get(operatorUser.getId()), Optional.empty());
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -93,7 +95,7 @@ public class ClientRegisterBillApi {
 	@ApiOperation("修改报备单")
 	@RequestMapping(value = "/doEditRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput doEditRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
-		logger.info("修改报备单:{}",JSON.toJSONString(dto));
+		logger.info("修改报备单:{}", JSON.toJSONString(dto));
 		if (dto == null || dto.getBillId() == null) {
 			return BaseOutput.failure("参数错误");
 		}
@@ -105,10 +107,34 @@ public class ClientRegisterBillApi {
 				return BaseOutput.failure("未登陆用户");
 			}
 
-			
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存登记单:{}", JSON.toJSONString(registerBill));
-			this.registerBillService.doEdit(registerBill,dto.getImageCertList(),Optional.empty());
+			this.registerBillService.doEdit(registerBill, dto.getImageCertList(), Optional.empty());
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+		return BaseOutput.success();
+	}
+
+	@ApiOperation("删除报备单")
+	@RequestMapping(value = "/doDeleteRegisterBill.api", method = RequestMethod.POST)
+	public BaseOutput doDeleteRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
+		logger.info("删除报备单:{}", JSON.toJSONString(dto));
+		if (dto == null || dto.getBillId() == null) {
+			return BaseOutput.failure("参数错误");
+		}
+		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+
+			User user = userService.get(operatorUser.getId());
+			if (user == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			logger.info("删除报备单:billId:{},userId:{}", dto.getBillId(), user.getId());
+			this.registerBillService.doDelete(dto.getBillId(), user.getId(), Optional.empty());
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

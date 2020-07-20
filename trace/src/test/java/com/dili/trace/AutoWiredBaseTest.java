@@ -54,7 +54,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 	@Autowired
 	UpStreamService UpStreamService;
 	@Autowired
-	protected RegisterBillService billService;
+	protected RegisterBillService registerBillService;
 	@Autowired
 	CheckinOutRecordService checkinOutRecordService;
 	@Autowired
@@ -141,9 +141,9 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
 		List<ImageCert> imageList = Lists.newArrayList(imageCert);
 
-		Long billId = this.billService.createRegisterBill(bill, imageList, Optional.ofNullable(new OperatorUser(1L, "test")));
+		Long billId = this.registerBillService.createRegisterBill(bill, imageList, Optional.ofNullable(new OperatorUser(1L, "test")));
 		assertNotNull(billId);
-		RegisterBill billItem = this.billService.get(billId);
+		RegisterBill billItem = this.registerBillService.get(billId);
 		assertNotNull(billItem);
 		assertTrue(BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus()));
 		return billItem;
@@ -177,9 +177,9 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		RegisterBill bill = new RegisterBill();
 		bill.setId(billId);
 		bill.setVerifyStatus(verifyStatusEnum.getCode());
-		this.billService.doVerifyBeforeCheckIn(bill, Optional.ofNullable(new OperatorUser(1L, "test")));
+		this.registerBillService.doVerifyBeforeCheckIn(bill, Optional.ofNullable(new OperatorUser(1L, "test")));
 
-		RegisterBill billItem = this.billService.get(billId);
+		RegisterBill billItem = this.registerBillService.get(billId);
 		assertNotNull(billItem);
 		assertTrue(verifyStatusEnum.equalsToCode(billItem.getVerifyStatus()));
 		assertTrue(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.equalsToCode(billItem.getVerifyType()));
@@ -191,8 +191,8 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		RegisterBill bill = new RegisterBill();
 		bill.setId(billId);
 		bill.setVerifyStatus(verifyStatusEnum.getCode());
-		this.billService.doVerifyAfterCheckIn(bill.getId(),bill.getVerifyStatus(),bill.getReason(), Optional.ofNullable(new OperatorUser(1L, "test")));
-		RegisterBill billItem = this.billService.get(billId);
+		this.registerBillService.doVerifyAfterCheckIn(bill.getId(),bill.getVerifyStatus(),bill.getReason(), Optional.ofNullable(new OperatorUser(1L, "test")));
+		RegisterBill billItem = this.registerBillService.get(billId);
 		assertNotNull(billItem);
 		assertTrue(verifyStatusEnum.equalsToCode(billItem.getVerifyStatus()));
 		assertTrue(VerifyTypeEnum.PASSED_AFTER_CHECKIN.equalsToCode(billItem.getVerifyType()));

@@ -28,13 +28,13 @@ public class TradeService {
     @Autowired
     ProductStockService batchStockService;
     @Autowired
-    RegisterBillService billService;
+    RegisterBillService registerBillService;
     @Autowired
     TradeDetailService tradeDetailService;
 
     public Long createBatchStockAfterVerifiedAndCheckin(Long billId, Long tradeDetailId,
     Optional<OperatorUser> operatorUser) {
-        RegisterBill billItem = this.billService.get(billId);
+        RegisterBill billItem = this.registerBillService.get(billId);
         BigDecimal weight=billItem.getWeight();
         if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
             // 还没有进门，不对TradeDetaile及BatchStock进行任何操作

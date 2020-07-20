@@ -35,6 +35,7 @@ import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.BrandService;
@@ -105,7 +106,28 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Transactional
 	@Override
 	public Optional<RegisterBill> selectByIdForUpdate(Long id) {
-		return this.getActualDao().selectByIdForUpdate(id);
+		return this.getActualDao().selectByIdForUpdate(id).map(billItem -> {
+			if (TFEnum.TRUE.equalsCode(billItem.getIsDeleted())) {
+				throw new TraceBusinessException("报备单已经被删除");
+			}
+			return billItem;
+		});
+	}
+
+	@Transactional
+	@Override
+	public Optional<RegisterBill> getAndCheckById(Long billId) {
+		if (billId == null) {
+			return Optional.empty();
+		}
+		RegisterBill billItem = this.get(billId);
+		if (billItem == null) {
+			return Optional.empty();
+		}
+		if (TFEnum.TRUE.equalsCode(billItem.getIsDeleted())) {
+			throw new TraceBusinessException("报备单已经被删除");
+		}
+		return Optional.of(billItem);
 	}
 
 	@Override
@@ -136,6 +158,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		registerBill.setVersion(1);
 		registerBill.setCreated(new Date());
 		registerBill.setIsCheckin(YnEnum.NO.getCode());
+		registerBill.setIsDeleted(TFEnum.FALSE.getCode());
 		operatorUser.ifPresent(op -> {
 			registerBill.setOperatorName(op.getName());
 			registerBill.setOperatorId(op.getId());
@@ -262,10 +285,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		RegisterBill billItem = this.get(input.getId());
-		if (billItem == null) {
-			throw new TraceBusinessException("数据错误");
-		}
+		RegisterBill billItem = this.getAndCheckById(input.getId())
+				.orElseThrow(() -> new TraceBusinessException("数据不存在"));
+
 		if (BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
 				|| BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
 			// 待审核，或者已退回状态可以进行数据修改
@@ -324,6 +346,39 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		this.updateUserQrStatusByUserId(billItem.getUserId());
 		return input.getId();
 	}
+
+	@Transactional
+	@Override
+	public Long doDelete(Long billId,Long userId,Optional<OperatorUser> operatorUser) {
+		if (billId == null||userId==null) {
+			throw new TraceBusinessException("参数错误");
+		}
+		RegisterBill billItem = this.getAndCheckById(billId)
+				.orElseThrow(() -> new TraceBusinessException("数据不存在"));
+		if(!userId.equals(billItem.getUserId())){
+			throw	new TraceBusinessException("没有权限删除数据");
+		}
+		if(YnEnum.YES.equalsToCode(billItem.getIsCheckin())){
+			throw	new TraceBusinessException("不能删除已进门数据");
+		}
+		if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())){
+			throw	new TraceBusinessException("不能删除审核未通过数据");
+		}
+		RegisterBill bill=new RegisterBill();
+		bill.setId(billItem.getBillId());
+		bill.setIsDeleted(TFEnum.TRUE.getCode());
+		
+		
+		operatorUser.ifPresent(op -> {
+			bill.setOperatorName(op.getName());
+			bill.setOperatorId(op.getId());
+		});
+		this.updateSelective(bill);
+		this.registerBillHistoryService.createHistory(billItem.getBillId());
+		this.userQrHistoryService.rollbackUserQrStatus(bill.getId(),billItem.getUserId());
+		return input.getId();
+	}
+
 
 	private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
 		if (StringUtils.isNotBlank(dto.getAttrValue())) {
@@ -391,9 +446,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (input == null || input.getId() == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		RegisterBill billItem = Optional.ofNullable(this.get(input.getId())).orElseThrow(() -> {
-			return new TraceBusinessException("数据不存在");
-		});
+		RegisterBill billItem = this.getAndCheckById(input.getId())
+				.orElseThrow(() -> new TraceBusinessException("数据不存在"));
 
 		if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())
 				|| BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
@@ -412,9 +466,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("参数错误");
 		}
 
-		RegisterBill billItem = Optional.ofNullable(this.get(billId)).orElseThrow(() -> {
-			return new TraceBusinessException("数据不存在");
-		});
+		RegisterBill billItem = this.getAndCheckById(billId).orElseThrow(()->new TraceBusinessException("数据不存在"));
+		
 		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())
 				&& !BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
 			throw new TraceBusinessException("补单或已进门报备单,才能场内审核");
@@ -532,7 +585,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		dto.setQrStatus(UserQrStatusEnum.BLACK.getCode());
 		dto.setCreatedStart(createdStart);
 		dto.setCreatedEnd(createdEnd);
-		List<Long>userIdList=this.getActualDao().selectUserIdWithouBill(dto);
+		List<Long> userIdList = this.getActualDao().selectUserIdWithouBill(dto);
 		StreamEx.of(userIdList).nonNull().forEach(uid -> {
 			this.userQrHistoryService.createUserQrHistoryForWithousBills(uid);
 		});
@@ -552,6 +605,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	@Override
 	public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query) {
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn());
+		query.setIsDeleted(TFEnum.FALSE.getCode());
 		return this.listPageByExample(query);
 	}
 
@@ -561,12 +615,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("参数错误");
 		}
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn());
+		query.setIsDeleted(TFEnum.FALSE.getCode());
 		return this.countByVerifyStatus(query);
 	}
 
 	@Override
 	public BasePage<RegisterBill> listPageAfterCheckinVerifyBill(RegisterBillDto query) {
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn());
+		query.setIsDeleted(TFEnum.FALSE.getCode());
 		return this.listPageByExample(query);
 	}
 
@@ -576,6 +632,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("参数错误");
 		}
 		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn());
+		query.setIsDeleted(TFEnum.FALSE.getCode());
 		return this.countByVerifyStatus(query);
 	}
 

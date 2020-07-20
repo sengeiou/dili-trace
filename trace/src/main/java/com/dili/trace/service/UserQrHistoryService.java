@@ -9,6 +9,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.google.common.base.Objects;
 
@@ -104,12 +105,43 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 			String color = UserQrStatusEnum.fromCode(qrStatus).map(UserQrStatusEnum::getDesc)
 					.orElse(UserQrStatusEnum.BLACK.getDesc());
 			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
+			userQrHistory.setBillId(billItem.getId());
+			userQrHistory.setVerifyStatus(billVerifyStatusEnum.getCode());
 			userQrHistory.setContent("最新报备单当前审核状态是" + billVerifyStatusEnum.getName() + ",变为" + color + "码");
 			this.insertSelective(userQrHistory);
 			return userQrHistory;
 		});
 	}
 
+	/**
+	 * 禁止删除的报备单对应的状态记录，并恢复到前一个有效的用户二维码颜色
+	 * @param deletedBillId
+	 * @param userId
+	 */
+	public void rollbackUserQrStatus(Long deletedBillId,Long userId){
+			if(deletedBillId!=null){
+				UserQrHistory domain = new UserQrHistory();
+				// domain.setBillId(deletedBillId);
+				domain.setIsValid(TFEnum.FALSE.getCode());
+
+				UserQrHistory condition = new UserQrHistory();
+				condition.setBillId(deletedBillId);
+				condition.setUserId(userId);
+				this.updateSelectiveByExample(domain, condition);
+
+				UserQrHistory query=new UserQrHistory();
+				query.setUserId(userId);
+				query.setPage(1);
+				query.setRows(1);
+				query.setSort("id");
+				query.setOrder("desc");
+				Integer userQrStatus=this.listPageByExample(query).getDatas().stream().findFirst().map(UserQrHistory::getQrStatus).orElse(UserQrStatusEnum.BLACK.getCode());
+				this.updateUserQrStatus(userId,userQrStatus);
+
+			}
+
+
+	}
 	private void updateUserQrStatus(Long userId, Integer qrStatus) {
 
 		User user = DTOUtils.newDTO(User.class);
@@ -128,6 +160,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		userQrHistory.setQrStatus(qrStatus);
 		userQrHistory.setCreated(new Date());
 		userQrHistory.setModified(new Date());
+		userQrHistory.setIsValid(TFEnum.TRUE.getCode());
 		return userQrHistory;
 
 	}

@@ -49,6 +49,20 @@ public class UserQrHistory extends BaseDomain {
     @Column(name = "`modified`")
     private Date modified;
 
+    
+    @ApiModelProperty(value = "报备单ID")
+    @Column(name = "`bill_id`")
+    private Long billId;
+    
+    @ApiModelProperty(value = "查验状态")
+    @Column(name = "`verify_status`")
+    private Integer verifyStatus;
+    
+    @ApiModelProperty(value = "是否有效")
+    @Column(name = "`is_valid`")
+    private Integer isValid;
+
+    
     /**
      * @return Long return the id
      */
@@ -145,6 +159,49 @@ public class UserQrHistory extends BaseDomain {
      */
     public void setContent(String content) {
         this.content = content;
+    }
+
+
+    /**
+     * @return Long return the billId
+     */
+    public Long getBillId() {
+        return billId;
+    }
+
+    /**
+     * @param billId the billId to set
+     */
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
+
+    /**
+     * @return Integer return the verifyStatus
+     */
+    public Integer getVerifyStatus() {
+        return verifyStatus;
+    }
+
+    /**
+     * @param verifyStatus the verifyStatus to set
+     */
+    public void setVerifyStatus(Integer verifyStatus) {
+        this.verifyStatus = verifyStatus;
+    }
+
+    /**
+     * @return Integer return the isValid
+     */
+    public Integer getIsValid() {
+        return isValid;
+    }
+
+    /**
+     * @param isValid the isValid to set
+     */
+    public void setIsValid(Integer isValid) {
+        this.isValid = isValid;
     }
 
 }

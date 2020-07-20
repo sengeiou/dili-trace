@@ -2,6 +2,14 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
+import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.exception.TraceBusinessException;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.domain.RegisterBillHistory;
+import com.dili.trace.service.RegisterBillHistoryService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,16 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.api.output.BrandOutputDto;
-import com.dili.trace.domain.RegisterBillHistory;
-import com.dili.trace.service.RegisterBillHistoryService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

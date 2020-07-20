@@ -13,6 +13,7 @@ import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.UserPlateQueryDto;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.domain.UserQrHistory;
+import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.service.UserQrHistoryService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +48,7 @@ public class ClientUserQrHistoryApi {
             // condition.setUserId(userId);
             condition.setSort("created");
             condition.setOrder("desc");
+            condition.setIsValid(TFEnum.TRUE.getCode());
             BasePage<UserQrHistory> data = this.userQrHistoryService.listPageByExample(condition);
             return BaseOutput.success().setData(data);
         } catch (TraceBusinessException e) {

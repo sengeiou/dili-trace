@@ -24,6 +24,11 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      */
 	public Optional<RegisterBill> selectByIdForUpdate(Long id);
 
+	/**
+	 * 查询并检查报备单子是否删除
+	 */
+	public Optional<RegisterBill> getAndCheckById(Long billId);
+
 	public RegisterBill findFirstWaitAuditRegisterBillCreateByCurrentUser(RegisterBillDto dto) throws Exception;
 
 	public String listPage(RegisterBillDto dto) throws Exception;
@@ -118,4 +123,12 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 
 
 	public RegisterBillOutputDto viewTradeDetailBill(Long billId,Long tradeDetailId);
+
+	/**
+	 * 删除报备单
+	 * @param input
+	 * @param operatorUser
+	 * @return
+	 */
+	public Long doDelete(Long billId,Long userId,Optional<OperatorUser> operatorUser) ;
 }

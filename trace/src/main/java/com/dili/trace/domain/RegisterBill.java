@@ -184,6 +184,10 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`reason`")
 	private String reason;
 
+	@ApiModelProperty(value = "是否被删除")
+	@Column(name = "`is_deleted`")
+	private Integer isDeleted;
+
 	public Integer getVerifyStatus() {
 		return verifyStatus;
 	}
@@ -605,6 +609,21 @@ public class RegisterBill extends BaseDomain {
      */
     public void setIsCheckin(Integer isCheckin) {
         this.isCheckin = isCheckin;
+    }
+
+
+    /**
+     * @return Integer return the isDeleted
+     */
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    /**
+     * @param isDeleted the isDeleted to set
+     */
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
 }

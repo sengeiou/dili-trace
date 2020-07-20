@@ -255,6 +255,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		if (dto.getRows() == null || dto.getRows() <= 0) {
 			dto.setRows(10);
 		}
+		dto.setIsDeleted(TFEnum.FALSE.getCode());
 		PageHelper.startPage(dto.getPage(), dto.getRows());
 		List<TradeDetailBillOutput> list = this.tradeDetailMapper.selectTradeDetailAndBill(dto);
 		Page<TradeDetailBillOutput> page = (Page) list;

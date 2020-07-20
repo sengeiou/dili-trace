@@ -23,6 +23,9 @@
       <if test="likeProductName != null  and likeProductName != ''">
         AND trade_detail.product_name like '%${likeProductName}%'
       </if>
+      <if test="isDeleted != null">
+        AND register_bill.is_deleted =#{isDeleted}
+      </if>
       union 
       select id as bill_id,null as trade_detail_id,
       register_bill.verify_status,weight,weight,
@@ -46,6 +49,9 @@
       </if>
       <if test="likeProductName != null  and likeProductName != ''">
         AND register_bill.product_name  like '%${likeProductName}%'
+      </if>
+      <if test="isDeleted != null">
+        AND register_bill.is_deleted =#{isDeleted}
       </if>
     ) t order by created desc
   </select>

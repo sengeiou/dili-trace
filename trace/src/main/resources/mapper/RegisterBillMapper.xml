@@ -159,6 +159,10 @@
     <if test="billType != null">
       AND bill_type =#{billType}
     </if>
+    <if test="isDeleted != null">
+      AND is_deleted =#{isDeleted}
+    </if>
+    
     group by verify_status
   </select>
 

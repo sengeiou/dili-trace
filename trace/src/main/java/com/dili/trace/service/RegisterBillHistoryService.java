@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class RegisterBillHistoryService extends BaseServiceImpl<RegisterBillHistory, Long> {
 	@Autowired
-	RegisterBillService billService;
+	RegisterBillService registerBillService;
 
     public RegisterBillHistory createHistory(Long billId) {
-    	RegisterBill billItem=this.billService.get(billId);
+    	RegisterBill billItem=this.registerBillService.get(billId);
         RegisterBillHistory historyBill = new RegisterBillHistory();
         try {
             BeanUtils.copyProperties(historyBill, billItem);

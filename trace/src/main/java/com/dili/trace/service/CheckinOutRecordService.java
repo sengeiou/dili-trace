@@ -161,10 +161,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 */
 	private CheckinOutRecord checkin(Long billId, CheckinStatusEnum checkinStatusEnum,
 			Optional<OperatorUser> operateUser) {
-		RegisterBill billItem = StreamEx.ofNullable(this.registerBillService.get(billId)).findFirst()
-				.orElseThrow(() -> {
-					return new TraceBusinessException("没有找到数据");
-				});
+		RegisterBill billItem =registerBillService.getAndCheckById(billId).orElseThrow(()->new TraceBusinessException("数据不存在"));
 
 		if (CheckinStatusEnum.NONE == checkinStatusEnum) {
 			throw new TraceBusinessException("参数错误");
@@ -280,202 +277,202 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		return checkinRecord;
 	}
 
-	public Optional<CheckInApiDetailOutput> getCheckInDetail(Long billId) {
-		RegisterBill registerBill = this.registerBillService.get(billId);
-		if (registerBill != null) {
-			CheckInApiDetailOutput output = new CheckInApiDetailOutput();
-			Long upstreamId = registerBill.getUpStreamId();
-			Long userId = registerBill.getUserId();
-			if (upstreamId != null) {
-				UpStream upStream = this.upStreamService.get(upstreamId);
-				output.setUpStream(upStream);
-			}
-			if (userId != null) {
-				User user = this.getUser(userId).orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
-				output.setUser(user);
-			}
-			output.setId(registerBill.getId());
-			output.setState(registerBill.getState());
-			output.setDetectState(registerBill.getDetectState());
-			return Optional.of(output);
-		}
-		return Optional.empty();
-	}
+	// public Optional<CheckInApiDetailOutput> getCheckInDetail(Long billId) {
+	// 	RegisterBill registerBill = this.registerBillService.get(billId);
+	// 	if (registerBill != null) {
+	// 		CheckInApiDetailOutput output = new CheckInApiDetailOutput();
+	// 		Long upstreamId = registerBill.getUpStreamId();
+	// 		Long userId = registerBill.getUserId();
+	// 		if (upstreamId != null) {
+	// 			UpStream upStream = this.upStreamService.get(upstreamId);
+	// 			output.setUpStream(upStream);
+	// 		}
+	// 		if (userId != null) {
+	// 			User user = this.getUser(userId).orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
+	// 			output.setUser(user);
+	// 		}
+	// 		output.setId(registerBill.getId());
+	// 		output.setState(registerBill.getState());
+	// 		output.setDetectState(registerBill.getDetectState());
+	// 		return Optional.of(output);
+	// 	}
+	// 	return Optional.empty();
+	// }
 
-	public BasePage<CheckInApiListOutput> listCheckInApiListOutputPage(RegisterBillDto query) {
+	// public BasePage<CheckInApiListOutput> listCheckInApiListOutputPage(RegisterBillDto query) {
 
-		// RegisterBill condition = new RegisterBill();
-		List<String> sqlList = new ArrayList<>();
+	// 	// RegisterBill condition = new RegisterBill();
+	// 	List<String> sqlList = new ArrayList<>();
 
-		// if (query.getUserId() != null) {
-		//
-		// sqlList.add("user_id=" + query.getUserId());
-		//
-		// }
-		// if (query.getUpStreamId() != null) {
-		//
-		// sqlList.add("upstream_id=" + query.getUpStreamId());
-		//
-		// }
-		// if (query.getState() != null) {
-		//
-		// sqlList.add("state=" + query.getState());
-		// }
-		if (sqlList.size() > 0) {
-			// query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
-		}
-		// query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
-		// query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-		query.setMetadata(IDTO.AND_CONDITION_EXPR,
-				" ( (id in(select bill_id from separate_sales_record where checkin_record_id  is null and sales_type="
-						+ TradeTypeEnum.NONE.getCode() + ") and state=" + RegisterBillStateEnum.WAIT_AUDIT.getCode()
-						+ " ) or  (id in(select bill_id from separate_sales_record where checkin_record_id  is not null and sales_type="
-						+ TradeTypeEnum.NONE.getCode() + " and checkout_record_id is null) ) )");
+	// 	// if (query.getUserId() != null) {
+	// 	//
+	// 	// sqlList.add("user_id=" + query.getUserId());
+	// 	//
+	// 	// }
+	// 	// if (query.getUpStreamId() != null) {
+	// 	//
+	// 	// sqlList.add("upstream_id=" + query.getUpStreamId());
+	// 	//
+	// 	// }
+	// 	// if (query.getState() != null) {
+	// 	//
+	// 	// sqlList.add("state=" + query.getState());
+	// 	// }
+	// 	if (sqlList.size() > 0) {
+	// 		// query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
+	// 	}
+	// 	// query.mset(IDTO.AND_CONDITION_EXPR, String.join("AND ", sqlList));
+	// 	// query.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+	// 	query.setMetadata(IDTO.AND_CONDITION_EXPR,
+	// 			" ( (id in(select bill_id from separate_sales_record where checkin_record_id  is null and sales_type="
+	// 					+ TradeTypeEnum.NONE.getCode() + ") and state=" + RegisterBillStateEnum.WAIT_AUDIT.getCode()
+	// 					+ " ) or  (id in(select bill_id from separate_sales_record where checkin_record_id  is not null and sales_type="
+	// 					+ TradeTypeEnum.NONE.getCode() + " and checkout_record_id is null) ) )");
 
-		BasePage<RegisterBill> billPage = this.registerBillService.listPageByExample(query);
-		List<CheckInApiListOutput> dataList = billPage.getDatas().stream().map(bill -> {
-			CheckInApiListOutput out = new CheckInApiListOutput();
-			out.setBillId(bill.getId());
-			out.setCode(bill.getCode());
-			out.setProductName(bill.getProductName());
-			out.setPhone(bill.getPhone());
-			out.setState(bill.getState());
-			out.setCreated(bill.getCreated());
-			out.setWeight(bill.getWeight());
+	// 	BasePage<RegisterBill> billPage = this.registerBillService.listPageByExample(query);
+	// 	List<CheckInApiListOutput> dataList = billPage.getDatas().stream().map(bill -> {
+	// 		CheckInApiListOutput out = new CheckInApiListOutput();
+	// 		out.setBillId(bill.getId());
+	// 		out.setCode(bill.getCode());
+	// 		out.setProductName(bill.getProductName());
+	// 		out.setPhone(bill.getPhone());
+	// 		out.setState(bill.getState());
+	// 		out.setCreated(bill.getCreated());
+	// 		out.setWeight(bill.getWeight());
 
-			if (bill.getUpStreamId() != null) {
-				Optional.ofNullable(this.upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {
+	// 		if (bill.getUpStreamId() != null) {
+	// 			Optional.ofNullable(this.upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {
 
-					out.setUpstreamName(up.getName());
-					out.setUpstreamTelphone(up.getTelphone());
-				});
-			}
+	// 				out.setUpstreamName(up.getName());
+	// 				out.setUpstreamTelphone(up.getTelphone());
+	// 			});
+	// 		}
 
-			return out;
-		}).collect(Collectors.toList());
+	// 		return out;
+	// 	}).collect(Collectors.toList());
 
-		BasePage<CheckInApiListOutput> result = BasePageUtil.convert(dataList, billPage);
+	// 	BasePage<CheckInApiListOutput> result = BasePageUtil.convert(dataList, billPage);
 
-		return result;
+	// 	return result;
 
-	}
+	// }
 
-	public CheckoutApiDetailOutput getCheckoutDataDetail(Long tradeDetailId) {
-		if (tradeDetailId == null) {
-			throw new TraceBusinessException("参数错误");
-		}
-		TradeDetail tradeDetailItem = this.tradeDetailService.get(tradeDetailId);
-		if (tradeDetailItem == null) {
-			throw new TraceBusinessException("没有数据");
-		}
+	// public CheckoutApiDetailOutput getCheckoutDataDetail(Long tradeDetailId) {
+	// 	if (tradeDetailId == null) {
+	// 		throw new TraceBusinessException("参数错误");
+	// 	}
+	// 	TradeDetail tradeDetailItem = this.tradeDetailService.get(tradeDetailId);
+	// 	if (tradeDetailItem == null) {
+	// 		throw new TraceBusinessException("没有数据");
+	// 	}
 
-		RegisterBill bill = this.registerBillService.get(tradeDetailItem.getBillId());
-		User user = this.getUser(bill.getUserId()).orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
-		user.setPassword("");
+	// 	RegisterBill bill = this.registerBillService.get(tradeDetailItem.getBillId());
+	// 	User user = this.getUser(bill.getUserId()).orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
+	// 	user.setPassword("");
 
-		CheckoutApiDetailOutput output = new CheckoutApiDetailOutput();
-		output.setId(tradeDetailItem.getId());
-		output.setState(bill.getState());
-		output.setUser(user);
+	// 	CheckoutApiDetailOutput output = new CheckoutApiDetailOutput();
+	// 	output.setId(tradeDetailItem.getId());
+	// 	output.setState(bill.getState());
+	// 	output.setUser(user);
 
-		if (tradeDetailItem.getParentId() == null && bill.getUpStreamId() != null) {
-			UpStream upStream = this.upStreamService.get(bill.getUpStreamId());
-			output.setUpStream(upStream);
-		} else if (tradeDetailItem.getParentId() != null) {
-			TradeDetail parentSalesRecord = this.tradeDetailService.get(tradeDetailItem.getParentId());
-			if (parentSalesRecord != null && parentSalesRecord.getBuyerId() != null) {
-				UpStream upStream = this.upStreamService.queryUpStreamBySourceUserId(parentSalesRecord.getBuyerId());
-				output.setUpStream(upStream);
-			}
+	// 	if (tradeDetailItem.getParentId() == null && bill.getUpStreamId() != null) {
+	// 		UpStream upStream = this.upStreamService.get(bill.getUpStreamId());
+	// 		output.setUpStream(upStream);
+	// 	} else if (tradeDetailItem.getParentId() != null) {
+	// 		TradeDetail parentSalesRecord = this.tradeDetailService.get(tradeDetailItem.getParentId());
+	// 		if (parentSalesRecord != null && parentSalesRecord.getBuyerId() != null) {
+	// 			UpStream upStream = this.upStreamService.queryUpStreamBySourceUserId(parentSalesRecord.getBuyerId());
+	// 			output.setUpStream(upStream);
+	// 		}
 
-		}
+	// 	}
 
-		return output;
+	// 	return output;
 
-	}
+	// }
 
-	public BaseOutput<BasePage<DTO>> listPagedAvailableCheckOutData(CheckoutApiListQuery query) {
+	// public BaseOutput<BasePage<DTO>> listPagedAvailableCheckOutData(CheckoutApiListQuery query) {
 
-		if (query == null || query.getUserId() == null) {
-			return BaseOutput.failure("参数错误");
-		}
+	// 	if (query == null || query.getUserId() == null) {
+	// 		return BaseOutput.failure("参数错误");
+	// 	}
 
-		TradeDetail separateSalesRecord = new TradeDetail();
-		separateSalesRecord.setBuyerId(query.getUserId());
+	// 	TradeDetail separateSalesRecord = new TradeDetail();
+	// 	separateSalesRecord.setBuyerId(query.getUserId());
 
-		StringBuilder sql = new StringBuilder("( checkin_record_id in(select id from checkinout_record where `inout`="
-				+ CheckinOutTypeEnum.IN.getCode() + " and status=" + CheckinStatusEnum.ALLOWED.getCode()
-				+ "  and checkout_record_id is null) or checkout_record_id in (select id from checkinout_record where `inout`="
-				+ CheckinOutTypeEnum.OUT.getCode() + " and status=" + CheckinStatusEnum.NOTALLOWED.getCode() + " ) )");
-		if (StringUtils.isNotBlank(query.getLikeProductName())) {
+	// 	StringBuilder sql = new StringBuilder("( checkin_record_id in(select id from checkinout_record where `inout`="
+	// 			+ CheckinOutTypeEnum.IN.getCode() + " and status=" + CheckinStatusEnum.ALLOWED.getCode()
+	// 			+ "  and checkout_record_id is null) or checkout_record_id in (select id from checkinout_record where `inout`="
+	// 			+ CheckinOutTypeEnum.OUT.getCode() + " and status=" + CheckinStatusEnum.NOTALLOWED.getCode() + " ) )");
+	// 	if (StringUtils.isNotBlank(query.getLikeProductName())) {
 
-			sql.append(" AND bill_id in(select id from register_bill where product_name like '%"
-					+ query.getLikeProductName() + "%')");
+	// 		sql.append(" AND bill_id in(select id from register_bill where product_name like '%"
+	// 				+ query.getLikeProductName() + "%')");
 
-		}
+	// 	}
 
-		separateSalesRecord.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
+	// 	separateSalesRecord.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
 
-		BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(separateSalesRecord);
-		List<DTO> dataList = page.getDatas().stream().map(sp -> {
-			Long id = sp.getId();
-			Long billId = sp.getBillId();
-			DTO dto = DTOUtils.go(sp);
-			dto.remove("billId");
-			dto.remove("id");
-			dto.put("separateSalesId", id);
-			RegisterBill rb = this.registerBillService.get(billId);
-			if (rb != null) {
-				RegisterBillStateEnum stateEnum = RegisterBillStateEnum.getRegisterBillStateEnum(rb.getState());
-				dto.put("state", rb.getState());
-				dto.put("stateName", stateEnum.getName());
-				dto.put("productName", rb.getProductName());
-			}
+	// 	BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(separateSalesRecord);
+	// 	List<DTO> dataList = page.getDatas().stream().map(sp -> {
+	// 		Long id = sp.getId();
+	// 		Long billId = sp.getBillId();
+	// 		DTO dto = DTOUtils.go(sp);
+	// 		dto.remove("billId");
+	// 		dto.remove("id");
+	// 		dto.put("separateSalesId", id);
+	// 		RegisterBill rb = this.registerBillService.get(billId);
+	// 		if (rb != null) {
+	// 			RegisterBillStateEnum stateEnum = RegisterBillStateEnum.getRegisterBillStateEnum(rb.getState());
+	// 			dto.put("state", rb.getState());
+	// 			dto.put("stateName", stateEnum.getName());
+	// 			dto.put("productName", rb.getProductName());
+	// 		}
 
-			return dto;
-		}).collect(Collectors.toList());
+	// 		return dto;
+	// 	}).collect(Collectors.toList());
 
-		BasePage<DTO> result = BasePageUtil.convert(dataList, page);
-		return BaseOutput.success().setData(result);
-	}
+	// 	BasePage<DTO> result = BasePageUtil.convert(dataList, page);
+	// 	return BaseOutput.success().setData(result);
+	// }
 
-	public BaseOutput<BasePage<Map<String, Object>>> listPagedData(CheckoutApiListQuery query, Long operatorId) {
-		// if (query == null || query.getUserId() == null) {
-		// return BaseOutput.failure("参数错误");
-		// }
-		CheckinOutRecord checkinOutRecord = new CheckinOutRecord();
-		checkinOutRecord.setOperatorId(operatorId);
-		if (query.getDate() != null) {
-			checkinOutRecord.setMetadata(IDTO.AND_CONDITION_EXPR,
-					" DATE_FORMAT(created,'%Y-%m-%d')='" + query.getDate() + "'");
-		}
-		BasePage<CheckinOutRecord> page = this.listPageByExample(checkinOutRecord);
+	// public BaseOutput<BasePage<Map<String, Object>>> listPagedData(CheckoutApiListQuery query, Long operatorId) {
+	// 	// if (query == null || query.getUserId() == null) {
+	// 	// return BaseOutput.failure("参数错误");
+	// 	// }
+	// 	CheckinOutRecord checkinOutRecord = new CheckinOutRecord();
+	// 	checkinOutRecord.setOperatorId(operatorId);
+	// 	if (query.getDate() != null) {
+	// 		checkinOutRecord.setMetadata(IDTO.AND_CONDITION_EXPR,
+	// 				" DATE_FORMAT(created,'%Y-%m-%d')='" + query.getDate() + "'");
+	// 	}
+	// 	BasePage<CheckinOutRecord> page = this.listPageByExample(checkinOutRecord);
 
-		List<Map<String, Object>> dataList = page.getDatas().stream().map(cr -> {
-			// RegisterBill billQuery = new RegisterBill();
-			// billQuery.mset(IDTO.AND_CONDITION_EXPR,
-			// " id in (select bill_id from separate_sales_record where checkin_record_id ="
-			// + cr.getId()
-			// + " or checkout_record_id=" + cr.getId() + ") ");
-			// RegisterBill billItem =
-			// this.registerBillService.listByExample(billQuery).stream().findFirst()
-			// .orElse(new RegisterBill());
+	// 	List<Map<String, Object>> dataList = page.getDatas().stream().map(cr -> {
+	// 		// RegisterBill billQuery = new RegisterBill();
+	// 		// billQuery.mset(IDTO.AND_CONDITION_EXPR,
+	// 		// " id in (select bill_id from separate_sales_record where checkin_record_id ="
+	// 		// + cr.getId()
+	// 		// + " or checkout_record_id=" + cr.getId() + ") ");
+	// 		// RegisterBill billItem =
+	// 		// this.registerBillService.listByExample(billQuery).stream().findFirst()
+	// 		// .orElse(new RegisterBill());
 
-			TradeDetail separateSalesRecordQuery = new TradeDetail();
-			separateSalesRecordQuery.setMetadata(IDTO.AND_CONDITION_EXPR,
-					"  ( checkin_record_id =" + cr.getId() + " or checkout_record_id=" + cr.getId() + ") ");
-			TradeDetail separateSalesRecordItem = this.tradeDetailService.listByExample(separateSalesRecordQuery)
-					.stream().findFirst().orElse(new TradeDetail());
-			Map<String, Object> dto = BeanMapUtil.beanToMap(cr);
-			// Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
-			// dto.remove("id");
-			// if (billItem != null) {
-			// dto.put("state", billItem.getState());
-			// }
-			return dto;
+	// 		TradeDetail separateSalesRecordQuery = new TradeDetail();
+	// 		separateSalesRecordQuery.setMetadata(IDTO.AND_CONDITION_EXPR,
+	// 				"  ( checkin_record_id =" + cr.getId() + " or checkout_record_id=" + cr.getId() + ") ");
+	// 		TradeDetail separateSalesRecordItem = this.tradeDetailService.listByExample(separateSalesRecordQuery)
+	// 				.stream().findFirst().orElse(new TradeDetail());
+	// 		Map<String, Object> dto = BeanMapUtil.beanToMap(cr);
+	// 		// Map<String,Object>dto=BeanMapUtil.beanToMap(cr);
+	// 		// dto.remove("id");
+	// 		// if (billItem != null) {
+	// 		// dto.put("state", billItem.getState());
+	// 		// }
+	// 		return dto;
 
-		}).collect(Collectors.toList());
-		BasePage<Map<String, Object>> result = BasePageUtil.convert(dataList, page);
-		return BaseOutput.success().setData(result);
-	}
+	// 	}).collect(Collectors.toList());
+	// 	BasePage<Map<String, Object>> result = BasePageUtil.convert(dataList, page);
+	// 	return BaseOutput.success().setData(result);
+	// }
 }
