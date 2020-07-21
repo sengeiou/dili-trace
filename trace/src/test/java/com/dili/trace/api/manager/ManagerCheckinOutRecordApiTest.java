@@ -52,10 +52,10 @@ public class ManagerCheckinOutRecordApiTest extends AutoWiredBaseTest {
     public void listPageCheckInData() {
         RegisterBillDto inputDto = new RegisterBillDto();
         inputDto.setUserId(2L);
-        BaseOutput<Map<Integer, Object>> out = this.managerCheckinOutRecordApi.listPageCheckInData(inputDto);
+        BaseOutput<Map<Integer, Map<String,List<RegisterBill>>>> out = this.managerCheckinOutRecordApi.listPageCheckInData(inputDto);
         assertNotNull(out);
         assertTrue(out.isSuccess());
-        Map<Integer, Object> map = out.getData();
+        Map<Integer, Map<String,List<RegisterBill>>> map = out.getData();
         assertNotNull(map);
         System.out.println(map);
         if (map.containsKey(TruckTypeEnum.FULL.getCode())) {

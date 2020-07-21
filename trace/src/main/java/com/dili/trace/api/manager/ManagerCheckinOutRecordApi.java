@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.hutool.core.date.DateUtil;
 import io.swagger.annotations.Api;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
@@ -127,13 +128,13 @@ public class ManagerCheckinOutRecordApi {
 	 * 分页查询需要出场查询的信息
 	 */
 	@RequestMapping(value = "/listPageCheckInData.api", method = { RequestMethod.POST })
-	public BaseOutput<Map<Integer, Object>> listPageCheckInData(@RequestBody RegisterBillDto query) {
+	public BaseOutput<Map<Integer, Map<String,List<RegisterBill>>>> listPageCheckInData(@RequestBody RegisterBillDto query) {
 		try {
 			if (query == null || query.getUserId() == null) {
 				return BaseOutput.failure("参数错误");
 			}
 			Long operatorUserId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
-			Map<Integer, Object> resultMap = this.listCheckInData(query);
+			Map<Integer, Map<String,List<RegisterBill>>> resultMap = this.listCheckInData(query);
 			return BaseOutput.success().setData(resultMap);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -143,7 +144,7 @@ public class ManagerCheckinOutRecordApi {
 		}
 	}
 
-	private Map<Integer, Object> listCheckInData(RegisterBillDto query) {
+	private Map<Integer, Map<String,List<RegisterBill>>> listCheckInData(RegisterBillDto query) {
 		String dynaWhere = " is_checkin=" + YnEnum.NO.getCode() + " and bill_type =" + BillTypeEnum.NONE.getCode();
 
 		query.setSort("created");
@@ -170,9 +171,11 @@ public class ManagerCheckinOutRecordApi {
 		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList)
 				.append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
 				.groupingBy(RegisterBill::getTruckType);
-		Map<Integer, Object> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
+		Map<Integer, Map<String,List<RegisterBill>>> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
 			if (TruckTypeEnum.FULL.equalsToCode(k)) {
-				return Stream.of(v);
+				return Stream.of(StreamEx.of(v).groupingBy(item->{
+					return DateUtil.format(item.getCreated(), "");
+				}));
 			}
 			if (TruckTypeEnum.POOL.equalsToCode(k)) {
 				return Stream.of(StreamEx.of(v).groupingBy(RegisterBill::getPlate));
