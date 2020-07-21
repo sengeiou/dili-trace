@@ -210,8 +210,8 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				item.setId(cin.getId());
 				item.setStatus(checkinStatusEnum.getCode());
 				operateUser.ifPresent(op -> {
-					item.setOperatorId(op.getId());
-					item.setOperatorName(op.getName());
+					// item.setOperatorId(op.getId());
+					// item.setOperatorName(op.getName());
 				});
 		
 				item.setModified(new Date());
@@ -220,7 +220,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				item.setWeightUnit(billItem.getWeightUnit());
 				item.setUserName(billItem.getName());
 				item.setUserId(billItem.getUserId());
-				item.setBillType(billItem.getBillType());
+				// item.setBillType(billItem.getBillType());
 				item.setVerifyStatus(billItem.getVerifyStatus());
 				item.setBillId(billItem.getBillId());
 				item.setTradeDetailId(tradeDetailItem.getId());
