@@ -99,7 +99,9 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
 			checkoutRecord.setProductName(registerBillItem.getProductName());
 			checkoutRecord.setInoutWeight(tradeDetailItem.getStockWeight());
+			checkoutRecord.setWeightUnit(tradeDetailItem.getWeightUnit());
 			checkoutRecord.setUserName(user.getName());
+			checkoutRecord.setUserId(user.getId());
 
 			checkoutRecord.setOperatorId(operateUser.getId());
 			checkoutRecord.setOperatorName(operateUser.getName());
@@ -215,7 +217,9 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				item.setModified(new Date());
 				item.setProductName(billItem.getProductName());
 				item.setInoutWeight(billItem.getWeight());
+				item.setWeightUnit(billItem.getWeightUnit()
 				item.setUserName(billItem.getName());
+				item.setUserId(billItem.getUserId());
 				item.setBillType(billItem.getBillType());
 				item.setVerifyStatus(billItem.getVerifyStatus());
 				item.setBillId(billItem.getBillId());
@@ -268,7 +272,9 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 		checkinRecord.setModified(new Date());
 		checkinRecord.setProductName(billItem.getProductName());
 		checkinRecord.setInoutWeight(billItem.getWeight());
+		checkinRecord.setWeightUnit(billItem.getWeightUnit());
 		checkinRecord.setUserName(billItem.getName());
+		checkinRecord.setUserId(billItem.getUserId());
 		checkinRecord.setBillType(billItem.getBillType());
 		checkinRecord.setVerifyStatus(billItem.getVerifyStatus());
 		checkinRecord.setBillId(billItem.getBillId());

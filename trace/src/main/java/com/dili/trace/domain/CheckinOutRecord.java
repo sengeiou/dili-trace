@@ -8,8 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.CheckinOutTypeEnum;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -53,6 +55,11 @@ public class CheckinOutRecord extends BaseDomain {
     @Column(name = "`modified`")
     private Date modified;
 
+
+    @ApiModelProperty(value = "业户ID")
+    @Column(name = "`user_id`")
+    private Long userId;
+
     @ApiModelProperty(value = "业户名称")
     @Column(name = "`user_name`")
     private String userName;
@@ -81,6 +88,10 @@ public class CheckinOutRecord extends BaseDomain {
     @ApiModelProperty(value = "进出门重量")
     @Column(name = "`inout_weight`")
     private BigDecimal inoutWeight;
+
+    @ApiModelProperty(value = "重量单位")
+	@Column(name = "`weight_unit`")
+	private Integer weightUnit;
     
     @ApiModelProperty(value = "分销ID")
     @Column(name = "`trade_detail_id`")
@@ -90,6 +101,11 @@ public class CheckinOutRecord extends BaseDomain {
     @ApiModelProperty(value = "报备单ID")
     @Column(name = "`bill_id`")
     private Long billId;
+
+    @Transient
+    public String getInoutName(){
+       return  CheckinOutTypeEnum.fromCode(this.getInout()).map(CheckinOutTypeEnum::getDesc).orElse("");
+    }
 
     public BigDecimal getInoutWeight() {
 		return inoutWeight;
@@ -228,6 +244,35 @@ public class CheckinOutRecord extends BaseDomain {
      */
     public void setBillId(Long billId) {
         this.billId = billId;
+    }
+
+
+    /**
+     * @return Long return the userId
+     */
+    public Long getUserId() {
+        return userId;
+    }
+
+    /**
+     * @param userId the userId to set
+     */
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * @return Integer return the weightUnit
+     */
+    public Integer getWeightUnit() {
+        return weightUnit;
+    }
+
+    /**
+     * @param weightUnit the weightUnit to set
+     */
+    public void setWeightUnit(Integer weightUnit) {
+        this.weightUnit = weightUnit;
     }
 
 }
