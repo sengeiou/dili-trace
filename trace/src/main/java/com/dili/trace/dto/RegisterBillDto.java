@@ -90,7 +90,9 @@ public class RegisterBillDto extends RegisterBill {
 	@Column(name = "`plate`")
 	@Like(value = "RIGHT")
 	private String likePlate;
-
+	@Transient
+	private String keyword;
+	
 	@Transient
 	private String tag;
 
@@ -274,6 +276,21 @@ public class RegisterBillDto extends RegisterBill {
      */
     public void setPlateList(List<String> plateList) {
         this.plateList = plateList;
+    }
+
+
+    /**
+     * @return String return the keyword
+     */
+    public String getKeyword() {
+        return keyword;
+    }
+
+    /**
+     * @param keyword the keyword to set
+     */
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
 }

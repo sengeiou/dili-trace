@@ -145,7 +145,7 @@
     where 1=1
     <if test="metadata != null">
       <foreach collection="metadata.entrySet()" item="value" index="key">  
-        <if test="key != null and key !=''">
+        <if test="key =='_andConditionExpr'">
           AND  (${value})
         </if>
       </foreach>

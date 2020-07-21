@@ -1,10 +1,12 @@
 package com.dili.trace.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBusinessException;
@@ -63,6 +65,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.hutool.core.date.DateUtil;
+import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 
 /**
@@ -201,7 +204,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 					bill.setId(registerBill.getId());
 					this.updateSelective(bill);
 				});
-		this.updateUserQrStatusByUserId(registerBill.getBillId(),registerBill.getUserId());
+		this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
 		return registerBill.getId();
 	}
 
@@ -343,42 +346,39 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		});
 
 		this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
-		this.updateUserQrStatusByUserId(billItem.getBillId(),billItem.getUserId());
+		this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
 		return input.getId();
 	}
 
 	@Transactional
 	@Override
-	public Long doDelete(Long billId,Long userId,Optional<OperatorUser> operatorUser) {
-		if (billId == null||userId==null) {
+	public Long doDelete(Long billId, Long userId, Optional<OperatorUser> operatorUser) {
+		if (billId == null || userId == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		RegisterBill billItem = this.getAndCheckById(billId)
-				.orElseThrow(() -> new TraceBusinessException("数据不存在"));
-		if(!userId.equals(billItem.getUserId())){
-			throw	new TraceBusinessException("没有权限删除数据");
+		RegisterBill billItem = this.getAndCheckById(billId).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+		if (!userId.equals(billItem.getUserId())) {
+			throw new TraceBusinessException("没有权限删除数据");
 		}
-		if(YnEnum.YES.equalsToCode(billItem.getIsCheckin())){
-			throw	new TraceBusinessException("不能删除已进门数据");
+		if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+			throw new TraceBusinessException("不能删除已进门数据");
 		}
-		if(BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())){
-			throw	new TraceBusinessException("不能删除审核未通过数据");
+		if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
+			throw new TraceBusinessException("不能删除审核未通过数据");
 		}
-		RegisterBill bill=new RegisterBill();
+		RegisterBill bill = new RegisterBill();
 		bill.setId(billItem.getBillId());
 		bill.setIsDeleted(TFEnum.TRUE.getCode());
-		
-		
+
 		operatorUser.ifPresent(op -> {
 			bill.setOperatorName(op.getName());
 			bill.setOperatorId(op.getId());
 		});
 		this.updateSelective(bill);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
-		this.userQrHistoryService.rollbackUserQrStatus(bill.getId(),billItem.getUserId());
+		this.userQrHistoryService.rollbackUserQrStatus(bill.getId(), billItem.getUserId());
 		return billId;
 	}
-
 
 	private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
 		if (StringUtils.isNotBlank(dto.getAttrValue())) {
@@ -466,8 +466,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 			throw new TraceBusinessException("参数错误");
 		}
 
-		RegisterBill billItem = this.getAndCheckById(billId).orElseThrow(()->new TraceBusinessException("数据不存在"));
-		
+		RegisterBill billItem = this.getAndCheckById(billId).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+
 		if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())
 				&& !BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
 			throw new TraceBusinessException("补单或已进门报备单,才能场内审核");
@@ -530,7 +530,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		});
 
 		// 更新用户颜色码
-		this.updateUserQrStatusByUserId(billItem.getBillId(),billItem.getUserId());
+		this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
 
 	}
 
@@ -539,7 +539,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	 * 
 	 * @param userId
 	 */
-	public void updateUserQrStatusByUserId(Long billId,Long userId) {
+	public void updateUserQrStatusByUserId(Long billId, Long userId) {
 		if (userId == null) {
 			return;
 		}
@@ -585,17 +585,19 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// bq.setCreatedStart(DateUtil.format(createdStart, "yyyy-MM-dd HH:mm:ss"));
 		// bq.setCreatedEnd(DateUtil.format(createdEnd, "yyyy-MM-dd HH:mm:ss"));
 		// bq.setMetadata(IDTO.AND_CONDITION_EXPR,
-		// 		"user_id in(select id from `user` where qr_status=" + UserQrStatusEnum.BLACK.getCode() + ")");
-		// StreamEx.of(this.listByExample(bq)).map(RegisterBill::getUserId).distinct().map(uid -> {
-		// 	return this.userService.get(uid);
+		// "user_id in(select id from `user` where qr_status=" +
+		// UserQrStatusEnum.BLACK.getCode() + ")");
+		// StreamEx.of(this.listByExample(bq)).map(RegisterBill::getUserId).distinct().map(uid
+		// -> {
+		// return this.userService.get(uid);
 		// }).nonNull().forEach(userItem -> {
-		// 	this.updateUserQrStatusByUserId(userItem.getId());
+		// this.updateUserQrStatusByUserId(userItem.getId());
 		// });
 	}
 
 	@Override
 	public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query) {
-		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn());
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn(query));
 		query.setIsDeleted(TFEnum.FALSE.getCode());
 		return this.listPageByExample(query);
 	}
@@ -605,14 +607,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (query == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn());
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn(query));
 		query.setIsDeleted(TFEnum.FALSE.getCode());
 		return this.countByVerifyStatus(query);
 	}
 
 	@Override
 	public BasePage<RegisterBill> listPageAfterCheckinVerifyBill(RegisterBillDto query) {
-		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn());
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn(query));
 		query.setIsDeleted(TFEnum.FALSE.getCode());
 		return this.listPageByExample(query);
 	}
@@ -622,11 +624,54 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		if (query == null) {
 			throw new TraceBusinessException("参数错误");
 		}
-		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn());
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn(query));
 		query.setIsDeleted(TFEnum.FALSE.getCode());
 		return this.countByVerifyStatus(query);
 	}
 
+	@Override
+	public Map<Integer, Map<String,List<RegisterBill>>> listPageCheckInData(RegisterBillDto query) {
+		String dynaWhere = " is_checkin=" + YnEnum.NO.getCode() + " and bill_type =" + BillTypeEnum.NONE.getCode();
+
+		query.setSort("created");
+		query.setOrder("desc");
+		query.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
+		query.setIsDeleted(TFEnum.FALSE.getCode());
+		query.setTruckType(TruckTypeEnum.FULL.getCode());
+		List<RegisterBill> list = this.listByExample(query);
+
+		query.setTruckType(TruckTypeEnum.POOL.getCode());
+		List<RegisterBill> userPoolList = this.listByExample(query);
+
+		List<String> plateList = StreamEx.of(userPoolList).filter(bill -> {
+			return TruckTypeEnum.POOL.equalsToCode(bill.getTruckType());
+		}).map(RegisterBill::getPlate).distinct().toList();
+		List<RegisterBill> samePlatePoolTruckTypeBillList = StreamEx.ofNullable(plateList).filter(l -> !l.isEmpty())
+				.flatMap(l -> {
+					query.setPlateList(plateList);
+					query.setTruckType(TruckTypeEnum.POOL.getCode());
+					query.setUserId(null);
+					return StreamEx.of(this.listByExample(query));
+				}).toList();
+
+		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList)
+				.append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
+				.groupingBy(RegisterBill::getTruckType);
+		Map<Integer, Map<String,List<RegisterBill>>> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
+			if (TruckTypeEnum.FULL.equalsToCode(k)) {
+				return Stream.of(StreamEx.of(v).groupingBy(item->{
+					return DateUtil.format(item.getCreated(), "yyyy-MM-dd HH:mm:ss");
+				}));
+			}
+			if (TruckTypeEnum.POOL.equalsToCode(k)) {
+				return Stream.of(StreamEx.of(v).groupingBy(RegisterBill::getPlate));
+			}
+			return StreamEx.empty();
+		}).toMap();
+		return resultMap;
+
+	}
+	@Override
 	public RegisterBillOutputDto viewTradeDetailBill(Long billId, Long tradeDetailId) {
 		if (billId == null && tradeDetailId == null) {
 			throw new TraceBusinessException("参数错误");
@@ -667,18 +712,41 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	}
 
-	private String dynamicSQLBeforeCheckIn() {
-		return "( bill_type=" + BillTypeEnum.NONE.getCode() + " and (is_checkin=" + YnEnum.NO.getCode()
-				+ " OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
-				+ BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
-				+ VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode() + " ) ) )";
+	private Optional<String> buildLikeKeyword(RegisterBillDto query){
+		String sql=null;
+		if (StringUtils.isNotBlank(query.getKeyword())) {
+			String keyword=query.getKeyword().trim();
+			sql= "( product_name like '%"+keyword+"%'  OR user_id in(select id from `user` u where u.name like '%"+keyword+"%' OR legal_person like '%"+keyword+"%' OR upper(tally_area_nos) like '%"+keyword.toUpperCase()+"%'))";
+		}
+		return Optional.ofNullable(sql);
+		
+
 	}
 
-	private String dynamicSQLAfterCheckIn() {
-		return "( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode()
+	private String dynamicSQLBeforeCheckIn(RegisterBillDto query) {
+		List<String> sqlList = new ArrayList<>();
+		this.buildLikeKeyword(query).ifPresent(sql -> {
+			sqlList.add(sql);
+		});
+		sqlList.add("( bill_type=" + BillTypeEnum.NONE.getCode() + " and (is_checkin=" + YnEnum.NO.getCode()
+				+ " OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
+				+ BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
+				+ VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode() + " ) ) )");
+
+		return StreamEx.of(sqlList).joining(" AND ");
+	}
+
+	private String dynamicSQLAfterCheckIn(RegisterBillDto query) {
+		List<String> sqlList = new ArrayList<>();
+		this.buildLikeKeyword(query).ifPresent(sql -> {
+			sqlList.add(sql);
+		});
+		sqlList.add("( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YnEnum.YES.getCode()
 				+ " AND verify_status<>" + BillVerifyStatusEnum.PASSED.getCode() + ") OR(verify_status="
 				+ BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
-				+ VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode() + ") )";
+				+ VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode() + ") )");
+
+		return StreamEx.of(sqlList).joining(" AND ");
 	}
 
 	private List<VerifyStatusCountOutputDto> countByVerifyStatus(RegisterBillDto query) {

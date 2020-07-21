@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.dili.ss.base.BaseService;
@@ -131,4 +132,8 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doDelete(Long billId,Long userId,Optional<OperatorUser> operatorUser) ;
+
+
+
+	public Map<Integer, Map<String,List<RegisterBill>>> listPageCheckInData(RegisterBillDto query);
 }

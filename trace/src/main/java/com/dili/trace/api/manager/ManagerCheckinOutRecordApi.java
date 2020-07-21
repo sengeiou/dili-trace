@@ -134,7 +134,7 @@ public class ManagerCheckinOutRecordApi {
 				return BaseOutput.failure("参数错误");
 			}
 			Long operatorUserId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
-			Map<Integer, Map<String,List<RegisterBill>>> resultMap = this.listCheckInData(query);
+			Map<Integer, Map<String,List<RegisterBill>>> resultMap = this.registerBillService.listPageCheckInData(query);
 			return BaseOutput.success().setData(resultMap);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -142,48 +142,6 @@ public class ManagerCheckinOutRecordApi {
 			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
-	}
-
-	private Map<Integer, Map<String,List<RegisterBill>>> listCheckInData(RegisterBillDto query) {
-		String dynaWhere = " is_checkin=" + YnEnum.NO.getCode() + " and bill_type =" + BillTypeEnum.NONE.getCode();
-
-		query.setSort("created");
-		query.setOrder("desc");
-		query.setMetadata(IDTO.AND_CONDITION_EXPR, dynaWhere);
-		query.setIsDeleted(TFEnum.FALSE.getCode());
-		query.setTruckType(TruckTypeEnum.FULL.getCode());
-		List<RegisterBill> list = this.registerBillService.listByExample(query);
-
-		query.setTruckType(TruckTypeEnum.POOL.getCode());
-		List<RegisterBill> userPoolList = this.registerBillService.listByExample(query);
-
-		List<String> plateList = StreamEx.of(userPoolList).filter(bill -> {
-			return TruckTypeEnum.POOL.equalsToCode(bill.getTruckType());
-		}).map(RegisterBill::getPlate).distinct().toList();
-		List<RegisterBill> samePlatePoolTruckTypeBillList = StreamEx.ofNullable(plateList).filter(l -> !l.isEmpty())
-				.flatMap(l -> {
-					query.setPlateList(plateList);
-					query.setTruckType(TruckTypeEnum.POOL.getCode());
-					query.setUserId(null);
-					return StreamEx.of(this.registerBillService.listByExample(query));
-				}).toList();
-
-		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList)
-				.append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
-				.groupingBy(RegisterBill::getTruckType);
-		Map<Integer, Map<String,List<RegisterBill>>> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
-			if (TruckTypeEnum.FULL.equalsToCode(k)) {
-				return Stream.of(StreamEx.of(v).groupingBy(item->{
-					return DateUtil.format(item.getCreated(), "");
-				}));
-			}
-			if (TruckTypeEnum.POOL.equalsToCode(k)) {
-				return Stream.of(StreamEx.of(v).groupingBy(RegisterBill::getPlate));
-			}
-			return StreamEx.empty();
-		}).toMap();
-		return resultMap;
-
 	}
 
 }
