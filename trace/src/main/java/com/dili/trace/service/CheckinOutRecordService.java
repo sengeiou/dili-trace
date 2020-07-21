@@ -217,7 +217,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 				item.setModified(new Date());
 				item.setProductName(billItem.getProductName());
 				item.setInoutWeight(billItem.getWeight());
-				item.setWeightUnit(billItem.getWeightUnit()
+				item.setWeightUnit(billItem.getWeightUnit());
 				item.setUserName(billItem.getName());
 				item.setUserId(billItem.getUserId());
 				item.setBillType(billItem.getBillType());
