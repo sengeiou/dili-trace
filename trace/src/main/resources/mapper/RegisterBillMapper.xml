@@ -179,62 +179,161 @@
     <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
 
   </select>
-  <select id="userCountQuery" resultType="com.dili.trace.dto.TraceReportDto">
+  <select id="userCountQuery" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
   select count(1) user_count,area from(
-    select distinct u.id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from `user` u 
+    select distinct u.id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    from `user` u 
     left join   r_user_tally_area on r_user_tally_area.user_id =u.id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
     )t GROUP  by area;
 </select>
 
-<select id="billCountQuery" resultType="com.dili.trace.dto.TraceReportDto">
+<select id="billCountQuery" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
   select count(1) bill_count,area from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    where 1=1
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
     )t GROUP  by area;
 </select>
 
-<select id="tradeDetailBuyerCount" resultType="com.dili.trace.dto.TraceReportDto">
+<select id="tradeDetailBuyerCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
   select count(1) trade_detail_buyer_count,area from(
-    select distinct trade_detail.buyer_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from trade_detail 
+    select distinct trade_detail.buyer_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    from trade_detail 
     left join   r_user_tally_area on r_user_tally_area.user_id =trade_detail.buyer_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    where 1=1
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
+    </if>
     )t GROUP  by area;
 </select>
 
-<select id="greenBillCount" resultType="com.dili.trace.dto.TraceReportDto">
+<select id="greenBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
   select count(1) green_bill_count,area from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    where 1=1
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="greenBillVerifyStatus" open="IN (" close=")" item="verifyStatus"  separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
+
+    
     )t GROUP  by area;
 </select>
 
 
-<select id="yellowBillCount" resultType="com.dili.trace.dto.TraceReportDto">
+<select id="yellowBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
   select count(1) yellow_bill_count,area from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    where 1=1
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+
+    <if test="yellowBillVerifyStatus!=null and yellowBillVerifyStatus.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="yellowBillVerifyStatus" open=" IN (" close=")" item="verifyStatus"  separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
+
+    <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="greenBillVerifyStatus" open=" NOT IN (" close=")" item="verifyStatus"  separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
+
     )t GROUP  by area;
 </select>
 
-<select id="redBillCount" resultType="com.dili.trace.dto.TraceReportDto">
+<select id="redBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
   select count(1) red_bill_count,area from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    where 1=1
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+
+    <if test="redBillVerifyStatus!=null and redBillVerifyStatus.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="redBillVerifyStatus" open=" IN (" close=")" item="verifyStatus"  separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
+
+    <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="greenBillVerifyStatus" open=" NOT IN (" close=")" item="verifyStatus"  separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
+
+    
+    <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="greenBillVerifyStatus" open=" NOT IN (" close=")" item="verifyStatus"  separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
+
     )t GROUP  by area;
 </select>
 
-
-
-<select id="noVerifyedBillCount" resultType="com.dili.trace.dto.TraceReportDto">
+<select id="noVerifyedBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
   select count(1) no_verifyed_bill_count,area from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    where 1=1
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="noneVerifyStatus!=null and noneVerifyStatus.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="noneVerifyStatus" open=" IN (" close=")" item="verifyStatus" separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
     )t GROUP  by area;
 </select>
 

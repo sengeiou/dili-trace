@@ -7,6 +7,7 @@ import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.TraceReportDto;
+import com.dili.trace.dto.TraceReportQueryDto;
 import com.dili.trace.dto.UserListDto;
 
 import org.apache.ibatis.annotations.Select;
@@ -34,18 +35,18 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
     @Select("select * from register_bill where id = #{id} for update")
     public Optional<RegisterBill> selectByIdForUpdate(Long id);
 
-    public List<TraceReportDto> userCountQuery();
+    public List<TraceReportDto> userCountQuery(TraceReportQueryDto query);
 
-    public List<TraceReportDto> billCountQuery();
+    public List<TraceReportDto> billCountQuery(TraceReportQueryDto query);
 
-    public List<TraceReportDto> tradeDetailBuyerCount();
+    public List<TraceReportDto> tradeDetailBuyerCount(TraceReportQueryDto query);
 
-    public List<TraceReportDto> greenBillCount();
+    public List<TraceReportDto> greenBillCount(TraceReportQueryDto query);
 
-    public List<TraceReportDto> yellowBillCount();
+    public List<TraceReportDto> yellowBillCount(TraceReportQueryDto query);
 
-    public List<TraceReportDto> redBillCount();
+    public List<TraceReportDto> redBillCount(TraceReportQueryDto query);
 
-    public List<TraceReportDto> noVerifyedBillCount();
+    public List<TraceReportDto> noVerifyedBillCount(TraceReportQueryDto query);
 
 }

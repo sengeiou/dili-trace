@@ -11,17 +11,11 @@
             <div class="form-item-group">
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>开始时间</label>
-                    <input class="form-control input-sm" value="" readonly/>
+                    <input class="form-control input-sm" value="${query.createdStart,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>结束时间</label>
-                    <input class="form-control input-sm" value="" readonly/>
-                </div>
-               
-                <div class="form-group">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>上游联系方式</label>
-                    <input type="text" class="form-control input-sm" value="" required readonly/>
+                    <input class="form-control input-sm" value="${query.createdEnd,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
                 </div>
             </div>
             <button>查询</button>
@@ -48,76 +42,76 @@
                 <tr>
                     <td rowspan="2">A区</td>
                     <td>A1（6、7、8、9街、虾区）</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>${data['A1'].userCount}</td>
+                    <td>${data['A1'].billCount}</td>
+                    <td>${data['A1'].tradeDetailBuyerCount}</td>
+                    <td>${data['A1'].percentage}%</td>
+                    <td>${data['A1'].greenBillCount}</td>
+                    <td>${data['A1'].yellowBillCount}</td>
+                    <td>${data['A1'].redBillCount}</td>
+                    <td>${data['A1'].noVerifyedBillCount}</td>
 
                 </tr>
                 <tr>
                     <td>A2（3、5、18街、东大街）</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>${data['A2'].userCount}</td>
+                    <td>${data['A2'].billCount}</td>
+                    <td>${data['A2'].tradeDetailBuyerCount}</td>
+                    <td>${data['A2'].percentage}%</td>
+                    <td>${data['A2'].greenBillCount}</td>
+                    <td>${data['A2'].yellowBillCount}</td>
+                    <td>${data['A2'].redBillCount}</td>
+                    <td>${data['A2'].noVerifyedBillCount}</td>
 
                 </tr>
                 <tr>
                     <td rowspan="2">B区</td>
                     <td>B1（11、12、13街、黑鱼区）</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>${data['B1'].userCount}</td>
+                    <td>${data['B1'].billCount}</td>
+                    <td>${data['B1'].tradeDetailBuyerCount}</td>
+                    <td>${data['B1'].percentage}%</td>
+                    <td>${data['B1'].greenBillCount}</td>
+                    <td>${data['B1'].yellowBillCount}</td>
+                    <td>${data['B1'].redBillCount}</td>
+                    <td>${data['B1'].noVerifyedBillCount}</td>
 
                 </tr>
                 <tr>
                     <td>B2（10街、冰鲜区、梭子蟹）</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>${data['B2'].userCount}</td>
+                    <td>${data['B2'].billCount}</td>
+                    <td>${data['B2'].tradeDetailBuyerCount}</td>
+                    <td>${data['B2'].percentage}%</td>
+                    <td>${data['B2'].greenBillCount}</td>
+                    <td>${data['B2'].yellowBillCount}</td>
+                    <td>${data['B2'].redBillCount}</td>
+                    <td>${data['B2'].noVerifyedBillCount}</td>
 
                 </tr>
                 <tr>
                     <td>其他</td>
                     <td>其他</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>${data['Others'].userCount}</td>
+                    <td>${data['Others'].billCount}</td>
+                    <td>${data['Others'].tradeDetailBuyerCount}</td>
+                    <td>${data['Others'].percentage}%</td>
+                    <td>${data['Others'].greenBillCount}</td>
+                    <td>${data['Others'].yellowBillCount}</td>
+                    <td>${data['Others'].redBillCount}</td>
+                    <td>${data['Others'].noVerifyedBillCount}</td>
 
                 </tr>
                 <tr>
                     <td colspan="2">合计</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>${data['Total'].userCount}</td>
+                    <td>${data['Total'].billCount}</td>
+                    <td>${data['Total'].tradeDetailBuyerCount}</td>
+                    <td>${data['Total'].percentage}%</td>
+                    <td>${data['Total'].greenBillCount}</td>
+                    <td>${data['Total'].yellowBillCount}</td>
+                    <td>${data['Total'].redBillCount}</td>
+                    <td>${data['Total'].noVerifyedBillCount}</td>
                 </tr>
                 <tr><td colspan="10" style="height: 20px;"></td></tr>
 

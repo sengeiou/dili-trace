@@ -1,6 +1,7 @@
 package com.dili.trace.dto;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class TraceReportDto {
     private String area;
@@ -13,6 +14,13 @@ public class TraceReportDto {
     private Integer yellowBillCount;
     private Integer redBillCount;
     private Integer noVerifyedBillCount;
+    public BigDecimal calculatePercentage(){
+        BigDecimal uc=  new BigDecimal(this.userCount);
+        if(BigDecimal.ZERO.compareTo(uc)!=0){
+          this.percentage=  new BigDecimal(this.billCount).add( new BigDecimal(this.tradeDetailBuyerCount)).divide(uc,2,RoundingMode.HALF_UP);
+        }
+        return this.percentage;
+    }
 
     /**
      * @return String return the area
