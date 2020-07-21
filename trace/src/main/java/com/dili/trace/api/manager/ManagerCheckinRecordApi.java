@@ -7,6 +7,7 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.input.CheckinOutRecordQueryDto;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.service.CheckinOutRecordService;
 
@@ -34,7 +35,7 @@ public class ManagerCheckinRecordApi {
 
 	@ApiOperation(value = "获得当前管理员进门操作数据列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody CheckinOutRecord query) {
+	public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody CheckinOutRecordQueryDto query) {
 		try {
 			Long operatorUserId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
 			query.setOperatorId(operatorUserId);

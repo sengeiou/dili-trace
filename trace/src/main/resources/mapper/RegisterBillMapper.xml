@@ -144,7 +144,7 @@
     from register_bill
     where 1=1
     <if test="metadata != null">
-      <foreach collection="metadata.entrySet()" item="value" index="key">  
+      <foreach collection="metadata.entrySet()" item="value" index="key">
         <if test="key =='_andConditionExpr'">
           AND  (${value})
         </if>
@@ -162,13 +162,12 @@
     <if test="isDeleted != null">
       AND is_deleted =#{isDeleted}
     </if>
-    
     group by verify_status
   </select>
 
 
   <select id="selectUserIdWithouBill" parameterType="com.dili.trace.dto.UserListDto" resultType="java.lang.Long">
-select id from `user` where id not in(
+    select id from `user` where id not in(
     select user_id from register_bill where 1=1
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=created ]]>
@@ -176,8 +175,67 @@ select id from `user` where id not in(
     <if test="createdEnd != null">
       <![CDATA[AND created <=#{createdEnd}]]>
     </if>
-)<![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
+    )
+    <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
 
   </select>
+  <select id="userCountQuery" resultType="com.dili.trace.dto.TraceReportDto">
+  select count(1) user_count,area from(
+    select distinct u.id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from `user` u 
+    left join   r_user_tally_area on r_user_tally_area.user_id =u.id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    )t GROUP  by area;
+</select>
+
+<select id="billCountQuery" resultType="com.dili.trace.dto.TraceReportDto">
+  select count(1) bill_count,area from(
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    )t GROUP  by area;
+</select>
+
+<select id="tradeDetailBuyerCount" resultType="com.dili.trace.dto.TraceReportDto">
+  select count(1) trade_detail_buyer_count,area from(
+    select distinct trade_detail.buyer_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from trade_detail 
+    left join   r_user_tally_area on r_user_tally_area.user_id =trade_detail.buyer_id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    )t GROUP  by area;
+</select>
+
+<select id="greenBillCount" resultType="com.dili.trace.dto.TraceReportDto">
+  select count(1) green_bill_count,area from(
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    )t GROUP  by area;
+</select>
+
+
+<select id="yellowBillCount" resultType="com.dili.trace.dto.TraceReportDto">
+  select count(1) yellow_bill_count,area from(
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    )t GROUP  by area;
+</select>
+
+<select id="redBillCount" resultType="com.dili.trace.dto.TraceReportDto">
+  select count(1) red_bill_count,area from(
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    )t GROUP  by area;
+</select>
+
+
+
+<select id="noVerifyedBillCount" resultType="com.dili.trace.dto.TraceReportDto">
+  select count(1) no_verifyed_bill_count,area from(
+    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area from register_bill 
+    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
+    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    )t GROUP  by area;
+</select>
 
 </mapper>

@@ -2,10 +2,13 @@ package com.dili.trace.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.alibaba.fastjson.JSON;
@@ -630,7 +633,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	}
 
 	@Override
-	public Map<Integer, Map<String,List<RegisterBill>>> listPageCheckInData(RegisterBillDto query) {
+	public Map<Integer, Map<String, List<RegisterBill>>> listPageCheckInData(RegisterBillDto query) {
 		String dynaWhere = " is_checkin=" + YnEnum.NO.getCode() + " and bill_type =" + BillTypeEnum.NONE.getCode();
 
 		query.setSort("created");
@@ -657,20 +660,23 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		Map<Integer, List<RegisterBill>> truckTypeBillMap = StreamEx.of(list).append(userPoolList)
 				.append(samePlatePoolTruckTypeBillList).distinct(RegisterBill::getBillId)
 				.groupingBy(RegisterBill::getTruckType);
-		Map<Integer, Map<String,List<RegisterBill>>> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
-			if (TruckTypeEnum.FULL.equalsToCode(k)) {
-				return Stream.of(StreamEx.of(v).groupingBy(item->{
-					return DateUtil.format(item.getCreated(), "yyyy-MM-dd");
-				}));
-			}
-			if (TruckTypeEnum.POOL.equalsToCode(k)) {
-				return Stream.of(StreamEx.of(v).groupingBy(RegisterBill::getPlate));
-			}
-			return StreamEx.empty();
-		}).toMap();
+		Map<Integer, Map<String, List<RegisterBill>>> resultMap = EntryStream.of(truckTypeBillMap)
+				.flatMapToValue((k, v) -> {
+					if (TruckTypeEnum.FULL.equalsToCode(k)) {
+						return Stream.of(StreamEx.of(v).mapToEntry(item -> {
+							return DateUtil.format(item.getCreated(), "yyyy-MM-dd");
+						}, Function.identity())
+								.grouping(() -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER.reversed())));
+					}
+					if (TruckTypeEnum.POOL.equalsToCode(k)) {
+						return Stream.of(StreamEx.of(v).groupingBy(RegisterBill::getPlate));
+					}
+					return StreamEx.empty();
+				}).toMap();
 		return resultMap;
 
 	}
+
 	@Override
 	public RegisterBillOutputDto viewTradeDetailBill(Long billId, Long tradeDetailId) {
 		if (billId == null && tradeDetailId == null) {
@@ -712,14 +718,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 	}
 
-	private Optional<String> buildLikeKeyword(RegisterBillDto query){
-		String sql=null;
+	private Optional<String> buildLikeKeyword(RegisterBillDto query) {
+		String sql = null;
 		if (StringUtils.isNotBlank(query.getKeyword())) {
-			String keyword=query.getKeyword().trim();
-			sql= "( product_name like '%"+keyword+"%'  OR user_id in(select id from `user` u where u.name like '%"+keyword+"%' OR legal_person like '%"+keyword+"%' OR upper(tally_area_nos) like '%"+keyword.toUpperCase()+"%'))";
+			String keyword = query.getKeyword().trim();
+			sql = "( product_name like '%" + keyword + "%'  OR user_id in(select id from `user` u where u.name like '%"
+					+ keyword + "%' OR legal_person like '%" + keyword + "%' OR upper(tally_area_nos) like '%"
+					+ keyword.toUpperCase() + "%'))";
 		}
 		return Optional.ofNullable(sql);
-		
 
 	}
 

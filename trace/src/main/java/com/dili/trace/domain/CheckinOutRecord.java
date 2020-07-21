@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.CheckinOutTypeEnum;
+import com.dili.trace.enums.WeightUnitEnum;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -105,6 +106,11 @@ public class CheckinOutRecord extends BaseDomain {
     @Transient
     public String getInoutName(){
        return  CheckinOutTypeEnum.fromCode(this.getInout()).map(CheckinOutTypeEnum::getDesc).orElse("");
+    }
+
+    @Transient
+    public String getWeightUnitName(){
+       return  WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
     }
 
     public BigDecimal getInoutWeight() {
