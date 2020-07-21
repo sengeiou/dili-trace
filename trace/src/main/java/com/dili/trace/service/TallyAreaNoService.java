@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
@@ -50,9 +50,22 @@ public class TallyAreaNoService extends BaseServiceImpl<TallyAreaNo, Long> imple
     public void run(String... args) throws Exception {
         User uq = DTOUtils.newDTO(User.class);
         uq.setPage(1);
-        uq.setRows(100);
+        uq.setRows(200);
         while (true) {
-            List<User> userList = this.userService.listPageByExample(uq).getDatas();
+            List<User> userList = StreamEx.of(this.userService.listPageByExample(uq).getDatas()).map(userItem -> {
+
+                String parsedTallyAreaNos = StringUtils
+                        .trimToNull(this.parseAndConvertTallyAreaNos(userItem.getTallyAreaNos()));
+                if (!Objects.equals(parsedTallyAreaNos, StringUtils.trimToNull(userItem.getTallyAreaNos()))) {
+                    User u = DTOUtils.newDTO(User.class);
+                    u.setId(userItem.getId());
+                    u.setTallyAreaNos(parsedTallyAreaNos);
+                    this.userService.updateSelective(u);
+                    return this.userService.get(u.getId());
+                }
+                return userItem;
+
+            }).toList();
             if (userList.isEmpty()) {
                 return;
             }

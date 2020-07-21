@@ -24,4 +24,5 @@ public class RUserTallyAreaService extends BaseServiceImpl<RUserTallyArea, Long>
 
     }
 
+
 }
