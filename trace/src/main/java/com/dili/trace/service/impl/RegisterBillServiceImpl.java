@@ -660,7 +660,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		Map<Integer, Map<String,List<RegisterBill>>> resultMap = EntryStream.of(truckTypeBillMap).flatMapToValue((k, v) -> {
 			if (TruckTypeEnum.FULL.equalsToCode(k)) {
 				return Stream.of(StreamEx.of(v).groupingBy(item->{
-					return DateUtil.format(item.getCreated(), "yyyy-MM-dd HH:mm:ss");
+					return DateUtil.format(item.getCreated(), "yyyy-MM-dd");
 				}));
 			}
 			if (TruckTypeEnum.POOL.equalsToCode(k)) {
