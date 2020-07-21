@@ -180,7 +180,7 @@
 
   </select>
   <select id="userCountQuery" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
-  select count(1) user_count,area from(
+  select count(1) user_count,area as group_key from(
     select distinct u.id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from `user` u 
     left join   r_user_tally_area on r_user_tally_area.user_id =u.id 
@@ -189,7 +189,7 @@
 </select>
 
 <select id="billCountQuery" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
-  select count(1) bill_count,area from(
+  select count(1) bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
@@ -205,7 +205,7 @@
 </select>
 
 <select id="tradeDetailBuyerCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
-  select count(1) trade_detail_buyer_count,area from(
+  select count(1) trade_detail_buyer_count,area as group_key from(
     select distinct trade_detail.buyer_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from trade_detail 
     left join   r_user_tally_area on r_user_tally_area.user_id =trade_detail.buyer_id 
@@ -221,7 +221,7 @@
 </select>
 
 <select id="greenBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
-  select count(1) green_bill_count,area from(
+  select count(1) green_bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
@@ -246,7 +246,7 @@
 
 
 <select id="yellowBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
-  select count(1) yellow_bill_count,area from(
+  select count(1) yellow_bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
@@ -277,7 +277,7 @@
 </select>
 
 <select id="redBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
-  select count(1) red_bill_count,area from(
+  select count(1) red_bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
@@ -316,7 +316,7 @@
 </select>
 
 <select id="noVerifyedBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
-  select count(1) no_verifyed_bill_count,area from(
+  select count(1) no_verifyed_bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 

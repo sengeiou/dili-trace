@@ -70,4 +70,32 @@
 
 
     </select>
+
+    <select id="groupCountCommonBillByColor"  parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+        select color as group_key,count(1) as billCount from (
+            select case when verify_status=30 then 'RED' when verify_status =20 then 'GREEN' else 'YELLOW' end  as color ,bill_id from checkinout_record
+            where bill_type=#{billType}
+        <if test="createdStart != null">
+            <![CDATA[ AND #{createdStart}<=checkinout_record.created ]]>
+          </if>
+          <if test="createdEnd != null">
+            <![CDATA[AND checkinout_record.created <=#{createdEnd}]]>
+          </if>
+
+        )t group by color
+    </select>
+    <select id="groupCountSupplementBillByColor"  parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+        select count(1) as billCount from (
+            select distinct bill_id from checkinout_record
+            where bill_type=#{billType}
+        <if test="createdStart != null">
+            <![CDATA[ AND #{createdStart}<=checkinout_record.created ]]>
+          </if>
+          <if test="createdEnd != null">
+            <![CDATA[AND checkinout_record.created <=#{createdEnd}]]>
+          </if>
+
+        )t 
+    </select>
+   
 </mapper>

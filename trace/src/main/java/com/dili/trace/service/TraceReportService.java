@@ -4,22 +4,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.dili.trace.api.input.CheckinOutRecordQueryDto;
+import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.dto.TraceReportDto;
 import com.dili.trace.dto.TraceReportQueryDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.google.common.collect.Lists;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import liquibase.pro.packaged.t;
 import one.util.streamex.StreamEx;
 
 @Service
 public class TraceReportService {
     @Autowired
     RegisterBillMapper billMapper;
+    @Autowired
+    CheckinOutRecordMapper checkinOutRecordMapper;
 
     public Map<String, TraceReportDto> getTraceBillReportData(TraceReportQueryDto query) {
         query.setGreenBillVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.PASSED.getCode()));
@@ -37,7 +43,7 @@ public class TraceReportService {
             item.setRedBillCount(0);
             item.setNoVerifyedBillCount(0);
             return item;
-        }).toMap(TraceReportDto::getArea, Function.identity());
+        }).toMap(TraceReportDto::getGroupKey, Function.identity());
 
         StreamEx.of(this.billMapper.billCountQuery(query)).forEach(item -> {
             areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto()).setBillCount(item.getBillCount());
@@ -69,30 +75,51 @@ public class TraceReportService {
         });
 
         TraceReportDto total = StreamEx.of(list).map(item -> {
-
             item.calculatePercentage();
             return item;
-        }).reduce((t, v) -> {
-            t.setBillCount(v.getBillCount());
-            t.setTradeDetailBuyerCount(v.getTradeDetailBuyerCount());
-            t.setGreenBillCount(v.getGreenBillCount());
-            t.setYellowBillCount(v.getYellowBillCount());
-            t.setRedBillCount(v.getRedBillCount());
-            t.setNoVerifyedBillCount(v.getNoVerifyedBillCount());
+        }).reduce(this.defaultReportDTO(),(t, v) -> {
+            t.sum(v);
             return t;
-        }).orElseGet(() -> {
-            TraceReportDto dto = new TraceReportDto();
-            dto.setBillCount(0);
-            dto.setTradeDetailBuyerCount(0);
-            dto.setGreenBillCount(0);
-            dto.setYellowBillCount(0);
-            dto.setRedBillCount(0);
-            dto.setNoVerifyedBillCount(0);
-            return dto;
         });
         total.calculatePercentage();
         areaReportDtoMap.put("Total", total);
         return areaReportDtoMap;
 
+    }
+
+    public Map<String,TraceReportDto> getCommonCheckinReportData(TraceReportQueryDto query) {
+        query.setBillType(BillTypeEnum.NONE.getCode());
+        List<TraceReportDto>list=this.checkinOutRecordMapper.groupCountCommonBillByColor(query);
+        Map<String,TraceReportDto>mapData= StreamEx.ofNullable(list).nonNull().flatCollection(Function.identity()).toMap(TraceReportDto::getGroupKey, Function.identity());
+        TraceReportDto total = StreamEx.of(list).map(item -> {
+            item.calculatePercentage();
+            return item;
+        }).reduce(this.defaultReportDTO(),(t, v) -> {
+           t.sum(v);
+            return t;
+        });
+        mapData.put("Total", total);
+        return mapData;
+    }
+
+    public TraceReportDto getSupplementCheckinReportData(TraceReportQueryDto query) {
+        query.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
+        return StreamEx.ofNullable(this.checkinOutRecordMapper.groupCountCommonBillByColor(query)).nonNull()
+                .flatCollection(Function.identity()).nonNull().findFirst().orElseGet(() -> {
+
+                    return this.defaultReportDTO();
+                });
+
+    }
+
+    private TraceReportDto defaultReportDTO() {
+        TraceReportDto dto = new TraceReportDto();
+        dto.setBillCount(0);
+        dto.setTradeDetailBuyerCount(0);
+        dto.setGreenBillCount(0);
+        dto.setYellowBillCount(0);
+        dto.setRedBillCount(0);
+        dto.setNoVerifyedBillCount(0);
+        return dto;
     }
 }

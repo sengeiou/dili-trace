@@ -18,7 +18,6 @@
                     <input class="form-control input-sm" value="${query.createdEnd,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
                 </div>
             </div>
-            <button>查询</button>
         </form>
         <table style="width: 100%;border:#333;" border="medium">
 
@@ -130,12 +129,12 @@
                 </tr>
                 <tr style="height: 30px;">
                     <td colspan="2"></td>
+                    <td>${commonCheckinData['Total'].billCount!0}</td>
                     <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>${commonCheckinData['GREEN'].billCount!0}</td>
+                    <td>${commonCheckinData['YELLOW'].billCount!0}</td>
+                    <td>${commonCheckinData['RED'].billCount!0}</td>
+                    <td>${supplementCheckinData.billCount!0}</td>
                 </tr>
 
         </table>

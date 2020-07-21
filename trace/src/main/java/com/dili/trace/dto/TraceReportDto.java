@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class TraceReportDto {
-    private String area;
+    private String groupKey;
     private Integer userCount;
     private Integer billCount;
     private Integer tradeDetailBuyerCount;
@@ -15,27 +15,61 @@ public class TraceReportDto {
     private Integer redBillCount;
     private Integer noVerifyedBillCount;
     public BigDecimal calculatePercentage(){
+        if(this.userCount==null){
+            return this.percentage;
+        }
         BigDecimal uc=  new BigDecimal(this.userCount);
         if(BigDecimal.ZERO.compareTo(uc)!=0){
           this.percentage=  new BigDecimal(this.billCount).add( new BigDecimal(this.tradeDetailBuyerCount)).divide(uc,2,RoundingMode.HALF_UP);
         }
         return this.percentage;
     }
+    public TraceReportDto sum(TraceReportDto dto){
+        if(this.billCount==null){
+            this.billCount=0;
+        }
+        if(this.tradeDetailBuyerCount==null){
+            this.tradeDetailBuyerCount=0;
+        }
+        if(this.greenBillCount==null){
+            this.greenBillCount=0;
+        }
 
-    /**
-     * @return String return the area
-     */
-    public String getArea() {
-        return area;
+        if(this.yellowBillCount==null){
+            this.yellowBillCount=0;
+        }
+        if(this.redBillCount==null){
+            this.redBillCount=0;
+        }
+        if(this.noVerifyedBillCount==null){
+            this.noVerifyedBillCount=0;
+        }
+
+
+        if(dto.getBillCount()!=null){
+            this.setBillCount(this.getBillCount()+dto.getBillCount());
+        }
+        if(dto.getTradeDetailBuyerCount()!=null){
+            this.setTradeDetailBuyerCount(this.getTradeDetailBuyerCount()+  dto.getTradeDetailBuyerCount());
+        }
+        if(dto.getGreenBillCount()!=null){
+            this.setGreenBillCount(this.getGreenBillCount()+dto.getGreenBillCount());
+        }
+
+        if(dto.getYellowBillCount()!=null){
+            this.setYellowBillCount(this.getYellowBillCount()+dto.getYellowBillCount());
+        }
+        if(dto.getRedBillCount()!=null){
+            this.setRedBillCount(this.getRedBillCount()+ dto.getRedBillCount());
+        }
+        if(dto.getNoVerifyedBillCount()!=null){
+            this.setNoVerifyedBillCount(this.getNoVerifyedBillCount()+  dto.getNoVerifyedBillCount());
+        }
+
+        return this;
     }
 
-    /**
-     * @param area the area to set
-     */
-    public void setArea(String area) {
-        this.area = area;
-    }
-
+   
     /**
      * @return Integer return the userCount
      */
@@ -146,6 +180,21 @@ public class TraceReportDto {
      */
     public void setNoVerifyedBillCount(Integer noVerifyedBillCount) {
         this.noVerifyedBillCount = noVerifyedBillCount;
+    }
+
+
+    /**
+     * @return String return the groupKey
+     */
+    public String getGroupKey() {
+        return groupKey;
+    }
+
+    /**
+     * @param groupKey the groupKey to set
+     */
+    public void setGroupKey(String groupKey) {
+        this.groupKey = groupKey;
     }
 
 }

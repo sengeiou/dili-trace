@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TraceReportQueryDto {
+    private Integer billType;
     private Date createdStart;
     private Date createdEnd;
     private List<Integer> greenBillVerifyStatus;
@@ -94,6 +95,21 @@ public class TraceReportQueryDto {
      */
     public void setNoneVerifyStatus(List<Integer> noneVerifyStatus) {
         this.noneVerifyStatus = noneVerifyStatus;
+    }
+
+
+    /**
+     * @return Integer return the billType
+     */
+    public Integer getBillType() {
+        return billType;
+    }
+
+    /**
+     * @param billType the billType to set
+     */
+    public void setBillType(Integer billType) {
+        this.billType = billType;
     }
 
 }

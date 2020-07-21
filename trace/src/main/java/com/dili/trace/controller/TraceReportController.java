@@ -43,7 +43,12 @@ public class TraceReportController {
 
         Map<String, TraceReportDto>data= this.traceReportService.getTraceBillReportData(query);
        
+        Map<String, TraceReportDto> commonCheckinData=this.traceReportService.getCommonCheckinReportData(query);
+        TraceReportDto supplementCheckinData=this.traceReportService.getSupplementCheckinReportData(query);
+
         modelMap.put("data", data);
+        modelMap.put("commonCheckinData", commonCheckinData);
+        modelMap.put("supplementCheckinData", supplementCheckinData);
         modelMap.put("query", query);
         return "traceReport/index";
     }
