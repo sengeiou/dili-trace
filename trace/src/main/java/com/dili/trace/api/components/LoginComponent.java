@@ -110,6 +110,8 @@ public class LoginComponent {
 	// }
 
 	private User userLogin(String phone, String password) {
+		logger.info("original password={}",password);
+		logger.info("md5 password={}",MD5Util.md5(password));
 		User userItem = userService.login(phone, MD5Util.md5(password));
 		this.userLoginHistoryService.createLoginHistory(userItem);
 		return userItem;

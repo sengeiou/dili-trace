@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSON;
 import com.beust.jcommander.internal.Lists;
+import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.RedisService;
@@ -86,6 +87,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Resource
     RegisterBillService registerBillService;
     @Autowired
+    DefaultConfiguration defaultConfiguration;
+    @Autowired
     QrCodeService qrCodeService;
     @Value("${current.baseWebPath}")
     private String baseWebPath;
@@ -112,7 +115,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         if (StringUtils.isEmpty(user.getPassword())) {
-            user.setPassword("123456");// TODO 默认密码
+            user.setPassword(this.defaultConfiguration.getPassword());// TODO 默认密码
         }
         user.setPassword(MD5Util.md5(user.getPassword()));
 
