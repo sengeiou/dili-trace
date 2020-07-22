@@ -98,7 +98,7 @@ public class TraceReportService {
 
     public TraceReportDto getSupplementCheckinReportData(TraceReportQueryDto query) {
         query.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
-        return StreamEx.ofNullable(this.checkinOutRecordMapper.groupCountCommonBillByColor(query)).nonNull()
+        return StreamEx.ofNullable(this.checkinOutRecordMapper.groupCountSupplementBillByColor(query)).nonNull()
                 .flatCollection(Function.identity()).nonNull().findFirst().orElseGet(() -> {
 
                     return this.defaultReportDTO();
