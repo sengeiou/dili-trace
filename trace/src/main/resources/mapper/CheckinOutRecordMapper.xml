@@ -20,7 +20,7 @@
         ,register_bill.weight_unit 
         ,register_bill.created AS 'bill_created'
         ,register_bill.is_deleted 
-        ,register_bill.created 
+        ,register_bill.bill_type 
         ,u.phone
         ,u.tally_area_nos
         ,u.legal_person
