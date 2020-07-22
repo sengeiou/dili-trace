@@ -228,69 +228,7 @@
   		})
   	
    }
-   $('#queryUser').keydown(function (e){
-    	    if(e.keyCode == 13){
-    	    	// $(selector).data('keycode',e.keyCode);
-    	    	// console.info('keydown')
-    	    }
-    	});
-    	$('#queryUser').data('oldvalue','');
-    	// $(selector).data('keycode','');
-        $('#queryUser').on('change',function () {
-        	var oldvalue=$('#queryUser').data('oldvalue');
-        	var val=$(this).val();
-        	if(oldvalue!=val){
-                $(this).siblings('input').val('');
-                $('#userId').val('');
-                $('#name').val('');
-                $('#idCardNo').val('');
-                $('#addr').val('');
-                $('#phone').val('');
-        	}
-        });
-        // 产地联系输入
-        //listByCondition.action 
-        //likeName
-        $('#queryUser').devbridgeAutocomplete({
-            noCache: 1,
-            serviceUrl:"${contextPath}/user/listByKeyword.action",  // 数据地址
-            // lookup: countries, 本地测试模拟数据使用结合上面的var countries
-            dataType: 'json',
-            onSearchComplete: function (query, suggestions) {
-            	// console.info(2)
-            },
-            showNoSuggestionNotice: true,
-            noSuggestionNotice: "不存在，请重输！",
-            autoSelectFirst:true,
-            autoFocus: true,
-            transformResult: function(response, originalQuery) {
-                var data=response.data;
-                var suggestions=data.map(function(v,i){
-                    return {id:v.id,value:v.name,item:v};
-                });
-                
-                return {"suggestions":suggestions}
-            },
-            formatResult: function (suggestion, currentValue) {
-                var user=suggestion.item;
-                return user.name+"|"+user.phone+"|"+user.tallyAreaNos;
-            },
-            onSelect: function (suggestion) {
-                var self = this;
-                var idField = $(self).siblings('input');
-                idField.val(suggestion.id);
-                $(self).val(suggestion.value.trim());
-
-                var user=suggestion.item;
-                $('#userId').val(user.id);
-                $('#name').val(user.name);
-                $('#idCardNo').val(user.cardNo);
-                $('#addr').val(user.addr);
-                $('#phone').val(user.phone);
-                $('#queryUser').data('oldvalue',suggestion.value);
-                var v=$(self).valid();
-            }
-        });
+  
     
      </script>
  </#body>

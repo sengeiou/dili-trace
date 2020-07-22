@@ -72,7 +72,7 @@ public class ImageService {
      */
     private StringBuilder createDirectory(Integer type) {
         StringBuilder directory = new StringBuilder();
-        directory.append(ImageCertTypeEnum.fromCode(type).map(ImageCertTypeEnum::getName).orElse("default"));
+        directory.append(ImageCertTypeEnum.fromCode(type).map(ImageCertTypeEnum::name).orElse("default"));
         directory.append("/");
         directory.append(DateUtil.format(new Date(),"yyyyMM"));
         directory.append("/");
@@ -87,4 +87,5 @@ public class ImageService {
         String ex=originalFilename.substring(originalFilename.lastIndexOf("."));
         return UUIDUtil.get()+ex;
     }
+
 }

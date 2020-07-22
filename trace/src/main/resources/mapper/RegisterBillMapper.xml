@@ -168,7 +168,7 @@
 
   <select id="selectUserIdWithouBill" parameterType="com.dili.trace.dto.UserListDto" resultType="java.lang.Long">
     select id from `user` where id not in(
-    select user_id from register_bill where 1=1
+    select user_id from register_bill where is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=created ]]>
     </if>
@@ -194,7 +194,7 @@
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
-    where 1=1
+    where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
     </if>
@@ -226,7 +226,7 @@
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id
-    where 1=1
+    where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
     </if>
@@ -251,7 +251,7 @@
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
-    where 1=1
+    where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
     </if>
@@ -282,7 +282,7 @@
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
-    where 1=1
+    where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
     </if>
@@ -321,7 +321,7 @@
     from register_bill 
     left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id
-    where 1=1
+    where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
     </if>
