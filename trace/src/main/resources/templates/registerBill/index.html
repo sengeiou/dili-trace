@@ -15,9 +15,9 @@
                     <div class="search-wrap">
 
                         <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="billCreatedStart" id="billCreatedStart" style="width:58%" labelAlign="right" data-options="label:'报备时间'" value="${billCreatedStart!}"/>
+                            <input class="easyui-datetimebox" name="billCreatedStart" id="billCreatedStart" style="width:58%" labelAlign="right" data-options="label:'报备时间'" value="${query.billCreatedStart!}"/>
                             <span style="width: 2%;">-</span>
-                            <input class="easyui-datetimebox" name="billCreatedEnd" id="billCreatedEnd" style="width:39%;" value="${billCreatedEnd!}"/>
+                            <input class="easyui-datetimebox" name="billCreatedEnd" id="billCreatedEnd" style="width:39%;" value="${query.billCreatedEnd!}"/>
                         </div>
 
                         <div class="search-item long-item">
@@ -99,7 +99,7 @@
             <!-- =========================================================表格========================================================= -->
             <table class="easyui-datagrid" title="登记单列表" id="registerBillGrid" fitColumns="true" noheader="true"
                    pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
-                   loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false"  sortName="code" sortOrder="desc"
+                   loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false"  sortName="created" sortOrder="desc"
                    align="center" fit="true" idField="id" selectOnCheck="true" data-options="onBeforeLoad:onBeforeLoad,loader: loadRegisterBillGridData,rowStyler:coloredRowRender, onClickRow:onClickRow,onSelect:onClickRow,onUnselect:onUnselect,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked,onSelectAll:onSelectAll,onUnselectAll:onUnselectAll ">
                 <thead>
                     <tr>
@@ -109,6 +109,9 @@
                         </th>
                         <th width="8%" data-options="field:'billCode',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             编号
+                        </th>
+                        <th width="8%" data-options="field:'billTypeName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            报备单类型
                         </th>
                         <th width="5%" data-options="field:'userName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             业户姓名
@@ -140,11 +143,11 @@
                         <th width="5%" data-options="field:'checkinStatusName',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             是否进门
                          </th>
+                         <th width="10%" data-options="field:'checkinCreated',  _provider:'datetimeProvider',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            进门时间
+                         </th>
                          <th width="5%" data-options="field:'isDeletedName',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             是否删除
-                         </th>
-                        <th width="10%" data-options="field:'checkinCreated',  _provider:'datetimeProvider',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            进门时间
                          </th>
                    </tr>
                 </thead>

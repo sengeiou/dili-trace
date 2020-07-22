@@ -34,6 +34,7 @@ import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.service.SMSService;
@@ -57,6 +58,7 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 
 /**
  * 账号相关api
@@ -160,33 +162,7 @@ public class UserApi {
         return this.smsService.sendVerificationCodeMsg(params, phone, verificationCode);
     }
 
-    @ApiOperation(value = "找回密码【接口已通】", notes = "找回密码")
-    @RequestMapping(value = "/resetPassword.api", method = RequestMethod.POST)
-    public BaseOutput<String> resetPassword(@RequestBody User user) {
-        try {
-            if (StrUtil.isBlank(user.getPhone())) {
-                return BaseOutput.failure("手机号为空");
-            }
-            if (StrUtil.isBlank(user.getPassword())) {
-                return BaseOutput.failure("密码为空");
-            }
-            if (StrUtil.isBlank(user.getAckPassword())) {
-                return BaseOutput.failure("确认密码为空");
-            }
-            if (!user.getPassword().equals(user.getAckPassword())) {
-                throw new TraceBusinessException("密码与确认密码不同");
-            }
-            user.setPassword(MD5Util.md5(user.getPassword()));
-            userService.resetPassword(user);
-            return BaseOutput.success();
-        } catch (TraceBusinessException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error("resetPassword", e);
-            return BaseOutput.failure();
-        }
-    }
-
+    
     @ApiOperation(value = "用户获取个人信息【接口已通】", notes = "用户获取个人信息")
     @RequestMapping(value = "/get.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -253,6 +229,76 @@ public class UserApi {
             return BaseOutput.failure();
         }
     }
+
+
+
+    
+    @ApiOperation(value = "发送重置密码验证码【接口已通】", notes = "发送重置密码验证码")
+    @RequestMapping(value = "/sendSmsCodeForResetPassword.api", method = RequestMethod.POST)
+    @InterceptConfiguration(loginRequired = false)
+    public BaseOutput<String> sendSmsCodeForResetPassword(@RequestBody User user) {
+        try {
+            if(StringUtils.isBlank(user.getPhone())){
+                return BaseOutput.failure("手机号码不能为空");
+            }
+            User query=DTOUtils.newDTO(User.class);
+            query.setPhone(user.getPhone());
+            query.setYn(YnEnum.YES.getCode());
+            User userItem=StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(()->{return new TraceBusinessException("手机号码不存在");});
+
+            if (defaultConfiguration.getCheckCodeExpire()
+                    - redisUtil.getRedisTemplate().getExpire(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX) < 60) {
+                return BaseOutput.success();// 发送间隔60秒
+            }
+    
+            String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
+            // 发送短信验证码
+            JSONObject params = new JSONObject();
+            params.put("marketCode", ExecutionConstants.MARKET_CODE);
+            params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
+            params.put("sceneCode", "registerAuthCode");
+            params.put("cellphone", userItem.getPhone());
+            Map<String, Object> content = new HashMap<>();
+            content.put("code", verificationCode);
+            params.put("parameters", content);
+            return this.smsService.sendVerificationCodeMsg(params, userItem.getPhone(), verificationCode);
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error("sendSmsCodeForResetPassword", e);
+            return BaseOutput.failure();
+        }
+    }
+
+
+    @ApiOperation(value = "重置密码【接口已通】", notes = "重置密码")
+    @RequestMapping(value = "/resetPassword.api", method = RequestMethod.POST)
+    @InterceptConfiguration(loginRequired = false)
+    public BaseOutput<String> resetPassword(@RequestBody User user) {
+        try {
+            if(StringUtils.isBlank(user.getPhone())){
+                return BaseOutput.failure("手机号码不能为空");
+            }
+            
+            User query=DTOUtils.newDTO(User.class);
+            query.setPhone(user.getPhone());
+            query.setYn(YnEnum.YES.getCode());
+            User userItem=StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(()->{return new TraceBusinessException("手机号码不存在");});
+
+
+
+            
+            return BaseOutput.success();
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error("changePassword", e);
+            return BaseOutput.failure();
+        }
+    }
+
+
+
 
     @ApiOperation(value = "退出【接口已通】", notes = "退出")
     @RequestMapping(value = "/quit.api", method = RequestMethod.POST)

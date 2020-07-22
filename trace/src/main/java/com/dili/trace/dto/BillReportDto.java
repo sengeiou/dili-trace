@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
@@ -22,6 +23,7 @@ public class BillReportDto extends BaseDomain{
     private Date billCreated;
     private Date checkinCreated;
     private Integer checkinStatus;
+    private Integer billType;
     private String productName;
     private Integer preserveType ;
     private String originName; 
@@ -39,9 +41,11 @@ public class BillReportDto extends BaseDomain{
         };
         return "";
     }
-
+    public String getBillTypeName(){
+        return BillTypeEnum.fromCode(this.getBillType()).map(BillTypeEnum::getName).orElse("");
+    }
     public String getCheckinStatusName(){
-        return Optional.ofNullable(CheckinStatusEnum.fromCode(this.getCheckinStatus())).map(CheckinStatusEnum::getDesc).orElse("无");
+        return Optional.ofNullable(CheckinStatusEnum.fromCode(this.getCheckinStatus())).map(CheckinStatusEnum::getDesc).orElse("");
     }
     public String getPreserveTypeName(){
         return PreserveTypeEnum.fromCode(this.getPreserveType()).map(PreserveTypeEnum::getName).orElse("");
@@ -308,6 +312,21 @@ public class BillReportDto extends BaseDomain{
      */
     public Integer getIsDeleted() {
         return isDeleted;
+    }
+
+
+    /**
+     * @param billType the billType to set
+     */
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+    }
+
+    /**
+     * @return the billType
+     */
+    public Integer getBillType() {
+        return billType;
     }
 
 }
