@@ -195,9 +195,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		// 创建审核历史数据
 		this.registerBillHistoryService.createHistory(registerBill.getBillId());
 		// 保存图片
-		if (imageCertList != null) {
-			this.imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
+		imageCertList=StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
+		if(imageCertList.isEmpty()){
+			throw new TraceBusinessException("请上传凭证");
 		}
+		this.imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
 
 		// 创建/更新品牌信息并更新brandId字段值
 		this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId())
@@ -334,10 +336,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		this.updateSelective(input);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
-		// 保存图片
-		if (imageCertList != null) {
-			this.imageCertService.insertImageCert(imageCertList, input.getId());
+
+		imageCertList=StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
+		if(imageCertList.isEmpty()){
+			throw new TraceBusinessException("请上传凭证");
 		}
+		// 保存图片
+		this.imageCertService.insertImageCert(imageCertList, input.getId());
 
 		this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(td -> {
 			TradeDetail updatableRecord = new TradeDetail();
