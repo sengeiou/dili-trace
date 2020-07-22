@@ -138,6 +138,9 @@ public class RegisterBillHistory extends BaseDomain {
 	@Column(name = "`operator_id`")
 	private Long operatorId;
 
+	@Column(name = "`operation_time`")
+	private Date operationTime;
+
 	@ApiModelProperty(value = "上游信息ID")
 	@Column(name = "`upstream_id`")
 	private Long upStreamId;
@@ -583,6 +586,21 @@ public class RegisterBillHistory extends BaseDomain {
      */
     public void setIsCheckin(Integer isCheckin) {
         this.isCheckin = isCheckin;
+    }
+
+
+    /**
+     * @return Date return the operationTime
+     */
+    public Date getOperationTime() {
+        return operationTime;
+    }
+
+    /**
+     * @param operationTime the operationTime to set
+     */
+    public void setOperationTime(Date operationTime) {
+        this.operationTime = operationTime;
     }
 
 }

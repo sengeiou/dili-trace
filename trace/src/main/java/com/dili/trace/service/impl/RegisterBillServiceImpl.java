@@ -168,6 +168,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		operatorUser.ifPresent(op -> {
 			registerBill.setOperatorName(op.getName());
 			registerBill.setOperatorId(op.getId());
+			registerBill.setOperationTime(new Date());
 		});
 		registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
 		// 车牌转大写
@@ -316,10 +317,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
 		input.setOperatorName(null);
 		input.setOperatorId(null);
+		input.setOperationTime(null);
 		input.setReason("");
 		operatorUser.ifPresent(op -> {
 			input.setOperatorName(op.getName());
 			input.setOperatorId(op.getId());
+			input.setOperationTime(new Date());
 		});
 		if (tradeDetailItem == null) {
 			// 补单直接进门状态
@@ -381,6 +384,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		operatorUser.ifPresent(op -> {
 			bill.setOperatorName(op.getName());
 			bill.setOperatorId(op.getId());
+			bill.setOperationTime(new Date());
 		});
 		this.updateSelective(bill);
 		this.registerBillHistoryService.createHistory(billItem.getBillId());
@@ -516,6 +520,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 		operatorUser.ifPresent(op -> {
 			bill.setOperatorId(op.getId());
 			bill.setOperatorName(op.getName());
+			bill.setOperationTime(new Date());
 		});
 
 		bill.setReason(StringUtils.trimToEmpty(reason));

@@ -136,6 +136,9 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`operator_id`")
 	private Long operatorId;
 
+	@Column(name = "`operation_time`")
+	private Date operationTime;
+
 	@ApiModelProperty(value = "上游信息ID")
 	@Column(name = "`upstream_id`")
 	private Long upStreamId;
@@ -624,6 +627,21 @@ public class RegisterBill extends BaseDomain {
      */
     public void setIsDeleted(Integer isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+
+    /**
+     * @return Date return the operationTime
+     */
+    public Date getOperationTime() {
+        return operationTime;
+    }
+
+    /**
+     * @param operationTime the operationTime to set
+     */
+    public void setOperationTime(Date operationTime) {
+        this.operationTime = operationTime;
     }
 
 }
