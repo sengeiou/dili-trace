@@ -64,8 +64,8 @@ public class CreateRegisterBillInputDto {
 	public RegisterBill build(User user) {
 		RegisterBill registerBill = new RegisterBill();
 		registerBill.setId(this.getBillId());
-		registerBill.setOperatorName(user.getName());
-		registerBill.setOperatorId(user.getId());
+		// registerBill.setOperatorName(user.getName());
+		// registerBill.setOperatorId(user.getId());
 		registerBill.setUserId(user.getId());
 		registerBill.setName(user.getName());
 		registerBill.setTallyAreaNo(user.getTallyAreaNos());
