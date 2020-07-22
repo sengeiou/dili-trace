@@ -6,8 +6,10 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.RegisterBillHistory;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.service.RegisterBillHistoryService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +53,8 @@ public class ClientRegisterBillHistoryApi {
 				inputDto.setOrder("desc");
 				inputDto.setSort("modified");
 			}
+			
+			inputDto.setMetadata(IDTO.AND_CONDITION_EXPR, "verify_status <>"+BillVerifyStatusEnum.NONE.getCode());
 			List<RegisterBillHistory> page = this.billHistoryService.listByExample(inputDto);
 			return BaseOutput.success().setData(page);
 		} catch (TraceBusinessException e) {
