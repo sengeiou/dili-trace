@@ -7,17 +7,18 @@
         </div>
     </div>
     <div class="form-box border"  style="width: 80%;">
-        <form id="createRecordForm" class="form-inline" role="form">
+        <form id="createRecordForm" class="form-inline" role="form" method="GET" action="${contextPath!}/traceReport/index.html">
             <div class="form-item-group">
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>开始时间</label>
-                    <input class="form-control input-sm" value="${query.createdStart,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
+                    <input class="form-control input-sm" name="createdStart" value="${query.createdStart,dateFormat='yyyy-MM-dd HH:mm:ss'}"  <%if(query.readonly==true){%> readonly<%}%>/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>结束时间</label>
-                    <input class="form-control input-sm" value="${query.createdEnd,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
+                    <input class="form-control input-sm" name="createdEnd" value="${query.createdEnd,dateFormat='yyyy-MM-dd HH:mm:ss'}"  <%if(query.readonly==true){%> readonly<%}%>/>
                 </div>
             </div>
+            <button type="submit" <%if(query.readonly==true){%> style="display:none"<%}%>>查询</button>
         </form>
         <table style="width: 100%;border:#333;" border="medium">
 

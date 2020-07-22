@@ -7,6 +7,7 @@ public class TraceReportQueryDto {
     private Integer billType;
     private Date createdStart;
     private Date createdEnd;
+    private Boolean readonly;
     private List<Integer> greenBillVerifyStatus;
     private List<Integer> yellowBillVerifyStatus;
     private List<Integer> redBillVerifyStatus;
@@ -110,6 +111,21 @@ public class TraceReportQueryDto {
      */
     public void setBillType(Integer billType) {
         this.billType = billType;
+    }
+
+
+    /**
+     * @return Boolean return the readonly
+     */
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    /**
+     * @param readonly the readonly to set
+     */
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
     }
 
 }

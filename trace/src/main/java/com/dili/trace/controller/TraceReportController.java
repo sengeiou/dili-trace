@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -24,10 +25,10 @@ public class TraceReportController {
     TraceReportService traceReportService;
 
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
-    public String index(ModelMap modelMap) {
+    public String index(ModelMap modelMap,TraceReportQueryDto query) {
 
-        TraceReportQueryDto query = new TraceReportQueryDto();
-
+        // TraceReportQueryDto query=new TraceReportQueryDto();
+        // query.setReadonly(readonly);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime splitTime=now.withHour(20).withMinute(30).withSecond(0);
         if(now.isBefore(splitTime)){
@@ -38,8 +39,12 @@ public class TraceReportController {
         Date start=Date.from(now.minusDays(1).atZone(ZoneId.systemDefault()).toInstant());
         Date end=Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
 
-        query.setCreatedStart(start);
-        query.setCreatedEnd(end);
+        if(query.getCreatedEnd()==null&&query.getCreatedEnd()==null){
+            query.setCreatedStart(start);
+            query.setCreatedEnd(end);
+        }
+        
+        
 
         Map<String, TraceReportDto>data= this.traceReportService.getTraceBillReportData(query);
        
