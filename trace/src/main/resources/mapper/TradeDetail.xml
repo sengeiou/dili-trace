@@ -10,7 +10,8 @@
       trade_detail.product_name,
       register_bill.is_checkin,
       register_bill.bill_type,
-      register_bill.truck_type
+      register_bill.truck_type,
+      register_bill.is_deleted
       from trade_detail 
       left join register_bill on trade_detail.bill_id =register_bill.id 
       where buyer_id=#{userId}
@@ -35,7 +36,8 @@
       register_bill.product_name,
       register_bill.is_checkin,
       register_bill.bill_type,
-      register_bill.truck_type
+      register_bill.truck_type,
+      register_bill.is_deleted
       from register_bill
       where user_id=#{userId} and id not in(
           select bill_id from trade_detail

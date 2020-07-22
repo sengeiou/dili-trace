@@ -8,6 +8,7 @@ import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.glossary.TFEnum;
 
 public class BillReportDto extends BaseDomain{
     private Long billId;
@@ -27,6 +28,17 @@ public class BillReportDto extends BaseDomain{
     private Integer verifyStatus;  
     private BigDecimal weight;
     private Integer weightUnit;
+    private Integer isDeleted;
+
+    public String getIsDeletedName() {
+        if( TFEnum.TRUE.equalsCode(this.getIsDeleted())){
+            return "是";
+        };
+        if( TFEnum.FALSE.equalsCode(this.getIsDeleted())){
+            return "否";
+        };
+        return "";
+    }
 
     public String getCheckinStatusName(){
         return Optional.ofNullable(CheckinStatusEnum.fromCode(this.getCheckinStatus())).map(CheckinStatusEnum::getDesc).orElse("无");
@@ -281,6 +293,21 @@ public class BillReportDto extends BaseDomain{
      */
     public void setWeightUnit(Integer weightUnit) {
         this.weightUnit = weightUnit;
+    }
+
+
+    /**
+     * @param isDeleted the isDeleted to set
+     */
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    /**
+     * @return the isDeleted
+     */
+    public Integer getIsDeleted() {
+        return isDeleted;
     }
 
 }

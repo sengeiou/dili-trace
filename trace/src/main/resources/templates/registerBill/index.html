@@ -26,13 +26,7 @@
                             <input class="easyui-datetimebox" name="checkinCreatedEnd" id="checkinCreatedEnd" style="width:39%;" value="${checkinCreatedEnd!}"/>
                         </div>
 
-                        <!--div class="search-item" style="width: 200px;">
-                            <select class="easyui-combobox" name="includeUnCheckin" id="includeUnCheckin" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'未进门'"  labelAlign="right">
-                                <option value="">全部</option>
-                                <option value="true">是</option>
-                                <option value="false">否</option>
-                            </select>
-                        </div-->
+
 
                         <div class="search-item">
                             <input  name="verifyStatus" id="verifyStatus" style="width:100%" labelAlign="right" data-options="label:'审核状态' "  panelWidth="auto" panelHeight="auto"/>
@@ -67,6 +61,13 @@
                                     data-options="label:'产地',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,required:false,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
                                 $('#_salesCityName').val(record.text);
                             }"></select>
+                        </div>
+                        <div class="search-item" style="width: 200px;">
+                            <select class="easyui-combobox" name="isDeleted" id="isDeleted" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'是否已删除'"  labelAlign="right">
+                                <option value="">全部</option>
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
                         </div>
                         <div class="search-item">
                             <input class="easyui-textbox" name="likeUserName" id="likeUserName" style="width:100%" labelAlign="right"
@@ -138,6 +139,9 @@
                         </th>
                         <th width="5%" data-options="field:'checkinStatusName',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             是否进门
+                         </th>
+                         <th width="5%" data-options="field:'isDeletedName',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            是否删除
                          </th>
                         <th width="10%" data-options="field:'checkinCreated',  _provider:'datetimeProvider',    sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             进门时间

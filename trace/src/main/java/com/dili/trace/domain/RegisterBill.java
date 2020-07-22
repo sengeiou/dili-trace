@@ -16,6 +16,7 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.glossary.TFEnum;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -613,7 +614,13 @@ public class RegisterBill extends BaseDomain {
     public void setIsCheckin(Integer isCheckin) {
         this.isCheckin = isCheckin;
     }
-
+    /**
+     * @return Integer return the isDeleted
+     */
+	@Transient
+    public String getIsDeletedName() {
+        return TFEnum.fromCode(this.getIsDeleted()).map(TFEnum::getDesc).orElse("");
+    }
 
     /**
      * @return Integer return the isDeleted

@@ -1,5 +1,6 @@
 package com.dili.trace.glossary;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public enum TFEnum {
@@ -21,8 +22,8 @@ public enum TFEnum {
 		this.desc = desc;
 	}
 
-	public static TFEnum fromCode(Integer code) {
-		return Stream.of(TFEnum.values()).filter(e -> e.getCode().equals(code)).findFirst().orElse(null);
+	public static Optional<TFEnum> fromCode(Integer code) {
+		return Stream.of(TFEnum.values()).filter(e -> e.getCode().equals(code)).findFirst();
 	}
 
 	public boolean equalsCode(Integer code) {

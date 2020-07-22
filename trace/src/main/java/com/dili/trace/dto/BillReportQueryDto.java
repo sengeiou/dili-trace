@@ -29,6 +29,7 @@ public class BillReportQueryDto extends BaseDomain {
     private String dynamicSql;
     
     
+    private Integer isDeleted;
 
     
 
@@ -223,6 +224,21 @@ public class BillReportQueryDto extends BaseDomain {
      */
     public void setLikeCode(String likeCode) {
         this.likeCode = likeCode;
+    }
+
+
+    /**
+     * @return Integer return the isDeleted
+     */
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    /**
+     * @param isDeleted the isDeleted to set
+     */
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
 }
