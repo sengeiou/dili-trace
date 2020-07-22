@@ -35,18 +35,9 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
     @Select("select * from register_bill where id = #{id} for update")
     public Optional<RegisterBill> selectByIdForUpdate(Long id);
 
-    public List<TraceReportDto> userCountQuery(TraceReportQueryDto query);
 
-    public List<TraceReportDto> billCountQuery(TraceReportQueryDto query);
-
-    public List<TraceReportDto> tradeDetailBuyerCount(TraceReportQueryDto query);
-
-    public List<TraceReportDto> greenBillCount(TraceReportQueryDto query);
-
-    public List<TraceReportDto> yellowBillCount(TraceReportQueryDto query);
-
-    public List<TraceReportDto> redBillCount(TraceReportQueryDto query);
-
-    public List<TraceReportDto> noVerifyedBillCount(TraceReportQueryDto query);
+    
+    public List<TraceReportDto> selectBillReportData(TraceReportQueryDto query);
+    
 
 }

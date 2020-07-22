@@ -25,6 +25,9 @@ public class TraceReportDto {
         return this.percentage;
     }
     public TraceReportDto sum(TraceReportDto dto){
+        if(this.userCount==null){
+            this.userCount=0;
+        }
         if(this.billCount==null){
             this.billCount=0;
         }
@@ -45,7 +48,9 @@ public class TraceReportDto {
             this.noVerifyedBillCount=0;
         }
 
-
+        if(dto.getUserCount()!=null){
+            this.setUserCount(this.getUserCount()+dto.getUserCount());
+        }
         if(dto.getBillCount()!=null){
             this.setBillCount(this.getBillCount()+dto.getBillCount());
         }

@@ -55,6 +55,9 @@
     <if test="likeCode != null and likeCode != ''">
         AND register_bill.code like '%${likeCode}%'
     </if>
+    <if test="likeUserName != null and likeUserName != ''">
+        AND register_bill.name like '%${likeUserName}%'
+    </if>
     
     <if test="includeUnCheckin == true">
         <![CDATA[AND (checkinout_record.`status` is null or checkinout_record.`status`<>10)]]>

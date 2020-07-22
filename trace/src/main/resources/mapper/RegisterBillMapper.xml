@@ -179,16 +179,27 @@
     <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
 
   </select>
-  <select id="userCountQuery" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+  <select id="selectBillReportData"  parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+
+    select * from (select DISTINCT  area from tally_area_no)a
+    left join  ( <include refid="userCountQuery"/>) t_user_count on t_user_count.group_key=a.area
+    left join  ( <include refid="billCountQuery"/>) t_bill_count on t_bill_count.group_key=a.area
+    left join  ( <include refid="tradeDetailBuyerCount"/>) t_trade_detail_buyer_count on t_trade_detail_buyer_count.group_key=a.area
+    left join  ( <include refid="greenBillCount"/>) t_green_bill_count on t_green_bill_count.group_key=a.area
+    left join  ( <include refid="yellowBillCount"/>) t_yellow_bill_count on t_yellow_bill_count.group_key=a.area
+    left join  ( <include refid="redBillCount"/>) t_red_bill_count on t_red_bill_count.group_key=a.area
+    left join  ( <include refid="noVerifyedBillCount"/>) t_no_verifyed_bill_count on t_no_verifyed_bill_count.group_key=a.area
+  </select>
+  <sql  id="userCountQuery">
   select count(1) user_count,area as group_key from(
     select distinct u.id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from `user` u 
     left join   r_user_tally_area on r_user_tally_area.user_id =u.id 
     left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
-    )t GROUP  by area;
-</select>
+    )t GROUP  by area
+</sql>
 
-<select id="billCountQuery" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+<sql id="billCountQuery">
   select count(1) bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
@@ -201,10 +212,10 @@
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
     </if>
-    )t GROUP  by area;
-</select>
+    )t GROUP  by area
+</sql>
 
-<select id="tradeDetailBuyerCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+<sql id="tradeDetailBuyerCount">
   select count(1) trade_detail_buyer_count,area as group_key from(
     select distinct trade_detail.buyer_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from trade_detail 
@@ -217,10 +228,10 @@
     <if test="createdEnd != null">
       <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
     </if>
-    )t GROUP  by area;
-</select>
+    )t GROUP  by area
+</sql>
 
-<select id="greenBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+<sql id="greenBillCount">
   select count(1) green_bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
@@ -241,11 +252,11 @@
     </if>
 
     
-    )t GROUP  by area;
-</select>
+    )t GROUP  by area
+</sql>
 
 
-<select id="yellowBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+<sql id="yellowBillCount">
   select count(1) yellow_bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
@@ -273,10 +284,10 @@
       </foreach>
     </if>
 
-    )t GROUP  by area;
-</select>
+    )t GROUP  by area
+</sql>
 
-<select id="redBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+<sql id="redBillCount">
   select count(1) red_bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
@@ -312,10 +323,10 @@
       </foreach>
     </if>
 
-    )t GROUP  by area;
-</select>
+    )t GROUP  by area
+</sql>
 
-<select id="noVerifyedBillCount" parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+<sql id="noVerifyedBillCount">
   select count(1) no_verifyed_bill_count,area as group_key from(
     select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
     from register_bill 
@@ -334,7 +345,7 @@
         #{verifyStatus}
       </foreach>
     </if>
-    )t GROUP  by area;
-</select>
+    )t GROUP  by area
+</sql>
 
 </mapper>

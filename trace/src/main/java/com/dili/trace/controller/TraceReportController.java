@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -29,6 +28,9 @@ public class TraceReportController {
 
         // TraceReportQueryDto query=new TraceReportQueryDto();
         // query.setReadonly(readonly);
+        if(query.getReadonly()==null){
+            query.setReadonly(true);
+        }
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime splitTime=now.withHour(20).withMinute(30).withSecond(0);
         if(now.isBefore(splitTime)){

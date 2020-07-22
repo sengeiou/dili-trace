@@ -4,15 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.dili.trace.api.input.CheckinOutRecordQueryDto;
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.dto.TraceReportDto;
 import com.dili.trace.dto.TraceReportQueryDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.google.common.collect.Lists;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,45 +31,42 @@ public class TraceReportService {
                 Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode(), BillVerifyStatusEnum.RETURNED.getCode()));
         query.setNoneVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode()));
 
-        List<TraceReportDto> list = this.billMapper.userCountQuery(query);
+
+        List<TraceReportDto> list =  this.billMapper.selectBillReportData(query);
+
         Map<String, TraceReportDto> areaReportDtoMap = StreamEx.of(list).map(item -> {
-            item.setBillCount(0);
-            item.setTradeDetailBuyerCount(0);
-            item.setGreenBillCount(0);
-            item.setYellowBillCount(0);
-            item.setRedBillCount(0);
-            item.setNoVerifyedBillCount(0);
+            item.sum(new TraceReportDto());
             return item;
         }).toMap(TraceReportDto::getGroupKey, Function.identity());
 
-        StreamEx.of(this.billMapper.billCountQuery(query)).forEach(item -> {
-            areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto()).setBillCount(item.getBillCount());
-        });
+        // StreamEx.of(this.billMapper.billCountQuery(query)).forEach(item -> {
+        //     areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto()).setBillCount(item.getBillCount());
+        // });
 
-        StreamEx.of(this.billMapper.tradeDetailBuyerCount(query)).forEach(item -> {
-            areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
-                    .setTradeDetailBuyerCount(item.getTradeDetailBuyerCount());
-        });
+        // StreamEx.of(this.billMapper.tradeDetailBuyerCount(query)).forEach(item -> {
+        //     areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
+        //             .setTradeDetailBuyerCount(item.getTradeDetailBuyerCount());
+        // });
 
-        StreamEx.of(this.billMapper.greenBillCount(query)).forEach(item -> {
-            areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
-                    .setGreenBillCount(item.getGreenBillCount());
-        });
+        // StreamEx.of(this.billMapper.greenBillCount(query)).forEach(item -> {
+        //     areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
+        //             .setGreenBillCount(item.getGreenBillCount());
+        // });
 
-        StreamEx.of(this.billMapper.yellowBillCount(query)).forEach(item -> {
-            areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
-                    .setYellowBillCount(item.getYellowBillCount());
-        });
+        // StreamEx.of(this.billMapper.yellowBillCount(query)).forEach(item -> {
+        //     areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
+        //             .setYellowBillCount(item.getYellowBillCount());
+        // });
 
-        StreamEx.of(this.billMapper.redBillCount(query)).forEach(item -> {
-            areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
-                    .setRedBillCount(item.getRedBillCount());
-        });
+        // StreamEx.of(this.billMapper.redBillCount(query)).forEach(item -> {
+        //     areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
+        //             .setRedBillCount(item.getRedBillCount());
+        // });
 
-        StreamEx.of(this.billMapper.noVerifyedBillCount(query)).forEach(item -> {
-            areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
-                    .setNoVerifyedBillCount(item.getNoVerifyedBillCount());
-        });
+        // StreamEx.of(this.billMapper.noVerifyedBillCount(query)).forEach(item -> {
+        //     areaReportDtoMap.getOrDefault(areaReportDtoMap, new TraceReportDto())
+        //             .setNoVerifyedBillCount(item.getNoVerifyedBillCount());
+        // });
 
         TraceReportDto total = StreamEx.of(list).map(item -> {
             item.calculatePercentage();

@@ -19,7 +19,7 @@
                 </div>
             </div>
             <button type="submit" <%if(query.readonly==true){%> style="display:none"<%}%>>查询</button>
-            <input type="hidden" name="readonly" value="#{query.readonly}"/>
+            <input type="hidden" name="readonly" value="${query.readonly!false}"/>
         </form>
         <table style="width: 100%;border:#333;" border="medium">
 
