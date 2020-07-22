@@ -1,12 +1,9 @@
 package com.dili.trace.api;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -32,11 +29,9 @@ import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.rpc.MessageRpc;
-import com.dili.trace.service.QrCodeService;
 import com.dili.trace.service.SMSService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
@@ -46,14 +41,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
@@ -144,11 +137,6 @@ public class UserApi {
             return BaseOutput.failure("参数为空").setCode(ResultCode.PARAMS_ERROR);
         }
 
-        if (defaultConfiguration.getCheckCodeExpire()
-                - redisUtil.getRedisTemplate().getExpire(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX) < 60) {
-            return BaseOutput.success();// 发送间隔60秒
-        }
-
         String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
         // 发送短信验证码
         JSONObject params = new JSONObject();
@@ -234,9 +222,9 @@ public class UserApi {
 
     
     @ApiOperation(value = "发送重置密码验证码【接口已通】", notes = "发送重置密码验证码")
-    @RequestMapping(value = "/sendSmsCodeForResetPassword.api", method = RequestMethod.POST)
+    @RequestMapping(value = "/sendSmsCodeForRenewPassword.api", method = RequestMethod.POST)
     @InterceptConfiguration(loginRequired = false)
-    public BaseOutput<String> sendSmsCodeForResetPassword(@RequestBody User user) {
+    public BaseOutput<String> sendSmsCodeForRenewPassword(@RequestBody User user) {
         try {
             if(StringUtils.isBlank(user.getPhone())){
                 return BaseOutput.failure("手机号码不能为空");
@@ -246,22 +234,19 @@ public class UserApi {
             query.setYn(YnEnum.YES.getCode());
             User userItem=StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(()->{return new TraceBusinessException("手机号码不存在");});
 
-            if (defaultConfiguration.getCheckCodeExpire()
-                    - redisUtil.getRedisTemplate().getExpire(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX) < 60) {
-                return BaseOutput.success();// 发送间隔60秒
-            }
+          
     
             String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
             // 发送短信验证码
             JSONObject params = new JSONObject();
             params.put("marketCode", ExecutionConstants.MARKET_CODE);
             params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
-            params.put("sceneCode", "registerAuthCode");
+            params.put("sceneCode", "resetAuthcode");
             params.put("cellphone", userItem.getPhone());
             Map<String, Object> content = new HashMap<>();
             content.put("code", verificationCode);
             params.put("parameters", content);
-            return this.smsService.sendVerificationCodeMsg(params, userItem.getPhone(), verificationCode);
+            return this.smsService.sendRenewPasswordSMSCodeMsg(params, userItem.getPhone(), verificationCode);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -272,22 +257,20 @@ public class UserApi {
 
 
     @ApiOperation(value = "重置密码【接口已通】", notes = "重置密码")
-    @RequestMapping(value = "/resetPassword.api", method = RequestMethod.POST)
+    @RequestMapping(value = "/renewPassword.api", method = RequestMethod.POST)
     @InterceptConfiguration(loginRequired = false)
-    public BaseOutput<String> resetPassword(@RequestBody User user) {
+    public BaseOutput<String> renewPassword(@RequestBody User user) {
         try {
             if(StringUtils.isBlank(user.getPhone())){
                 return BaseOutput.failure("手机号码不能为空");
             }
-            
-            User query=DTOUtils.newDTO(User.class);
-            query.setPhone(user.getPhone());
-            query.setYn(YnEnum.YES.getCode());
-            User userItem=StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(()->{return new TraceBusinessException("手机号码不存在");});
-
-
-
-            
+            if(StringUtils.isBlank(user.getCheckCode())){
+                return BaseOutput.failure("验证码不能为空");
+            }
+            if(StringUtils.isBlank(user.getPassword())){
+                return BaseOutput.failure("密码不能为空");
+            }
+            this.userService.renewPassword(user, user.getCheckCode());
             return BaseOutput.success();
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());

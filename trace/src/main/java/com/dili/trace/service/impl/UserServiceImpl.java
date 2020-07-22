@@ -46,6 +46,7 @@ import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.service.RUserTallyAreaService;
 import com.dili.trace.service.RegisterBillService;
+import com.dili.trace.service.SMSService;
 import com.dili.trace.service.TallyAreaNoService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserQrHistoryService;
@@ -96,13 +97,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     UserQrHistoryService userQrHistoryService;
     @Autowired
     TallyAreaNoService tallyAreaNoService;
+    @Autowired
+    SMSService sMSService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void register(User user, Boolean flag) {
         // 验证验证码是否正确
         if (flag) {
-            checkVerificationCode(user.getPhone(), user.getCheckCode());
+            this.sMSService.checkVerificationCode(user.getPhone(), user.getCheckCode());
             user.setSource(UpStreamSourceEnum.REGISTER.getCode());
         } else {
             user.setSource(UpStreamSourceEnum.DOWN.getCode());
@@ -227,20 +230,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     }
 
-    private Boolean checkVerificationCode(String phone, String verCode) {
-        String verificationCodeTemp = String
-                .valueOf(redisService.get(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone));
-        if (StringUtils.isBlank(verificationCodeTemp)) {
-            throw new TraceBusinessException("验证码已过期");
-        }
-        if (verificationCodeTemp.equals(verCode)) {
-            redisService.del(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone);
-            return true;
-        } else {
-            throw new TraceBusinessException("验证码不正确");
-        }
-    }
-
     @Override
     public User login(String phone, String encryptedPassword) {
         User query = DTOUtils.newDTO(User.class);
@@ -273,6 +262,28 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         condition.setId(po.getId());
         condition.setVersion(po.getVersion());
         po.setPassword(user.getPassword());
+        po.setVersion(po.getVersion() + 1);
+        int i = updateSelectiveByExample(po, condition);
+        if (i != 1) {
+            throw new TraceBusinessException("数据已变更,请稍后重试");
+        }
+    }
+
+    @Transactional
+    @Override
+    public void renewPassword(User user,String smscode) {
+        this.sMSService.checkResetPasswordSmsCode(user.getPhone(), smscode);
+        User query = DTOUtils.newDTO(User.class);
+        query.setPhone(user.getPhone());
+        query.setYn(YnEnum.YES.getCode());
+        User po = listByExample(query).stream().findFirst().orElse(null);
+        if (po == null) {
+            throw new TraceBusinessException("用户不存在");
+        }
+        User condition = DTOUtils.newDTO(User.class);
+        condition.setId(po.getId());
+        condition.setVersion(po.getVersion());
+        po.setPassword(MD5Util.md5(user.getPassword()));
         po.setVersion(po.getVersion() + 1);
         int i = updateSelectiveByExample(po, condition);
         if (i != 1) {

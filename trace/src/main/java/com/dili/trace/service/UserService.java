@@ -102,4 +102,7 @@ public interface UserService extends BaseService<User, Long> {
 	public UserQrOutput getUserQrCode(Long userId) throws Exception;
 
 	public List<User> findUserQrStatusChangedList();
+
+
+	public void renewPassword(User user,String smscode);
 }
