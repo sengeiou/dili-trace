@@ -149,6 +149,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 			query.setRows(1);
 			query.setSort("id");
 			query.setOrder("desc");
+			query.setIsValid(TFEnum.TRUE.getCode());
 			Integer userQrStatus = this.listPageByExample(query).getDatas().stream().findFirst()
 					.map(UserQrHistory::getQrStatus).orElse(UserQrStatusEnum.BLACK.getCode());
 			this.updateUserQrStatus(userId, userQrStatus);
