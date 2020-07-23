@@ -117,7 +117,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return this.hanleRequest(request, tradeDetailInputList);
                 }).toList();
-        this.createUpStreamAndDownStream(sellerId, buyerId);
+        // this.createUpStreamAndDownStream(sellerId, buyerId);
         return list;
 
     }
