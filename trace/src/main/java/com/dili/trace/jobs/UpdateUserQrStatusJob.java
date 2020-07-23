@@ -21,7 +21,7 @@ public class UpdateUserQrStatusJob implements CommandLineRunner {
     @Autowired
     RegisterBillService billService;
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/2 * * * ?")
     public void execute() {
         LocalDateTime now = LocalDateTime.now();
         Date start = this.start(now);

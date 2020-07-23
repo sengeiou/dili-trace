@@ -233,7 +233,7 @@
       on r_user_tally_area.tally_area_no_id =tally_area_no.id  
       group by r_user_tally_area.user_id 
       )t_area on t_area.user_id=trade_detail.buyer_id 
-    where 1=1
+    where  trade_detail.parent_id IS NOT NULL
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
     </if>
