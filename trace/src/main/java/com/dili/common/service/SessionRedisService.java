@@ -81,19 +81,27 @@ public class SessionRedisService {
         SessionData sessionData=  SessionData.fromUser(user, LoginIdentityTypeEnum.USER.getCode());
         logger.info("removeUser:sessionData={}", sessionData.toMap());
         String accountRedisKey = this.getAccountRedisKey(sessionData);
-        String sessionRedisKey = this.getSessionRedisKey(sessionData.getSessionId());
-        this.redisUtil.remove(accountRedisKey);
-        this.redisUtil.remove(sessionRedisKey);
+        Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisUtil.get(accountRedisKey);
+        if (accountMapData != null) {
+            SessionData accountData = SessionData.fromMap(accountMapData);
+            logger.info("removeUser:accountData={}", accountData.toMap());
+            this.deleteFromRedis(accountData.getSessionId());
+        }
        
     }
     public void updateUser(User user) {
         SessionData sessionData=  SessionData.fromUser(user, LoginIdentityTypeEnum.USER.getCode());
         logger.info("updateUser:sessionData={}", sessionData.toMap());
         String accountRedisKey = this.getAccountRedisKey(sessionData);
-        // String sessionRedisKey = this.getSessionRedisKey(sessionData.getSessionId());
-        Long expire= this.redisUtil.getRedisTemplate().getExpire(accountRedisKey);
-        if(expire!=null&&expire>0){
-            this.saveToRedis(sessionData, expire);
+        Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisUtil.get(accountRedisKey);
+        if (accountMapData != null) {
+            SessionData accountData = SessionData.fromMap(accountMapData);
+            String sessionId=accountData.getSessionId();
+            accountData.setSessionId(sessionId);
+            Long expire= this.redisUtil.getRedisTemplate().getExpire(accountRedisKey);
+            if(expire!=null&&expire>0){
+                this.saveToRedis(accountData, expire);
+            }
         }
 
     }
