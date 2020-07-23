@@ -17,6 +17,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.UserFlagEnum;
+import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
