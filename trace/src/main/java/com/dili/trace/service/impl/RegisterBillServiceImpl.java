@@ -553,29 +553,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 	 * @param userId
 	 */
 	public void updateUserQrStatusByUserId(Long billId, Long userId) {
-		if (userId == null) {
+		if (billId==null||userId == null) {
 			return;
 		}
 		RegisterBill billItem = this.get(billId);
-		BillVerifyStatusEnum verifyStatus = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus()).orElse(null);
-		UserQrStatusEnum userQrStatus = UserQrStatusEnum.BLACK;
-		switch (verifyStatus) {
-			case PASSED:
-				userQrStatus = UserQrStatusEnum.GREEN;
-				break;
-			case NO_PASSED:
-				userQrStatus = UserQrStatusEnum.RED;
-				break;
-			case RETURNED:
-				userQrStatus = UserQrStatusEnum.YELLOW;
-				break;
-			case NONE:
-				userQrStatus = UserQrStatusEnum.YELLOW;
-				break;
-			default:
-				throw new TraceBusinessException("错误");
-		}
-		this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, userQrStatus.getCode());
+		this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem,userId);
 	}
 
 	/**

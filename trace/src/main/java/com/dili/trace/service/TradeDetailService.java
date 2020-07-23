@@ -49,6 +49,8 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	TradeDetailMapper tradeDetailMapper;
 	@Autowired
 	ProductStockService batchStockService;
+	@Autowired
+	UserQrHistoryService userQrHistoryService;
 
 	public Optional<TradeDetail> findBilledTradeDetailByBillId(Long billId) {
 
@@ -204,6 +206,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		buyerTradeDetail.setProductStockId(buyerBatchStock.getId());
 		buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
 		this.updateSelective(buyerTradeDetail);
+		//更新买家二维码颜色
+		// this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, buyer.getId());
+
 		return this.get(buyerTradeDetailId);
 
 	}

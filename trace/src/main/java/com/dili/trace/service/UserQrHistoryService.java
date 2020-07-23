@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import java.util.Date;
 import java.util.Optional;
 
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.RegisterBill;
@@ -78,18 +79,34 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		});
 	}
 
-	public UserQrHistory createUserQrHistoryForVerifyBill(RegisterBill billItem, Integer qrStatus) {
-		if(billItem==null){
+	public UserQrHistory createUserQrHistoryForVerifyBill(RegisterBill billItem,Long userId) {
+		if (billItem == null) {
 			return null;
 		}
 		BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
 				.orElse(null);
-
-		User userItem = this.userService.get(billItem.getUserId());
-
 		if (billVerifyStatusEnum == null) {
 			return null;
 		}
+		UserQrStatusEnum userQrStatus = UserQrStatusEnum.BLACK;
+		switch (billVerifyStatusEnum) {
+			case PASSED:
+				userQrStatus = UserQrStatusEnum.GREEN;
+				break;
+			case NO_PASSED:
+				userQrStatus = UserQrStatusEnum.RED;
+				break;
+			case RETURNED:
+				userQrStatus = UserQrStatusEnum.YELLOW;
+				break;
+			case NONE:
+				userQrStatus = UserQrStatusEnum.YELLOW;
+				break;
+			default:
+				throw new TraceBusinessException("错误");
+		}
+		Integer qrStatus = userQrStatus.getCode();
+		User userItem = this.userService.get(userId);
 		if (userItem == null) {
 			return null;
 		}
@@ -111,33 +128,35 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 
 	/**
 	 * 禁止删除的报备单对应的状态记录，并恢复到前一个有效的用户二维码颜色
+	 * 
 	 * @param deletedBillId
 	 * @param userId
 	 */
-	public void rollbackUserQrStatus(Long deletedBillId,Long userId){
-			if(deletedBillId!=null){
-				UserQrHistory domain = new UserQrHistory();
-				// domain.setBillId(deletedBillId);
-				domain.setIsValid(TFEnum.FALSE.getCode());
+	public void rollbackUserQrStatus(Long deletedBillId, Long userId) {
+		if (deletedBillId != null) {
+			UserQrHistory domain = new UserQrHistory();
+			// domain.setBillId(deletedBillId);
+			domain.setIsValid(TFEnum.FALSE.getCode());
 
-				UserQrHistory condition = new UserQrHistory();
-				condition.setBillId(deletedBillId);
-				condition.setUserId(userId);
-				this.updateSelectiveByExample(domain, condition);
+			UserQrHistory condition = new UserQrHistory();
+			condition.setBillId(deletedBillId);
+			condition.setUserId(userId);
+			this.updateSelectiveByExample(domain, condition);
 
-				UserQrHistory query=new UserQrHistory();
-				query.setUserId(userId);
-				query.setPage(1);
-				query.setRows(1);
-				query.setSort("id");
-				query.setOrder("desc");
-				Integer userQrStatus=this.listPageByExample(query).getDatas().stream().findFirst().map(UserQrHistory::getQrStatus).orElse(UserQrStatusEnum.BLACK.getCode());
-				this.updateUserQrStatus(userId,userQrStatus);
+			UserQrHistory query = new UserQrHistory();
+			query.setUserId(userId);
+			query.setPage(1);
+			query.setRows(1);
+			query.setSort("id");
+			query.setOrder("desc");
+			Integer userQrStatus = this.listPageByExample(query).getDatas().stream().findFirst()
+					.map(UserQrHistory::getQrStatus).orElse(UserQrStatusEnum.BLACK.getCode());
+			this.updateUserQrStatus(userId, userQrStatus);
 
-			}
-
+		}
 
 	}
+
 	private void updateUserQrStatus(Long userId, Integer qrStatus) {
 
 		User user = DTOUtils.newDTO(User.class);
