@@ -296,14 +296,22 @@
         #{verifyStatus}
       </foreach>
     </if>
-
-    <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
-      AND register_bill.verify_status
-      <foreach collection="greenBillVerifyStatus" open=" NOT IN (" close=")" item="verifyStatus"  separator=",">
-        #{verifyStatus}
-      </foreach>
-    </if>
-
+      AND register_bill.user_id not in(
+        select  register_bill.user_id 
+        from register_bill where register_bill.is_deleted=0
+        <if test="createdStart != null">
+          <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+        </if>
+        <if test="createdEnd != null">
+          <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+        </if>
+        <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
+          AND register_bill.verify_status
+          <foreach collection="greenBillVerifyStatus" open="IN (" close=")" item="verifyStatus"  separator=",">
+            #{verifyStatus}
+          </foreach>
+        </if>
+      )
     )t GROUP  by area
 </sql>
 
@@ -332,20 +340,29 @@
       </foreach>
     </if>
 
-    <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
-      AND register_bill.verify_status
-      <foreach collection="greenBillVerifyStatus" open=" NOT IN (" close=")" item="verifyStatus"  separator=",">
-        #{verifyStatus}
-      </foreach>
-    </if>
-
-    
-    <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
-      AND register_bill.verify_status
-      <foreach collection="greenBillVerifyStatus" open=" NOT IN (" close=")" item="verifyStatus"  separator=",">
-        #{verifyStatus}
-      </foreach>
-    </if>
+    AND register_bill.user_id not in(
+      select  register_bill.user_id 
+      from register_bill where register_bill.is_deleted=0
+     <if test="createdStart != null">
+        <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+      </if>
+      <if test="createdEnd != null">
+        <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+      </if>
+      AND ( <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
+         register_bill.verify_status
+        <foreach collection="greenBillVerifyStatus" open="IN (" close=")" item="verifyStatus"  separator=",">
+          #{verifyStatus}
+        </foreach>
+      </if>
+      <if test="yellowBillVerifyStatus!=null and yellowBillVerifyStatus.size()>0">
+        OR register_bill.verify_status
+        <foreach collection="yellowBillVerifyStatus" open=" IN (" close=")" item="verifyStatus"  separator=",">
+          #{verifyStatus}
+        </foreach>
+      </if>
+    )
+    )
 
     )t GROUP  by area
 </sql>
