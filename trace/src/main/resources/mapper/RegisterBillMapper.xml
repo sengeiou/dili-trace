@@ -192,19 +192,27 @@
   </select>
   <sql  id="userCountQuery">
   select count(1) user_count,area as group_key from(
-    select distinct u.id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    select u.id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from `user` u 
-    left join   r_user_tally_area on r_user_tally_area.user_id =u.id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    left join  (
+      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+      left join tally_area_no  
+      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
+      group by r_user_tally_area.user_id 
+      )t_area on t_area.user_id=u.id
     )t GROUP  by area
 </sql>
 
 <sql id="billCountQuery">
   select count(1) bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill 
-    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    left join  (
+      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+      left join tally_area_no  
+      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
+      group by r_user_tally_area.user_id 
+      )t_area on t_area.user_id=register_bill.user_id 
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -217,10 +225,14 @@
 
 <sql id="tradeDetailBuyerCount">
   select count(1) trade_detail_buyer_count,area as group_key from(
-    select distinct trade_detail.buyer_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    select distinct trade_detail.buyer_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from trade_detail 
-    left join   r_user_tally_area on r_user_tally_area.user_id =trade_detail.buyer_id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    left join  (
+      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+      left join tally_area_no  
+      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
+      group by r_user_tally_area.user_id 
+      )t_area on t_area.user_id=trade_detail.buyer_id 
     where 1=1
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
@@ -233,10 +245,14 @@
 
 <sql id="greenBillCount">
   select count(1) green_bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill 
-    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    left join  (
+      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+      left join tally_area_no  
+      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
+      group by r_user_tally_area.user_id 
+      )t_area on t_area.user_id=register_bill.user_id 
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -258,10 +274,14 @@
 
 <sql id="yellowBillCount">
   select count(1) yellow_bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill 
-    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    left join  (
+      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+      left join tally_area_no  
+      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
+      group by r_user_tally_area.user_id 
+      )t_area on t_area.user_id=register_bill.user_id 
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -289,10 +309,14 @@
 
 <sql id="redBillCount">
   select count(1) red_bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill 
-    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id 
+    left join  (
+      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+      left join tally_area_no  
+      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
+      group by r_user_tally_area.user_id 
+      )t_area on t_area.user_id=register_bill.user_id 
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -328,10 +352,14 @@
 
 <sql id="noVerifyedBillCount">
   select count(1) no_verifyed_bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (tally_area_no.area is null or tally_area_no.area='Others') then 'Others' else   tally_area_no.area end area
+    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill 
-    left join   r_user_tally_area on r_user_tally_area.user_id =register_bill.user_id 
-    left join tally_area_no  on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    left join  (
+      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+      left join tally_area_no  
+      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
+      group by r_user_tally_area.user_id 
+      )t_area on t_area.user_id=register_bill.user_id 
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
