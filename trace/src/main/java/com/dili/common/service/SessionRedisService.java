@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.SessionData;
 import com.dili.ss.redis.service.RedisUtil;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.domain.User;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -75,7 +77,26 @@ public class SessionRedisService {
 
         return Optional.of(sessionData);
     }
+    public void removeUser(User user){
+        SessionData sessionData=  SessionData.fromUser(user, LoginIdentityTypeEnum.USER.getCode());
+        logger.info("removeUser:sessionData={}", sessionData.toMap());
+        String accountRedisKey = this.getAccountRedisKey(sessionData);
+        String sessionRedisKey = this.getSessionRedisKey(sessionData.getSessionId());
+        this.redisUtil.remove(accountRedisKey);
+        this.redisUtil.remove(sessionRedisKey);
+       
+    }
+    public void updateUser(User user) {
+        SessionData sessionData=  SessionData.fromUser(user, LoginIdentityTypeEnum.USER.getCode());
+        logger.info("updateUser:sessionData={}", sessionData.toMap());
+        String accountRedisKey = this.getAccountRedisKey(sessionData);
+        // String sessionRedisKey = this.getSessionRedisKey(sessionData.getSessionId());
+        Long expire= this.redisUtil.getRedisTemplate().getExpire(accountRedisKey);
+        if(expire!=null&&expire>0){
+            this.saveToRedis(sessionData, expire);
+        }
 
+    }
     public void deleteFromRedis(String sessionId) {
         logger.info("deleteFromRedis:sessionId={}", sessionId);
         if (StringUtils.isBlank(sessionId)) {
@@ -112,6 +133,14 @@ public class SessionRedisService {
         if (sessionData == null) {
             return sessionData;
         }
+        this.saveToRedis(sessionData, defaultConfiguration.getSessionExpire());
+        return sessionData;
+    }
+
+    private SessionData saveToRedis(SessionData sessionData,long expire) {
+        if (sessionData == null) {
+            return sessionData;
+        }
         logger.info("saveToRedis:sessionData={}", sessionData.toMap());
         String accountRedisKey = this.getAccountRedisKey(sessionData);
         String sessionRedisKey = this.getSessionRedisKey(sessionData.getSessionId());
@@ -133,8 +162,8 @@ public class SessionRedisService {
             }
         }
 
-        this.redisUtil.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
-        this.redisUtil.set(sessionRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
+        this.redisUtil.set(accountRedisKey, sessionData.toMap(), expire);
+        this.redisUtil.set(sessionRedisKey, sessionData.toMap(),expire);
 
         return sessionData;
     }
