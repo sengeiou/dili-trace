@@ -18,5 +18,7 @@ ALTER TABLE `checkinout_record` ADD COLUMN `user_id`  bigint(20) NULL COMMENT 'ä
 update `register_bill` set operator_name=null,operator_id=null where verify_status=0;
 update `register_bill` set operation_time=modified  where verify_status<>0;
 
+update `register_bill_history` set operator_name=null,operator_id=null where verify_status=0;
+update `register_bill_history` set operation_time=modified  where verify_status<>0;
 
 /*DROP TABLE `user_access_log`;*/

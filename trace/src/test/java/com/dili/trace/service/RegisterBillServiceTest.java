@@ -13,6 +13,7 @@ import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
@@ -81,7 +82,8 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
 
     @Test
     public void viewTradeDetailBill() {
-        this.registerBillService.viewTradeDetailBill(182L, 5071L);
+        RegisterBillOutputDto dto=this.registerBillService.viewTradeDetailBill(16172L, null);
+        System.out.println(dto);
     }
 
     @Test
