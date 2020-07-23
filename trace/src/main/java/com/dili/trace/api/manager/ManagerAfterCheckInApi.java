@@ -39,7 +39,7 @@ public class ManagerAfterCheckInApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerAfterCheckInApi.class);
 	@Autowired
 	private RegisterBillService registerBillService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;

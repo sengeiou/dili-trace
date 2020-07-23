@@ -27,7 +27,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserAccessLogService userAccessLogService;

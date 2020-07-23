@@ -35,9 +35,9 @@ import io.swagger.annotations.Api;
 @RequestMapping(value = "/api/client/clientTradeDetail")
 public class ClientTradeDetailApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);
-	@Resource
+	@Autowired
 	private UserService userService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	RegisterBillService registerBillService;

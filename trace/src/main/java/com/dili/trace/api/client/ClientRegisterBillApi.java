@@ -52,7 +52,7 @@ public class ClientRegisterBillApi {
 	@Autowired
 	private RegisterBillService registerBillService;
 
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;

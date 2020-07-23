@@ -30,11 +30,11 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 	// private static final String SESSION_PREFIX_ACCOUNT =
 	// "TRACE_SESSION_ACCOUNT_";
 	// private static final String PREFIX_GAP = "_";
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
-	@Resource
+	@Autowired
 	private RedisService redisService;
-	@Resource
+	@Autowired
 	private DefaultConfiguration defaultConfiguration;
 	@Autowired
 	SessionRedisService sessionRedisService;

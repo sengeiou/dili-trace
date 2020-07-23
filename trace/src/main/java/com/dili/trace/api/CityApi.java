@@ -1,26 +1,28 @@
 package com.dili.trace.api;
 
+import java.util.List;
+
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.City;
 import com.dili.trace.dto.CityListInput;
 import com.dili.trace.rpc.BaseInfoRpc;
-import io.swagger.annotations.ApiOperation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import java.util.List;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping(value = "/api/cityApi")
 public class CityApi {
     private static final Logger LOGGER= LoggerFactory.getLogger(CityApi.class);
 
-    @Resource
+    @Autowired
     private BaseInfoRpc baseInfoRpc;
 
     /**

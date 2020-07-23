@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Rollback(false)
 public class ExcelTest extends AutoWiredBaseTest {
-    @Resource
+    @Autowired
     private UserService userService;
     @Test
     public void testReadExcel() {

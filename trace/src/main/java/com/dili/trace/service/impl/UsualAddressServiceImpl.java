@@ -3,11 +3,6 @@ package com.dili.trace.service.impl;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
@@ -18,11 +13,15 @@ import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UsualAddressService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long> implements UsualAddressService {
-    @Resource
+    @Autowired
     BaseInfoRpcService baseInfoRpcService;
-    @Resource
+    @Autowired
     UsualAddressMapper usualAddressMapper;
 	@Override
 	public int insertUsualAddress(UsualAddress input) {

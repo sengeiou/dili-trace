@@ -61,7 +61,7 @@ public class UserController {
 	UserService userService;
 	@Autowired
 	UserPlateService userPlateService;
-	@Resource
+	@Autowired
 	DefaultConfiguration defaultConfiguration;
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;

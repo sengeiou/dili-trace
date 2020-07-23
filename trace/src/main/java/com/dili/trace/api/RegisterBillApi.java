@@ -30,7 +30,7 @@ public class RegisterBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(RegisterBillApi.class);
 	@Autowired
 	private RegisterBillService registerBillService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 
 	@ApiOperation(value = "通过登记单ID获取登记单详细信息")

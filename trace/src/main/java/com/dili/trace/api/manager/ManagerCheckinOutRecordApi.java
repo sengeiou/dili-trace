@@ -3,32 +3,21 @@ package com.dili.trace.api.manager;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
-
-import javax.annotation.Resource;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CheckInApiInput;
 import com.dili.trace.api.input.CheckOutApiInput;
-import com.dili.trace.api.output.CheckoutApiListQuery;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillInputDto;
-import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
-import com.dili.trace.enums.TradeTypeEnum;
-import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -43,9 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import cn.hutool.core.date.DateUtil;
 import io.swagger.annotations.Api;
-import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 
 @SuppressWarnings("deprecation")
@@ -55,9 +42,9 @@ import one.util.streamex.StreamEx;
 @RequestMapping(value = "/api/manager/managerCheckinRecord")
 public class ManagerCheckinOutRecordApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerCheckinOutRecordApi.class);
-	@Resource
+	@Autowired
 	private UserService userService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	RegisterBillService registerBillService;

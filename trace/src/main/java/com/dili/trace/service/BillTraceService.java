@@ -25,7 +25,7 @@ import one.util.streamex.StreamEx;
 
 @Service
 public class BillTraceService {
-    @Resource
+    @Autowired
     private UserService userService;
     @Autowired
     RegisterBillService registerBillService;

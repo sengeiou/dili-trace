@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.annotation.InterceptConfiguration;
@@ -61,19 +59,19 @@ import one.util.streamex.StreamEx;
 @RequestMapping(value = "/api/userApi")
 public class UserApi {
     private static final Logger logger = LoggerFactory.getLogger(UserApi.class);
-    @Resource
+    @Autowired
     private UserService userService;
-    @Resource
+    @Autowired
     private LoginSessionContext sessionContext;
-    @Resource
+    @Autowired
     private DefaultConfiguration defaultConfiguration;
 
 
-    @Resource
+    @Autowired
     private MessageRpc messageRpc;
-    @Resource
+    @Autowired
     private RedisUtil redisUtil;
-    @Resource
+    @Autowired
     UserPlateService userPlateService;
     @Autowired
     SMSService smsService;

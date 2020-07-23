@@ -28,7 +28,7 @@ import java.util.List;
 @Api(value = "/api/manager/user", description = "用户管理相关接口")
 public class ManagerUserApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerUserApi.class);
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;

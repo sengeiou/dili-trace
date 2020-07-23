@@ -9,14 +9,17 @@ import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.EventMessage;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.service.EventMessageService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 消息api
@@ -27,9 +30,9 @@ import javax.annotation.Resource;
 public class EventMessageApi {
     private static final Logger LOGGER= LoggerFactory.getLogger(EventMessageApi.class);
 
-    @Resource
+    @Autowired
     private LoginSessionContext sessionContext;
-    @Resource
+    @Autowired
     EventMessageService eventMessageService;
 
     @ApiOperation(value ="已读/未读", notes = "已读/未读")

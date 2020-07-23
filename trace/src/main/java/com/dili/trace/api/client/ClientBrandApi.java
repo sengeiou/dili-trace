@@ -37,7 +37,7 @@ import one.util.streamex.StreamEx;
 @InterceptConfiguration
 public class ClientBrandApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientBrandApi.class);
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	BrandService brandService;

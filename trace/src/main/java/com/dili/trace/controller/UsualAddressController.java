@@ -45,7 +45,7 @@ public class UsualAddressController {
 	UsualAddressService usualAddressService;
 	@Autowired
 	UserPlateService userPlateService;
-	@Resource
+	@Autowired
 	DefaultConfiguration defaultConfiguration;
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;

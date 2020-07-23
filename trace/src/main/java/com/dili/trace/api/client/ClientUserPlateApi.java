@@ -2,8 +2,6 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
@@ -16,6 +14,7 @@ import com.dili.trace.service.UserPlateService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,9 +28,9 @@ import io.swagger.annotations.Api;
 @RequestMapping(value = "/api/client/clientUserPlateApi")
 public class ClientUserPlateApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientUserPlateApi.class);
-    @Resource
+    @Autowired
     private LoginSessionContext sessionContext;
-    @Resource
+    @Autowired
     private UserPlateService userPlateService;
 
     @SuppressWarnings({ "unchecked" })

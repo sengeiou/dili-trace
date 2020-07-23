@@ -42,9 +42,9 @@ import io.swagger.annotations.Api;
 @RequestMapping(value = "/api/client/clientBillTraceApi")
 public class ClientBillTraceApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientBillTraceApi.class);
-	@Resource
+	@Autowired
 	private UserService userService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	RegisterBillService registerBillService;

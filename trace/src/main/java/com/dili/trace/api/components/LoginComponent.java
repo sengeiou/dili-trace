@@ -39,9 +39,9 @@ import one.util.streamex.StreamEx;
 @Component
 public class LoginComponent {
 	private static final Logger logger = LoggerFactory.getLogger(LoginComponent.class);
-	@Resource
+	@Autowired
 	private UserService userService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserLoginHistoryService userLoginHistoryService;

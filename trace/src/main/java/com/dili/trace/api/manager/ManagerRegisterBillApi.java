@@ -23,7 +23,7 @@ public class ManagerRegisterBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerRegisterBillApi.class);
 	@Autowired
 	private RegisterBillService registerBillService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;

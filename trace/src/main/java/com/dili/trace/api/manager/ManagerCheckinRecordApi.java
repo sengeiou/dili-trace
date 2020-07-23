@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "/api/manager/managerCheckinRecordApi", description = "进门数据接口")
 public class ManagerCheckinRecordApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerCheckinRecordApi.class);
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 
 	@Autowired

@@ -38,7 +38,7 @@ public class CategoryApi {
 	BaseInfoRpcService baseInfoRpcService;
 	@Autowired
 	RUserCategoryService rUserCategoryService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 
 	/**

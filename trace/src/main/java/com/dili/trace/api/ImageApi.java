@@ -1,25 +1,26 @@
 package com.dili.trace.api;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.dili.common.service.ImageService;
 import com.dili.ss.domain.BaseOutput;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @RestController
 @RequestMapping(value = "/api/imageApi")
 public class ImageApi {
     private static final Logger LOGGER= LoggerFactory.getLogger(ImageApi.class);
 
-    @Resource
+    @Autowired
     private ImageService imageService;
 
     @RequestMapping(value = "/upload",method = RequestMethod.POST)

@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/client/clientUserQrHistoryApi")
 public class ClientUserQrHistoryApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientUserQrHistoryApi.class);
-    @Resource
+    @Autowired
     private LoginSessionContext sessionContext;
 
     @Autowired

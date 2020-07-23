@@ -35,9 +35,9 @@ import io.swagger.annotations.Api;
 @RequestMapping(value = "/api/upstreamApi")
 public class UpStreamApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserApi.class);
-    @Resource
+    @Autowired
     private UserService userService;
-    @Resource
+    @Autowired
     private LoginSessionContext sessionContext;
     @Autowired
     UpStreamService upStreamService;

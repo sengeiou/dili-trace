@@ -1,27 +1,25 @@
 package com.dili.common.service;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.Date;
+
+import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.UUIDUtil;
 import com.dili.trace.enums.ImageCertTypeEnum;
 
-import net.coobird.thumbnailator.Thumbnails;
-
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.Date;
-import java.util.Dictionary;
+import cn.hutool.core.date.DateUtil;
+import net.coobird.thumbnailator.Thumbnails;
 
 /**
  * 用于处理图片
@@ -30,7 +28,7 @@ import java.util.Dictionary;
 public class ImageService {
     private static final Logger logger= LoggerFactory.getLogger(ImageService.class);
 
-    @Resource
+    @Autowired
     private DefaultConfiguration defaultConfiguration;
     
     

@@ -2,15 +2,6 @@ package com.dili.trace.controller;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
@@ -19,6 +10,13 @@ import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.MaskUserInfo;
 import com.diligrp.manage.sdk.session.SessionContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -31,9 +29,9 @@ public class TradeInfoController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TradeInfoController.class);
 
 
-	@Resource
+	@Autowired
 	private UserService userService;
-	@Resource
+	@Autowired
 	private UserPlateService userPlateService;
 
 	
