@@ -23,15 +23,14 @@ public class SMSServiceDefaultImpl extends SMSService {
     private static final Logger logger = LoggerFactory.getLogger(SMSServiceDefaultImpl.class);
     @Autowired
     MessageRpc messageRpc;
-    @Resource
+    @Autowired
     private DefaultConfiguration defaultConfiguration;
-    @Resource
-    private RedisUtil redisUtil;
+
 
     @Override
     public BaseOutput sendVerificationCodeMsg(JSONObject params, String phone, String verificationCode) {
         if (defaultConfiguration.getCheckCodeExpire()
-                - redisUtil.getRedisTemplate().getExpire(REDIS_SYSTEM_VERCODE_PREIX) < 60) {
+                - super.redisUtil.getRedisTemplate().getExpire(REDIS_SYSTEM_VERCODE_PREIX) < 60) {
             return BaseOutput.success();// 发送间隔60秒
         }
         BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
@@ -45,7 +44,7 @@ public class SMSServiceDefaultImpl extends SMSService {
             logger.error("发送失败,错误信息：" + msgOutput.getMessage());
             logger.info("短信验证码发送失败：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
             logger.info("继续将短信验证码{}缓存到REDIS方便测试", verificationCode);
-            redisUtil.set(REDIS_SYSTEM_VERCODE_PREIX + phone, verificationCode,
+            super.redisUtil.set(REDIS_SYSTEM_VERCODE_PREIX + phone, verificationCode,
                     defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);
             return BaseOutput.success();
         }
@@ -56,12 +55,12 @@ public class SMSServiceDefaultImpl extends SMSService {
     public BaseOutput sendRenewPasswordSMSCodeMsg( JSONObject params,String phone,String verificationCode) {
 
         if (defaultConfiguration.getCheckCodeExpire()
-        - redisUtil.getRedisTemplate().getExpire(REDIS_SYSTEM_VERCODE_PREIX) < 60) {
+        - super.redisUtil.getRedisTemplate().getExpire(REDIS_SYSTEM_VERCODE_PREIX) < 60) {
             return BaseOutput.success();// 发送间隔60秒
         }
         BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
         if (msgOutput.isSuccess()) {
-            redisUtil.set(REDIS_SYSTEM_RENEW_PASSWORD_PREIX + phone, verificationCode,
+            super.redisUtil.set(REDIS_SYSTEM_RENEW_PASSWORD_PREIX + phone, verificationCode,
                     defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);
             logger.info("短信验证码发送成功：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
             return BaseOutput.success();
@@ -70,7 +69,7 @@ public class SMSServiceDefaultImpl extends SMSService {
             logger.error("发送失败,错误信息：" + msgOutput.getMessage());
             logger.info("短信验证码发送失败：---------------手机号：【" + phone + "】，验证码：【" + verificationCode + "】--------------");
             logger.info("继续将短信验证码{}缓存到REDIS方便测试", verificationCode);
-            redisUtil.set(REDIS_SYSTEM_RENEW_PASSWORD_PREIX + phone, verificationCode,
+            super.redisUtil.set(REDIS_SYSTEM_RENEW_PASSWORD_PREIX + phone, verificationCode,
                     defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);
             return BaseOutput.success();
         }

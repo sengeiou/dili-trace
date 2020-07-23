@@ -76,16 +76,16 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         return (UserMapper) getDao();
     }
 
-    @Resource
+    @Autowired
     private RedisService redisService;
 
-    @Resource
+    @Autowired
     UserPlateService userPlateService;
-    @Resource
+    @Autowired
     UsualAddressService usualAddressService;
-    @Resource
+    @Autowired
     EventMessageService eventMessageService;
-    @Resource
+    @Autowired
     RegisterBillService registerBillService;
     @Autowired
     DefaultConfiguration defaultConfiguration;

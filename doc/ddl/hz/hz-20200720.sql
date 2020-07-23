@@ -21,4 +21,47 @@ update `register_bill` set operation_time=modified  where verify_status<>0;
 update `register_bill_history` set operator_name=null,operator_id=null where verify_status=0;
 update `register_bill_history` set operation_time=modified  where verify_status<>0;
 
+
+update
+	checkinout_record t1,
+	(
+	SELECT
+		distinct checkinout_record.id ckid, trade_detail.id as tdid , checkinout_record.trade_detail_id cktdid, trade_detail.checkin_record_id tdckid
+	from
+		trade_detail
+	left join checkinout_record on
+		trade_detail.checkin_record_id = checkinout_record.id
+	where
+		checkinout_record.trade_detail_id <> trade_detail.id
+		and trade_detail.parent_id is null ) t2 set
+	t1.trade_detail_id = t2.tdid
+where
+	t1.id = t2.ckid;
+
+
+update
+	checkinout_record ck,
+	(
+	select
+		*
+	from
+		trade_detail
+	where
+		parent_id is null)t
+		set
+	ck.bill_id = t.bill_id
+where
+	ck.id = t.checkin_record_id
+	and ((ck.bill_id <> t.bill_id )or (ck.bill_id is null));
+
+
+update
+	checkinout_record ck,
+	 register_bill  r
+	set ck.verify_status =r.verify_status ,
+	  ck.user_id =r.user_id ,
+	  ck.weight_unit =r.weight_unit 
+where
+	ck.bill_id = r.id ;
+
 /*DROP TABLE `user_access_log`;*/
