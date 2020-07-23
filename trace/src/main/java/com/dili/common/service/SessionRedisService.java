@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.SessionData;
+import com.dili.ss.redis.service.RedisUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,8 +16,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class SessionRedisService {
     private static final Logger logger = LoggerFactory.getLogger(SessionRedisService.class);
+
     @Autowired
-    RedisService redisService;
+    RedisUtil redisUtil;
     @Autowired
     private DefaultConfiguration defaultConfiguration;
 
@@ -45,7 +47,8 @@ public class SessionRedisService {
             return Optional.empty();
         }
         String sessionRedisKey = this.getSessionRedisKey(sessionId);
-        Map<Object, Object> sessionMapData = (Map<Object, Object>) this.redisService.get(sessionRedisKey);
+        
+        Map<Object, Object> sessionMapData = (Map<Object, Object>) this.redisUtil.get(sessionRedisKey);
         if (sessionMapData == null) {
             return Optional.empty();
         }
@@ -58,15 +61,15 @@ public class SessionRedisService {
         }
 
         String accountRedisKey = this.getAccountRedisKey(sessionData);
-        Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisService.get(accountRedisKey);
+        Map<Object, Object> accountMapData = (Map<Object, Object>) this.redisUtil.get(accountRedisKey);
         if (accountMapData != null) {
             SessionData accountData = SessionData.fromMap(accountMapData);
             logger.info("loadFromRedis:accountData={}", accountData.toMap());
             if (!sessionId.equals(accountData.getSessionId()) && accountData.getSessionId() != null) {
                 String oldSessionKey = this.getSessionRedisKey(accountData.getSessionId());
                 logger.info("del:session={}", oldSessionKey);
-                this.redisService.del(oldSessionKey);
-                this.redisService.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
+                this.redisUtil.remove(oldSessionKey);
+                this.redisUtil.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
             }
         }
 
@@ -79,13 +82,13 @@ public class SessionRedisService {
             return;
         }
         String sessionRedisKey = this.getSessionRedisKey(sessionId);
-        Map<Object, Object> sessionMapData = (Map<Object, Object>) this.redisService.get(sessionRedisKey);
+        Map<Object, Object> sessionMapData = (Map<Object, Object>) this.redisUtil.get(sessionRedisKey);
         if (sessionMapData != null) {
-            this.redisService.del(sessionRedisKey);
+            this.redisUtil.remove(sessionRedisKey);
 
             SessionData sessionData = SessionData.fromMap(sessionMapData);
             String accountRedisKey = this.getAccountRedisKey(sessionData);
-            this.redisService.del(accountRedisKey);
+            this.redisUtil.remove(accountRedisKey);
         }
 
     }
@@ -116,22 +119,22 @@ public class SessionRedisService {
         logger.info("saveToRedis:accountRedisKey={}", accountRedisKey);
         logger.info("saveToRedis:sessionRedisKey={}", sessionRedisKey);
 
-        Map<Object, Object> oldAccountMapData = (Map<Object, Object>) this.redisService.get(accountRedisKey);
+        Map<Object, Object> oldAccountMapData = (Map<Object, Object>) this.redisUtil.get(accountRedisKey);
         logger.info("oldAccountMapData={}", oldAccountMapData);
         if (oldAccountMapData != null) {
             // 删除原有的session及相关数据
-            this.redisService.del(accountRedisKey);
+            this.redisUtil.remove(accountRedisKey);
             SessionData oldAccountData = SessionData.fromMap(oldAccountMapData);
             logger.info("oldAccountData={}", oldAccountData.toMap());
             if (oldAccountData != null && oldAccountData.getSessionId() != null) {
                 String oldSessionKey = this.getSessionRedisKey(oldAccountData.getSessionId());
                 logger.info("del oldAccountData:session={}", oldSessionKey);
-                this.redisService.del(oldSessionKey);
+                this.redisUtil.remove(oldSessionKey);
             }
         }
 
-        this.redisService.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
-        this.redisService.set(sessionRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
+        this.redisUtil.set(accountRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
+        this.redisUtil.set(sessionRedisKey, sessionData.toMap(), defaultConfiguration.getSessionExpire());
 
         return sessionData;
     }

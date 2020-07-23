@@ -9,14 +9,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
-
 import com.alibaba.fastjson.JSON;
 import com.beust.jcommander.internal.Lists;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.exception.TraceBusinessException;
-import com.dili.common.service.RedisService;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -25,6 +22,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
@@ -44,7 +42,6 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.QrCodeService;
-import com.dili.trace.service.RUserTallyAreaService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SMSService;
 import com.dili.trace.service.TallyAreaNoService;
@@ -77,8 +74,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Autowired
-    private RedisService redisService;
-
+    RedisUtil redisUtil;
     @Autowired
     UserPlateService userPlateService;
     @Autowired
@@ -334,7 +330,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     @Transactional
     public BaseOutput updateEnable(Long id, Boolean enable) {
-        long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
+        long tt = this.redisUtil.getRedisTemplate().getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         User user = get(id);
         if (user == null) {
             return BaseOutput.failure("数据不存在");
@@ -346,11 +342,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
 
-            redisService.setRemove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
+            this.redisUtil.getRedisTemplate().opsForSet().remove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         } else {
             user.setState(EnabledStateEnum.DISABLED.getCode());
             this.updateSelective(user);
-            redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
+            this.redisUtil.getRedisTemplate().opsForSet().add(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
         }
         return BaseOutput.success("操作成功");
     }
@@ -413,7 +409,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             return BaseOutput.failure("数据不存在");
         }
 
-        long tt = redisService.getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
+        long tt = this.redisUtil.getRedisTemplate().getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         List<String> tallyAreaNos = Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(","));
 
         user.setState(EnabledStateEnum.DISABLED.getCode());
@@ -421,7 +417,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setIsDelete(user.getId());
         this.updateSelective(user);
 
-        redisService.sSet(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
+        this.redisUtil.getRedisTemplate().opsForSet().add(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
 
         // 删除用户车牌信息
         UserPlate up = DTOUtils.newDTO(UserPlate.class);

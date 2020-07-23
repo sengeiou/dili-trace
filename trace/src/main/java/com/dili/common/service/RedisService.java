@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import cn.hutool.core.util.ArrayUtil;
 public class RedisService {
 
     @Autowired
+    @Lazy
     private RedisTemplate<String,Object> redisTemplate;
 
     /**

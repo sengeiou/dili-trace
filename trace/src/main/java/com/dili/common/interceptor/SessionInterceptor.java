@@ -1,12 +1,9 @@
 package com.dili.common.interceptor;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.service.RedisService;
 import com.dili.common.service.SessionRedisService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +29,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 	// private static final String PREFIX_GAP = "_";
 	@Autowired
 	private LoginSessionContext sessionContext;
-	@Autowired
-	private RedisService redisService;
-	@Autowired
-	private DefaultConfiguration defaultConfiguration;
+
 	@Autowired
 	SessionRedisService sessionRedisService;
 
