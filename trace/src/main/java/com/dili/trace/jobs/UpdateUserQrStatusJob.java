@@ -21,7 +21,7 @@ public class UpdateUserQrStatusJob implements CommandLineRunner {
     @Autowired
     RegisterBillService billService;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void execute() {
         LocalDateTime now = LocalDateTime.now();
         Date start = this.start(now);
@@ -42,12 +42,12 @@ public class UpdateUserQrStatusJob implements CommandLineRunner {
 
     protected Date start(LocalDateTime now) {
         Date start = Date.from(
-                now.minusDays(6).withHour(0).withMinute(0).withSecond(0).atZone(ZoneId.systemDefault()).toInstant());
+                now.minusDays(6).atZone(ZoneId.systemDefault()).toInstant());
         return start;
     }
 
     protected Date end(LocalDateTime now) {
-        Date end = Date.from(now.withHour(23).withMinute(59).withSecond(59).atZone(ZoneId.systemDefault()).toInstant());
+        Date end = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
         return end;
     }
 
