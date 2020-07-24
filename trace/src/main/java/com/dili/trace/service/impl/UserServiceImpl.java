@@ -208,7 +208,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
                 user.getSalesCityId());
 
-         this.sessionRedisService.removeUser(this.get(user.getId()));
+         this.sessionRedisService.updateUser(this.get(user.getId()));
         // this.updateUserQrItem(user.getId());
 
     }
