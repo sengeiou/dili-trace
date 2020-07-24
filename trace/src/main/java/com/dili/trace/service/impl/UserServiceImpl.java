@@ -136,6 +136,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         // user.getSalesCityId());
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
+        if(StringUtils.isBlank(user.getMarketName())){
+            user.setMarketName("杭州水产");
+        }
         insertSelective(user);
         this.tallyAreaNoService.saveOrUpdateTallyAreaNo(user.getId(), tallyAreaNos);
         // // 增加车牌信息
