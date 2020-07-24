@@ -1,6 +1,7 @@
 package com.dili.trace.domain;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -199,7 +200,15 @@ public class RegisterBill extends BaseDomain {
 	public void setVerifyStatus(Integer verifyStatus) {
 		this.verifyStatus = verifyStatus;
 	}
-
+	@Transient
+	public String getFormattedWeight() {
+		if(this.getWeight()==null){
+			return "0";
+		}
+		return this.getWeight().stripTrailingZeros().toPlainString();
+		// return this.getWeight().
+		// return BillVerifyStatusEnum.fromCode(this.getVerifyStatus()).map(BillVerifyStatusEnum::getName).orElse("");
+	}
 	@Transient
 	public String getVerifyStatusName() {
 		return BillVerifyStatusEnum.fromCode(this.getVerifyStatus()).map(BillVerifyStatusEnum::getName).orElse("");
