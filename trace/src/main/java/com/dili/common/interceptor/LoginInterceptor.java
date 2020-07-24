@@ -12,7 +12,6 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.service.UserAccessLogService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +28,13 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
 	@Autowired
 	private LoginSessionContext sessionContext;
-	@Autowired
-	UserAccessLogService userAccessLogService;
+
 
 	private void logRequest(HttpServletRequest request) {
 		if (this.sessionContext.getSessionData() != null && this.sessionContext.getSessionData().getUserId() != null) {
 			String requestUri = request.getRequestURI();
 			logger.info("loginType={},accountId={},requestUri={}", this.sessionContext.getSessionData().getIdentityType(),
 					this.sessionContext.getAccountId(), requestUri);
-			this.userAccessLogService.createUserAccessLog(this.sessionContext.getSessionData(), requestUri);
 		}
 	}
 
