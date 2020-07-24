@@ -202,7 +202,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
             }
         }
-
+        if(StringUtils.isBlank(user.getMarketName())){
+            user.setMarketName(userPO.getMarketName());
+        }
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
