@@ -388,6 +388,7 @@ public class UserApi {
 
     @ApiOperation(value = "通过姓名关键字查询用户信息", notes = "通过姓名关键字查询用户信息")
     @RequestMapping(value = "/getUserQrCode.api", method = RequestMethod.POST)
+    @InterceptConfiguration
     public BaseOutput<UserQrOutput> getUserQrCode(UserListDto input) {
         try {
             Long loginUserId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
