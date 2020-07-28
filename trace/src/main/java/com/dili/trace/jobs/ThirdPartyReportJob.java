@@ -183,14 +183,14 @@ public class ThirdPartyReportJob implements CommandLineRunner {
 
     }
 
-    protected Date start(LocalDateTime now) {
-        Date start = Date.from(now.minusDays(6).atZone(ZoneId.systemDefault()).toInstant());
-        return start;
-    }
+    // protected Date start(LocalDateTime now) {
+    //     Date start = Date.from(now.minusDays(6).atZone(ZoneId.systemDefault()).toInstant());
+    //     return start;
+    // }
 
-    protected Date end(LocalDateTime now) {
-        Date end = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
-        return end;
-    }
+    // protected Date end(LocalDateTime now) {
+    //     Date end = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
+    //     return end;
+    // }
 
 }
