@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ThirdPartyReportData;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.ThirdPartyReportDataQueryDto;
 import com.dili.trace.dto.TraceReportQueryDto;
 import com.dili.trace.dto.thirdparty.report.CodeCountDto;
 import com.dili.trace.dto.thirdparty.report.MarketCountDto;
@@ -51,10 +52,8 @@ public class ThirdPartyReportController {
 
     @RequestMapping(value = "/listPage.action", method = RequestMethod.POST)
     @ResponseBody
-    public String listPage(ModelMap modelMap, ThirdPartyReportData input) throws Exception {
+    public String listPage(ModelMap modelMap, ThirdPartyReportDataQueryDto input) throws Exception {
         input.setOperatorName(StringUtils.trimToNull(input.getOperatorName()));
-        input.setSort("created");
-        input.setOrder("desc");
         return thirdPartyReportDataService.listEasyuiPage(input, true).toString();
     }
 
@@ -71,7 +70,7 @@ public class ThirdPartyReportController {
     @RequestMapping(value = "/countAll.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput countAll(ModelMap modelMap, @RequestBody ReportCountDto input) {
-        if(input==null||input.getCheckBatch()==null||input.getCheckBatch()<=0){
+        if(input==null||input.getCheckBatch()==null||input.getCheckBatch()<0){
             return BaseOutput.failure("参数错误");
         }
         Optional<OperatorUser> opt = this.fromSessionContext();
