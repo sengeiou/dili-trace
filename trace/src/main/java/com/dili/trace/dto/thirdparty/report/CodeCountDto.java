@@ -11,7 +11,7 @@ public class CodeCountDto implements ReportDto {
     private Integer greenCount;// 绿码数量
     private Integer yellowCount;// 黄码数量
     private Integer redCount;// 红码数量
-    private List<WaringInfoDto> waringInfo;// 预警数据明细
+    private List<WaringInfoDto> warningInfo;// 预警数据明细
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;// 更新日期(格式:yyyy-MM-dd hh:mm:ss)
 
@@ -63,19 +63,7 @@ public class CodeCountDto implements ReportDto {
         this.redCount = redCount;
     }
 
-    /**
-     * @return the waringInfo
-     */
-    public List<WaringInfoDto> getWaringInfo() {
-        return waringInfo;
-    }
 
-    /**
-     * @param waringInfo the waringInfo to set
-     */
-    public void setWaringInfo(List<WaringInfoDto> waringInfo) {
-        this.waringInfo = waringInfo;
-    }
 
     /**
      * @return the updateTime
@@ -89,6 +77,20 @@ public class CodeCountDto implements ReportDto {
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    /**
+     * @return the warningInfo
+     */
+    public List<WaringInfoDto> getWarningInfo() {
+        return warningInfo;
+    }
+
+    /**
+     * @param warningInfo the warningInfo to set
+     */
+    public void setWarningInfo(List<WaringInfoDto> warningInfo) {
+        this.warningInfo = warningInfo;
     }
 
 }

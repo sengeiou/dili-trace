@@ -5,6 +5,8 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class WaringInfoDto implements ReportDto {
+    private String marketName;
+    private String marketId;
     private String stallNo;// 摊位号
     private String subjectName;// 经营主体名称
     private String codeStatus;// 码状态（黄码，红码）
@@ -80,6 +82,35 @@ public class WaringInfoDto implements ReportDto {
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+
+    /**
+     * @return String return the marketName
+     */
+    public String getMarketName() {
+        return marketName;
+    }
+
+    /**
+     * @param marketName the marketName to set
+     */
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
+    }
+
+    /**
+     * @return String return the marketId
+     */
+    public String getMarketId() {
+        return marketId;
+    }
+
+    /**
+     * @param marketId the marketId to set
+     */
+    public void setMarketId(String marketId) {
+        this.marketId = marketId;
     }
 
 }

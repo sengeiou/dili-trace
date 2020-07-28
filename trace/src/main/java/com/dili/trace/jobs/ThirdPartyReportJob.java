@@ -127,13 +127,13 @@ public class ThirdPartyReportJob implements CommandLineRunner {
                     info.setStallNo(rb.getTallyAreaNo());
                     info.setSubjectName(rb.getName());
                     info.setUpdateTime(updateTime);
-                    if(billDto.getWeight()==null){
-                        billDto.setWeight(BigDecimal.ZERO);
+                    if(rb.getWeight()==null){
+                        rb.setWeight(BigDecimal.ZERO);
                     }
-                    if (WeightUnitEnum.JIN.equalsToCode(billDto.getWeightUnit())) {
-                        info.setWeight(billDto.getWeight().divide(BigDecimal.valueOf(2)));
+                    if (WeightUnitEnum.JIN.equalsToCode(rb.getWeightUnit())) {
+                        info.setWeight(rb.getWeight().divide(BigDecimal.valueOf(2)));
                     } else {
-                        info.setWeight(billDto.getWeight());
+                        info.setWeight(rb.getWeight());
                     }
 
                     return info;
@@ -199,10 +199,12 @@ public class ThirdPartyReportJob implements CommandLineRunner {
                     warn.setStallNo(u.getTallyAreaNos());
                     warn.setSubjectName(u.getName());
                     warn.setUpdateTime(updateTime);
+                    warn.setMarketId(u.getMarketId()==null?"":String.valueOf(u.getMarketId()));
+                    warn.setMarketName(u.getMarketName());
                     return warn;
                 }).toList();
 
-        codeCountDto.setWaringInfo(warninfoList);
+        codeCountDto.setWarningInfo(warninfoList);
         return this.thirdPartyReportService.codeCount(codeCountDto, optUser);
 
     }
