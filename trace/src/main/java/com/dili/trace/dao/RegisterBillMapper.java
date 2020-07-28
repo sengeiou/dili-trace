@@ -6,9 +6,12 @@ import java.util.Optional;
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.TraceReportDto;
 import com.dili.trace.dto.TraceReportQueryDto;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.dto.thirdparty.report.RegionCountInfo;
+import com.dili.trace.dto.thirdparty.report.ReportCountDto;
 
 import org.apache.ibatis.annotations.Select;
 
@@ -35,9 +38,19 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
     @Select("select * from register_bill where id = #{id} for update")
     public Optional<RegisterBill> selectByIdForUpdate(Long id);
 
-
-    
     public List<TraceReportDto> selectBillReportData(TraceReportQueryDto query);
-    
+
+    /**
+     * 查询品种产地排名统计数据
+     * 
+     * @param billDto
+     * @return
+     */
+    public List<RegionCountInfo> selectRegionCountData(RegisterBillDto billDto);
+
+    /**
+     * 报备检测数据统计
+     */
+    public List<ReportCountDto> selectReportCountData(RegisterBillDto billDto);
 
 }

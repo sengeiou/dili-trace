@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import java.util.List;
 
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.dao.CategoryMapper;
 import com.dili.trace.domain.Category;
 import com.google.common.collect.Lists;
 
@@ -28,5 +29,9 @@ public class CategoryService extends BaseServiceImpl<Category, Long> {
 			e.and().andEqualTo("parentId", parentId);
 		}
 		return this.getDao().selectByExample(e);
+	}
+
+	public Integer count(Category category) {
+		return ((CategoryMapper) (this.getDao())).selectCount(category);
 	}
 }

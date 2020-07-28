@@ -66,4 +66,20 @@ update
 where
 	ck.bill_id = r.id ;
 
-/*DROP TABLE `user_access_log`;*/
+
+
+
+CREATE TABLE `third_party_report_data` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(500) DEFAULT NULL COMMENT '上报名称',
+  `type` int(11) DEFAULT NULL COMMENT '上报类型',
+  `operator_id` bigint(20) DEFAULT NULL COMMENT '操作人',
+  `operator_name` varchar(20) DEFAULT NULL COMMENT '操作人ID',
+  `data` text DEFAULT NULL COMMENT '提交数据结果',
+  `success`  int(11) DEFAULT NULL COMMENT '是否成功执行',
+  `msg` varchar(150) DEFAULT NULL COMMENT '执行结果',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1;

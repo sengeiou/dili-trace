@@ -40,7 +40,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    select 
+    select
     <include refid="Base_Column_List" />
     from user
     where id = #{id,jdbcType=BIGINT}
@@ -109,5 +109,17 @@
       and (name LIKE CONCAT('%',#{keyword},'%')  or tally_area_nos LIKE CONCAT('%',#{keyword},'%'))
     </if>
 
+  </select>
+  <select id="groupByQrStatus"  resultType="com.dili.trace.api.output.UserOutput">
+    select qr_status,count(1) cnt from `user`
+    where yn=1
+    <if test="qrStatusList!=null and qrStatusList.size()>0">
+      and qr_status
+      <foreach collection="qrStatusList" open=" IN (" close=")" item="qrStatus"  separator=",">
+        #{qrStatus}
+      </foreach>
+    </if>
+
+    group by qr_status
   </select>
 </mapper>

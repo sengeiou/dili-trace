@@ -1,16 +1,19 @@
 package com.dili.trace.dao;
 
+import java.util.List;
+
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.User;
-import org.apache.ibatis.annotations.MapKey;
 
-import java.util.List;
-import java.util.Map;
-
+import org.apache.ibatis.annotations.Param;
 public interface UserMapper extends MyMapper<User> {
     public List<UserOutput> countGroupByValidateState(User user);
 
     public List<UserOutput> listUserByQuery(UserInput user);
+
+
+    public List<UserOutput> groupByQrStatus(@Param("qrStatusList")List<Integer>qrStatusList);
+
 }

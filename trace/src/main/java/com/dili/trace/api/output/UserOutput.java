@@ -8,6 +8,7 @@ public class UserOutput {
 	private String name;
 	private String numbers;
 	private Integer qrStatus;
+	private Integer cnt;
 
 	public Integer getQrStatus() {
 		return qrStatus;
@@ -64,4 +65,19 @@ public class UserOutput {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    /**
+     * @return Integer return the cnt
+     */
+    public Integer getCnt() {
+        return cnt;
+    }
+
+    /**
+     * @param cnt the cnt to set
+     */
+    public void setCnt(Integer cnt) {
+        this.cnt = cnt;
+    }
+
 }

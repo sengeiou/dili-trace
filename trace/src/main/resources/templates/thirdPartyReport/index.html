@@ -1,0 +1,398 @@
+<#body head_title="用户列表">
+    <style>
+        .textbox-text[readonly] {
+            background: #ebebe4;
+        }
+    </style>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+            </div>
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="queryForm" class="easyui-form" method="post" fit="true">
+                    <div class="search-wrap">
+                        <div class="search-item long-item">
+                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%"
+                                labelAlign="right" data-options="label:'操作时间:'" value="" />
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"
+                                value="" />
+                        </div>
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="operatorName" id="operatorName" style="width:100%"
+                                labelAlign="right" data-options="label:'操作人:'" />
+                        </div>
+
+                        <div class="search-item">
+                            <input class="easyui-textbox" name="plates" id="plates" style="width:100%"
+                                labelAlign="right" data-options="label:'统计名称:'" />
+                        </div>
+                        <div class="search-item">
+                            <select class="easyui-combobox" name="success" id="success""
+                                style=" width:100%;" editable="false" panelHeight="auto" data-options="label:'上报结果'"
+                                labelAlign="right">
+                                <option value="">全部</option>
+                                <option value="1">成功</option>
+                                <option value="0">失败</option>
+                            </select>
+                        </div>
+
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                                onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                                onclick="clearQueryForm()">清除</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="客户列表" id="userGrid" fitColumns="true" noheader="true"
+                pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+                singleSelect="true" method="post" multiSort="false" sortName="created" sortOrder="desc" align="center"
+                fit="true" idField="id"
+                data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+                <thead>
+                    <tr>
+                        <th width="15%"
+                            data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            上报时间
+                        </th>
+                        <th width="30%"
+                            data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            报告名称
+                        </th>
+                        <th width="15%"
+                            data-options="field:'operatorName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            操作人
+                        </th>
+                        <th width="10%"
+                            data-options="field:'success', formatter:successFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            状态
+                        </th>
+                        <th width="20%"
+                            data-options="field:'msg',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            上报结果
+                        </th>
+
+
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+    <script src="http://base.nong12.com/static/log/log.build.js"></script>
+    <link rel="stylesheet" type="text/css"
+        href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+    <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+    <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+    <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+    <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+    <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+    <script type="text/javascript">
+
+        //打开新增窗口
+        function openInsert() {
+
+
+            layer.open({
+                //formType: 2,//这里依然指定类型是多行文本框，但是在下面content中也可绑定多行文title: '是否确信将账号临时挂账?',
+                area: ['300px', '2'],
+                btnAlign: 'c',
+                type: 0,
+                title: '数据上报',
+                closeBtn: '1',//右上角的关闭
+                content: '<div>检测批次:<input type="text" name="checkBatch" id="checkBatch" style="width:200px;height:30px;"></input></div>',
+                btn: ['确认', '取消'],//, '关闭'],
+                yes: function (index, layero) {
+                    var checkBatchVal = $('#checkBatch').val();//获取多行文本框的值
+                    console.info($.type(checkBatchVal))
+                    if (parseInt(checkBatchVal) != checkBatchVal) {
+                        alert('请输入正确的检测批次(整数)');
+                        return;
+                    }
+                    $('#checkBatch').attr("readonly","readonly");
+                    $('#checkBatch').attr("disabled","disabled");
+                    var resp = {};
+                    $.ajax({
+                        type: "POST",
+                        url: "${contextPath}/thirdPartyReport/countAll.action",
+                        processData: true,
+                        data:JSON.stringify({'checkBatch':parseInt(checkBatchVal)}),
+                        dataType: "json",
+                        contentType: 'application/json',
+                        async: false,
+                        success: function (ret) { resp = ret; },
+                        error: function () {
+                            resp = { code: 500, message: "远程请求出错" }
+                        }
+                    });
+                    layer.close(index);
+                    if(resp.code==200){
+                        layer.msg('上报成功');
+                        parent.queryUserGrid();
+                    }else{
+                        layer.alert(resp.message)
+                    }
+                    
+                    //可执行确定按钮事件并把备注信息（即多行文本框值）存入需要的地方
+                },
+                no: function (index) {
+
+                    // alert('您刚才点击了取消按钮');
+                    // layer.close(index);
+
+                    //return false;//点击按钮按钮不想让弹层关闭就返回false
+
+                },
+                close: function (index) {
+                    alert('您刚才点击了关闭按钮');
+
+                    return false;//点击按钮按钮                    不想让弹层关闭就返回false
+                }
+
+
+
+            });
+
+        }
+
+        //打开修改窗口
+        var formOldData = {};
+        function openUpdate() {
+            var selected = $("#userGrid").datagrid("getSelected");
+            if (null == selected) {
+                swal('警告', '请选中一条数据', 'warning');
+                return;
+            }
+
+            layer.alert('真的要再次上报失败的数据吗', {
+               // skin: 'layui-layer-molv' //样式类名  自定义样式
+                 closeBtn: 1    // 是否显示关闭按钮
+              //  , anim: 1 //动画类型
+                , btn: ['确定', '取消'] //按钮
+                //, icon: 6    // icon
+                , yes: function (index, layero) {
+                    var resp = {};
+                    $.ajax({
+                        type: "POST",
+                        url: "${contextPath}/thirdPartyReport/reportAgain.action",
+                        processData: true,
+                        data:JSON.stringify({id:selected.id}),
+                        dataType: "json",
+                        contentType: 'application/json',
+                        async: false,
+                        success: function (ret) { resp = ret; },
+                        error: function () {
+                            resp = { code: 500, message: "远程请求出错" }
+                        }
+                    });
+                    layer.close(index);
+                    if(resp.code==200){
+                        layer.msg('上报成功');
+                    }else{
+                        layer.alert(resp.message)
+                    }
+                    //
+                }
+                , btn2: function () {
+                   // layer.msg('上报失败');
+                }
+            });
+
+
+        }
+
+
+
+
+        //表格查询
+        function queryUserGrid() {
+            var opts = _userGrid.datagrid("options");
+            if (null == opts.url || "" == opts.url) {
+                opts.url = "${contextPath}/thirdPartyReport/listPage.action";
+            }
+
+            if (!$('#queryForm').form("validate")) {
+                return false;
+            }
+            _userGrid.datagrid("load", bindGridMeta2Form("userGrid", "queryForm"));
+
+        }
+
+
+        //清空表单
+        function clearQueryForm() {
+            $('#queryForm').form('clear');
+        }
+
+        //表格表头右键菜单
+        function headerContextMenu(e, field) {
+            e.preventDefault();
+            if (!cmenu) {
+                createColumnMenu("userGrid");
+            }
+            cmenu.menu('show', {
+                left: e.pageX,
+                top: e.pageY
+            });
+        }
+
+        /**
+         * 绑定页面回车事件，以及初始化页面时的光标定位
+         * @formId
+         *          表单ID
+         * @elementName
+         *          光标定位在指点表单元素的name属性的值
+         * @submitFun
+         *          表单提交需执行的任务
+         */
+        $(function () {
+            window._userGrid = $('#userGrid');
+            bindFormEvent("queryForm", "createdStart", queryUserGrid);
+            initUserGrid();
+            queryUserGrid();
+        })
+
+
+
+
+        /**
+         * 初始化用户列表组件
+         */
+        function initUserGrid() {
+            var pager = _userGrid.datagrid('getPager');
+            var toolbar = [
+                <#resource method="post" url="user/index.html#add">
+                    {
+                        iconCls:'icon-add',
+                    text:'开始上报',
+                    handler:function(){
+                        openInsert();
+                    }
+                },
+                </#resource>
+                <#resource method="post" url="user/index.html#update">
+                    {
+                        iconCls:'icon-edit',
+                    text:'再次上报',
+                    handler:function(){
+                        openUpdate();
+                    }
+                },
+                </#resource>
+    /*
+                {
+                    iconCls: 'icon-detail',
+                    id: 'detail-btn',
+                    text: '查看',
+                    handler: function () {
+                        doDetail();
+                    }
+                },*/
+
+            ];
+            _userGrid.datagrid({
+                toolbar: toolbar
+            });
+            pager.pagination({
+                <#controls_paginationOpts />,
+                //buttons:toolbar
+    
+            });
+        pager.pagination({
+                <#controls_paginationOpts />,
+                
+            });
+        }
+
+
+
+
+
+        /**
+         * datagrid行点击事件
+         * 目前用于来判断 启禁用是否可点
+         */
+        function onClickRow(index, row) {
+            var state = row.$_state;
+            if (state == ${ @com.dili.trace.glossary.EnabledStateEnum.DISABLED.getCode() }) {
+                //当用户状态为 禁用，可操作 启用
+                $('#play_btn').linkbutton('enable');
+                $('#stop_btn').linkbutton('disable');
+            }else if (state == ${ @com.dili.trace.glossary.EnabledStateEnum.ENABLED.getCode() }) {
+                //当用户状态为正常时，则只能操作 禁用
+                $('#stop_btn').linkbutton('enable');
+                $('#play_btn').linkbutton('disable');
+            } else {
+                //其它情况，按钮不可用
+                $('#stop_btn').linkbutton('disable');
+                $('#play_btn').linkbutton('disable');
+            }
+        }
+
+        function blankFormatter(val, row) {
+
+            return val;
+        }
+
+        function successFormatter(val, row) {
+            if (val = "1") {
+                return "成功";
+            } else {
+                return "失败";
+            }
+        }
+
+        function cardNoFormatter(val, row) {
+
+            return val;
+        }
+
+        function closeLastWin(id) {
+            $('#' + id).last().remove();
+        }
+        function closeWin(id) {
+            $('#' + id).remove();
+            $('#grid').datagrid('reload');
+        }
+        function openWin(url) {
+            $('body').append('<iframe id="view_win" name="view_win" src="' + url + '" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
+        }
+
+        function doDetail() {
+            var selected = _userGrid.datagrid("getSelected");
+            if (null == selected) {
+                swal({
+                    title: '警告',
+                    text: '请选中一条数据',
+                    type: 'warning',
+                    width: 300,
+                });
+                return;
+            }
+            openWin('${contextPath}/thirdPartyReport/view/' + selected.id)
+        }
+
+
+        function userQrStatusFormatter(value, rowData, rowIndex) {
+
+            return value;
+        }
+
+    </script>
+</#body>

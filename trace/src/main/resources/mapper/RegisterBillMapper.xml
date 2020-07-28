@@ -393,4 +393,64 @@
     )t GROUP  by area
 </sql>
 
+
+
+
+<select id="selectRegionCountData" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.RegionCountInfo">
+    select case when LOCATE(',',origin_name)>0 then SUBSTRING(origin_name,1,LOCATE(',',origin_name)-1) else origin_name end as region_name,sum(case when weight_unit=1 then weight/2 else weight end) weight
+    from register_bill 
+    where register_bill.is_deleted=0
+    group by case when LOCATE(',',origin_name)>0 then SUBSTRING(origin_name,1,LOCATE(',',origin_name)-1) else origin_name end
+</select>
+
+<select id="selectReportCountData" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.ReportCountDto">
+  select * from (select sum(case when weight_unit=1 then weight/2 else weight end) reportTotal,count(1) reportBatch,0 AS checkBatch
+    from register_bill 
+    where register_bill.is_deleted=0
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+  )report,
+    
+  (select sum(case when weight_unit=1 then total_weight /2 else total_weight end) transactionTotal,count(1) transactionBatch
+    from trade_detail 
+    where trade_detail.parent_id is not null
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
+    </if>
+    )trans
+    
+     ,
+    (select   count(1) unqualifiedBatch
+    from register_bill 
+    where register_bill.is_deleted=0
+    and verify_status =30
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    )unqualified,
+    
+   (select   count(distinct product_id ) unqualifiedPdtCount
+    from register_bill 
+    where register_bill.is_deleted=0
+    and verify_status =30
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    )unqualifiedPdt
+</select>
+
+
 </mapper>

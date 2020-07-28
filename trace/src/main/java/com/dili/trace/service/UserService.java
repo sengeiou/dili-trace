@@ -63,7 +63,6 @@ public interface UserService extends BaseService<User, Long> {
 	 */
 	boolean existsAccount(String phone);
 
-
 	/**
 	 * 根据手机号查询用户
 	 *
@@ -81,9 +80,8 @@ public interface UserService extends BaseService<User, Long> {
 	 */
 	BaseOutput updateEnable(Long id, Boolean enable);
 
-
 	public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception;
-	
+
 	/**
 	 * 删除用户信息
 	 * 
@@ -101,8 +99,9 @@ public interface UserService extends BaseService<User, Long> {
 
 	public UserQrOutput getUserQrCode(Long userId) throws Exception;
 
-	public List<User> findUserQrStatusChangedList();
+	public List<User> findUserByQrStatusList(List<Integer>qrStatusList);
 
+	public void renewPassword(User user, String smscode);
 
-	public void renewPassword(User user,String smscode);
+	public Integer countUser(User user);
 }

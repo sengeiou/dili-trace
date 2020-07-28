@@ -9,4 +9,5 @@ public class TraceBusinessException extends RuntimeException{
     public TraceBusinessException(String msg, Throwable t){
         super(msg,t);
     }
+ 
 }

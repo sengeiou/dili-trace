@@ -136,7 +136,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         // user.getSalesCityId());
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
-        if(StringUtils.isBlank(user.getMarketName())){
+        if (StringUtils.isBlank(user.getMarketName())) {
             user.setMarketName("杭州水产");
         }
         insertSelective(user);
@@ -202,7 +202,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
             }
         }
-        if(StringUtils.isBlank(user.getMarketName())){
+        if (StringUtils.isBlank(user.getMarketName())) {
             user.setMarketName(userPO.getMarketName());
         }
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
@@ -213,7 +213,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
                 user.getSalesCityId());
 
-         this.sessionRedisService.updateUser(this.get(user.getId()));
+        this.sessionRedisService.updateUser(this.get(user.getId()));
         // this.updateUserQrItem(user.getId());
 
     }
@@ -275,7 +275,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Transactional
     @Override
-    public void renewPassword(User user,String smscode) {
+    public void renewPassword(User user, String smscode) {
         this.sMSService.checkResetPasswordSmsCode(user.getPhone(), smscode);
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(user.getPhone());
@@ -338,7 +338,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     @Transactional
     public BaseOutput updateEnable(Long id, Boolean enable) {
-        // long tt = this.redisUtil.getRedisTemplate().getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
+        // long tt =
+        // this.redisUtil.getRedisTemplate().getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
         User user = get(id);
         if (user == null) {
             return BaseOutput.failure("数据不存在");
@@ -350,12 +351,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
             this.sessionRedisService.updateUser(this.get(user.getId()));
-            // this.redisUtil.getRedisTemplate().opsForSet().remove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
+            // this.redisUtil.getRedisTemplate().opsForSet().remove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,
+            // id);
         } else {
             user.setState(EnabledStateEnum.DISABLED.getCode());
             this.updateSelective(user);
             this.sessionRedisService.removeUser(this.get(user.getId()));
-            // this.redisUtil.getRedisTemplate().opsForSet().add(ExecutionConstants.WAITING_DISABLED_USER_PREFIX, id);
+            // this.redisUtil.getRedisTemplate().opsForSet().add(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,
+            // id);
         }
         return BaseOutput.success("操作成功");
     }
@@ -424,7 +427,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setYn(YnEnum.NO.getCode());
         user.setIsDelete(user.getId());
         this.updateSelective(user);
-
 
         // 删除用户车牌信息
         UserPlate up = DTOUtils.newDTO(UserPlate.class);
@@ -549,11 +551,16 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public List<User> findUserQrStatusChangedList() {
+    public List<User> findUserByQrStatusList(List<Integer>qrStatusList) {
 
         Example e = new Example(User.class);
-        e.and().andCondition("pre_qr_status<>qr_status");
+        e.and().andIn("qrStatus", qrStatusList);
         return this.getDao().selectByExample(e);
+    }
+
+    @Override
+    public Integer countUser(User user) {
+        return this.getActualDao().selectCount(user);
     }
 
 }

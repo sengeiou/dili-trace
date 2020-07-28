@@ -11,9 +11,7 @@ import com.dili.trace.domain.RegisterBill;
 
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * Created by laikui on 2019/7/30.
- */
+
 public class RegisterBillDto extends RegisterBill {
 	@ApiModelProperty(value = "查询登记开始时间")
 	@Column(name = "`created`")
