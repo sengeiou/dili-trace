@@ -54,6 +54,7 @@ public class ThirdPartyReportController {
     @ResponseBody
     public String listPage(ModelMap modelMap, ThirdPartyReportDataQueryDto input) throws Exception {
         input.setOperatorName(StringUtils.trimToNull(input.getOperatorName()));
+        input.setName(StringUtils.trimToNull(input.getName()));
         return thirdPartyReportDataService.listEasyuiPage(input, true).toString();
     }
 
