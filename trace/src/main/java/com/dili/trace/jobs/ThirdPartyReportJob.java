@@ -1,5 +1,6 @@
 package com.dili.trace.jobs;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -26,6 +27,7 @@ import com.dili.trace.dto.thirdparty.report.ReportCountDto;
 import com.dili.trace.dto.thirdparty.report.UnqualifiedPdtInfo;
 import com.dili.trace.dto.thirdparty.report.WaringInfoDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.service.CategoryService;
@@ -125,6 +127,15 @@ public class ThirdPartyReportJob implements CommandLineRunner {
                     info.setStallNo(rb.getTallyAreaNo());
                     info.setSubjectName(rb.getName());
                     info.setUpdateTime(updateTime);
+                    if(billDto.getWeight()==null){
+                        billDto.setWeight(BigDecimal.ZERO);
+                    }
+                    if (WeightUnitEnum.JIN.equalsToCode(billDto.getWeightUnit())) {
+                        info.setWeight(billDto.getWeight().divide(BigDecimal.valueOf(2)));
+                    } else {
+                        info.setWeight(billDto.getWeight());
+                    }
+
                     return info;
 
                 }).toList();
@@ -174,7 +185,6 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         User yellowQuery = DTOUtils.newDTO(User.class);
         yellowQuery.setYn(YesOrNoEnum.YES.getCode());
         yellowQuery.setQrStatus(UserQrStatusEnum.YELLOW.getCode());
-
 
         User redQuery = DTOUtils.newDTO(User.class);
         redQuery.setYn(YesOrNoEnum.YES.getCode());
