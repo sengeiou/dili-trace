@@ -111,7 +111,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
                 .nonNull().flatCollection(Function.identity()).findFirst().orElse(new ReportCountDto());
         reportCountDto.setUpdateTime(updateTime);
 
-        billDto.setIsCheckin(TFEnum.FALSE.getCode());
+        billDto.setIsDeleted(TFEnum.FALSE.getCode());
         billDto.setVerifyStatus(BillVerifyStatusEnum.NO_PASSED.getCode());
 
         List<UnqualifiedPdtInfo> unqualifiedPdtInfo = StreamEx
@@ -179,7 +179,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         User redQuery = DTOUtils.newDTO(User.class);
         redQuery.setYn(YesOrNoEnum.YES.getCode());
         redQuery.setQrStatus(UserQrStatusEnum.RED.getCode());
-        
+
         List<WaringInfoDto> warninfoList = StreamEx.of(this.userService.listByExample(yellowQuery))
                 .append(this.userService.listByExample(redQuery)).map(u -> {
 
