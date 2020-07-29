@@ -44,6 +44,8 @@
     <logger name="springfox.documentation.spring.web.readers.operation" level="warn"/>
     <logger name="tk.mybatis.mapper.autoconfigure.MapperCacheDisabler" level="warn"/>
     <logger name="com.dili.common.service.SessionRedisService" level="error"/>
+    <logger name="com.dili.trace.service.DataReportService" level="error"/>
+    
     <logger name="com.dili.common.interceptor.LoginInterceptor" level="info" additivity="false">
         <appender-ref ref="accessAppender"/>
     </logger>
