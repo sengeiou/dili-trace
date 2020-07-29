@@ -1,6 +1,5 @@
 package com.dili.trace.service;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -31,12 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpUtil;
 
 @Service
-public class ThirdPartyReportService {
-    private static final Logger logger = LoggerFactory.getLogger(ThirdPartyReportService.class);
+public class DataReportService {
+    private static final Logger logger = LoggerFactory.getLogger(DataReportService.class);
 
     private ParseContext parseContext = JsonPath
             .using(Configuration.builder().options(Option.SUPPRESS_EXCEPTIONS).build());
@@ -129,13 +127,13 @@ public class ThirdPartyReportService {
      */
     public String refreshToken(boolean forceRefresh) {
         String redisKey = this.accessTokeyRedisKey();
-        if (forceRefresh) {
+        String existedAccessToken = this.getAccessToken().orElse(null);
+        if (forceRefresh||existedAccessToken==null) {
             String accessToken = this.getLatestToken();
             this.redisUtil.set(redisKey, accessToken, 2L, TimeUnit.HOURS);// 两小时有效时间
             return accessToken;
         }
-        String accessToken = this.getAccessToken().orElse(null);
-        return accessToken;
+        return existedAccessToken;
     }
 
     /**
@@ -241,7 +239,7 @@ public class ThirdPartyReportService {
         try {
 
             logger.info("url:{}", url);
-            logger.info("headeMap:{}", headeMap);
+            // logger.info("headeMap:{}", headeMap);
             logger.info("jsonBody:{}", jsonBody);
             String responseText = HttpUtil.createPost(url).addHeaders(headeMap).body(jsonBody).timeout(30 * 1000)
                     .charset("utf-8").contentLength(jsonBody.getBytes("utf-8").length).contentType("application/json")

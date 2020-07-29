@@ -2,6 +2,7 @@ package com.dili.trace.dto;
 
 import javax.persistence.Column;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.ThirdPartyReportData;
 
@@ -17,6 +18,17 @@ public class ThirdPartyReportDataQueryDto extends ThirdPartyReportData {
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
     private String createdEnd;
+    
+	@ApiModelProperty(value = "上报名称LIKE")
+	@Column(name = "`name`")
+	@Like(value = "BOTH")
+    private String likeName;
+    
+
+    @ApiModelProperty(value = "操作员名称")
+	@Column(name = "`operator_name`")
+	@Like(value = "BOTH")
+    private String likeOperatorName;
 
     /**
      * @return String return the createdStart
@@ -44,6 +56,35 @@ public class ThirdPartyReportDataQueryDto extends ThirdPartyReportData {
      */
     public void setCreatedEnd(String createdEnd) {
         this.createdEnd = createdEnd;
+    }
+
+
+    /**
+     * @return String return the likeName
+     */
+    public String getLikeName() {
+        return likeName;
+    }
+
+    /**
+     * @param likeName the likeName to set
+     */
+    public void setLikeName(String likeName) {
+        this.likeName = likeName;
+    }
+
+    /**
+     * @return String return the likeOperatorName
+     */
+    public String getLikeOperatorName() {
+        return likeOperatorName;
+    }
+
+    /**
+     * @param likeOperatorName the likeOperatorName to set
+     */
+    public void setLikeOperatorName(String likeOperatorName) {
+        this.likeOperatorName = likeOperatorName;
     }
 
 }

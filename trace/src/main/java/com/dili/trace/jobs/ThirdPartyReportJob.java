@@ -3,6 +3,7 @@ package com.dili.trace.jobs;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.dili.trace.domain.Category;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.ThirdPartyReportDataQueryDto;
 import com.dili.trace.dto.thirdparty.report.CodeCountDto;
 import com.dili.trace.dto.thirdparty.report.MarketCountDto;
 import com.dili.trace.dto.thirdparty.report.RegionCountDto;
@@ -31,8 +33,9 @@ import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.service.CategoryService;
+import com.dili.trace.service.DataReportService;
 import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.ThirdPartyReportService;
+import com.dili.trace.service.ThirdPartyReportDataService;
 import com.dili.trace.service.UserService;
 import com.google.common.collect.Lists;
 
@@ -50,7 +53,9 @@ import one.util.streamex.StreamEx;
 public class ThirdPartyReportJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(ThirdPartyReportJob.class);
     @Autowired
-    ThirdPartyReportService thirdPartyReportService;
+    DataReportService dataReportService;
+    @Autowired
+    ThirdPartyReportDataService thirdPartyReportDataService;
 
     @Autowired
     UserService userService;
@@ -64,17 +69,26 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     @Autowired
     RegisterBillService registerBillService;
 
+    @Override
+    public void run(String... args) throws Exception {
+        logger.info("===启动时刷新Token===");
+        this.execute();
+    }
+
     // 每115分钟执行一次(token是两小时有效时间)
     @Scheduled(fixedRate = 1000L * 60L * 115)
     public void execute() {
-        logger.info("开始刷新Token");
+        logger.info("---开始刷新Token---");
         try {
-            this.thirdPartyReportService.refreshToken(true);
+            this.dataReportService.refreshToken(true);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+        logger.info("---结束刷新Token---");
     }
 
+    // 每五分钟提交一次数据
+    @Scheduled(cron = "0 */5 * * * ?")
     public void reportData() {
         Optional<OperatorUser> optUser = Optional.empty();
         this.marketCount(optUser);
@@ -83,6 +97,21 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         this.codeCount(optUser);
     }
 
+    // 每天凌晨清理数据，防止历史数据太多
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void cleanReportData() {
+        logger.info("---开始清理数据---");
+        LocalDateTime end = LocalDateTime.now().minusDays(11).withHour(23).withMinute(59).withSecond(59);
+        String createdEnd = end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        ThirdPartyReportDataQueryDto condition = new ThirdPartyReportDataQueryDto();
+        condition.setCreatedEnd(createdEnd);
+        try {
+            this.thirdPartyReportDataService.deleteByExample(condition);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        logger.info("---结束清理数据---");
+    }
     public BaseOutput marketCount(Optional<OperatorUser> optUser) {
         User query = DTOUtils.newDTO(User.class);
         query.setYn(YesOrNoEnum.YES.getCode());
@@ -96,7 +125,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         marketCountDto.setSubjectCount(categoryCount == null ? 0 : categoryCount);
         marketCountDto.setUpdateTime(new Date());
 
-        return this.thirdPartyReportService.marketCount(marketCountDto, optUser);
+        return this.dataReportService.marketCount(marketCountDto, optUser);
 
     }
 
@@ -127,7 +156,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
                     info.setStallNo(rb.getTallyAreaNo());
                     info.setSubjectName(rb.getName());
                     info.setUpdateTime(updateTime);
-                    if(rb.getWeight()==null){
+                    if (rb.getWeight() == null) {
                         rb.setWeight(BigDecimal.ZERO);
                     }
                     if (WeightUnitEnum.JIN.equalsToCode(rb.getWeightUnit())) {
@@ -143,9 +172,11 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         reportCountDto.setUnqualifiedPdtInfo(unqualifiedPdtInfo);
         if (checkBatch != null && checkBatch > 0) {
             reportCountDto.setCheckBatch(checkBatch);
+        }else{
+            reportCountDto.setCheckBatch(0);
         }
 
-        return this.thirdPartyReportService.reportCount(reportCountDto, optUser);
+        return this.dataReportService.reportCount(reportCountDto, optUser);
 
     }
 
@@ -166,7 +197,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
 
         RegionCountDto regionCountDto = new RegionCountDto();
         regionCountDto.setInfo(infoList);
-        return this.thirdPartyReportService.regionCount(regionCountDto, optUser);
+        return this.dataReportService.regionCount(regionCountDto, optUser);
 
     }
 
@@ -199,24 +230,13 @@ public class ThirdPartyReportJob implements CommandLineRunner {
                     warn.setStallNo(u.getTallyAreaNos());
                     warn.setSubjectName(u.getName());
                     warn.setUpdateTime(updateTime);
-                    warn.setMarketId(u.getMarketId()==null?"":String.valueOf(u.getMarketId()));
+                    warn.setMarketId(u.getMarketId() == null ? "" : String.valueOf(u.getMarketId()));
                     warn.setMarketName(u.getMarketName());
                     return warn;
                 }).toList();
 
         codeCountDto.setWarningInfo(warninfoList);
-        return this.thirdPartyReportService.codeCount(codeCountDto, optUser);
-
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        logger.info("启动时刷新Token");
-        try {
-            this.thirdPartyReportService.refreshToken(true);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+        return this.dataReportService.codeCount(codeCountDto, optUser);
 
     }
 

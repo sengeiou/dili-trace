@@ -13,9 +13,10 @@ import com.dili.trace.dto.thirdparty.report.RegionCountDto;
 import com.dili.trace.dto.thirdparty.report.ReportCountDto;
 import com.dili.trace.enums.ReportDtoTypeEnum;
 import com.dili.trace.jobs.ThirdPartyReportJob;
+import com.dili.trace.service.DataReportService;
 import com.dili.trace.service.ThirdPartyReportDataService;
-import com.dili.trace.service.ThirdPartyReportService;
 import com.dili.trace.service.TraceReportService;
+import com.dili.trace.util.BeanMapUtil;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +40,7 @@ public class ThirdPartyReportController {
     ThirdPartyReportJob thirdPartyReportJob;
 
     @Autowired
-    ThirdPartyReportService thirdPartyReportService;
+    DataReportService dataReportService;
 
     @Autowired
     ThirdPartyReportDataService thirdPartyReportDataService;
@@ -53,9 +54,12 @@ public class ThirdPartyReportController {
     @RequestMapping(value = "/listPage.action", method = RequestMethod.POST)
     @ResponseBody
     public String listPage(ModelMap modelMap, ThirdPartyReportDataQueryDto input) throws Exception {
-        input.setOperatorName(StringUtils.trimToNull(input.getOperatorName()));
-        input.setName(StringUtils.trimToNull(input.getName()));
-        return thirdPartyReportDataService.listEasyuiPage(input, true).toString();
+        // input.setOperatorName(StringUtils.trimToNull(input.getOperatorName()));
+        // input.setLikeName(StringUtils.trimToNull(input.getLikeName()));
+        // input.setCreatedStart(StringUtils.trimToNull(input.getCreatedStart()));
+        // input.setCreatedEnd(StringUtils.trimToNull(input.getCreatedEnd()));
+        input=BeanMapUtil.trimBean(input);
+        return thirdPartyReportDataService.listEasyuiPageByExample(input, true).toString();
     }
 
     private static Optional<OperatorUser> fromSessionContext() {
@@ -100,16 +104,16 @@ public class ThirdPartyReportController {
             ObjectMapper mapper = new ObjectMapper();
             if (ReportDtoTypeEnum.codeCount.equalsToCode(reportData.getType())) {
                 CodeCountDto dto = mapper.readValue(json, CodeCountDto.class);
-                return this.thirdPartyReportService.codeCount(dto, this.fromSessionContext());
+                return this.dataReportService.codeCount(dto, this.fromSessionContext());
             } else if (ReportDtoTypeEnum.regionCount.equalsToCode(reportData.getType())) {
                 RegionCountDto dto = mapper.readValue(json, RegionCountDto.class);
-                return this.thirdPartyReportService.regionCount(dto, this.fromSessionContext());
+                return this.dataReportService.regionCount(dto, this.fromSessionContext());
             } else if (ReportDtoTypeEnum.reportCount.equalsToCode(reportData.getType())) {
                 ReportCountDto dto = mapper.readValue(json, ReportCountDto.class);
-                return this.thirdPartyReportService.reportCount(dto, this.fromSessionContext());
+                return this.dataReportService.reportCount(dto, this.fromSessionContext());
             } else if (ReportDtoTypeEnum.marketCount.equalsToCode(reportData.getType())) {
                 MarketCountDto dto = mapper.readValue(json, MarketCountDto.class);
-                return this.thirdPartyReportService.marketCount(dto, this.fromSessionContext());
+                return this.dataReportService.marketCount(dto, this.fromSessionContext());
             } else {
                 return BaseOutput.failure("数据错误");
             }

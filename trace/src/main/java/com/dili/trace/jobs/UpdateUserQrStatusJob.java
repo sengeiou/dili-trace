@@ -26,7 +26,7 @@ public class UpdateUserQrStatusJob implements CommandLineRunner {
         LocalDateTime now = LocalDateTime.now();
         Date start = this.start(now);
         Date end = this.end(now);
-        logger.info("开始执行任务: 根据 {}-{} 之内报备单数据更新用户颜色码",DateFormatUtils.format(start, "yyyy-MM-dd HH:mm:ss"),DateFormatUtils.format(end, "yyyy-MM-dd HH:mm:ss") );
+        // logger.info("开始执行任务: 根据 {}-{} 之内报备单数据更新用户颜色码",DateFormatUtils.format(start, "yyyy-MM-dd HH:mm:ss"),DateFormatUtils.format(end, "yyyy-MM-dd HH:mm:ss") );
         try {
             this.billService.updateAllUserQrStatusByRegisterBillNum(start, end);
         } catch (Exception e) {
