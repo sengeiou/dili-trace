@@ -226,6 +226,10 @@ public class DataReportService {
         });
         thirdPartyReportData.setSuccess(out.isSuccess() ? 1 : 0);
         thirdPartyReportData.setMsg(out.getMessage());
+        optUser.ifPresent(u->{
+            thirdPartyReportData.setOperatorId(u.getId());
+            thirdPartyReportData.setOperatorName(u.getName());
+        });
         if(reportDto.getType()!=null){
             thirdPartyReportData.setName(reportDto.getType().getName());
             thirdPartyReportData.setType(reportDto.getType().getCode());
