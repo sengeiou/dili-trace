@@ -112,9 +112,11 @@ public class DataReportService {
     protected Map<String, String> buildHeaderMap() {
         String accessToken = this.getAccessToken().orElse(null);
         if (accessToken == null) {
+            accessToken=this.refreshToken(true);
+        }
+        if (accessToken == null) {
             throw new TraceBusinessException("请求上报数据出错:tocken为空");
         }
-
         Map<String, String> headeMap = Maps.newHashMap();
         headeMap.put("token", accessToken);
         return headeMap;
