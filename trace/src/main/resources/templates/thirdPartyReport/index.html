@@ -100,7 +100,65 @@
     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
     <script type="text/javascript">
+        function openDailyReport(){
+            layer.open({
+                //formType: 2,//这里依然指定类型是多行文本框，但是在下面content中也可绑定多行文title: '是否确信将账号临时挂账?',
+                area: ['300px', '2'],
+                btnAlign: 'c',
+                type: 0,
+                title: '历史数据按天上报',
+                closeBtn: '1',//右上角的关闭
+                content: '<div id="dailyReport">开始时间(yyyy-MM-dd):<input type="text" name="createdStart" id="createdStart" style="width:200px;height:30px;"></input>'
+                    +'<br/>结束时间(yyyy-MM-dd):<input type="text" name="createdEnd" id="createdEnd" style="width:200px;height:30px;"></input></div>',
+                btn: ['确认', '取消'],//, '关闭'],
+                yes: function (index, layero) {
+                    if($('#dailyReport #createdStart').val()==''||$('#dailyReport #createdEnd').val()==''){
+                        alert('请输入正确的开始和结束时间');
+                    }
+ 
+                    var resp = {};
+                    $.ajax({
+                        type: "POST",
+                        url: "${contextPath}/thirdPartyReport/dailyReport.action",
+                        processData: true,
+                        data:JSON.stringify({'createdStart':$('#dailyReport #createdStart').val(),'createdEnd':$('#dailyReport #createdEnd').val()}),
+                        dataType: "json",
+                        contentType: 'application/json',
+                        async: false,
+                        success: function (ret) { resp = ret; },
+                        error: function () {
+                            resp = { code: 500, message: "远程请求出错" }
+                        }
+                    });
+                    layer.close(index);
+                    if(resp.code==200){
+                        layer.msg('上报成功');
+                        parent.queryUserGrid();
+                    }else{
+                        layer.alert(resp.message)
+                    }
+                    
+                    //可执行确定按钮事件并把备注信息（即多行文本框值）存入需要的地方
+                },
+                no: function (index) {
 
+                    // alert('您刚才点击了取消按钮');
+                    // layer.close(index);
+
+                    //return false;//点击按钮按钮不想让弹层关闭就返回false
+
+                },
+                close: function (index) {
+                    alert('您刚才点击了关闭按钮');
+
+                    return false;//点击按钮按钮                    不想让弹层关闭就返回false
+                }
+
+
+
+            });
+            
+        }
         //打开新增窗口
         function openInsert() {
 
@@ -288,6 +346,15 @@
                     text:'再次上报',
                     handler:function(){
                         openUpdate();
+                    }
+                },
+                </#resource>
+                <#resource method="post" url="user/index.html#dailyReport">
+                    {
+                        iconCls:'icon-edit',
+                    text:'历史数据按天上报',
+                    handler:function(){
+                        openDailyReport();
                     }
                 },
                 </#resource>

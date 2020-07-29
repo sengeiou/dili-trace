@@ -90,7 +90,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     // 每五分钟提交一次数据
     @Scheduled(cron = "0 */5 * * * ?")
     public void reportData() {
-        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L,"auto"));
+        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             this.marketCount(optUser);
             this.regionCount(optUser);
@@ -99,7 +99,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-      
+
     }
 
     // 每天凌晨清理数据，防止历史数据太多
@@ -117,6 +117,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         }
         logger.info("---结束清理数据---");
     }
+
     public BaseOutput marketCount(Optional<OperatorUser> optUser) {
         User query = DTOUtils.newDTO(User.class);
         query.setYn(YesOrNoEnum.YES.getCode());
@@ -135,53 +136,10 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     }
 
     public BaseOutput reportCount(Optional<OperatorUser> optUser, Integer checkBatch) {
-        RegisterBillDto billDto = new RegisterBillDto();
         LocalDateTime now = LocalDateTime.now();
-        Date updateTime = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
-        Date start = Date.from(
-                now.withHour(0).withMinute(0).withSecond(0).withNano(0).atZone(ZoneId.systemDefault()).toInstant());
-        Date end = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
-        billDto.setCreatedStart(DateUtil.format(start, "yyyy-MM-dd HH:mm:ss"));
-        billDto.setCreatedEnd(DateUtil.format(end, "yyyy-MM-dd HH:mm:ss"));
-        ReportCountDto reportCountDto = StreamEx.ofNullable(this.registerBillMapper.selectReportCountData(billDto))
-                .nonNull().flatCollection(Function.identity()).findFirst().orElse(new ReportCountDto());
-        reportCountDto.setUpdateTime(updateTime);
-
-        billDto.setIsDeleted(TFEnum.FALSE.getCode());
-        billDto.setVerifyStatus(BillVerifyStatusEnum.NO_PASSED.getCode());
-
-        List<UnqualifiedPdtInfo> unqualifiedPdtInfo = StreamEx
-                .ofNullable(this.registerBillService.listByExample(billDto)).nonNull()
-                .flatCollection(Function.identity()).map(rb -> {
-                    UnqualifiedPdtInfo info = new UnqualifiedPdtInfo();
-                    info.setBatchNo(rb.getCode());
-                    info.setPdtName(rb.getProductName());
-                    info.setPdtPlace(rb.getOriginName());
-                    info.setPdtSpec(rb.getSpecName());
-                    info.setStallNo(rb.getTallyAreaNo());
-                    info.setSubjectName(rb.getName());
-                    info.setUpdateTime(updateTime);
-                    if (rb.getWeight() == null) {
-                        rb.setWeight(BigDecimal.ZERO);
-                    }
-                    if (WeightUnitEnum.JIN.equalsToCode(rb.getWeightUnit())) {
-                        info.setWeight(rb.getWeight().divide(BigDecimal.valueOf(2)));
-                    } else {
-                        info.setWeight(rb.getWeight());
-                    }
-
-                    return info;
-
-                }).toList();
-
-        reportCountDto.setUnqualifiedPdtInfo(unqualifiedPdtInfo);
-        if (checkBatch != null && checkBatch > 0) {
-            reportCountDto.setCheckBatch(checkBatch);
-        }else{
-            reportCountDto.setCheckBatch(0);
-        }
-
-        return this.dataReportService.reportCount(reportCountDto, optUser);
+        LocalDateTime startDateTime= now.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endDateTime = now;
+        return this.dataReportService.reportCount(optUser,startDateTime,endDateTime, 0);
 
     }
 

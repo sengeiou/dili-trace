@@ -1,5 +1,10 @@
 package com.dili.trace.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -8,14 +13,20 @@ import java.util.function.Function;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
+import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ThirdPartyReportData;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.thirdparty.report.AccessTokenDto;
 import com.dili.trace.dto.thirdparty.report.CodeCountDto;
 import com.dili.trace.dto.thirdparty.report.MarketCountDto;
 import com.dili.trace.dto.thirdparty.report.RegionCountDto;
 import com.dili.trace.dto.thirdparty.report.ReportCountDto;
 import com.dili.trace.dto.thirdparty.report.ReportDto;
+import com.dili.trace.dto.thirdparty.report.UnqualifiedPdtInfo;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
 import com.jayway.jsonpath.Configuration;
@@ -30,7 +41,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpUtil;
+import one.util.streamex.StreamEx;
+import tk.mybatis.mapper.annotation.RegisterMapper;
 
 @Service
 public class DataReportService {
@@ -41,6 +55,10 @@ public class DataReportService {
 
     @Autowired
     RedisUtil redisUtil;
+    @Autowired
+    RegisterBillMapper registerBillMapper;
+    @Autowired
+    RegisterBillService registerBillService;
     @Autowired
     ThirdPartyReportDataService thirdPartyReportDataService;
     @Value("${thirdparty.report.contextUrl}")
@@ -58,11 +76,11 @@ public class DataReportService {
      * @param marketCountDto
      * @return
      */
-    public BaseOutput marketCount(MarketCountDto marketCountDto,Optional<OperatorUser>optUser) {
+    public BaseOutput marketCount(MarketCountDto marketCountDto, Optional<OperatorUser> optUser) {
         logger.info("上报:市场经营户数据统计");
         String path = "/nfwlApi/marketCount";
         String url = this.reportContextUrl + path;
-        return this.postJson(url, marketCountDto,optUser);
+        return this.postJson(url, marketCountDto, optUser);
     }
 
     /**
@@ -71,11 +89,71 @@ public class DataReportService {
      * @param reportCountDto
      * @return
      */
-    public BaseOutput reportCount(ReportCountDto reportCountDto,Optional<OperatorUser>optUser) {
+
+    /**
+     * 报备检测数据统计
+     * 
+     * @param reportCountDto
+     * @return
+     */
+    public BaseOutput reportCount(ReportCountDto reportCountDto, Optional<OperatorUser> optUser) {
         logger.info("上报:报备检测数据统计");
         String path = "/nfwlApi/reportCount";
         String url = this.reportContextUrl + path;
-        return this.postJson(url, reportCountDto,optUser);
+        return this.postJson(url, reportCountDto, optUser);
+    }
+
+    public BaseOutput reportCount(Optional<OperatorUser> optUser,LocalDateTime startDateTime,LocalDateTime endDateTime, int checkBatch) {
+        logger.info("上报:报备检测数据统计");
+
+        RegisterBillDto billDto = new RegisterBillDto();
+       
+        Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+        Date updateTime = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+        billDto.setCreatedStart(DateUtil.format(start, "yyyy-MM-dd HH:mm:ss"));
+        billDto.setCreatedEnd(DateUtil.format(end, "yyyy-MM-dd HH:mm:ss"));
+        ReportCountDto reportCountDto = StreamEx.ofNullable(this.registerBillMapper.selectReportCountData(billDto))
+                .nonNull().flatCollection(Function.identity()).findFirst().orElse(new ReportCountDto());
+        reportCountDto.setUpdateTime(updateTime);
+
+        billDto.setIsDeleted(TFEnum.FALSE.getCode());
+        billDto.setVerifyStatus(BillVerifyStatusEnum.NO_PASSED.getCode());
+
+        List<UnqualifiedPdtInfo> unqualifiedPdtInfo = StreamEx
+                .ofNullable(this.registerBillService.listByExample(billDto)).nonNull()
+                .flatCollection(Function.identity()).map(rb -> {
+                    UnqualifiedPdtInfo info = new UnqualifiedPdtInfo();
+                    info.setBatchNo(rb.getCode());
+                    info.setPdtName(rb.getProductName());
+                    info.setPdtPlace(rb.getOriginName());
+                    info.setPdtSpec(rb.getSpecName());
+                    info.setStallNo(rb.getTallyAreaNo());
+                    info.setSubjectName(rb.getName());
+                    info.setUpdateTime(updateTime);
+                    if (rb.getWeight() == null) {
+                        rb.setWeight(BigDecimal.ZERO);
+                    }
+                    if (WeightUnitEnum.JIN.equalsToCode(rb.getWeightUnit())) {
+                        info.setWeight(rb.getWeight().divide(BigDecimal.valueOf(2)));
+                    } else {
+                        info.setWeight(rb.getWeight());
+                    }
+
+                    return info;
+
+                }).toList();
+
+        reportCountDto.setUnqualifiedPdtInfo(unqualifiedPdtInfo);
+        if (checkBatch >= 0) {
+            reportCountDto.setCheckBatch(checkBatch);
+        } else {
+            reportCountDto.setCheckBatch(0);
+        }
+
+        return this.reportCount(reportCountDto, optUser);
     }
 
     /**
@@ -84,11 +162,11 @@ public class DataReportService {
      * @param regionCountDto
      * @return
      */
-    public BaseOutput regionCount(RegionCountDto regionCountDto,Optional<OperatorUser>optUser) {
+    public BaseOutput regionCount(RegionCountDto regionCountDto, Optional<OperatorUser> optUser) {
         logger.info("上报:品种产地排名统计数据");
         String path = "/nfwlApi/regionCount";
         String url = this.reportContextUrl + path;
-        return this.postJson(url, regionCountDto,optUser);
+        return this.postJson(url, regionCountDto, optUser);
     }
 
     /**
@@ -97,11 +175,11 @@ public class DataReportService {
      * @param codeCountDto
      * @return
      */
-    public BaseOutput codeCount(CodeCountDto codeCountDto,Optional<OperatorUser>optUser) {
+    public BaseOutput codeCount(CodeCountDto codeCountDto, Optional<OperatorUser> optUser) {
         logger.info("上报:三色码状态数据统计");
         String path = "/nfwlApi/codeCount";
         String url = this.reportContextUrl + path;
-        return this.postJson(url, codeCountDto,optUser);
+        return this.postJson(url, codeCountDto, optUser);
     }
 
     /**
@@ -112,7 +190,7 @@ public class DataReportService {
     protected Map<String, String> buildHeaderMap() {
         String accessToken = this.getAccessToken().orElse(null);
         if (accessToken == null) {
-            accessToken=this.refreshToken(true);
+            accessToken = this.refreshToken(true);
         }
         if (accessToken == null) {
             throw new TraceBusinessException("请求上报数据出错:tocken为空");
@@ -130,7 +208,7 @@ public class DataReportService {
     public String refreshToken(boolean forceRefresh) {
         String redisKey = this.accessTokeyRedisKey();
         String existedAccessToken = this.getAccessToken().orElse(null);
-        if (forceRefresh||existedAccessToken==null) {
+        if (forceRefresh || existedAccessToken == null) {
             String accessToken = this.getLatestToken();
             this.redisUtil.set(redisKey, accessToken, 2L, TimeUnit.HOURS);// 两小时有效时间
             return accessToken;
@@ -178,7 +256,7 @@ public class DataReportService {
     }
 
     protected BaseOutput postJsonGetApostJsonccessToken(String url, AccessTokenDto reportDto) {
-        String data=null;
+        String data = null;
         try {
             data = reportDto.toJson();
         } catch (JsonProcessingException e) {
@@ -199,13 +277,11 @@ public class DataReportService {
         });
     }
 
-    protected BaseOutput postJson(String url, ReportDto reportDto,Optional<OperatorUser>optUser) {
+    protected BaseOutput postJson(String url, ReportDto reportDto, Optional<OperatorUser> optUser) {
 
         ThirdPartyReportData thirdPartyReportData = new ThirdPartyReportData();
-        thirdPartyReportData.setCreated(reportDto.getUpdateTime());
-        thirdPartyReportData.setModified(thirdPartyReportData.getCreated());
-        
-       
+        thirdPartyReportData.setCreated(new Date());
+        thirdPartyReportData.setModified(new Date());
 
         try {
             String data = reportDto.toJson();
@@ -226,16 +302,16 @@ public class DataReportService {
         });
         thirdPartyReportData.setSuccess(out.isSuccess() ? 1 : 0);
         thirdPartyReportData.setMsg(out.getMessage());
-        optUser.ifPresent(u->{
+        optUser.ifPresent(u -> {
             thirdPartyReportData.setOperatorId(u.getId());
             thirdPartyReportData.setOperatorName(u.getName());
         });
-        if(reportDto.getType()!=null){
+        if (reportDto.getType() != null) {
             thirdPartyReportData.setName(reportDto.getType().getName());
             thirdPartyReportData.setType(reportDto.getType().getCode());
             this.thirdPartyReportDataService.insertSelective(thirdPartyReportData);
         }
-        
+
         return out;
     }
 
