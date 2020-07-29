@@ -90,7 +90,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     // 每五分钟提交一次数据
     @Scheduled(cron = "0 */5 * * * ?")
     public void reportData() {
-        Optional<OperatorUser> optUser = Optional.empty();
+        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L,"auto"));
         this.marketCount(optUser);
         this.regionCount(optUser);
         this.reportCount(optUser);
