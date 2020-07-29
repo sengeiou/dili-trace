@@ -91,10 +91,15 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     @Scheduled(cron = "0 */5 * * * ?")
     public void reportData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L,"auto"));
-        this.marketCount(optUser);
-        this.regionCount(optUser);
-        this.reportCount(optUser);
-        this.codeCount(optUser);
+        try {
+            this.marketCount(optUser);
+            this.regionCount(optUser);
+            this.reportCount(optUser);
+            this.codeCount(optUser);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+      
     }
 
     // 每天凌晨清理数据，防止历史数据太多
