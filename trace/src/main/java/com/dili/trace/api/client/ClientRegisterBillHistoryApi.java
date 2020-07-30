@@ -41,7 +41,7 @@ public class ClientRegisterBillHistoryApi {
 	@Autowired
 	private RegisterBillHistoryService billHistoryService;
 
-	@ApiOperation(value = "获取报备单历史列表")
+	@ApiOperation(value = "获取报备单审核历史列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/list.api", method = RequestMethod.POST)
 	public BaseOutput<List<RegisterBillHistory>> list(@RequestBody RegisterBillHistory inputDto) {

@@ -33,6 +33,9 @@ public class ClientUserPlateApi {
     @Autowired
     private UserPlateService userPlateService;
 
+    /**
+     * 查询与当前用户绑定的车牌列表
+     */
     @SuppressWarnings({ "unchecked" })
     @RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
     public BaseOutput<List<UserPlate>> listPage(@RequestBody UserPlateQueryDto condition) {

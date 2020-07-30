@@ -51,6 +51,11 @@ public class ClientProductStockApi {
 	@Autowired
 	BrandService brandService;
 
+	/**
+	 * 查询用户自己的商品库存信息
+	 * @param condition
+	 * @return
+	 */
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listMyProductStock.api", method = { RequestMethod.POST })
 	public BaseOutput<BasePage<ProductStock>> listMyProductStock(@RequestBody ProductStockQueryDto condition) {
@@ -71,6 +76,9 @@ public class ClientProductStockApi {
 
 	}
 
+	/**
+	 * 查询卖家的库存信息
+	 */
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listSellersProductStock.api", method = { RequestMethod.POST })
 	public BaseOutput<BasePage<ProductStock>> listSellersProductStock(@RequestBody ProductStockQueryDto condition) {
@@ -93,7 +101,7 @@ public class ClientProductStockApi {
 	}
 
 	/**
-	 * 获得批次列表
+	 * 通过库存ID获得批次列表
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/listTradeDetailForSaleByProductStoreId.api", method = { RequestMethod.POST })

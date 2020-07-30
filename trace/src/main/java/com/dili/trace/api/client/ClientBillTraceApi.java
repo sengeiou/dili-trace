@@ -65,6 +65,11 @@ public class ClientBillTraceApi {
 	@Autowired
 	BillTraceService billTraceService;
 
+	/**
+	 * 列出当前买家或者卖家所有的交易请求
+	 * @param query
+	 * @return
+	 */
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
 	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequestInputDto query) {
@@ -85,7 +90,7 @@ public class ClientBillTraceApi {
 	}
 
 	/**
-	 * 查询需要被进场查询的信息
+	 * 查询需要交易的溯源信息
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewBillTrace.api", method = { RequestMethod.POST })
@@ -109,7 +114,7 @@ public class ClientBillTraceApi {
 	}
 
 	/**
-	 * 查询需要被进场查询的信息
+	 * 查询交易对应的交易批次详情
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewTradeDetailList.api", method = { RequestMethod.POST })

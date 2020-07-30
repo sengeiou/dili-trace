@@ -60,6 +60,11 @@ public class ClientTradeRequestApi {
 	@Autowired
 	TradeRequestService tradeRequestService;
 
+	/**
+	 * 查询交易请求列表
+	 * @param condition
+	 * @return
+	 */
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
 	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequestListInput condition) {
@@ -87,7 +92,7 @@ public class ClientTradeRequestApi {
 	}
 
 	/**
-	 * 详情
+	 * 查询交易详情(包括交易批次)
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewTradeDetail.api", method = { RequestMethod.POST })

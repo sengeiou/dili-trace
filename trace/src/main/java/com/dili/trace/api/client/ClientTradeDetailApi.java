@@ -50,6 +50,11 @@ public class ClientTradeDetailApi {
 	@Autowired
 	TradeDetailService tradeDetailService;
 
+	/**
+	 * 获得批次详情列表
+	 * @param query
+	 * @return
+	 */
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST})
 	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetailQueryDto query) {

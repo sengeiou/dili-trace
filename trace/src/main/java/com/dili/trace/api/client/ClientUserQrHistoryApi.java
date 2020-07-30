@@ -36,6 +36,11 @@ public class ClientUserQrHistoryApi {
     @Autowired
     UserQrHistoryService userQrHistoryService;
 
+    /**
+     * 查询用户最新的二维码变更记录
+     * @param condition
+     * @return
+     */
     @SuppressWarnings({ "unchecked" })
     @RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
     public BaseOutput<List<UserPlate>> listPage(@RequestBody UserQrHistory condition) {
