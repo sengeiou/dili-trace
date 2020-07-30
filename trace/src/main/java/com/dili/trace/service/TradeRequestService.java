@@ -211,7 +211,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
     /**
-     * 处理请求
+     * 处理交易
      */
     TradeRequest hanleRequest(TradeRequest requestItem, List<TradeDetailInputDto> tradeDetailInputList) {
 
@@ -233,17 +233,21 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
         User buyer = this.userService.get(requestItem.getBuyerId());
         User seller = this.userService.get(requestItem.getSellerId());
+        BigDecimal totalTradeWeight=requestItem.getTradeWeight();
 
+
+        //查询和统计(基于批次)用户总库存(其实可以通过总库存获得)
         TradeDetail tradeDetailQuery = new TradeDetail();
         tradeDetailQuery.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
         tradeDetailQuery.setProductStockId(batchStockItem.getId());
         tradeDetailQuery.setSort("created");
         tradeDetailQuery.setOrder("asc");
-        BigDecimal totalTradeWeight=requestItem.getTradeWeight();
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         if (batchStockItem.getStockWeight().compareTo(totalTradeWeight) < 0) {
             throw new TraceBusinessException("购买重量不能超过总库存重量");
         }
+
+        //基于总库存进行交易
         if (tradeDetailIdWeightList.isEmpty()) {
             AtomicReference<BigDecimal> sumTradeWeightAt = new AtomicReference<BigDecimal>(BigDecimal.ZERO);
             List<TradeDetail> resultList = StreamEx.of(tradeDetailList).map(td -> {
@@ -269,6 +273,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 return tradeDetail;
             }).nonNull().toList();
         } else {
+            //基于批次交易
             List<TradeDetail> resultList = StreamEx.of(tradeDetailIdWeightList).map(p -> {
                 TradeDetail tradeDetaiItem = p.getKey();
                 BigDecimal tradeWeight = p.getValue();

@@ -46,6 +46,9 @@ import cn.hutool.http.HttpUtil;
 import one.util.streamex.StreamEx;
 import tk.mybatis.mapper.annotation.RegisterMapper;
 
+/**
+ * 数据上报接口服务
+ */
 @Service
 public class DataReportService {
     private static final Logger logger = LoggerFactory.getLogger(DataReportService.class);

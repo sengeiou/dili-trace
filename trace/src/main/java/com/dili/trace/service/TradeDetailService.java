@@ -62,15 +62,28 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return StreamEx.of(this.listByExample(query)).findFirst();
 
 	}
-	
+	/**
+	 * 构造上一级批次号
+	 * @param billItem
+	 * @return
+	 */
 	private String buildParentBatchNo(RegisterBill billItem){
 		return billItem.getName()+" "+DateUtil.format(billItem.getCreated(), "yyyy-MM-dd HH:mm:ss");
 	}
-
+	/**
+	 * 构造上一级批次号
+	 * @param tradeDetailItem
+	 * @return
+	 */
 	private String buildParentBatchNo(TradeDetail tradeDetailItem){
 		return tradeDetailItem.getBuyerName()+" "+DateUtil.format(tradeDetailItem.getCreated(), "yyyy-MM-dd HH:mm:ss");
 	}
 
+	/**
+	 * 通过报备单创建批次
+	 * @param billItem
+	 * @return
+	 */
 	public TradeDetail createTradeDetailForCheckInBill(RegisterBill billItem) {
 		TradeDetail item = new TradeDetail();
 		Date now=new Date();
@@ -99,7 +112,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	// 1->2 苹果 100 （卖:1->）
 	/**
-	 * 创建单个交易信息
+	 * 通过交易行为创建批次，同时更新相应的库存信息
 	 */
 	public TradeDetail createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			Long sellerId, User buyer) {
@@ -157,6 +170,13 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return buyerTradeDetail;
 	}
 
+	/**
+	 * 更新卖家库存及批次信息(交易触发)
+	 * @param billItem
+	 * @param tradeDetailItem
+	 * @param tradeWeight
+	 * @return
+	 */
 	TradeDetail updateSellerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight) {
 		Long sellerId = tradeDetailItem.getBuyerId();
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
@@ -183,6 +203,15 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return this.get(sellerTradeDetail.getId());
 
 	}
+	/**
+	 * 创建买家的交易批次并(创建)更新相应的库存信息
+	 * @param billItem
+	 * @param tradeDetailItem
+	 * @param tradeWeight
+	 * @param buyer
+	 * @param tradeRequestId
+	 * @return
+	 */
 
 	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			User buyer, Long tradeRequestId) {
@@ -213,6 +242,12 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	}
 
+	/**
+	 * 通过卖家批次构造新的买家交易批次
+	 * @param tradeDetailItem
+	 * @param buyer
+	 * @return
+	 */
 	Long createTradeDetailByTrade(TradeDetail tradeDetailItem, User buyer) {
 		TradeDetail buyerTradeDetail = new TradeDetail();
 		Date now=new Date();
@@ -251,7 +286,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	}
 
 	/**
-	 * 查询用户的登记单类型
+	 * 查询用户的报备单
 	 */
 	public BasePage<TradeDetailBillOutput> selectTradeDetailAndBill(RegisterBillDto dto) {
 		if (dto.getPage() == null || dto.getPage() < 0) {
