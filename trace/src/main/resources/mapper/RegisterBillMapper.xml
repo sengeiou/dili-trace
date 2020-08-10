@@ -200,6 +200,7 @@
       on r_user_tally_area.tally_area_no_id =tally_area_no.id  
       group by r_user_tally_area.user_id 
       )t_area on t_area.user_id=u.id
+     where u.yn=1
     )t GROUP  by area
 </sql>
 
