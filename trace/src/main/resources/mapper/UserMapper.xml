@@ -95,13 +95,13 @@
   </update>
 
   <select id="countGroupByValidateState" parameterType="com.dili.trace.domain.User" resultType="com.dili.trace.api.output.UserOutput">
-    SELECT validate_state validateState,COUNT(1) numbers from `user` u  GROUP BY validate_state
+    SELECT validate_state validateState,COUNT(1) numbers from `user` u where  yn=1  GROUP BY validate_state
   </select>
 
   <select id="listUserByQuery" parameterType="com.dili.trace.api.input.UserInput" resultType="com.dili.trace.api.output.UserOutput">
     SELECT id,name,tally_area_nos,phone,validate_state
     from `user` u
-    where 1=1
+    where yn=1
     <if test="validateState != null">
       and validate_state = #{validateState}
     </if>
