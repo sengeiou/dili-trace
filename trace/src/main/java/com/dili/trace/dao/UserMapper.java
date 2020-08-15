@@ -1,13 +1,12 @@
 package com.dili.trace.dao;
 
-import java.util.List;
-
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.User;
-
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 public interface UserMapper extends MyMapper<User> {
     public List<UserOutput> countGroupByValidateState(User user);
 

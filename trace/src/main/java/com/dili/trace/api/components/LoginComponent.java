@@ -1,12 +1,7 @@
 package com.dili.trace.api.components;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBusinessException;
@@ -17,14 +12,11 @@ import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.LoginInputDto;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.service.IWxAppService;
 import com.dili.trace.service.UserLoginHistoryService;
 import com.dili.trace.service.UserService;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ParseContext;
-
+import com.jayway.jsonpath.*;
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
-import one.util.streamex.StreamEx;
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class LoginComponent {
@@ -48,6 +41,9 @@ public class LoginComponent {
 
 	@Autowired
 	SessionRedisService sessionRedisService;
+
+	@Autowired
+	IWxAppService iWxAppService;
 
 	@Value("${manage.domain}")
 	private String manageDomainPath;
@@ -109,6 +105,8 @@ public class LoginComponent {
 	// 	sessionContext.setLoginType(loginType);
 	// }
 
+
+	//
 	private User userLogin(String phone, String password) {
 		// logger.info("original password={}",password);
 		// logger.info("md5 password={}",MD5Util.md5(password));
@@ -177,6 +175,20 @@ public class LoginComponent {
 
 		}
 
+	}
+
+	public SessionData wxLogin(String openid, Integer type) {
+		User user = userWxLogin(openid,type);
+		SessionData sessionData = SessionData.fromUser(user, type);
+		sessionData.setSessionId(UUIDUtil.get());
+		logger.info("sessionid:{}",sessionData.getSessionId());
+		return this.sessionRedisService.saveToRedis(sessionData);
+	}
+
+	private User userWxLogin(String openid, Integer type) {
+		User user=userService.wxLogin(openid);
+		userLoginHistoryService.createLoginHistory(user);
+		return user;
 	}
 
 	public static void main(String[] args) {
