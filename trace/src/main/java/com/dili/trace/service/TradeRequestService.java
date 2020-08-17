@@ -1,25 +1,16 @@
 package com.dili.trace.service;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.api.input.ProductStockInput;
-import com.dili.trace.api.input.TradeDetailInputDto;
-import com.dili.trace.api.input.TradeRequestInputDto;
-import com.dili.trace.domain.ProductStock;
-import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.TradeOrder;
-import com.dili.trace.domain.TradeRequest;
-import com.dili.trace.domain.UpStream;
-import com.dili.trace.domain.User;
+import com.dili.trace.api.input.*;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.SaleStatusEnum;
@@ -32,6 +23,7 @@ import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.nutz.json.Json;
 import org.slf4j.Logger;
@@ -42,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
+import tk.mybatis.mapper.entity.Example;
 
 @Service
 @Transactional
@@ -60,6 +53,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     TradeOrderService tradeOrderService;
     @Autowired
     UpStreamService upStreamService;
+
+    @Autowired
+    ImageCertService imageCertService;
 
     /**
      * 检查参数是否正确
@@ -115,7 +111,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    return this.hanleRequest(request, tradeDetailInputList);
+                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
         return list;
@@ -142,11 +138,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         }
         TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerUserIdList.get(0), buyerId,
                 TradeOrderTypeEnum.SELL);
-        return EntryStream.of(this.createTradeRequestList(tradeOrderItem, null, buyerId, batchStockInputList))
+        List<TradeRequest> tradeRequests = EntryStream.of(this.createTradeRequestList(tradeOrderItem, null, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    return request;
+                    return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL);
                 }).toList();
-
+        return tradeRequests;
     }
 
     /**
@@ -213,7 +209,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 处理交易
      */
-    TradeRequest hanleRequest(TradeRequest requestItem, List<TradeDetailInputDto> tradeDetailInputList) {
+    TradeRequest hanleRequest(TradeRequest requestItem, List<TradeDetailInputDto> tradeDetailInputList,
+                              TradeOrderTypeEnum tradeOrderTypeEnum) {
 
         List<MutablePair<TradeDetail, BigDecimal>> tradeDetailIdWeightList = StreamEx
                 .of(CollectionUtils.emptyIfNull(tradeDetailInputList)).nonNull().map(tr -> {
@@ -269,7 +266,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
                 logger.info("tradeWeight={}",tradeWeight);
                 TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td,
-                        tradeWeight, seller.getId(), buyer);
+                        tradeWeight, seller.getId(), buyer, tradeOrderTypeEnum);
                 return tradeDetail;
             }).nonNull().toList();
         } else {
@@ -278,7 +275,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 TradeDetail tradeDetaiItem = p.getKey();
                 BigDecimal tradeWeight = p.getValue();
                 TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), tradeDetaiItem,
-                        tradeWeight, seller.getId(), buyer);
+                        tradeWeight, seller.getId(), buyer, tradeOrderTypeEnum);
                 return tradeDetail;
 
             }).toList();
@@ -549,5 +546,83 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR, "(buyer_id=" + userId + " OR seller_id=" + userId + ")");
         return this.listPageByExample(tradeRequest);
 
+    }
+
+    @Transactional
+    public void handleBuyerRequest(TradeRequestHandleDto handleDto)
+    {
+        Long tradeRequestId = handleDto.getTradeRequestId();
+        Integer handleStatus = handleDto.getHandleStatus();
+        TradeRequest tradeRequest = this.get(tradeRequestId);
+        TradeOrder tradeOrder = new TradeOrder();
+        tradeOrder.setId(tradeRequest.getTradeOrderId());
+        tradeOrder.setOrderStatus(handleStatus);
+        this.tradeOrderService.updateSelective(tradeOrder);
+
+        TradeDetail tradeDetailQuery = new TradeDetail();
+        tradeDetailQuery.setTradeRequestId(tradeRequestId);
+        List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
+        StreamEx.of(tradeDetailList).forEach(td -> {
+            if(handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
+                TradeDetail tradeDetail = new TradeDetail();
+                tradeDetail.setId(td.getId());
+                tradeDetail.setStockWeight(td.getSoftWeight());
+                tradeDetail.setSoftWeight(BigDecimal.ZERO);
+                tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                this.tradeDetailService.updateSelective(tradeDetail);
+
+                ProductStock productStock = this.batchStockService.get(td.getProductStockId());
+                ProductStock productStockUpdate = new ProductStock();
+                productStockUpdate.setId(td.getProductStockId());
+                productStockUpdate.setStockWeight(productStock.getStockWeight().add(td.getSoftWeight()));
+                productStockUpdate.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
+                this.batchStockService.updateSelective(productStockUpdate);
+            }
+            else if(handleStatus.equals(TradeOrderStatusEnum.CANCELLED.getCode())){
+                TradeDetail parentTradeDetail = this.tradeDetailService.get(td.getParentId());
+                TradeDetail parentTradeDetailForUpdate = new TradeDetail();
+                parentTradeDetailForUpdate.setId(parentTradeDetail.getId());
+                parentTradeDetailForUpdate.setStockWeight(parentTradeDetail.getStockWeight().add(td.getSoftWeight()));
+                this.tradeDetailService.updateSelective(parentTradeDetailForUpdate);
+            }
+        });
+    }
+
+    public List<TradeHistoryOutPutDto> queryTradeSellerHistoryList(Long buyerId, String queryCondition)
+    {
+        TradeRequest request = new TradeRequest();
+        request.setBuyerId(buyerId);
+        List<TradeRequest> tradeRequests = this.list(request);
+        List<Long> sellerIds = StreamEx.of(this.list(request))
+                .map(TradeRequest::getSellerId).nonNull().distinct().toList();
+        List<TradeHistoryOutPutDto> outPutDtoList = new ArrayList<>();
+        StreamEx.of(sellerIds).nonNull().forEach(td -> {
+            TradeHistoryOutPutDto outPutDto = new TradeHistoryOutPutDto();
+            if(StringUtils.isNoneBlank(queryCondition)) {
+                UserQueryDto queryDto = DTOUtils.newInstance(UserQueryDto.class);
+                queryDto.setName(queryCondition);
+                queryDto.setTallyAreaNos(queryCondition);
+                queryDto.setId(td);
+                User user = StreamEx.of(this.userService.listByExample(queryDto)).findFirst().orElse(null);
+                if (user != null) {
+                    outPutDto.setUserId(td);
+                    outPutDto.setUserName(user.getName());
+                    outPutDto.setImageUrl(user.getBusinessLicenseUrl());
+                    outPutDto.setTallyAreaNos(user.getTallyAreaNos());
+                    outPutDto.setMarketName(user.getMarketName());
+                    outPutDtoList.add(outPutDto);
+                }
+            }
+            else
+            {
+                User user = this.userService.get(td);
+                outPutDto.setUserId(td);
+                outPutDto.setUserName(user.getName());
+                outPutDto.setImageUrl(user.getBusinessLicenseUrl());
+                outPutDto.setMarketName(user.getMarketName());
+                outPutDtoList.add(outPutDto);
+            }
+        });
+        return outPutDtoList;
     }
 }

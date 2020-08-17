@@ -95,6 +95,17 @@ public class TradeRequest extends BaseDomain {
 	}
 
 	@Transient
+	private String orderStatusName;
+
+	public String getOrderStatusName() {
+		return orderStatusName;
+	}
+
+	public void setOrderStatusName(String orderStatusName) {
+		this.orderStatusName = orderStatusName;
+	}
+
+	@Transient
 	public String getWeightUnitName() {
 		return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
 	}

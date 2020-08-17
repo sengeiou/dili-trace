@@ -79,7 +79,7 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
                 eventMessage.setCreatorId(creatorUser.getId());
                 eventMessage.setReceiver(receiverUser.getName());
                 eventMessage.setReceiverId(receiverUser.getId());
-                eventMessage.setReceiverType(receiverUser.getUserType());
+                eventMessage.setReceiverType(messageInputDto.getReceiverType());
 
                 eventMessage.setSourceBusinessId(messageInputDto.getSourceBusinessId());
                 eventMessage.setSourceBusinessType(messageInputDto.getSourceBusinessType());
