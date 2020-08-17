@@ -113,6 +113,12 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`modified`")
 	private Date modified;
 
+	@Column(name =  "`pushawayWeight`")
+	private BigDecimal pushawayWeight;
+
+	@Column(name =  "`soft_weight`")
+	private BigDecimal softWeight;
+
 	@Transient
 	private String plate;
 	
@@ -372,4 +378,19 @@ public class TradeDetail extends BaseDomain {
         this.parentBatchNo = parentBatchNo;
     }
 
+	public BigDecimal getPushawayWeight() {
+		return pushawayWeight;
+	}
+
+	public void setPushawayWeight(BigDecimal pushawayWeight) {
+		this.pushawayWeight = pushawayWeight;
+	}
+
+	public BigDecimal getSoftWeight() {
+		return softWeight;
+	}
+
+	public void setSoftWeight(BigDecimal softWeight) {
+		this.softWeight = softWeight;
+	}
 }

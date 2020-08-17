@@ -336,4 +336,9 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	}
 
+	public void udpateTradePushAway(Long tradeDetailId, BigDecimal pushAwayWeight)
+	{
+		tradeDetailMapper.updatePushAway(tradeDetailId, pushAwayWeight);
+	}
+
 }
