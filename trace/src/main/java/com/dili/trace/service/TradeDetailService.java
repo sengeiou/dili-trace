@@ -56,6 +56,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 		// 查找报备相关的TradeDetail信息
 		TradeDetail query = new TradeDetail();
+
 		query.setBillId(billId);
 		query.setTradeType(TradeTypeEnum.NONE.getCode());
 
