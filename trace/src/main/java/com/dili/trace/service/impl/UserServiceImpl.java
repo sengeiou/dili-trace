@@ -617,6 +617,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         return getActualDao().listUserByStoreName(queryCondition);
     }
 
+    @Override
+    public UserOutput getUserByUserId(Long userId) {
+        return getActualDao().getUserByUserId(userId);
+    }
+
     private boolean existsOpenId(String openid) {
         if(StringUtils.isBlank(openid)){
             throw  new TraceBusinessException("注册用户openid为空");

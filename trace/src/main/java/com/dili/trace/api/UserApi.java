@@ -19,6 +19,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
@@ -494,5 +495,25 @@ public class UserApi {
             }
         }
         return false;
+    }
+
+    @ApiOperation(value = "用户获取个人信息【接口已通】", notes = "用户获取个人信息")
+    @RequestMapping(value = "/getUserInfo.api", method = RequestMethod.GET)
+    @InterceptConfiguration
+    public BaseOutput<UserOutput> getUserInfoByUserId(@RequestParam Long userId) {
+        try {
+            UserOutput user = userService.getUserByUserId(userId);
+            if (user == null) {
+                return BaseOutput.failure("用户不存在");
+            }
+            // //初始状态获取个人信息不展示名称
+            // if (user.getValidateState() == ValidateStateEnum.CERTREQ.getCode()){
+            // user.setName("");
+            // }
+            return BaseOutput.success().setData(user);
+        } catch (Exception e) {
+            logger.error("get", e);
+            return BaseOutput.failure();
+        }
     }
 }

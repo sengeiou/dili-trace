@@ -138,4 +138,11 @@ public interface UserService extends BaseService<User, Long> {
 	 * @return
 	 */
 	List<UserOutput> listUserByStoreName(String queryCondition);
+
+	/**
+	 * 根据店铺名查找user
+	 * @param userId
+	 * @return
+	 */
+	UserOutput getUserByUserId(Long userId);
 }

@@ -17,4 +17,6 @@ public interface UserMapper extends MyMapper<User> {
 
     public List<UserOutput> listUserByStoreName(String queryCondition);
 
+    UserOutput getUserByUserId(Long id);
+
 }
