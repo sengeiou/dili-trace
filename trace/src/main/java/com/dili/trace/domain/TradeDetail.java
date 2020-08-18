@@ -1,19 +1,12 @@
 package com.dili.trace.domain;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.WeightUnitEnum;
-
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -113,7 +106,7 @@ public class TradeDetail extends BaseDomain {
 	@Column(name = "`modified`")
 	private Date modified;
 
-	@Column(name =  "`pushawayWeight`")
+	@Column(name =  "`pushaway_weight`")
 	private BigDecimal pushawayWeight;
 
 	@Column(name =  "`soft_weight`")
