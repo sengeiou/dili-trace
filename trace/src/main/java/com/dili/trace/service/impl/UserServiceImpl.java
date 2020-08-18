@@ -19,10 +19,13 @@ import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.*;
+import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
+import com.dili.trace.domain.WxApp;
+import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
-import com.dili.trace.enums.MessageStateEnum;
+import com.dili.trace.enums.MessageTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
@@ -57,8 +60,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Autowired
     UsualAddressService usualAddressService;
     @Autowired
-    EventMessageService eventMessageService;
-    @Autowired
     RegisterBillService registerBillService;
     @Autowired
     DefaultConfiguration defaultConfiguration;
@@ -76,7 +77,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     SessionRedisService sessionRedisService;
     @Autowired
     IWxAppService wxAppService;
-
+    @Autowired
+    MessageService messageService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -299,7 +301,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     /**
      * 检测手机号是否存在
-     * 
+     *
      * @param phone
      * @return true 存在 false 不存在
      */
@@ -457,42 +459,38 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (ValidateStateEnum.UNCERT.getCode() != user.getValidateState()) {
             return BaseOutput.failure("当前状态不能审核");
         }
-        String message;
-        if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {// 审核通过
-            message = "用户资料审核申请已通过";
-        } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {// 审核不通过
-            message = "用户资料审核申请未通过";
+        ;
+        // 审核通过
+        if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {
+            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(),null, operatorUser);
+        } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {
+            // 审核不通过
+            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(),input.getRefuseReason(), operatorUser);
         } else {
-            message = "系统出现异常";
+            String message = "系统出现异常";
             return BaseOutput.failure(message);
         }
 
         user.setValidateState(input.getValidateState());
         int retRows = update(user);
         if (retRows > 0) {
-            sendVerifyCertMessage(user, message, input.getRefuseReason(), operatorUser);
-            return BaseOutput.success(message);
+            return BaseOutput.success("用户资料审核申请已通过");
         } else {
             return BaseOutput.failure();
         }
     }
 
-    private void sendVerifyCertMessage(User user, String message, String operateReason, OperatorUser operatorUser) {
-        // 增加消息
-        EventMessage eventMessage = new EventMessage();
-        eventMessage.setTitle(message);
-        eventMessage.setOverview(operateReason);
+    private void sendVerifyCertMessage(User user,Integer messageType, String operateReason, OperatorUser operatorUser) {
+        // 审核通过增加消息
+        MessageInputDto messageInputDto = new MessageInputDto();
+        messageInputDto.setCreatorId(operatorUser.getId());
+        messageInputDto.setMessageType(messageType);
+        messageInputDto.setReceiverIdArray(new Long[]{user.getId()});
+        messageInputDto.setEventMessageContentParam(new String[]{operateReason});
 
-        eventMessage.setCreator(operatorUser.getName());
-        eventMessage.setCreatorId(operatorUser.getId());
-        eventMessage.setReceiver(user.getName());
-        eventMessage.setReceiverId(user.getId());
-        eventMessage.setReceiverType(UserTypeEnum.USER.getCode());
-
-        eventMessage.setSourceBusinessId(user.getId());
-        eventMessage.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
-
-        eventMessageService.addMessage(eventMessage);
+        Map<String, Object> smsMap=new HashMap<>();
+        smsMap.put("userName",user.getName());
+        messageService.addMessage(messageInputDto);
     }
 
     private void updateUserQrItem(Long userId) {
@@ -532,7 +530,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public List<User> findUserByQrStatusList(List<Integer>qrStatusList) {
+    public List<User> findUserByQrStatusList(List<Integer> qrStatusList) {
 
         Example e = new Example(User.class);
         e.and().andIn("qrStatus", qrStatusList);
@@ -561,14 +559,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public String wxRegister(String phone, String wxName,String openid) throws JsonProcessingException {
+    public String wxRegister(String phone, String wxName, String openid) throws JsonProcessingException {
         // 验证手机号是否已注册
         if (existsAccount(phone)) {
             throw new TraceBusinessException("手机号已注册");
         }
         User user = DTOUtils.newDTO(User.class);
         //验证openid是否已注册
-        if(existsOpenId(openid)){
+        if (existsOpenId(openid)) {
             throw new TraceBusinessException("微信已绑定用户");
         }
         user.setOpenId(openid);
@@ -593,12 +591,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         //验证微信是否已绑定用户
         User query = DTOUtils.newDTO(User.class);
         query.setOpenId(openid);
-        if(null!=getActualDao().selectOne(query)){
-            throw  new TraceBusinessException("微信已绑定用户");
+        if (null != getActualDao().selectOne(query)) {
+            throw new TraceBusinessException("微信已绑定用户");
         }
-        User user=get(user_id);
-        if(null!=user&&StringUtils.isNotBlank(user.getOpenId())){
-            throw  new TraceBusinessException("用户已绑定微信");
+        User user = get(user_id);
+        if (null != user && StringUtils.isNotBlank(user.getOpenId())) {
+            throw new TraceBusinessException("用户已绑定微信");
         }
         user.setOpenId(openid);
         update(user);
@@ -607,7 +605,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void confirmBindWeChatTip(String user_id) {
-        User user=get(Long.valueOf(user_id));
+        User user = get(Long.valueOf(user_id));
         user.setConfirmDate(new Date());
         update(user);
     }
@@ -623,23 +621,23 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     private boolean existsOpenId(String openid) {
-        if(StringUtils.isBlank(openid)){
-            throw  new TraceBusinessException("注册用户openid为空");
+        if (StringUtils.isBlank(openid)) {
+            throw new TraceBusinessException("注册用户openid为空");
         }
-        User openuser  = DTOUtils.newDTO(User.class);
+        User openuser = DTOUtils.newDTO(User.class);
         openuser.setOpenId(openid);
-        return null!=getActualDao().selectOne(openuser);
+        return null != getActualDao().selectOne(openuser);
     }
 
     private WxApp getWxAppInfo(String appId) {
-        if(StringUtils.isBlank(appId)) {
+        if (StringUtils.isBlank(appId)) {
             return null;
         }
         WxApp wxApp = new WxApp();
         wxApp.setAppId(appId);
-        List<WxApp> list=wxAppService.list(wxApp);
-        if(!CollectionUtils.isEmpty(list)){
-           return list.get(0);
+        List<WxApp> list = wxAppService.list(wxApp);
+        if (!CollectionUtils.isEmpty(list)) {
+            return list.get(0);
         }
         return null;
     }

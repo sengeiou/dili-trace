@@ -1,30 +1,26 @@
 package com.dili.trace.service;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.api.input.*;
+import com.dili.ss.util.DateUtils;
+import com.dili.trace.api.input.ProductStockInput;
+import com.dili.trace.api.input.TradeDetailInputDto;
+import com.dili.trace.api.input.TradeRequestHandleDto;
+import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.*;
+import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
-import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeOrderStatusEnum;
-import com.dili.trace.enums.TradeOrderTypeEnum;
-import com.dili.trace.enums.TradeReturnStatusEnum;
-import com.dili.trace.enums.UserFlagEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
-
+import one.util.streamex.EntryStream;
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.nutz.json.Json;
 import org.slf4j.Logger;
@@ -33,9 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import one.util.streamex.EntryStream;
-import one.util.streamex.StreamEx;
-import tk.mybatis.mapper.entity.Example;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @Transactional
@@ -47,17 +43,16 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     ProductStockService batchStockService;
     @Autowired
     CodeGenerateService codeGenerateService;
-
     @Autowired
     TradeDetailService tradeDetailService;
     @Autowired
     TradeOrderService tradeOrderService;
     @Autowired
     UpStreamService upStreamService;
-
     @Autowired
     ImageCertService imageCertService;
-
+    @Autowired
+    MessageService messageService;
     /**
      * 检查参数是否正确
      * 
@@ -115,6 +110,18 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
+
+        //下单消息
+        Set<String> productSet = new HashSet<>();
+        batchStockInputList.stream().forEach(s ->
+                {
+                    ProductStock stock = this.batchStockService.get(s.getProductStockId());
+                    if (null != stock) {
+                        productSet.add(stock.getProductName());
+                    }
+                }
+        );
+        addMessage(sellerId,buyerId,MessageTypeEnum.SALERORDER.getCode(),productSet.toString());
         return list;
 
     }
@@ -143,6 +150,18 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL);
                 }).toList();
+
+        //下单消息
+        Set<String> productSet = new HashSet<>();
+        batchStockInputList.stream().forEach(s ->
+                {
+                    ProductStock stock = this.batchStockService.get(s.getProductStockId());
+                    if (null != stock) {
+                    productSet.add(stock.getProductName());
+                }
+                }
+        );
+        addMessage(buyerId,sellerUserIdList.get(0),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
         return tradeRequests;
     }
 
@@ -201,6 +220,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         this.insertSelective(request);
         return request;
     }
+
+
 
     private String getNextCode() {
         return this.codeGenerateService.nextTradeRequestCode();
@@ -549,7 +570,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void handleBuyerRequest(TradeRequestHandleDto handleDto)
     {
         Long tradeRequestId = handleDto.getTradeRequestId();
@@ -587,6 +608,39 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 this.tradeDetailService.updateSelective(parentTradeDetailForUpdate);
             }
         });
+
+        //下单消息
+        Set<String> productSet = new HashSet<>();
+        Set<Long> buyerId=new HashSet<>();
+        Set<Long> sellerid = new HashSet<>();
+        StreamEx.of(tradeDetailList).forEach(td -> {
+            productSet.add(td.getProductName());
+            buyerId.add(td.getBuyerId());
+            sellerid.add(td.getSellerId());
+        });
+        addMessage(buyerId.stream().findFirst().get(),sellerid.stream().findFirst().get(),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
+    }
+
+    /**
+     * 新增消息并发送短信
+     * @param sendUserId
+     * @param messageType
+     * @param productNames
+     */
+    private void addMessage(Long sendUserId,Long receiUserId, Integer messageType, String productNames) {
+        // 增加消息
+        MessageInputDto messageInputDto = new MessageInputDto();
+        messageInputDto.setCreatorId(sendUserId);
+        messageInputDto.setMessageType(messageType);
+        messageInputDto.setReceiverIdArray(new Long[]{receiUserId});
+
+        //增加卖家短信
+        Map<String,Object> sellmap = new HashMap<>();
+        sellmap.put("userName",sendUserId);
+        sellmap.put("created", DateUtils.format(new Date(),"yyyy年MM月dd日 HH:mm:ss"));
+        sellmap.put("tradeInfo",productNames);
+        messageInputDto.setSmsContentParam(sellmap);
+        messageService.addMessage(messageInputDto);
     }
 
     public List<UserOutput> queryTradeSellerHistoryList(Long buyerId)
