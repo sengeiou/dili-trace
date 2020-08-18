@@ -131,4 +131,11 @@ public interface UserService extends BaseService<User, Long> {
 	 * @param user_id
 	 */
 	void confirmBindWeChatTip(String user_id);
+
+	/**
+	 * 根据店铺名查找user
+	 * @param queryCondition
+	 * @return
+	 */
+	List<UserOutput> listUserByStoreName(String queryCondition);
 }

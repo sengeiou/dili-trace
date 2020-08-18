@@ -612,6 +612,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         update(user);
     }
 
+    @Override
+    public List<UserOutput> listUserByStoreName(String queryCondition) {
+        return getActualDao().listUserByStoreName(queryCondition);
+    }
+
     private boolean existsOpenId(String openid) {
         if(StringUtils.isBlank(openid)){
             throw  new TraceBusinessException("注册用户openid为空");

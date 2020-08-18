@@ -16,11 +16,7 @@ import com.dili.trace.domain.Category;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
-import com.dili.trace.enums.CheckinStatusEnum;
-import com.dili.trace.enums.CheckoutStatusEnum;
-import com.dili.trace.enums.PreserveTypeEnum;
-import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeTypeEnum;
+import com.dili.trace.enums.*;
 import com.google.common.collect.Lists;
 
 import org.junit.jupiter.api.Test;
@@ -107,7 +103,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Test
     public void createAndCancelTradeRequest() {
         TradeRequest request = this.createBuyTradeRequest(this.createBatchStock());
-        this.tradeRequestService.hanleRequest(request, Lists.newArrayList());
+        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(), TradeOrderTypeEnum.SELL);
     }
 
     @Test
@@ -119,7 +115,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         TradeDetailInputDto input = new TradeDetailInputDto();
         input.setTradeDetailId(tradeDetail.getId());
         input.setTradeWeight(request.getTradeWeight());
-        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(input));
+        this.tradeRequestService.hanleRequest(request, Lists.newArrayList(input), TradeOrderTypeEnum.SELL);
     }
 
     @Test

@@ -10,6 +10,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.*;
+import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
@@ -588,37 +589,23 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         });
     }
 
-    public List<TradeHistoryOutPutDto> queryTradeSellerHistoryList(Long buyerId, String queryCondition)
+    public List<UserOutput> queryTradeSellerHistoryList(Long buyerId)
     {
         TradeRequest request = new TradeRequest();
         request.setBuyerId(buyerId);
         List<TradeRequest> tradeRequests = this.list(request);
         List<Long> sellerIds = StreamEx.of(this.list(request))
                 .map(TradeRequest::getSellerId).nonNull().distinct().toList();
-        List<TradeHistoryOutPutDto> outPutDtoList = new ArrayList<>();
+        List<UserOutput> outPutDtoList = new ArrayList<>();
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
-            TradeHistoryOutPutDto outPutDto = new TradeHistoryOutPutDto();
-            if(StringUtils.isNoneBlank(queryCondition)) {
-                UserQueryDto queryDto = DTOUtils.newInstance(UserQueryDto.class);
-                queryDto.setName(queryCondition);
-                queryDto.setTallyAreaNos(queryCondition);
-                queryDto.setId(td);
-                User user = StreamEx.of(this.userService.listByExample(queryDto)).findFirst().orElse(null);
-                if (user != null) {
-                    outPutDto.setUserId(td);
-                    outPutDto.setUserName(user.getName());
-                    outPutDto.setImageUrl(user.getBusinessLicenseUrl());
-                    outPutDto.setTallyAreaNos(user.getTallyAreaNos());
-                    outPutDto.setMarketName(user.getMarketName());
-                    outPutDtoList.add(outPutDto);
-                }
-            }
-            else
-            {
-                User user = this.userService.get(td);
-                outPutDto.setUserId(td);
-                outPutDto.setUserName(user.getName());
-                outPutDto.setImageUrl(user.getBusinessLicenseUrl());
+            UserOutput outPutDto = new UserOutput();
+
+            User user = this.userService.get(td);
+            if(user != null) {
+                outPutDto.setId(td);
+                outPutDto.setName(user.getName());
+                outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
+                outPutDto.setTallyAreaNos(user.getTallyAreaNos());
                 outPutDto.setMarketName(user.getMarketName());
                 outPutDtoList.add(outPutDto);
             }

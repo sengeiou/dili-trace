@@ -221,15 +221,14 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		Long buyerTradeDetailId = this.createTradeDetailByTrade(tradeDetailItem, buyer);
 		TradeDetail buyerTradeDetail = new TradeDetail();
 		buyerTradeDetail.setId(buyerTradeDetailId);
-		// 买家下单
-		if(tradeOrderTypeEnum.getCode().equals(TradeOrderTypeEnum.SELL.getCode()))
+		// 卖家下单
+		ProductStock buyerBatchStock=new ProductStock();
+		buyerBatchStock.setId(buyerBatchStockItem.getId());
+		buyerBatchStock.setTotalWeight(buyerBatchStockItem.getTotalWeight().add(tradeWeight));
+		if(tradeOrderTypeEnum.getCode().equals(TradeOrderTypeEnum.BUY.getCode()))
 		{
-			ProductStock buyerBatchStock=new ProductStock();
-			buyerBatchStock.setId(buyerBatchStockItem.getId());
-			buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
 			buyerBatchStock.setTradeDetailNum(buyerBatchStockItem.getTradeDetailNum() + 1);
-			this.batchStockService.updateSelective(buyerBatchStock);
-
+			buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
 			buyerTradeDetail.setStockWeight(tradeWeight);
 		}
 		else
@@ -241,9 +240,10 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 		buyerTradeDetail.setTotalWeight(tradeWeight);
 		buyerTradeDetail.setTradeRequestId(tradeRequestId);
-
 		buyerTradeDetail.setProductStockId(buyerBatchStockItem.getId());
 		buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
+
+		this.batchStockService.updateSelective(buyerBatchStock);
 		this.updateSelective(buyerTradeDetail);
 		//更新买家二维码颜色
 		// this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, buyer.getId());

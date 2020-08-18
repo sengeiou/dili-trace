@@ -9,18 +9,14 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.api.input.TradeHistoryOutPutDto;
-import com.dili.trace.api.input.TradeRequestHandleDto;
-import com.dili.trace.api.input.TradeRequestInputDto;
-import com.dili.trace.api.input.TradeRequestListInput;
+import com.dili.trace.api.input.*;
 import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
-import com.dili.trace.domain.ProductStock;
-import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.TradeOrder;
-import com.dili.trace.domain.TradeRequest;
+import com.dili.trace.api.output.UserOutput;
+import com.dili.trace.domain.*;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.service.*;
@@ -141,15 +137,14 @@ public class ClientTradeRequestApi {
 
 	@ApiOperation(value = "创建购买请求")
 	@RequestMapping(value = "/createBuyProductRequest.api", method = RequestMethod.POST)
-	public BaseOutput<?> createBuyProductRequest(@RequestBody TradeRequestInputDto inputDto) {
-		if (inputDto == null || inputDto.getBatchStockList() == null || inputDto.getBatchStockList().isEmpty()) {
+	public BaseOutput<?> createBuyProductRequest(@RequestBody List<ProductStockInput> inputDto) {
+		if (inputDto == null) {
 			return BaseOutput.failure("参数错误");
 		}
-
 		try {
-			Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			inputDto.setBuyerId(buyerId);
-			List<TradeRequest> list = this.tradeRequestService.createBuyRequest(buyerId, inputDto.getBatchStockList());
+			//Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			Long buyerId = 1284L;
+			List<TradeRequest> list = this.tradeRequestService.createBuyRequest(buyerId, inputDto);
 			return BaseOutput.success();
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -262,10 +257,22 @@ public class ClientTradeRequestApi {
 	}
 
 	@RequestMapping(value = "/listBuyHistory.api", method = { RequestMethod.GET })
-	public BaseOutput<List<TradeHistoryOutPutDto>> listBuyHistory(@RequestParam Long buyerId,
-					@RequestParam String queryCondition) {
+	public BaseOutput<List<UserOutput>> listBuyHistory(@RequestParam Long buyerId) {
 		try {
-			List<TradeHistoryOutPutDto> list = this.tradeRequestService.queryTradeSellerHistoryList(buyerId, queryCondition);
+			List<UserOutput> list = this.tradeRequestService.queryTradeSellerHistoryList(buyerId);
+			return BaseOutput.success().setData(list);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("服务端出错");
+		}
+	}
+
+	@RequestMapping(value = "/listSeller.api", method = { RequestMethod.GET })
+	public BaseOutput<List<UserOutput>> listSeller(@RequestParam String queryCondition) {
+		try {
+			List<UserOutput> list = StreamEx.of(this.userService.listUserByStoreName("%"+queryCondition+"%")).nonNull().toList();
 			return BaseOutput.success().setData(list);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -280,8 +287,8 @@ public class ClientTradeRequestApi {
 		try {
 			ProductStock productStock = new ProductStock();
 			productStock.setUserId(userId);
-			productStock.setMetadata(IDTO.AND_CONDITION_EXPR, "and stock_weight > 0");
-			List<ProductStock> list = this.productStockService.list(productStock);
+			productStock.setMetadata(IDTO.AND_CONDITION_EXPR, "stock_weight > 0");
+			List<ProductStock> list = this.productStockService.listByExample(productStock);
 			return BaseOutput.success().setData(list);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
