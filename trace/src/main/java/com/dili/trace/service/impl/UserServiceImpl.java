@@ -80,8 +80,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     IWxAppService wxAppService;
 
     @Autowired
-    UserStoreService userStoreService;
+    MessageService messageService;
 
+    @Autowired
+    UserStoreService userStoreService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -627,27 +629,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         return getActualDao().getUserByUserId(userId);
     }
 
-    @Override
-    public UserQrOutput getUserQrCodeWithName(Long userId) throws Exception {
-        UserQrOutput qrOutput = new UserQrOutput();
-        qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
-        qrOutput.setUserId(userId);
-        String content = this.baseWebPath + "/user?userId=" + userId;
-        User user = this.get(userId);
-        qrOutput.setUserName(user.getName());
-        UserStore userStoreParam = new UserStore();
-        userStoreParam.setUserId(userId);
-        UserStore userStore = StreamEx.of(userStoreService.list(userStoreParam)).nonNull().findFirst().orElse(null);
-        if(userStore !=  null)
-        {
-            qrOutput.setUserName(userStore.getStoreName());
-        }
-        byte[] bytes = QRCodeUtil.encode(content, this.getUserQrCode(userId).getBase64QRImg(),false,qrOutput.getUserName());
-        String base64Img = QRCodeUtil.base64Image(bytes);
-        qrOutput.setBase64QRImg(base64Img);
-        return qrOutput;
-    }
-
     private boolean existsOpenId(String openid) {
         if(StringUtils.isBlank(openid)){
             throw  new TraceBusinessException("注册用户openid为空");
@@ -668,6 +649,27 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
            return list.get(0);
         }
         return null;
+    }
+
+    @Override
+    public UserQrOutput getUserQrCodeWithName(Long userId) throws Exception {
+        UserQrOutput qrOutput = new UserQrOutput();
+        qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+        qrOutput.setUserId(userId);
+        String content = this.baseWebPath + "/user?userId=" + userId;
+        User user = this.get(userId);
+        qrOutput.setUserName(user.getName());
+        UserStore userStoreParam = new UserStore();
+        userStoreParam.setUserId(userId);
+        UserStore userStore = StreamEx.of(userStoreService.list(userStoreParam)).nonNull().findFirst().orElse(null);
+        if(userStore !=  null)
+        {
+            qrOutput.setUserName(userStore.getStoreName());
+        }
+        byte[] bytes = QRCodeUtil.encode(content, this.getUserQrCode(userId).getBase64QRImg(),false,qrOutput.getUserName());
+        String base64Img = QRCodeUtil.base64Image(bytes);
+        qrOutput.setBase64QRImg(base64Img);
+        return qrOutput;
     }
 
 }
