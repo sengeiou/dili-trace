@@ -6,10 +6,15 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.EventMessageApi;
 import com.dili.trace.domain.EventMessage;
+import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.enums.MessageStateEnum;
+import com.dili.trace.enums.MessageTypeEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+
+import java.awt.*;
+import java.text.MessageFormat;
 
 @Rollback(false)
 public class EventMessageServiceTest extends AutoWiredBaseTest {
@@ -17,6 +22,25 @@ public class EventMessageServiceTest extends AutoWiredBaseTest {
     EventMessageService eventMessageService;
     @Autowired
     EventMessageApi eventMessageApi;
+
+    @Autowired
+    MessageService messageService;
+
+
+
+    @Test
+    public void addMessageTest()
+    {
+        MessageInputDto inputDto = new MessageInputDto();
+        inputDto.setMessageType(MessageTypeEnum.USERREGISTER.getCode());
+        inputDto.setCreatorId(1L);
+        inputDto.setReceiverIdArray(new Long[]{1277L});
+        inputDto.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
+        inputDto.setSourceBusinessId(1L);
+        inputDto.setEventMessageTitleParam(new Object[]{"xx"});
+        inputDto.setEventMessageContentParam(new Object[]{"xxxccc"});
+        messageService.addMessage(inputDto);
+    }
 
     @Test
     public void addTest(){

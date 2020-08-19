@@ -1,7 +1,5 @@
 package com.dili.trace.api;
 
-import java.util.Map;
-
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
@@ -9,7 +7,9 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.components.LoginComponent;
 import com.dili.trace.api.input.LoginInputDto;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.Map;
 
 /**
  * 账号相关api
@@ -79,4 +78,25 @@ public class LoginApi {
         }
     }
 
+	@ApiOperation(value = "wx授权登录", notes = "wx授权登录")
+	@RequestMapping(value = "/wxLogin.api", method = RequestMethod.POST)
+	public BaseOutput<SessionData> wxLogin(@RequestBody Map<String, String> wxInfo) {
+		try {
+			String openid = wxInfo.get("openid");
+			String id = wxInfo.get("identityType");
+			if(StringUtils.isBlank(openid)){
+				return BaseOutput.failure("openid 为空");
+			}
+			if(StringUtils.isBlank(id)){
+				return BaseOutput.failure("用户identityType 为空");
+			}
+			SessionData data = this.loginComponent.wxLogin(openid,Integer.valueOf(id));
+			return BaseOutput.success().setData(data);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure();
+		}
+	}
 }

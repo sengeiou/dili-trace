@@ -18,6 +18,7 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 
+import com.dili.trace.enums.TradeOrderTypeEnum;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         this.tradeService.createBatchStockAfterVerifiedAndCheckin(billId, tradeDetailItem.getId(), Optional.ofNullable(new OperatorUser(1L, "")));
 
         TradeDetail buyerTradeDetailItem = this.tradeDetailService.updateBuyerTradeDetail(billItem, tradeDetailItem,
-                tradeWeight, super.findUser(), 1L);
+                tradeWeight, super.findUser(), 1L, TradeOrderTypeEnum.SELL);
         assertNotNull(buyerTradeDetailItem);
         ProductStock batchStock = batchStockService.get(buyerTradeDetailItem.getProductStockId());
         assertNotNull(batchStock);
@@ -123,7 +124,7 @@ public class TradeServiceTest extends AutoWiredBaseTest {
         assertNotNull(sellerBatchStock);
 
         TradeDetail buyerTradeDetailItem = this.tradeDetailService.updateBuyerTradeDetail(billItem, tradeDetailItem,
-                tradeWeight, buyer, 1L);
+                tradeWeight, buyer, 1L, TradeOrderTypeEnum.BUY);
         assertNotNull(buyerTradeDetailItem);
         ProductStock buyerBatchStock = batchStockService.get(buyerTradeDetailItem.getProductStockId());
         assertNotNull(buyerBatchStock);

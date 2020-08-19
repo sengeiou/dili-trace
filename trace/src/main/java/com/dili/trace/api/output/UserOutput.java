@@ -9,6 +9,24 @@ public class UserOutput {
 	private String numbers;
 	private Integer qrStatus;
 	private Integer cnt;
+	private String marketName;
+	private String businessLicenseUrl;
+
+	public String getBusinessLicenseUrl() {
+		return businessLicenseUrl;
+	}
+
+	public void setBusinessLicenseUrl(String businessLicenseUrl) {
+		this.businessLicenseUrl = businessLicenseUrl;
+	}
+
+	public String getMarketName() {
+		return marketName;
+	}
+
+	public void setMarketName(String marketName) {
+		this.marketName = marketName;
+	}
 
 	public Integer getQrStatus() {
 		return qrStatus;

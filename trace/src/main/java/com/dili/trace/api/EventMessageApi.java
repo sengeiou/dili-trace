@@ -9,7 +9,8 @@ import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.EventMessage;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.service.EventMessageService;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.HashMap;
 
 /**
  * 消息api
@@ -73,4 +73,44 @@ public class EventMessageApi {
         }
     }
 
+    @ApiOperation(value ="查询消息列表", notes = "消息列表")
+    @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
+    @InterceptConfiguration
+    public BaseOutput<BasePage<EventMessage>> listPage(@RequestBody EventMessage eventMessage){
+        if (eventMessage == null){
+            return BaseOutput.failure("param is null");
+        }
+        try{
+            eventMessage.setSort("create_time");
+            eventMessage.setOrder("desc");
+            BasePage<EventMessage> out = eventMessageService.listPageByExample(eventMessage);
+            return BaseOutput.success().setData(out);
+        }catch (TraceBusinessException e){
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("quit",e);
+            return BaseOutput.failure();
+        }
+    }
+
+    @ApiOperation(value ="已读全部", notes = "已读全部")
+    @RequestMapping(value = "/doReadAll.api", method = RequestMethod.POST)
+    public BaseOutput doReadAll(@RequestBody EventMessage eventMessage){
+        if (eventMessage == null || null == eventMessage.getReceiverId()){
+            LOGGER.info("已读全部");
+            return BaseOutput.failure("已读全部用户id未获取");
+        }
+        try{
+            EventMessage upSource = new EventMessage();
+            upSource.setReadFlag(MessageStateEnum.READ.getCode());
+            eventMessageService.updateExactByExample(upSource,eventMessage);
+            return BaseOutput.success().setData(new HashMap<>().put("isRead",1));
+        }catch (TraceBusinessException e){
+            LOGGER.error(e.getMessage(),e);
+            return BaseOutput.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("register",e);
+            return BaseOutput.failure(e.getMessage());
+        }
+    }
 }

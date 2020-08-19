@@ -13,6 +13,7 @@ import javax.persistence.Transient;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 
+import com.dili.trace.enums.WeightUnitEnum;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -82,6 +83,17 @@ public class ProductStock extends BaseDomain {
     @ApiModelProperty(value = "品牌名称")
     @Column(name = "`brand_name`")
     private String brandName;
+
+    @Transient
+    private String weightUnitName;
+
+    public String getWeightUnitName() {
+        return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+    }
+
+    public void setWeightUnitName(String weightUnitName) {
+        this.weightUnitName = weightUnitName;
+    }
 
     @Transient
     public Long getProductStockId(){

@@ -3,6 +3,7 @@ package com.dili.trace.domain;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -145,6 +146,9 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`upstream_id`")
 	private Long upStreamId;
 
+	@Transient
+	private String upStreamName;
+
 	@ApiModelProperty(value = "数据是否完整")
 	@Column(name = "`complete`")
 	private Integer complete;
@@ -192,6 +196,28 @@ public class RegisterBill extends BaseDomain {
 	@ApiModelProperty(value = "是否被删除")
 	@Column(name = "`is_deleted`")
 	private Integer isDeleted;
+
+	@Transient
+	private List<ImageCert> imageCerts;
+
+	@Transient
+	private String tradeRequestCode;
+
+	public String getTradeRequestCode() {
+		return tradeRequestCode;
+	}
+
+	public void setTradeRequestCode(String tradeRequestCode) {
+		this.tradeRequestCode = tradeRequestCode;
+	}
+
+	public List<ImageCert> getImageCerts() {
+		return imageCerts;
+	}
+
+	public void setImageCerts(List<ImageCert> imageCerts) {
+		this.imageCerts = imageCerts;
+	}
 
 	public Integer getVerifyStatus() {
 		return verifyStatus;
@@ -660,4 +686,11 @@ public class RegisterBill extends BaseDomain {
         this.operationTime = operationTime;
     }
 
+	public String getUpStreamName() {
+		return upStreamName;
+	}
+
+	public void setUpStreamName(String upStreamName) {
+		this.upStreamName = upStreamName;
+	}
 }
