@@ -231,6 +231,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 处理交易
      */
+    @Transactional
     TradeRequest hanleRequest(TradeRequest requestItem, List<TradeDetailInputDto> tradeDetailInputList,
                               TradeOrderTypeEnum tradeOrderTypeEnum) {
 

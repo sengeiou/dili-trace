@@ -200,6 +200,17 @@ public class RegisterBill extends BaseDomain {
 	@Transient
 	private List<ImageCert> imageCerts;
 
+	@Transient
+	private String tradeRequestCode;
+
+	public String getTradeRequestCode() {
+		return tradeRequestCode;
+	}
+
+	public void setTradeRequestCode(String tradeRequestCode) {
+		this.tradeRequestCode = tradeRequestCode;
+	}
+
 	public List<ImageCert> getImageCerts() {
 		return imageCerts;
 	}

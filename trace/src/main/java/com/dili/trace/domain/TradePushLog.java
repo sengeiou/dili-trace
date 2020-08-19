@@ -36,7 +36,7 @@ public class TradePushLog extends BaseDomain {
 
     @ApiModelProperty(value = "上下架原因")
     @Column(name = "`operation_reason`")
-    private BigDecimal operationReason;
+    private String operationReason;
 
     @ApiModelProperty(value = "0：报备单 1：交易单")
     @Column(name = "`order_type`")
@@ -45,6 +45,10 @@ public class TradePushLog extends BaseDomain {
     @ApiModelProperty(value = "单据主键id")
     @Column(name = "`order_id`")
     private Long orderId;
+
+    @ApiModelProperty(value = "单据单号")
+    @Column(name = "`order_code`")
+    private String orderCode;
 
     @ApiModelProperty(value = "商户 id")
     @Column(name = "`user_id`")
@@ -104,11 +108,11 @@ public class TradePushLog extends BaseDomain {
         this.operationWeight = operationWeight;
     }
 
-    public BigDecimal getOperationReason() {
+    public String getOperationReason() {
         return operationReason;
     }
 
-    public void setOperationReason(BigDecimal operationReason) {
+    public void setOperationReason(String operationReason) {
         this.operationReason = operationReason;
     }
 
@@ -158,5 +162,13 @@ public class TradePushLog extends BaseDomain {
 
     public void setModified(Date modified) {
         this.modified = modified;
+    }
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 }
