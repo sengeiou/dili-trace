@@ -1,6 +1,8 @@
 package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.ss.domain.annotation.Like;
+import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.enums.WeightUnitEnum;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -114,7 +116,22 @@ public class TradeDetail extends BaseDomain {
 
 	@Transient
 	private String plate;
-	
+
+	@ApiModelProperty(value = "查询检测开始时间")
+	@Column(name = "`created`")
+	@Operator(Operator.GREAT_EQUAL_THAN)
+	private String createdStart;
+
+	@ApiModelProperty(value = "查询检测结束时间")
+	@Column(name = "`created`")
+	@Operator(Operator.LITTLE_EQUAL_THAN)
+	private String createdEnd;
+
+	@ApiModelProperty(value = "商品名称LIKE")
+	@Column(name = "`product_name`")
+	@Like(value = "RIGHT")
+	private String likeProductName;
+
 	@Transient
 	public String getWeightUnitName() {
 		return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
@@ -385,5 +402,29 @@ public class TradeDetail extends BaseDomain {
 
 	public void setSoftWeight(BigDecimal softWeight) {
 		this.softWeight = softWeight;
+	}
+
+	public String getCreatedStart() {
+		return createdStart;
+	}
+
+	public void setCreatedStart(String createdStart) {
+		this.createdStart = createdStart;
+	}
+
+	public String getCreatedEnd() {
+		return createdEnd;
+	}
+
+	public void setCreatedEnd(String createdEnd) {
+		this.createdEnd = createdEnd;
+	}
+
+	public String getLikeProductName() {
+		return likeProductName;
+	}
+
+	public void setLikeProductName(String likeProductName) {
+		this.likeProductName = likeProductName;
 	}
 }

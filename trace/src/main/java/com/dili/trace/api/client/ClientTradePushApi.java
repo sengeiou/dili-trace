@@ -92,14 +92,13 @@ public class ClientTradePushApi {
         try {
             tradeDetail.setSort("product_name");
             tradeDetail.setOrder("desc");
-            Map<String,Object> map=new HashMap<>();
-            //报备单
-            map.put(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NULL");
-            tradeDetail.setMetadata(map);
+
+            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NULL");
+
+
             BasePage<TradeDetail> billList= tradeDetailService.listPageByExample(tradeDetail);
             //销售单
-            map.put(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NOT NULL");
-            tradeDetail.setMetadata(map);
+            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NOT NULL");
             BasePage<TradeDetail> saleList= tradeDetailService.listPageByExample(tradeDetail);
 
             Map<String,BasePage<TradeDetail>> result = new HashedMap();
