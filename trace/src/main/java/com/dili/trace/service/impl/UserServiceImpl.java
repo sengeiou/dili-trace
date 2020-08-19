@@ -26,9 +26,11 @@ import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
+import com.dili.trace.util.QRCodeUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +78,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     SessionRedisService sessionRedisService;
     @Autowired
     IWxAppService wxAppService;
+
+    @Autowired
+    UserStoreService userStoreService;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -620,6 +625,27 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     public UserOutput getUserByUserId(Long userId) {
         return getActualDao().getUserByUserId(userId);
+    }
+
+    @Override
+    public UserQrOutput getUserQrCodeWithName(Long userId) throws Exception {
+        UserQrOutput qrOutput = new UserQrOutput();
+        qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+        qrOutput.setUserId(userId);
+        String content = this.baseWebPath + "/user?userId=" + userId;
+        User user = this.get(userId);
+        qrOutput.setUserName(user.getName());
+        UserStore userStoreParam = new UserStore();
+        userStoreParam.setUserId(userId);
+        UserStore userStore = StreamEx.of(userStoreService.list(userStoreParam)).nonNull().findFirst().orElse(null);
+        if(userStore !=  null)
+        {
+            qrOutput.setUserName(userStore.getStoreName());
+        }
+        byte[] bytes = QRCodeUtil.encode(content, this.getUserQrCode(userId).getBase64QRImg(),false,qrOutput.getUserName());
+        String base64Img = QRCodeUtil.base64Image(bytes);
+        qrOutput.setBase64QRImg(base64Img);
+        return qrOutput;
     }
 
     private boolean existsOpenId(String openid) {

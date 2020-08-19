@@ -118,7 +118,7 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
         if(wechatFlag.equals("1"))
         {
             logger.info("send wechat message");
-            wxService.sendSubscribeMessageNotity("ohS1P5TvrPl_9opdpTvawbudNEwE",messageType.toString(),null);
+           // wxService.sendSubscribeMessageNotity("ohS1P5TvrPl_9opdpTvawbudNEwE",messageType.toString(),null);
         }
     }
 }

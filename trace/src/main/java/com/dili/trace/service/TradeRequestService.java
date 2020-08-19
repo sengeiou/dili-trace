@@ -137,9 +137,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (sellerUserIdList.size() != 1) {
             throw new TraceBusinessException("参数错误");
         }
-        TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerUserIdList.get(0), buyerId,
-                TradeOrderTypeEnum.SELL);
-        List<TradeRequest> tradeRequests = EntryStream.of(this.createTradeRequestList(tradeOrderItem, null, buyerId, batchStockInputList))
+        List<TradeRequest> tradeRequests = EntryStream.of(this.createTradeRequestListForBuy(sellerUserIdList.get(0), null, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.SELL);
                 }).toList();
@@ -288,6 +286,30 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         // this.batchStockService.updateSelective(batchStock);
 
         return this.get(requestItem.getId());
+
+    }
+
+    /**
+     * 创建批量交易请求
+     *
+     * @param sellerId
+     * @param buyerId
+     * @param tradeRequestType
+     * @param batchStockInputList
+     * @return
+     */
+    Map<TradeRequest, List<TradeDetailInputDto>> createTradeRequestListForBuy(Long sellerUserId, Long sellerId,
+                                                                              Long buyerId, List<ProductStockInput> batchStockInputList) {
+        Map<TradeRequest, List<TradeDetailInputDto>> map = StreamEx.of(batchStockInputList).nonNull()
+                .mapToEntry(input -> {
+                    TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerUserId, buyerId,
+                            TradeOrderTypeEnum.SELL);
+                    TradeRequest request = this.createTradeRequest(tradeOrderItem, sellerId, buyerId, input);
+                    return request;
+                }, input -> {
+                    return StreamEx.of(CollectionUtils.emptyIfNull(input.getTradeDetailInputList())).nonNull().toList();
+                }).toMap();
+        return map;
 
     }
 

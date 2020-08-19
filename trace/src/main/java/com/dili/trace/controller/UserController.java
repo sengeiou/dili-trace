@@ -17,6 +17,7 @@ import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.domain.UserQrHistory;
@@ -259,6 +260,20 @@ public class UserController {
 	public BaseOutput triggerJob(ModelMap modelMap, Long id) {
 		job.execute();
 		return BaseOutput.success();
+	}
+
+	@RequestMapping(value = "/getUserQrCode.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput getUserQrCode(Long id) {
+		try {
+			UserQrOutput userQrOutput = this.userService.getUserQrCodeWithName(id);
+			return BaseOutput.success().setData(userQrOutput);
+
+		} catch (Exception e) {
+			LOGGER.error("查询失败", e);
+			return BaseOutput.failure();
+		}
+
 	}
 
 }
