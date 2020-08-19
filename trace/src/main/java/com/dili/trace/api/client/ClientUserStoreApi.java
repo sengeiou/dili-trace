@@ -48,6 +48,7 @@ public class ClientUserStoreApi {
             if(storeList.isEmpty()){
                 return BaseOutput.failure("用户店铺为空");
             }
+            store=storeList.get(0);
             return BaseOutput.success("success").setData(store);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
