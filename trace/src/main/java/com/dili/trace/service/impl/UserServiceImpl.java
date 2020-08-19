@@ -19,19 +19,20 @@ import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.WxApp;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.MessageTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
+import com.dili.trace.util.QRCodeUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Autowired
     UsualAddressService usualAddressService;
     @Autowired
+    EventMessageService eventMessageService;
+    @Autowired
     RegisterBillService registerBillService;
     @Autowired
     DefaultConfiguration defaultConfiguration;
@@ -77,8 +80,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     SessionRedisService sessionRedisService;
     @Autowired
     IWxAppService wxAppService;
+
     @Autowired
     MessageService messageService;
+
+    @Autowired
+    UserStoreService userStoreService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -301,7 +308,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     /**
      * 检测手机号是否存在
-     *
+     * 
      * @param phone
      * @return true 存在 false 不存在
      */
@@ -493,6 +500,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         messageService.addMessage(messageInputDto);
     }
 
+
     private void updateUserQrItem(Long userId) {
         if (userId == null) {
             return;
@@ -530,7 +538,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public List<User> findUserByQrStatusList(List<Integer> qrStatusList) {
+    public List<User> findUserByQrStatusList(List<Integer>qrStatusList) {
 
         Example e = new Example(User.class);
         e.and().andIn("qrStatus", qrStatusList);
@@ -559,14 +567,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public String wxRegister(String phone, String wxName, String openid) throws JsonProcessingException {
+    public String wxRegister(String phone, String wxName,String openid) throws JsonProcessingException {
         // 验证手机号是否已注册
         if (existsAccount(phone)) {
             throw new TraceBusinessException("手机号已注册");
         }
         User user = DTOUtils.newDTO(User.class);
         //验证openid是否已注册
-        if (existsOpenId(openid)) {
+        if(existsOpenId(openid)){
             throw new TraceBusinessException("微信已绑定用户");
         }
         user.setOpenId(openid);
@@ -591,12 +599,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         //验证微信是否已绑定用户
         User query = DTOUtils.newDTO(User.class);
         query.setOpenId(openid);
-        if (null != getActualDao().selectOne(query)) {
-            throw new TraceBusinessException("微信已绑定用户");
+        if(null!=getActualDao().selectOne(query)){
+            throw  new TraceBusinessException("微信已绑定用户");
         }
-        User user = get(user_id);
-        if (null != user && StringUtils.isNotBlank(user.getOpenId())) {
-            throw new TraceBusinessException("用户已绑定微信");
+        User user=get(user_id);
+        if(null!=user&&StringUtils.isNotBlank(user.getOpenId())){
+            throw  new TraceBusinessException("用户已绑定微信");
         }
         user.setOpenId(openid);
         update(user);
@@ -605,7 +613,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void confirmBindWeChatTip(String user_id) {
-        User user = get(Long.valueOf(user_id));
+        User user=get(Long.valueOf(user_id));
         user.setConfirmDate(new Date());
         update(user);
     }
@@ -621,25 +629,46 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     private boolean existsOpenId(String openid) {
-        if (StringUtils.isBlank(openid)) {
-            throw new TraceBusinessException("注册用户openid为空");
+        if(StringUtils.isBlank(openid)){
+            throw  new TraceBusinessException("注册用户openid为空");
         }
-        User openuser = DTOUtils.newDTO(User.class);
+        User openuser  = DTOUtils.newDTO(User.class);
         openuser.setOpenId(openid);
-        return null != getActualDao().selectOne(openuser);
+        return null!=getActualDao().selectOne(openuser);
     }
 
     private WxApp getWxAppInfo(String appId) {
-        if (StringUtils.isBlank(appId)) {
+        if(StringUtils.isBlank(appId)) {
             return null;
         }
         WxApp wxApp = new WxApp();
         wxApp.setAppId(appId);
-        List<WxApp> list = wxAppService.list(wxApp);
-        if (!CollectionUtils.isEmpty(list)) {
-            return list.get(0);
+        List<WxApp> list=wxAppService.list(wxApp);
+        if(!CollectionUtils.isEmpty(list)){
+           return list.get(0);
         }
         return null;
+    }
+
+    @Override
+    public UserQrOutput getUserQrCodeWithName(Long userId) throws Exception {
+        UserQrOutput qrOutput = new UserQrOutput();
+        qrOutput.setUpdated(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+        qrOutput.setUserId(userId);
+        String content = this.baseWebPath + "/user?userId=" + userId;
+        User user = this.get(userId);
+        qrOutput.setUserName(user.getName());
+        UserStore userStoreParam = new UserStore();
+        userStoreParam.setUserId(userId);
+        UserStore userStore = StreamEx.of(userStoreService.list(userStoreParam)).nonNull().findFirst().orElse(null);
+        if(userStore !=  null)
+        {
+            qrOutput.setUserName(userStore.getStoreName());
+        }
+        byte[] bytes = QRCodeUtil.encode(content, this.getUserQrCode(userId).getBase64QRImg(),false,qrOutput.getUserName());
+        String base64Img = QRCodeUtil.base64Image(bytes);
+        qrOutput.setBase64QRImg(base64Img);
+        return qrOutput;
     }
 
 }

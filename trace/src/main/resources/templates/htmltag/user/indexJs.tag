@@ -63,8 +63,48 @@
         
     }
 
-    
-	
+    function downloadQrCode(){
+        var selected = _userGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal('警告','请选中一条数据', 'warning');
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/user/getUserQrCode.action",
+            data: {id: selected.id},
+            processData:true,
+            dataType: "json",
+            async : true,
+            success : function(ret) {
+                if(ret.success){
+                    TLOG.component.operateLog('用户管理',"下载二维码","【ID】:"+selected.id);
+                    var a = document.createElement('a'); // 创建a标签
+                    a.setAttribute('download', ret.data.userName);// download属性
+                    a.setAttribute('href', ret.data.base64QRImg);// href链接
+                    a.click();//
+                }else{
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error : function() {
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
+
+
+
+    }
+
+
     //根据主键删除
     function del() {
         var selected = _userGrid.datagrid("getSelected");
@@ -280,7 +320,17 @@
                         }
                     });
                 }
-            }
+            },
+            </#resource>
+            <#resource method="post" url="user/index.html#donwload">
+            {
+                iconCls:'icon-down',
+                text:'下载二维码',
+                id:'download-btn',
+                handler:function(){
+                    downloadQrCode();
+                }
+            },
             </#resource>
         ];
         	_userGrid.datagrid({
