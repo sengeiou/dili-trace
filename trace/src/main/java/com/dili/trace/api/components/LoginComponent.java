@@ -7,6 +7,7 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBusinessException;
@@ -41,30 +42,21 @@ public class LoginComponent {
 	private static final Logger logger = LoggerFactory.getLogger(LoginComponent.class);
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private LoginSessionContext sessionContext;
+//	@Autowired
+//	private LoginSessionContext sessionContext;
 	@Autowired
 	UserLoginHistoryService userLoginHistoryService;
 
 	@Autowired
 	SessionRedisService sessionRedisService;
 
-	@Value("${manage.domain}")
-	private String manageDomainPath;
+//	@Value("${manage.domain}")
+//	private String manageDomainPath;
+	
+	@Autowired
+	ManageSystemComponent manageSystemComponent;
 
-	@PostConstruct
-	public void init() {
-		if (StringUtils.isBlank(this.manageDomainPath)) {
-			throw new RuntimeException("缺少权限系统的配置信息");
-		}
-		logger.warn(">>>>>>>>>>>>>>请注意配置host,以确保当前应用所在服务器能访问权限系统: {}", this.manageDomainPath);
-		StreamEx.of(LoginIdentityTypeEnum.values()).map(LoginIdentityTypeEnum::getAuthUrl)
-				.filter(StringUtils::isNotBlank).forEach(auth -> {
 
-					logger.warn(">>>>>>>>>>>>>>请注意配置登录访问权限: {}", auth);
-
-				});
-	}
 
 	public SessionData login(LoginInputDto loginInput) {
 
@@ -85,8 +77,10 @@ public class LoginComponent {
 						// 		loginInput.getLoginIdentityType());
 						return SessionData.fromUser(operatorUser, loginInput.getLoginIdentityType());
 					} else if (LoginIdentityTypeEnum.SYS_MANAGER == identityType) {
-						OperatorUser operatorUser = this.sysManagerLogin(loginInput.getUsername(),
+						OperatorUser operatorUser = this.manageSystemComponent.sysManagerLogin(loginInput.getUsername(),
 								loginInput.getPassword(), LoginIdentityTypeEnum.SYS_MANAGER);
+//						OperatorUser operatorUser = this.sysManagerLogin(loginInput.getUsername(),
+//								loginInput.getPassword(), LoginIdentityTypeEnum.SYS_MANAGER);
 						// prepareSessionId(operatorUser.getId(), operatorUser.getName(),
 						// 		loginInput.getLoginIdentityType());
 						return SessionData.fromUser(operatorUser, loginInput.getLoginIdentityType());
@@ -117,71 +111,85 @@ public class LoginComponent {
 		return userItem;
 	}
 
-	private OperatorUser sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
-		String loginUrl = (this.manageDomainPath.trim() + "/loginControl/doLoginAPP.do");
-		String checkAuthUrl = (this.manageDomainPath.trim() + "/api/user/checkUserResource.do");
-		try {
-			Map<String, Object> loginMap = new HashMap<String, Object>();
-			loginMap.put("username", username);
-			loginMap.put("passwd", password);
-			String loginRespBody = HttpUtil.post(loginUrl, loginMap);
-			// {"success":true, "msg":"登录成功！", "sessionId":
-			// "0fff1b6f-51ee-4bdb-9700-6d31854ac2c0", "userId":
-			// 260,"realName":"超级用户","depId":29}
-			logger.info("loginRespBody={}", loginRespBody);
-			Configuration conf = Configuration.builder().options(Option.SUPPRESS_EXCEPTIONS).build();
-			ParseContext parseContext = JsonPath.using(conf);
-			DocumentContext loginDocumentContext = parseContext.parse(loginRespBody);
-
-			Boolean success = loginDocumentContext.read("$.success");
-			if (success == null) {
-				throw new TraceBusinessException("登录失败");
-			}
-
-			String msg = loginDocumentContext.read("$.msg");
-			if (!success) {
-				throw new TraceBusinessException(msg);
-			}
-
-			Long depId = loginDocumentContext.read("$.depId", Long.class);
-
-			String sessionId = loginDocumentContext.read("$.sessionId");
-			Long userId = loginDocumentContext.read("$.userId", Long.class);
-			String realName = loginDocumentContext.read("$.realName");
-
-			Map<String, Object> checkAuthMap = new HashMap<String, Object>();
-			checkAuthMap.put("sessionId", sessionId);
-			checkAuthMap.put("url", identityTypeEnum.getAuthUrl());
-
-			String checkAuthRespBody = HttpUtil.post(checkAuthUrl, checkAuthMap, 20 * 1000);
-			DocumentContext checkAuthDocumentContext = parseContext.parse(checkAuthRespBody);
-			logger.info("checkAuthRespBody={}", checkAuthRespBody);
-			String code = checkAuthDocumentContext.read("$.code");
-			String result = checkAuthDocumentContext.read("$.result");
-			Object data = checkAuthDocumentContext.read("$.data");
-			Object errorData = checkAuthDocumentContext.read("$.errorData");
-
-			if ("200".equals(code)) {
-				return new OperatorUser(userId, realName);
-			} else {
-				throw new TraceBusinessException("权限不足");
-			}
-
-		} catch (Exception e) {
-			if (!(e instanceof TraceBusinessException)) {
-				logger.error(e.getMessage(), e);
-				throw new TraceBusinessException("登录失败:网络错误");
-			} else {
-				throw e;
-			}
-
-		}
-
-	}
-
-	public static void main(String[] args) {
-		LoginComponent loginapi = new LoginComponent();
-		loginapi.manageDomainPath = "http://mg.nong12.com/";
-		loginapi.sysManagerLogin("admin", "wenze123456", LoginIdentityTypeEnum.SYS_MANAGER);
-	}
+//	private OperatorUser sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
+//		String loginUrl = (this.manageDomainPath.trim() + "/loginControl/doLoginAPP.do");
+//		String checkAuthUrl = (this.manageDomainPath.trim() + "/api/user/checkUserResource.do");
+//		try {
+//			Map<String, Object> loginMap = new HashMap<String, Object>();
+//			loginMap.put("username", username);
+//			loginMap.put("passwd", password);
+//			String loginRespBody = HttpUtil.post(loginUrl, loginMap);
+//			// {"success":true, "msg":"登录成功！", "sessionId":
+//			// "0fff1b6f-51ee-4bdb-9700-6d31854ac2c0", "userId":
+//			// 260,"realName":"超级用户","depId":29}
+//			logger.info("loginRespBody={}", loginRespBody);
+//			Configuration conf = Configuration.builder().options(Option.SUPPRESS_EXCEPTIONS).build();
+//			ParseContext parseContext = JsonPath.using(conf);
+//			DocumentContext loginDocumentContext = parseContext.parse(loginRespBody);
+//
+//			Boolean success = loginDocumentContext.read("$.success");
+//			if (success == null) {
+//				throw new TraceBusinessException("登录失败");
+//			}
+//
+//			String msg = loginDocumentContext.read("$.msg");
+//			if (!success) {
+//				throw new TraceBusinessException(msg);
+//			}
+//
+//			Long depId = loginDocumentContext.read("$.depId", Long.class);
+//
+//			String sessionId = loginDocumentContext.read("$.sessionId");
+//			Long userId = loginDocumentContext.read("$.userId", Long.class);
+//			String realName = loginDocumentContext.read("$.realName");
+//
+//			Map<String, Object> checkAuthMap = new HashMap<String, Object>();
+//			checkAuthMap.put("sessionId", sessionId);
+//			checkAuthMap.put("url", identityTypeEnum.getAuthUrl());
+//
+//			String checkAuthRespBody = HttpUtil.post(checkAuthUrl, checkAuthMap, 20 * 1000);
+//			DocumentContext checkAuthDocumentContext = parseContext.parse(checkAuthRespBody);
+//			logger.info("checkAuthRespBody={}", checkAuthRespBody);
+//			String code = checkAuthDocumentContext.read("$.code");
+//			String result = checkAuthDocumentContext.read("$.result");
+//			Object data = checkAuthDocumentContext.read("$.data");
+//			Object errorData = checkAuthDocumentContext.read("$.errorData");
+//
+//			if ("200".equals(code)) {
+//				return new OperatorUser(userId, realName);
+//			} else {
+//				throw new TraceBusinessException("权限不足");
+//			}
+//
+//		} catch (Exception e) {
+//			if (!(e instanceof TraceBusinessException)) {
+//				logger.error(e.getMessage(), e);
+//				throw new TraceBusinessException("登录失败:网络错误");
+//			} else {
+//				throw e;
+//			}
+//
+//		}
+//
+//	}
+//
+//	public static void main(String[] args) {
+//		
+//		Map<String, Object> loginMap = new HashMap<String, Object>();
+//		loginMap.put("url", "http://127.0.0.1/menu/preSave.do");
+//		
+//		
+//		
+//		Map<String, String> header = new HashMap<String, String>();
+//		header.put("contentType", "application/json");
+//		try {
+//			System.out.println(HttpUtil.post("http://10.28.10.167/api/user/findUserByUserResource.do", loginMap));
+//			String loginRespBody = HttpUtil.createPost("http://10.28.10.167/api/user/findUserByUserResource.do").addHeaders(header).body(JSON.toJSONString(loginMap)).execute().toString();
+//			System.out.println(loginRespBody);
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		
+//	}
 }
