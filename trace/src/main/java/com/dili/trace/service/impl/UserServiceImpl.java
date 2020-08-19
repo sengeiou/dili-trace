@@ -20,9 +20,11 @@ import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.*;
+import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.MessageStateEnum;
+import com.dili.trace.enums.MessageTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
@@ -464,43 +466,40 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (ValidateStateEnum.UNCERT.getCode() != user.getValidateState()) {
             return BaseOutput.failure("当前状态不能审核");
         }
-        String message;
-        if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {// 审核通过
-            message = "用户资料审核申请已通过";
-        } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {// 审核不通过
-            message = "用户资料审核申请未通过";
+        ;
+        // 审核通过
+        if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {
+            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(),null, operatorUser);
+        } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {
+            // 审核不通过
+            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(),input.getRefuseReason(), operatorUser);
         } else {
-            message = "系统出现异常";
+            String message = "系统出现异常";
             return BaseOutput.failure(message);
         }
 
         user.setValidateState(input.getValidateState());
         int retRows = update(user);
         if (retRows > 0) {
-            sendVerifyCertMessage(user, message, input.getRefuseReason(), operatorUser);
-            return BaseOutput.success(message);
+            return BaseOutput.success("用户资料审核申请已通过");
         } else {
             return BaseOutput.failure();
         }
     }
 
-    private void sendVerifyCertMessage(User user, String message, String operateReason, OperatorUser operatorUser) {
-        // 增加消息
-        EventMessage eventMessage = new EventMessage();
-        eventMessage.setTitle(message);
-        eventMessage.setOverview(operateReason);
+    private void sendVerifyCertMessage(User user,Integer messageType, String operateReason, OperatorUser operatorUser) {
+        // 审核通过增加消息
+        MessageInputDto messageInputDto = new MessageInputDto();
+        messageInputDto.setCreatorId(operatorUser.getId());
+        messageInputDto.setMessageType(messageType);
+        messageInputDto.setReceiverIdArray(new Long[]{user.getId()});
+        messageInputDto.setEventMessageContentParam(new String[]{operateReason});
 
-        eventMessage.setCreator(operatorUser.getName());
-        eventMessage.setCreatorId(operatorUser.getId());
-        eventMessage.setReceiver(user.getName());
-        eventMessage.setReceiverId(user.getId());
-        eventMessage.setReceiverType(UserTypeEnum.USER.getCode());
-
-        eventMessage.setSourceBusinessId(user.getId());
-        eventMessage.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
-
-        eventMessageService.addMessage(eventMessage);
+        Map<String, Object> smsMap=new HashMap<>();
+        smsMap.put("userName",user.getName());
+        messageService.addMessage(messageInputDto);
     }
+
 
     private void updateUserQrItem(Long userId) {
         if (userId == null) {
