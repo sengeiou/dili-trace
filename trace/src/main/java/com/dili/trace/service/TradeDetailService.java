@@ -15,10 +15,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.CheckinStatusEnum;
-import com.dili.trace.enums.CheckoutStatusEnum;
-import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeTypeEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -56,6 +53,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 		// 查找报备相关的TradeDetail信息
 		TradeDetail query = new TradeDetail();
+
 		query.setBillId(billId);
 		query.setTradeType(TradeTypeEnum.NONE.getCode());
 
@@ -115,7 +113,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 * 通过交易行为创建批次，同时更新相应的库存信息
 	 */
 	public TradeDetail createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
-			Long sellerId, User buyer) {
+			Long sellerId, User buyer, TradeOrderTypeEnum tradeOrderTypeEnum) {
 		if (tradeDetailItem == null) {
 			throw new TraceBusinessException("数据不存在");
 		}
@@ -165,7 +163,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		// buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
 		// this.updateSelective(buyerTradeDetail);
 		TradeDetail buyerTradeDetail = this.updateBuyerTradeDetail(billItem, tradeDetailItem, tradeWeight, buyer,
-				tradeRequestId);
+				tradeRequestId, tradeOrderTypeEnum);
 
 		return buyerTradeDetail;
 	}
@@ -214,26 +212,38 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	 */
 
 	TradeDetail updateBuyerTradeDetail(RegisterBill billItem, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
-			User buyer, Long tradeRequestId) {
+			User buyer, Long tradeRequestId, TradeOrderTypeEnum tradeOrderTypeEnum) {
 		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
 		ProductStock buyerBatchStockItem = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
 			return new TraceBusinessException("操作库存失败");
 		});
-		ProductStock buyerBatchStock=new ProductStock();
-		buyerBatchStock.setId(buyerBatchStockItem.getId());
-		buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
-		buyerBatchStock.setTradeDetailNum(buyerBatchStockItem.getTradeDetailNum() + 1);
-		this.batchStockService.updateSelective(buyerBatchStock);
 
 		Long buyerTradeDetailId = this.createTradeDetailByTrade(tradeDetailItem, buyer);
 		TradeDetail buyerTradeDetail = new TradeDetail();
 		buyerTradeDetail.setId(buyerTradeDetailId);
-		buyerTradeDetail.setStockWeight(tradeWeight);
+		// 卖家下单
+		ProductStock buyerBatchStock=new ProductStock();
+		buyerBatchStock.setId(buyerBatchStockItem.getId());
+		buyerBatchStock.setTotalWeight(buyerBatchStockItem.getTotalWeight().add(tradeWeight));
+		if(tradeOrderTypeEnum.getCode().equals(TradeOrderTypeEnum.BUY.getCode()))
+		{
+			buyerBatchStock.setTradeDetailNum(buyerBatchStockItem.getTradeDetailNum() + 1);
+			buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
+			buyerTradeDetail.setStockWeight(tradeWeight);
+		}
+		else
+		{
+			buyerTradeDetail.setSoftWeight(tradeWeight);
+			buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
+			buyerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+		}
+
 		buyerTradeDetail.setTotalWeight(tradeWeight);
 		buyerTradeDetail.setTradeRequestId(tradeRequestId);
-
-		buyerTradeDetail.setProductStockId(buyerBatchStock.getId());
+		buyerTradeDetail.setProductStockId(buyerBatchStockItem.getId());
 		buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
+
+		this.batchStockService.updateSelective(buyerBatchStock);
 		this.updateSelective(buyerTradeDetail);
 		//更新买家二维码颜色
 		// this.userQrHistoryService.createUserQrHistoryForVerifyBill(billItem, buyer.getId());
@@ -241,6 +251,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		return this.get(buyerTradeDetailId);
 
 	}
+
 
 	/**
 	 * 通过卖家批次构造新的买家交易批次
@@ -264,7 +275,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 		buyerTradeDetail.setSellerId(tradeDetailItem.getBuyerId());
 		buyerTradeDetail.setSellerName(tradeDetailItem.getBuyerName());
-
+		buyerTradeDetail.setSoftWeight(BigDecimal.ZERO);
 		buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
 		buyerTradeDetail.setTotalWeight(BigDecimal.ZERO);
 		buyerTradeDetail.setCheckinRecordId(tradeDetailItem.getCheckinRecordId());
@@ -334,6 +345,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		e.and().andIn("parentId", parentIdList);
 		return this.getDao().selectByExample(e);
 
+	}
+
+	public void udpateTradePushAway(Long tradeDetailId, BigDecimal pushAwayWeight)
+	{
+		tradeDetailMapper.updatePushAway(tradeDetailId, pushAwayWeight);
 	}
 
 }

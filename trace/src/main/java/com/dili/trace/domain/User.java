@@ -6,15 +6,10 @@ import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
 import com.dili.trace.enums.VocationTypeEnum;
-
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
 import javax.persistence.*;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -300,4 +295,30 @@ public interface User extends IBaseDomain {
     Integer getSource();
 
     void setSource(Integer source);
+
+    /**
+     * 微信openid
+     * @return
+     */
+    @Column(name = "`open_id`")
+    String getOpenId();
+
+    /**
+     * 微信openid
+     * @param open_id
+     */
+    void setOpenId(String open_id);
+
+    /**
+     * 微信弹窗绑定确认时间
+     * @return
+     */
+    @Column(name = "`confirm_date`")
+    Date getConfirmDate();
+
+    /**
+     * 微信弹窗绑定确认时间
+     * @param confirm_date
+     */
+    void setConfirmDate(Date confirm_date);
 }

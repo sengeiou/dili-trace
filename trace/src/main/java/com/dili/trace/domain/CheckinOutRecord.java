@@ -1,20 +1,13 @@
 package com.dili.trace.domain;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
-
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Table(name = "`checkinout_record`")
 public class CheckinOutRecord extends BaseDomain {
@@ -93,15 +86,19 @@ public class CheckinOutRecord extends BaseDomain {
     @ApiModelProperty(value = "重量单位")
 	@Column(name = "`weight_unit`")
 	private Integer weightUnit;
-    
+
     @ApiModelProperty(value = "分销ID")
     @Column(name = "`trade_detail_id`")
     private Long tradeDetailId;
-    
-    
+
+
     @ApiModelProperty(value = "报备单ID")
     @Column(name = "`bill_id`")
     private Long billId;
+
+    @ApiModelProperty(value = "车牌号")
+    @Transient
+    private String plate;
 
     @Transient
     public String getInoutName(){
@@ -112,6 +109,10 @@ public class CheckinOutRecord extends BaseDomain {
     public String getWeightUnitName(){
        return  WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
     }
+
+    public String getPlate() { return plate; }
+
+    public void setPlate(String plate) { this.plate = plate; }
 
     public BigDecimal getInoutWeight() {
 		return inoutWeight;

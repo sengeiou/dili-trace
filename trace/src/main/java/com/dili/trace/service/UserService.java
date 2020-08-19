@@ -1,7 +1,5 @@
 package com.dili.trace.service;
 
-import java.util.List;
-
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -12,6 +10,9 @@ import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -104,4 +105,44 @@ public interface UserService extends BaseService<User, Long> {
 	public void renewPassword(User user, String smscode);
 
 	public Integer countUser(User user);
+
+	User wxLogin(String openid);
+
+	/**
+	 * 微信一键注册
+	 * @param phone
+	 * @param wxName
+	 * @param code
+	 * @param appId
+	 * @return
+	 * @throws JsonProcessingException
+	 */
+	String wxRegister(String phone, String wxName,String openId) throws JsonProcessingException;
+
+	/**
+	 * 微信绑定用户
+	 * @param openid
+	 * @param user_id
+	 */
+	void userBindWeChat(String openid, Long user_id);
+
+	/**
+	 * 确认今日不再弹出微信绑定提示
+	 * @param user_id
+	 */
+	void confirmBindWeChatTip(String user_id);
+
+	/**
+	 * 根据店铺名查找user
+	 * @param queryCondition
+	 * @return
+	 */
+	List<UserOutput> listUserByStoreName(String queryCondition);
+
+	/**
+	 * 根据店铺名查找user
+	 * @param userId
+	 * @return
+	 */
+	UserOutput getUserByUserId(Long userId);
 }

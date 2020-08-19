@@ -1,14 +1,7 @@
 package com.dili.trace.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.beust.jcommander.internal.Lists;
 import com.dili.common.config.DefaultConfiguration;
@@ -26,41 +19,26 @@ import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.EventMessage;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.ValidateStateEnum;
-import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.UpStreamSourceEnum;
-import com.dili.trace.glossary.UserQrStatusEnum;
-import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.service.EventMessageService;
-import com.dili.trace.service.QrCodeService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.SMSService;
-import com.dili.trace.service.TallyAreaNoService;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserQrHistoryService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.service.UsualAddressService;
+import com.dili.trace.glossary.*;
+import com.dili.trace.service.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -96,6 +74,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     SMSService sMSService;
     @Autowired
     SessionRedisService sessionRedisService;
+    @Autowired
+    IWxAppService wxAppService;
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -561,6 +542,106 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     public Integer countUser(User user) {
         return this.getActualDao().selectCount(user);
+    }
+
+    @Override
+    public User wxLogin(String openid) {
+        User query = DTOUtils.newDTO(User.class);
+        query.setOpenId(openid);
+        query.setYn(YnEnum.YES.getCode());
+        User po = listByExample(query).stream().findFirst().orElse(null);
+        if (po == null) {
+            throw new TraceBusinessException("用户未注册");
+        }
+        if (EnabledStateEnum.DISABLED.getCode().equals(po.getState())) {
+            throw new TraceBusinessException("手机号已禁用");
+        }
+        return po;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public String wxRegister(String phone, String wxName,String openid) throws JsonProcessingException {
+        // 验证手机号是否已注册
+        if (existsAccount(phone)) {
+            throw new TraceBusinessException("手机号已注册");
+        }
+        User user = DTOUtils.newDTO(User.class);
+        //验证openid是否已注册
+        if(existsOpenId(openid)){
+            throw new TraceBusinessException("微信已绑定用户");
+        }
+        user.setOpenId(openid);
+        user.setPhone(phone);
+        user.setName(wxName);
+        user.setPassword(MD5Util.md5(this.defaultConfiguration.getPassword()));
+        user.setCardNo("");
+        user.setAddr("");
+        user.setValidateState(ValidateStateEnum.CERTREQ.getCode());
+        String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
+        user.setTallyAreaNos(tallyAreaNos);
+        user.setMarketName("杭州水产");
+        user.setSource(UpStreamSourceEnum.REGISTER.getCode());
+        insertSelective(user);
+        this.tallyAreaNoService.saveOrUpdateTallyAreaNo(user.getId(), tallyAreaNos);
+        this.updateUserQrItem(user.getId());
+        return this.defaultConfiguration.getPassword();
+    }
+
+    @Override
+    public void userBindWeChat(String openid, Long user_id) {
+        //验证微信是否已绑定用户
+        User query = DTOUtils.newDTO(User.class);
+        query.setOpenId(openid);
+        if(null!=getActualDao().selectOne(query)){
+            throw  new TraceBusinessException("微信已绑定用户");
+        }
+        User user=get(user_id);
+        if(null!=user&&StringUtils.isNotBlank(user.getOpenId())){
+            throw  new TraceBusinessException("用户已绑定微信");
+        }
+        user.setOpenId(openid);
+        update(user);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void confirmBindWeChatTip(String user_id) {
+        User user=get(Long.valueOf(user_id));
+        user.setConfirmDate(new Date());
+        update(user);
+    }
+
+    @Override
+    public List<UserOutput> listUserByStoreName(String queryCondition) {
+        return getActualDao().listUserByStoreName(queryCondition);
+    }
+
+    @Override
+    public UserOutput getUserByUserId(Long userId) {
+        return getActualDao().getUserByUserId(userId);
+    }
+
+    private boolean existsOpenId(String openid) {
+        if(StringUtils.isBlank(openid)){
+            throw  new TraceBusinessException("注册用户openid为空");
+        }
+        User openuser  = DTOUtils.newDTO(User.class);
+        openuser.setOpenId(openid);
+        return null!=getActualDao().selectOne(openuser);
+    }
+
+    private WxApp getWxAppInfo(String appId) {
+        if(StringUtils.isBlank(appId)) {
+            return null;
+        }
+        WxApp wxApp = new WxApp();
+        wxApp.setAppId(appId);
+        List<WxApp> list=wxAppService.list(wxApp);
+        if(!CollectionUtils.isEmpty(list)){
+           return list.get(0);
+        }
+        return null;
     }
 
 }

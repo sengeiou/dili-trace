@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.trace.AutoWiredBaseTest;
 import com.dili.trace.api.input.CheckInApiInput;
 import com.dili.trace.domain.CheckinOutRecord;
@@ -32,6 +33,13 @@ public class RegisterBillServiceTest extends AutoWiredBaseTest {
     CheckinOutRecordService checkinOutRecordService;
     @Autowired
     TradeDetailService tradeDetailService;
+
+    @Test
+    public void getBillDetail()
+    {
+        RegisterBill registerBill = registerBillService.get(5L);
+        System.out.println(JSON.toJSONString(registerBill));
+    }
 
     @Test
     public void doVerifyBeforeCheckIn() {

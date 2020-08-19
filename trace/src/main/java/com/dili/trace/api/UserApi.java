@@ -1,10 +1,7 @@
 package com.dili.trace.api;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.annotation.InterceptConfiguration;
@@ -20,7 +17,9 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.redis.service.RedisUtil;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
@@ -34,22 +33,16 @@ import com.dili.trace.service.SMSService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
+import java.util.*;
 
 /**
  * 账号相关api
@@ -120,13 +113,12 @@ public class UserApi {
     }
 
     /**
-     *
      * 发送短信验证码
-     * 
+     *
      * @param {code:"客户CODE",phone:''}
      * @return
      */
-    @RequestMapping(value = "/sendVerificationCode.api", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/sendVerificationCode.api", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput<Boolean> sendVerificationCode(@RequestBody JSONObject object) {
         String phone = object.getString("phone");
@@ -148,7 +140,7 @@ public class UserApi {
         return this.smsService.sendVerificationCodeMsg(params, phone, verificationCode);
     }
 
-    
+
     @ApiOperation(value = "用户获取个人信息【接口已通】", notes = "用户获取个人信息")
     @RequestMapping(value = "/get.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -217,23 +209,22 @@ public class UserApi {
     }
 
 
-
-    
     @ApiOperation(value = "发送重置密码验证码【接口已通】", notes = "发送重置密码验证码")
     @RequestMapping(value = "/sendSmsCodeForRenewPassword.api", method = RequestMethod.POST)
     @InterceptConfiguration(loginRequired = false)
     public BaseOutput<String> sendSmsCodeForRenewPassword(@RequestBody User user) {
         try {
-            if(StringUtils.isBlank(user.getPhone())){
+            if (StringUtils.isBlank(user.getPhone())) {
                 return BaseOutput.failure("手机号码不能为空");
             }
-            User query=DTOUtils.newDTO(User.class);
+            User query = DTOUtils.newDTO(User.class);
             query.setPhone(user.getPhone());
             query.setYn(YnEnum.YES.getCode());
-            User userItem=StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(()->{return new TraceBusinessException("手机号码不存在");});
+            User userItem = StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(() -> {
+                return new TraceBusinessException("手机号码不存在");
+            });
 
-          
-    
+
             String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
             // 发送短信验证码
             JSONObject params = new JSONObject();
@@ -259,13 +250,13 @@ public class UserApi {
     @InterceptConfiguration(loginRequired = false)
     public BaseOutput<String> renewPassword(@RequestBody User user) {
         try {
-            if(StringUtils.isBlank(user.getPhone())){
+            if (StringUtils.isBlank(user.getPhone())) {
                 return BaseOutput.failure("手机号码不能为空");
             }
-            if(StringUtils.isBlank(user.getCheckCode())){
+            if (StringUtils.isBlank(user.getCheckCode())) {
                 return BaseOutput.failure("验证码不能为空");
             }
-            if(StringUtils.isBlank(user.getPassword())){
+            if (StringUtils.isBlank(user.getPassword())) {
                 return BaseOutput.failure("密码不能为空");
             }
             this.userService.renewPassword(user, user.getCheckCode());
@@ -277,8 +268,6 @@ public class UserApi {
             return BaseOutput.failure();
         }
     }
-
-
 
 
     @ApiOperation(value = "退出【接口已通】", notes = "退出")
@@ -405,5 +394,126 @@ public class UserApi {
             return BaseOutput.failure("查询出错");
         }
 
+    }
+
+    @ApiOperation(value = "wx授权一键注册", notes = "wx授权一键注册")
+    @RequestMapping(value = "/wxRegister.api", method = RequestMethod.POST)
+    public BaseOutput<Long> wxRegister(@RequestBody Map<String, String> userInfo) {
+        logger.info("wxRegister param:" + userInfo.toString());
+        try {
+            String phone = userInfo.get("phone");
+            String wxName = userInfo.get("wxName");
+            String openid = userInfo.get("openid");
+            if (StringUtils.isBlank(openid)) {
+                return BaseOutput.failure("未获取到微信openid");
+            }
+            if (StringUtils.isBlank(phone)) {
+                return BaseOutput.failure("未获取到手机号");
+            }
+            if (StringUtils.isBlank(wxName)) {
+                return BaseOutput.failure("未获取到微信昵称");
+            }
+            String defaultPassword = userService.wxRegister(phone, wxName, openid);
+            userInfo.put("password", defaultPassword);
+            return BaseOutput.success().setData(userInfo);
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error("register", e);
+            return BaseOutput.failure(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "wx用户绑定", notes = "微信用户绑定")
+    @RequestMapping(value = "/userBindWeChat.api", method = RequestMethod.POST)
+    public BaseOutput userBindWeChat(@RequestBody Map<String, String> wxInfo) {
+        logger.info("wxRegister param:" + wxInfo.toString());
+        try {
+            String openid = wxInfo.get("openid");
+            String user_id = wxInfo.get("user_id");
+            if (StrUtil.isBlank(openid)) {
+                throw new TraceBusinessException("微信用户绑定未获取到openid");
+            }
+            if (StrUtil.isBlank(user_id)) {
+                throw new TraceBusinessException("微信用户绑定未获取到用户id");
+            }
+            userService.userBindWeChat(openid, Long.valueOf(user_id));
+            return BaseOutput.success();
+        } catch (Exception e) {
+            logger.error("微信用户绑定失败", e);
+            return BaseOutput.failure(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "wx用户绑定查询", notes = "微信用户绑定")
+    @GetMapping(value = "/getUserBindWeChat.api")
+    public BaseOutput getUserBindWeChat(@RequestParam String user_id) {
+        logger.info("微信用户绑定查询，user_id:" + user_id);
+        try {
+            User user = userService.get(Long.valueOf(user_id));
+            Boolean needTip = checkNeedTip(user);
+            return BaseOutput.success().setData(needTip);
+        } catch (Exception e) {
+            logger.error("微信用户绑定查询失败", e);
+            BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.failure("error");
+    }
+
+    @ApiOperation(value = "wx用户绑定确认提示", notes = "wx用户绑定确认提示")
+    @GetMapping(value = "/confirmBindWeChatTip.api")
+    public BaseOutput confirmBindWeChatTip(@RequestParam String user_id) {
+        logger.info("wx用户绑定确认提示，user_id:" + user_id);
+        try {
+            userService.confirmBindWeChatTip(user_id);
+            return BaseOutput.success();
+        } catch (Exception e) {
+            logger.error("wx用户绑定确认提示", e);
+            BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.failure("error");
+    }
+
+    /**
+     * 检查是否需要弹出提示
+     *
+     * @param user
+     * @return
+     */
+    private Boolean checkNeedTip(User user) {
+        if (StringUtils.isBlank(user.getOpenId())) {
+            Date confirm_date = user.getConfirmDate();
+            //未确认
+            if (null == confirm_date) {
+                return true;
+            }
+            //当前日期在确认一天后则弹出提示
+            if (DateUtils.getCurrentDate().after(DateUtils.addDays(confirm_date, 1))) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @ApiOperation(value = "用户获取个人信息【接口已通】", notes = "用户获取个人信息")
+    @RequestMapping(value = "/getUserInfo.api", method = RequestMethod.GET)
+    @InterceptConfiguration
+    public BaseOutput<UserOutput> getUserInfoByUserId(@RequestParam Long userId) {
+        try {
+            UserOutput user = userService.getUserByUserId(userId);
+            if (user == null) {
+                return BaseOutput.failure("用户不存在");
+            }
+            // //初始状态获取个人信息不展示名称
+            // if (user.getValidateState() == ValidateStateEnum.CERTREQ.getCode()){
+            // user.setName("");
+            // }
+            return BaseOutput.success().setData(user);
+        } catch (Exception e) {
+            logger.error("get", e);
+            return BaseOutput.failure();
+        }
     }
 }
