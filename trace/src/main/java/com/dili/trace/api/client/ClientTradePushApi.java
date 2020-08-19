@@ -13,13 +13,14 @@ import com.dili.trace.enums.PushTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradePush")
@@ -116,8 +117,16 @@ public class ClientTradePushApi {
         try {
             tradeDetail.setSort("product_name");
             tradeDetail.setOrder("desc");
-            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0");
-            return BaseOutput.success().setData(tradeDetailService.listPageByExample(tradeDetail));
+            //报备
+            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NULL");
+            BasePage<TradeDetail> billList= tradeDetailService.listPageByExample(tradeDetail);
+            //销售单
+            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NOT NULL");
+            BasePage<TradeDetail> saleList= tradeDetailService.listPageByExample(tradeDetail);
+            Map<String,BasePage<TradeDetail>> result = new HashedMap();
+            result.put("billList",billList);
+            result.put("saleList",saleList);
+            return BaseOutput.success().setData(result);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -137,8 +146,17 @@ public class ClientTradePushApi {
 
             tradeDetail.setSort("product_name");
             tradeDetail.setOrder("desc");
-            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " pushaway_weight > 0");
-            return BaseOutput.success().setData(tradeDetailService.listPageByExample(tradeDetail));
+            //报备单
+            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " pushaway_weight > 0 AND  parent_id IS NULL");
+            BasePage<TradeDetail> billList= tradeDetailService.listPageByExample(tradeDetail);
+            //销售单
+            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " pushaway_weight > 0 AND  parent_id IS NOT NULL");
+            BasePage<TradeDetail> saleList= tradeDetailService.listPageByExample(tradeDetail);
+            //结果集
+            Map<String,BasePage<TradeDetail>> result = new HashedMap();
+            result.put("billList",billList);
+            result.put("saleList",saleList);
+            return BaseOutput.success().setData(result);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
