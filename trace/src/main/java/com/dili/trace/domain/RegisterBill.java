@@ -203,6 +203,17 @@ public class RegisterBill extends BaseDomain {
 	@Transient
 	private String tradeRequestCode;
 
+	@Transient
+	private List<TradePushLog> tradePushLogs;
+
+	public List<TradePushLog> getTradePushLogs() {
+		return tradePushLogs;
+	}
+
+	public void setTradePushLogs(List<TradePushLog> tradePushLogs) {
+		this.tradePushLogs = tradePushLogs;
+	}
+
 	public String getTradeRequestCode() {
 		return tradeRequestCode;
 	}
