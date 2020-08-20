@@ -4,6 +4,7 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.UserStore;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserStoreService;
@@ -46,13 +47,19 @@ public class ClientUserStoreApi {
             if (null == userId) {
                 return BaseOutput.failure("userid为空");
             }
+            userStore.setSort("modified");
+            userStore.setOrder("asc");
             List<UserStore> storeList =userStoreService.listByExample(userStore);
             UserStore store=new UserStore();
             if(storeList.isEmpty()){
                 store.setStoreName(userService.get(userId).getName());
                 return BaseOutput.success().setData(store);
             }
-            store=storeList.get(0);
+            int last =storeList.size()-1;
+            if(last<0){
+                last=0;
+            }
+            store=storeList.get(last);
             return BaseOutput.success("success").setData(store);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
@@ -77,11 +84,13 @@ public class ClientUserStoreApi {
                 return BaseOutput.failure("用户店铺名称不能为空");
             }
             userStore.setUserId(userId);
-            List<UserStore> storeList =userStoreService.listByExample(userStore);
+            UserStore queObj = DTOUtils.newDTO(UserStore.class);
+            queObj.setUserId(userId);
+            List<UserStore> storeList =userStoreService.listByExample(queObj);
             if(storeList.isEmpty()){
                 userStoreService.insert(userStore);
             }else{
-                this.userStoreService.updateExactByExample(userStore, userStore);
+                this.userStoreService.updateExactByExample(userStore, queObj);
             }
             return BaseOutput.success("success");
         } catch (TraceBusinessException e) {
