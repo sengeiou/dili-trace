@@ -48,18 +48,14 @@ public class ClientUserStoreApi {
                 return BaseOutput.failure("userid为空");
             }
             userStore.setSort("modified");
-            userStore.setOrder("asc");
+            userStore.setOrder("desc");
             List<UserStore> storeList =userStoreService.listByExample(userStore);
             UserStore store=new UserStore();
             if(storeList.isEmpty()){
                 store.setStoreName(userService.get(userId).getName());
                 return BaseOutput.success().setData(store);
             }
-            int last =storeList.size()-1;
-            if(last<0){
-                last=0;
-            }
-            store=storeList.get(last);
+            store=storeList.get(0);
             return BaseOutput.success("success").setData(store);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
