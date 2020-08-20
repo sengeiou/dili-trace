@@ -689,8 +689,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public List<UserOutput> listUserByStoreName(String queryCondition) {
-        return getActualDao().listUserByStoreName(queryCondition);
+    public List<UserOutput> listUserByStoreName(Long userId, String queryCondition) {
+        return getActualDao().listUserByStoreName(userId, queryCondition);
     }
 
     @Override
