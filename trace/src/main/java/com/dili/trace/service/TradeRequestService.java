@@ -680,6 +680,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
                 outPutDto.setTallyAreaNos(user.getTallyAreaNos());
                 outPutDto.setMarketName(user.getMarketName());
+                outPutDto.setUserType(user.getUserType());
                 outPutDtoList.add(outPutDto);
             }
         });
