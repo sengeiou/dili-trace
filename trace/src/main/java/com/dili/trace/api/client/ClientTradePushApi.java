@@ -74,6 +74,12 @@ public class ClientTradePushApi {
 
             List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(tradeDetail.getBillId());
             registerBill.setImageCerts(imageCerts);
+            TradePushLog pushLog = new TradePushLog();
+            pushLog.setTradeDetailId(tradeDetailId);
+            pushLog.setSort("created");
+            pushLog.setOrder("asc");
+            List<TradePushLog> tradePushLogs = tradePushService.listByExample(pushLog);
+            registerBill.setTradePushLogs(tradePushLogs);
             return BaseOutput.success().setData(registerBill);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
