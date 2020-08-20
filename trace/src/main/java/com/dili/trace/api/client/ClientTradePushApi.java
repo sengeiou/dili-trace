@@ -13,14 +13,12 @@ import com.dili.trace.enums.PushTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradePush")
@@ -61,17 +59,16 @@ public class ClientTradePushApi {
         try {
             TradeDetail tradeDetail = tradeDetailService.get(tradeDetailId);
             RegisterBill registerBill = registerBillService.get(tradeDetail.getBillId());
-            if(tradeDetail.getTradeRequestId() != null){
+            if (tradeDetail.getTradeRequestId() != null) {
                 TradeRequest tradeRequest = tradeRequestService.get(tradeDetail.getTradeRequestId());
                 registerBill.setTradeRequestCode(tradeRequest.getCode());
             }
             Long upStreamId = registerBill.getUpStreamId();
             UpStream upStream = upStreamService.get(upStreamId);
             registerBill.setUpStreamName(upStream.getName());
-            if(pushType.equals(PushTypeEnum.DOWN.getCode())) {
+            if (pushType.equals(PushTypeEnum.DOWN.getCode())) {
                 registerBill.setWeight(tradeDetail.getStockWeight());
-            }
-            else{
+            } else {
                 registerBill.setWeight(tradeDetail.getPushawayWeight());
             }
 
@@ -81,7 +78,7 @@ public class ClientTradePushApi {
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
-            logger.error("查询交易详情出错",e);
+            logger.error("查询交易详情出错", e);
             return BaseOutput.failure("查询数据出错");
         }
     }
@@ -117,16 +114,8 @@ public class ClientTradePushApi {
         try {
             tradeDetail.setSort("product_name");
             tradeDetail.setOrder("desc");
-            //报备
             tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NULL");
-            BasePage<TradeDetail> billList= tradeDetailService.listPageByExample(tradeDetail);
-            //销售单
-            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NOT NULL");
-            BasePage<TradeDetail> saleList= tradeDetailService.listPageByExample(tradeDetail);
-            Map<String,BasePage<TradeDetail>> result = new HashedMap();
-            result.put("billList",billList);
-            result.put("saleList",saleList);
-            return BaseOutput.success().setData(result);
+            return BaseOutput.success().setData(tradeDetailService.listPageByExample(tradeDetail));
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -146,17 +135,8 @@ public class ClientTradePushApi {
 
             tradeDetail.setSort("product_name");
             tradeDetail.setOrder("desc");
-            //报备单
-            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " pushaway_weight > 0 AND  parent_id IS NULL");
-            BasePage<TradeDetail> billList= tradeDetailService.listPageByExample(tradeDetail);
-            //销售单
-            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " pushaway_weight > 0 AND  parent_id IS NOT NULL");
-            BasePage<TradeDetail> saleList= tradeDetailService.listPageByExample(tradeDetail);
-            //结果集
-            Map<String,BasePage<TradeDetail>> result = new HashedMap();
-            result.put("billList",billList);
-            result.put("saleList",saleList);
-            return BaseOutput.success().setData(result);
+            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " pushaway_weight > 0");
+            return BaseOutput.success().setData(tradeDetailService.listPageByExample(tradeDetail));
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author asa.lee
  */
@@ -41,7 +43,13 @@ public class ClientUserStoreApi {
             if (null == userId) {
                 return BaseOutput.failure("userid为空");
             }
-            return BaseOutput.success("success").setData(userStoreService.get(userId));
+            List<UserStore> storeList =userStoreService.listByExample(userStore);
+            UserStore store=new UserStore();
+            if(storeList.isEmpty()){
+                return BaseOutput.failure("用户店铺为空");
+            }
+            store=storeList.get(0);
+            return BaseOutput.success("success").setData(store);
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
