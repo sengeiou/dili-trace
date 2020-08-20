@@ -71,6 +71,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     UserQrHistoryService userQrHistoryService;
     @Autowired
     MessageService messageService;
+    @Autowired
+    ManageSystemComponent manageSystemComponent;
 
 
     public RegisterBillMapper getActualDao() {
@@ -481,8 +483,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         //管理员
         if(!receiverType.equals(receiverNormal)){
             // 审核通过增加消息**已通过
-            ManageSystemComponent c=new ManageSystemComponent();
-            List<ManagerInfoDto> manageList=c.findUserByUserResource("user/index.html#list");
+            List<ManagerInfoDto> manageList=manageSystemComponent.findUserByUserResource("user/index.html#list");
             Set<Long> managerIdSet = new HashSet<>();
             StreamEx.of(manageList).nonNull().forEach(s->{
                 managerIdSet.add(s.getId());

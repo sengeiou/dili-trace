@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 消息api
@@ -43,6 +44,15 @@ public class EventMessageApi {
         }
         try{
             eventMessageService.readMessage(eventMessage, MessageStateEnum.READ);
+            //更新同一事件为已读
+            eventMessage =eventMessageService.get(eventMessage.getId());
+            if(null!=eventMessage.getSourceBusinessType()&&null!=eventMessage.getSourceBusinessId()){
+                EventMessage upObj = new EventMessage();
+                upObj.setSourceBusinessType(eventMessage.getSourceBusinessType());
+                upObj.setSourceBusinessId(eventMessage.getSourceBusinessId());
+                upObj.setReadFlag(MessageStateEnum.READ.getCode());
+                eventMessageService.updateExactByExample(upObj,upObj);
+            }
         }catch (TraceBusinessException e){
             LOGGER.error(e.getMessage(),e);
         }catch (Exception e){
@@ -63,6 +73,10 @@ public class EventMessageApi {
             eventMessage.setReceiverId(id);
             eventMessage.setSort("create_time");
             eventMessage.setOrder("desc");
+            //默认查询普通用户消息
+            if(null==eventMessage.getReceiverType()){
+                eventMessage.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+            }
             BasePage<EventMessage> out = eventMessageService.listPageByExample(eventMessage);
             return BaseOutput.success().setData(out);
         }catch (TraceBusinessException e){
@@ -83,6 +97,10 @@ public class EventMessageApi {
         try{
             eventMessage.setSort("create_time");
             eventMessage.setOrder("desc");
+            //默认查询普通用户消息
+            if(null==eventMessage.getReceiverType()){
+                eventMessage.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+            }
             BasePage<EventMessage> out = eventMessageService.listPageByExample(eventMessage);
             return BaseOutput.success().setData(out);
         }catch (TraceBusinessException e){
@@ -104,6 +122,21 @@ public class EventMessageApi {
             EventMessage upSource = new EventMessage();
             upSource.setReadFlag(MessageStateEnum.READ.getCode());
             eventMessageService.updateExactByExample(upSource,eventMessage);
+
+            //更新同一事件为已读
+            List<EventMessage> messageList =eventMessageService.listByExample(eventMessage);
+            if(!messageList.isEmpty()){
+                messageList.stream().forEach(s->{
+                    if(null!=s.getSourceBusinessType()&&null!=s.getSourceBusinessId()){
+                        EventMessage upObj = new EventMessage();
+                        upObj.setSourceBusinessType(s.getSourceBusinessType());
+                        upObj.setSourceBusinessId(s.getSourceBusinessId());
+                        upObj.setReadFlag(MessageStateEnum.READ.getCode());
+                        eventMessageService.updateExactByExample(upObj,upObj);
+                    }
+                });
+            }
+
             return BaseOutput.success().setData(new HashMap<>().put("isRead",1));
         }catch (TraceBusinessException e){
             LOGGER.error(e.getMessage(),e);

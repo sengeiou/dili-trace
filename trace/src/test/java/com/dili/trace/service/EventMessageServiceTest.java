@@ -13,9 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 
-import java.awt.*;
-import java.text.MessageFormat;
-
 @Rollback(false)
 public class EventMessageServiceTest extends AutoWiredBaseTest {
     @Autowired
@@ -52,7 +49,7 @@ public class EventMessageServiceTest extends AutoWiredBaseTest {
             eventMessage.setCreator("系统管理员-甲");
             eventMessage.setSourceBusinessId(Long.valueOf(i));
             eventMessage.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_BILL.getCode());
-            eventMessage.setReceiverType(EventMessage.RECEIVER_TYPE);
+            //eventMessage.setReceiverType(EventMessage.RECEIVER_TYPE);
             eventMessage.setReceiverId(18l);
             eventMessage.setReceiver("庞先生");
 
