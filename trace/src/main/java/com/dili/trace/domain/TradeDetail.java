@@ -129,7 +129,7 @@ public class TradeDetail extends BaseDomain {
 
 	@ApiModelProperty(value = "商品名称LIKE")
 	@Column(name = "`product_name`")
-	@Like(value = "RIGHT")
+	@Like
 	private String likeProductName;
 
 	@Transient
