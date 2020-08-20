@@ -15,7 +15,7 @@ public interface UserMapper extends MyMapper<User> {
 
     public List<UserOutput> groupByQrStatus(@Param("qrStatusList")List<Integer>qrStatusList);
 
-    public List<UserOutput> listUserByStoreName(String queryCondition);
+    public List<UserOutput> listUserByStoreName(@Param("userId") Long userId, @Param("queryCondition") String queryCondition);
 
     UserOutput getUserByUserId(Long id);
 

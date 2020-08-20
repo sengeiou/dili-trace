@@ -137,7 +137,7 @@ public interface UserService extends BaseService<User, Long> {
 	 * @param queryCondition
 	 * @return
 	 */
-	List<UserOutput> listUserByStoreName(String queryCondition);
+	List<UserOutput> listUserByStoreName(Long userId, String queryCondition);
 
 	/**
 	 * 根据店铺名查找user
