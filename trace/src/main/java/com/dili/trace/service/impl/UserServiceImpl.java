@@ -92,6 +92,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Autowired
     UserStoreService userStoreService;
 
+    @Autowired
+    ManageSystemComponent manageSystemComponent;
+
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void register(User user, Boolean flag) {
@@ -149,7 +153,36 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         // this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
         // }
         // this.userHistoryService.insertUserHistoryForNewUser(user.getId());
+        // 新增用户店铺信息
+        addUserStore(user);
         this.updateUserQrItem(user.getId());
+    }
+
+    private void addUserStore(User user) {
+        UserStore userStore = new UserStore();
+        userStore.setStoreName(user.getName());
+
+        //店铺名重复则添加后缀
+        List<UserStore> storeList = userStoreService.listByExample(userStore);
+        if (!storeList.isEmpty()) {
+            userStore.setStoreName(getUserStoreNameUnique(userStore.getStoreName()));
+        }
+        userStore.setUserId(user.getId());
+        userStoreService.insert(userStore);
+    }
+
+    private String getUserStoreNameUnique(String storeName) {
+        int max = 100, min = 1;
+        int ran2 = (int) (Math.random() * (max - min) + min);
+        String newStoreName = storeName + "-" + String.valueOf(ran2);
+        UserStore userStore = new UserStore();
+        userStore.setStoreName(newStoreName);
+        List<UserStore> storeList = userStoreService.listByExample(userStore);
+        if (!storeList.isEmpty()) {
+            return getUserStoreNameUnique(storeName);
+        } else {
+            return newStoreName;
+        }
     }
 
     @Override
@@ -210,10 +243,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         this.sessionRedisService.updateUser(this.get(user.getId()));
 
-        Integer valialow=40;
+        Integer valialow = 40;
         //审核未通过发送消息
-        if(!valialow.equals(user.getValidateState())){
-            sendMessageByManage(user.getName(),user.getId());
+        if (!valialow.equals(user.getValidateState())) {
+            sendMessageByManage(user.getName(), user.getId());
         }
         // this.updateUserQrItem(user.getId());
 
@@ -221,10 +254,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     /**
      * 发送消息给管理员提示审核
+     *
      * @param userName
      * @param userId
      */
-    private void sendMessageByManage(String userName,Long userId) {
+    private void sendMessageByManage(String userName, Long userId) {
         // 审核通过增加消息
         MessageInputDto messageInputDto = new MessageInputDto();
         messageInputDto.setCreatorId(userId);
@@ -233,13 +267,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         messageInputDto.setSourceBusinessId(userId);
         messageInputDto.setEventMessageContentParam(new String[]{userName});
         messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
-        ManageSystemComponent c=new ManageSystemComponent();
-        List<ManagerInfoDto> manageList=c.findUserByUserResource("user/index.html#list");
+
+        List<ManagerInfoDto> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
         Set<Long> managerIdSet = new HashSet<>();
-        StreamEx.of(manageList).nonNull().forEach(s->{
+        StreamEx.of(manageList).nonNull().forEach(s -> {
             managerIdSet.add(s.getId());
         });
-        Long[] managerId=managerIdSet.toArray(new Long[managerIdSet.size()]);
+        Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
         messageInputDto.setReceiverIdArray(managerId);
         messageService.addMessage(messageInputDto);
     }
@@ -344,7 +378,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     /**
      * 检测手机号是否存在
-     * 
+     *
      * @param phone
      * @return true 存在 false 不存在
      */
@@ -505,10 +539,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         ;
         // 审核通过
         if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {
-            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(),null, operatorUser);
+            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(), null, operatorUser);
         } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {
             // 审核不通过
-            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(),input.getRefuseReason(), operatorUser);
+            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(), input.getRefuseReason(), operatorUser);
         } else {
             String message = "系统出现异常";
             return BaseOutput.failure(message);
@@ -523,7 +557,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
     }
 
-    private void sendVerifyCertMessage(User user,Integer messageType, String operateReason, OperatorUser operatorUser) {
+    private void sendVerifyCertMessage(User user, Integer messageType, String operateReason, OperatorUser operatorUser) {
         // 审核通过增加消息
         MessageInputDto messageInputDto = new MessageInputDto();
         messageInputDto.setCreatorId(operatorUser.getId());
@@ -531,8 +565,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         messageInputDto.setReceiverIdArray(new Long[]{user.getId()});
         messageInputDto.setEventMessageContentParam(new String[]{operateReason});
 
-        Map<String, Object> smsMap=new HashMap<>();
-        smsMap.put("userName",user.getName());
+        Map<String, Object> smsMap = new HashMap<>();
+        smsMap.put("userName", user.getName());
         messageService.addMessage(messageInputDto);
     }
 
@@ -574,7 +608,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public List<User> findUserByQrStatusList(List<Integer>qrStatusList) {
+    public List<User> findUserByQrStatusList(List<Integer> qrStatusList) {
 
         Example e = new Example(User.class);
         e.and().andIn("qrStatus", qrStatusList);
@@ -603,14 +637,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public String wxRegister(String phone, String wxName,String openid) throws JsonProcessingException {
+    public String wxRegister(String phone, String wxName, String openid) throws JsonProcessingException {
         // 验证手机号是否已注册
         if (existsAccount(phone)) {
             throw new TraceBusinessException("手机号已注册");
         }
         User user = DTOUtils.newDTO(User.class);
         //验证openid是否已注册
-        if(existsOpenId(openid)){
+        if (existsOpenId(openid)) {
             throw new TraceBusinessException("微信已绑定用户");
         }
         user.setOpenId(openid);
@@ -635,12 +669,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         //验证微信是否已绑定用户
         User query = DTOUtils.newDTO(User.class);
         query.setOpenId(openid);
-        if(null!=getActualDao().selectOne(query)){
-            throw  new TraceBusinessException("微信已绑定用户");
+        if (null != getActualDao().selectOne(query)) {
+            throw new TraceBusinessException("微信已绑定用户");
         }
-        User user=get(user_id);
-        if(null!=user&&StringUtils.isNotBlank(user.getOpenId())){
-            throw  new TraceBusinessException("用户已绑定微信");
+        User user = get(user_id);
+        if (null != user && StringUtils.isNotBlank(user.getOpenId())) {
+            throw new TraceBusinessException("用户已绑定微信");
         }
         user.setOpenId(openid);
         update(user);
@@ -649,7 +683,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void confirmBindWeChatTip(String user_id) {
-        User user=get(Long.valueOf(user_id));
+        User user = get(Long.valueOf(user_id));
         user.setConfirmDate(new Date());
         update(user);
     }
@@ -665,23 +699,23 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     private boolean existsOpenId(String openid) {
-        if(StringUtils.isBlank(openid)){
-            throw  new TraceBusinessException("注册用户openid为空");
+        if (StringUtils.isBlank(openid)) {
+            throw new TraceBusinessException("注册用户openid为空");
         }
-        User openuser  = DTOUtils.newDTO(User.class);
+        User openuser = DTOUtils.newDTO(User.class);
         openuser.setOpenId(openid);
-        return null!=getActualDao().selectOne(openuser);
+        return null != getActualDao().selectOne(openuser);
     }
 
     private WxApp getWxAppInfo(String appId) {
-        if(StringUtils.isBlank(appId)) {
+        if (StringUtils.isBlank(appId)) {
             return null;
         }
         WxApp wxApp = new WxApp();
         wxApp.setAppId(appId);
-        List<WxApp> list=wxAppService.list(wxApp);
-        if(!CollectionUtils.isEmpty(list)){
-           return list.get(0);
+        List<WxApp> list = wxAppService.list(wxApp);
+        if (!CollectionUtils.isEmpty(list)) {
+            return list.get(0);
         }
         return null;
     }
@@ -697,11 +731,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         UserStore userStoreParam = new UserStore();
         userStoreParam.setUserId(userId);
         UserStore userStore = StreamEx.of(userStoreService.list(userStoreParam)).nonNull().findFirst().orElse(null);
-        if(userStore !=  null)
-        {
+        if (userStore != null) {
             qrOutput.setUserName(userStore.getStoreName());
         }
-        byte[] bytes = QRCodeUtil.encode(content, this.getUserQrCode(userId).getBase64QRImg(),false,qrOutput.getUserName());
+        byte[] bytes = QRCodeUtil.encode(content, this.getUserQrCode(userId).getBase64QRImg(), false, qrOutput.getUserName());
         String base64Img = QRCodeUtil.base64Image(bytes);
         qrOutput.setBase64QRImg(base64Img);
         return qrOutput;

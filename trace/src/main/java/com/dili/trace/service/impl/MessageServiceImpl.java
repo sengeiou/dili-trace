@@ -12,6 +12,7 @@ import com.dili.trace.domain.MessageConfig;
 import com.dili.trace.domain.SmsMessage;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.MessageInputDto;
+import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.MessageService;
@@ -78,7 +79,11 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
                     eventMessage.setReceiver(receiverUser.getName());
                 }
                 eventMessage.setReceiverId(recevierId);
-                eventMessage.setReceiverType(messageInputDto.getReceiverType());
+                if(null==messageInputDto.getReceiverType()){
+                    eventMessage.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+                }else{
+                    eventMessage.setReceiverType(messageInputDto.getReceiverType());
+                }
 
                 eventMessage.setSourceBusinessId(messageInputDto.getSourceBusinessId());
                 eventMessage.setSourceBusinessType(messageInputDto.getSourceBusinessType());

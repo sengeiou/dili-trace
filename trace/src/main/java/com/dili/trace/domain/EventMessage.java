@@ -6,10 +6,7 @@ import javax.persistence.*;
 
 @Table(name = "event_message")
 public class EventMessage extends BaseDomain {
-    /**
-     * 接收者角色 普通用户10 管理员20， 默认是 10；
-     */
-    public static final Integer RECEIVER_TYPE = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
