@@ -663,8 +663,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     {
         TradeRequest request = new TradeRequest();
         request.setBuyerId(buyerId);
-        List<TradeRequest> tradeRequests = this.list(request);
-        List<Long> sellerIds = StreamEx.of(this.list(request))
+        request.setSort("created");
+        request.setOrder("desc");
+        List<TradeRequest> tradeRequests = this.listByExample(request);
+        List<Long> sellerIds = StreamEx.of(tradeRequests)
                 .map(TradeRequest::getSellerId).nonNull().distinct().toList();
         List<UserOutput> outPutDtoList = new ArrayList<>();
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
