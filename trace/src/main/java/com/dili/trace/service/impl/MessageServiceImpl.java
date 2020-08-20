@@ -12,8 +12,6 @@ import com.dili.trace.domain.MessageConfig;
 import com.dili.trace.domain.SmsMessage;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.MessageInputDto;
-import com.dili.trace.enums.MessageStateEnum;
-import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.MessageService;
@@ -26,8 +24,6 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @EnableRetry
@@ -77,8 +73,11 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
                 eventMessage.setContent(content);
                 eventMessage.setCreator(creatorUser.getName());
                 eventMessage.setCreatorId(creatorUser.getId());
-                eventMessage.setReceiver(receiverUser.getName());
-                eventMessage.setReceiverId(receiverUser.getId());
+                //管理员类型的用户查询为空
+                if(null!=receiverUser){
+                    eventMessage.setReceiver(receiverUser.getName());
+                }
+                eventMessage.setReceiverId(recevierId);
                 eventMessage.setReceiverType(messageInputDto.getReceiverType());
 
                 eventMessage.setSourceBusinessId(messageInputDto.getSourceBusinessId());

@@ -29,7 +29,22 @@ public enum MessageStateEnum {
 	/**
 	 * 消息业务类型-交易
 	 */
-	BUSINESS_TYPE_TRADE(30,"交易"),
+	BUSINESS_TYPE_TRADE(30,"购买"),
+
+	/**
+	 * 消息业务类型-交易
+	 */
+	BUSINESS_TYPE_TRADE_SELL(40,"销售"),
+
+	/**
+	 * 消息接收人类型-普通
+	 */
+	MESSAGE_RECEIVER_TYPE_NORMAL(10,"普通"),
+
+	/**
+	 * 消息接收人类型-管理员
+	 */
+	MESSAGE_RECEIVER_TYPE_MANAGER(20,"管理员"),
 	;
 
 	private String name;
