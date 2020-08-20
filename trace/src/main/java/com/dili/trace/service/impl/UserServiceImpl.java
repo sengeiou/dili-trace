@@ -244,7 +244,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         this.sessionRedisService.updateUser(this.get(user.getId()));
 
         Integer valialow = 40;
-        //审核未通过发送消息
+        //发送消息
         if (!valialow.equals(user.getValidateState())) {
             sendMessageByManage(user.getName(), user.getId());
         }
@@ -275,6 +275,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         });
         Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
         messageInputDto.setReceiverIdArray(managerId);
+        Map<String, Object> smsMap=new HashMap<>();
+        smsMap.put("userName",userName);
+        messageInputDto.setSmsContentParam(smsMap);
         messageService.addMessage(messageInputDto);
     }
 

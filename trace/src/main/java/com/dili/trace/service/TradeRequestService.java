@@ -104,18 +104,21 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         this.checkInput(sellerId, batchStockInputList);
         //获取交易单号
         Set<String> codeSet=new HashSet<>();
+        Set<String> productSet=new HashSet<>();
         TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY,
                 TradeOrderStatusEnum.FINISHED);
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    codeSet.add("商品名称:"+request.getProductName()+"重量:"+request.getTradeWeight()+WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName()+"订单编号:"+request.getCode());
+                    productSet.add("商品名称:"+request.getProductName()+"重量:"+request.getTradeWeight()+WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName()+"订单编号:"+request.getCode());
+
+                    codeSet.add(request.getCode());
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
 
         //下单消息
-        addMessage(sellerId,buyerId,MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(),MessageTypeEnum.SALERORDER.getCode(),codeSet.toString());
+        addMessage(sellerId,buyerId,MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(),MessageTypeEnum.SALERORDER.getCode(),codeSet.toString(),productSet.toString());
         return list;
 
     }
@@ -145,12 +148,14 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
         //下单消息
         Set<String> productSet = new HashSet<>();
+        Set<String> codeSet = new HashSet<>();
         tradeRequests.stream().forEach(request ->
                 {
-                        productSet.add("商品名称:"+request.getProductName()+"重量:"+request.getTradeWeight()+WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName()+"订单编号:"+request.getCode());
+                        productSet.add("商品名称:"+request.getProductName()+",  重量:"+request.getTradeWeight()+"("+WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName()+"),  订单编号:"+request.getCode());
+                        codeSet.add(request.getCode());
                 }
         );
-        addMessage(buyerId,sellerUserIdList.get(0),MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
+        addMessage(buyerId,sellerUserIdList.get(0),MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(),MessageTypeEnum.BUYERORDER.getCode(),codeSet.toString(),productSet.toString());
         return tradeRequests;
     }
 
@@ -626,11 +631,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             Set<Long> buyerId = new HashSet<>();
             Set<Long> sealer = new HashSet<>();
             StreamEx.of(tradeDetailList).forEach(td -> {
-                productSet.add(td.getProductName()+"重量:"+td.getSoftWeight()+"("+WeightUnitEnum.fromCode(td.getWeightUnit()).get().getName()+")");
+                productSet.add("商品名称:"+td.getProductName()+",  重量:"+td.getSoftWeight()+"("+WeightUnitEnum.fromCode(td.getWeightUnit()).get().getName()+"),  订单编号:"+tradeRequest.getCode());
                 buyerId.add(td.getBuyerId());
                 sealer.add(td.getSellerId());
             });
-            addMessage(buyerId.stream().findFirst().get(), sealer.stream().findFirst().get(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), productSet.toString());
+            addMessage(sealer.stream().findFirst().get(),buyerId.stream().findFirst().get(),  MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null,productSet.toString());
         }
     }
 
@@ -640,13 +645,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param messageType
      * @param productNames
      */
-    private void addMessage(Long sendUserId,Long receiUserId,Integer businessType, Integer messageType, String productNames) {
+    private void addMessage(Long sendUserId,Long receiUserId,Integer businessType, Integer messageType,String tradeNo, String productNames) {
         // 增加消息
         MessageInputDto messageInputDto = new MessageInputDto();
         messageInputDto.setCreatorId(sendUserId);
         messageInputDto.setMessageType(messageType);
         messageInputDto.setReceiverIdArray(new Long[]{receiUserId});
-        messageInputDto.setEventMessageContentParam(new String[]{productNames});
+        messageInputDto.setEventMessageContentParam(new String[]{tradeNo});
         messageInputDto.setSourceBusinessType(businessType);
         messageInputDto.setSourceBusinessId(null);
         messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
