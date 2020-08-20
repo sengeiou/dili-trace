@@ -4,7 +4,6 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.UserStore;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserStoreService;
@@ -80,7 +79,7 @@ public class ClientUserStoreApi {
                 return BaseOutput.failure("用户店铺名称不能为空");
             }
             userStore.setUserId(userId);
-            UserStore queObj = DTOUtils.newDTO(UserStore.class);
+            UserStore queObj = new UserStore();
             queObj.setUserId(userId);
             List<UserStore> storeList =userStoreService.listByExample(queObj);
             if(storeList.isEmpty()){
