@@ -11,6 +11,15 @@ public class UserOutput {
 	private Integer cnt;
 	private String marketName;
 	private String businessLicenseUrl;
+	private Integer userType;
+
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
 
 	public String getBusinessLicenseUrl() {
 		return businessLicenseUrl;
