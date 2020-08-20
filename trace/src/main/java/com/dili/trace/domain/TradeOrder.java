@@ -21,9 +21,6 @@ public class TradeOrder extends BaseDomain {
     @Column(name = "`id`")
     private Long id;
 
-    @Column(name = "`code`")
-    private String code;
-
     @ApiModelProperty(value = "买家ID")
     @Column(name = "`buyer_id`")
     private Long buyerId;
@@ -71,20 +68,6 @@ public class TradeOrder extends BaseDomain {
      */
     public void setId(Long id) {
         this.id = id;
-    }
-
-    /**
-     * @return String return the code
-     */
-    public String getCode() {
-        return code;
-    }
-
-    /**
-     * @param code the code to set
-     */
-    public void setCode(String code) {
-        this.code = code;
     }
 
     /**

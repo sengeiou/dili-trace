@@ -126,7 +126,7 @@
   <select id="listUserByStoreName" resultType="com.dili.trace.api.output.UserOutput">
     select u.id, if(s.store_name = '' or s.store_name is null, u.name, s.store_name) as name,
     u.tally_area_nos, u.market_name, u.business_license_url,u.user_type from user u left join user_store s
-    on (u.id=s.user_id) where u.name like #{queryCondition} or s.store_name like #{queryCondition}
+    on (u.id=s.user_id) where u.id != #{userId} and u.name like #{queryCondition} or s.store_name like #{queryCondition}
     or u.tally_area_nos like #{queryCondition}
   </select>
 
