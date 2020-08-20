@@ -102,26 +102,20 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         logger.info("sellerId:{},buyerId:{},checkinput:{}",sellerId,buyerId,Json.toJson(batchStockInputList));
         // 检查提交参数
         this.checkInput(sellerId, batchStockInputList);
+        //获取交易单号
+        Set<String> codeSet=new HashSet<>();
         TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY,
                 TradeOrderStatusEnum.FINISHED);
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
+                    codeSet.add(request.getCode());
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
 
         //下单消息
-        Set<String> productSet = new HashSet<>();
-        batchStockInputList.stream().forEach(s ->
-                {
-                    ProductStock stock = this.batchStockService.get(s.getProductStockId());
-                    if (null != stock) {
-                        productSet.add(stock.getProductName());
-                    }
-                }
-        );
-        addMessage(sellerId,buyerId,MessageTypeEnum.SALERORDER.getCode(),productSet.toString());
+        addMessage(sellerId,buyerId,MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(),MessageTypeEnum.SALERORDER.getCode(),codeSet.toString());
         return list;
 
     }
@@ -129,7 +123,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 创建购买请求
      * 
-     * @param request
+     * @param buyerId
      * @return
      */
     @Transactional
@@ -159,7 +153,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 }
                 }
         );
-        addMessage(buyerId,sellerUserIdList.get(0),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
+        addMessage(buyerId,sellerUserIdList.get(0),MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
         return tradeRequests;
     }
 
@@ -315,7 +309,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      *
      * @param sellerId
      * @param buyerId
-     * @param tradeRequestType
      * @param batchStockInputList
      * @return
      */
@@ -384,7 +377,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 申请退货
      * 
-     * @param input
+     * @param tradeRequestId
      * @param userId
      * @return
      */
@@ -442,7 +435,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     /**
      * 完成退货处理
      * 
-     * @param input
+     * @param tradeRequestId
      * @param userId
      * @return
      */
@@ -641,7 +634,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             buyerId.add(td.getBuyerId());
             sellerid.add(td.getSellerId());
         });
-        addMessage(buyerId.stream().findFirst().get(),sellerid.stream().findFirst().get(),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
+        addMessage(buyerId.stream().findFirst().get(),sellerid.stream().findFirst().get(),MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
     }
 
     /**
@@ -650,13 +643,16 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @param messageType
      * @param productNames
      */
-    private void addMessage(Long sendUserId,Long receiUserId, Integer messageType, String productNames) {
+    private void addMessage(Long sendUserId,Long receiUserId,Integer businessType, Integer messageType, String productNames) {
         // 增加消息
         MessageInputDto messageInputDto = new MessageInputDto();
         messageInputDto.setCreatorId(sendUserId);
         messageInputDto.setMessageType(messageType);
         messageInputDto.setReceiverIdArray(new Long[]{receiUserId});
-
+        messageInputDto.setEventMessageContentParam(new String[]{productNames});
+        messageInputDto.setSourceBusinessType(businessType);
+        messageInputDto.setSourceBusinessId(null);
+        messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
         //增加卖家短信
         Map<String,Object> sellmap = new HashMap<>();
         sellmap.put("userName",sendUserId);
@@ -684,6 +680,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
                 outPutDto.setTallyAreaNos(user.getTallyAreaNos());
                 outPutDto.setMarketName(user.getMarketName());
+                outPutDto.setUserType(user.getUserType());
                 outPutDtoList.add(outPutDto);
             }
         });

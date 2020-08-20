@@ -10,6 +10,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
+import com.dili.trace.api.components.ManageSystemComponent;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.RegisterBillMapper;
@@ -115,7 +116,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             RegisterBill registerBill = dto.build(user);
             return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
         }).toList();
-
     }
 
     @Transactional
@@ -178,6 +178,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                     this.updateSelective(bill);
                 });
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
+
+        //报备单新增消息
+        addMessage(registerBill,MessageTypeEnum.BILLSUBMIT.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(),null);
         return registerBill.getId();
     }
 
@@ -435,7 +438,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         this.doVerify(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
         //新增消息
-        addMessage(billItem,input.getVerifyStatus(),MessageTypeEnum.CHECKIN.getCode(),null,operatorUser);
+        addMessage(billItem,MessageTypeEnum.CHECKIN.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(),null);
         return billItem.getId();
     }
 
@@ -459,34 +462,40 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         this.doVerify(billItem, verifyStatus, reason, operatorUser);
         //新增消息
-        addMessage(billItem,verifyStatus,MessageTypeEnum.BILLPASS.getCode(),null,operatorUser);
+        addMessage(billItem,MessageTypeEnum.BILLPASS.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(),null);
         return billItem.getId();
 
     }
 
 
-    private void addMessage(RegisterBill billItem,Integer verifyCode, Integer messageType, String externalRemark, Optional<OperatorUser> operatorUser) {
-        // 审核通过增加消息**已通过
-        MessageInputDto messageInputDto = new MessageInputDto();
-        operatorUser.ifPresent(op -> {
-            messageInputDto.setCreatorId(op.getId());
-        });
+    private void addMessage(RegisterBill billItem, Integer messageType,Integer businessType,Integer receiverType, String externalRemark) {
 
+        Integer receiverNormal=10;
+        MessageInputDto messageInputDto = new MessageInputDto();
+        messageInputDto.setSourceBusinessType(businessType);
+        messageInputDto.setSourceBusinessId(billItem.getId());
         messageInputDto.setMessageType(messageType);
-        messageInputDto.setReceiverIdArray(new Long[]{billItem.getUserId()});
-        messageInputDto.setEventMessageContentParam(new String[]{externalRemark});
+        messageInputDto.setCreatorId(billItem.getUserId());
+        messageInputDto.setReceiverType(receiverType);
+        messageInputDto.setEventMessageContentParam(new String[]{billItem.getName()});
+        //管理员
+        if(!receiverType.equals(receiverNormal)){
+            // 审核通过增加消息**已通过
+            ManageSystemComponent c=new ManageSystemComponent();
+            List<ManagerInfoDto> manageList=c.findUserByUserResource("user/index.html#list");
+            Set<Long> managerIdSet = new HashSet<>();
+            StreamEx.of(manageList).nonNull().forEach(s->{
+                managerIdSet.add(s.getId());
+            });
+            Long[] managerId=managerIdSet.toArray(new Long[managerIdSet.size()]);
+            messageInputDto.setReceiverIdArray(managerId);
+        }else{
+            messageInputDto.setReceiverIdArray(new Long[]{billItem.getUserId()});
+        }
         //审核通过/不通过/退回
         //增加卖家短信
-        if(BillVerifyStatusEnum.PASSED.equals(verifyCode)){
-            Map<String,Object> smsMap=getSmsMap(billItem);
-            messageInputDto.setSmsContentParam(smsMap);
-        }else if(BillVerifyStatusEnum.NO_PASSED.equals(verifyCode)){
-            Map<String,Object> smsMap=getSmsMap(billItem);
-            messageInputDto.setSmsContentParam(smsMap);
-        }else if(BillVerifyStatusEnum.RETURNED.equals(verifyCode)){
-            Map<String,Object> smsMap=getSmsMap(billItem);
-            messageInputDto.setSmsContentParam(smsMap);
-        }
+        Map<String,Object> smsMap=getSmsMap(billItem);
+        messageInputDto.setSmsContentParam(smsMap);
         messageService.addMessage(messageInputDto);
     }
 

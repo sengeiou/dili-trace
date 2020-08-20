@@ -15,11 +15,16 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.api.components.ManageSystemComponent;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.*;
+import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
+import com.dili.trace.domain.UserStore;
+import com.dili.trace.domain.WxApp;
+import com.dili.trace.dto.ManagerInfoDto;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
@@ -91,12 +96,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     public void register(User user, Boolean flag) {
         // 验证验证码是否正确
-        if (flag) {
+        user.setSource(UpStreamSourceEnum.REGISTER.getCode());
+        /*if (flag) {
             this.sMSService.checkVerificationCode(user.getPhone(), user.getCheckCode());
-            user.setSource(UpStreamSourceEnum.REGISTER.getCode());
         } else {
             user.setSource(UpStreamSourceEnum.DOWN.getCode());
-        }
+        }*/
 
         // 验证手机号是否已注册
         if (existsAccount(user.getPhone())) {
@@ -204,8 +209,39 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 user.getSalesCityId());
 
         this.sessionRedisService.updateUser(this.get(user.getId()));
+
+        Integer valialow=40;
+        //审核未通过发送消息
+        if(!valialow.equals(user.getValidateState())){
+            sendMessageByManage(user.getName(),user.getId());
+        }
         // this.updateUserQrItem(user.getId());
 
+    }
+
+    /**
+     * 发送消息给管理员提示审核
+     * @param userName
+     * @param userId
+     */
+    private void sendMessageByManage(String userName,Long userId) {
+        // 审核通过增加消息
+        MessageInputDto messageInputDto = new MessageInputDto();
+        messageInputDto.setCreatorId(userId);
+        messageInputDto.setMessageType(MessageTypeEnum.USERREGISTER.getCode());
+        messageInputDto.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
+        messageInputDto.setSourceBusinessId(userId);
+        messageInputDto.setEventMessageContentParam(new String[]{userName});
+        messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        ManageSystemComponent c=new ManageSystemComponent();
+        List<ManagerInfoDto> manageList=c.findUserByUserResource("user/index.html#list");
+        Set<Long> managerIdSet = new HashSet<>();
+        StreamEx.of(manageList).nonNull().forEach(s->{
+            managerIdSet.add(s.getId());
+        });
+        Long[] managerId=managerIdSet.toArray(new Long[managerIdSet.size()]);
+        messageInputDto.setReceiverIdArray(managerId);
+        messageService.addMessage(messageInputDto);
     }
 
     private List<String> parsePlate(String plates) {

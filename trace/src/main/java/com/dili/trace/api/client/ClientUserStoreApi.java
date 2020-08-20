@@ -5,6 +5,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.UserStore;
+import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserStoreService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +32,8 @@ public class ClientUserStoreApi {
     @Autowired
     UserStoreService userStoreService;
     @Autowired
+    UserService userService;
+    @Autowired
     private LoginSessionContext sessionContext;
 
     /**
@@ -46,7 +49,8 @@ public class ClientUserStoreApi {
             List<UserStore> storeList =userStoreService.listByExample(userStore);
             UserStore store=new UserStore();
             if(storeList.isEmpty()){
-                return BaseOutput.failure("用户店铺为空");
+                store.setStoreName(userService.get(userId).getName());
+                return BaseOutput.success().setData(store);
             }
             store=storeList.get(0);
             return BaseOutput.success("success").setData(store);
@@ -73,7 +77,12 @@ public class ClientUserStoreApi {
                 return BaseOutput.failure("用户店铺名称不能为空");
             }
             userStore.setUserId(userId);
-            this.userStoreService.updateExactByExample(userStore, userStore);
+            List<UserStore> storeList =userStoreService.listByExample(userStore);
+            if(storeList.isEmpty()){
+                userStoreService.insert(userStore);
+            }else{
+                this.userStoreService.updateExactByExample(userStore, userStore);
+            }
             return BaseOutput.success("success");
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());

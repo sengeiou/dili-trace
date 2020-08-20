@@ -143,8 +143,7 @@ public class ClientTradeRequestApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			//Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			Long buyerId = 1284L;
+			Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			List<TradeRequest> list = this.tradeRequestService.createBuyRequest(buyerId, inputDto);
 			return BaseOutput.success();
 		} catch (TraceBusinessException e) {
