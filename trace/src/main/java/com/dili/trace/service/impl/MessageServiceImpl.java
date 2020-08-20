@@ -104,6 +104,7 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
                 params.put("cellphone", receiverUser.getPhone());
                 // 根据不同messageType，传不同的参数（在各个消息节点中传递过来）
                 params.put("parameters", messageInputDto.getSmsContentParam());
+                logger.info("send sms RPC:"+params.toJSONString());
                 BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
 
                 //插入日志

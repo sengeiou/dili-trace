@@ -1,17 +1,6 @@
 package com.dili.trace.api.components;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
+import cn.hutool.http.HttpUtil;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.dto.ManagerInfoDto;
@@ -19,14 +8,18 @@ import com.dili.trace.dto.OperatorUser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ParseContext;
-
-import cn.hutool.http.HttpUtil;
+import com.jayway.jsonpath.*;
 import one.util.streamex.StreamEx;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class ManageSystemComponent {

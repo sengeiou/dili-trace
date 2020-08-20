@@ -182,7 +182,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
 
         //报备单新增消息
-        addMessage(registerBill,MessageTypeEnum.BILLSUBMIT.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(),null);
+        addMessage(registerBill,MessageTypeEnum.BILLSUBMIT.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
         return registerBill.getId();
     }
 
@@ -440,7 +440,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         this.doVerify(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
         //新增消息
-        addMessage(billItem,MessageTypeEnum.CHECKIN.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(),null);
+        addMessage(billItem,MessageTypeEnum.BILLPASS.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
         return billItem.getId();
     }
 
@@ -464,13 +464,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         this.doVerify(billItem, verifyStatus, reason, operatorUser);
         //新增消息
-        addMessage(billItem,MessageTypeEnum.BILLPASS.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(),null);
+        addMessage(billItem,MessageTypeEnum.BILLPASS.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
         return billItem.getId();
 
     }
 
 
-    private void addMessage(RegisterBill billItem, Integer messageType,Integer businessType,Integer receiverType, String externalRemark) {
+    private void addMessage(RegisterBill billItem, Integer messageType,Integer businessType,Integer receiverType) {
 
         Integer receiverNormal=10;
         MessageInputDto messageInputDto = new MessageInputDto();
@@ -505,7 +505,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         smsMap.put("userName",userService.get(billItem.getUserId()).getName());
         smsMap.put("created", DateUtils.format(new Date(),"yyyy年MM月dd日 HH:mm:ss"));
         smsMap.put("billNo",billItem.getCode());
-        smsMap.put("tradeInfo",billItem.getProductName());
+        smsMap.put("productName","商品:"+billItem.getProductName()+"    车号:"+billItem.getPlate());
         return smsMap;
     }
 

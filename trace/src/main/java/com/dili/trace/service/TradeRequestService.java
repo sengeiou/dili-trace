@@ -109,7 +109,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    codeSet.add(request.getCode());
+                    codeSet.add("商品名称:"+request.getProductName()+"重量:"+request.getTradeWeight()+WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName()+"订单编号:"+request.getCode());
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
@@ -145,12 +145,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
         //下单消息
         Set<String> productSet = new HashSet<>();
-        batchStockInputList.stream().forEach(s ->
+        tradeRequests.stream().forEach(request ->
                 {
-                    ProductStock stock = this.batchStockService.get(s.getProductStockId());
-                    if (null != stock) {
-                    productSet.add(stock.getProductName());
-                }
+                        productSet.add("商品名称:"+request.getProductName()+"重量:"+request.getTradeWeight()+WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName()+"订单编号:"+request.getCode());
                 }
         );
         addMessage(buyerId,sellerUserIdList.get(0),MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
@@ -587,8 +584,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void handleBuyerRequest(TradeRequestHandleDto handleDto)
-    {
+    public void handleBuyerRequest(TradeRequestHandleDto handleDto) {
         Long tradeRequestId = handleDto.getTradeRequestId();
         Integer handleStatus = handleDto.getHandleStatus();
         TradeRequest tradeRequest = this.get(tradeRequestId);
@@ -601,7 +597,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         tradeDetailQuery.setTradeRequestId(tradeRequestId);
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         StreamEx.of(tradeDetailList).forEach(td -> {
-            if(handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
+            if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
                 TradeDetail tradeDetail = new TradeDetail();
                 tradeDetail.setId(td.getId());
                 tradeDetail.setStockWeight(td.getSoftWeight());
@@ -615,8 +611,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 productStockUpdate.setStockWeight(productStock.getStockWeight().add(td.getSoftWeight()));
                 productStockUpdate.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
                 this.batchStockService.updateSelective(productStockUpdate);
-            }
-            else if(handleStatus.equals(TradeOrderStatusEnum.CANCELLED.getCode())){
+            } else if (handleStatus.equals(TradeOrderStatusEnum.CANCELLED.getCode())) {
                 TradeDetail parentTradeDetail = this.tradeDetailService.get(td.getParentId());
                 TradeDetail parentTradeDetailForUpdate = new TradeDetail();
                 parentTradeDetailForUpdate.setId(parentTradeDetail.getId());
@@ -624,17 +619,19 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 this.tradeDetailService.updateSelective(parentTradeDetailForUpdate);
             }
         });
-
-        //下单消息
-        Set<String> productSet = new HashSet<>();
-        Set<Long> buyerId=new HashSet<>();
-        Set<Long> sellerid = new HashSet<>();
-        StreamEx.of(tradeDetailList).forEach(td -> {
-            productSet.add(td.getProductName());
-            buyerId.add(td.getBuyerId());
-            sellerid.add(td.getSellerId());
-        });
-        addMessage(buyerId.stream().findFirst().get(),sellerid.stream().findFirst().get(),MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(),MessageTypeEnum.BUYERORDER.getCode(),productSet.toString());
+        //完成发送消息
+        if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
+            //下单消息
+            Set<String> productSet = new HashSet<>();
+            Set<Long> buyerId = new HashSet<>();
+            Set<Long> sealer = new HashSet<>();
+            StreamEx.of(tradeDetailList).forEach(td -> {
+                productSet.add(td.getProductName()+"重量:"+td.getSoftWeight()+"("+WeightUnitEnum.fromCode(td.getWeightUnit()).get().getName()+")");
+                buyerId.add(td.getBuyerId());
+                sealer.add(td.getSellerId());
+            });
+            addMessage(buyerId.stream().findFirst().get(), sealer.stream().findFirst().get(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), productSet.toString());
+        }
     }
 
     /**
