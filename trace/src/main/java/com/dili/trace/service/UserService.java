@@ -145,4 +145,12 @@ public interface UserService extends BaseService<User, Long> {
 	 * @return
 	 */
 	UserOutput getUserByUserId(Long userId);
+
+	/**
+	 * 生成带店铺名的二维码
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	UserQrOutput getUserQrCodeWithName(Long userId) throws Exception;
 }

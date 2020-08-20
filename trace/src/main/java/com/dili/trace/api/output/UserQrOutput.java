@@ -4,6 +4,15 @@ public class UserQrOutput {
     private Long userId;
     private String updated;
     private String base64QRImg;
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     /**
      * @return String return the updated
