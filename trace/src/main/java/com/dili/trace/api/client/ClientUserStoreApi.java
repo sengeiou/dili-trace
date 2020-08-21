@@ -81,11 +81,26 @@ public class ClientUserStoreApi {
             userStore.setUserId(userId);
             UserStore queObj = new UserStore();
             queObj.setUserId(userId);
+            //查询用户店铺列表
             List<UserStore> storeList =userStoreService.listByExample(queObj);
+            //用户无店铺则新增
             if(storeList.isEmpty()){
                 userStoreService.insert(userStore);
             }else{
-                this.userStoreService.updateExactByExample(userStore, queObj);
+                //验证店铺名是否已存在
+                UserStore queStore = new UserStore();
+                queStore.setStoreName(userStore.getStoreName());
+                List<UserStore> oldList=userStoreService.listByExample(queStore);
+                if(oldList.isEmpty()){
+                    this.userStoreService.updateExactByExample(userStore, queObj);
+                }else{
+                    //旧店铺名与新店铺名一致
+                    if(userStore.getStoreName().equals(storeList.get(0).getStoreName())){
+                        this.userStoreService.updateExactByExample(userStore, queObj);
+                        return BaseOutput.success("success");
+                    }
+                    return BaseOutput.failure("店铺名已存在");
+                }
             }
             return BaseOutput.success("success");
         } catch (TraceBusinessException e) {

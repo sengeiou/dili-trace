@@ -120,7 +120,7 @@ public class ClientTradePushApi {
         try {
             tradeDetail.setSort("product_name");
             tradeDetail.setOrder("desc");
-            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0 AND  parent_id IS NULL");
+            tradeDetail.setMetadata(IDTO.AND_CONDITION_EXPR, " stock_weight > 0");
             return BaseOutput.success().setData(tradeDetailService.listPageByExample(tradeDetail));
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());

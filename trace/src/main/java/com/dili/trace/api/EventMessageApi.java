@@ -39,9 +39,9 @@ public class EventMessageApi {
 
     @ApiOperation(value = "已读/未读", notes = "已读/未读")
     @RequestMapping(value = "/read.api", method = RequestMethod.POST)
-    public void signRead(@RequestBody EventMessage eventMessage) {
+    public BaseOutput signRead(@RequestBody EventMessage eventMessage) {
         if (eventMessage == null || null == eventMessage.getId()) {
-            return;
+            return BaseOutput.failure("用户id为空");
         }
         try {
             eventMessageService.readMessage(eventMessage, MessageStateEnum.READ);
@@ -55,10 +55,13 @@ public class EventMessageApi {
                 upObj.setReadFlag(MessageStateEnum.READ.getCode());
                 eventMessageService.updateExactByExample(upObj, queObj);
             }
+            return BaseOutput.success();
         } catch (TraceBusinessException e) {
             LOGGER.error(e.getMessage(), e);
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("register", e);
+            return BaseOutput.failure(e.getMessage());
         }
     }
 

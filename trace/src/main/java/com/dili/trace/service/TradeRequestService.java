@@ -601,6 +601,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 tradeDetail.setStockWeight(td.getSoftWeight());
                 tradeDetail.setSoftWeight(BigDecimal.ZERO);
                 tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                tradeDetail.setIsBatched(TFEnum.TRUE.getCode());
                 this.tradeDetailService.updateSelective(tradeDetail);
 
                 ProductStock productStock = this.batchStockService.get(td.getProductStockId());
@@ -614,7 +615,21 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 TradeDetail parentTradeDetailForUpdate = new TradeDetail();
                 parentTradeDetailForUpdate.setId(parentTradeDetail.getId());
                 parentTradeDetailForUpdate.setStockWeight(parentTradeDetail.getStockWeight().add(td.getSoftWeight()));
+
+                ProductStock productStock = this.batchStockService.get(parentTradeDetail.getProductStockId());
+                BigDecimal totalStockWeight = productStock.getStockWeight().add(td.getSoftWeight());
+                ProductStock productStockUpdate = new ProductStock();
+                productStockUpdate.setId(productStock.getId());
+                productStockUpdate.setStockWeight(totalStockWeight);
+                if(parentTradeDetail.getStockWeight().compareTo(BigDecimal.ZERO) <= 0
+                    && parentTradeDetailForUpdate.getStockWeight().compareTo(BigDecimal.ZERO) > 0){
+
+                    productStockUpdate.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
+                    parentTradeDetailForUpdate.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                    parentTradeDetailForUpdate.setIsBatched(TFEnum.TRUE.getCode());
+                }
                 this.tradeDetailService.updateSelective(parentTradeDetailForUpdate);
+                this.batchStockService.updateSelective(productStockUpdate);
             }
         });
         //完成发送消息
