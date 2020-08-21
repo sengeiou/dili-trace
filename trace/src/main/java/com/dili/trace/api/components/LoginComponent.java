@@ -252,6 +252,12 @@ public class LoginComponent {
 
 	}
 
+	/**
+	 * 微信登陆
+	 * @param openid
+	 * @param type
+	 * @return
+	 */
 	public SessionData wxLogin(String openid, Integer type) {
 		User user = userWxLogin(openid,type);
 		SessionData sessionData = SessionData.fromUser(user, type);
