@@ -53,14 +53,15 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     ImageCertService imageCertService;
     @Autowired
     MessageService messageService;
+
     /**
      * 检查参数是否正确
-     * 
+     *
      * @param sellerId
      * @param batchStockInputList
      */
     private void checkInput(Long sellerId, List<ProductStockInput> batchStockInputList) {
-        
+
         Map<Long, List<Long>> batchIdDetailIdMap = StreamEx.of(CollectionUtils.emptyIfNull(batchStockInputList))
                 .nonNull().toMap(batchStockInput -> {
                     return batchStockInput.getProductStockId();
@@ -98,34 +99,30 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * 创建销售请求并处理为完成
      */
     public List<TradeRequest> createSellRequest(Long sellerId, Long buyerId,
-            List<ProductStockInput> batchStockInputList) {
-        logger.info("sellerId:{},buyerId:{},checkinput:{}",sellerId,buyerId,Json.toJson(batchStockInputList));
+                                                List<ProductStockInput> batchStockInputList) {
+        logger.info("sellerId:{},buyerId:{},checkinput:{}", sellerId, buyerId, Json.toJson(batchStockInputList));
         // 检查提交参数
         this.checkInput(sellerId, batchStockInputList);
         //获取交易单号
-        Set<String> codeSet=new HashSet<>();
-        Set<String> productSet=new HashSet<>();
         TradeOrder tradeOrderItem = this.tradeOrderService.createTradeOrder(sellerId, buyerId, TradeOrderTypeEnum.BUY,
                 TradeOrderStatusEnum.FINISHED);
         List<TradeRequest> list = EntryStream
                 .of(this.createTradeRequestList(tradeOrderItem, sellerId, buyerId, batchStockInputList))
                 .mapKeyValue((request, tradeDetailInputList) -> {
-                    productSet.add("商品名称:"+request.getProductName()+"重量:"+request.getTradeWeight()+WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName()+"订单编号:"+request.getCode());
+                    //下单消息
+                    String productName = "商品名称:" + request.getProductName() + "重量:" + request.getTradeWeight() + WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName() + "订单编号:" + request.getCode();
+                    addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName);
 
-                    codeSet.add(request.getCode());
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
-
-        //下单消息
-        addMessage(sellerId,buyerId,MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(),MessageTypeEnum.SALERORDER.getCode(),codeSet.toString(),productSet.toString());
         return list;
 
     }
 
     /**
      * 创建购买请求
-     * 
+     *
      * @param buyerId
      * @return
      */
@@ -147,21 +144,18 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 }).toList();
 
         //下单消息
-        Set<String> productSet = new HashSet<>();
-        Set<String> codeSet = new HashSet<>();
         tradeRequests.stream().forEach(request ->
                 {
-                        productSet.add("商品名称:"+request.getProductName()+",  重量:"+request.getTradeWeight()+"("+WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName()+"),  订单编号:"+request.getCode());
-                        codeSet.add(request.getCode());
+                    String productName = "商品名称:" + request.getProductName() + ",  重量:" + request.getTradeWeight() + "(" + WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName() + "),  订单编号:" + request.getCode();
+                    addMessage(buyerId, sellerUserIdList.get(0), request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), request.getCode(), productName);
                 }
         );
-        addMessage(buyerId,sellerUserIdList.get(0),MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(),MessageTypeEnum.BUYERORDER.getCode(),codeSet.toString(),productSet.toString());
         return tradeRequests;
     }
 
     /**
      * 创建请求
-     * 
+     *
      * @param sellerId
      * @param buyerId
      * @param tradeRequestType
@@ -216,7 +210,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
 
-
     private String getNextCode() {
         return this.codeGenerateService.nextTradeRequestCode();
 
@@ -247,7 +240,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
         User buyer = this.userService.get(requestItem.getBuyerId());
         User seller = this.userService.get(requestItem.getSellerId());
-        BigDecimal totalTradeWeight=requestItem.getTradeWeight();
+        BigDecimal totalTradeWeight = requestItem.getTradeWeight();
 
 
         //查询和统计(基于批次)用户总库存(其实可以通过总库存获得)
@@ -265,23 +258,23 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         if (tradeDetailIdWeightList.isEmpty()) {
             AtomicReference<BigDecimal> sumTradeWeightAt = new AtomicReference<BigDecimal>(BigDecimal.ZERO);
             List<TradeDetail> resultList = StreamEx.of(tradeDetailList).map(td -> {
-                BigDecimal stockWeight=td.getStockWeight();
+                BigDecimal stockWeight = td.getStockWeight();
                 sumTradeWeightAt.set(sumTradeWeightAt.get().add(stockWeight));
-                logger.info("stockWeight={}",stockWeight);
-                logger.info("sumTradeWeightAt={}",sumTradeWeightAt.get());
-                logger.info("totalTradeWeight={}",totalTradeWeight);
-                BigDecimal tradeWeight=BigDecimal.ZERO;
-                if(sumTradeWeightAt.get().compareTo(totalTradeWeight)<=0){
-                    tradeWeight=stockWeight;
-                }else{
-                    if(sumTradeWeightAt.get().subtract(stockWeight).compareTo(totalTradeWeight)<0){
-                        tradeWeight=totalTradeWeight.subtract(sumTradeWeightAt.get().subtract(stockWeight));
-                    }else{
+                logger.info("stockWeight={}", stockWeight);
+                logger.info("sumTradeWeightAt={}", sumTradeWeightAt.get());
+                logger.info("totalTradeWeight={}", totalTradeWeight);
+                BigDecimal tradeWeight = BigDecimal.ZERO;
+                if (sumTradeWeightAt.get().compareTo(totalTradeWeight) <= 0) {
+                    tradeWeight = stockWeight;
+                } else {
+                    if (sumTradeWeightAt.get().subtract(stockWeight).compareTo(totalTradeWeight) < 0) {
+                        tradeWeight = totalTradeWeight.subtract(sumTradeWeightAt.get().subtract(stockWeight));
+                    } else {
                         return null;
                     }
                 }
 
-                logger.info("tradeWeight={}",tradeWeight);
+                logger.info("tradeWeight={}", tradeWeight);
                 TradeDetail tradeDetail = this.tradeDetailService.createTradeDetail(requestItem.getId(), td,
                         tradeWeight, seller.getId(), buyer, tradeOrderTypeEnum);
                 return tradeDetail;
@@ -331,7 +324,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 创建批量交易请求
-     * 
+     *
      * @param sellerId
      * @param buyerId
      * @param tradeRequestType
@@ -339,7 +332,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      * @return
      */
     Map<TradeRequest, List<TradeDetailInputDto>> createTradeRequestList(TradeOrder tradeOrderItem, Long sellerId,
-            Long buyerId, List<ProductStockInput> batchStockInputList) {
+                                                                        Long buyerId, List<ProductStockInput> batchStockInputList) {
         Map<TradeRequest, List<TradeDetailInputDto>> map = StreamEx.of(batchStockInputList).nonNull()
                 .mapToEntry(input -> {
                     TradeRequest request = this.createTradeRequest(tradeOrderItem, sellerId, buyerId, input);
@@ -378,7 +371,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 申请退货
-     * 
+     *
      * @param tradeRequestId
      * @param userId
      * @return
@@ -436,7 +429,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 完成退货处理
-     * 
+     *
      * @param tradeRequestId
      * @param userId
      * @return
@@ -582,7 +575,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
     public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest,
-            Long userId) {
+                                                                          Long userId) {
         tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR, "(buyer_id=" + userId + " OR seller_id=" + userId + ")");
         return this.listPageByExample(tradeRequest);
 
@@ -626,26 +619,22 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         });
         //完成发送消息
         if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
-            //下单消息
-            Set<String> productSet = new HashSet<>();
-            Set<Long> buyerId = new HashSet<>();
-            Set<Long> sealer = new HashSet<>();
+            //下单消息--一个单一个消息方便跳转页面
             StreamEx.of(tradeDetailList).forEach(td -> {
-                productSet.add("商品名称:"+td.getProductName()+",  重量:"+td.getSoftWeight()+"("+WeightUnitEnum.fromCode(td.getWeightUnit()).get().getName()+"),  订单编号:"+tradeRequest.getCode());
-                buyerId.add(td.getBuyerId());
-                sealer.add(td.getSellerId());
+                String productName = "商品名称:" + td.getProductName() + ",  重量:" + td.getSoftWeight() + "(" + WeightUnitEnum.fromCode(td.getWeightUnit()).get().getName() + "),  订单编号:" + tradeRequest.getCode();
+                addMessage(td.getSellerId(), td.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName);
             });
-            addMessage(sealer.stream().findFirst().get(),buyerId.stream().findFirst().get(),  MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null,productSet.toString());
         }
     }
 
     /**
      * 新增消息并发送短信
+     *
      * @param sendUserId
      * @param messageType
      * @param productNames
      */
-    private void addMessage(Long sendUserId,Long receiUserId,Integer businessType, Integer messageType,String tradeNo, String productNames) {
+    private void addMessage(Long sendUserId, Long receiUserId, Long businessId, Integer businessType, Integer messageType, String tradeNo, String productNames) {
         // 增加消息
         MessageInputDto messageInputDto = new MessageInputDto();
         messageInputDto.setCreatorId(sendUserId);
@@ -653,19 +642,18 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         messageInputDto.setReceiverIdArray(new Long[]{receiUserId});
         messageInputDto.setEventMessageContentParam(new String[]{tradeNo});
         messageInputDto.setSourceBusinessType(businessType);
-        messageInputDto.setSourceBusinessId(null);
+        messageInputDto.setSourceBusinessId(businessId);
         messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
         //增加卖家短信
-        Map<String,Object> sellmap = new HashMap<>();
-        sellmap.put("userName",sendUserId);
-        sellmap.put("created", DateUtils.format(new Date(),"yyyy年MM月dd日 HH:mm:ss"));
-        sellmap.put("tradeInfo",productNames);
+        Map<String, Object> sellmap = new HashMap<>();
+        sellmap.put("userName", sendUserId);
+        sellmap.put("created", DateUtils.format(new Date(), "yyyy年MM月dd日 HH:mm:ss"));
+        sellmap.put("tradeInfo", productNames);
         messageInputDto.setSmsContentParam(sellmap);
         messageService.addMessage(messageInputDto);
     }
 
-    public List<UserOutput> queryTradeSellerHistoryList(Long buyerId)
-    {
+    public List<UserOutput> queryTradeSellerHistoryList(Long buyerId) {
         TradeRequest request = new TradeRequest();
         request.setBuyerId(buyerId);
         request.setSort("created");
@@ -678,7 +666,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             UserOutput outPutDto = new UserOutput();
 
             User user = this.userService.get(td);
-            if(user != null) {
+            if (user != null) {
                 outPutDto.setId(td);
                 outPutDto.setName(user.getName());
                 outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());

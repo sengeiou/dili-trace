@@ -86,9 +86,16 @@ public class AppletAesUtil {
     }
 
     public static void main(String[] args) throws UnsupportedEncodingException {
-        String content = "W90bkymzEPP2Whbr62X0OfJU10aLtHK80GBgV+QKDDn+gAg1HEROqW7isycf01nUgDUJVUVQZQYCIcBFH2Ovhf0usJ8DMqK4S/zDh9krOfApqm4p0N53TC5A2cWZSMhvBlPyxBJpzFnsbh8o8zTvjHiRE0EZ8zc5StUAgXbPQiYxXSom1uf6/xRoDhOJGMSs47VOccNaGuNBlu8cd2UGjg==";
-        String key = "Iq4E7+CZlRkuvB1RaU+qpA==";
-        String iv = "EopC2cY9UI8FQiDYqECR9A==";
+//       String content = "W90bkymzEPP2Whbr62X0OfJU10aLtHK80GBgV+QKDDn+gAg1HEROqW7isycf01nUgDUJVUVQZQYCIcBFH2Ovhf0usJ8DMqK4S/zDh9krOfApqm4p0N53TC5A2cWZSMhvBlPyxBJpzFnsbh8o8zTvjHiRE0EZ8zc5StUAgXbPQiYxXSom1uf6/xRoDhOJGMSs47VOccNaGuNBlu8cd2UGjg==";
+//       String key = "Iq4E7+CZlRkuvB1RaU+qpA==";
+//       String iv = "EopC2cY9UI8FQiDYqECR9A==";
+
+
+
+       String content = "R6sEw39bC4LpuW1Rd3r74SCFqRRwMQXz63nDnGrSEuokggzfa/KVRYU/rDOkWADGlMYZJxi888GyYo0+rgT6jW/Y4cXZmsFk+dTymqcebTXhaiY1fTyCkd161xZlnAjgskWj/0u8RqSGWGyAPbvjwrNb87GhlATaFm29qsiXq361BxVFDKEVFeQd4PE3llCQDzzHtjQTy0+MGK8C8v8pog==";
+       String key = "2It8+4LNyM/XuqDsrMLznQ==";
+       String iv = "mmnNX8Aq/QW10JxkjbFEiQ==";
+
         String result = AppletAesUtil.decrypt(content, key, iv);
         System.out.println("result:" + result);
     }
