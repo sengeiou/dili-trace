@@ -88,7 +88,7 @@ public class QRCodeUtil
         //获取图像面板
         Graphics2D graph = image.createGraphics();
 
-        Font font=new Font("Segoe UI Emoji(TrueType)",Font.BOLD,16);
+        Font font=new Font("微软雅黑",Font.BOLD,16);
        
         graph.setFont(font);
         graph.setColor(Color.BLACK);
