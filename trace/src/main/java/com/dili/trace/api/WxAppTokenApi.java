@@ -1,12 +1,13 @@
 package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.AppletPhone;
-import com.dili.trace.domain.Watermark;
 import com.dili.trace.domain.WxApp;
 import com.dili.trace.service.IWxAppService;
+import com.dili.trace.util.AppletAesUtil;
 import com.dili.trace.util.WxServerUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,15 +38,15 @@ public class WxAppTokenApi {
     @PostMapping(value = "/initAccessToken", produces = "application/json;charset=utf-8")
     public BaseOutput initAccessToken(@RequestBody Map<String, String> wxInfo) {
         try {
-            String appId=null;
+            String appId = null;
             appId = wxInfo.get("appId");
             if (StringUtils.isBlank(appId)) {
                 throw new RuntimeException("appId 不能为空");
             }
             WxApp wxapp = new WxApp();
             wxapp.setAppId(appId);
-            List<WxApp> list=wxAppService.list(wxapp);
-            if(!CollectionUtils.isEmpty(list)){
+            List<WxApp> list = wxAppService.list(wxapp);
+            if (!CollectionUtils.isEmpty(list)) {
                 wxapp.setAppSecret(list.get(0).getAppSecret());
             }
 
@@ -116,7 +118,7 @@ public class WxAppTokenApi {
             if (StringUtils.isBlank(openId)) {
                 throw new RuntimeException("openId 不能为空");
             }
-            WxApp wxApp=getWxAppByAppId(appId);
+            WxApp wxApp = getWxAppByAppId(appId);
             String accessToken = wxApp.getAccessToken();
             String userinfo = wxAppService.getUserinfo(appId, openId, accessToken);
             ObjectMapper objectMapper = new ObjectMapper();
@@ -129,11 +131,9 @@ public class WxAppTokenApi {
 
     @ApiOperation(value = "解密手机号信息", notes = "解密手机号信息")
     @PostMapping(value = "/decodePhone.api")
-    public BaseOutput decodePhone(@RequestBody Map<String, String> wxInfo)
-    {
-        try
-        {
-            String sessionKey=wxInfo.get("sessionKey");
+    public BaseOutput decodePhone(@RequestBody Map<String, String> wxInfo) {
+        try {
+            String sessionKey = wxInfo.get("sessionKey");
             String encryptedData = wxInfo.get("encryptedData");
             String iv = wxInfo.get("iv");
 
@@ -142,39 +142,26 @@ public class WxAppTokenApi {
 
             if (StringUtils.isEmpty(sessionKey)
                     || StringUtils.isEmpty(encryptedData)
-                    || StringUtils.isEmpty(iv))
-            {
+                    || StringUtils.isEmpty(iv)) {
                 return BaseOutput.failure("参数错误");
             }
 
-            //test-start
-            AppletPhone test= new AppletPhone();
-            test.setPhoneNumber("13100000000");
-            test.setPurePhoneNumber("13100000000");
-            test.setCountryCode("86");
-            Watermark testWate = new Watermark();
-            testWate.setAppid("wx9c2027ae603a1bf3");
-            testWate.setTimestamp(System.currentTimeMillis());
-            test.setWatermark(testWate);
-            return BaseOutput.success().setData(test);
-            //test-end
 
-            /*sessionKey = URLDecoder.decode(sessionKey, "UTF-8");
+            sessionKey = URLDecoder.decode(sessionKey, "UTF-8");
             encryptedData = URLDecoder.decode(encryptedData, "UTF-8");
             iv = URLDecoder.decode(iv, "UTF-8");
 
             log.info("decodePhone decode sessionKey:" + sessionKey
                     + ",encryptedData:" + encryptedData + ",iv:" + iv);
 
-            String decryStr = AppletAESUtil.decrypt(encryptedData, sessionKey,
+            String decryStr = AppletAesUtil.decrypt(encryptedData, sessionKey,
                     iv);
 
             log.info("decodePhone str:" + decryStr);
-            AppletPhone phone= JSON.parseObject(decryStr,new TypeReference<AppletPhone>() {});
-            return BaseOutput.success().setData(phone);*/
-        }
-        catch (Exception e)
-        {
+            AppletPhone phone = JSON.parseObject(decryStr, new TypeReference<AppletPhone>() {
+            });
+            return BaseOutput.success().setData(phone);
+        } catch (Exception e) {
             log.error("解密手机号码错误", e);
             BaseOutput.failure(e.getMessage());
         }
@@ -183,16 +170,17 @@ public class WxAppTokenApi {
 
     /**
      * 获取微信小程序的相关信息
+     *
      * @param appId
      * @return
      */
     private WxApp getWxAppByAppId(String appId) {
         WxApp wxapp = new WxApp();
         wxapp.setAppId(appId);
-        List<WxApp> list=wxAppService.list(wxapp);
-        if(!CollectionUtils.isEmpty(list)){
+        List<WxApp> list = wxAppService.list(wxapp);
+        if (!CollectionUtils.isEmpty(list)) {
             wxapp.setAccessToken(list.get(0).getAccessToken());
         }
-        return  wxapp;
+        return wxapp;
     }
 }
