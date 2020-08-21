@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -146,10 +145,10 @@ public class WxAppTokenApi {
                 return BaseOutput.failure("参数错误");
             }
 
-
+            /*
             sessionKey = URLDecoder.decode(sessionKey, "UTF-8");
             encryptedData = URLDecoder.decode(encryptedData, "UTF-8");
-            iv = URLDecoder.decode(iv, "UTF-8");
+            iv = URLDecoder.decode(iv, "UTF-8");*/
 
             log.info("decodePhone decode sessionKey:" + sessionKey
                     + ",encryptedData:" + encryptedData + ",iv:" + iv);
