@@ -100,12 +100,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     public void register(User user, Boolean flag) {
         // 验证验证码是否正确
-        user.setSource(UpStreamSourceEnum.REGISTER.getCode());
-        /*if (flag) {
+        if (flag) {
+            user.setSource(UpStreamSourceEnum.REGISTER.getCode());
             this.sMSService.checkVerificationCode(user.getPhone(), user.getCheckCode());
         } else {
             user.setSource(UpStreamSourceEnum.DOWN.getCode());
-        }*/
+        }
 
         // 验证手机号是否已注册
         if (existsAccount(user.getPhone())) {
