@@ -21,6 +21,7 @@ import com.dili.trace.glossary.UserTypeEnum;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.nutz.json.Json;
 import org.slf4j.Logger;
@@ -53,6 +54,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     ImageCertService imageCertService;
     @Autowired
     MessageService messageService;
+
+    @Autowired
+    UserStoreService userStoreService;
 
     /**
      * 检查参数是否正确
@@ -679,11 +683,16 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<UserOutput> outPutDtoList = new ArrayList<>();
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
             UserOutput outPutDto = new UserOutput();
-
             User user = this.userService.get(td);
             if (user != null) {
                 outPutDto.setId(td);
+                UserStore userStore = new UserStore();
+                userStore.setUserId(td);
                 outPutDto.setName(user.getName());
+                UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
+                if(userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())){
+                    outPutDto.setName(userStoreExists.getStoreName());
+                }
                 outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
                 outPutDto.setTallyAreaNos(user.getTallyAreaNos());
                 outPutDto.setMarketName(user.getMarketName());
