@@ -8,13 +8,16 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.EventMessage;
 import com.dili.trace.domain.TradeOrder;
-import com.dili.trace.enums.MessageStateEnum;
+import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.enums.MessageReceiverEnum;
+import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.MessageTypeEnum;
 import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.TradeOrderService;
+import com.dili.trace.service.TradeRequestService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,8 @@ public class EventMessageApi {
     EventMessageService eventMessageService;
     @Autowired
     TradeOrderService tradeOrderService;
+    @Autowired
+    TradeRequestService tradeRequestService;
 
     @ApiOperation(value = "已读/未读", notes = "已读/未读")
     @RequestMapping(value = "/read.api", method = RequestMethod.POST)
@@ -130,8 +135,9 @@ public class EventMessageApi {
      * @param out
      */
     private void setMessageOrderStatus(BasePage<EventMessage> out) {
-        if (!out.getDatas().isEmpty()) {
-            out.getDatas().stream().forEach(eventMessage -> {
+        List<EventMessage> messageList = out.getDatas();
+        if (!messageList.isEmpty() && null != messageList) {
+            StreamEx.of(messageList).nonNull().forEach(eventMessage -> {
                 Integer sourceCode = eventMessage.getSourceBusinessType();
                 //判断为订单交易类型
                 if (null == eventMessage.getSourceBusinessType()) {
@@ -140,8 +146,13 @@ public class EventMessageApi {
                 if ((MessageTypeEnum.BUYERORDER.getCode().equals(sourceCode) || MessageTypeEnum.SALERORDER.getCode().equals(sourceCode))) {
                     Long sourceBusinessId = eventMessage.getSourceBusinessId();
                     if (null != sourceBusinessId) {
-                        TradeOrder order = tradeOrderService.get(sourceBusinessId);
-                        eventMessage.setSourceOrderStatus(order.getOrderStatus());
+                        TradeRequest orderRequest = tradeRequestService.get(sourceBusinessId);
+                        if (null != orderRequest) {
+                            TradeOrder tradeOrder = this.tradeOrderService.get(orderRequest.getTradeOrderId());
+                            if (null != tradeOrder) {
+                                eventMessage.setSourceOrderStatus(tradeOrder.getOrderStatus());
+                            }
+                        }
                     }
                 }
             });
