@@ -8,6 +8,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.EventMessage;
 import com.dili.trace.enums.MessageStateEnum;
+import com.dili.trace.enums.MessageReceiverEnum;
 import com.dili.trace.service.EventMessageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -81,7 +82,7 @@ public class EventMessageApi {
             eventMessage.setOrder("desc");
             //默认查询普通用户消息
             if (null == eventMessage.getReceiverType()) {
-                eventMessage.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+                eventMessage.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
             }
             BasePage<EventMessage> out = eventMessageService.listPageByExample(eventMessage);
             return BaseOutput.success().setData(out);
@@ -105,7 +106,7 @@ public class EventMessageApi {
             eventMessage.setOrder("desc");
             //默认查询普通用户消息
             if (null == eventMessage.getReceiverType()) {
-                eventMessage.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+                eventMessage.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
             }
             BasePage<EventMessage> out = eventMessageService.listPageByExample(eventMessage);
             eventMessage.setReadFlag(MessageStateEnum.UNREAD.getCode());

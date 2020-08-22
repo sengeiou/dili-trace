@@ -12,7 +12,7 @@ import com.dili.trace.domain.MessageConfig;
 import com.dili.trace.domain.SmsMessage;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.MessageInputDto;
-import com.dili.trace.enums.MessageStateEnum;
+import com.dili.trace.enums.MessageReceiverEnum;
 import com.dili.trace.rpc.MessageRpc;
 import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.MessageService;
@@ -28,7 +28,7 @@ import java.text.MessageFormat;
 
 @Service
 @EnableRetry
-public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> implements MessageService {
+public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> implements MessageService {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageServiceImpl.class);
 
@@ -59,13 +59,12 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
         String wechatFlag = messageConfig.getWechatFlag();
         User creatorUser = userService.get(messageInputDto.getCreatorId());
         Long[] receiverIdArray = messageInputDto.getReceiverIdArray();
-        if(messageFlag.equals("1"))
-        {
+        if (messageFlag.equals("1")) {
             logger.info("send event message");
-            for (Long recevierId:receiverIdArray) {
+            for (Long recevierId : receiverIdArray) {
                 User receiverUser = userService.get(recevierId);
                 EventMessage eventMessage = new EventMessage();
-                String title =  MessageFormat.format(messageConfig.getEventMessageTitle(),
+                String title = MessageFormat.format(messageConfig.getEventMessageTitle(),
                         messageInputDto.getEventMessageTitleParam());
                 eventMessage.setTitle(title);
                 eventMessage.setOverview(title);
@@ -75,13 +74,13 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
                 eventMessage.setCreator(creatorUser.getName());
                 eventMessage.setCreatorId(creatorUser.getId());
                 //管理员类型的用户查询为空
-                if(null!=receiverUser){
+                if (null != receiverUser) {
                     eventMessage.setReceiver(receiverUser.getName());
                 }
                 eventMessage.setReceiverId(recevierId);
-                if(null==messageInputDto.getReceiverType()){
-                    eventMessage.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
-                }else{
+                if (null == messageInputDto.getReceiverType()) {
+                    eventMessage.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+                } else {
                     eventMessage.setReceiverType(messageInputDto.getReceiverType());
                 }
 
@@ -92,10 +91,9 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
 
         }
 
-        if(smsFlag.equals("1"))
-        {
+        if (smsFlag.equals("1")) {
             logger.info("send sms");
-            for (Long recevierId:receiverIdArray) {
+            for (Long recevierId : receiverIdArray) {
                 User receiverUser = userService.get(recevierId);
                 JSONObject params = new JSONObject();
                 params.put("marketCode", ExecutionConstants.MARKET_CODE);
@@ -104,7 +102,7 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
                 params.put("cellphone", receiverUser.getPhone());
                 // 根据不同messageType，传不同的参数（在各个消息节点中传递过来）
                 params.put("parameters", messageInputDto.getSmsContentParam());
-                logger.info("send sms RPC:"+params.toJSONString());
+                logger.info("send sms RPC:" + params.toJSONString());
                 BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
 
                 //插入日志
@@ -120,10 +118,9 @@ public class MessageServiceImpl  extends BaseServiceImpl<MessageConfig,Long> imp
             }
         }
 
-        if(wechatFlag.equals("1"))
-        {
+        if (wechatFlag.equals("1")) {
             logger.info("send wechat message");
-           // wxService.sendSubscribeMessageNotity("ohS1P5TvrPl_9opdpTvawbudNEwE",messageType.toString(),null);
+            // wxService.sendSubscribeMessageNotity("ohS1P5TvrPl_9opdpTvawbudNEwE",messageType.toString(),null);
         }
     }
 }

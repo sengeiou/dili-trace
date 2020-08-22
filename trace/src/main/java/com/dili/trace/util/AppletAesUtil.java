@@ -10,7 +10,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.security.Key;
 import java.security.Security;
 import java.util.Arrays;
@@ -92,16 +91,9 @@ public class AppletAesUtil {
 //       String iv = "EopC2cY9UI8FQiDYqECR9A==";
 
 
-
-       String content = "R6sEw39bC4LpuW1Rd3r74SCFqRRwMQXz63nDnGrSEuokggzfa/KVRYU/rDOkWADGlMYZJxi888GyYo0+rgT6jW/Y4cXZmsFk+dTymqcebTXhaiY1fTyCkd161xZlnAjgskWj/0u8RqSGWGyAPbvjwrNb87GhlATaFm29qsiXq361BxVFDKEVFeQd4PE3llCQDzzHtjQTy0+MGK8C8v8pog==";
-       String key = "2It8+4LNyM/XuqDsrMLznQ==";
-       String iv = "mmnNX8Aq/QW10JxkjbFEiQ==";
-        content = URLDecoder.decode(content, "UTF-8");
-        key = URLDecoder.decode(key, "UTF-8");
-        iv = URLDecoder.decode(iv, "UTF-8");
-        System.out.println("content:" + content);
-        System.out.println("key:" + key);
-        System.out.println("iv:" + iv);
+        String content = "R6sEw39bC4LpuW1Rd3r74SCFqRRwMQXz63nDnGrSEuokggzfa/KVRYU/rDOkWADGlMYZJxi888GyYo0+rgT6jW/Y4cXZmsFk+dTymqcebTXhaiY1fTyCkd161xZlnAjgskWj/0u8RqSGWGyAPbvjwrNb87GhlATaFm29qsiXq361BxVFDKEVFeQd4PE3llCQDzzHtjQTy0+MGK8C8v8pog==";
+        String key = "2It8+4LNyM/XuqDsrMLznQ==";
+        String iv = "mmnNX8Aq/QW10JxkjbFEiQ==";
         String result = AppletAesUtil.decrypt(content, key, iv);
         System.out.println("result:" + result);
     }
