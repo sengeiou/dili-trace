@@ -440,7 +440,7 @@ public class UserApi {
             userService.userBindWeChat(openid, Long.valueOf(user_id));
             return BaseOutput.success();
         } catch (TraceBusinessException e) {
-            return BaseOutput.failure("微信用户绑定失败");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("微信用户绑定失败", e);
             return BaseOutput.failure(e.getMessage());
@@ -456,7 +456,7 @@ public class UserApi {
             Boolean needTip = checkNeedTip(user);
             return BaseOutput.success().setData(needTip);
         } catch (TraceBusinessException e) {
-            return BaseOutput.failure("wx用户绑定弹窗查询失败");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("微信用户绑定查询失败", e);
             BaseOutput.failure(e.getMessage());
@@ -479,7 +479,7 @@ public class UserApi {
             }
             return BaseOutput.success().setData(isBind);
         } catch (TraceBusinessException e) {
-            return BaseOutput.failure("查询微信是否绑定用户失败");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("微信用户绑定查询失败", e);
             BaseOutput.failure(e.getMessage());
@@ -495,7 +495,7 @@ public class UserApi {
             userService.confirmBindWeChatTip(user_id);
             return BaseOutput.success();
         } catch (TraceBusinessException e) {
-            return BaseOutput.failure("用户绑定确认提示失败");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("wx用户绑定确认提示", e);
             BaseOutput.failure(e.getMessage());
