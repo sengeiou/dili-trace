@@ -47,7 +47,7 @@ public class EventMessageApi {
         try {
             eventMessageService.readMessage(eventMessage, MessageStateEnum.READ);
             //更新同一事件为已读
-            eventMessage = eventMessageService.get(eventMessage.getId());
+            /*eventMessage = eventMessageService.get(eventMessage.getId());
             if (null != eventMessage.getSourceBusinessType() && null != eventMessage.getSourceBusinessId()) {
                 EventMessage queObj = new EventMessage();
                 queObj.setSourceBusinessType(eventMessage.getSourceBusinessType());
@@ -55,7 +55,7 @@ public class EventMessageApi {
                 EventMessage upObj = new EventMessage();
                 upObj.setReadFlag(MessageStateEnum.READ.getCode());
                 eventMessageService.updateExactByExample(upObj, queObj);
-            }
+            }*/
             return BaseOutput.success();
         } catch (TraceBusinessException e) {
             LOGGER.error(e.getMessage(), e);
@@ -140,7 +140,7 @@ public class EventMessageApi {
             eventMessageService.updateExactByExample(upSource, eventMessage);
 
             //更新同一事件为已读
-            List<EventMessage> messageList = eventMessageService.listByExample(eventMessage);
+            /*List<EventMessage> messageList = eventMessageService.listByExample(eventMessage);
             if (!messageList.isEmpty()) {
                 messageList.stream().forEach(s -> {
                     if (null != s.getSourceBusinessType() && null != s.getSourceBusinessId()) {
@@ -152,7 +152,7 @@ public class EventMessageApi {
                         eventMessageService.updateExactByExample(upObj, queObj);
                     }
                 });
-            }
+            }*/
 
             return BaseOutput.success().setData(new HashMap<>().put("isRead", 1));
         } catch (TraceBusinessException e) {
