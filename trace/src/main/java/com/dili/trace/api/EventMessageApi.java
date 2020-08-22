@@ -7,9 +7,12 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.EventMessage;
+import com.dili.trace.domain.TradeOrder;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.MessageReceiverEnum;
+import com.dili.trace.enums.MessageTypeEnum;
 import com.dili.trace.service.EventMessageService;
+import com.dili.trace.service.TradeOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -37,6 +40,8 @@ public class EventMessageApi {
     private LoginSessionContext sessionContext;
     @Autowired
     EventMessageService eventMessageService;
+    @Autowired
+    TradeOrderService tradeOrderService;
 
     @ApiOperation(value = "已读/未读", notes = "已读/未读")
     @RequestMapping(value = "/read.api", method = RequestMethod.POST)
@@ -46,16 +51,6 @@ public class EventMessageApi {
         }
         try {
             eventMessageService.readMessage(eventMessage, MessageStateEnum.READ);
-            //更新同一事件为已读
-            /*eventMessage = eventMessageService.get(eventMessage.getId());
-            if (null != eventMessage.getSourceBusinessType() && null != eventMessage.getSourceBusinessId()) {
-                EventMessage queObj = new EventMessage();
-                queObj.setSourceBusinessType(eventMessage.getSourceBusinessType());
-                queObj.setSourceBusinessId(eventMessage.getSourceBusinessId());
-                EventMessage upObj = new EventMessage();
-                upObj.setReadFlag(MessageStateEnum.READ.getCode());
-                eventMessageService.updateExactByExample(upObj, queObj);
-            }*/
             return BaseOutput.success();
         } catch (TraceBusinessException e) {
             LOGGER.error(e.getMessage(), e);
@@ -115,6 +110,7 @@ public class EventMessageApi {
             if (!unReadList.isEmpty()) {
                 pendReadCount = unReadList.size();
             }
+            setMessageOrderStatus(out);
             Map<String, Object> map = new HashMap<>();
             map.put("list", out);
             map.put("pendReadCount", pendReadCount);
@@ -124,6 +120,31 @@ public class EventMessageApi {
         } catch (Exception e) {
             LOGGER.error("quit", e);
             return BaseOutput.failure();
+        }
+    }
+
+    /**
+     * 消息类型为订单，需要将订单状态返回
+     * 用于前端跳转订单中，买家发起需要卖家确认，判断逻辑
+     *
+     * @param out
+     */
+    private void setMessageOrderStatus(BasePage<EventMessage> out) {
+        if (!out.getDatas().isEmpty()) {
+            out.getDatas().stream().forEach(eventMessage -> {
+                Integer sourceCode = eventMessage.getSourceBusinessType();
+                //判断为订单交易类型
+                if (null == eventMessage.getSourceBusinessType()) {
+                    return;
+                }
+                if ((MessageTypeEnum.BUYERORDER.getCode().equals(sourceCode) || MessageTypeEnum.SALERORDER.getCode().equals(sourceCode))) {
+                    Long sourceBusinessId = eventMessage.getSourceBusinessId();
+                    if (null != sourceBusinessId) {
+                        TradeOrder order = tradeOrderService.get(sourceBusinessId);
+                        eventMessage.setSourceOrderStatus(order.getOrderStatus());
+                    }
+                }
+            });
         }
     }
 
@@ -138,22 +159,6 @@ public class EventMessageApi {
             EventMessage upSource = new EventMessage();
             upSource.setReadFlag(MessageStateEnum.READ.getCode());
             eventMessageService.updateExactByExample(upSource, eventMessage);
-
-            //更新同一事件为已读
-            /*List<EventMessage> messageList = eventMessageService.listByExample(eventMessage);
-            if (!messageList.isEmpty()) {
-                messageList.stream().forEach(s -> {
-                    if (null != s.getSourceBusinessType() && null != s.getSourceBusinessId()) {
-                        EventMessage queObj = new EventMessage();
-                        queObj.setSourceBusinessType(s.getSourceBusinessType());
-                        queObj.setSourceBusinessId(s.getSourceBusinessId());
-                        EventMessage upObj = new EventMessage();
-                        upObj.setReadFlag(MessageStateEnum.READ.getCode());
-                        eventMessageService.updateExactByExample(upObj, queObj);
-                    }
-                });
-            }*/
-
             return BaseOutput.success().setData(new HashMap<>().put("isRead", 1));
         } catch (TraceBusinessException e) {
             LOGGER.error(e.getMessage(), e);
