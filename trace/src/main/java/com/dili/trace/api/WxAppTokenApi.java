@@ -63,7 +63,7 @@ public class WxAppTokenApi {
             return BaseOutput.success().setData("初始化成功");
         } catch (TraceBusinessException e) {
             log.error("初始化小程序access_token失败", e);
-            return BaseOutput.failure("初始化小程序access_token失败");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("init_access_token异常", e);
             return BaseOutput.failure("初始化失败").setData(e.getMessage());
@@ -83,7 +83,7 @@ public class WxAppTokenApi {
             return BaseOutput.success("查询成功").setData(wxapp.getAccessToken());
         } catch (TraceBusinessException e) {
             log.error("获取小程序access_token失败", e);
-            return BaseOutput.failure("获取小程序access_token失败");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("get_access_token异常", e);
             return BaseOutput.failure(e.getMessage());
@@ -107,7 +107,7 @@ public class WxAppTokenApi {
             return BaseOutput.success("查询成功").setData(JSON.parse(session));
         } catch (TraceBusinessException e) {
             log.error("获取授权信息失败", e);
-            return BaseOutput.failure("获取授权信息失败");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("getWxOpenidUnionId异常", e);
             return BaseOutput.failure(e.getMessage());
@@ -134,7 +134,7 @@ public class WxAppTokenApi {
             return BaseOutput.success("查询成功").setData(objectMapper.readTree(userinfo));
         } catch (TraceBusinessException e) {
             log.error("获取用户信息", e);
-            return BaseOutput.failure("获取用户信息失败");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("get_userinfo异常", e);
             return BaseOutput.failure(e.getMessage());
@@ -174,7 +174,7 @@ public class WxAppTokenApi {
             return BaseOutput.success().setData(phone);
         } catch (TraceBusinessException e) {
             log.error("解密手机号码错误", e);
-            return BaseOutput.failure("解密手机号码错误");
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("解密手机号码错误", e);
             return BaseOutput.failure("解密手机号码错误");
