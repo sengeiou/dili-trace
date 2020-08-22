@@ -600,6 +600,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         StreamEx.of(tradeDetailList).forEach(td -> {
             if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
+                ProductStock productStock = this.batchStockService.selectByIdForUpdate(td.getProductStockId())
+                        .orElseThrow(() -> {
+                            return new TraceBusinessException("操作库存失败");
+                        });
                 TradeDetail tradeDetail = new TradeDetail();
                 tradeDetail.setId(td.getId());
                 tradeDetail.setStockWeight(td.getSoftWeight());
@@ -608,7 +612,6 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 tradeDetail.setIsBatched(TFEnum.TRUE.getCode());
                 this.tradeDetailService.updateSelective(tradeDetail);
 
-                ProductStock productStock = this.batchStockService.get(td.getProductStockId());
                 ProductStock productStockUpdate = new ProductStock();
                 productStockUpdate.setId(td.getProductStockId());
                 productStockUpdate.setStockWeight(productStock.getStockWeight().add(td.getSoftWeight()));
@@ -620,7 +623,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 parentTradeDetailForUpdate.setId(parentTradeDetail.getId());
                 parentTradeDetailForUpdate.setStockWeight(parentTradeDetail.getStockWeight().add(td.getSoftWeight()));
 
-                ProductStock productStock = this.batchStockService.get(parentTradeDetail.getProductStockId());
+                ProductStock productStock = this.batchStockService.selectByIdForUpdate(parentTradeDetail.getProductStockId())
+                        .orElseThrow(() -> {
+                            return new TraceBusinessException("操作库存失败");
+                        });
+
                 BigDecimal totalStockWeight = productStock.getStockWeight().add(td.getSoftWeight());
                 ProductStock productStockUpdate = new ProductStock();
                 productStockUpdate.setId(productStock.getId());
