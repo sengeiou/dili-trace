@@ -28,6 +28,7 @@ import com.dili.trace.dto.ManagerInfoDto;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.enums.MessageReceiverEnum;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.MessageTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
@@ -266,7 +267,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         messageInputDto.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
         messageInputDto.setSourceBusinessId(userId);
         messageInputDto.setEventMessageContentParam(new String[]{userName});
-        messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        messageInputDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
 
         List<ManagerInfoDto> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
         Set<Long> managerIdSet = new HashSet<>();
@@ -275,8 +276,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         });
         Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
         messageInputDto.setReceiverIdArray(managerId);
-        Map<String, Object> smsMap=new HashMap<>();
-        smsMap.put("userName",userName);
+        Map<String, Object> smsMap = new HashMap<>();
+        smsMap.put("userName", userName);
         messageInputDto.setSmsContentParam(smsMap);
         messageService.addMessage(messageInputDto);
     }

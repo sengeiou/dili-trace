@@ -182,7 +182,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
 
         //报备单新增消息
-        addMessage(registerBill,MessageTypeEnum.BILLSUBMIT.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
         return registerBill.getId();
     }
 
@@ -440,7 +440,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         this.doVerify(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
         //新增消息
-        addMessage(billItem,MessageTypeEnum.BILLPASS.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
         return billItem.getId();
     }
 
@@ -464,15 +464,15 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         this.doVerify(billItem, verifyStatus, reason, operatorUser);
         //新增消息
-        addMessage(billItem,MessageTypeEnum.BILLPASS.getCode(),MessageStateEnum.BUSINESS_TYPE_BILL.getCode(),MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
         return billItem.getId();
 
     }
 
 
-    private void addMessage(RegisterBill billItem, Integer messageType,Integer businessType,Integer receiverType) {
+    private void addMessage(RegisterBill billItem, Integer messageType, Integer businessType, Integer receiverType) {
 
-        Integer receiverNormal=10;
+        Integer receiverNormal = 10;
         MessageInputDto messageInputDto = new MessageInputDto();
         messageInputDto.setSourceBusinessType(businessType);
         messageInputDto.setSourceBusinessId(billItem.getId());
@@ -481,31 +481,31 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         messageInputDto.setReceiverType(receiverType);
         messageInputDto.setEventMessageContentParam(new String[]{billItem.getName()});
         //管理员
-        if(!receiverType.equals(receiverNormal)){
+        if (!receiverType.equals(receiverNormal)) {
             // 审核通过增加消息**已通过
-            List<ManagerInfoDto> manageList=manageSystemComponent.findUserByUserResource("user/index.html#list");
+            List<ManagerInfoDto> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
             Set<Long> managerIdSet = new HashSet<>();
-            StreamEx.of(manageList).nonNull().forEach(s->{
+            StreamEx.of(manageList).nonNull().forEach(s -> {
                 managerIdSet.add(s.getId());
             });
-            Long[] managerId=managerIdSet.toArray(new Long[managerIdSet.size()]);
+            Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
             messageInputDto.setReceiverIdArray(managerId);
-        }else{
+        } else {
             messageInputDto.setReceiverIdArray(new Long[]{billItem.getUserId()});
         }
         //审核通过/不通过/退回
         //增加卖家短信
-        Map<String,Object> smsMap=getSmsMap(billItem);
+        Map<String, Object> smsMap = getSmsMap(billItem);
         messageInputDto.setSmsContentParam(smsMap);
         messageService.addMessage(messageInputDto);
     }
 
     private Map<String, Object> getSmsMap(RegisterBill billItem) {
-        Map<String, Object> smsMap=new HashMap<>();
-        smsMap.put("userName",userService.get(billItem.getUserId()).getName());
-        smsMap.put("created", DateUtils.format(new Date(),"yyyy年MM月dd日 HH:mm:ss"));
-        smsMap.put("billNo",billItem.getCode());
-        smsMap.put("productName","商品:"+billItem.getProductName()+"    车号:"+billItem.getPlate());
+        Map<String, Object> smsMap = new HashMap<>();
+        smsMap.put("userName", userService.get(billItem.getUserId()).getName());
+        smsMap.put("created", DateUtils.format(new Date(), "yyyy年MM月dd日 HH:mm:ss"));
+        smsMap.put("billNo", billItem.getCode());
+        smsMap.put("productName", "商品:" + billItem.getProductName() + "    车号:" + billItem.getPlate());
         return smsMap;
     }
 

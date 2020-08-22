@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
+ *
  * @author asa.lee
  */
 @Service

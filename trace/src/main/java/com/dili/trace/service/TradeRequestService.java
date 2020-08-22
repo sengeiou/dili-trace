@@ -625,8 +625,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 ProductStock productStockUpdate = new ProductStock();
                 productStockUpdate.setId(productStock.getId());
                 productStockUpdate.setStockWeight(totalStockWeight);
-                if(parentTradeDetail.getStockWeight().compareTo(BigDecimal.ZERO) <= 0
-                    && parentTradeDetailForUpdate.getStockWeight().compareTo(BigDecimal.ZERO) > 0){
+                if (parentTradeDetail.getStockWeight().compareTo(BigDecimal.ZERO) <= 0
+                        && parentTradeDetailForUpdate.getStockWeight().compareTo(BigDecimal.ZERO) > 0) {
 
                     productStockUpdate.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
                     parentTradeDetailForUpdate.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
@@ -662,7 +662,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         messageInputDto.setEventMessageContentParam(new String[]{tradeNo});
         messageInputDto.setSourceBusinessType(businessType);
         messageInputDto.setSourceBusinessId(businessId);
-        messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        messageInputDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
         //增加卖家短信
         Map<String, Object> sellmap = new HashMap<>();
         sellmap.put("userName", sendUserId);
@@ -690,7 +690,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 userStore.setUserId(td);
                 outPutDto.setName(user.getName());
                 UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
-                if(userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())){
+                if (userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())) {
                     outPutDto.setName(userStoreExists.getStoreName());
                 }
                 outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
