@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.TradeRequestMapper">
+
+  <select id="queryListByOrderStatus" parameterType="com.dili.trace.api.input.TradeRequestInputDto" resultType="com.dili.trace.domain.TradeRequest">
+    <![CDATA[
+      SELECT r.id,r.buyer_id,r.buyer_name,r.code,r.created,r.modified,
+      r.product_name,r.product_stock_id,r.reason,r.return_status,r.seller_id,r.seller_name,r.spec_name,
+      r.trade_order_Id,r.trade_weight,r.weight_unit
+      FROM trade_request r,trade_order o WHERE o.id = r.trade_order_Id
+      AND (r.buyer_id = #{buyerId} OR r.seller_id = #{buyerId})
+      and (r.created >= #{createdStart} and r.created <=#{createdEnd})
+      and o.order_status = #{orderStatus}
+     ]]>
+  </select>
+
+</mapper>
