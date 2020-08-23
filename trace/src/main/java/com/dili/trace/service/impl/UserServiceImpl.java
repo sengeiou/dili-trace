@@ -490,6 +490,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setState(EnabledStateEnum.DISABLED.getCode());
         user.setYn(YnEnum.NO.getCode());
         user.setIsDelete(user.getId());
+        user.setOpenId("");
         this.updateSelective(user);
 
         // 删除用户车牌信息
