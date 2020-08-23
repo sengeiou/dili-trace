@@ -419,6 +419,7 @@
   (select sum(case when weight_unit=1 then total_weight /2 else total_weight end) transactionTotal,count(1) transactionBatch
     from trade_detail 
     where trade_detail.parent_id is not null
+    and trade_detail.sale_status = 10
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
     </if>
