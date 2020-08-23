@@ -708,6 +708,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         User openuser = DTOUtils.newDTO(User.class);
         openuser.setOpenId(openid);
+        openuser.setYn(YnEnum.YES.getCode());
         return null != getActualDao().selectOne(openuser);
     }
 
