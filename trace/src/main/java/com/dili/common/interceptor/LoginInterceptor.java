@@ -60,7 +60,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		if (interceptConfiguration == null || !interceptConfiguration.loginRequired()) {
 			return true;
 		}
-		/*if (sessionContext.getAccountId() == null) {// 用户id为空表示未登陆
+		if (sessionContext.getAccountId() == null) {// 用户id为空表示未登陆
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			BaseOutput baseOutput = new BaseOutput(ExecutionConstants.NO_LOGIN, "未登陆");
@@ -71,7 +71,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 				writer.close();
 			}
 			return false;
-		}*/
+		}
 		return true;
 	}
 
