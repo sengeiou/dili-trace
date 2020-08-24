@@ -1,4 +1,3 @@
-
 drop table if exists message_config;
 CREATE TABLE `message_config` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -125,14 +124,13 @@ SELECT u.`id`,u.`name`,CURRENT_TIMESTAMP FROM `user` u;
 
 -- patch 店铺名
 SET @i=0;
-SELECT s.id,s.user_id,s.store_name,CONCAT(s.store_name,'-',@i:=@i+1) FROM user_store s
+UPDATE user_store u,
+(SELECT s.id,s.user_id,s.store_name,CONCAT(s.store_name,'-',@i:=@i+1) new_store_name FROM user_store s
 JOIN (SELECT u.store_name NAME FROM user_store u 
 GROUP BY u.store_name
 HAVING COUNT(0)>1) tmp ON s.store_name=tmp.name
 LEFT JOIN (SELECT u.id FROM user_store u 
 GROUP BY u.store_name) n ON n.id=s.id
-WHERE n.id IS NULL;
-
-
-
-
+WHERE n.id IS NULL) tmp
+SET u.store_name=tmp.new_store_name
+WHERE u.id=tmp.id;
