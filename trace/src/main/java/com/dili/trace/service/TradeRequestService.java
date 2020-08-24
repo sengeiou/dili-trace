@@ -20,6 +20,7 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import one.util.streamex.EntryStream;
@@ -720,7 +721,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
             UserOutput outPutDto = new UserOutput();
             User user = this.userService.get(td);
-            if (user != null) {
+            if (user != null && user.getYn().equals(YnEnum.YES.getCode())) {
                 outPutDto.setId(td);
                 UserStore userStore = new UserStore();
                 userStore.setUserId(td);
