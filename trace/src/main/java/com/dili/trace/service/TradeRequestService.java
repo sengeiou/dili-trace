@@ -10,6 +10,8 @@ import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.input.TradeRequestHandleDto;
 import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.output.UserOutput;
+import com.dili.trace.dao.TradeDetailMapper;
+import com.dili.trace.dao.TradeRequestMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
@@ -18,6 +20,9 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.glossary.YnEnum;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,6 +62,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     @Autowired
     UserStoreService userStoreService;
+
+    @Autowired
+    TradeRequestMapper tradeRequestMapper;
 
     /**
      * 检查参数是否正确
@@ -331,7 +339,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      *
      * @param sellerId
      * @param buyerId
-     * @param tradeRequestType
+     * @param
      * @param batchStockInputList
      * @return
      */
@@ -578,6 +586,28 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return upStreamDto;
     }
 
+    public BasePage<TradeRequest> listPageForStatusOrder(TradeRequestInputDto dto,Long userId){
+        dto.setBuyerId(userId);
+        dto.setOrderStatus(TradeOrderStatusEnum.FINISHED.getCode());
+        if (dto.getPage() == null || dto.getPage() < 0) {
+            dto.setPage(1);
+        }
+        if (dto.getRows() == null || dto.getRows() <= 0) {
+            dto.setRows(10);
+        }
+        PageHelper.startPage(dto.getPage(), dto.getRows());
+        List<TradeRequest> list = this.tradeRequestMapper.queryListByOrderStatus(dto);
+        Page<TradeRequest> page = (Page) list;
+        BasePage<TradeRequest> result = new BasePage<TradeRequest>();
+        result.setDatas(list);
+        result.setPage(page.getPageNum());
+        result.setRows(page.getPageSize());
+        result.setTotalItem(Integer.parseInt(String.valueOf(page.getTotal())));
+        result.setTotalPage(page.getPages());
+        result.setStartIndex(page.getStartRow());
+        return result;
+    }
+
     public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest,
                                                                           Long userId) {
         tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR, "(buyer_id=" + userId + " OR seller_id=" + userId + ")");
@@ -689,7 +719,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
             UserOutput outPutDto = new UserOutput();
             User user = this.userService.get(td);
-            if (user != null) {
+            if (user != null && user.getYn().equals(YnEnum.YES.getCode())) {
                 outPutDto.setId(td);
                 UserStore userStore = new UserStore();
                 userStore.setUserId(td);

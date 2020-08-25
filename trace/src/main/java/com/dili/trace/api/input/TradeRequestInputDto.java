@@ -6,7 +6,6 @@ public class TradeRequestInputDto extends TradeRequestListInput {
     private Long traderOrderId;
     private String reason;
 
-
     /**
      * @return Long return the tradeRequestId
      */
@@ -50,5 +49,4 @@ public class TradeRequestInputDto extends TradeRequestListInput {
     public void setTraderOrderId(Long traderOrderId) {
         this.traderOrderId = traderOrderId;
     }
-
 }
