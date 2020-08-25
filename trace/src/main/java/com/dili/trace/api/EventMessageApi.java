@@ -102,8 +102,8 @@ public class EventMessageApi {
             return BaseOutput.failure("param is null");
         }
         try {
-            eventMessage.setSort("create_time");
-            eventMessage.setOrder("desc");
+            eventMessage.setSort("read_flag,create_time");
+            eventMessage.setOrder("asc,desc");
             //默认查询普通用户消息
             if (null == eventMessage.getReceiverType()) {
                 eventMessage.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());

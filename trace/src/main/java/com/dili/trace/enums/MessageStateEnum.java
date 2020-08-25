@@ -27,6 +27,11 @@ public enum MessageStateEnum {
     BUSINESS_TYPE_BILL(20, "报备"),
 
     /**
+     * 消息业务类型-报备(场内审核)
+     */
+    BUSINESS_TYPE_FIELD_BILL(21, "场内审核"),
+
+    /**
      * 消息业务类型-交易
      */
     BUSINESS_TYPE_TRADE(30, "购买"),
