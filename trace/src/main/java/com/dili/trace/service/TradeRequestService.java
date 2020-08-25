@@ -132,7 +132,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     }
 
-    /**
+    /**a
      * 创建购买请求
      *
      * @param buyerId
@@ -676,10 +676,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         //完成发送消息
         if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
             //下单消息--一个单一个消息方便跳转页面
-            StreamEx.of(tradeDetailList).forEach(td -> {
-                String productName = "商品名称:" + td.getProductName() + ",  重量:" + td.getSoftWeight() + "(" + WeightUnitEnum.fromCode(td.getWeightUnit()).get().getName() + "),  订单编号:" + tradeRequest.getCode();
-                addMessage(td.getSellerId(), td.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName);
-            });
+            String productName = "商品名称:" + tradeRequest.getProductName() + ",  重量:" + tradeRequest.getTradeWeight() + "(" + WeightUnitEnum.fromCode(tradeRequest.getWeightUnit()).get().getName() + "),  订单编号:" + tradeRequest.getCode();
+            addMessage(tradeRequest.getSellerId(), tradeRequest.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName);
         }
     }
 
