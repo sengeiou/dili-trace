@@ -110,7 +110,7 @@ public class EventMessageApi {
             }
             BasePage<EventMessage> out = eventMessageService.listPageByExample(eventMessage);
             eventMessage.setReadFlag(MessageStateEnum.UNREAD.getCode());
-            List<EventMessage> unReadList = eventMessageService.listByExample(eventMessage);
+            List<EventMessage> unReadList = eventMessageService.list(eventMessage);
             int pendReadCount = 0;
             if (!unReadList.isEmpty()) {
                 pendReadCount = unReadList.size();
