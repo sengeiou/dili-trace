@@ -74,6 +74,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Autowired
     ManageSystemComponent manageSystemComponent;
 
+    @Autowired
+    TradeRequestService tradeRequestService;
+
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -593,6 +596,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         dto.setCreatedStart(createdStart);
         dto.setCreatedEnd(createdEnd);
         List<Long> userIdList = this.getActualDao().selectUserIdWithouBill(dto);
+        if(userIdList == null)
+        {
+            userIdList = new ArrayList<>();
+        }
+        List<Long> buyerIdList = tradeRequestService.selectBuyerIdWithouTradeRequest(dto);
+        if(buyerIdList != null) {
+            userIdList.retainAll(buyerIdList);
+        }
         StreamEx.of(userIdList).nonNull().forEach(uid -> {
             this.userQrHistoryService.createUserQrHistoryForWithousBills(uid);
         });

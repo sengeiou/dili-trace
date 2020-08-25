@@ -53,6 +53,10 @@ public class UserQrHistory extends BaseDomain {
     @ApiModelProperty(value = "报备单ID")
     @Column(name = "`bill_id`")
     private Long billId;
+
+    @ApiModelProperty(value = "交易单ID")
+    @Column(name = "`trade_request_id`")
+    private Long tradeRequestId;
     
     @ApiModelProperty(value = "查验状态")
     @Column(name = "`verify_status`")
@@ -62,7 +66,14 @@ public class UserQrHistory extends BaseDomain {
     @Column(name = "`is_valid`")
     private Integer isValid;
 
-    
+    public Long getTradeRequestId() {
+        return tradeRequestId;
+    }
+
+    public void setTradeRequestId(Long tradeRequestId) {
+        this.tradeRequestId = tradeRequestId;
+    }
+
     /**
      * @return Long return the id
      */
