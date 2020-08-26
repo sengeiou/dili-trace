@@ -260,6 +260,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		query.setOrder("desc");
 		query.setPage(1);
 		query.setRows(1);
+		query.setIsValid(TFEnum.TRUE.getCode());
 		return StreamEx.of(this.listPageByExample(query).getDatas()).findFirst();
 	}
 
