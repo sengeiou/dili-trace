@@ -180,7 +180,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      *
      * @param sellerId
      * @param buyerId
-     * @param tradeRequestType
+     * @param tradeOrderItem
      * @param input
      * @return
      */
@@ -541,7 +541,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
 
             try {
-                userQrHistoryService.createUserQrHistoryForOrderReturn(tradeRequestItem.getId(),tradeRequestItem.getBuyerId());
+                userQrHistoryService.rollbackUserQrStatusForOrderReturn(tradeRequestItem.getId(),tradeRequestItem.getBuyerId());
             } catch (ParseException e) {
                 e.printStackTrace();
                 logger.error(e.getMessage(), e);

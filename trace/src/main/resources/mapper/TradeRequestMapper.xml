@@ -16,12 +16,12 @@
 
   <select id="selectBuyerIdWithouTradeRequest" parameterType="com.dili.trace.dto.UserListDto" resultType="java.lang.Long">
     select id from `user` where id not in(
-    select buyer_id from trade_request where return_status != 20
+    select t.buyer_id from trade_request t, trade_order o where t.return_status != 20 and o.order_status=10
     <if test="createdStart != null">
-      <![CDATA[ AND #{createdStart}<=created ]]>
+      <![CDATA[ AND #{createdStart}<=t.created ]]>
     </if>
     <if test="createdEnd != null">
-      <![CDATA[AND created <=#{createdEnd}]]>
+      <![CDATA[AND t.created <=#{createdEnd}]]>
     </if>
     )
     <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
