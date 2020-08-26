@@ -57,7 +57,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 					.orElse(UserQrStatusEnum.BLACK.getDesc());
 
 			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
-			userQrHistory.setContent("最近七天无报备" + ",变为" + color + "码");
+			userQrHistory.setContent("最近七天无报备且无交易单" + ",变为" + color + "码");
 			this.insertSelective(userQrHistory);
 			return userQrHistory;
 		});
@@ -160,88 +160,30 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		});
 	}
 
-	public UserQrHistory createUserQrHistoryForOrderReturn(Long tradeRequestId, Long userId) throws ParseException {
-		if (userId == null) {
-			return null;
-		}
-		User userItem = this.userService.get(userId);
-		if (userItem == null) {
-			return null;
-		}
-		LocalDateTime now = LocalDateTime.now();
-		Date startDate = this.start(now);
-		Date endDate = this.end(now);
 
+	public void rollbackUserQrStatusForOrderReturn(Long tradeRequestId, Long userId) throws ParseException {
+		if (tradeRequestId != null) {
+			UserQrHistory domain = new UserQrHistory();
+			// domain.setBillId(deletedBillId);
+			domain.setIsValid(TFEnum.FALSE.getCode());
 
-		// 查询最近7天报价单报价单
-		String createdSql = "created>='"+DateUtils.format(startDate)+"' and created<='"+DateUtils.format(endDate)+"'";
-		RegisterBill registerBill = new RegisterBill();
-		registerBill.setUserId(userId);
-		registerBill.setSort("id");
-		registerBill.setOrder("desc");
-		registerBill.setMetadata(IDTO.AND_CONDITION_EXPR,createdSql);
-		registerBill.setIsDeleted(0);
-		registerBill.setRows(1);
-		registerBill.setPage(1);
-		RegisterBill lastestBill = StreamEx.of(registerBillService.listPageByExample(registerBill).getDatas()).nonNull().findFirst().orElse(null);;
+			UserQrHistory condition = new UserQrHistory();
+			condition.setTradeRequestId(tradeRequestId);
+			condition.setUserId(userId);
+			this.updateSelectiveByExample(domain, condition);
 
-		// 查询最近7天交易单
-		TradeRequest tradeRequest = new TradeRequest();
-		tradeRequest.setBuyerId(userId);
-		tradeRequest.setSort("id");
-		tradeRequest.setOrder("desc");
-		tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR,createdSql+" and return_status != 20");
-		tradeRequest.setRows(1);
-		tradeRequest.setPage(1);
-		TradeRequest lastestTrade = StreamEx.of(tradeRequestService.listPageByExample(tradeRequest).getDatas()).nonNull().findFirst().orElse(null);
-		UserQrStatusEnum userQrStatus = UserQrStatusEnum.BLACK;
-		// 七天内无报价单和交易单
-		if(lastestBill != null || lastestTrade != null)
-		{
-			SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd");
-			Date before = sdf1.parse("1900-01-01");
-			Date tradeCreated = lastestTrade == null ? before : lastestTrade.getCreated();
-			Date billCreated = lastestBill == null ? before : lastestBill.getCreated();
-			if(tradeCreated.compareTo(billCreated) > 0)
-			{
-				userQrStatus = UserQrStatusEnum.GREEN;
-			}
-			else
-			{
-				BillVerifyStatusEnum billVerifyStatusEnum = BillVerifyStatusEnum.fromCode(lastestBill.getVerifyStatus())
-						.orElse(null);
-				if (billVerifyStatusEnum == null) {
-					return null;
-				}
-				switch (billVerifyStatusEnum) {
-					case PASSED:
-						userQrStatus = UserQrStatusEnum.GREEN;
-						break;
-					case NO_PASSED:
-						userQrStatus = UserQrStatusEnum.RED;
-						break;
-					case RETURNED:
-						userQrStatus = UserQrStatusEnum.YELLOW;
-						break;
-					case NONE:
-						userQrStatus = UserQrStatusEnum.YELLOW;
-						break;
-					default:
-						throw new TraceBusinessException("错误");
-				}
-			}
+			UserQrHistory query = new UserQrHistory();
+			query.setUserId(userId);
+			query.setPage(1);
+			query.setRows(1);
+			query.setSort("id");
+			query.setOrder("desc");
+			query.setIsValid(TFEnum.TRUE.getCode());
+			Integer userQrStatus = this.listPageByExample(query).getDatas().stream().findFirst()
+					.map(UserQrHistory::getQrStatus).orElse(UserQrStatusEnum.BLACK.getCode());
+			this.updateUserQrStatus(userId, userQrStatus);
+
 		}
-		if(!userItem.getQrStatus().equals(userQrStatus.getCode()))
-		{
-			String color = UserQrStatusEnum.fromCode(userQrStatus.getCode()).map(UserQrStatusEnum::getDesc).get();
-			this.updateUserQrStatus(userItem.getId(), userQrStatus.getCode());
-			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, userQrStatus.getCode());
-			userQrHistory.setContent("订单退回，还原码为" + color + "码");
-			userQrHistory.setTradeRequestId(tradeRequestId);
-			this.insertSelective(userQrHistory);
-			return userQrHistory;
-		}
-		return null;
 	}
 
 	protected Date start(LocalDateTime now) {

@@ -17,5 +17,4 @@ public interface TradeRequestMapper extends MyMapper<TradeRequest> {
     * @return
     */
    List<Long> selectBuyerIdWithouTradeRequest(UserListDto user);
-
 }

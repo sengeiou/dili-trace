@@ -73,7 +73,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     MessageService messageService;
     @Autowired
     ManageSystemComponent manageSystemComponent;
-
     @Autowired
     TradeRequestService tradeRequestService;
 
