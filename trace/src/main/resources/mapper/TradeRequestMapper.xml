@@ -14,4 +14,18 @@
      ]]>
   </select>
 
+  <select id="selectBuyerIdWithouTradeRequest" parameterType="com.dili.trace.dto.UserListDto" resultType="java.lang.Long">
+    select id from `user` where id not in(
+    select buyer_id from trade_request where return_status != 20
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND created <=#{createdEnd}]]>
+    </if>
+    )
+    <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
+
+  </select>
+
 </mapper>

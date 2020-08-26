@@ -16,6 +16,7 @@ import com.dili.trace.domain.*;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -65,6 +67,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     @Autowired
     TradeRequestMapper tradeRequestMapper;
+
+    @Autowired
+    UserQrHistoryService userQrHistoryService;
+
+    public TradeRequestMapper getActualDao() {
+        return (TradeRequestMapper) getDao();
+    }
 
     /**
      * 检查参数是否正确
@@ -124,7 +133,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     //下单消息
                     String productName = "商品名称:" + request.getProductName() + "重量:" + request.getTradeWeight() + WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName() + "订单编号:" + request.getCode();
                     addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName);
-
+                    // 卖家下单
+                    userQrHistoryService.createUserQrHistoryForOrder(request.getId(),buyerId);
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
@@ -528,6 +538,14 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 this.batchStockService.updateSelective(sellerBatchStock);
                 this.tradeDetailService.updateSelective(sellerTradeDetail);
             });
+
+
+            try {
+                userQrHistoryService.createUserQrHistoryForOrderReturn(tradeRequestItem.getId(),tradeRequestItem.getBuyerId());
+            } catch (ParseException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage(), e);
+            }
         }
 
         return tradeRequest.getId();
@@ -676,8 +694,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         //完成发送消息
         if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
             //下单消息--一个单一个消息方便跳转页面
-                String productName = "商品名称:" + tradeRequest.getProductName() + ",  重量:" + tradeRequest.getTradeWeight() + "(" + WeightUnitEnum.fromCode(tradeRequest.getWeightUnit()).get().getName() + "),  订单编号:" + tradeRequest.getCode();
-                addMessage(tradeRequest.getSellerId(), tradeRequest.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName);
+            String productName = "商品名称:" + tradeRequest.getProductName() + ",  重量:" + tradeRequest.getTradeWeight() + "(" + WeightUnitEnum.fromCode(tradeRequest.getWeightUnit()).get().getName() + "),  订单编号:" + tradeRequest.getCode();
+            addMessage(tradeRequest.getSellerId(), tradeRequest.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName);
+            userQrHistoryService.createUserQrHistoryForOrder(tradeRequest.getId(), tradeRequest.getBuyerId());
         }
     }
 
@@ -736,5 +755,15 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             }
         });
         return outPutDtoList;
+    }
+
+    /**
+     * 查询近7天有买商品的用户
+     * @param user
+     * @return
+     */
+    public List<Long> selectBuyerIdWithouTradeRequest(UserListDto user)
+    {
+        return getActualDao().selectBuyerIdWithouTradeRequest(user);
     }
 }
