@@ -74,6 +74,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Autowired
     ManageSystemComponent manageSystemComponent;
 
+    @Autowired
+    TradeRequestService tradeRequestService;
+
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -182,7 +185,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
 
         //报备单新增消息
-        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        Integer businessType=MessageStateEnum.BUSINESS_TYPE_BILL.getCode();
+        if(BillTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getBillType())){
+            businessType=MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
+        }
+        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
         return registerBill.getId();
     }
 
@@ -589,6 +596,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         dto.setCreatedStart(createdStart);
         dto.setCreatedEnd(createdEnd);
         List<Long> userIdList = this.getActualDao().selectUserIdWithouBill(dto);
+        if(userIdList == null)
+        {
+            userIdList = new ArrayList<>();
+        }
+        List<Long> buyerIdList = tradeRequestService.selectBuyerIdWithouTradeRequest(dto);
+        if(buyerIdList != null) {
+            userIdList.retainAll(buyerIdList);
+        }
         StreamEx.of(userIdList).nonNull().forEach(uid -> {
             this.userQrHistoryService.createUserQrHistoryForWithousBills(uid);
         });
