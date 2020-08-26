@@ -57,7 +57,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 					.orElse(UserQrStatusEnum.BLACK.getDesc());
 
 			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
-			userQrHistory.setContent("最近七天无报备" + ",变为" + color + "码");
+			userQrHistory.setContent("最近七天无报备且无交易单" + ",变为" + color + "码");
 			this.insertSelective(userQrHistory);
 			return userQrHistory;
 		});
