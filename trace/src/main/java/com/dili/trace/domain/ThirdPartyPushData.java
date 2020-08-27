@@ -8,6 +8,12 @@ import java.util.Date;
 @Table(name = "third_party_push_data")
 public class ThirdPartyPushData extends BaseDomain {
 
+    public ThirdPartyPushData() {}
+    public ThirdPartyPushData(String interfaceName, String tableName) {
+        this.interfaceName = interfaceName;
+        this.tableName = tableName;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -18,9 +24,6 @@ public class ThirdPartyPushData extends BaseDomain {
 
     @Column(name = "table_name")
     private String tableName;
-
-    @Column(name = "table_id")
-    private Long tableId;
 
     @Column(name = "push_time")
     private Date pushTime;
@@ -52,14 +55,6 @@ public class ThirdPartyPushData extends BaseDomain {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
-    }
-
-    public Long getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(Long tableId) {
-        this.tableId = tableId;
     }
 
     public Date getPushTime() {

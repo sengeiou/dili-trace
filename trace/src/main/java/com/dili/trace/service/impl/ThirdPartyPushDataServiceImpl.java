@@ -16,7 +16,6 @@ public class ThirdPartyPushDataServiceImpl extends BaseServiceImpl<ThirdPartyPus
     @Override
     public ThirdPartyPushData getThredPartyPushData(String tableName, Long tableId) {
         ThirdPartyPushData d = new ThirdPartyPushData();
-        d.setTableId(tableId);
         d.setTableName(tableName);
         d = StreamEx.of(this.list(d)).nonNull().findFirst().orElse(null);
         return d;
@@ -36,8 +35,8 @@ public class ThirdPartyPushDataServiceImpl extends BaseServiceImpl<ThirdPartyPus
         List<ThirdPartyPushData> insertThirtDataList = new ArrayList<>();
         Date currentDate = new Date();
         StreamEx.of(thirdPartyPushData).forEach(td ->{
-            td.setPushTime(currentDate);
             List<ThirdPartyPushData> thirdPartyPushDataList = this.list(td);
+            td.setPushTime(currentDate);
             if(thirdPartyPushDataList == null || thirdPartyPushDataList.size() == 0)
             {
                 insertThirtDataList.add(td);
