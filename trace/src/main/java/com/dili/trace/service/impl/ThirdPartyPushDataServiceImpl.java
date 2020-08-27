@@ -14,14 +14,6 @@ import java.util.List;
 public class ThirdPartyPushDataServiceImpl extends BaseServiceImpl<ThirdPartyPushData, Long> implements ThirdPartyPushDataService {
 
     @Override
-    public ThirdPartyPushData getThredPartyPushData(String tableName, Long tableId) {
-        ThirdPartyPushData d = new ThirdPartyPushData();
-        d.setTableName(tableName);
-        d = StreamEx.of(this.list(d)).nonNull().findFirst().orElse(null);
-        return d;
-    }
-
-    @Override
     public ThirdPartyPushData getThredPartyPushData(String tableName) {
         ThirdPartyPushData d = new ThirdPartyPushData();
         d.setTableName(tableName);
@@ -30,24 +22,22 @@ public class ThirdPartyPushDataServiceImpl extends BaseServiceImpl<ThirdPartyPus
     }
 
     @Override
-    public void updatePushTime(List<ThirdPartyPushData> thirdPartyPushData) {
-        List<ThirdPartyPushData> updateThirtDataList = new ArrayList<>();
-        List<ThirdPartyPushData> insertThirtDataList = new ArrayList<>();
+    public void updatePushTime(ThirdPartyPushData thirdPartyPushData) {
         Date currentDate = new Date();
-        StreamEx.of(thirdPartyPushData).forEach(td ->{
-            List<ThirdPartyPushData> thirdPartyPushDataList = this.list(td);
-            td.setPushTime(currentDate);
-            if(thirdPartyPushDataList == null || thirdPartyPushDataList.size() == 0)
-            {
-                insertThirtDataList.add(td);
-                td.setCreated(currentDate);
-            }
-            else
-            {
-                updateThirtDataList.add(thirdPartyPushDataList.get(0));
-            }
-        });
-        this.batchInsert(insertThirtDataList);
-        this.batchUpdateSelective(updateThirtDataList);
+        ThirdPartyPushData param = new ThirdPartyPushData();
+        param.setTableName(thirdPartyPushData.getTableName());
+        param.setInterfaceName(thirdPartyPushData.getInterfaceName());
+        List<ThirdPartyPushData> thirdPartyPushDataList = this.list(param);
+        thirdPartyPushData.setPushTime(currentDate);
+        if(thirdPartyPushDataList == null || thirdPartyPushDataList.size() == 0)
+        {
+            thirdPartyPushData.setCreated(currentDate);
+            this.insertSelective(thirdPartyPushData);
+        }
+        else
+        {
+            thirdPartyPushData.setId(thirdPartyPushDataList.get(0).getId());
+            this.updateSelective(thirdPartyPushData);
+        }
     }
 }
