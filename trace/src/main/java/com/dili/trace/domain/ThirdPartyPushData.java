@@ -5,8 +5,8 @@ import com.dili.ss.domain.BaseDomain;
 import javax.persistence.*;
 import java.util.Date;
 
-@Table(name = "thirty_party_push_data")
-public class ThirtyPartyPushData extends BaseDomain {
+@Table(name = "third_party_push_data")
+public class ThirdPartyPushData extends BaseDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
