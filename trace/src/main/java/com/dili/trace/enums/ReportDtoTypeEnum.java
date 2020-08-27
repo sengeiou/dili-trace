@@ -29,6 +29,36 @@ public enum ReportDtoTypeEnum {
 	 */
 	codeCount(40, "三色码状态数据统计"),
 
+	/**
+	 * 报备新增/编辑
+	 */
+	registerBill(110, "报备新增/编辑"),
+
+	/**
+	 * 上游新增/修改
+	 */
+	upstream(120, "上游新增/修改"),
+
+	/**
+	 * 下游新增/修改
+	 */
+	downstream(130, "下游新增/修改"),
+
+	/**
+	 * 扫码交易
+	 */
+	scanCodeOrder(140, "扫码交易"),
+
+	/**
+	 * 配送交易
+	 */
+	deliveryOrder(150, "配送交易"),
+
+	/**
+	 * 进门
+	 */
+	inDoor(160, "进门"),
+
 	;
 
 	private String name;
