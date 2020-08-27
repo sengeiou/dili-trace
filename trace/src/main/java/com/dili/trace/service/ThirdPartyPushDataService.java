@@ -2,12 +2,16 @@ package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.ThirdPartyPushData;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface ThirdPartyPushDataService extends BaseService<ThirdPartyPushData,Long> {
 
     ThirdPartyPushData getThredPartyPushData(String tableName, Long tableId);
+
+    ThirdPartyPushData getThredPartyPushData(String tableName);
 
     void updatePushTime(List<ThirdPartyPushData> thirdPartyPushData);
 }

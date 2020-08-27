@@ -218,7 +218,6 @@ public class DataReportService {
     /**
      * 刷新token或者返回当前有效的token
      * 
-     * @param forceRefresh 是否强制刷新
      */
     private Optional<String> getAccessToken() {
         String redisKey = this.accessTokeyRedisKey();
@@ -376,6 +375,19 @@ public class DataReportService {
         logger.info("上报:市场经营户数据统计");
         String path = "/thirdParty/bigClass/save";
         String url = this.reportContextUrl + path;
-        return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.categoryBigLevel);
+        return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.registerBill);
+    }
+
+    /**
+     * 报备新增/编辑
+     *
+     * @param reportRegisterBillDtos
+     * @return
+     */
+    public BaseOutput reportRegisterBill(List<ReportRegisterBillDto> reportRegisterBillDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:报备新增/编辑");
+        String path = "/thirdParty/enterBase/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportRegisterBillDtos, optUser, ReportDtoTypeEnum.registerBill);
     }
 }

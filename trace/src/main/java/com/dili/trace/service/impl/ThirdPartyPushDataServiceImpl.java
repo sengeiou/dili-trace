@@ -4,17 +4,27 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.ThirdPartyPushData;
 import com.dili.trace.service.ThirdPartyPushDataService;
 import one.util.streamex.StreamEx;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Service
 public class ThirdPartyPushDataServiceImpl extends BaseServiceImpl<ThirdPartyPushData, Long> implements ThirdPartyPushDataService {
 
     @Override
     public ThirdPartyPushData getThredPartyPushData(String tableName, Long tableId) {
         ThirdPartyPushData d = new ThirdPartyPushData();
         d.setTableId(tableId);
+        d.setTableName(tableName);
+        d = StreamEx.of(this.list(d)).nonNull().findFirst().orElse(null);
+        return d;
+    }
+
+    @Override
+    public ThirdPartyPushData getThredPartyPushData(String tableName) {
+        ThirdPartyPushData d = new ThirdPartyPushData();
         d.setTableName(tableName);
         d = StreamEx.of(this.list(d)).nonNull().findFirst().orElse(null);
         return d;
@@ -28,7 +38,7 @@ public class ThirdPartyPushDataServiceImpl extends BaseServiceImpl<ThirdPartyPus
         StreamEx.of(thirdPartyPushData).forEach(td ->{
             td.setPushTime(currentDate);
             List<ThirdPartyPushData> thirdPartyPushDataList = this.list(td);
-            if(thirdPartyPushDataList == null || thirdPartyPushData.size() == 0)
+            if(thirdPartyPushDataList == null || thirdPartyPushDataList.size() == 0)
             {
                 insertThirtDataList.add(td);
                 td.setCreated(currentDate);
