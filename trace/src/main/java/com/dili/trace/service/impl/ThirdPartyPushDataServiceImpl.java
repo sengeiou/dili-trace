@@ -10,6 +10,16 @@ import java.util.Date;
 import java.util.List;
 
 public class ThirdPartyPushDataServiceImpl extends BaseServiceImpl<ThirdPartyPushData, Long> implements ThirdPartyPushDataService {
+
+    @Override
+    public ThirdPartyPushData getThredPartyPushData(String tableName, Long tableId) {
+        ThirdPartyPushData d = new ThirdPartyPushData();
+        d.setTableId(tableId);
+        d.setTableName(tableName);
+        d = StreamEx.of(this.list(d)).nonNull().findFirst().orElse(null);
+        return d;
+    }
+
     @Override
     public void updatePushTime(List<ThirdPartyPushData> thirdPartyPushData) {
         List<ThirdPartyPushData> updateThirtDataList = new ArrayList<>();
