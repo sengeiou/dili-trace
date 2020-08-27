@@ -31,7 +31,7 @@ public class Category extends BaseDomain {
 
 	@ApiModelProperty(value = "层级")
 	@Column(name = "`level`")
-    private Integer level;
+	private Integer level;
 
 	@ApiModelProperty(value = "创建时间")
 	@Column(name = "`created`")
@@ -90,18 +90,18 @@ public class Category extends BaseDomain {
 	}
 
 
-    /**
-     * @return Integer return the level
-     */
-    public Integer getLevel() {
-        return level;
-    }
+	/**
+	 * @return Integer return the level
+	 */
+	public Integer getLevel() {
+		return level;
+	}
 
-    /**
-     * @param level the level to set
-     */
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
+	/**
+	 * @param level the level to set
+	 */
+	public void setLevel(Integer level) {
+		this.level = level;
+	}
 
 }

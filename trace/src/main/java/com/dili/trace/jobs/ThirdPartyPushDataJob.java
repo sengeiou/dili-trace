@@ -85,7 +85,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         this.
 
-        thirdPartyPushDataService.updatePushTime(pushDataList);
+                thirdPartyPushDataService.updatePushTime(pushDataList);
     }
 
 }
