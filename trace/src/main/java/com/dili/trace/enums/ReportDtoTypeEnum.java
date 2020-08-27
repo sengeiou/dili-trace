@@ -30,9 +30,14 @@ public enum ReportDtoTypeEnum {
 	codeCount(40, "三色码状态数据统计"),
 
     /**
-     * 商品类目
+     * 商品类目（一级）
      */
     categoryBigLevel(80, "商品大类新增/修改"),
+
+    /**
+     * 商品类目（二级）
+     */
+    categorySmallLevel(90, "商品小类新增/修改"),
 
     /**
 	 * 报备新增/编辑

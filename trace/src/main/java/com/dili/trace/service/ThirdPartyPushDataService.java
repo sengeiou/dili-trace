@@ -9,9 +9,7 @@ import java.util.List;
 @Service
 public interface ThirdPartyPushDataService extends BaseService<ThirdPartyPushData,Long> {
 
-    ThirdPartyPushData getThredPartyPushData(String tableName, Long tableId);
-
     ThirdPartyPushData getThredPartyPushData(String tableName);
 
-    void updatePushTime(List<ThirdPartyPushData> thirdPartyPushData);
+    void updatePushTime(ThirdPartyPushData thirdPartyPushData);
 }

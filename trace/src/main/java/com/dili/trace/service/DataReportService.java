@@ -366,16 +366,42 @@ public class DataReportService {
     }
 
     /**
-     * 市场经营户数据统计
+     * 商品大类新增/修改
      *
      * @param categoryDto
      * @return
      */
     public BaseOutput reportCategory(List<CategoryDto> categoryDto, Optional<OperatorUser> optUser) {
-        logger.info("上报:市场经营户数据统计");
+        logger.info("上报:商品大类新增/修改");
         String path = "/thirdParty/bigClass/save";
         String url = this.reportContextUrl + path;
-        return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.registerBill);
+        return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.categoryBigLevel);
+    }
+
+    /**
+     * 商品二级类目新增/修改
+     *
+     * @param categoryDto
+     * @return
+     */
+    public BaseOutput reportSecondCategory(List<CategorySecondDto> categoryDto, Optional<OperatorUser> optUser) {
+        logger.info("上报:商品二级类目新增/修改");
+        String path = "/thirdParty/smallClass/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.categorySmallLevel);
+    }
+
+    /**
+     * 商品二级类目新增/修改
+     *
+     * @param goodsDto
+     * @return
+     */
+    public BaseOutput reportGoods(List<GoodsDto> goodsDto, Optional<OperatorUser> optUser) {
+        logger.info("上报:商品新增/修改");
+        String path = "/thirdParty/goods/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, goodsDto, optUser, ReportDtoTypeEnum.categorySmallLevel);
     }
 
     /**
