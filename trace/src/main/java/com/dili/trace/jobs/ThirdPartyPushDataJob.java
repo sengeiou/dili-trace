@@ -1,15 +1,21 @@
 package com.dili.trace.jobs;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.ThirdPartyPushData;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.thirdparty.report.ReportRegisterBillDto;
-import com.dili.trace.service.CategoryService;
-import com.dili.trace.service.DataReportService;
-import com.dili.trace.service.ThirdPartyPushDataService;
+import com.dili.trace.dto.ThirdPartyReportDataQueryDto;
+import com.dili.trace.dto.thirdparty.report.*;
+import com.dili.trace.glossary.UserQrStatusEnum;
+import com.dili.trace.service.*;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import sun.plugin2.jvm.CircularByteBuffer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 @Component
