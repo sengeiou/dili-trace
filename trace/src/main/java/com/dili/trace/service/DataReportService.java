@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
@@ -17,14 +18,9 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ThirdPartyReportData;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.thirdparty.report.AccessTokenDto;
-import com.dili.trace.dto.thirdparty.report.CodeCountDto;
-import com.dili.trace.dto.thirdparty.report.MarketCountDto;
-import com.dili.trace.dto.thirdparty.report.RegionCountDto;
-import com.dili.trace.dto.thirdparty.report.ReportCountDto;
-import com.dili.trace.dto.thirdparty.report.ReportDto;
-import com.dili.trace.dto.thirdparty.report.UnqualifiedPdtInfo;
+import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.ReportDtoTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -336,5 +332,50 @@ public class DataReportService {
             logger.error(e.getMessage(), e);
             throw new TraceBusinessException("请求上报数据接口出错");
         }
+    }
+
+    protected BaseOutput postJson(String url, Object reportDto, Optional<OperatorUser> optUser, ReportDtoTypeEnum reportType) {
+
+        ThirdPartyReportData thirdPartyReportData = new ThirdPartyReportData();
+        thirdPartyReportData.setCreated(new Date());
+        thirdPartyReportData.setModified(new Date());
+
+        String data = JSON.toJSONString(reportDto);
+        thirdPartyReportData.setData(data);
+        String jsonBody = thirdPartyReportData.getData();
+
+        BaseOutput out = this.postJson(url, this.buildHeaderMap(), jsonBody, doc -> {
+            Boolean success = doc.read("$.success");
+            if (success != null && success) {
+                return BaseOutput.success();
+            } else {
+                String msg = doc.read("$.msg");
+                return BaseOutput.failure(msg);
+            }
+        });
+        thirdPartyReportData.setSuccess(out.isSuccess() ? 1 : 0);
+        thirdPartyReportData.setMsg(out.getMessage());
+        optUser.ifPresent(u -> {
+            thirdPartyReportData.setOperatorId(u.getId());
+            thirdPartyReportData.setOperatorName(u.getName());
+        });
+        thirdPartyReportData.setName(reportType.getName());
+        thirdPartyReportData.setType(reportType.getCode());
+        this.thirdPartyReportDataService.insertSelective(thirdPartyReportData);
+
+        return out;
+    }
+
+    /**
+     * 市场经营户数据统计
+     *
+     * @param categoryDto
+     * @return
+     */
+    public BaseOutput reportCategory(List<CategoryDto> categoryDto, Optional<OperatorUser> optUser) {
+        logger.info("上报:市场经营户数据统计");
+        String path = "/thirdParty/bigClass/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.categoryBigLevel);
     }
 }
