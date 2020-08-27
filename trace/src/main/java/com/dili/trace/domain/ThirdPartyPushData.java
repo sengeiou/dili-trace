@@ -20,7 +20,7 @@ public class ThirdPartyPushData extends BaseDomain {
     private String tableName;
 
     @Column(name = "table_id")
-    private Integer tableId;
+    private Long tableId;
 
     @Column(name = "push_time")
     private Date pushTime;
@@ -54,11 +54,11 @@ public class ThirdPartyPushData extends BaseDomain {
         this.tableName = tableName;
     }
 
-    public Integer getTableId() {
+    public Long getTableId() {
         return tableId;
     }
 
-    public void setTableId(Integer tableId) {
+    public void setTableId(Long tableId) {
         this.tableId = tableId;
     }
 
