@@ -1,17 +1,17 @@
 package com.dili.trace.dto.thirdparty.report;
 
 public class CategorySecondDto {
-    private String market = "1";
+    private String marketId = "330110800";
     private String smallClassName;
     private String thirdBigClassId;
     private String thirdSmallClassId;
 
-    public String getMarket() {
-        return market;
+    public String getMarketId() {
+        return marketId;
     }
 
-    public void setMarket(String market) {
-        this.market = market;
+    public void setMarketId(String marketId) {
+        this.marketId = marketId;
     }
 
     public String getThirdBigClassId() {
