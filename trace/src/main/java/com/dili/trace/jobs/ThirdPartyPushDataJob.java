@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
@@ -22,6 +23,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
 
@@ -65,6 +67,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         this.pushCategory("category_goods", "商品新增/修改", 2, optUser);*/
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         this.pushUserQrCode(optUser);
+        this.pushUserSaveUpdate(optUser);
     }
 
     // 每五分钟提交一次数据
@@ -170,7 +173,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             updateTime = new Date();
             pushData = new ThirdPartyPushData();
             pushData.setTableName("user_qr_history");
-            pushData.setInterfaceName("食安码新增/编辑");
+            pushData.setInterfaceName("食安码新增/修改");
             pushData.setPushTime(updateTime);
         } else {
             updateTime = pushData.getPushTime();
@@ -214,6 +217,46 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
         StreamEx.ofNullable(this.userService.list(null))
+                .nonNull().flatCollection(Function.identity()).map(info -> {
+            //push后修改了用户信息
+            if (finalNewPushFlag || finalUpdateTime.compareTo(info.getModified()) < 0) {
+                ReportUserDto reportUser = thirdDataReportService.reprocessUser(info);
+                reportUserDtoList.add(reportUser);
+                return true;
+            }
+            return false;
+        }).toList();
+
+        System.out.print("pushUserSaveUpdate:" + JSON.toJSONString(reportUserDtoList));
+        BaseOutput baseOutput =this.dataReportService.reportUserSaveUpdate(reportUserDtoList, optUser);
+        if(baseOutput.isSuccess()){
+            this.thirdPartyPushDataService.updatePushTime(pushData);
+        }
+        return baseOutput;
+    }
+
+    private BaseOutput pushUserDelete(Optional<OperatorUser> optUser) {
+        Date updateTime = null;
+        boolean newPushFlag = true;
+        List<ReportUserDto> reportUserDtoList = new ArrayList<>();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user_delete");
+        if (pushData == null) {
+            updateTime = new Date();
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName("user_delete");
+            pushData.setInterfaceName("经营户作废");
+            pushData.setPushTime(updateTime);
+        } else {
+            updateTime = pushData.getPushTime();
+            newPushFlag = false;
+        }
+
+        Date finalUpdateTime = updateTime;
+        boolean finalNewPushFlag = newPushFlag;
+        Timestamp sqlPushTime = new Timestamp(updateTime.getTime());
+        User queUser = DTOUtils.newDTO(User.class);
+        queUser.setMetadata(IDTO.AND_CONDITION_EXPR," yn = -1 and modified > '"+sqlPushTime+"'");
+        StreamEx.ofNullable(this.userService.list(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
             if (finalNewPushFlag || finalUpdateTime.compareTo(info.getModified()) < 0) {
