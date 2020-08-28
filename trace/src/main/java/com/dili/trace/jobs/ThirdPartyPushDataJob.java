@@ -351,14 +351,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
         Integer part = checkInList.size() / batchSize; // 分批数
         // 上报
-        for (int i = 0; i < part; i++) {
-            List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, (i + 1) * batchSize);
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i==part ? checkInList.size() : (i + 1) * batchSize;
+            List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, endPos);
             baseOutput = this.dataReportService.reportCheckIn(partBills, optUser);
         }
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
             // TODO:endTime应该传入进去
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
         }
