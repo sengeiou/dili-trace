@@ -1,16 +1,9 @@
 package com.dili.trace.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
@@ -25,22 +18,23 @@ import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ParseContext;
-
+import com.jayway.jsonpath.*;
+import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.http.HttpUtil;
-import one.util.streamex.StreamEx;
-import tk.mybatis.mapper.annotation.RegisterMapper;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * 数据上报接口服务
@@ -339,7 +333,7 @@ public class DataReportService {
         thirdPartyReportData.setCreated(new Date());
         thirdPartyReportData.setModified(new Date());
 
-        String data = JSON.toJSONString(reportDto);
+        String data = JSON.toJSONString(reportDto, SerializerFeature.WriteMapNullValue);
         thirdPartyReportData.setData(data);
         String jsonBody = thirdPartyReportData.getData();
 
@@ -405,6 +399,30 @@ public class DataReportService {
     }
 
     /**
+     * 经营户新增/编辑
+     *
+     * @param reportUserDtos
+     * @return
+     */
+    public BaseOutput reportUserSaveUpdate(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:经营户新增/编辑");
+        String path = "/thirdParty/account/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserSave);
+    }
+
+    /**
+     * 食安码新增/修改
+     * @param pushList
+     * @param optUser
+     */
+    public BaseOutput reportUserQrCode(List<ReportQrCodeDto> pushList, Optional<OperatorUser> optUser) {
+        logger.info("上报:食安码新增/编辑");
+        String path = "/thirdParty/code/updateAccount";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, pushList, optUser, ReportDtoTypeEnum.userQrCode);
+    }
+    /**
      * 报备新增/编辑
      *
      * @param reportRegisterBillDtos
@@ -415,5 +433,18 @@ public class DataReportService {
         String path = "/thirdParty/enterBase/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportRegisterBillDtos, optUser, ReportDtoTypeEnum.registerBill);
+    }
+
+    /**
+     * 进门
+     *
+     * @param checkInDtos
+     * @return
+     */
+    public BaseOutput reportCheckIn(List<ReportCheckInDto> checkInDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:进门");
+        String path = "/thirdParty/inDoor/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, checkInDtos, optUser, ReportDtoTypeEnum.inDoor);
     }
 }
