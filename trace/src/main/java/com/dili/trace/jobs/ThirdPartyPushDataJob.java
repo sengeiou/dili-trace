@@ -2,6 +2,7 @@ package com.dili.trace.jobs;
 
 import cn.hutool.core.date.DateUtil;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.Category;
 import com.dili.trace.domain.ImageCert;
@@ -49,6 +50,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private ImageCertService imageCertService;
     @Value("${current.baseWebPath}")
     private String baseWebPath;
+    @Value("${push.batch.size}")
+    private Integer pushBatchSize;
+    @Autowired
+    CheckinOutRecordMapper checkinOutRecordMapper;
 
     private String marketId = "330110800";
 
@@ -63,7 +68,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
     // 每五分钟提交一次数据
-    // @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
@@ -184,7 +189,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
         }
         List<ReportRegisterBillDto> billList = StreamEx.ofNullable(this.registerBillMapper.selectRegisterBillReport(billDto))
-            .nonNull().flatCollection(Function.identity()).map(bill -> {
+                .nonNull().flatCollection(Function.identity()).map(bill -> {
                     return dealReportRegisterBillDto(statusMap, bill);
                 }).toList();
 
@@ -192,10 +197,59 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             return new BaseOutput("200", "没有需要推送的报备单数据");
         }
 
-        // TODO:分批上报
-
+        // 分批上报
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 :  pushBatchSize;
+        Integer part = billList.size() / batchSize; // 分批数
         // 上报
-        BaseOutput baseOutput = this.dataReportService.reportRegisterBill(billList, optUser);
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i==part ? billList.size() : (i + 1) * batchSize;
+            List<ReportRegisterBillDto> partBills = billList.subList(i * batchSize, endPos);
+            baseOutput = this.dataReportService.reportRegisterBill(partBills, optUser);
+        }
+
+        // 更新 pushtime
+        if (baseOutput.isSuccess()) {
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
+            // TODO:endTime应该传入进去
+            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
+        }
+        return baseOutput;
+    }
+
+    public BaseOutput reportCheckIn(Optional<OperatorUser> optUser) {
+
+        String tableName = "checkinout_record";
+        String interfaceName = "进门";
+        Date endTime = new Date();
+
+        // 查询待上报的进门单
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        RegisterBillDto queryDto = new RegisterBillDto();
+        queryDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        if (thirdPartyPushData != null) {
+            queryDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+
+        List<ReportCheckInDto> checkInList = StreamEx.ofNullable(this.checkinOutRecordMapper.selectCheckInReport(queryDto))
+                .nonNull().flatCollection(Function.identity()).map(checkIn -> {
+                    checkIn.setMarketId(marketId);
+                    return checkIn;
+                }).toList();
+
+        if (CollectionUtils.isEmpty(checkInList)) {
+            return new BaseOutput("200", "没有需要推送的进门单数据");
+        }
+
+        // 分批上报
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 :  pushBatchSize;
+        Integer part = checkInList.size() / batchSize; // 分批数
+        // 上报
+        for (int i = 0; i < part; i++) {
+            List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, (i + 1) * batchSize);
+            baseOutput = this.dataReportService.reportCheckIn(partBills, optUser);
+        }
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {

@@ -15,7 +15,8 @@ public class ReportRegisterBillDto implements ReportDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date approvalTime;// 审核时间
     private String brand;// 品牌
-    private String enterTime;// 报备时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date enterTime;// 报备时间
     private String marketId;// 市场id
     private String productionStr;// 产地字符串 省市区之间用-分隔
     private List<CredentialInfoDto> pzAddVoList;// 照片集合
@@ -32,7 +33,7 @@ public class ReportRegisterBillDto implements ReportDto {
     @JsonIgnore
     @Override
     public ReportDtoTypeEnum getType(){
-        return ReportDtoTypeEnum.reportCount;
+        return ReportDtoTypeEnum.registerBill;
     };
 
     public String getApprovalName() {
@@ -67,11 +68,11 @@ public class ReportRegisterBillDto implements ReportDto {
         this.brand = brand;
     }
 
-    public String getEnterTime() {
+    public Date getEnterTime() {
         return enterTime;
     }
 
-    public void setEnterTime(String enterTime) {
+    public void setEnterTime(Date enterTime) {
         this.enterTime = enterTime;
     }
 

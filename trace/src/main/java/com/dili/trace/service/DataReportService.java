@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
@@ -339,7 +340,7 @@ public class DataReportService {
         thirdPartyReportData.setCreated(new Date());
         thirdPartyReportData.setModified(new Date());
 
-        String data = JSON.toJSONString(reportDto);
+        String data = JSON.toJSONString(reportDto, SerializerFeature.WriteMapNullValue);
         thirdPartyReportData.setData(data);
         String jsonBody = thirdPartyReportData.getData();
 
@@ -415,5 +416,18 @@ public class DataReportService {
         String path = "/thirdParty/enterBase/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportRegisterBillDtos, optUser, ReportDtoTypeEnum.registerBill);
+    }
+
+    /**
+     * 进门
+     *
+     * @param checkInDtos
+     * @return
+     */
+    public BaseOutput reportCheckIn(List<ReportCheckInDto> checkInDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:进门");
+        String path = "/thirdParty/inDoor/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, checkInDtos, optUser, ReportDtoTypeEnum.inDoor);
     }
 }
