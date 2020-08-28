@@ -39,11 +39,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Autowired
     private ImageCertService imageCertService;
     @Autowired
-    private  UserService userService;
+    private UserService userService;
     @Autowired
-    private  UserQrHistoryService userQrHistoryService;
+    private UserQrHistoryService userQrHistoryService;
     @Autowired
-    private  ThirdDataReportService thirdDataReportService;
+    private ThirdDataReportService thirdDataReportService;
 
 
     @Value("${current.baseWebPath}")
@@ -57,8 +57,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-         //Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-         //this.reportRegisterBill(optUser);
+        //Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        //this.reportRegisterBill(optUser);
         /*Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         this.pushBigCategory(optUser);
         this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
@@ -81,41 +81,37 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
-    private void pushBigCategory(Optional<OperatorUser> optUser)
-    {
+    private void pushBigCategory(Optional<OperatorUser> optUser) {
         String tableName = "category_bigClass";
         String interfaceName = "商品大类新增/修改";
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
-        if(thirdPartyPushData == null) {
+        if (thirdPartyPushData == null) {
             PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
             List<CategoryDto> categoryDtos = new ArrayList<>();
             int i = 1;
-            for(PreserveTypeEnum td : preserveTypeEnums){
+            for (PreserveTypeEnum td : preserveTypeEnums) {
                 CategoryDto categoryDto = new CategoryDto();
                 categoryDto.setThirdBigClassName(td.getName());
                 categoryDto.setThirdBigClassId(String.valueOf(i));
                 categoryDtos.add(categoryDto);
                 i++;
-            };
+            }
+            ;
             BaseOutput baseOutput = this.dataReportService.reportCategory(categoryDtos, optUser);
-            if(baseOutput.isSuccess())
-            {
+            if (baseOutput.isSuccess()) {
                 ThirdPartyPushData pushData = new ThirdPartyPushData();
                 pushData.setTableName(tableName);
                 pushData.setInterfaceName(interfaceName);
                 this.thirdPartyPushDataService.updatePushTime(pushData);
-            }
-            else
-            {
+            } else {
                 logger.error("上报:商品大类新增/修改 失败，原因:{}", baseOutput.getMessage());
             }
         }
     }
 
     private void pushCategory(String tableName, String interfaceName,
-                              Integer level, Optional<OperatorUser> optUser)
-    {
+                              Integer level, Optional<OperatorUser> optUser) {
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
         Category category = new Category();
@@ -125,12 +121,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
         BaseOutput baseOutput = new BaseOutput();
-        if(tableName.equals("category_smallClass")) {
+        if (tableName.equals("category_smallClass")) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
             int i = 1;
             PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
-            for(PreserveTypeEnum type : preserveTypeEnums) {
-                for(Category td : categories){
+            for (PreserveTypeEnum type : preserveTypeEnums) {
+                for (Category td : categories) {
                     if (thirdPartyPushData == null || thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0) {
                         CategorySecondDto categoryDto = new CategorySecondDto();
                         categoryDto.setThirdSmallClassId(td.getId().toString());
@@ -138,16 +134,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                         categoryDto.setThirdBigClassId(String.valueOf(i));
                         categoryDtos.add(categoryDto);
                     }
-                };
+                }
+                ;
                 i++;
             }
             baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser);
-        }
-        else if(tableName.equals("category_goods"))
-        {
+        } else if (tableName.equals("category_goods")) {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
-                if (thirdPartyPushData == null || thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0){
+                if (thirdPartyPushData == null || thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0) {
                     GoodsDto categoryDto = new GoodsDto();
                     categoryDto.setGoodsName(td.getName());
                     categoryDto.setThirdGoodsId(td.getId().toString());
@@ -158,11 +153,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser);
         }
 
-        if(baseOutput.isSuccess()) {
+        if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
-        }
-        else
-        {
+        } else {
             logger.error("上报:{} 失败，原因:{}", interfaceName, baseOutput.getMessage());
         }
 
@@ -194,7 +187,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
         });
         List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
-        System.out.print("ReportQrCodeDto:"+ JSON.toJSONString(pushList));
+        System.out.print("ReportQrCodeDto:" + JSON.toJSONString(pushList));
         BaseOutput baseOutput = this.dataReportService.reportUserQrCode(pushList, optUser);
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
@@ -245,10 +238,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // verify_status "待审核"0, "已退回10, "已通过20, "不通过30
         // approvalStatus 审核状态 0-默认未审核 1-通过 2-退回 3-未通过
         Map<Integer, Integer> statusMap = new HashMap<>();
-        statusMap.put(0,0);
-        statusMap.put(20,1);
-        statusMap.put(10,2);
-        statusMap.put(30,3);
+        statusMap.put(0, 0);
+        statusMap.put(20, 1);
+        statusMap.put(10, 2);
+        statusMap.put(30, 3);
 
         // 查询待上报的报备单
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
@@ -268,11 +261,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 :  pushBatchSize;
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
         Integer part = billList.size() / batchSize; // 分批数
         // 上报
         for (int i = 0; i <= part; i++) {
-            Integer endPos = i==part ? billList.size() : (i + 1) * batchSize;
+            Integer endPos = i == part ? billList.size() : (i + 1) * batchSize;
             List<ReportRegisterBillDto> partBills = billList.subList(i * batchSize, endPos);
             baseOutput = this.dataReportService.reportRegisterBill(partBills, optUser);
         }
@@ -312,7 +305,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 :  pushBatchSize;
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
         Integer part = checkInList.size() / batchSize; // 分批数
         // 上报
         for (int i = 0; i < part; i++) {
