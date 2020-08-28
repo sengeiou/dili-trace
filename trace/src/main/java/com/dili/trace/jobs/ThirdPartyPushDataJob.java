@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
@@ -12,6 +13,8 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.PreserveTypeEnum;
+import com.dili.trace.glossary.UpStreamSourceEnum;
+import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,6 +48,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private UserQrHistoryService userQrHistoryService;
     @Autowired
     private ThirdDataReportService thirdDataReportService;
+    @Autowired
+    private UpStreamService upStreamService;
 
 
     @Value("${current.baseWebPath}")
@@ -65,9 +70,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
         this.pushCategory("category_goods", "商品新增/修改", 2, optUser);*/
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        this.pushUserQrCode(optUser);
+        /*this.pushUserQrCode(optUser);
         this.pushUserSaveUpdate(optUser);
-        this.pushUserDelete(optUser);
+        this.pushUserDelete(optUser);*/
+        this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
+        this.pushStream("upstream_down", "下游新增/修改", 20, optUser);
     }
 
     // 每五分钟提交一次数据
@@ -75,10 +82,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            this.pushBigCategory(optUser);
+           /* this.pushBigCategory(optUser);
             this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
             this.pushCategory("category_goods", "商品新增/修改", 2, optUser);
             this.reportRegisterBill(optUser);
+            this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
+            this.pushStream("upstream_down", "下游新增/修改", 20, optUser);*/
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -410,6 +420,151 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
         bill.setPzAddVoList(pzAddVoList);
         return bill;
+    }
+
+    private void pushStream(String tableName, String interfaceName,
+                              Integer type, Optional<OperatorUser> optUser) {
+        ThirdPartyPushData thirdPartyPushData =
+                thirdPartyPushDataService.getThredPartyPushData(tableName);
+        UpStream upStream = new UpStream();
+        upStream.setUpORdown(type);
+        if(thirdPartyPushData != null)
+        {
+            upStream.setMetadata(IDTO.AND_CONDITION_EXPR,
+                    "modified>'"+ DateUtils.format(thirdPartyPushData.getPushTime())+"'");
+        }
+        List<UpStream> upStreams = upStreamService.listByExample(upStream);
+        if(upStreams == null || upStreams.size() == 0)
+        {
+            return;
+        }
+        BaseOutput baseOutput = new BaseOutput();
+        // 上游
+        if(type.intValue() == 10){
+            baseOutput = reportUpStream(optUser, upStreams);
+        }
+        else{
+            baseOutput = reportDownStream(optUser, upStreams);
+        }
+
+        ThirdPartyPushData pushData = new ThirdPartyPushData();
+        pushData.setTableName(tableName);
+        pushData.setInterfaceName(interfaceName);
+
+        if (baseOutput.isSuccess()) {
+            this.thirdPartyPushDataService.updatePushTime(pushData);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", interfaceName, baseOutput.getMessage());
+        }
+
+    }
+
+    private BaseOutput reportUpStream(Optional<OperatorUser> optUser, List<UpStream> upStreams) {
+        BaseOutput baseOutput;
+        List<UpStreamDto> upStreamDtos = new ArrayList<>();
+        StreamEx.of(upStreams).forEach(td -> {
+            UpStreamDto upStreamDto = new UpStreamDto();
+            upStreamDto.setIdCard(td.getIdCard());
+            upStreamDto.setLegalPerson(td.getLegalPerson());
+            upStreamDto.setLicense(td.getLicense());
+            upStreamDto.setQyName(td.getName());
+            upStreamDto.setTel(td.getTelphone());
+            upStreamDto.setThirdAccountId(td.getSourceUserId() == null ? "" : td.getSourceUserId().toString());
+            upStreamDto.setThirdUpId(td.getId().toString());
+            int upStreamType = td.getUpstreamType().intValue();
+            List<UpStreamDto.PzVo> poVoList = new ArrayList<>();
+            upStreamDto.setPzVoList(poVoList);
+            // 10 个人
+            if (upStreamType == 10) {
+                upStreamDto.setType(1);
+                UpStreamDto.PzVo pzVoFront = new UpStreamDto.PzVo();
+                pzVoFront.setCredentialName("身份证正面");
+                pzVoFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
+
+                UpStreamDto.PzVo pzVoBack = new UpStreamDto.PzVo();
+                pzVoBack.setCredentialName("身份证反面");
+                pzVoBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
+
+                poVoList.add(pzVoFront);
+                poVoList.add(pzVoBack);
+
+            } else {
+                upStreamDto.setType(0);
+                UpStreamDto.PzVo pzVoBusiness = new UpStreamDto.PzVo();
+                pzVoBusiness.setCredentialName("营业执照");
+                pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
+
+                UpStreamDto.PzVo pzVoManu = new UpStreamDto.PzVo();
+                pzVoManu.setCredentialName("生产许可证");
+                pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
+
+                UpStreamDto.PzVo pzVoOperate = new UpStreamDto.PzVo();
+                pzVoOperate.setCredentialName("经营许可证");
+                pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
+
+                poVoList.add(pzVoBusiness);
+                poVoList.add(pzVoOperate);
+                poVoList.add(pzVoOperate);
+            }
+            upStreamDtos.add(upStreamDto);
+        });
+        baseOutput = dataReportService.reportUpStream(upStreamDtos, optUser);
+        return baseOutput;
+    }
+
+    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams) {
+        BaseOutput baseOutput;
+        List<DownStreamDto> downStreamDtos = new ArrayList<>();
+        StreamEx.of(upStreams).forEach(td -> {
+            DownStreamDto downStreamDto = new DownStreamDto();
+            downStreamDto.setIdCard(td.getIdCard());
+            downStreamDto.setLegalPerson(td.getLegalPerson());
+            downStreamDto.setLicense(td.getLicense());
+            downStreamDto.setTel(td.getTelphone());
+            downStreamDto.setThirdAccountId(td.getSourceUserId() == null ? "" : td.getSourceUserId().toString());
+            downStreamDto.setThirdDsId(td.getId().toString());
+            int upStreamType = td.getUpstreamType().intValue();
+            List<DownStreamDto.DownStreamImg> downStreamImgs = new ArrayList<>();
+            downStreamDto.setDownStreamImgList(downStreamImgs);
+            // 10 个人
+            if (upStreamType == 10) {
+                downStreamDto.setName(td.getName());
+                downStreamDto.setType(1);
+
+                DownStreamDto.DownStreamImg downStreamImgFront = new DownStreamDto.DownStreamImg();
+                downStreamImgFront.setCredentialName("身份证正面");
+                downStreamImgFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
+
+                DownStreamDto.DownStreamImg downStreamImgBack = new DownStreamDto.DownStreamImg();
+                downStreamImgBack.setCredentialName("身份证反面");
+                downStreamImgBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
+
+                downStreamImgs.add(downStreamImgFront);
+                downStreamImgs.add(downStreamImgBack);
+
+            } else {
+                downStreamDto.setStreamName(td.getName());
+                downStreamDto.setType(0);
+                DownStreamDto.DownStreamImg pzVoBusiness = new DownStreamDto.DownStreamImg();
+                pzVoBusiness.setCredentialName("营业执照");
+                pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
+
+                DownStreamDto.DownStreamImg pzVoManu = new DownStreamDto.DownStreamImg();
+                pzVoManu.setCredentialName("生产许可证");
+                pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
+
+                DownStreamDto.DownStreamImg pzVoOperate = new DownStreamDto.DownStreamImg();
+                pzVoOperate.setCredentialName("经营许可证");
+                pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
+
+                downStreamImgs.add(pzVoBusiness);
+                downStreamImgs.add(pzVoOperate);
+                downStreamImgs.add(pzVoOperate);
+            }
+            downStreamDtos.add(downStreamDto);
+        });
+        baseOutput = dataReportService.reportDownStream(downStreamDtos, optUser);
+        return baseOutput;
     }
 
 }

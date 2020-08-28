@@ -54,6 +54,11 @@ public enum ReportDtoTypeEnum {
      */
     categorySmallLevel(90, "商品小类新增/修改"),
 
+	/**
+	 * 商品
+	 */
+	goods(100, "商品新增/修改"),
+
     /**
 	 * 报备新增/编辑
 	 */
