@@ -4,7 +4,6 @@ import java.util.List;
 
 public class ReportUserDto implements ReportDto {
     private String marketId;
-    private String thirdAccIds;
     private String accountName;
     private Integer accountType;
     private String address;
@@ -27,14 +26,6 @@ public class ReportUserDto implements ReportDto {
 
     public void setMarketId(String marketId) {
         this.marketId = marketId;
-    }
-
-    public String getThirdAccIds() {
-        return thirdAccIds;
-    }
-
-    public void setThirdAccIds(String thirdAccIds) {
-        this.thirdAccIds = thirdAccIds;
     }
 
     public String getAccountName() {

@@ -354,6 +354,7 @@ public class DataReportService {
         });
         thirdPartyReportData.setName(reportType.getName());
         thirdPartyReportData.setType(reportType.getCode());
+        System.out.print("Insert info :"+JSON.toJSONString(thirdPartyReportData));
         this.thirdPartyReportDataService.insertSelective(thirdPartyReportData);
 
         return out;
@@ -396,6 +397,19 @@ public class DataReportService {
         String path = "/thirdParty/goods/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, goodsDto, optUser, ReportDtoTypeEnum.categorySmallLevel);
+    }
+
+    /**
+     * 经营户新增/编辑
+     *
+     * @param reportUserDtos
+     * @return
+     */
+    public BaseOutput reportUserDelete(List<ReportUserDeleteDto> reportUserDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:经营户作废");
+        String path = "/thirdParty/account/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserDelete);
     }
 
     /**

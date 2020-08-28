@@ -68,6 +68,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         this.pushUserQrCode(optUser);
         this.pushUserSaveUpdate(optUser);
+        this.pushUserDelete(optUser);
     }
 
     // 每五分钟提交一次数据
@@ -167,7 +168,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser) {
         Date updateTime = null;
         boolean newPushFlag = true;
-        List<ReportQrCodeDto> reportUserDtoList = new ArrayList<>();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user_qr_history");
         if (pushData == null) {
             updateTime = new Date();
@@ -191,7 +191,18 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         });
         List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
         System.out.print("ReportQrCodeDto:" + JSON.toJSONString(pushList));
-        BaseOutput baseOutput = this.dataReportService.reportUserQrCode(pushList, optUser);
+        // 分批上报
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer part = pushList.size() / batchSize; // 分批数
+        // 上报
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i == part ? pushList.size() : (i + 1) * batchSize;
+            List<ReportQrCodeDto> partBills = pushList.subList(i * batchSize, endPos);
+            baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser);
+        }
+
+        //BaseOutput baseOutput = this.dataReportService.reportUserQrCode(pushList, optUser);
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
         }
@@ -228,8 +239,17 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }).toList();
 
         System.out.print("pushUserSaveUpdate:" + JSON.toJSONString(reportUserDtoList));
-        BaseOutput baseOutput =this.dataReportService.reportUserSaveUpdate(reportUserDtoList, optUser);
-        if(baseOutput.isSuccess()){
+        // 分批上报
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer part = reportUserDtoList.size() / batchSize; // 分批数
+        // 上报
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i == part ? reportUserDtoList.size() : (i + 1) * batchSize;
+            List<ReportUserDto> partBills = reportUserDtoList.subList(i * batchSize, endPos);
+            baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser);
+        }
+        if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
         }
         return baseOutput;
@@ -238,7 +258,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private BaseOutput pushUserDelete(Optional<OperatorUser> optUser) {
         Date updateTime = null;
         boolean newPushFlag = true;
-        List<ReportUserDto> reportUserDtoList = new ArrayList<>();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user_delete");
         if (pushData == null) {
             updateTime = new Date();
@@ -251,25 +270,34 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             newPushFlag = false;
         }
 
-        Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
         Timestamp sqlPushTime = new Timestamp(updateTime.getTime());
         User queUser = DTOUtils.newDTO(User.class);
-        queUser.setMetadata(IDTO.AND_CONDITION_EXPR," yn = -1 and modified > '"+sqlPushTime+"'");
+        //没有push过则将所有作废记录push
+        if (finalNewPushFlag) {
+            queUser.setMetadata(IDTO.AND_CONDITION_EXPR, " yn = -1 ");
+        } else {
+            queUser.setMetadata(IDTO.AND_CONDITION_EXPR, " yn = -1 and modified > '" + sqlPushTime + "'");
+        }
+        ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
+        reportUser.setMarketId(marketId);
+        List<String> thirdAccIds = new ArrayList<>();
         StreamEx.ofNullable(this.userService.list(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
-            if (finalNewPushFlag || finalUpdateTime.compareTo(info.getModified()) < 0) {
-                ReportUserDto reportUser = thirdDataReportService.reprocessUser(info);
-                reportUserDtoList.add(reportUser);
-                return true;
-            }
-            return false;
+            thirdAccIds.add(String.valueOf(info.getId()));
+            return true;
         }).toList();
+        reportUser.setThirdAccIds(String.join(",", thirdAccIds));
 
-        this.thirdPartyPushDataService.updatePushTime(pushData);
-        System.out.print("pushUserSaveUpdate:" + JSON.toJSONString(reportUserDtoList));
-        return this.dataReportService.reportUserSaveUpdate(reportUserDtoList, optUser);
+        System.out.print("pushUserSaveUpdate:" + JSON.toJSONString(reportUser));
+        // 分批上报
+        BaseOutput baseOutput = this.dataReportService.reportUserDelete(Arrays.asList(reportUser), optUser);
+        if (baseOutput.isSuccess()) {
+            this.thirdPartyPushDataService.updatePushTime(pushData);
+
+        }
+        return baseOutput;
     }
 
 
@@ -315,7 +343,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
             // TODO:endTime应该传入进去
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
         }
@@ -351,15 +379,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
         Integer part = checkInList.size() / batchSize; // 分批数
         // 上报
-        for (int i = 0; i <= part; i++) {
-            Integer endPos = i==part ? checkInList.size() : (i + 1) * batchSize;
-            List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, endPos);
+        for (int i = 0; i < part; i++) {
+            List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, (i + 1) * batchSize);
             baseOutput = this.dataReportService.reportCheckIn(partBills, optUser);
         }
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
             // TODO:endTime应该传入进去
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
         }
