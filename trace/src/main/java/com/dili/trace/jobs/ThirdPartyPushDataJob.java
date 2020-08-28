@@ -1,26 +1,17 @@
 package com.dili.trace.jobs;
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.Category;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.ThirdPartyPushData;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.thirdparty.report.CredentialInfoDto;
-import com.dili.trace.dto.thirdparty.report.ReportRegisterBillDto;
-import com.dili.trace.service.CategoryService;
-import com.dili.trace.service.DataReportService;
-import com.dili.trace.service.ImageCertService;
-import com.dili.trace.service.ThirdPartyPushDataService;
-import com.dili.trace.dto.ThirdPartyReportDataQueryDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.PreserveTypeEnum;
-import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.service.*;
-import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -32,7 +23,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 @Component
@@ -48,6 +38,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private ThirdPartyPushDataService thirdPartyPushDataService;
     @Autowired
     private ImageCertService imageCertService;
+    @Autowired
+    private  UserService userService;
+    @Autowired
+    private  UserQrHistoryService userQrHistoryService;
+    @Autowired
+    private  ThirdDataReportService thirdDataReportService;
+
+
     @Value("${current.baseWebPath}")
     private String baseWebPath;
     @Value("${push.batch.size}")
@@ -65,6 +63,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         this.pushBigCategory(optUser);
         this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
         this.pushCategory("category_goods", "商品新增/修改", 2, optUser);*/
+        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        this.pushUserQrCode(optUser);
     }
 
     // 每五分钟提交一次数据
@@ -167,6 +167,75 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
 
     }
+
+    private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser) {
+        Date updateTime = null;
+        boolean newPushFlag = true;
+        List<ReportQrCodeDto> reportUserDtoList = new ArrayList<>();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user_qr_history");
+        if (pushData == null) {
+            updateTime = new Date();
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName("user_qr_history");
+            pushData.setInterfaceName("食安码新增/编辑");
+            pushData.setPushTime(updateTime);
+        } else {
+            updateTime = pushData.getPushTime();
+            newPushFlag = false;
+        }
+
+        Date finalUpdateTime = updateTime;
+        boolean finalNewPushFlag = newPushFlag;
+        List<UserQrHistory> qrHistories = new ArrayList<>();
+
+        StreamEx.ofNullable(userQrHistoryService.list(null)).nonNull().flatCollection(Function.identity()).forEach(q -> {
+            if (finalNewPushFlag || finalUpdateTime.compareTo(q.getModified()) < 0) {
+                qrHistories.add(q);
+            }
+        });
+        List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
+        System.out.print("ReportQrCodeDto:"+ JSON.toJSONString(pushList));
+        BaseOutput baseOutput = this.dataReportService.reportUserQrCode(pushList, optUser);
+        if (baseOutput.isSuccess()) {
+            this.thirdPartyPushDataService.updatePushTime(pushData);
+        }
+        return baseOutput;
+    }
+
+    private BaseOutput pushUserSaveUpdate(Optional<OperatorUser> optUser) {
+        Date updateTime = null;
+        boolean newPushFlag = true;
+        List<ReportUserDto> reportUserDtoList = new ArrayList<>();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user");
+        if (pushData == null) {
+            updateTime = new Date();
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName("user");
+            pushData.setInterfaceName("经营户新增/编辑");
+            pushData.setPushTime(updateTime);
+        } else {
+            updateTime = pushData.getPushTime();
+            newPushFlag = false;
+        }
+
+        Date finalUpdateTime = updateTime;
+        boolean finalNewPushFlag = newPushFlag;
+        StreamEx.ofNullable(this.userService.list(null))
+                .nonNull().flatCollection(Function.identity()).map(info -> {
+            //push后修改了用户信息
+            if (finalNewPushFlag || finalUpdateTime.compareTo(info.getModified()) < 0) {
+                ReportUserDto reportUser = thirdDataReportService.reprocessUser(info);
+                reportUserDtoList.add(reportUser);
+                return true;
+            }
+            return false;
+        }).toList();
+
+        this.thirdPartyPushDataService.updatePushTime(pushData);
+        System.out.print("pushUserSaveUpdate:" + JSON.toJSONString(reportUserDtoList));
+        return this.dataReportService.reportUserSaveUpdate(reportUserDtoList, optUser);
+    }
+
 
     public BaseOutput reportRegisterBill(Optional<OperatorUser> optUser) {
 

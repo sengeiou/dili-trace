@@ -1,17 +1,18 @@
 package com.dili.trace.api.client;
 
-import java.util.List;
-
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.api.components.ManageSystemComponent;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.RegisterBillHistory;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.service.RegisterBillHistoryService;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import java.util.List;
 
 /**
  * Created by wangguofeng
@@ -40,6 +39,9 @@ public class ClientRegisterBillHistoryApi {
 	private LoginSessionContext sessionContext;
 	@Autowired
 	private RegisterBillHistoryService billHistoryService;
+	@Autowired
+	private ManageSystemComponent manageSystemComponent;
+
 
 	@ApiOperation(value = "获取报备单审核历史列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
@@ -53,7 +55,9 @@ public class ClientRegisterBillHistoryApi {
 				inputDto.setOrder("desc");
 				inputDto.setSort("modified");
 			}
-			
+			if(manageSystemComponent.isAdminUser(userId)){
+				inputDto.setUserId(null);
+			}
 			inputDto.setMetadata(IDTO.AND_CONDITION_EXPR, "verify_status <>"+BillVerifyStatusEnum.NONE.getCode());
 			List<RegisterBillHistory> page = this.billHistoryService.listByExample(inputDto);
 			return BaseOutput.success().setData(page);
