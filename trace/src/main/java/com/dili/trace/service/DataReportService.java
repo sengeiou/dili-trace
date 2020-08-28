@@ -405,24 +405,24 @@ public class DataReportService {
      * @param reportUserDtos
      * @return
      */
-    public BaseOutput reportUserDelete(List<ReportUserDeleteDto> reportUserDtos, Optional<OperatorUser> optUser) {
-        logger.info("上报:经营户作废");
-        String path = "/thirdParty/account/delete";
-        String url = this.reportContextUrl + path;
-        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserDelete);
-    }
-
-    /**
-     * 经营户新增/编辑
-     *
-     * @param reportUserDtos
-     * @return
-     */
     public BaseOutput reportUserSaveUpdate(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser) {
         logger.info("上报:经营户新增/编辑");
         String path = "/thirdParty/account/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserSave);
+    }
+
+    /**
+     * 经营户作废
+     *
+     * @param reportUserDtos
+     * @return
+     */
+    public BaseOutput reportUserDelete(ReportUserDeleteDto reportUserDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:经营户作废");
+        String path = "/thirdParty/account/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserDelete);
     }
 
     /**
