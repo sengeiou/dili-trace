@@ -399,6 +399,30 @@ public class DataReportService {
     }
 
     /**
+     * 经营户新增/编辑
+     *
+     * @param reportUserDtos
+     * @return
+     */
+    public BaseOutput reportUserSaveUpdate(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:经营户新增/编辑");
+        String path = "/thirdParty/account/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserSave);
+    }
+
+    /**
+     * 食安码新增/修改
+     * @param pushList
+     * @param optUser
+     */
+    public BaseOutput reportUserQrCode(List<ReportQrCodeDto> pushList, Optional<OperatorUser> optUser) {
+        logger.info("上报:食安码新增/编辑");
+        String path = "/thirdParty/code/updateAccount";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, pushList, optUser, ReportDtoTypeEnum.userQrCode);
+    }
+    /**
      * 报备新增/编辑
      *
      * @param reportRegisterBillDtos

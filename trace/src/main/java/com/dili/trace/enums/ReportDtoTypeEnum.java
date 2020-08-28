@@ -1,8 +1,8 @@
 package com.dili.trace.enums;
 
-import java.util.Optional;
-
 import one.util.streamex.StreamEx;
+
+import java.util.Optional;
 
 /**
  * <B>Description</B> 本软件源代码版权归农丰时代及其团队所有,未经许可不得任意复制与传播 <B>农丰时代科技有限公司</B>
@@ -28,6 +28,21 @@ public enum ReportDtoTypeEnum {
 	 * 三色码状态数据统计
 	 */
 	codeCount(40, "三色码状态数据统计"),
+
+	/**
+	 * 经营户作废
+	 */
+	thirdUserDelete(50, "经营户作废"),
+
+	/**
+	 * 三色码状态数据统计
+	 */
+	thirdUserSave(60, "经营户新增/修改"),
+
+	/**
+	 * 食安码
+	 */
+	userQrCode(70, "食安码新增/修改"),
 
     /**
      * 商品类目（一级）
