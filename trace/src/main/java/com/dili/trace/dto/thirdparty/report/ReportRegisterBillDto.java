@@ -1,14 +1,12 @@
 package com.dili.trace.dto.thirdparty.report;
 
-import com.dili.trace.enums.ReportDtoTypeEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public class ReportRegisterBillDto implements ReportDto {
+public class ReportRegisterBillDto {
 
     private String approvalName;// 审核人姓名
     private Integer approvalStatus;// 审核状态 0-默认未审核 1-通过 2-退回 3-未通过
@@ -29,12 +27,6 @@ public class ReportRegisterBillDto implements ReportDto {
     private String transporterId;// 车牌号
     private BigDecimal enterNum=BigDecimal.ZERO;// 数量
     private String unitName;// 计量单位名称(斤 /公斤)
-
-    @JsonIgnore
-    @Override
-    public ReportDtoTypeEnum getType(){
-        return ReportDtoTypeEnum.registerBill;
-    };
 
     public String getApprovalName() {
         return approvalName;
