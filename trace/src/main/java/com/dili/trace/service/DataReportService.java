@@ -396,7 +396,7 @@ public class DataReportService {
         logger.info("上报:商品新增/修改");
         String path = "/thirdParty/goods/save";
         String url = this.reportContextUrl + path;
-        return this.postJson(url, goodsDto, optUser, ReportDtoTypeEnum.categorySmallLevel);
+        return this.postJson(url, goodsDto, optUser, ReportDtoTypeEnum.goods);
     }
 
     /**
@@ -460,5 +460,31 @@ public class DataReportService {
         String path = "/thirdParty/inDoor/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, checkInDtos, optUser, ReportDtoTypeEnum.inDoor);
+    }
+
+    /**
+     * 上游新增/修改
+     *
+     * @param upStreamDtos
+     * @return
+     */
+    public BaseOutput reportUpStream(List<UpStreamDto> upStreamDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:上游新增/修改");
+        String path = "/thirdParty/upstreamOwn/saveOrUpdate";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, upStreamDtos, optUser, ReportDtoTypeEnum.upstream);
+    }
+
+    /**
+     * 上游新增/修改
+     *
+     * @param downStreamDtos
+     * @return
+     */
+    public BaseOutput reportDownStream(List<DownStreamDto> downStreamDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:下游新增/修改");
+        String path = "/thirdParty/downStream/saveOrUpdate";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, downStreamDtos, optUser, ReportDtoTypeEnum.downstream);
     }
 }
