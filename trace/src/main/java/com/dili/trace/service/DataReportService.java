@@ -1,15 +1,7 @@
 package com.dili.trace.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.common.exception.TraceBusinessException;
@@ -26,22 +18,23 @@ import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ParseContext;
-
+import com.jayway.jsonpath.*;
+import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.http.HttpUtil;
-import one.util.streamex.StreamEx;
-import tk.mybatis.mapper.annotation.RegisterMapper;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * 数据上报接口服务
@@ -340,7 +333,7 @@ public class DataReportService {
         thirdPartyReportData.setCreated(new Date());
         thirdPartyReportData.setModified(new Date());
 
-        String data = JSON.toJSONString(reportDto, SerializerFeature.WriteMapNullValue);
+        String data = JSON.toJSONStringWithDateFormat(reportDto,"yyyy-MM-hh HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
         thirdPartyReportData.setData(data);
         String jsonBody = thirdPartyReportData.getData();
 

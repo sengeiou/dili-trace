@@ -210,7 +210,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
             // TODO:endTime应该传入进去
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
         }
