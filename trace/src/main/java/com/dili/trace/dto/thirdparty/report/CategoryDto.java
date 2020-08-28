@@ -3,16 +3,16 @@ package com.dili.trace.dto.thirdparty.report;
 import java.util.List;
 
 public class CategoryDto{
-    private String market = "1";
+    private String marketId = "330110800";
     private String thirdBigClassId;
     private String thirdBigClassName;
 
-    public String getMarket() {
-        return market;
+    public String getMarketId() {
+        return marketId;
     }
 
-    public void setMarket(String market) {
-        this.market = market;
+    public void setMarketId(String marketId) {
+        this.marketId = marketId;
     }
 
     public String getThirdBigClassId() {
