@@ -7,6 +7,7 @@ import com.dili.trace.dto.thirdparty.report.ReportQrCodeDto;
 import com.dili.trace.dto.thirdparty.report.ReportUserDto;
 import com.dili.trace.dto.thirdparty.report.ReportUserImgDto;
 import com.dili.trace.glossary.ColorEnum;
+import com.dili.trace.glossary.UserTypeEnum;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,9 @@ public class ThirdDataReportService {
         ReportUserDto reportUser = new ReportUserDto();
         reportUser.setAccountName(info.getName());
         reportUser.setAccountType(info.getUserType());
+        if(UserTypeEnum.CORPORATE.equalsCode(info.getUserType())){
+            reportUser.setComeName(info.getName());
+        }
         reportUser.setAddress(info.getAddr());
         reportUser.setBoothNo(info.getTallyAreaNos());
         reportUser.setBlAccountImgList(getBlAccountImgList(info));

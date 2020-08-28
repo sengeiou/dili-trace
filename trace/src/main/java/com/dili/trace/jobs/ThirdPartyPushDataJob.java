@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -72,7 +71,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
     // 每五分钟提交一次数据
-    @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
@@ -191,9 +190,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         });
         List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
         System.out.print("ReportQrCodeDto:" + JSON.toJSONString(pushList));
-        // 分批上报
+        // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer batchSize = 100;
         Integer part = pushList.size() / batchSize; // 分批数
         // 上报
         for (int i = 0; i <= part; i++) {
@@ -239,9 +238,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }).toList();
 
         System.out.print("pushUserSaveUpdate:" + JSON.toJSONString(reportUserDtoList));
-        // 分批上报
+        // 分批上报  由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer batchSize = 70;
         Integer part = reportUserDtoList.size() / batchSize; // 分批数
         // 上报
         for (int i = 0; i <= part; i++) {
@@ -275,14 +274,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         User queUser = DTOUtils.newDTO(User.class);
         //没有push过则将所有作废记录push
         if (finalNewPushFlag) {
-            queUser.setMetadata(IDTO.AND_CONDITION_EXPR, " yn = -1 ");
+            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 ");
         } else {
-            queUser.setMetadata(IDTO.AND_CONDITION_EXPR, " yn = -1 and modified > '" + sqlPushTime + "'");
+            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and modified > '" + sqlPushTime + "'");
         }
+        List<User> userList = this.userService.listByExample(queUser);
         ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
         reportUser.setMarketId(marketId);
         List<String> thirdAccIds = new ArrayList<>();
-        StreamEx.ofNullable(this.userService.list(queUser))
+        StreamEx.ofNullable(userList)
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
             thirdAccIds.add(String.valueOf(info.getId()));
@@ -290,9 +290,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }).toList();
         reportUser.setThirdAccIds(String.join(",", thirdAccIds));
 
-        System.out.print("pushUserSaveUpdate:" + JSON.toJSONString(reportUser));
+        System.out.print("pushUserDelete:" + JSON.toJSONString(reportUser));
         // 分批上报
-        BaseOutput baseOutput = this.dataReportService.reportUserDelete(Arrays.asList(reportUser), optUser);
+        BaseOutput baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
 
