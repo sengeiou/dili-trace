@@ -487,4 +487,30 @@ public class DataReportService {
         String url = this.reportContextUrl + path;
         return this.postJson(url, downStreamDtos, optUser, ReportDtoTypeEnum.downstream);
     }
+
+    /**
+     * 扫码交易
+     *
+     * @param scanCodeOrderDtos
+     * @return
+     */
+    public BaseOutput reportScanCodeOrder(List<ReportScanCodeOrderDto> scanCodeOrderDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:扫码交易");
+        String path = "/thirdParty/order/sc";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, scanCodeOrderDtos, optUser, ReportDtoTypeEnum.scanCodeOrder);
+    }
+
+    /**
+     * 配送交易
+     *
+     * @param deliveryOrderDtos
+     * @return
+     */
+    public BaseOutput reportDeliveryOrder(List<ReportDeliveryOrderDto> deliveryOrderDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:配送交易");
+        String path = "/thirdParty/order/delivery";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, deliveryOrderDtos, optUser, ReportDtoTypeEnum.deliveryOrder);
+    }
 }

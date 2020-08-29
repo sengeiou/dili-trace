@@ -25,7 +25,42 @@
     </if>
     )
     <![CDATA[ AND `user`.qr_status <>#{qrStatus}]]>
+  </select>
 
+  <select id="selectScanOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportScanCodeOrderDto">
+    SELECT r.`created` orderTime, r.`buyer_id` thirdBuyId, r.`id` thirdOrderId, r.`seller_id` thirdSellId
+      FROM trade_request r
+      JOIN trade_order o ON (r.trade_order_Id = o.id AND o.order_status = 10)
+      JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 20)
+      WHERE r.return_status = 0
+      <if test="modifiedEnd != null">
+        <![CDATA[AND r.modified <=#{modifiedEnd}]]>
+      </if>
+      <if test="modifiedStart != null">
+        <![CDATA[AND r.modified >#{modifiedStart}]]>
+      </if>
+  </select>
+
+  <select id="selectDeliveryOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportDeliveryOrderDto">
+    SELECT r.`created` orderTime, r.`buyer_id` thirdDsId, r.`id` thirdOrderId, r.`seller_id` thirdAccId
+      FROM trade_request r
+      JOIN trade_order o ON (r.trade_order_Id = o.id AND o.order_status = 10)
+      JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 10)
+      WHERE r.return_status = 0
+      <if test="modifiedEnd != null">
+        <![CDATA[AND r.modified <=#{modifiedEnd}]]>
+      </if>
+      <if test="modifiedStart != null">
+        <![CDATA[AND r.modified >#{modifiedStart}]]>
+      </if>
+  </select>
+
+  <select id="selectOrderDetailReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportOrderDetailDto">
+    SELECT d.`id` detailId, d.`total_weight` orderNum, d.`bill_id` thirdEnterId, p.`trade_request_id` thirdOrderParentId,
+      d.`parent_id` thirdOrderDetailParentId, IF(d.`weight_unit`=1,'斤','公斤') unitName
+    FROM `trade_detail` d
+      LEFT JOIN `trade_detail` p ON d.`parent_id` = p.`id`
+    WHERE d.`trade_request_id` = #{tradeRequestId}
   </select>
 
 </mapper>

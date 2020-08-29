@@ -8,8 +8,10 @@ import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.dao.TradeRequestMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.PushDataQueryDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.PreserveTypeEnum;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -34,6 +37,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     DataReportService dataReportService;
     @Autowired
     RegisterBillMapper registerBillMapper;
+    @Autowired
+    TradeRequestMapper tradeRequestMapper;
     @Autowired
     private CategoryService categoryService;
     @Autowired
@@ -76,17 +81,19 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
     // 每五分钟提交一次数据
-    //@Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-           /* this.pushBigCategory(optUser);
-            this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
+           /* this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
             this.pushCategory("category_goods", "商品新增/修改", 2, optUser);
             this.reportRegisterBill(optUser);
             this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
             this.pushStream("upstream_down", "下游新增/修改", 20, optUser);*/
-
+            this.reportRegisterBill(optUser);// 报备新增/编辑
+            this.reportCheckIn(optUser);// 进门
+            this.reportOrder("trade_request_delivery", "配送交易", 10, optUser);// 配送交易
+            this.reportOrder("trade_request_scan", "扫码交易", 20, optUser);// 扫码交易
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -355,7 +362,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
-            // TODO:endTime应该传入进去
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
         }
         return baseOutput;
@@ -390,15 +396,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
         Integer part = checkInList.size() / batchSize; // 分批数
         // 上报
-        for (int i = 0; i < part; i++) {
-            List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, (i + 1) * batchSize);
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i==part ? checkInList.size() : (i + 1) * batchSize;
+            List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, endPos);
             baseOutput = this.dataReportService.reportCheckIn(partBills, optUser);
         }
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
-            // TODO:endTime应该传入进去
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
         }
         return baseOutput;
@@ -421,6 +427,84 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
         bill.setPzAddVoList(pzAddVoList);
         return bill;
+    }
+
+    public BaseOutput reportOrder(String tableName, String interfaceName,Integer type, Optional<OperatorUser> optUser) {
+        Date endTime = new Date();
+        // 查询待上报的交易单
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        PushDataQueryDto queryDto = new PushDataQueryDto();
+        queryDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        queryDto.setOrderType(type);
+        if (thirdPartyPushData != null) {
+            queryDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+
+        BaseOutput baseOutput = reportOrderLogic(type, optUser, queryDto);
+
+        // 更新 pushtime
+        if (baseOutput.isSuccess()) {
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
+        }
+        return baseOutput;
+    }
+
+    private BaseOutput reportOrderLogic(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto) {
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        // 10-配送交易 20-扫码交易
+        if (type == 10) {
+
+            List<ReportDeliveryOrderDto> deliveryOrderList = StreamEx.ofNullable(this.tradeRequestMapper.selectDeliveryOrderReport(queryDto))
+                    .nonNull().flatCollection(Function.identity()).map(order -> {
+                        order.setMarketId(marketId);
+                        order.setThirdQrCode(this.baseWebPath + "/user?userId=" + order.getThirdDsId());
+                        PushDataQueryDto queryDetailDto = new PushDataQueryDto();
+                        queryDetailDto.setTradeRequestId(order.getThirdOrderId());
+                        List<ReportOrderDetailDto> reportOrderDetailDtos = this.tradeRequestMapper.selectOrderDetailReport(queryDetailDto);
+                        order.setTradeList(reportOrderDetailDtos);
+                        return order;
+                    }).toList();
+
+
+            if (CollectionUtils.isEmpty(deliveryOrderList)) {
+                return new BaseOutput("200", "没有需要推送的配送交易单数据");
+            }
+
+            // 分批上报
+            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+            Integer part = deliveryOrderList.size() / batchSize; // 分批数
+            for (int i = 0; i <= part; i++) {
+                Integer endPos = i==part ? deliveryOrderList.size() : (i + 1) * batchSize;
+                List<ReportDeliveryOrderDto> partBills = deliveryOrderList.subList(i * batchSize, endPos);
+                baseOutput = this.dataReportService.reportDeliveryOrder(partBills, optUser);
+            }
+        } else {
+            List<ReportScanCodeOrderDto> scanOrderList = StreamEx.ofNullable(this.tradeRequestMapper.selectScanOrderReport(queryDto))
+                    .nonNull().flatCollection(Function.identity()).map(order -> {
+                        order.setMarketId(marketId);
+                        order.setThirdQrCode(this.baseWebPath + "/user?userId=" + order.getThirdBuyId());
+                        PushDataQueryDto queryDetailDto = new PushDataQueryDto();
+                        queryDetailDto.setTradeRequestId(order.getThirdOrderId());
+                        List<ReportOrderDetailDto> reportOrderDetailDtos = this.tradeRequestMapper.selectOrderDetailReport(queryDetailDto);
+                        order.setTradeList(reportOrderDetailDtos);
+                        return order;
+                    }).toList();
+            if (CollectionUtils.isEmpty(scanOrderList)) {
+                return new BaseOutput("200", "没有需要推送的扫码交易单数据");
+            }
+
+            // 分批上报
+            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+            Integer part = scanOrderList.size() / batchSize; // 分批数
+            for (int i = 0; i <= part; i++) {
+                Integer endPos = i==part ? scanOrderList.size() : (i + 1) * batchSize;
+                List<ReportScanCodeOrderDto> partBills = scanOrderList.subList(i * batchSize, endPos);
+
+                baseOutput = this.dataReportService.reportScanCodeOrder(partBills, optUser);
+            }
+        }
+        return baseOutput;
     }
 
     private void pushStream(String tableName, String interfaceName,
