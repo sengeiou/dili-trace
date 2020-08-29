@@ -67,10 +67,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         this.pushBigCategory(optUser);
         this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
         this.pushCategory("category_goods", "商品新增/修改", 2, optUser);*/
-        //Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        /*this.pushUserQrCode(optUser);
+        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        this.pushUserQrCode(optUser);
         this.pushUserSaveUpdate(optUser);
-        this.pushUserDelete(optUser);*/
+        this.pushUserDelete(optUser);
         //this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
         //this.pushStream("upstream_down", "下游新增/修改", 20, optUser);
     }
@@ -199,7 +199,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
         });
         List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
-        System.out.print("ReportQrCodeDto:" + JSON.toJSONString(pushList));
+        logger.info("ReportQrCodeDto ： "+ JSON.toJSONString(pushList));
         // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         Integer batchSize = 100;
@@ -251,7 +251,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             return false;
         }).toList();
 
-        System.out.print("pushUserSaveUpdate:" + JSON.toJSONString(reportUserDtoList));
         // 分批上报  由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         Integer batchSize = 70;
@@ -302,9 +301,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             thirdAccIds.add(String.valueOf(info.getId()));
             return true;
         }).toList();
+        logger.info("thirdAccIds:" + JSON.toJSONString(thirdAccIds));
         reportUser.setThirdAccIds(String.join(",", thirdAccIds));
-
-        System.out.print("pushUserDelete:" + JSON.toJSONString(reportUser));
         // 分批上报
         BaseOutput baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
         if (baseOutput.isSuccess()) {
