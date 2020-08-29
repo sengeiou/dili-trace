@@ -13,8 +13,6 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.PreserveTypeEnum;
-import com.dili.trace.glossary.UpStreamSourceEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -69,12 +67,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         this.pushBigCategory(optUser);
         this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
         this.pushCategory("category_goods", "商品新增/修改", 2, optUser);*/
-        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        //Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         /*this.pushUserQrCode(optUser);
         this.pushUserSaveUpdate(optUser);
         this.pushUserDelete(optUser);*/
-        this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
-        this.pushStream("upstream_down", "下游新增/修改", 20, optUser);
+        //this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
+        //this.pushStream("upstream_down", "下游新增/修改", 20, optUser);
     }
 
     // 每五分钟提交一次数据
@@ -192,8 +190,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
         List<UserQrHistory> qrHistories = new ArrayList<>();
-
-        StreamEx.ofNullable(userQrHistoryService.list(null)).nonNull().flatCollection(Function.identity()).forEach(q -> {
+        //取有效二维码变更记录
+        UserQrHistory queryQr = new UserQrHistory();
+        queryQr.setIsValid(1);
+        StreamEx.ofNullable(userQrHistoryService.list(queryQr)).nonNull().flatCollection(Function.identity()).forEach(q -> {
             if (finalNewPushFlag || finalUpdateTime.compareTo(q.getModified()) < 0) {
                 qrHistories.add(q);
             }
@@ -221,6 +221,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private BaseOutput pushUserSaveUpdate(Optional<OperatorUser> optUser) {
         Date updateTime = null;
         boolean newPushFlag = true;
+        Integer normalUserType = 1;
         List<ReportUserDto> reportUserDtoList = new ArrayList<>();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user");
         if (pushData == null) {
@@ -233,10 +234,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
         }
-
+        //获取正常经营的经营户列表（排除未实名的用户）
         Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
-        StreamEx.ofNullable(this.userService.list(null))
+        User queUser = DTOUtils.newDTO(User.class);
+        queUser.setYn(normalUserType);
+        queUser.mset(IDTO.AND_CONDITION_EXPR," validate_state <> 10");
+        StreamEx.ofNullable(this.userService.listByExample(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
             if (finalNewPushFlag || finalUpdateTime.compareTo(info.getModified()) < 0) {
@@ -284,9 +288,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         User queUser = DTOUtils.newDTO(User.class);
         //没有push过则将所有作废记录push
         if (finalNewPushFlag) {
-            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 ");
+            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10");
         } else {
-            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and modified > '" + sqlPushTime + "'");
+            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and modified > '" + sqlPushTime + "'");
         }
         List<User> userList = this.userService.listByExample(queUser);
         ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
@@ -305,7 +309,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         BaseOutput baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
-
         }
         return baseOutput;
     }
