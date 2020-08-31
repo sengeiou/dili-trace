@@ -6,6 +6,7 @@ import com.dili.trace.dto.thirdparty.report.ReportQrCodeDetailDto;
 import com.dili.trace.dto.thirdparty.report.ReportQrCodeDto;
 import com.dili.trace.dto.thirdparty.report.ReportUserDto;
 import com.dili.trace.dto.thirdparty.report.ReportUserImgDto;
+import com.dili.trace.enums.ReportInterfacePicEnum;
 import com.dili.trace.glossary.ColorEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import one.util.streamex.StreamEx;
@@ -72,7 +73,7 @@ public class ThirdDataReportService {
         if (StringUtils.isNotBlank(info.getManufacturingLicenseUrl())) {
             String url = info.getManufacturingLicenseUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
-            imgDto.setCredentialName("生产许可证");
+            imgDto.setCredentialName(ReportInterfacePicEnum.PRODUCTION_LICENSE.getName());
             if (StringUtils.isNotBlank(url)) {
                 imgDto.setPicUrl(baseWebPath + url);
             }
@@ -82,7 +83,7 @@ public class ThirdDataReportService {
         if (StringUtils.isNotBlank(info.getOperationLicenseUrl())) {
             String url = info.getOperationLicenseUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
-            imgDto.setCredentialName("经营许可证");
+            imgDto.setCredentialName(ReportInterfacePicEnum.OPERATING_LICENSE.getName());
             if (StringUtils.isNotBlank(url)) {
                 imgDto.setPicUrl(baseWebPath + url);
             }
@@ -92,7 +93,7 @@ public class ThirdDataReportService {
         if (StringUtils.isNotBlank(info.getBusinessLicenseUrl())) {
             String url = info.getBusinessLicenseUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
-            imgDto.setCredentialName("营业执照");
+            imgDto.setCredentialName(ReportInterfacePicEnum.BUSINESS_LICENSE.getName());
             if (StringUtils.isNotBlank(url)) {
                 imgDto.setPicUrl(baseWebPath + url);
             }
@@ -102,7 +103,7 @@ public class ThirdDataReportService {
         if (StringUtils.isNotBlank(info.getCardNoFrontUrl())) {
             String url = info.getCardNoFrontUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
-            imgDto.setCredentialName("身份证正面");
+            imgDto.setCredentialName(ReportInterfacePicEnum.ID_CARD_FRONT.getName());
             if (StringUtils.isNotBlank(url)) {
                 imgDto.setPicUrl(baseWebPath + url);
             }
@@ -112,7 +113,7 @@ public class ThirdDataReportService {
         if (StringUtils.isNotBlank(info.getCardNoBackUrl())) {
             String url = info.getCardNoBackUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
-            imgDto.setCredentialName("身份证反面");
+            imgDto.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
             if (StringUtils.isNotBlank(url)) {
                 imgDto.setPicUrl(baseWebPath + url);
             }
