@@ -70,37 +70,52 @@ public class ThirdDataReportService {
         List<ReportUserImgDto> userImgList = new ArrayList<>();
         //生产许可证
         if (StringUtils.isNotBlank(info.getManufacturingLicenseUrl())) {
+            String url = info.getManufacturingLicenseUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
             imgDto.setCredentialName("生产许可证");
-            imgDto.setPicUrl(baseWebPath + info.getManufacturingLicenseUrl());
+            if (StringUtils.isNotBlank(url)) {
+                imgDto.setPicUrl(baseWebPath + url);
+            }
             userImgList.add(imgDto);
         }
         //经营许可证
         if (StringUtils.isNotBlank(info.getOperationLicenseUrl())) {
+            String url = info.getOperationLicenseUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
             imgDto.setCredentialName("经营许可证");
-            imgDto.setPicUrl(baseWebPath + info.getOperationLicenseUrl());
+            if (StringUtils.isNotBlank(url)) {
+                imgDto.setPicUrl(baseWebPath + url);
+            }
             userImgList.add(imgDto);
         }
         //营业执照
         if (StringUtils.isNotBlank(info.getBusinessLicenseUrl())) {
+            String url = info.getBusinessLicenseUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
             imgDto.setCredentialName("营业执照");
-            imgDto.setPicUrl(baseWebPath + info.getBusinessLicenseUrl());
+            if (StringUtils.isNotBlank(url)) {
+                imgDto.setPicUrl(baseWebPath + url);
+            }
             userImgList.add(imgDto);
         }
         //身份证正面
         if (StringUtils.isNotBlank(info.getCardNoFrontUrl())) {
+            String url = info.getCardNoFrontUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
             imgDto.setCredentialName("身份证正面");
-            imgDto.setPicUrl(baseWebPath + info.getCardNoFrontUrl());
+            if (StringUtils.isNotBlank(url)) {
+                imgDto.setPicUrl(baseWebPath + url);
+            }
             userImgList.add(imgDto);
         }
         //身份证反面
         if (StringUtils.isNotBlank(info.getCardNoBackUrl())) {
+            String url = info.getCardNoBackUrl();
             ReportUserImgDto imgDto = new ReportUserImgDto();
             imgDto.setCredentialName("身份证反面");
-            imgDto.setPicUrl(baseWebPath + info.getCardNoBackUrl());
+            if (StringUtils.isNotBlank(url)) {
+                imgDto.setPicUrl(baseWebPath + url);
+            }
             userImgList.add(imgDto);
         }
         return userImgList;
