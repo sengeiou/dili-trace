@@ -336,8 +336,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and modified > '" + sqlPushTime + "'");
         }
         List<User> userList = this.userService.listByExample(queUser);
-        ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
+        // 分批上报
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
         if (!userList.isEmpty()) {
+            ReportUserDeleteDto reportUser =new ReportUserDeleteDto();
             reportUser.setMarketId(marketId);
             List<String> thirdAccIds = new ArrayList<>();
             StreamEx.ofNullable(userList)
@@ -348,11 +350,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }).toList();
             logger.info("thirdAccIds:" + JSON.toJSONString(thirdAccIds));
             reportUser.setThirdAccIds(String.join(",", thirdAccIds));
-        }
-        // 分批上报
-        BaseOutput baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
-        if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData);
+            // 分批上报
+            baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
+            if (baseOutput.isSuccess()) {
+                this.thirdPartyPushDataService.updatePushTime(pushData);
+            }
         }
         return baseOutput;
     }
