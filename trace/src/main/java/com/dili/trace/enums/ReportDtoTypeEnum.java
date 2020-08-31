@@ -89,6 +89,16 @@ public enum ReportDtoTypeEnum {
 	 */
 	inDoor(160, "进门"),
 
+	/**
+	 * 扫码交易作废
+	 */
+	deleteScanCodeOrder(170, "扫码交易"),
+
+	/**
+	 * 配送交易作废
+	 */
+	deleteDeliveryOrder(180, "配送交易"),
+
 	;
 
 	private String name;

@@ -37,9 +37,19 @@ public enum ReportInterfaceEnum {
     TRADE_REQUEST_DELIVERY("trade_request_delivery", "配送交易"),
 
     /**
+     * 配送交易作废
+     */
+    TRADE_REQUEST_DELIVERY_DELETE("trade_request_delivery_delete", "配送交易作废"),
+
+    /**
      * 扫码交易
      */
     TRADE_REQUEST_SCAN("trade_request_scan", "扫码交易"),
+
+    /**
+     * 扫码交易作废
+     */
+    TRADE_REQUEST_SCAN_DELETE("trade_request_scan_delete", "扫码交易作废"),
 
     /**
      * 报备新增/编辑
