@@ -362,7 +362,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
-            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
+            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         }
         return baseOutput;
     }
@@ -405,7 +405,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
-            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
+            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         }
         return baseOutput;
     }
@@ -445,7 +445,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
-            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData);
+            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         }
         return baseOutput;
     }
