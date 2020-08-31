@@ -56,11 +56,14 @@
   </select>
 
   <select id="selectOrderDetailReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportOrderDetailDto">
-    SELECT d.`id` detailId, d.`total_weight` orderNum, d.`bill_id` thirdEnterId, p.`trade_request_id` thirdOrderParentId,
+    SELECT d.`trade_request_id` requestId,d.`id` detailId, d.`total_weight` orderNum, d.`bill_id` thirdEnterId, p.`trade_request_id` thirdOrderParentId,
       d.`parent_id` thirdOrderDetailParentId, IF(d.`weight_unit`=1,'斤','公斤') unitName
     FROM `trade_detail` d
       LEFT JOIN `trade_detail` p ON d.`parent_id` = p.`id`
-    WHERE d.`trade_request_id` = #{tradeRequestId}
+    WHERE d.`trade_request_id` in
+      <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+        #{id}
+      </foreach>
   </select>
 
 </mapper>

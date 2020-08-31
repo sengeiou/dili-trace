@@ -354,8 +354,12 @@ public class DataReportService {
         });
         thirdPartyReportData.setName(reportType.getName());
         thirdPartyReportData.setType(reportType.getCode());
-        System.out.print("Insert info :"+JSON.toJSONString(thirdPartyReportData));
-        this.thirdPartyReportDataService.insertSelective(thirdPartyReportData);
+        logger.info("Insert info :{}", JSON.toJSONString(thirdPartyReportData));
+        try {
+            this.thirdPartyReportDataService.insertSelective(thirdPartyReportData);
+        } catch (Exception e) {
+            logger.error("Insert error:", e);
+        }
 
         return out;
     }

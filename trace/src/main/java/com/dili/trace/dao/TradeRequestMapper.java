@@ -26,5 +26,5 @@ public interface TradeRequestMapper extends MyMapper<TradeRequest> {
 
    public List<ReportDeliveryOrderDto> selectDeliveryOrderReport(PushDataQueryDto dto);
 
-   public List<ReportOrderDetailDto> selectOrderDetailReport(PushDataQueryDto dto);
+   public List<ReportOrderDetailDto> selectOrderDetailReport(List<String> ids);
 }

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class ThirdPartyPushDataJob implements CommandLineRunner {
@@ -54,7 +55,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Autowired
     private UpStreamService upStreamService;
 
-
     @Value("${current.baseWebPath}")
     private String baseWebPath;
     @Value("${push.batch.size}")
@@ -66,16 +66,16 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        //this.reportRegisterBill(optUser);
+        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        //this.reportOrder("trade_request_scan", "扫码交易", 20, optUser);// 扫码交易
         /*Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         this.pushBigCategory(optUser);
         this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
         this.pushCategory("category_goods", "商品新增/修改", 2, optUser);*/
-        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        this.pushUserQrCode(optUser);
-        this.pushUserSaveUpdate(optUser);
-        this.pushUserDelete(optUser);
+//        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+//        this.pushUserQrCode(optUser);
+//        this.pushUserSaveUpdate(optUser);
+//        this.pushUserDelete(optUser);
         //this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
         //this.pushStream("upstream_down", "下游新增/修改", 20, optUser);
     }
@@ -94,6 +94,16 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             this.reportCheckIn(optUser);// 进门
             this.reportOrder("trade_request_delivery", "配送交易", 10, optUser);// 配送交易
             this.reportOrder("trade_request_scan", "扫码交易", 20, optUser);// 扫码交易
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    @Scheduled(cron = "0 */5 * * * ?")
+    public void pushRegisterBillData() {
+        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        try {
+            this.reportRegisterBill(optUser);// 报备新增/编辑
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -320,7 +330,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
 
     public BaseOutput reportRegisterBill(Optional<OperatorUser> optUser) {
-
         String tableName = "register_bill";
         String interfaceName = "报备新增/编辑";
         Date endTime = new Date();
@@ -339,18 +348,26 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (thirdPartyPushData != null) {
             billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
         }
+        List<Long> billIdList = new ArrayList<>();
         List<ReportRegisterBillDto> billList = StreamEx.ofNullable(this.registerBillMapper.selectRegisterBillReport(billDto))
                 .nonNull().flatCollection(Function.identity()).map(bill -> {
-                    return dealReportRegisterBillDto(statusMap, bill);
+                    // 状态映射
+                    bill.setApprovalStatus(statusMap.get(bill.getApprovalStatus()));
+                    bill.setMarketId(marketId);
+                    billIdList.add(Long.valueOf(bill.getThirdEnterId()));
+                    return bill;
                 }).toList();
 
         if (CollectionUtils.isEmpty(billList)) {
             return new BaseOutput("200", "没有需要推送的报备单数据");
         }
 
+        // 设置证件
+        settingImageCerts(billIdList, billList);
+
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
         Integer part = billList.size() / batchSize; // 分批数
         // 上报
         for (int i = 0; i <= part; i++) {
@@ -361,10 +378,29 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         }
         return baseOutput;
+    }
+
+    private void settingImageCerts(List<Long> billIdList, List<ReportRegisterBillDto> billList) {
+        Map<Long, List<ImageCert>> imageCertMap = this.imageCertService.findImageCertListByBillIdList(billIdList)
+                .stream().collect(Collectors.groupingBy(ImageCert::getBillId));
+        billList.forEach(bill -> {
+            // 照片处理
+            List<CredentialInfoDto> pzAddVoList = new ArrayList<>();
+            List<ImageCert> imageCerts = imageCertMap.get(Long.valueOf(bill.getThirdEnterId()));
+            if (CollectionUtils.isNotEmpty(imageCerts)) {
+                imageCerts.forEach(cert -> {
+                    CredentialInfoDto credentialInfoDto = new CredentialInfoDto();
+                    credentialInfoDto.setCredentialName(cert.getCertTypeName());
+                    credentialInfoDto.setPicUrl(baseWebPath + cert.getUrl());
+                    pzAddVoList.add(credentialInfoDto);
+                });
+            }
+            bill.setPzAddVoList(pzAddVoList);
+        });
     }
 
     public BaseOutput reportCheckIn(Optional<OperatorUser> optUser) {
@@ -393,7 +429,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
         Integer part = checkInList.size() / batchSize; // 分批数
         // 上报
         for (int i = 0; i <= part; i++) {
@@ -404,29 +440,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData() : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         }
         return baseOutput;
-    }
-
-    private ReportRegisterBillDto dealReportRegisterBillDto(Map<Integer, Integer> statusMap, ReportRegisterBillDto bill) {
-        // 状态映射
-        bill.setApprovalStatus(statusMap.get(bill.getApprovalStatus()));
-        bill.setMarketId(marketId);
-        // 照片处理
-        List<CredentialInfoDto> pzAddVoList = new ArrayList<>();
-        List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(Long.valueOf(bill.getThirdEnterId()));
-        if (CollectionUtils.isNotEmpty(imageCerts)) {
-            imageCerts.forEach(cert -> {
-                CredentialInfoDto credentialInfoDto = new CredentialInfoDto();
-                credentialInfoDto.setCredentialName(cert.getCertTypeName());
-                credentialInfoDto.setPicUrl(baseWebPath + cert.getUrl());
-                pzAddVoList.add(credentialInfoDto);
-            });
-        }
-        bill.setPzAddVoList(pzAddVoList);
-        return bill;
     }
 
     public BaseOutput reportOrder(String tableName, String interfaceName,Integer type, Optional<OperatorUser> optUser) {
@@ -452,6 +469,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     private BaseOutput reportOrderLogic(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto) {
         BaseOutput baseOutput = new BaseOutput("200", "成功");
+        List<String> requestIdList = new ArrayList<>();
         // 10-配送交易 20-扫码交易
         if (type == 10) {
 
@@ -459,17 +477,20 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                     .nonNull().flatCollection(Function.identity()).map(order -> {
                         order.setMarketId(marketId);
                         order.setThirdQrCode(this.baseWebPath + "/user?userId=" + order.getThirdDsId());
-                        PushDataQueryDto queryDetailDto = new PushDataQueryDto();
-                        queryDetailDto.setTradeRequestId(order.getThirdOrderId());
-                        List<ReportOrderDetailDto> reportOrderDetailDtos = this.tradeRequestMapper.selectOrderDetailReport(queryDetailDto);
-                        order.setTradeList(reportOrderDetailDtos);
+                        requestIdList.add(order.getThirdOrderId());
                         return order;
                     }).toList();
-
 
             if (CollectionUtils.isEmpty(deliveryOrderList)) {
                 return new BaseOutput("200", "没有需要推送的配送交易单数据");
             }
+
+            // 设置 detail
+            Map<String, List<ReportOrderDetailDto>> detailMap = this.tradeRequestMapper.selectOrderDetailReport(requestIdList)
+                    .stream().collect(Collectors.groupingBy(ReportOrderDetailDto::getRequestId));
+            deliveryOrderList.forEach(order -> {
+                order.setTradeList(detailMap.get(order.getThirdOrderId()));
+            });
 
             // 分批上报
             Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
@@ -484,15 +505,19 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                     .nonNull().flatCollection(Function.identity()).map(order -> {
                         order.setMarketId(marketId);
                         order.setThirdQrCode(this.baseWebPath + "/user?userId=" + order.getThirdBuyId());
-                        PushDataQueryDto queryDetailDto = new PushDataQueryDto();
-                        queryDetailDto.setTradeRequestId(order.getThirdOrderId());
-                        List<ReportOrderDetailDto> reportOrderDetailDtos = this.tradeRequestMapper.selectOrderDetailReport(queryDetailDto);
-                        order.setTradeList(reportOrderDetailDtos);
+                        requestIdList.add(order.getThirdOrderId());
                         return order;
                     }).toList();
             if (CollectionUtils.isEmpty(scanOrderList)) {
                 return new BaseOutput("200", "没有需要推送的扫码交易单数据");
             }
+
+            // 设置 detail
+            Map<String, List<ReportOrderDetailDto>> detailMap = this.tradeRequestMapper.selectOrderDetailReport(requestIdList)
+                    .stream().collect(Collectors.groupingBy(ReportOrderDetailDto::getRequestId));
+            scanOrderList.forEach(order -> {
+                order.setTradeList(detailMap.get(order.getThirdOrderId()));
+            });
 
             // 分批上报
             Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;

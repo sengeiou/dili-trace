@@ -5,6 +5,7 @@ import com.dili.trace.domain.ThirdPartyReportData;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
+import java.util.List;
 
 public class PushDataQueryDto extends ThirdPartyReportData {
 
@@ -35,6 +36,10 @@ public class PushDataQueryDto extends ThirdPartyReportData {
     @ApiModelProperty(value = "交易单主键")
     @Column(name = "`trade_request_id`")
     private String tradeRequestId;
+
+    @ApiModelProperty(value = "交易单主键集合")
+    @Column(name = "`trade_request_id`")
+    private List<String> requestIds;
 
     public String getCreatedStart() {
         return createdStart;
@@ -82,5 +87,13 @@ public class PushDataQueryDto extends ThirdPartyReportData {
 
     public void setTradeRequestId(String tradeRequestId) {
         this.tradeRequestId = tradeRequestId;
+    }
+
+    public List<String> getRequestIds() {
+        return requestIds;
+    }
+
+    public void setRequestIds(List<String> requestIds) {
+        this.requestIds = requestIds;
     }
 }
