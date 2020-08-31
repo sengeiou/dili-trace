@@ -39,4 +39,23 @@ public class ThirdPartyPushDataServiceImpl extends BaseServiceImpl<ThirdPartyPus
             this.updateSelective(thirdPartyPushData);
         }
     }
+
+    @Override
+    public void updatePushTime(ThirdPartyPushData thirdPartyPushData, Date pushDate) {
+        ThirdPartyPushData param = new ThirdPartyPushData();
+        param.setTableName(thirdPartyPushData.getTableName());
+        param.setInterfaceName(thirdPartyPushData.getInterfaceName());
+        List<ThirdPartyPushData> thirdPartyPushDataList = this.list(param);
+        thirdPartyPushData.setPushTime(pushDate);
+        if(thirdPartyPushDataList == null || thirdPartyPushDataList.size() == 0)
+        {
+            thirdPartyPushData.setCreated(pushDate);
+            this.insertSelective(thirdPartyPushData);
+        }
+        else
+        {
+            thirdPartyPushData.setId(thirdPartyPushDataList.get(0).getId());
+            this.updateSelective(thirdPartyPushData);
+        }
+    }
 }
