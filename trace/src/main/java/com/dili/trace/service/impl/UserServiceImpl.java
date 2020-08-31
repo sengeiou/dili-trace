@@ -237,6 +237,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
+        user.setModified(new Date());
         updateSelective(user);
         this.tallyAreaNoService.saveOrUpdateTallyAreaNo(userPO.getId(), tallyAreaNos);
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
