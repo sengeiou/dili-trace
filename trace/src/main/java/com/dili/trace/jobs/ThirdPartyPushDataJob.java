@@ -72,10 +72,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        this.pushUserQrCode(optUser);
-        this.pushUserSaveUpdate(optUser);
-        this.pushUserDelete(optUser);
+        // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
     }
 
     /**
@@ -94,8 +91,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             this.reportCheckIn(optUser);
             // 配送交易
             this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getCode(), ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getName(), 10, optUser);
+            // 配送交易作废
+            this.reportOrderDelete(ReportInterfaceEnum.TRADE_REQUEST_DELIVERY_DELETE.getCode(), ReportInterfaceEnum.TRADE_REQUEST_DELIVERY_DELETE.getName(), 10, optUser);
             // 扫码交易
             this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_SCAN.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN.getName(), 20, optUser);
+            // 扫码交易作废
+            this.reportOrderDelete(ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getName(), 20, optUser);
             //食安码新增/修改
             this.pushUserQrCode(optUser);
             //经营户新增/修改
@@ -565,6 +566,56 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
         return baseOutput;
     }
+
+    public BaseOutput reportOrderDelete(String tableName, String interfaceName,Integer type, Optional<OperatorUser> optUser) {
+        Date endTime = new Date();
+        // 查询待上报的交易单(退回单)
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        PushDataQueryDto queryDto = new PushDataQueryDto();
+        queryDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        queryDto.setOrderType(type);
+        if (thirdPartyPushData != null) {
+            queryDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        // 10-配送交易 20-扫码交易
+        if (type == 20) {
+            baseOutput = reportDeletedScanCodeOrder(type, optUser, queryDto);
+        } else {
+            baseOutput = reportDeletedDeliveryOrder(type, optUser, queryDto);
+        }
+
+        // 更新 pushtime
+        if (baseOutput.isSuccess()) {
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
+        }
+        return baseOutput;
+    }
+
+    private BaseOutput reportDeletedScanCodeOrder(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto) {
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        ReportDeletedOrderDto reportDeletedOrder = this.tradeRequestMapper.selectDeletedScanOrderReport(queryDto);
+        if (reportDeletedOrder == null) {
+            return baseOutput;
+        }
+        reportDeletedOrder.setMarketId(marketId);
+
+        return this.dataReportService.reportDeletedScanCodeOrder(reportDeletedOrder, optUser);
+    }
+
+    private BaseOutput reportDeletedDeliveryOrder(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto) {
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        ReportDeletedOrderDto reportDeletedOrder = this.tradeRequestMapper.selectDeletedDeliveryOrderReport(queryDto);
+        if (reportDeletedOrder == null) {
+            return baseOutput;
+        }
+        reportDeletedOrder.setMarketId(marketId);
+
+        return this.dataReportService.reportDeletedDeliveryOrder(reportDeletedOrder, optUser);
+    }
+
 
     private void pushStream(String tableName, String interfaceName,
                             Integer type, Optional<OperatorUser> optUser) {

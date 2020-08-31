@@ -506,6 +506,19 @@ public class DataReportService {
     }
 
     /**
+     * 扫码交易作废
+     *
+     * @param reportDeletedOrder
+     * @return
+     */
+    public BaseOutput reportDeletedScanCodeOrder(ReportDeletedOrderDto reportDeletedOrder, Optional<OperatorUser> optUser) {
+        logger.info("上报:扫码交易作废");
+        String path = "/thirdParty/order/sc/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportDeletedOrder, optUser, ReportDtoTypeEnum.deleteScanCodeOrder);
+    }
+
+    /**
      * 配送交易
      *
      * @param deliveryOrderDtos
@@ -516,5 +529,18 @@ public class DataReportService {
         String path = "/thirdParty/order/delivery";
         String url = this.reportContextUrl + path;
         return this.postJson(url, deliveryOrderDtos, optUser, ReportDtoTypeEnum.deliveryOrder);
+    }
+
+    /**
+     * 配送交易作废
+     *
+     * @param reportDeletedOrder
+     * @return
+     */
+    public BaseOutput reportDeletedDeliveryOrder(ReportDeletedOrderDto reportDeletedOrder, Optional<OperatorUser> optUser) {
+        logger.info("上报:扫码交易作废");
+        String path = "/thirdParty/order/delivery/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportDeletedOrder, optUser, ReportDtoTypeEnum.deleteDeliveryOrder);
     }
 }
