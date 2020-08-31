@@ -90,8 +90,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser);
             this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser);
             this.pushStream(ReportInterfaceEnum.UPSTREAM_DOWN.getCode(), ReportInterfaceEnum.UPSTREAM_DOWN.getName(), 20, optUser);
-            // 报备新增/编辑
-            this.reportRegisterBill(optUser);
             // 进门
             this.reportCheckIn(optUser);
             // 配送交易
@@ -113,7 +111,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public void pushRegisterBillData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            this.reportRegisterBill(optUser);// 报备新增/编辑
+            // 报备新增/编辑
+            this.reportRegisterBill(optUser);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
