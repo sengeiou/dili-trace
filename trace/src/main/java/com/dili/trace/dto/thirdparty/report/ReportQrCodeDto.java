@@ -2,7 +2,10 @@ package com.dili.trace.dto.thirdparty.report;
 
 import java.util.List;
 
-public class ReportQrCodeDto implements ReportDto {
+/**
+ * @author asa.lee
+ */
+public class ReportQrCodeDto {
     private String code;
     private Integer color;
     private String marketId;

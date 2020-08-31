@@ -15,9 +15,12 @@ import com.dili.trace.dto.PushDataQueryDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.PreserveTypeEnum;
+import com.dili.trace.enums.ReportInterfaceEnum;
+import com.dili.trace.enums.ReportInterfacePicEnum;
 import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * @author asa.lee, alvin, lily
+ */
 @Component
 public class ThirdPartyPushDataJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(ThirdPartyPushDataJob.class);
@@ -67,33 +73,37 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        //this.reportOrder("trade_request_scan", "扫码交易", 20, optUser);// 扫码交易
-        /*Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        this.pushBigCategory(optUser);
-        this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
-        this.pushCategory("category_goods", "商品新增/修改", 2, optUser);*/
-//        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-//        this.pushUserQrCode(optUser);
-//        this.pushUserSaveUpdate(optUser);
-//        this.pushUserDelete(optUser);
-        //this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
-        //this.pushStream("upstream_down", "下游新增/修改", 20, optUser);
+        this.pushUserQrCode(optUser);
+        this.pushUserSaveUpdate(optUser);
+        this.pushUserDelete(optUser);
     }
 
-    // 每五分钟提交一次数据
+    /**
+     * 每五分钟提交一次数据
+     */
     @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-           /* this.pushCategory("category_smallClass", "商品二级类目新增/修改", 1, optUser);
-            this.pushCategory("category_goods", "商品新增/修改", 2, optUser);
+            this.pushBigCategory(optUser);
+            this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser);
+            this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser);
+            this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser);
+            this.pushStream(ReportInterfaceEnum.UPSTREAM_DOWN.getCode(), ReportInterfaceEnum.UPSTREAM_DOWN.getName(), 20, optUser);
+            // 报备新增/编辑
             this.reportRegisterBill(optUser);
-            this.pushStream("upstream_up", "上游新增/修改", 10, optUser);
-            this.pushStream("upstream_down", "下游新增/修改", 20, optUser);*/
-            this.reportRegisterBill(optUser);// 报备新增/编辑
-            this.reportCheckIn(optUser);// 进门
-            this.reportOrder("trade_request_delivery", "配送交易", 10, optUser);// 配送交易
-            this.reportOrder("trade_request_scan", "扫码交易", 20, optUser);// 扫码交易
+            // 进门
+            this.reportCheckIn(optUser);
+            // 配送交易
+            this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getCode(), ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getName(), 10, optUser);
+            // 扫码交易
+            this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_SCAN.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN.getName(), 20, optUser);
+            //食安码新增/修改
+            this.pushUserQrCode(optUser);
+            //经营户新增/修改
+            this.pushUserSaveUpdate(optUser);
+            //经营户作废
+            this.pushUserDelete(optUser);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -110,8 +120,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
     private void pushBigCategory(Optional<OperatorUser> optUser) {
-        String tableName = "category_bigClass";
-        String interfaceName = "商品大类新增/修改";
+        String tableName = ReportInterfaceEnum.BIG_CATEGORY.getCode();
+        String interfaceName = ReportInterfaceEnum.BIG_CATEGORY.getName();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
         if (thirdPartyPushData == null) {
@@ -140,6 +150,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     private void pushCategory(String tableName, String interfaceName,
                               Integer level, Optional<OperatorUser> optUser) {
+        Date endTime = new Date();
+        String categorySmallClass = "category_smallClass";
+        String categoryGoods = "category_goods";
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
         Category category = new Category();
@@ -149,13 +162,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
         BaseOutput baseOutput = new BaseOutput();
-        if (tableName.equals("category_smallClass")) {
+        if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
             int i = 1;
             PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
             for (PreserveTypeEnum type : preserveTypeEnums) {
                 for (Category td : categories) {
-                    if (thirdPartyPushData == null || thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0) {
+                    boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                            && td.getModified().compareTo(endTime) <= 0);
+                    if (needPush) {
                         CategorySecondDto categoryDto = new CategorySecondDto();
                         categoryDto.setThirdSmallClassId(td.getId().toString());
                         categoryDto.setSmallClassName(td.getName());
@@ -166,11 +181,20 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 ;
                 i++;
             }
-            baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser);
-        } else if (tableName.equals("category_goods")) {
+            if (categoryDtos.size() > 0) {
+                baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser);
+                if (baseOutput.isSuccess()) {
+                    this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+                } else {
+                    logger.error("上报:{} 失败，原因:{}", interfaceName, baseOutput.getMessage());
+                }
+            }
+        } else if (categoryGoods.equals(tableName)) {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
-                if (thirdPartyPushData == null || thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0) {
+                boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                        && td.getModified().compareTo(endTime) <= 0);
+                if (needPush) {
                     GoodsDto categoryDto = new GoodsDto();
                     categoryDto.setGoodsName(td.getName());
                     categoryDto.setThirdGoodsId(td.getId().toString());
@@ -178,14 +202,16 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                     categoryDtos.add(categoryDto);
                 }
             });
-            baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser);
+            if (categoryDtos.size() > 0) {
+                baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser);
+                if (baseOutput.isSuccess()) {
+                    this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+                } else {
+                    logger.error("上报:{} 失败，原因:{}", interfaceName, baseOutput.getMessage());
+                }
+            }
         }
 
-        if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData);
-        } else {
-            logger.error("上报:{} 失败，原因:{}", interfaceName, baseOutput.getMessage());
-        }
 
     }
 
@@ -196,8 +222,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (pushData == null) {
             updateTime = new Date();
             pushData = new ThirdPartyPushData();
-            pushData.setTableName("user_qr_history");
-            pushData.setInterfaceName("食安码新增/修改");
+            pushData.setTableName(ReportInterfaceEnum.USER_QR_HISTORY.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.USER_QR_HISTORY.getName());
             pushData.setPushTime(updateTime);
         } else {
             updateTime = pushData.getPushTime();
@@ -216,11 +242,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
         });
         List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
-        logger.info("ReportQrCodeDto ： "+ JSON.toJSONString(pushList));
+        logger.info("ReportQrCodeDto ： " + JSON.toJSONString(pushList));
         // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         Integer batchSize = 100;
-        Integer part = pushList.size() / batchSize; // 分批数
+        // 分批数
+        Integer part = pushList.size() / batchSize;
         // 上报
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? pushList.size() : (i + 1) * batchSize;
@@ -228,7 +255,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser);
         }
 
-        //BaseOutput baseOutput = this.dataReportService.reportUserQrCode(pushList, optUser);
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
         }
@@ -244,8 +270,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (pushData == null) {
             updateTime = new Date();
             pushData = new ThirdPartyPushData();
-            pushData.setTableName("user");
-            pushData.setInterfaceName("经营户新增/编辑");
+            pushData.setTableName(ReportInterfaceEnum.USER.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.USER.getName());
             pushData.setPushTime(updateTime);
         } else {
             updateTime = pushData.getPushTime();
@@ -256,7 +282,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         boolean finalNewPushFlag = newPushFlag;
         User queUser = DTOUtils.newDTO(User.class);
         queUser.setYn(normalUserType);
-        queUser.mset(IDTO.AND_CONDITION_EXPR," validate_state <> 10");
+        queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state <> 10");
         StreamEx.ofNullable(this.userService.listByExample(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
@@ -270,8 +296,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报  由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = 70;
-        Integer part = reportUserDtoList.size() / batchSize; // 分批数
+        Integer batchSize = 60;
+        // 分批数
+        Integer part = reportUserDtoList.size() / batchSize;
         // 上报
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? reportUserDtoList.size() : (i + 1) * batchSize;
@@ -291,8 +318,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (pushData == null) {
             updateTime = new Date();
             pushData = new ThirdPartyPushData();
-            pushData.setTableName("user_delete");
-            pushData.setInterfaceName("经营户作废");
+            pushData.setTableName(ReportInterfaceEnum.USER_DELETE.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.USER_DELETE.getName());
             pushData.setPushTime(updateTime);
         } else {
             updateTime = pushData.getPushTime();
@@ -304,22 +331,25 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         User queUser = DTOUtils.newDTO(User.class);
         //没有push过则将所有作废记录push
         if (finalNewPushFlag) {
-            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10");
+            //首次push不需要将原作废经营户上报
+            queUser.mset(IDTO.AND_CONDITION_EXPR, " id = -1 ");
         } else {
             queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and modified > '" + sqlPushTime + "'");
         }
         List<User> userList = this.userService.listByExample(queUser);
         ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
-        reportUser.setMarketId(marketId);
-        List<String> thirdAccIds = new ArrayList<>();
-        StreamEx.ofNullable(userList)
-                .nonNull().flatCollection(Function.identity()).map(info -> {
-            //push后修改了用户信息
-            thirdAccIds.add(String.valueOf(info.getId()));
-            return true;
-        }).toList();
-        logger.info("thirdAccIds:" + JSON.toJSONString(thirdAccIds));
-        reportUser.setThirdAccIds(String.join(",", thirdAccIds));
+        if (!userList.isEmpty()) {
+            reportUser.setMarketId(marketId);
+            List<String> thirdAccIds = new ArrayList<>();
+            StreamEx.ofNullable(userList)
+                    .nonNull().flatCollection(Function.identity()).map(info -> {
+                //push后修改了用户信息
+                thirdAccIds.add(String.valueOf(info.getId()));
+                return true;
+            }).toList();
+            logger.info("thirdAccIds:" + JSON.toJSONString(thirdAccIds));
+            reportUser.setThirdAccIds(String.join(",", thirdAccIds));
+        }
         // 分批上报
         BaseOutput baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
         if (baseOutput.isSuccess()) {
@@ -330,12 +360,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
 
     public BaseOutput reportRegisterBill(Optional<OperatorUser> optUser) {
-        String tableName = "register_bill";
-        String interfaceName = "报备新增/编辑";
+
+        String tableName = ReportInterfaceEnum.REGISTER_BILL.getCode();
+        String interfaceName = ReportInterfaceEnum.REGISTER_BILL.getName();
         Date endTime = new Date();
         // verify_status "待审核"0, "已退回10, "已通过20, "不通过30
         // approvalStatus 审核状态 0-默认未审核 1-通过 2-退回 3-未通过
-        Map<Integer, Integer> statusMap = new HashMap<>();
+        Map<Integer, Integer> statusMap = new HashMap<>(16);
         statusMap.put(0, 0);
         statusMap.put(20, 1);
         statusMap.put(10, 2);
@@ -367,8 +398,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
-        Integer part = billList.size() / batchSize; // 分批数
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        // 分批数
+        Integer part = billList.size() / batchSize;
         // 上报
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? billList.size() : (i + 1) * batchSize;
@@ -405,8 +437,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     public BaseOutput reportCheckIn(Optional<OperatorUser> optUser) {
 
-        String tableName = "checkinout_record";
-        String interfaceName = "进门";
+        String tableName = ReportInterfaceEnum.CHECK_INOUT_RECORD.getCode();
+        String interfaceName = ReportInterfaceEnum.CHECK_INOUT_RECORD.getName();
         Date endTime = new Date();
 
         // 查询待上报的进门单
@@ -429,11 +461,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
-        Integer part = checkInList.size() / batchSize; // 分批数
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        // 分批数
+        Integer part = checkInList.size() / batchSize;
         // 上报
         for (int i = 0; i <= part; i++) {
-            Integer endPos = i==part ? checkInList.size() : (i + 1) * batchSize;
+            Integer endPos = i == part ? checkInList.size() : (i + 1) * batchSize;
             List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, endPos);
             baseOutput = this.dataReportService.reportCheckIn(partBills, optUser);
         }
@@ -494,9 +527,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
             // 分批上报
             Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
-            Integer part = deliveryOrderList.size() / batchSize; // 分批数
+            // 分批数
+            Integer part = deliveryOrderList.size() / batchSize;
             for (int i = 0; i <= part; i++) {
-                Integer endPos = i==part ? deliveryOrderList.size() : (i + 1) * batchSize;
+                Integer endPos = i == part ? deliveryOrderList.size() : (i + 1) * batchSize;
                 List<ReportDeliveryOrderDto> partBills = deliveryOrderList.subList(i * batchSize, endPos);
                 baseOutput = this.dataReportService.reportDeliveryOrder(partBills, optUser);
             }
@@ -521,9 +555,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
             // 分批上报
             Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
-            Integer part = scanOrderList.size() / batchSize; // 分批数
+            // 分批数
+            Integer part = scanOrderList.size() / batchSize;
             for (int i = 0; i <= part; i++) {
-                Integer endPos = i==part ? scanOrderList.size() : (i + 1) * batchSize;
+                Integer endPos = i == part ? scanOrderList.size() : (i + 1) * batchSize;
                 List<ReportScanCodeOrderDto> partBills = scanOrderList.subList(i * batchSize, endPos);
 
                 baseOutput = this.dataReportService.reportScanCodeOrder(partBills, optUser);
@@ -533,44 +568,36 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
     private void pushStream(String tableName, String interfaceName,
-                              Integer type, Optional<OperatorUser> optUser) {
+                            Integer type, Optional<OperatorUser> optUser) {
+        Date endTime = new Date();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
         UpStream upStream = new UpStream();
         upStream.setUpORdown(type);
-        if(thirdPartyPushData != null)
-        {
+        if (thirdPartyPushData != null) {
             upStream.setMetadata(IDTO.AND_CONDITION_EXPR,
-                    "modified>'"+ DateUtils.format(thirdPartyPushData.getPushTime())+"'");
+                    "modified>'" + DateUtils.format(thirdPartyPushData.getPushTime())
+                            + "' and modified<='" + DateUtils.format(endTime) + "'");
         }
         List<UpStream> upStreams = upStreamService.listByExample(upStream);
-        if(upStreams == null || upStreams.size() == 0)
-        {
+        if (upStreams == null || upStreams.size() == 0) {
             return;
         }
         BaseOutput baseOutput = new BaseOutput();
-        // 上游
-        if(type.intValue() == 10){
-            baseOutput = reportUpStream(optUser, upStreams);
-        }
-        else{
-            baseOutput = reportDownStream(optUser, upStreams);
-        }
-
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
-
-        if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData);
+        // 上游
+        if (type.intValue() == 10) {
+            baseOutput = reportUpStream(optUser, upStreams, pushData, endTime);
         } else {
-            logger.error("上报:{} 失败，原因:{}", interfaceName, baseOutput.getMessage());
+            baseOutput = reportDownStream(optUser, upStreams, pushData, endTime);
         }
 
     }
 
-    private BaseOutput reportUpStream(Optional<OperatorUser> optUser, List<UpStream> upStreams) {
-        BaseOutput baseOutput;
+    private BaseOutput reportUpStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
+        BaseOutput baseOutput = new BaseOutput();
         List<UpStreamDto> upStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
             UpStreamDto upStreamDto = new UpStreamDto();
@@ -588,11 +615,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             if (upStreamType == 10) {
                 upStreamDto.setType(1);
                 UpStreamDto.PzVo pzVoFront = new UpStreamDto.PzVo();
-                pzVoFront.setCredentialName("身份证正面");
+                pzVoFront.setCredentialName(ReportInterfacePicEnum.ID_CARD_FRONT.getName());
                 pzVoFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
 
                 UpStreamDto.PzVo pzVoBack = new UpStreamDto.PzVo();
-                pzVoBack.setCredentialName("身份证反面");
+                pzVoBack.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
                 pzVoBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
 
                 poVoList.add(pzVoFront);
@@ -601,15 +628,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             } else {
                 upStreamDto.setType(0);
                 UpStreamDto.PzVo pzVoBusiness = new UpStreamDto.PzVo();
-                pzVoBusiness.setCredentialName("营业执照");
+                pzVoBusiness.setCredentialName(ReportInterfacePicEnum.BUSINESS_LICENSE.getName());
                 pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
 
                 UpStreamDto.PzVo pzVoManu = new UpStreamDto.PzVo();
-                pzVoManu.setCredentialName("生产许可证");
+                pzVoManu.setCredentialName(ReportInterfacePicEnum.PRODUCTION_LICENSE.getName());
                 pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
 
                 UpStreamDto.PzVo pzVoOperate = new UpStreamDto.PzVo();
-                pzVoOperate.setCredentialName("经营许可证");
+                pzVoOperate.setCredentialName(ReportInterfacePicEnum.OPERATING_LICENSE.getName());
                 pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
 
                 poVoList.add(pzVoBusiness);
@@ -618,12 +645,19 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
             upStreamDtos.add(upStreamDto);
         });
-        baseOutput = dataReportService.reportUpStream(upStreamDtos, optUser);
+        if (upStreamDtos.size() > 0) {
+            baseOutput = dataReportService.reportUpStream(upStreamDtos, optUser);
+            if (baseOutput.isSuccess()) {
+                this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+            } else {
+                logger.error("上报:{} 失败，原因:{}", pushData.getInterfaceName(), baseOutput.getMessage());
+            }
+        }
         return baseOutput;
     }
 
-    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams) {
-        BaseOutput baseOutput;
+    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
+        BaseOutput baseOutput = new BaseOutput();
         List<DownStreamDto> downStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
             DownStreamDto downStreamDto = new DownStreamDto();
@@ -642,12 +676,16 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 downStreamDto.setType(1);
 
                 DownStreamDto.DownStreamImg downStreamImgFront = new DownStreamDto.DownStreamImg();
-                downStreamImgFront.setCredentialName("身份证正面");
-                downStreamImgFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
+                downStreamImgFront.setCredentialName(ReportInterfacePicEnum.ID_CARD_FRONT.getName());
+                if (StringUtils.isNotBlank(td.getCardNoFrontUrl())) {
+                    downStreamImgFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
+                }
 
                 DownStreamDto.DownStreamImg downStreamImgBack = new DownStreamDto.DownStreamImg();
-                downStreamImgBack.setCredentialName("身份证反面");
-                downStreamImgBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
+                downStreamImgBack.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
+                if (StringUtils.isNotBlank(td.getCardNoBackUrl())) {
+                    downStreamImgBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
+                }
 
                 downStreamImgs.add(downStreamImgFront);
                 downStreamImgs.add(downStreamImgBack);
@@ -656,24 +694,37 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 downStreamDto.setStreamName(td.getName());
                 downStreamDto.setType(0);
                 DownStreamDto.DownStreamImg pzVoBusiness = new DownStreamDto.DownStreamImg();
-                pzVoBusiness.setCredentialName("营业执照");
-                pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
+                pzVoBusiness.setCredentialName(ReportInterfacePicEnum.BUSINESS_LICENSE.getName());
+                if (StringUtils.isNotBlank(td.getBusinessLicenseUrl())) {
+                    pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
+                }
 
                 DownStreamDto.DownStreamImg pzVoManu = new DownStreamDto.DownStreamImg();
-                pzVoManu.setCredentialName("生产许可证");
-                pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
+                pzVoManu.setCredentialName(ReportInterfacePicEnum.PRODUCTION_LICENSE.getName());
+                if (StringUtils.isNotBlank(td.getManufacturingLicenseUrl())) {
+                    pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
+                }
 
                 DownStreamDto.DownStreamImg pzVoOperate = new DownStreamDto.DownStreamImg();
-                pzVoOperate.setCredentialName("经营许可证");
-                pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
+                pzVoOperate.setCredentialName(ReportInterfacePicEnum.OPERATING_LICENSE.getName());
+                if (StringUtils.isNotBlank(td.getOperationLicenseUrl())) {
+                    pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
+                }
 
                 downStreamImgs.add(pzVoBusiness);
-                downStreamImgs.add(pzVoOperate);
+                downStreamImgs.add(pzVoManu);
                 downStreamImgs.add(pzVoOperate);
             }
             downStreamDtos.add(downStreamDto);
         });
-        baseOutput = dataReportService.reportDownStream(downStreamDtos, optUser);
+        if (downStreamDtos.size() > 0) {
+            baseOutput = dataReportService.reportDownStream(downStreamDtos, optUser);
+            if (baseOutput.isSuccess()) {
+                this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+            } else {
+                logger.error("上报:{} 失败，原因:{}", pushData.getInterfaceName(), baseOutput.getMessage());
+            }
+        }
         return baseOutput;
     }
 
