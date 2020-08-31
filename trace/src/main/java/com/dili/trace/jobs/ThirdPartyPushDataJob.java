@@ -94,6 +94,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             this.reportCheckIn(optUser);// 进门
             this.reportOrder("trade_request_delivery", "配送交易", 10, optUser);// 配送交易
             this.reportOrder("trade_request_scan", "扫码交易", 20, optUser);// 扫码交易
+            this.pushUserQrCode(optUser);//食安码新增/修改
+            this.pushUserSaveUpdate(optUser);//经营户新增/修改
+            this.pushUserDelete(optUser);//经营户作废
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -158,7 +161,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 ;
                 i++;
             }
-            if(categoryDtos.size() > 0) {
+            if (categoryDtos.size() > 0) {
                 baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser);
                 if (baseOutput.isSuccess()) {
                     this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
@@ -170,7 +173,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
                 if (thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                    && td.getModified().compareTo(endTime) <= 0)) {
+                        && td.getModified().compareTo(endTime) <= 0)) {
                     GoodsDto categoryDto = new GoodsDto();
                     categoryDto.setGoodsName(td.getName());
                     categoryDto.setThirdGoodsId(td.getId().toString());
@@ -178,7 +181,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                     categoryDtos.add(categoryDto);
                 }
             });
-            if(categoryDtos.size() > 0) {
+            if (categoryDtos.size() > 0) {
                 baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser);
                 if (baseOutput.isSuccess()) {
                     this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
@@ -187,7 +190,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 }
             }
         }
-
 
 
     }
@@ -219,7 +221,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
         });
         List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
-        logger.info("ReportQrCodeDto ： "+ JSON.toJSONString(pushList));
+        logger.info("ReportQrCodeDto ： " + JSON.toJSONString(pushList));
         // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         Integer batchSize = 100;
@@ -259,7 +261,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         boolean finalNewPushFlag = newPushFlag;
         User queUser = DTOUtils.newDTO(User.class);
         queUser.setYn(normalUserType);
-        queUser.mset(IDTO.AND_CONDITION_EXPR," validate_state <> 10");
+        queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state <> 10");
         StreamEx.ofNullable(this.userService.listByExample(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
@@ -410,7 +412,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Integer part = checkInList.size() / batchSize; // 分批数
         // 上报
         for (int i = 0; i <= part; i++) {
-            Integer endPos = i==part ? checkInList.size() : (i + 1) * batchSize;
+            Integer endPos = i == part ? checkInList.size() : (i + 1) * batchSize;
             List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, endPos);
             baseOutput = this.dataReportService.reportCheckIn(partBills, optUser);
         }
@@ -442,7 +444,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return bill;
     }
 
-    public BaseOutput reportOrder(String tableName, String interfaceName,Integer type, Optional<OperatorUser> optUser) {
+    public BaseOutput reportOrder(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
         // 查询待上报的交易单
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
@@ -488,7 +490,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
             Integer part = deliveryOrderList.size() / batchSize; // 分批数
             for (int i = 0; i <= part; i++) {
-                Integer endPos = i==part ? deliveryOrderList.size() : (i + 1) * batchSize;
+                Integer endPos = i == part ? deliveryOrderList.size() : (i + 1) * batchSize;
                 List<ReportDeliveryOrderDto> partBills = deliveryOrderList.subList(i * batchSize, endPos);
                 baseOutput = this.dataReportService.reportDeliveryOrder(partBills, optUser);
             }
@@ -511,7 +513,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
             Integer part = scanOrderList.size() / batchSize; // 分批数
             for (int i = 0; i <= part; i++) {
-                Integer endPos = i==part ? scanOrderList.size() : (i + 1) * batchSize;
+                Integer endPos = i == part ? scanOrderList.size() : (i + 1) * batchSize;
                 List<ReportScanCodeOrderDto> partBills = scanOrderList.subList(i * batchSize, endPos);
 
                 baseOutput = this.dataReportService.reportScanCodeOrder(partBills, optUser);
@@ -521,21 +523,19 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
     private void pushStream(String tableName, String interfaceName,
-                              Integer type, Optional<OperatorUser> optUser) {
+                            Integer type, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
         UpStream upStream = new UpStream();
         upStream.setUpORdown(type);
-        if(thirdPartyPushData != null)
-        {
+        if (thirdPartyPushData != null) {
             upStream.setMetadata(IDTO.AND_CONDITION_EXPR,
-                    "modified>'"+ DateUtils.format(thirdPartyPushData.getPushTime())
-                            +"' and modified<='"+DateUtils.format(endTime)+"'");
+                    "modified>'" + DateUtils.format(thirdPartyPushData.getPushTime())
+                            + "' and modified<='" + DateUtils.format(endTime) + "'");
         }
         List<UpStream> upStreams = upStreamService.listByExample(upStream);
-        if(upStreams == null || upStreams.size() == 0)
-        {
+        if (upStreams == null || upStreams.size() == 0) {
             return;
         }
         BaseOutput baseOutput = new BaseOutput();
@@ -543,10 +543,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
         // 上游
-        if(type.intValue() == 10){
+        if (type.intValue() == 10) {
             baseOutput = reportUpStream(optUser, upStreams, pushData, endTime);
-        }
-        else{
+        } else {
             baseOutput = reportDownStream(optUser, upStreams, pushData, endTime);
         }
 
@@ -601,7 +600,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
             upStreamDtos.add(upStreamDto);
         });
-        if(upStreamDtos.size() > 0) {
+        if (upStreamDtos.size() > 0) {
             baseOutput = dataReportService.reportUpStream(upStreamDtos, optUser);
             if (baseOutput.isSuccess()) {
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
@@ -612,7 +611,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams,  ThirdPartyPushData pushData, Date endTime) {
+    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
         BaseOutput baseOutput = new BaseOutput();
         List<DownStreamDto> downStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
@@ -663,7 +662,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
             downStreamDtos.add(downStreamDto);
         });
-        if(downStreamDtos.size() > 0) {
+        if (downStreamDtos.size() > 0) {
             baseOutput = dataReportService.reportDownStream(downStreamDtos, optUser);
             if (baseOutput.isSuccess()) {
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
