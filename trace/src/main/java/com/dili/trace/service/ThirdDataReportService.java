@@ -18,23 +18,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author asa.lee
+ */
 @Service
 public class ThirdDataReportService {
 
     @Value("${current.baseWebPath}")
     private String baseWebPath;
 
-    //用户类型 市场固定传1
-    private Integer custType = 1;
     private Integer marketId = 330110800;
-    private Integer user_status_normal = 1;
-    private Integer user_status_delete = -1;
+    private Integer userStatusNormal = 1;
+    private Integer userStatusDelete = -1;
 
     public ReportUserDto reprocessUser(User info) {
         ReportUserDto reportUser = new ReportUserDto();
         reportUser.setAccountName(info.getName());
         reportUser.setAccountType(info.getUserType());
-        if(UserTypeEnum.CORPORATE.equalsCode(info.getUserType())){
+        if (UserTypeEnum.CORPORATE.equalsCode(info.getUserType())) {
             reportUser.setComeName(info.getName());
         }
         reportUser.setAddress(info.getAddr());
@@ -46,16 +47,17 @@ public class ThirdDataReportService {
         String codeContent = this.baseWebPath + "/user?userId=" + info.getId();
         reportUser.setCode(codeContent);
         reportUser.setTelphone(info.getPhone());
-        reportUser.setCustType(custType);
+        Integer userType = 1;
+        reportUser.setCustType(userType);
         reportUser.setLegal(info.getLegalPerson());
         reportUser.setLicense(info.getLicense());
         reportUser.setMarketId(String.valueOf(marketId));
         Integer userStatus = 0;
         //目标系统 0：正常，1：冻结：2:作废
         //现有 yn为1为正常/-1为删除 state为0禁用/1启用，
-        if (user_status_delete.equals(info.getYn())) {
+        if (userStatusDelete.equals(info.getYn())) {
             userStatus = 2;
-        } else if (!user_status_normal.equals(info.getState())) {
+        } else if (!userStatusNormal.equals(info.getState())) {
             userStatus = 1;
         }
         reportUser.setStatus(userStatus);
