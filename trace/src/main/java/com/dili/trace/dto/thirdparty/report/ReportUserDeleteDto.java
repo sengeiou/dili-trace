@@ -1,6 +1,9 @@
 package com.dili.trace.dto.thirdparty.report;
 
-public class ReportUserDeleteDto implements ReportDto {
+/**
+ * @author asa.lee
+ */
+public class ReportUserDeleteDto{
     private String marketId;
     private String thirdAccIds;
 

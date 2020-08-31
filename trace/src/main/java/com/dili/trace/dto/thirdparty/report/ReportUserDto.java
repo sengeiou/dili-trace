@@ -2,7 +2,10 @@ package com.dili.trace.dto.thirdparty.report;
 
 import java.util.List;
 
-public class ReportUserDto implements ReportDto {
+/**
+ * @author asa.lee
+ */
+public class ReportUserDto  {
     private String marketId;
     private String accountName;
     private Integer accountType;

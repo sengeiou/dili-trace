@@ -1,6 +1,9 @@
 package com.dili.trace.dto.thirdparty.report;
 
-public class ReportQrCodeDetailDto implements ReportDto{
+/**
+ * @author asa.lee
+ */
+public class ReportQrCodeDetailDto{
     String codeDetail;
 
     public String getCodeDetail() {

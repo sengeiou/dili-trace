@@ -275,7 +275,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报  由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = 70;
+        Integer batchSize = 60;
         Integer part = reportUserDtoList.size() / batchSize; // 分批数
         // 上报
         for (int i = 0; i <= part; i++) {
@@ -309,7 +309,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         User queUser = DTOUtils.newDTO(User.class);
         //没有push过则将所有作废记录push
         if (finalNewPushFlag) {
-            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10");
+            //首次push不需要将原作废经营户上报
+            queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and 1=0");
         } else {
             queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and modified > '" + sqlPushTime + "'");
         }

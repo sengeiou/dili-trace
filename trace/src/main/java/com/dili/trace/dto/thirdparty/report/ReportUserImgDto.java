@@ -2,9 +2,10 @@ package com.dili.trace.dto.thirdparty.report;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.util.List;
-
-public class ReportUserImgDto implements ReportDto {
+/**
+ * @author asa.lee
+ */
+public class ReportUserImgDto{
     private String credentialName;
     private String end;
     private String start;
