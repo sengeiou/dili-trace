@@ -361,7 +361,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         List<User> userList = this.userService.listByExample(queUser);
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        if (!userList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(userList)) {
             ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
             reportUser.setMarketId(marketId);
             List<String> thirdAccIds = new ArrayList<>();
