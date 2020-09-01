@@ -92,12 +92,12 @@ public enum ReportDtoTypeEnum {
 	/**
 	 * 扫码交易作废
 	 */
-	deleteScanCodeOrder(170, "扫码交易"),
+	deleteScanCodeOrder(170, "扫码交易作废"),
 
 	/**
 	 * 配送交易作废
 	 */
-	deleteDeliveryOrder(180, "配送交易"),
+	deleteDeliveryOrder(180, "配送交易作废"),
 
 	;
 
