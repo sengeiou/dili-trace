@@ -68,6 +68,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Autowired
     CheckinOutRecordMapper checkinOutRecordMapper;
 
+    /**
+     * marketId统一使用330110800
+     */
     private String marketId = "330110800";
 
     @Override
@@ -119,6 +122,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
+    /**
+     * 上报商品大类
+     * @param optUser
+     */
     private void pushBigCategory(Optional<OperatorUser> optUser) {
         String tableName = ReportInterfaceEnum.BIG_CATEGORY.getCode();
         String interfaceName = ReportInterfaceEnum.BIG_CATEGORY.getName();
@@ -148,6 +155,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
+    /**
+     * 上报商品二类/商品新增/修改
+     * @param optUser
+     */
     private void pushCategory(String tableName, String interfaceName,
                               Integer level, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
@@ -658,6 +669,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     }
 
+    /**
+     * 上报上游新增/修改
+     * @param optUser
+     * @param upStreams
+     * @param pushData
+     * @param endTime
+     * @return
+     */
     private BaseOutput reportUpStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
         BaseOutput baseOutput = new BaseOutput();
         List<UpStreamDto> upStreamDtos = new ArrayList<>();
@@ -718,7 +737,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
+    /**
+     * 上报下游新增/修改
+     * @param optUser
+     * @param upStreams
+     * @param pushData
+     * @param endTime
+     * @return
+     */
+    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams,  ThirdPartyPushData pushData, Date endTime) {
         BaseOutput baseOutput = new BaseOutput();
         List<DownStreamDto> downStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
