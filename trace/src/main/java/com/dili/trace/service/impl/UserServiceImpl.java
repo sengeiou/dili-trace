@@ -556,6 +556,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         user.setValidateState(input.getValidateState());
+        user.setModified(new Date());
         int retRows = update(user);
         if (retRows > 0) {
             return BaseOutput.success("用户资料审核申请已通过");
