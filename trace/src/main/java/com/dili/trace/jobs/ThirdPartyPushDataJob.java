@@ -252,7 +252,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? pushList.size() : (i + 1) * batchSize;
             List<ReportQrCodeDto> partBills = pushList.subList(i * batchSize, endPos);
-            if(CollectionUtils.isNotEmpty(partBills)){
+            if (CollectionUtils.isNotEmpty(partBills)) {
                 baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser);
             }
         }
@@ -281,12 +281,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
         }
-        //获取正常经营的经营户列表（排除未实名的用户）
+        //获取正常经营(审核通过)的经营户列表（排除未实名的用户）
         Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
         User queUser = DTOUtils.newDTO(User.class);
         queUser.setYn(normalUserType);
-        queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state <> 10");
+        queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state = 40");
         StreamEx.ofNullable(this.userService.listByExample(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
@@ -307,7 +307,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? reportUserDtoList.size() : (i + 1) * batchSize;
             List<ReportUserDto> partBills = reportUserDtoList.subList(i * batchSize, endPos);
-            if(CollectionUtils.isNotEmpty(partBills)){
+            if (CollectionUtils.isNotEmpty(partBills)) {
                 baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser);
             }
         }
@@ -348,7 +348,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         if (!userList.isEmpty()) {
-            ReportUserDeleteDto reportUser =new ReportUserDeleteDto();
+            ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
             reportUser.setMarketId(marketId);
             List<String> thirdAccIds = new ArrayList<>();
             StreamEx.ofNullable(userList)
@@ -491,7 +491,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    public BaseOutput reportOrder(String tableName, String interfaceName,Integer type, Optional<OperatorUser> optUser) {
+    public BaseOutput reportOrder(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
         // 查询待上报的交易单
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
@@ -579,7 +579,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    public BaseOutput reportOrderDelete(String tableName, String interfaceName,Integer type, Optional<OperatorUser> optUser) {
+    public BaseOutput reportOrderDelete(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
         // 查询待上报的交易单(退回单)
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
