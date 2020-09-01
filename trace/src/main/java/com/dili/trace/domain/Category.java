@@ -10,6 +10,8 @@ import com.dili.ss.domain.BaseDomain;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 @Table(name = "`category`")
 public class Category extends BaseDomain {
 	@Id
@@ -29,7 +31,31 @@ public class Category extends BaseDomain {
 
 	@ApiModelProperty(value = "层级")
 	@Column(name = "`level`")
-    private Integer level;
+	private Integer level;
+
+	@ApiModelProperty(value = "创建时间")
+	@Column(name = "`created`")
+	private Date created;
+
+	@ApiModelProperty(value = "修改时间")
+	@Column(name = "`modified`")
+	private Date modified;
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public Date getModified() {
+		return modified;
+	}
+
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
 
 	public Long getId() {
 		return id;
@@ -64,18 +90,18 @@ public class Category extends BaseDomain {
 	}
 
 
-    /**
-     * @return Integer return the level
-     */
-    public Integer getLevel() {
-        return level;
-    }
+	/**
+	 * @return Integer return the level
+	 */
+	public Integer getLevel() {
+		return level;
+	}
 
-    /**
-     * @param level the level to set
-     */
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
+	/**
+	 * @param level the level to set
+	 */
+	public void setLevel(Integer level) {
+		this.level = level;
+	}
 
 }

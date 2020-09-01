@@ -454,5 +454,19 @@
     )unqualifiedPdt
 </select>
 
+  <select id="selectRegisterBillReport" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.ReportRegisterBillDto">
+    SELECT b.`operator_name` approvalName,b.`verify_status` approvalStatus,b.`operation_time` approvalTime,b.`brand_name` brand,
+      b.`created` enterTime, REPLACE(b.`origin_name`,',','-') productionStr,
+      b.`spec_name` specification, b.`user_id` thirdAccId, b.`id` thirdEnterId, b.`product_id` thirdGoodsId, b.`product_name` thirdGoodsName,
+      b.`upstream_id` thirdUpId, b.`plate` transporterId, IF(b.`weight_unit`=1,'斤','公斤') unitName, b.`weight` enterNum
+    FROM `register_bill` b
+    WHERE b.is_deleted=0
+      <if test="modifiedEnd != null">
+          <![CDATA[AND b.modified <=#{modifiedEnd}]]>
+      </if>
+      <if test="modifiedStart != null">
+          <![CDATA[AND b.modified >#{modifiedStart}]]>
+      </if>
+  </select>
 
 </mapper>

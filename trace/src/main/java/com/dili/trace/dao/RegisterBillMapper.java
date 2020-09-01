@@ -13,6 +13,7 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.dto.thirdparty.report.RegionCountInfo;
 import com.dili.trace.dto.thirdparty.report.ReportCountDto;
 
+import com.dili.trace.dto.thirdparty.report.ReportRegisterBillDto;
 import org.apache.ibatis.annotations.Select;
 
 public interface RegisterBillMapper extends MyMapper<RegisterBill> {
@@ -53,4 +54,8 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
      */
     public List<ReportCountDto> selectReportCountData(RegisterBillDto billDto);
 
+    /**
+     * 报备检测数据统计
+     */
+    public List<ReportRegisterBillDto> selectRegisterBillReport(RegisterBillDto billDto);
 }

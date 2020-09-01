@@ -105,5 +105,16 @@
 
         )t 
     </select>
-   
+
+    <select id="selectCheckInReport" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.ReportCheckInDto">
+        SELECT r.`created` inTime, r.`user_id` thirdAccId, r.`bill_id` thirdEnterIds
+        FROM `checkinout_record` r
+        WHERE r.inout=10
+        <if test="modifiedEnd != null">
+            <![CDATA[AND r.modified <=#{modifiedEnd}]]>
+        </if>
+        <if test="modifiedStart != null">
+            <![CDATA[AND r.modified >#{modifiedStart}]]>
+        </if>
+    </select>
 </mapper>

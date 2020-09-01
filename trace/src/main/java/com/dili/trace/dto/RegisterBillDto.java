@@ -23,6 +23,16 @@ public class RegisterBillDto extends RegisterBill {
 	@Operator(Operator.LITTLE_EQUAL_THAN)
 	private String createdEnd;
 
+	@ApiModelProperty(value = "查询修改开始时间")
+	@Column(name = "`modified`")
+	@Operator(Operator.GREAT_EQUAL_THAN)
+	private String modifiedStart;
+
+	@ApiModelProperty(value = "查询修改结束时间")
+	@Column(name = "`modified`")
+	@Operator(Operator.LITTLE_EQUAL_THAN)
+	private String modifiedEnd;
+
 	@ApiModelProperty(value = "查询检测开始时间")
 	@Column(name = "`latest_detect_time`")
 	@Operator(Operator.GREAT_EQUAL_THAN)
@@ -291,4 +301,19 @@ public class RegisterBillDto extends RegisterBill {
         this.keyword = keyword;
     }
 
+	public String getModifiedStart() {
+		return modifiedStart;
+	}
+
+	public void setModifiedStart(String modifiedStart) {
+		this.modifiedStart = modifiedStart;
+	}
+
+	public String getModifiedEnd() {
+		return modifiedEnd;
+	}
+
+	public void setModifiedEnd(String modifiedEnd) {
+		this.modifiedEnd = modifiedEnd;
+	}
 }
