@@ -68,6 +68,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Autowired
     CheckinOutRecordMapper checkinOutRecordMapper;
 
+    /**
+     * marketId统一使用330110800
+     */
     private String marketId = "330110800";
 
     @Override
@@ -82,10 +85,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
+            // 商品大类新增/修改
             this.pushBigCategory(optUser);
+            // 商品二级类目新增/修改
             this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser);
+            // 商品新增/修改
             this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser);
+            // 上游新增编辑
             this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser);
+            // 下游新增/编辑
             this.pushStream(ReportInterfaceEnum.UPSTREAM_DOWN.getCode(), ReportInterfaceEnum.UPSTREAM_DOWN.getName(), 20, optUser);
             // 进门
             this.reportCheckIn(optUser);
@@ -119,6 +127,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
+    /**
+     * 上报商品大类
+     * @param optUser
+     */
     private void pushBigCategory(Optional<OperatorUser> optUser) {
         String tableName = ReportInterfaceEnum.BIG_CATEGORY.getCode();
         String interfaceName = ReportInterfaceEnum.BIG_CATEGORY.getName();
@@ -148,6 +160,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
+    /**
+     * 上报商品二类/商品新增/修改
+     * @param optUser
+     */
     private void pushCategory(String tableName, String interfaceName,
                               Integer level, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
@@ -372,7 +388,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
 
     public BaseOutput reportRegisterBill(Optional<OperatorUser> optUser) {
-
         String tableName = ReportInterfaceEnum.REGISTER_BILL.getCode();
         String interfaceName = ReportInterfaceEnum.REGISTER_BILL.getName();
         Date endTime = new Date();
@@ -658,6 +673,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     }
 
+    /**
+     * 上报上游新增/修改
+     * @param optUser
+     * @param upStreams
+     * @param pushData
+     * @param endTime
+     * @return
+     */
     private BaseOutput reportUpStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
         BaseOutput baseOutput = new BaseOutput();
         List<UpStreamDto> upStreamDtos = new ArrayList<>();
@@ -718,7 +741,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
+    /**
+     * 上报下游新增/修改
+     * @param optUser
+     * @param upStreams
+     * @param pushData
+     * @param endTime
+     * @return
+     */
+    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams,  ThirdPartyPushData pushData, Date endTime) {
         BaseOutput baseOutput = new BaseOutput();
         List<DownStreamDto> downStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
