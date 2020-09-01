@@ -68,6 +68,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Autowired
     CheckinOutRecordMapper checkinOutRecordMapper;
 
+    /**
+     * marketId统一使用330110800
+     */
     private String marketId = "330110800";
 
     @Override
@@ -124,6 +127,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
+    /**
+     * 上报商品大类
+     * @param optUser
+     */
     private void pushBigCategory(Optional<OperatorUser> optUser) {
         String tableName = ReportInterfaceEnum.BIG_CATEGORY.getCode();
         String interfaceName = ReportInterfaceEnum.BIG_CATEGORY.getName();
@@ -153,6 +160,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
+    /**
+     * 上报商品二类/商品新增/修改
+     * @param optUser
+     */
     private void pushCategory(String tableName, String interfaceName,
                               Integer level, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
@@ -257,11 +268,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? pushList.size() : (i + 1) * batchSize;
             List<ReportQrCodeDto> partBills = pushList.subList(i * batchSize, endPos);
-            baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser);
+            if (CollectionUtils.isNotEmpty(partBills)) {
+                baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser);
+            }
         }
 
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_QR_HISTORY.getName(), baseOutput.getMessage());
         }
         return baseOutput;
     }
@@ -282,12 +297,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
         }
-        //获取正常经营的经营户列表（排除未实名的用户）
+        //获取正常经营(审核通过)的经营户列表（排除未实名的用户）
         Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
         User queUser = DTOUtils.newDTO(User.class);
         queUser.setYn(normalUserType);
-        queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state <> 10");
+        queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state = 40");
         StreamEx.ofNullable(this.userService.listByExample(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
@@ -308,10 +323,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? reportUserDtoList.size() : (i + 1) * batchSize;
             List<ReportUserDto> partBills = reportUserDtoList.subList(i * batchSize, endPos);
-            baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser);
+            if (CollectionUtils.isNotEmpty(partBills)) {
+                baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser);
+            }
         }
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER.getName(), baseOutput.getMessage());
         }
         return baseOutput;
     }
@@ -345,7 +364,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         if (!userList.isEmpty()) {
-            ReportUserDeleteDto reportUser =new ReportUserDeleteDto();
+            ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
             reportUser.setMarketId(marketId);
             List<String> thirdAccIds = new ArrayList<>();
             StreamEx.ofNullable(userList)
@@ -360,6 +379,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
             if (baseOutput.isSuccess()) {
                 this.thirdPartyPushDataService.updatePushTime(pushData);
+            } else {
+                logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_DELETE.getName(), baseOutput.getMessage());
             }
         }
         return baseOutput;
@@ -485,7 +506,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    public BaseOutput reportOrder(String tableName, String interfaceName,Integer type, Optional<OperatorUser> optUser) {
+    public BaseOutput reportOrder(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
         // 查询待上报的交易单
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
@@ -573,7 +594,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    public BaseOutput reportOrderDelete(String tableName, String interfaceName,Integer type, Optional<OperatorUser> optUser) {
+    public BaseOutput reportOrderDelete(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser) {
         Date endTime = new Date();
         // 查询待上报的交易单(退回单)
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
@@ -652,6 +673,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     }
 
+    /**
+     * 上报上游新增/修改
+     * @param optUser
+     * @param upStreams
+     * @param pushData
+     * @param endTime
+     * @return
+     */
     private BaseOutput reportUpStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
         BaseOutput baseOutput = new BaseOutput();
         List<UpStreamDto> upStreamDtos = new ArrayList<>();
@@ -712,7 +741,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
+    /**
+     * 上报下游新增/修改
+     * @param optUser
+     * @param upStreams
+     * @param pushData
+     * @param endTime
+     * @return
+     */
+    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams,  ThirdPartyPushData pushData, Date endTime) {
         BaseOutput baseOutput = new BaseOutput();
         List<DownStreamDto> downStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
