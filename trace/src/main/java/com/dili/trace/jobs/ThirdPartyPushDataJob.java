@@ -227,8 +227,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 }
             }
         }
-
-
     }
 
     private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser) {
@@ -439,6 +437,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.REGISTER_BILL.getName(), baseOutput.getMessage());
         }
         return baseOutput;
     }
@@ -502,6 +502,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.CHECK_INOUT_RECORD.getName(), baseOutput.getMessage());
         }
         return baseOutput;
     }
@@ -523,6 +525,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
+        } else {
+            String name = type == 10 ? ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getName() : ReportInterfaceEnum.TRADE_REQUEST_SCAN.getName();
+            logger.error("上报:{} 失败，原因:{}", name, baseOutput.getMessage());
         }
         return baseOutput;
     }
@@ -617,6 +622,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (baseOutput.isSuccess()) {
             thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
+        } else {
+            String name = type == 10 ? ReportInterfaceEnum.TRADE_REQUEST_DELIVERY_DELETE.getName() : ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getName();
+            logger.error("上报:{} 失败，原因:{}", name, baseOutput.getMessage());
         }
         return baseOutput;
     }
