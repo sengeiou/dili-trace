@@ -252,11 +252,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? pushList.size() : (i + 1) * batchSize;
             List<ReportQrCodeDto> partBills = pushList.subList(i * batchSize, endPos);
-            baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser);
+            if(CollectionUtils.isNotEmpty(partBills)){
+                baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser);
+            }
         }
 
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_QR_HISTORY.getName(), baseOutput.getMessage());
         }
         return baseOutput;
     }
@@ -303,10 +307,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? reportUserDtoList.size() : (i + 1) * batchSize;
             List<ReportUserDto> partBills = reportUserDtoList.subList(i * batchSize, endPos);
-            baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser);
+            if(CollectionUtils.isNotEmpty(partBills)){
+                baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser);
+            }
         }
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER.getName(), baseOutput.getMessage());
         }
         return baseOutput;
     }
@@ -355,6 +363,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
             if (baseOutput.isSuccess()) {
                 this.thirdPartyPushDataService.updatePushTime(pushData);
+            } else {
+                logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_DELETE.getName(), baseOutput.getMessage());
             }
         }
         return baseOutput;
