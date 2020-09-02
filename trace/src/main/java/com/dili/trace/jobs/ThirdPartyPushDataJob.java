@@ -709,11 +709,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 upStreamDto.setType(1);
                 UpStreamDto.PzVo pzVoFront = new UpStreamDto.PzVo();
                 pzVoFront.setCredentialName(ReportInterfacePicEnum.ID_CARD_FRONT.getName());
-                pzVoFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
+                if (StringUtils.isNotBlank(td.getCardNoFrontUrl())) {
+                    pzVoFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
+                }
 
                 UpStreamDto.PzVo pzVoBack = new UpStreamDto.PzVo();
                 pzVoBack.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
-                pzVoBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
+                if (StringUtils.isNotBlank(td.getCardNoBackUrl())) {
+                    pzVoBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
+                }
 
                 poVoList.add(pzVoFront);
                 poVoList.add(pzVoBack);
@@ -722,19 +726,25 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 upStreamDto.setType(0);
                 UpStreamDto.PzVo pzVoBusiness = new UpStreamDto.PzVo();
                 pzVoBusiness.setCredentialName(ReportInterfacePicEnum.BUSINESS_LICENSE.getName());
-                pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
+                if (StringUtils.isNotBlank(td.getBusinessLicenseUrl())) {
+                    pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
+                }
 
                 UpStreamDto.PzVo pzVoManu = new UpStreamDto.PzVo();
                 pzVoManu.setCredentialName(ReportInterfacePicEnum.PRODUCTION_LICENSE.getName());
-                pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
+                if (StringUtils.isNotBlank(td.getManufacturingLicenseUrl())) {
+                    pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
+                }
 
                 UpStreamDto.PzVo pzVoOperate = new UpStreamDto.PzVo();
                 pzVoOperate.setCredentialName(ReportInterfacePicEnum.OPERATING_LICENSE.getName());
-                pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
+                if (StringUtils.isNotBlank(td.getOperationLicenseUrl())) {
+                    pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
+                }
 
                 poVoList.add(pzVoBusiness);
                 poVoList.add(pzVoOperate);
-                poVoList.add(pzVoOperate);
+                poVoList.add(pzVoManu);
             }
             upStreamDtos.add(upStreamDto);
         });
