@@ -35,7 +35,7 @@ public enum ReportDtoTypeEnum {
 	thirdUserDelete(50, "经营户作废"),
 
 	/**
-	 * 三色码状态数据统计
+	 * 经营户新增/修改
 	 */
 	thirdUserSave(60, "经营户新增/修改"),
 

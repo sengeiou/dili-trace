@@ -57,7 +57,7 @@ public enum ReportInterfaceEnum {
     REGISTER_BILL("register_bill", "报备新增/编辑"),
 
     /**
-     * 配送交易
+     * 进门
      */
     CHECK_INOUT_RECORD("checkinout_record", "进门"),
 

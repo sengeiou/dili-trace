@@ -1,20 +1,11 @@
 package com.dili.trace.controller;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.List;
-import java.util.Optional;
-
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ThirdPartyReportData;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.ThirdPartyReportDataQueryDto;
 import com.dili.trace.dto.TraceReportQueryDto;
-import com.dili.trace.dto.thirdparty.report.CodeCountDto;
-import com.dili.trace.dto.thirdparty.report.MarketCountDto;
-import com.dili.trace.dto.thirdparty.report.RegionCountDto;
-import com.dili.trace.dto.thirdparty.report.ReportCountDto;
+import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.ReportDtoTypeEnum;
 import com.dili.trace.jobs.ThirdPartyReportJob;
 import com.dili.trace.service.DataReportService;
@@ -23,27 +14,28 @@ import com.dili.trace.service.TraceReportService;
 import com.dili.trace.util.BeanMapUtil;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-
+import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import one.util.streamex.StreamEx;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/thirdPartyReport")
 public class ThirdPartyReportController {
-    private static final Logger logger=LoggerFactory.getLogger(ThirdPartyReportController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ThirdPartyReportController.class);
     @Autowired
     TraceReportService traceReportService;
     @Autowired
@@ -68,7 +60,7 @@ public class ThirdPartyReportController {
         return thirdPartyReportDataService.listEasyuiPageByExample(input, true).toString();
     }
 
-    private  Optional<OperatorUser> fromSessionContext() {
+    private Optional<OperatorUser> fromSessionContext() {
         if (SessionContext.getSessionContext() != null) {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             if (userTicket != null) {
@@ -120,6 +112,59 @@ public class ThirdPartyReportController {
             } else if (ReportDtoTypeEnum.marketCount.equalsToCode(reportData.getType())) {
                 MarketCountDto dto = mapper.readValue(json, MarketCountDto.class);
                 return this.dataReportService.marketCount(dto, opt);
+            } else if (ReportDtoTypeEnum.thirdUserDelete.equalsToCode(reportData.getType())) {
+                ReportUserDeleteDto dto = mapper.readValue(json, ReportUserDeleteDto.class);
+                return this.dataReportService.reportUserDelete(dto, opt);
+            } else if (ReportDtoTypeEnum.thirdUserSave.equalsToCode(reportData.getType())) {
+                List<ReportUserDto> dto = mapper.readValue(json, new TypeReference<List<ReportUserDto>>() {
+                });
+                return this.dataReportService.reportUserSaveUpdate(dto, opt);
+            } else if (ReportDtoTypeEnum.userQrCode.equalsToCode(reportData.getType())) {
+                List<ReportQrCodeDto> dto = mapper.readValue(json, new TypeReference<List<ReportQrCodeDto>>() {
+                });
+                return this.dataReportService.reportUserQrCode(dto, opt);
+            } else if (ReportDtoTypeEnum.categoryBigLevel.equalsToCode(reportData.getType())) {
+                List<CategoryDto> dto = mapper.readValue(json, new TypeReference<List<CategoryDto>>() {
+                });
+                return this.dataReportService.reportCategory(dto, opt);
+            } else if (ReportDtoTypeEnum.categorySmallLevel.equalsToCode(reportData.getType())) {
+                List<CategorySecondDto> dto = mapper.readValue(json, new TypeReference<List<CategorySecondDto>>() {
+                });
+                return this.dataReportService.reportSecondCategory(dto, opt);
+            } else if (ReportDtoTypeEnum.goods.equalsToCode(reportData.getType())) {
+                List<GoodsDto> dto = mapper.readValue(json, new TypeReference<List<GoodsDto>>() {
+                });
+                return this.dataReportService.reportGoods(dto, opt);
+            } else if (ReportDtoTypeEnum.registerBill.equalsToCode(reportData.getType())) {
+                List<ReportRegisterBillDto> dto = mapper.readValue(json, new TypeReference<List<ReportRegisterBillDto>>() {
+                });
+                return this.dataReportService.reportRegisterBill(dto, opt);
+            } else if (ReportDtoTypeEnum.upstream.equalsToCode(reportData.getType())) {
+                List<UpStreamDto> dto = mapper.readValue(json, new TypeReference<List<UpStreamDto>>() {
+                });
+                return this.dataReportService.reportUpStream(dto, opt);
+            } else if (ReportDtoTypeEnum.downstream.equalsToCode(reportData.getType())) {
+                List<DownStreamDto> dto = mapper.readValue(json, new TypeReference<List<DownStreamDto>>() {
+                });
+                return this.dataReportService.reportDownStream(dto, opt);
+            } else if (ReportDtoTypeEnum.scanCodeOrder.equalsToCode(reportData.getType())) {
+                List<ReportScanCodeOrderDto> dto = mapper.readValue(json, new TypeReference<List<ReportScanCodeOrderDto>>() {
+                });
+                return this.dataReportService.reportScanCodeOrder(dto, opt);
+            } else if (ReportDtoTypeEnum.deliveryOrder.equalsToCode(reportData.getType())) {
+                List<ReportDeliveryOrderDto> dto = mapper.readValue(json, new TypeReference<List<ReportDeliveryOrderDto>>() {
+                });
+                return this.dataReportService.reportDeliveryOrder(dto, opt);
+            } else if (ReportDtoTypeEnum.inDoor.equalsToCode(reportData.getType())) {
+                List<ReportCheckInDto> dto = mapper.readValue(json, new TypeReference<List<ReportCheckInDto>>() {
+                });
+                return this.dataReportService.reportCheckIn(dto, opt);
+            } else if (ReportDtoTypeEnum.deleteScanCodeOrder.equalsToCode(reportData.getType())) {
+                ReportDeletedOrderDto dto = mapper.readValue(json, ReportDeletedOrderDto.class);
+                return this.dataReportService.reportDeletedScanCodeOrder(dto, opt);
+            } else if (ReportDtoTypeEnum.deleteDeliveryOrder.equalsToCode(reportData.getType())) {
+                ReportDeletedOrderDto dto = mapper.readValue(json, ReportDeletedOrderDto.class);
+                return this.dataReportService.reportDeletedDeliveryOrder(dto, opt);
             } else {
                 return BaseOutput.failure("数据错误");
             }
@@ -166,7 +211,7 @@ public class ThirdPartyReportController {
             start = start.plusDays(1);
         }
         Optional<OperatorUser> opt = this.fromSessionContext();
-        List<BaseOutput>list=StreamEx.of(dateList).mapToEntry(ld -> {
+        List<BaseOutput> list = StreamEx.of(dateList).mapToEntry(ld -> {
             return ld.atTime(0, 0, 0);
         }, ld -> {
 
@@ -174,15 +219,15 @@ public class ThirdPartyReportController {
 
         }).mapKeyValue((k, v) -> {
             BaseOutput output = this.dataReportService.reportCount(opt, k, v, 0);
-            logger.info("success:{},message:{}",output.isSuccess(),output.getMessage());
+            logger.info("success:{},message:{}", output.isSuccess(), output.getMessage());
             return output;
-        }).filter(o->!o.isSuccess()).toList();
-        if(list.size()>0){
+        }).filter(o -> !o.isSuccess()).toList();
+        if (list.size() > 0) {
             return BaseOutput.failure("部分请求失败,请查看后台日志");
-        }else{
+        } else {
             return BaseOutput.success();
         }
-        
+
     }
 
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
