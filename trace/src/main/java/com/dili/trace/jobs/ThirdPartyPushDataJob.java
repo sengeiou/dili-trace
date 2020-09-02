@@ -75,7 +75,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-       // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
     }
 
     /**
@@ -133,6 +133,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     /**
      * 上报商品大类
+     *
      * @param optUser
      */
     private void pushBigCategory(Optional<OperatorUser> optUser) {
@@ -166,6 +167,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     /**
      * 上报商品二类/商品新增/修改
+     *
      * @param optUser
      */
     private void pushCategory(String tableName, String interfaceName,
@@ -275,7 +277,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
 
         if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData,updateTime);
+            this.thirdPartyPushDataService.updatePushTime(pushData, updateTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_QR_HISTORY.getName(), baseOutput.getMessage());
         }
@@ -329,7 +331,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
         }
         if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData,updateTime);
+            this.thirdPartyPushDataService.updatePushTime(pushData, updateTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER.getName(), baseOutput.getMessage());
         }
@@ -379,7 +381,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             // 分批上报
             baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
             if (baseOutput.isSuccess()) {
-                this.thirdPartyPushDataService.updatePushTime(pushData,updateTime);
+                this.thirdPartyPushDataService.updatePushTime(pushData, updateTime);
             } else {
                 logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_DELETE.getName(), baseOutput.getMessage());
             }
@@ -657,7 +659,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
         UpStream upStream = new UpStream();
         upStream.setUpORdown(type);
-        upStream.setMetadata(IDTO.AND_CONDITION_EXPR,"source_user_id is not null");
+        upStream.setMetadata(IDTO.AND_CONDITION_EXPR, "source_user_id is not null");
         if (thirdPartyPushData != null) {
             upStream.setMetadata(IDTO.AND_CONDITION_EXPR,
                     "modified>'" + DateUtils.format(thirdPartyPushData.getPushTime())
@@ -682,6 +684,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     /**
      * 上报上游新增/修改
+     *
      * @param optUser
      * @param upStreams
      * @param pushData
@@ -758,13 +761,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     /**
      * 上报下游新增/修改
+     *
      * @param optUser
      * @param upStreams
      * @param pushData
      * @param endTime
      * @return
      */
-    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams,  ThirdPartyPushData pushData, Date endTime) {
+    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
         BaseOutput baseOutput = new BaseOutput();
         List<DownStreamDto> downStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
