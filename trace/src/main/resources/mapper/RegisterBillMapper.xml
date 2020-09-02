@@ -470,4 +470,8 @@
       </if>
   </select>
 
+  <select id="selectCurrentTime" resultType="java.util.Date">
+    SELECT CURRENT_TIMESTAMP
+  </select>
+
 </mapper>
