@@ -17,6 +17,7 @@ import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.ReportInterfaceEnum;
 import com.dili.trace.enums.ReportInterfacePicEnum;
+import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -81,13 +82,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     /**
      * 每五分钟提交一次数据
      */
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品大类新增/修改
-            this.pushBigCategory(optUser);
+            /*this.pushBigCategory(optUser);
             // 商品二级类目新增/修改
             this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser, endTime);
             // 商品新增/修改
@@ -107,7 +108,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_SCAN.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN.getName(), 20, optUser, endTime);
             // 扫码交易作废
             this.reportOrderDelete(ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getName(),
-                    20, optUser, endTime);
+                    20, optUser, endTime);*/
             //食安码新增/修改
             this.pushUserQrCode(optUser, endTime);
             //经营户新增/修改
@@ -237,13 +238,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser, Date endTime) {
         Date updateTime = null;
         boolean newPushFlag = true;
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user_qr_history");
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER_QR_HISTORY.getCode());
         if (pushData == null) {
             updateTime = endTime;
             pushData = new ThirdPartyPushData();
             pushData.setTableName(ReportInterfaceEnum.USER_QR_HISTORY.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.USER_QR_HISTORY.getName());
-            pushData.setPushTime(updateTime);
+            pushData.setPushTime(endTime);
         } else {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
@@ -255,9 +256,17 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //取有效二维码变更记录
         UserQrHistory queryQr = new UserQrHistory();
         queryQr.setIsValid(1);
+        User user = DTOUtils.newDTO(User.class);
+        user.setValidateState(ValidateStateEnum.PASSED.getCode());
+        Map<Long, String> userMap = new HashMap<>(16);
+        StreamEx.ofNullable(userService.list(user)).nonNull().flatCollection(Function.identity()).forEach(u -> {
+            userMap.put(u.getId(), u.getName());
+        });
         StreamEx.ofNullable(userQrHistoryService.list(queryQr)).nonNull().flatCollection(Function.identity()).forEach(q -> {
             if (finalNewPushFlag || finalUpdateTime.compareTo(q.getModified()) < 0) {
-                qrHistories.add(q);
+                if (userMap.containsKey(q.getUserId())) {
+                    qrHistories.add(q);
+                }
             }
         });
         List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
@@ -277,7 +286,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
 
         if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData, updateTime);
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_QR_HISTORY.getName(), baseOutput.getMessage());
         }
@@ -289,13 +298,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         boolean newPushFlag = true;
         Integer normalUserType = 1;
         List<ReportUserDto> reportUserDtoList = new ArrayList<>();
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user");
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER.getCode());
         if (pushData == null) {
             updateTime = endTime;
             pushData = new ThirdPartyPushData();
             pushData.setTableName(ReportInterfaceEnum.USER.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.USER.getName());
-            pushData.setPushTime(updateTime);
+            pushData.setPushTime(endTime);
         } else {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
@@ -331,7 +340,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
         }
         if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData, updateTime);
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER.getName(), baseOutput.getMessage());
         }
@@ -341,7 +350,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private BaseOutput pushUserDelete(Optional<OperatorUser> optUser, Date endTime) {
         Date updateTime = null;
         boolean newPushFlag = true;
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData("user_delete");
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER_DELETE.getCode());
         if (pushData == null) {
             updateTime = endTime;
             pushData = new ThirdPartyPushData();
@@ -359,7 +368,15 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //没有push过则将所有作废记录push
         if (finalNewPushFlag) {
             //首次push不需要将原作废经营户上报
-            queUser.mset(IDTO.AND_CONDITION_EXPR, " id = -1 ");
+            ThirdPartyPushData pushUser = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER.getCode());
+            //未push经营户新增修改数据时不上报
+            if (null == pushUser) {
+                queUser.mset(IDTO.AND_CONDITION_EXPR, " id = -1 ");
+            } else {
+                String userQueTime = DateUtils.dateFormat(pushUser.getPushTime().getTime());
+                queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and modified > '" + userQueTime + "'");
+            }
+
         } else {
             queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and modified > '" + sqlPushTime + "'");
         }
@@ -381,10 +398,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             // 分批上报
             baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
             if (baseOutput.isSuccess()) {
-                this.thirdPartyPushDataService.updatePushTime(pushData, updateTime);
+                this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             } else {
                 logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_DELETE.getName(), baseOutput.getMessage());
             }
+        } else {
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
         }
         return baseOutput;
     }
