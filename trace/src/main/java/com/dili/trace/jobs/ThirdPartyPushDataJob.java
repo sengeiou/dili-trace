@@ -75,18 +75,22 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        // 上游新增编辑
+        this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser);
+        // 下游新增/编辑
+        this.pushStream(ReportInterfaceEnum.UPSTREAM_DOWN.getCode(), ReportInterfaceEnum.UPSTREAM_DOWN.getName(), 20, optUser);
     }
 
     /**
      * 每五分钟提交一次数据
      */
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             // 商品大类新增/修改
-            this.pushBigCategory(optUser);
+            /*this.pushBigCategory(optUser);
             // 商品二级类目新增/修改
             this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser);
             // 商品新增/修改
@@ -110,7 +114,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             //经营户新增/修改
             this.pushUserSaveUpdate(optUser);
             //经营户作废
-            this.pushUserDelete(optUser);
+            this.pushUserDelete(optUser);*/
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -659,6 +663,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
         UpStream upStream = new UpStream();
         upStream.setUpORdown(type);
+        upStream.setMetadata(IDTO.AND_CONDITION_EXPR,"source_user_id is not null");
         if (thirdPartyPushData != null) {
             upStream.setMetadata(IDTO.AND_CONDITION_EXPR,
                     "modified>'" + DateUtils.format(thirdPartyPushData.getPushTime())
