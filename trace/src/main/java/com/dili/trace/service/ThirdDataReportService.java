@@ -35,7 +35,13 @@ public class ThirdDataReportService {
     public ReportUserDto reprocessUser(User info) {
         ReportUserDto reportUser = new ReportUserDto();
         reportUser.setAccountName(info.getName());
-        reportUser.setAccountType(info.getUserType());
+        //个人10 企业20 转换 1企业2个人
+        Integer oldAccountType = 10;
+        Integer accountType = 1;
+        if (oldAccountType.equals(info.getUserType())) {
+            accountType = 2;
+        }
+        reportUser.setAccountType(accountType);
         if (UserTypeEnum.CORPORATE.equalsCode(info.getUserType())) {
             reportUser.setComeName(info.getName());
         }
