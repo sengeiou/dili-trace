@@ -275,7 +275,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
 
         if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData);
+            this.thirdPartyPushDataService.updatePushTime(pushData,updateTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_QR_HISTORY.getName(), baseOutput.getMessage());
         }
@@ -329,7 +329,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
         }
         if (baseOutput.isSuccess()) {
-            this.thirdPartyPushDataService.updatePushTime(pushData);
+            this.thirdPartyPushDataService.updatePushTime(pushData,updateTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER.getName(), baseOutput.getMessage());
         }
@@ -379,7 +379,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             // 分批上报
             baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
             if (baseOutput.isSuccess()) {
-                this.thirdPartyPushDataService.updatePushTime(pushData);
+                this.thirdPartyPushDataService.updatePushTime(pushData,updateTime);
             } else {
                 logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.USER_DELETE.getName(), baseOutput.getMessage());
             }
