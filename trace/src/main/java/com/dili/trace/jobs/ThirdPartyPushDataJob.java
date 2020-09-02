@@ -81,7 +81,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     /**
      * 每五分钟提交一次数据
      */
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
@@ -662,7 +662,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         if (thirdPartyPushData != null) {
             upStream.setMetadata(IDTO.AND_CONDITION_EXPR,
                     "modified>'" + DateUtils.format(thirdPartyPushData.getPushTime())
-                            + "' and modified<='" + DateUtils.format(endTime) + "'");
+                            + "' and modified<='" + DateUtils.format(endTime) + "' and source_user_id is not null");
         }
         List<UpStream> upStreams = upStreamService.listByExample(upStream);
         if (upStreams == null || upStreams.size() == 0) {
@@ -702,49 +702,47 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             upStreamDto.setThirdAccountId(td.getSourceUserId() == null ? "" : td.getSourceUserId().toString());
             upStreamDto.setThirdUpId(td.getId().toString());
             int upStreamType = td.getUpstreamType().intValue();
-            List<UpStreamDto.PzVo> poVoList = new ArrayList<>();
+            List<PzVo> poVoList = new ArrayList<>();
             upStreamDto.setPzVoList(poVoList);
             // 10 个人
             if (upStreamType == 10) {
                 upStreamDto.setType(1);
-                UpStreamDto.PzVo pzVoFront = new UpStreamDto.PzVo();
-                pzVoFront.setCredentialName(ReportInterfacePicEnum.ID_CARD_FRONT.getName());
                 if (StringUtils.isNotBlank(td.getCardNoFrontUrl())) {
+                    PzVo pzVoFront = new PzVo();
+                    pzVoFront.setCredentialName(ReportInterfacePicEnum.ID_CARD_FRONT.getName());
                     pzVoFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
+                    poVoList.add(pzVoFront);
                 }
 
-                UpStreamDto.PzVo pzVoBack = new UpStreamDto.PzVo();
-                pzVoBack.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
                 if (StringUtils.isNotBlank(td.getCardNoBackUrl())) {
+                    PzVo pzVoBack = new PzVo();
+                    pzVoBack.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
                     pzVoBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
+                    poVoList.add(pzVoBack);
                 }
-
-                poVoList.add(pzVoFront);
-                poVoList.add(pzVoBack);
 
             } else {
                 upStreamDto.setType(0);
-                UpStreamDto.PzVo pzVoBusiness = new UpStreamDto.PzVo();
-                pzVoBusiness.setCredentialName(ReportInterfacePicEnum.BUSINESS_LICENSE.getName());
                 if (StringUtils.isNotBlank(td.getBusinessLicenseUrl())) {
+                    PzVo pzVoBusiness = new PzVo();
+                    pzVoBusiness.setCredentialName(ReportInterfacePicEnum.BUSINESS_LICENSE.getName());
                     pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
-                }
+                    poVoList.add(pzVoBusiness);
 
-                UpStreamDto.PzVo pzVoManu = new UpStreamDto.PzVo();
-                pzVoManu.setCredentialName(ReportInterfacePicEnum.PRODUCTION_LICENSE.getName());
+                }
                 if (StringUtils.isNotBlank(td.getManufacturingLicenseUrl())) {
+                    PzVo pzVoManu = new PzVo();
+                    pzVoManu.setCredentialName(ReportInterfacePicEnum.PRODUCTION_LICENSE.getName());
                     pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
+                    poVoList.add(pzVoManu);
                 }
-
-                UpStreamDto.PzVo pzVoOperate = new UpStreamDto.PzVo();
-                pzVoOperate.setCredentialName(ReportInterfacePicEnum.OPERATING_LICENSE.getName());
                 if (StringUtils.isNotBlank(td.getOperationLicenseUrl())) {
+                    PzVo pzVoOperate = new PzVo();
+                    pzVoOperate.setCredentialName(ReportInterfacePicEnum.OPERATING_LICENSE.getName());
                     pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
+                    poVoList.add(pzVoOperate);
                 }
 
-                poVoList.add(pzVoBusiness);
-                poVoList.add(pzVoOperate);
-                poVoList.add(pzVoManu);
             }
             upStreamDtos.add(upStreamDto);
         });
@@ -779,52 +777,46 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             downStreamDto.setThirdAccountId(td.getSourceUserId() == null ? "" : td.getSourceUserId().toString());
             downStreamDto.setThirdDsId(td.getId().toString());
             int upStreamType = td.getUpstreamType().intValue();
-            List<DownStreamDto.DownStreamImg> downStreamImgs = new ArrayList<>();
+            List<DownStreamImg> downStreamImgs = new ArrayList<>();
             downStreamDto.setDownStreamImgList(downStreamImgs);
             // 10 个人
             if (upStreamType == 10) {
                 downStreamDto.setName(td.getName());
                 downStreamDto.setType(1);
-
-                DownStreamDto.DownStreamImg downStreamImgFront = new DownStreamDto.DownStreamImg();
-                downStreamImgFront.setCredentialName(ReportInterfacePicEnum.ID_CARD_FRONT.getName());
                 if (StringUtils.isNotBlank(td.getCardNoFrontUrl())) {
+                    DownStreamImg downStreamImgFront = new DownStreamImg();
+                    downStreamImgFront.setCredentialName(ReportInterfacePicEnum.ID_CARD_FRONT.getName());
                     downStreamImgFront.setPicUrl(baseWebPath + td.getCardNoFrontUrl());
+                    downStreamImgs.add(downStreamImgFront);
                 }
-
-                DownStreamDto.DownStreamImg downStreamImgBack = new DownStreamDto.DownStreamImg();
-                downStreamImgBack.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
                 if (StringUtils.isNotBlank(td.getCardNoBackUrl())) {
+                    DownStreamImg downStreamImgBack = new DownStreamImg();
+                    downStreamImgBack.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
                     downStreamImgBack.setPicUrl(baseWebPath + td.getCardNoBackUrl());
+                    downStreamImgs.add(downStreamImgBack);
                 }
-
-                downStreamImgs.add(downStreamImgFront);
-                downStreamImgs.add(downStreamImgBack);
 
             } else {
                 downStreamDto.setStreamName(td.getName());
                 downStreamDto.setType(0);
-                DownStreamDto.DownStreamImg pzVoBusiness = new DownStreamDto.DownStreamImg();
-                pzVoBusiness.setCredentialName(ReportInterfacePicEnum.BUSINESS_LICENSE.getName());
                 if (StringUtils.isNotBlank(td.getBusinessLicenseUrl())) {
+                    DownStreamImg pzVoBusiness = new DownStreamImg();
+                    pzVoBusiness.setCredentialName(ReportInterfacePicEnum.BUSINESS_LICENSE.getName());
                     pzVoBusiness.setPicUrl(baseWebPath + td.getBusinessLicenseUrl());
+                    downStreamImgs.add(pzVoBusiness);
                 }
-
-                DownStreamDto.DownStreamImg pzVoManu = new DownStreamDto.DownStreamImg();
-                pzVoManu.setCredentialName(ReportInterfacePicEnum.PRODUCTION_LICENSE.getName());
                 if (StringUtils.isNotBlank(td.getManufacturingLicenseUrl())) {
+                    DownStreamImg pzVoManu = new DownStreamImg();
+                    pzVoManu.setCredentialName(ReportInterfacePicEnum.PRODUCTION_LICENSE.getName());
                     pzVoManu.setPicUrl(baseWebPath + td.getManufacturingLicenseUrl());
+                    downStreamImgs.add(pzVoManu);
                 }
-
-                DownStreamDto.DownStreamImg pzVoOperate = new DownStreamDto.DownStreamImg();
-                pzVoOperate.setCredentialName(ReportInterfacePicEnum.OPERATING_LICENSE.getName());
                 if (StringUtils.isNotBlank(td.getOperationLicenseUrl())) {
+                    DownStreamImg pzVoOperate = new DownStreamImg();
+                    pzVoOperate.setCredentialName(ReportInterfacePicEnum.OPERATING_LICENSE.getName());
                     pzVoOperate.setPicUrl(baseWebPath + td.getOperationLicenseUrl());
+                    downStreamImgs.add(pzVoOperate);
                 }
-
-                downStreamImgs.add(pzVoBusiness);
-                downStreamImgs.add(pzVoManu);
-                downStreamImgs.add(pzVoOperate);
             }
             downStreamDtos.add(downStreamDto);
         });
