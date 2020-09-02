@@ -75,11 +75,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        // 上游新增编辑
-        this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser);
-        // 下游新增/编辑
-        this.pushStream(ReportInterfaceEnum.UPSTREAM_DOWN.getCode(), ReportInterfaceEnum.UPSTREAM_DOWN.getName(), 20, optUser);
+       // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
     }
 
     /**
@@ -90,7 +86,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             // 商品大类新增/修改
-            /*this.pushBigCategory(optUser);
+            this.pushBigCategory(optUser);
             // 商品二级类目新增/修改
             this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser);
             // 商品新增/修改
@@ -114,7 +110,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             //经营户新增/修改
             this.pushUserSaveUpdate(optUser);
             //经营户作废
-            this.pushUserDelete(optUser);*/
+            this.pushUserDelete(optUser);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -427,7 +423,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
         // 分批数
         Integer part = billList.size() / batchSize;
         // 上报
@@ -492,7 +488,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
         // 分批数
         Integer part = checkInList.size() / batchSize;
         // 上报
@@ -562,7 +558,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             });
 
             // 分批上报
-            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
             // 分批数
             Integer part = deliveryOrderList.size() / batchSize;
             for (int i = 0; i <= part; i++) {
@@ -590,7 +586,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             });
 
             // 分批上报
-            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
             // 分批数
             Integer part = scanOrderList.size() / batchSize;
             for (int i = 0; i <= part; i++) {

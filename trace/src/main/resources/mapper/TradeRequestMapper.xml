@@ -34,10 +34,10 @@
       JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 20)
       WHERE r.return_status = 0
       <if test="modifiedEnd != null">
-        <![CDATA[AND r.modified <=#{modifiedEnd}]]>
+        <![CDATA[AND o.modified <=#{modifiedEnd}]]>
       </if>
       <if test="modifiedStart != null">
-        <![CDATA[AND r.modified >#{modifiedStart}]]>
+        <![CDATA[AND o.modified >#{modifiedStart}]]>
       </if>
   </select>
 
@@ -48,10 +48,10 @@
       JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 10)
       WHERE r.return_status = 0
       <if test="modifiedEnd != null">
-        <![CDATA[AND r.modified <=#{modifiedEnd}]]>
+        <![CDATA[AND o.modified <=#{modifiedEnd}]]>
       </if>
       <if test="modifiedStart != null">
-        <![CDATA[AND r.modified >#{modifiedStart}]]>
+        <![CDATA[AND o.modified >#{modifiedStart}]]>
       </if>
   </select>
 
