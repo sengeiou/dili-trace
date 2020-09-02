@@ -75,13 +75,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+       // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
     }
 
     /**
      * 每五分钟提交一次数据
      */
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
@@ -659,6 +659,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 thirdPartyPushDataService.getThredPartyPushData(tableName);
         UpStream upStream = new UpStream();
         upStream.setUpORdown(type);
+        upStream.setMetadata(IDTO.AND_CONDITION_EXPR,"source_user_id is not null");
         if (thirdPartyPushData != null) {
             upStream.setMetadata(IDTO.AND_CONDITION_EXPR,
                     "modified>'" + DateUtils.format(thirdPartyPushData.getPushTime())
