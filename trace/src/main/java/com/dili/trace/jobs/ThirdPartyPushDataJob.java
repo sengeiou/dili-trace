@@ -423,7 +423,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
         // 分批数
         Integer part = billList.size() / batchSize;
         // 上报
@@ -488,7 +488,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
         // 分批数
         Integer part = checkInList.size() / batchSize;
         // 上报
@@ -558,7 +558,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             });
 
             // 分批上报
-            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
             // 分批数
             Integer part = deliveryOrderList.size() / batchSize;
             for (int i = 0; i <= part; i++) {
@@ -586,7 +586,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             });
 
             // 分批上报
-            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 500 : pushBatchSize;
+            Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
             // 分批数
             Integer part = scanOrderList.size() / batchSize;
             for (int i = 0; i <= part; i++) {
