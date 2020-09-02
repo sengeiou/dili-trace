@@ -82,13 +82,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     /**
      * 每五分钟提交一次数据
      */
-    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品大类新增/修改
-            /*this.pushBigCategory(optUser);
+            this.pushBigCategory(optUser);
             // 商品二级类目新增/修改
             this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser, endTime);
             // 商品新增/修改
@@ -108,7 +108,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_SCAN.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN.getName(), 20, optUser, endTime);
             // 扫码交易作废
             this.reportOrderDelete(ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getName(),
-                    20, optUser, endTime);*/
+                    20, optUser, endTime);
             //食安码新增/修改
             this.pushUserQrCode(optUser, endTime);
             //经营户新增/修改
