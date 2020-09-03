@@ -367,8 +367,10 @@ public class DataReportService {
     /**
      * 商品大类新增/修改
      *
-     * @param categoryDto
-     * @return
+     * @author Lily
+     * @param categoryDto 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
      */
     public BaseOutput reportCategory(List<CategoryDto> categoryDto, Optional<OperatorUser> optUser) {
         logger.info("上报:商品大类新增/修改");
@@ -380,8 +382,10 @@ public class DataReportService {
     /**
      * 商品二级类目新增/修改
      *
-     * @param categoryDto
-     * @return
+     * @author Lily
+     * @param categoryDto 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
      */
     public BaseOutput reportSecondCategory(List<CategorySecondDto> categoryDto, Optional<OperatorUser> optUser) {
         logger.info("上报:商品二级类目新增/修改");
@@ -443,8 +447,10 @@ public class DataReportService {
     /**
      * 报备新增/编辑
      *
-     * @param reportRegisterBillDtos
-     * @return
+     * @author Alvin
+     * @param reportRegisterBillDtos 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
      */
     public BaseOutput reportRegisterBill(List<ReportRegisterBillDto> reportRegisterBillDtos, Optional<OperatorUser> optUser) {
         logger.info("上报:报备新增/编辑");
@@ -456,8 +462,10 @@ public class DataReportService {
     /**
      * 进门
      *
-     * @param checkInDtos
-     * @return
+     * @author Lily
+     * @param checkInDtos 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
      */
     public BaseOutput reportCheckIn(List<ReportCheckInDto> checkInDtos, Optional<OperatorUser> optUser) {
         logger.info("上报:进门");
@@ -495,8 +503,10 @@ public class DataReportService {
     /**
      * 扫码交易
      *
-     * @param scanCodeOrderDtos
-     * @return
+     * @author Alvin
+     * @param scanCodeOrderDtos 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
      */
     public BaseOutput reportScanCodeOrder(List<ReportScanCodeOrderDto> scanCodeOrderDtos, Optional<OperatorUser> optUser) {
         logger.info("上报:扫码交易");

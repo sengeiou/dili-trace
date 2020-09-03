@@ -35,6 +35,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * 对接天下粮仓入口，通过定时任务每5min调用天下粮仓的接口
+ *
  * @author asa.lee, alvin, lily
  */
 @Component
@@ -129,7 +131,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     /**
      * 上报商品大类
-     * @param optUser
+     * @param optUser 操作人信息
      */
     private void pushBigCategory(Optional<OperatorUser> optUser) {
         String tableName = ReportInterfaceEnum.BIG_CATEGORY.getCode();
