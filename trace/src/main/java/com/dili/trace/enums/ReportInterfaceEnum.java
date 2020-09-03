@@ -1,6 +1,7 @@
 package com.dili.trace.enums;
 
 /**
+ * 与天下粮仓对接的接口定义常量
  * @author asa.lee
  */
 
