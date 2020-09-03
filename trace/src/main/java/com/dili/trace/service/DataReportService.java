@@ -460,6 +460,21 @@ public class DataReportService {
     }
 
     /**
+     * 报备新增/编辑
+     *
+     * @author Asa
+     * @param reportRegisterBillDeleteDto 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
+     */
+    public BaseOutput reportRegisterBillDelete(ReportRegisterBillDeleteDto reportRegisterBillDeleteDto, Optional<OperatorUser> optUser) {
+        logger.info("上报:报备报废");
+        String path = "/thirdParty/enterBase/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportRegisterBillDeleteDto, optUser, ReportDtoTypeEnum.registerBillDelete);
+    }
+
+    /**
      * 进门
      *
      * @author Lily

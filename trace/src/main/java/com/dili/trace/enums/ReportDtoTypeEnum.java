@@ -98,7 +98,10 @@ public enum ReportDtoTypeEnum {
 	 * 配送交易作废
 	 */
 	deleteDeliveryOrder(180, "配送交易作废"),
-
+	/**
+	 * 报备作废
+	 */
+	registerBillDelete(190, "报备作废"),
 	;
 
 	private String name;

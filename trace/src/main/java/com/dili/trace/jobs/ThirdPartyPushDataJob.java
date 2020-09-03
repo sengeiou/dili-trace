@@ -78,7 +78,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        //Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
     }
 
     /**
@@ -117,6 +117,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             this.pushUserSaveUpdate(optUser, endTime);
             //经营户作废
             this.pushUserDelete(optUser, endTime);
+            // 报备作废
+            //this.reportRegisterBillDelete(optUser, endTime);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -136,6 +138,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     /**
      * 上报商品大类
+     *
      * @param optUser 操作人信息
      */
     private void pushBigCategory(Optional<OperatorUser> optUser) {
@@ -239,6 +242,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser, Date endTime) {
         Date updateTime = null;
         boolean newPushFlag = true;
+        Integer isValidate = 1;
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER_QR_HISTORY.getCode());
         if (pushData == null) {
             updateTime = endTime;
@@ -254,23 +258,52 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
         List<UserQrHistory> qrHistories = new ArrayList<>();
-        //取有效二维码变更记录
-        UserQrHistory queryQr = new UserQrHistory();
-        queryQr.setIsValid(1);
+        List<UserQrHistory> allQrHistories = new ArrayList<>();
+        List<UserQrHistory> resultQrHisList = new ArrayList<>();
+        Map<Long, String> userMap = new HashMap<>(16);
         User user = DTOUtils.newDTO(User.class);
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
-        Map<Long, String> userMap = new HashMap<>(16);
+
+        allQrHistories = userQrHistoryService.listByExample(null);
         StreamEx.ofNullable(userService.list(user)).nonNull().flatCollection(Function.identity()).forEach(u -> {
             userMap.put(u.getId(), u.getName());
         });
-        StreamEx.ofNullable(userQrHistoryService.list(queryQr)).nonNull().flatCollection(Function.identity()).forEach(q -> {
+        StreamEx.ofNullable(allQrHistories).nonNull().flatCollection(Function.identity()).forEach(q -> {
             if (finalNewPushFlag || finalUpdateTime.compareTo(q.getModified()) < 0) {
                 if (userMap.containsKey(q.getUserId())) {
                     qrHistories.add(q);
                 }
             }
         });
-        List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
+        //根据用户分组二维码
+        Map<Long, List<UserQrHistory>> qrMap = StreamEx.of(qrHistories).nonNull().groupingBy(UserQrHistory::getUserId);
+        qrMap.entrySet().stream().forEach(qList -> {
+            //如果最新的一条记录是变更为无效记录（报备单删除），则取当前用户最新有效二维码变更记录
+            List<UserQrHistory> userQrHistories = qList.getValue();
+            Set<Long> userIdSet = new HashSet<>();
+            userQrHistories.stream().sorted(Comparator.comparing(UserQrHistory::getModified).reversed()).forEachOrdered(s -> {
+                if (isValidate.equals(s.getIsValid())) {
+                    resultQrHisList.add(s);
+                } else {
+                    userIdSet.add(s.getUserId());
+                }
+            });
+            //如果最新记录是变更为无效记录（报备单删除），则取当前用户最新有效二维码变更记录
+            boolean onlyVoid = CollectionUtils.isNotEmpty(userIdSet) && userIdSet.size() == userQrHistories.size();
+            if (onlyVoid) {
+                Long userId = userIdSet.iterator().next();
+                UserQrHistory iteamQr = new UserQrHistory();
+                iteamQr.setIsValid(isValidate);
+                iteamQr.setUserId(userIdSet.iterator().next());
+                iteamQr.setMetadata(IDTO.AND_CONDITION_EXPR, " modified = (SELECT MAX(modified) FROM user_qr_history WHERE user_id ='"
+                        + userId + "' AND is_valid ='" + isValidate + "' )");
+                UserQrHistory addItem = userQrHistoryService.listByExample(iteamQr).get(0);
+                logger.info("时间段内最新食安码为作废记录，获取回滚记录" + JSON.toJSONString(addItem));
+                resultQrHisList.add(addItem);
+            }
+        });
+
+        List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(resultQrHisList);
         logger.info("ReportQrCodeDto ： " + JSON.toJSONString(pushList));
         // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
@@ -413,6 +446,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public BaseOutput reportRegisterBill(Optional<OperatorUser> optUser, Date endTime) {
         String tableName = ReportInterfaceEnum.REGISTER_BILL.getCode();
         String interfaceName = ReportInterfaceEnum.REGISTER_BILL.getName();
+        Integer noDelete = 0;
         // verify_status "待审核"0, "已退回10, "已通过20, "不通过30
         // approvalStatus 审核状态 0-默认未审核 1-通过 2-退回 3-未通过
         Map<Integer, Integer> statusMap = new HashMap<>(16);
@@ -424,6 +458,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 查询待上报的报备单
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
         RegisterBillDto billDto = new RegisterBillDto();
+        billDto.setIsDeleted(noDelete);
         billDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
         if (thirdPartyPushData != null) {
             billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
@@ -854,4 +889,40 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
+    public BaseOutput reportRegisterBillDelete(Optional<OperatorUser> optUser, Date endTime) {
+        String tableName = ReportInterfaceEnum.REGISTER_BILL_DELETE.getCode();
+        String interfaceName = ReportInterfaceEnum.REGISTER_BILL_DELETE.getName();
+        Integer isDelete = 1;
+        // 查询待上报的报备单
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        RegisterBillDto billDto = new RegisterBillDto();
+        billDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        if (thirdPartyPushData != null) {
+            billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+        billDto.setIsDeleted(isDelete);
+        Set<String> billIdSet = new HashSet<>();
+        StreamEx.ofNullable(this.registerBillMapper.selectRegisterBillReport(billDto))
+                .nonNull().flatCollection(Function.identity()).forEach(bill -> {
+            // 状态映射
+            billIdSet.add(bill.getThirdEnterId());
+        });
+        if (CollectionUtils.isEmpty(billIdSet)) {
+            return new BaseOutput("200", "没有需要推送的报备单数据");
+        }
+        String billIds = String.join(",", billIdSet);
+        ReportRegisterBillDeleteDto deleteDto = new ReportRegisterBillDeleteDto();
+        deleteDto.setMarketId(marketId);
+        deleteDto.setThirdEnterIds(billIds);
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        baseOutput = this.dataReportService.reportRegisterBillDelete(deleteDto, optUser);
+        // 更新 pushtime
+        if (baseOutput.isSuccess()) {
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.REGISTER_BILL_DELETE.getName(), baseOutput.getMessage());
+        }
+        return baseOutput;
+    }
 }
