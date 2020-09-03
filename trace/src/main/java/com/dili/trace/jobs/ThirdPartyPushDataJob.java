@@ -78,7 +78,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        //Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
     }
 
     /**
@@ -117,6 +117,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             this.pushUserSaveUpdate(optUser, endTime);
             //经营户作废
             this.pushUserDelete(optUser, endTime);
+            // 报备作废
+            //this.reportRegisterBillDelete(optUser, endTime);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -136,6 +138,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     /**
      * 上报商品大类
+     *
      * @param optUser 操作人信息
      */
     private void pushBigCategory(Optional<OperatorUser> optUser) {
@@ -261,9 +264,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         User user = DTOUtils.newDTO(User.class);
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
 
-        UserQrHistory qrHistory = new UserQrHistory();
-        qrHistory.setMetadata(IDTO.AND_CONDITION_EXPR, " user_id in ('1293','1296','1288')");
-        allQrHistories = userQrHistoryService.listByExample(qrHistory);
+        allQrHistories = userQrHistoryService.listByExample(null);
         StreamEx.ofNullable(userService.list(user)).nonNull().flatCollection(Function.identity()).forEach(u -> {
             userMap.put(u.getId(), u.getName());
         });
@@ -445,6 +446,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public BaseOutput reportRegisterBill(Optional<OperatorUser> optUser, Date endTime) {
         String tableName = ReportInterfaceEnum.REGISTER_BILL.getCode();
         String interfaceName = ReportInterfaceEnum.REGISTER_BILL.getName();
+        Integer noDelete = 0;
         // verify_status "待审核"0, "已退回10, "已通过20, "不通过30
         // approvalStatus 审核状态 0-默认未审核 1-通过 2-退回 3-未通过
         Map<Integer, Integer> statusMap = new HashMap<>(16);
@@ -456,6 +458,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 查询待上报的报备单
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
         RegisterBillDto billDto = new RegisterBillDto();
+        billDto.setIsDeleted(noDelete);
         billDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
         if (thirdPartyPushData != null) {
             billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
@@ -886,4 +889,40 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
+    public BaseOutput reportRegisterBillDelete(Optional<OperatorUser> optUser, Date endTime) {
+        String tableName = ReportInterfaceEnum.REGISTER_BILL_DELETE.getCode();
+        String interfaceName = ReportInterfaceEnum.REGISTER_BILL_DELETE.getName();
+        Integer isDelete = 1;
+        // 查询待上报的报备单
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        RegisterBillDto billDto = new RegisterBillDto();
+        billDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        if (thirdPartyPushData != null) {
+            billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+        billDto.setIsDeleted(isDelete);
+        Set<String> billIdSet = new HashSet<>();
+        StreamEx.ofNullable(this.registerBillMapper.selectRegisterBillReport(billDto))
+                .nonNull().flatCollection(Function.identity()).forEach(bill -> {
+            // 状态映射
+            billIdSet.add(bill.getThirdEnterId());
+        });
+        if (CollectionUtils.isEmpty(billIdSet)) {
+            return new BaseOutput("200", "没有需要推送的报备单数据");
+        }
+        String billIds = String.join(",", billIdSet);
+        ReportRegisterBillDeleteDto deleteDto = new ReportRegisterBillDeleteDto();
+        deleteDto.setMarketId(marketId);
+        deleteDto.setThirdEnterIds(billIds);
+        BaseOutput baseOutput = new BaseOutput("200", "成功");
+        baseOutput = this.dataReportService.reportRegisterBillDelete(deleteDto, optUser);
+        // 更新 pushtime
+        if (baseOutput.isSuccess()) {
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.REGISTER_BILL_DELETE.getName(), baseOutput.getMessage());
+        }
+        return baseOutput;
+    }
 }
