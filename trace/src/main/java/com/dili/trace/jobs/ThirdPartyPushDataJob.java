@@ -238,6 +238,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser, Date endTime) {
         Date updateTime = null;
         boolean newPushFlag = true;
+        Integer isValidate = 1;
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER_QR_HISTORY.getCode());
         if (pushData == null) {
             updateTime = endTime;
@@ -253,23 +254,54 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Date finalUpdateTime = updateTime;
         boolean finalNewPushFlag = newPushFlag;
         List<UserQrHistory> qrHistories = new ArrayList<>();
-        //取有效二维码变更记录
-        UserQrHistory queryQr = new UserQrHistory();
-        queryQr.setIsValid(1);
+        List<UserQrHistory> allQrHistories = new ArrayList<>();
+        List<UserQrHistory> resultQrHisList = new ArrayList<>();
+        Map<Long, String> userMap = new HashMap<>(16);
         User user = DTOUtils.newDTO(User.class);
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
-        Map<Long, String> userMap = new HashMap<>(16);
+
+        UserQrHistory qrHistory = new UserQrHistory();
+        qrHistory.setMetadata(IDTO.AND_CONDITION_EXPR, " user_id in ('1293','1296','1288')");
+        allQrHistories = userQrHistoryService.listByExample(qrHistory);
         StreamEx.ofNullable(userService.list(user)).nonNull().flatCollection(Function.identity()).forEach(u -> {
             userMap.put(u.getId(), u.getName());
         });
-        StreamEx.ofNullable(userQrHistoryService.list(queryQr)).nonNull().flatCollection(Function.identity()).forEach(q -> {
+        StreamEx.ofNullable(allQrHistories).nonNull().flatCollection(Function.identity()).forEach(q -> {
             if (finalNewPushFlag || finalUpdateTime.compareTo(q.getModified()) < 0) {
                 if (userMap.containsKey(q.getUserId())) {
                     qrHistories.add(q);
                 }
             }
         });
-        List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(qrHistories);
+        //根据用户分组二维码
+        Map<Long, List<UserQrHistory>> qrMap = StreamEx.of(qrHistories).nonNull().groupingBy(UserQrHistory::getUserId);
+        qrMap.entrySet().stream().forEach(qList -> {
+            //如果最新的一条记录是变更为无效记录（报备单删除），则取当前用户最新有效二维码变更记录
+            List<UserQrHistory> userQrHistories = qList.getValue();
+            Set<Long> userIdSet = new HashSet<>();
+            userQrHistories.stream().sorted(Comparator.comparing(UserQrHistory::getModified).reversed()).forEachOrdered(s -> {
+                if (isValidate.equals(s.getIsValid())) {
+                    resultQrHisList.add(s);
+                } else {
+                    userIdSet.add(s.getUserId());
+                }
+            });
+            //如果最新记录是变更为无效记录（报备单删除），则取当前用户最新有效二维码变更记录
+            boolean onlyVoid = CollectionUtils.isNotEmpty(userIdSet) && userIdSet.size() == userQrHistories.size();
+            if (onlyVoid) {
+                Long userId = userIdSet.iterator().next();
+                UserQrHistory iteamQr = new UserQrHistory();
+                iteamQr.setIsValid(isValidate);
+                iteamQr.setUserId(userIdSet.iterator().next());
+                iteamQr.setMetadata(IDTO.AND_CONDITION_EXPR, " modified = (SELECT MAX(modified) FROM user_qr_history WHERE user_id ='"
+                        + userId + "' AND is_valid ='" + isValidate + "' )");
+                UserQrHistory addItem = userQrHistoryService.listByExample(iteamQr).get(0);
+                logger.info("时间段内最新食安码为作废记录，获取回滚记录" + JSON.toJSONString(addItem));
+                resultQrHisList.add(addItem);
+            }
+        });
+
+        List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(resultQrHisList);
         logger.info("ReportQrCodeDto ： " + JSON.toJSONString(pushList));
         // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
