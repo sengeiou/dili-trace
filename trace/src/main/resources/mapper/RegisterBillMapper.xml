@@ -461,12 +461,15 @@
       b.`upstream_id` thirdUpId, b.`plate` transporterId, IF(b.`weight_unit`=1,'斤','公斤') unitName, b.`weight` enterNum
     FROM `register_bill` b
     JOIN `category` c ON b.product_id = c.id
-    WHERE b.is_deleted=0
+    WHERE 1=1
       <if test="modifiedEnd != null">
           <![CDATA[AND b.modified <=#{modifiedEnd}]]>
       </if>
       <if test="modifiedStart != null">
           <![CDATA[AND b.modified >#{modifiedStart}]]>
+      </if>
+        <if test="isDeleted != null">
+        <![CDATA[AND b.is_deleted = #{isDeleted}]]>
       </if>
   </select>
 

@@ -118,7 +118,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             //经营户作废
             this.pushUserDelete(optUser, endTime);
             // 报备作废
-            //this.reportRegisterBillDelete(optUser, endTime);
+            this.reportRegisterBillDelete(optUser, endTime);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
