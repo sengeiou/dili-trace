@@ -58,6 +58,11 @@ public enum ReportInterfaceEnum {
     REGISTER_BILL("register_bill", "报备新增/编辑"),
 
     /**
+     * 报备报废上报
+     */
+    REGISTER_BILL_DELETE("register_bill_delete", "报备单报废"),
+
+    /**
      * 进门
      */
     CHECK_INOUT_RECORD("checkinout_record", "进门"),
