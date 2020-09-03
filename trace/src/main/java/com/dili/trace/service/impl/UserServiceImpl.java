@@ -412,6 +412,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (!YnEnum.YES.getCode().equals(user.getYn())) {
             return BaseOutput.failure("数据已被删除");
         }
+        user.setModified(new Date());
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);

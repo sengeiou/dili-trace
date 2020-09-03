@@ -1,5 +1,6 @@
 package com.dili.trace.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,4 +59,9 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
      * 报备检测数据统计
      */
     public List<ReportRegisterBillDto> selectRegisterBillReport(RegisterBillDto billDto);
+
+    /**
+     * 查询数据库当前时间
+     */
+    public Date selectCurrentTime();
 }
