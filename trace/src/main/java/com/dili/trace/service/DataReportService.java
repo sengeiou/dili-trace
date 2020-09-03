@@ -333,7 +333,7 @@ public class DataReportService {
         thirdPartyReportData.setCreated(new Date());
         thirdPartyReportData.setModified(new Date());
 
-        String data = JSON.toJSONStringWithDateFormat(reportDto,"yyyy-MM-hh HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+        String data = JSON.toJSONStringWithDateFormat(reportDto,"yyyy-MM-dd HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
         thirdPartyReportData.setData(data);
         String jsonBody = thirdPartyReportData.getData();
 
