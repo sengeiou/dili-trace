@@ -321,4 +321,17 @@ public interface User extends IBaseDomain {
      * @param confirm_date
      */
     void setConfirmDate(Date confirm_date);
+
+    /**
+     * 用户上报标志位
+     * @return
+     */
+    @Column(name = "`is_push`")
+    Integer getIsPush();
+
+    /**
+     * 微信弹窗绑定确认时间
+     * @param is_push
+     */
+    void setIsPush(Integer is_push);
 }

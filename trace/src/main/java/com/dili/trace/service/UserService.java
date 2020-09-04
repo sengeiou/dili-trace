@@ -153,4 +153,11 @@ public interface UserService extends BaseService<User, Long> {
 	 * @throws Exception
 	 */
 	UserQrOutput getUserQrCodeWithName(Long userId) throws Exception;
+
+	/**
+	 * 根据用户id修改
+	 * @param isPush
+	 * @param userIdList
+	 */
+	void updateUserIsPushFlag(Integer isPush,List<Long> userIdList);
 }
