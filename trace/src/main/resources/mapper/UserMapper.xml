@@ -136,4 +136,19 @@
     on (u.id=s.user_id) where u.id = #{id}
   </select>
 
+  <update id="updateUserIsPushFlag">
+    update user
+    <set>
+        <if test="isPush != null">
+          is_push = #{isPush},
+        </if>
+    </set>
+      where 1=1
+      <if test="idList!=null and idList.size()>0">
+        and id
+        <foreach collection="idList" open=" IN (" close=")" item="oid"  separator=",">
+          #{oid}
+        </foreach>
+      </if>
+  </update>
 </mapper>

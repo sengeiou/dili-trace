@@ -165,7 +165,10 @@ public class ThirdPartyReportController {
             } else if (ReportDtoTypeEnum.deleteDeliveryOrder.equalsToCode(reportData.getType())) {
                 ReportDeletedOrderDto dto = mapper.readValue(json, ReportDeletedOrderDto.class);
                 return this.dataReportService.reportDeletedDeliveryOrder(dto, opt);
-            } else {
+            } else if (ReportDtoTypeEnum.registerBillDelete.equalsToCode(reportData.getType())) {
+                ReportRegisterBillDeleteDto dto = mapper.readValue(json, ReportRegisterBillDeleteDto.class);
+                return this.dataReportService.reportRegisterBillDelete(dto, opt);
+            }else {
                 return BaseOutput.failure("数据错误");
             }
         } catch (Exception e) {

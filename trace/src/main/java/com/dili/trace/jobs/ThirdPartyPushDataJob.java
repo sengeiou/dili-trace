@@ -331,6 +331,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Date updateTime = null;
         boolean newPushFlag = true;
         Integer normalUserType = 1;
+        Integer isPush = 1;
+        Integer pushed = -1;
         List<ReportUserDto> reportUserDtoList = new ArrayList<>();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER.getCode());
         if (pushData == null) {
@@ -348,6 +350,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         boolean finalNewPushFlag = newPushFlag;
         User queUser = DTOUtils.newDTO(User.class);
         queUser.setYn(normalUserType);
+        //1为需要上报
+        queUser.setIsPush(isPush);
         queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state = 40");
         StreamEx.ofNullable(this.userService.listByExample(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
@@ -371,6 +375,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             List<ReportUserDto> partBills = reportUserDtoList.subList(i * batchSize, endPos);
             if (CollectionUtils.isNotEmpty(partBills)) {
                 baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser);
+                List<Long> userIdList = StreamEx.ofNullable(partBills)
+                        .nonNull().flatCollection(Function.identity()).map(userDto -> Long.valueOf(userDto.getThirdAccId())).toList();
+                if (CollectionUtils.isNotEmpty(userIdList)) {
+                    userService.updateUserIsPushFlag(pushed, userIdList);
+                }
             }
         }
         if (baseOutput.isSuccess()) {

@@ -234,10 +234,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (StringUtils.isBlank(user.getMarketName())) {
             user.setMarketName(userPO.getMarketName());
         }
+        Integer validateAllow = 40;
+        Integer needPush = 1;
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
         user.setModified(new Date());
+        if (validateAllow.equals(userPO.getValidateState())) {
+            user.setIsPush(needPush);
+        }
         updateSelective(user);
         this.tallyAreaNoService.saveOrUpdateTallyAreaNo(userPO.getId(), tallyAreaNos);
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
@@ -245,9 +250,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         this.sessionRedisService.updateUser(this.get(user.getId()));
 
-        Integer valialow = 40;
         //发送消息
-        if (!valialow.equals(user.getValidateState())) {
+        if (!validateAllow.equals(user.getValidateState())) {
             sendMessageByManage(user.getName(), user.getId());
         }
         // this.updateUserQrItem(user.getId());
@@ -412,7 +416,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (!YnEnum.YES.getCode().equals(user.getYn())) {
             return BaseOutput.failure("数据已被删除");
         }
+        Integer needPush = 1;
         user.setModified(new Date());
+        user.setIsPush(needPush);
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
@@ -544,10 +550,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (ValidateStateEnum.UNCERT.getCode() != user.getValidateState()) {
             return BaseOutput.failure("当前状态不能审核");
         }
-        ;
+        Integer needPush = 1;
         // 审核通过
         if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {
             sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(), null, operatorUser);
+            user.setIsPush(needPush);
         } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {
             // 审核不通过
             sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(), input.getRefuseReason(), operatorUser);
@@ -748,6 +755,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         String base64Img = QRCodeUtil.base64Image(bytes);
         qrOutput.setBase64QRImg(base64Img);
         return qrOutput;
+    }
+
+    @Override
+    public void updateUserIsPushFlag(Integer isPush, List<Long> userIdList) {
+        if (CollectionUtils.isEmpty(userIdList)) {
+            LOGGER.error("updateUserIsPushFlag :userIdList IS NULL");
+            return;
+        }
+        if (null == isPush) {
+            LOGGER.error("updateUserIsPushFlag :isPush IS NULL");
+            return;
+        }
+        getActualDao().updateUserIsPushFlag(isPush, userIdList);
     }
 
 }

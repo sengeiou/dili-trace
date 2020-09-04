@@ -19,4 +19,6 @@ public interface UserMapper extends MyMapper<User> {
 
     UserOutput getUserByUserId(Long id);
 
+    void updateUserIsPushFlag(@Param("isPush") Integer isPush, @Param("idList") List<Long> userIdList);
+
 }
