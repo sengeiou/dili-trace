@@ -197,7 +197,7 @@
         count(t.is_active=1 or null) user_count,
       </when>
       <otherwise>
-        count(1) user_count
+        count(1) user_count,
       </otherwise>
     </choose>
    area as group_key from(
