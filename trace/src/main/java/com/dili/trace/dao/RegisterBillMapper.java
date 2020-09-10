@@ -7,10 +7,7 @@ import java.util.Optional;
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.TraceReportDto;
-import com.dili.trace.dto.TraceReportQueryDto;
-import com.dili.trace.dto.UserListDto;
+import com.dili.trace.dto.*;
 import com.dili.trace.dto.thirdparty.report.RegionCountInfo;
 import com.dili.trace.dto.thirdparty.report.ReportCountDto;
 
@@ -64,4 +61,11 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
      * 查询数据库当前时间
      */
     public Date selectCurrentTime();
+
+    /*
+     * 进场商品产地分布统计
+     * @param queryDto
+     * @return
+     */
+    public List<OrigionReportDto> queryOrigionReport(OrigionReportQueryDto queryDto);
 }

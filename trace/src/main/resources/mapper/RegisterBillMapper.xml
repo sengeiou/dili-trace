@@ -487,4 +487,25 @@
     SELECT CURRENT_TIMESTAMP
   </select>
 
+  <select id="queryOrigionReport" resultType="com.dili.trace.dto.OrigionReportDto"
+          parameterType="com.dili.trace.dto.OrigionReportQueryDto">
+    SELECT r.`origin_name` as origion_name, COUNT(1) as bill_count, round(SUM(IF(weight_unit=1,weight*0.0005,weight*0.001)),2) as weight
+    FROM register_bill r WHERE r.`is_checkin`=1 AND r.is_deleted=0
+    <if test="startDate != null">
+      <![CDATA[AND r.`operation_time`>=#{startDate}]]>
+    </if>
+    <if test="endDate != null">
+      <![CDATA[AND r.`operation_time`<=#{endDate}]]>
+    </if>
+    <if test="origionName != null and origionName != ''">
+        AND r.`origin_name` LIKE #{origionName}
+    </if>
+    <if test="productName != null and productName != ''">
+      AND r.`product_name` LIKE #{productName}
+    </if>
+
+    GROUP BY r.`origin_name` order by weight desc;
+
+  </select>
+
 </mapper>

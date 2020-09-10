@@ -1,0 +1,174 @@
+<#body head_title="采购商户交易统计">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item long-item">
+                        <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:58%"
+                               labelAlign="right" data-options="label:'进门时间:'" value="${query.startDate}!" />
+                        <span style="width: 2%;">-</span>
+                        <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:39%;"
+                               value="${query.endDate}!" />
+                    </div>
+                    <div class="search-item">
+                        <input type="hidden" name="origionName" id="origionName">
+                        <select class="easyui-combobox" name="origionId" id="origionId" style="width:100%;" labelAlign="right"
+                                data-options="label:'产地',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,required:false,validType:'comboBoxEditvalid[\'origionId\']',onSelect:function(record){$('#origionName').val(record.text);}">
+                        </select>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right"
+                               data-options="label:'品种:'" />
+                    </div>
+
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryOrigionReport()">查询</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-export"
+                           onclick="exportReport()">导出</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="产地进场重量分布统计" id="origionGrid" fitColumns="true" noheader="true"
+               pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+               singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
+               fit="true" idField="id"
+               data-options="loader:loadOrigionGridData">
+            <thead>
+            <tr>
+                <th width="50%"
+                    data-options="field:'origionName', align:'center', resizable:'true', fixed:'false'">
+                    产地
+                </th>
+                <th width="25%"
+                    data-options="field:'billCount',  align:'center', resizable:'true', fixed:'false'">
+                    进场报备单数
+                </th>
+                <th width="25%"
+                    data-options="field:'weight',  align:'center', resizable:'true', fixed:'false'">
+                    重量(吨)
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
+
+     function cityLoader(param,success,error) {
+        var q = param.q || '';
+        if (q.length < 1){return false}
+        $.ajax({
+            type: "POST",
+            url: '${contextPath}/provider/getLookupList.action',
+            dataType: 'json',
+            data: {
+                provider: 'cityProvider',
+                queryParams: '{required:true}',
+                value: q
+            },
+            success: function(data){
+                success(data);
+            },
+            error: function(){
+                error.apply(this, arguments);
+            }
+        });
+    }
+
+    function exportReport()
+    {
+        var startDate = $("#startDate").val().substring(0,10);
+        var endDate = $("#endDate").val().substring(0,10);
+        var opts = $('#origionGrid').datagrid("options");
+        opts.title="产地进场重量分布统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        doExport('origionGrid');
+    }
+
+    //表格查询
+    function loadOrigionGridData(param,success,error){
+
+        var origionId = $("[name='origionId']:hidden").val();
+        if(origionId == "")
+        {
+            $("#origionName").val("");
+        }
+        var data=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/origionReport/list.action",
+            processData:true,
+            dataType: "json",
+            data:bindGridMeta2Form("origionGrid", "queryForm"),
+            async : false,
+            success: function (ret) {
+                if(ret){
+                    data=ret;
+                }
+            },
+            error: function(){
+                data=[]
+            }
+        });
+        success(data);
+    }
+
+    function queryOrigionReport()
+    {
+        var origionId = $("[name='origionId']:hidden").val();
+        if(origionId == "")
+        {
+            $("#origionName").val("");
+        }
+        var opts = $('#origionGrid').datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/origionReport/list.action";
+        }
+
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        $('#origionGrid').datagrid("reload", bindGridMeta2Form("origionGrid", "queryForm"));
+    }
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+
+
+</script>
+</#body>

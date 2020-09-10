@@ -89,6 +89,9 @@ public class TradeRequest extends BaseDomain {
 	@Column(name = "`modified`")
 	private Date modified;
 
+	@Column(name = "`handle_time`")
+	private Date handleTime;
+
 	@Transient
 	public Long getTradeRequestId() {
 		return this.id;
@@ -99,6 +102,14 @@ public class TradeRequest extends BaseDomain {
 
 	@Transient
 	private String orderStatusName;
+
+	public Date getHandleTime() {
+		return handleTime;
+	}
+
+	public void setHandleTime(Date handleTime) {
+		this.handleTime = handleTime;
+	}
 
 	public Integer getOrderStatus() {
 		return orderStatus;

@@ -138,6 +138,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
+        StreamEx.of(list).forEach( td -> {
+            TradeRequest request = new TradeRequest();
+            request.setHandleTime(new Date());
+            request.setId(td.getId());
+            this.updateSelective(request);
+        });
+
         return list;
 
     }
@@ -665,6 +672,8 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 productStockUpdate.setStockWeight(productStock.getStockWeight().add(td.getSoftWeight()));
                 productStockUpdate.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
                 this.batchStockService.updateSelective(productStockUpdate);
+
+
             } else if (handleStatus.equals(TradeOrderStatusEnum.CANCELLED.getCode())) {
                 TradeDetail parentTradeDetail = this.tradeDetailService.get(td.getParentId());
                 TradeDetail parentTradeDetailForUpdate = new TradeDetail();
@@ -691,6 +700,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 this.batchStockService.updateSelective(productStockUpdate);
             }
         });
+
+        TradeRequest request = new TradeRequest();
+        request.setHandleTime(new Date());
+        request.setId(tradeRequestId);
+        this.updateSelective(request);
+
         //完成发送消息
         if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
             //下单消息--一个单一个消息方便跳转页面
