@@ -12,6 +12,15 @@ public class TraceReportQueryDto {
     private List<Integer> yellowBillVerifyStatus;
     private List<Integer> redBillVerifyStatus;
     private List<Integer> noneVerifyStatus;
+    private Integer isUserActive;
+
+    public Integer getIsUserActive() {
+        return isUserActive;
+    }
+
+    public void setIsUserActive(Integer isUserActive) {
+        this.isUserActive = isUserActive;
+    }
 
     /**
      * @return Date return the createdStart

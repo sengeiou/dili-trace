@@ -15,15 +15,13 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.components.ManageSystemComponent;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserStore;
-import com.dili.trace.domain.WxApp;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.ManagerInfoDto;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
@@ -49,6 +47,8 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -96,6 +96,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Autowired
     ManageSystemComponent manageSystemComponent;
 
+    @Autowired
+    SysConfigService sysConfigService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -299,7 +301,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             plateList.add(plates);
         }
 
-        return plateList.stream().filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toList());
+        return plateList.stream().filter(StringUtils::isNotBlank).map(String::trim).collect(toList());
 
     }
 
@@ -465,7 +467,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         List<DTO> users = out.getRows();
         List<Long> userIdList = users.stream().map(o -> {
             return (Long) o.get("id");
-        }).collect(Collectors.toList());
+        }).collect(toList());
         Map<Long, List<UserPlate>> userPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
         List<DTO> userList = users.stream().map(u -> {
             Long userId = (Long) u.get("id");
@@ -477,7 +479,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 u.put("plates", "");
             }
             return u;
-        }).collect(Collectors.toList());
+        }).collect(toList());
         out.setRows(userList);
 
         return out;
@@ -555,6 +557,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {
             sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(), null, operatorUser);
             user.setIsPush(needPush);
+            user.setIsActive(needPush);
         } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {
             // 审核不通过
             sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(), input.getRefuseReason(), operatorUser);
@@ -769,5 +772,95 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         getActualDao().updateUserIsPushFlag(isPush, userIdList);
     }
+
+    @Override
+    public void updateUserActiveByTime() {
+        String optType = "operation_report_limit_day";
+        String optCategory = "operation_report_limit_day";
+        SysConfig sysConfig = new SysConfig();
+        sysConfig.setOpt_type(optType);
+        sysConfig.setOpt_category(optCategory);
+        List<SysConfig> sysConfigList = sysConfigService.listByExample(sysConfig);
+        //未配置活跃限定天数，则不计算活跃
+        if (CollectionUtils.isEmpty(sysConfigList)) {
+            return;
+        }
+        //活跃限定天数为0，则不计算活跃
+        String val = sysConfigList.get(0).getOpt_value();
+        int limitDay = Integer.valueOf(val);
+        if (limitDay <= 0) {
+            return;
+        }
+        limitDay = 0 - limitDay;
+        Map<String, Object> activeMap = processActiveMap(limitDay);
+        //patch活跃
+        getActualDao().updateUserActiveByBill(activeMap);
+        getActualDao().updateUserActiveByBuyer(activeMap);
+        getActualDao().updateUserActiveBySeller(activeMap);
+        //patch不活跃
+        updateUserUnActive(activeMap);
+    }
+
+    /**
+     * 更新用户去活跃
+     *
+     * @param map
+     */
+    private void updateUserUnActive(Map<String, Object> map) {
+        List<User> unActiveListBill = getActualDao().getActiveUserListByBill(map);
+        List<User> unActiveListBuyer = getActualDao().getActiveUserListByBuyer(map);
+        List<User> unActiveListSeller = getActualDao().getActiveUserListBySeller(map);
+        List<Long> billList = new ArrayList<>();
+        List<Long> buyList = new ArrayList<>();
+        List<Long> sellList = new ArrayList<>();
+        //无报备单用户
+        if (CollectionUtils.isNotEmpty(unActiveListBill)) {
+            StreamEx.of(unActiveListBill).nonNull().forEach(b -> {
+                billList.add(b.getId());
+            });
+        }
+        //无购买交易用户
+        if (CollectionUtils.isNotEmpty(unActiveListBuyer)) {
+            StreamEx.of(unActiveListBuyer).nonNull().forEach(b -> {
+                buyList.add(b.getId());
+            });
+        }
+        //无销售交易用户
+        if (CollectionUtils.isNotEmpty(unActiveListSeller)) {
+            StreamEx.of(unActiveListSeller).nonNull().forEach(b -> {
+                sellList.add(b.getId());
+            });
+        }
+        //用户已存在报备单
+        if (CollectionUtils.isEmpty(billList)) {
+            return;
+        }
+        //用户已购买交易
+        if (CollectionUtils.isEmpty(unActiveListBuyer)) {
+            return;
+        }
+        //用户已销售交易
+        if (CollectionUtils.isEmpty(unActiveListSeller)) {
+            return;
+        }
+
+        List<Long> resultFow = billList.stream().filter(item -> buyList.contains(item)).collect(toList());
+        List<Long> resultList = resultFow.stream().filter(r -> sellList.contains(r)).collect(toList());
+        System.out.println("---去活跃集合 relustList---" + JSON.toJSONString(resultList));
+
+        if (CollectionUtils.isNotEmpty(resultList)) {
+            getActualDao().updateUserUnActiveFlag(resultList);
+        }
+    }
+
+    private Map<String, Object> processActiveMap(int limitDay) {
+        Map<String, Object> activeMap = new HashMap<>(16);
+        Date limitDate = new Date();
+        limitDate = DateUtils.addDays(limitDate, limitDay);
+        String limitDateStr = DateUtils.format(limitDate, "yyyy-MM-dd HH:mm:ss");
+        activeMap.put("limitTime", limitDateStr);
+        return activeMap;
+    }
+
 
 }

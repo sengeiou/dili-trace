@@ -330,8 +330,21 @@ public interface User extends IBaseDomain {
     Integer getIsPush();
 
     /**
-     * 微信弹窗绑定确认时间
+     * 用户上报标志位
      * @param is_push
      */
     void setIsPush(Integer is_push);
+
+    /**
+     * 用户活跃标志位
+     * @return
+     */
+    @Column(name = "`is_active`")
+    Integer getIsActive();
+
+    /**
+     * 用户活跃标志位
+     * @param is_active
+     */
+    void setIsActive(Integer is_active);
 }

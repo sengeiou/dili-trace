@@ -10,14 +10,16 @@
             <div class="form-item-group">
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>开始时间</label>
-                    <input class="form-control input-sm" name="createdStart" value="${query.createdStart,dateFormat='yyyy-MM-dd HH:mm:ss'}"  <%if(query.readonly==true){%> readonly<%}%>/>
+                    <input class="form-control input-sm easyui-datetimebox" name="createdStart" value="${query.createdStart,dateFormat='yyyy-MM-dd HH:mm:ss'}"  <%if(query.readonly==true){%> readonly<%}%>/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>结束时间</label>
-                    <input class="form-control input-sm" name="createdEnd" value="${query.createdEnd,dateFormat='yyyy-MM-dd HH:mm:ss'}"  <%if(query.readonly==true){%> readonly<%}%>/>
+                    <input class="form-control input-sm easyui-datetimebox" name="createdEnd" value="${query.createdEnd,dateFormat='yyyy-MM-dd HH:mm:ss'}"  <%if(query.readonly==true){%> readonly<%}%>/>
+                </div>
+                <div class="form-group">
+                    <button type="submit" <%if(query.readonly==true){%> style="display:none"<%}%>>查询</button>
                 </div>
             </div>
-            <button type="submit" <%if(query.readonly==true){%> style="display:none"<%}%>>查询</button>
             <input type="hidden" name="readonly" value="${query.readonly!false}"/>
         </form>
         <table style="width: 100%;border:#333;" border="medium">
@@ -148,8 +150,10 @@
     color:#333!important;
     }
 </style>
-
+<link rel="stylesheet" href="${contextPath!}/resources/easyui/css/themes/bootstrap/easyui.css">
+<script src="${contextPath!}/resources/easyui/js/jquery.easyui.min.js"></script>
+<script src="${contextPath!}/resources/easyui/js/easyui-lang-zh_CN.js"></script>
 <script>
 
-	
+
 </script>

@@ -151,4 +151,100 @@
         </foreach>
       </if>
   </update>
+
+  <update id="updateUserActiveByBill">
+    update user u,register_bill b
+    <set>
+      u.is_active=1
+    </set>
+    where u.is_delete=0
+    AND u.yn=1
+    AND u.is_active=-1
+    AND u.id=b.user_id
+    AND b.is_deleted=0
+    AND ( b.created > #{limitTime} OR b.modified > #{limitTime})
+  </update>
+
+  <update id="updateUserActiveByBuyer">
+    update user u,trade_detail t
+    <set>
+      u.is_active=1
+    </set>
+    where u.is_delete=0
+    AND u.yn=1
+    AND u.is_active=-1
+    AND u.id=t.buyer_id
+    AND ( t.created > #{limitTime} OR t.modified > #{limitTime})
+  </update>
+
+  <update id="updateUserActiveBySeller">
+    update user u,trade_detail t
+    <set>
+      u.is_active=1
+    </set>
+    where u.is_delete=0
+    AND u.yn=1
+    AND u.is_active=-1
+    AND u.id=t.seller_id
+    AND ( t.created > #{limitTime} OR t.modified > #{limitTime})
+  </update>
+
+  <select id="getActiveUserListByBill" resultType="com.dili.trace.domain.User" >
+    SELECT u.id,u.name,u.is_delete,u.is_active
+    FROM
+    user u
+    LEFT JOIN register_bill b ON u.id = b.user_id
+    AND b.is_deleted = 0
+    AND  (
+    b.created > #{limitTime}
+    OR b.modified > #{limitTime}
+    )
+    WHERE u.is_delete = 0
+    AND u.yn = 1
+    AND u.is_active = 1
+    AND b.id IS NULL
+  </select>
+
+  <select id="getActiveUserListByBuyer" resultType="com.dili.trace.domain.User" >
+    SELECT u.id,u.name,u.is_delete,u.is_active
+    FROM
+    user u
+    LEFT JOIN trade_detail t ON u.id = t.buyer_id
+    AND  (
+    t.created > #{limitTime}
+    OR t.modified > #{limitTime}
+    )
+    WHERE u.is_delete = 0
+    AND u.yn = 1
+    AND u.is_active = 1
+    AND t.id IS NULL
+  </select>
+
+  <select id="getActiveUserListBySeller" resultType="com.dili.trace.domain.User" >
+    SELECT u.id,u.name,u.is_delete,u.is_active
+    FROM
+    user u
+    LEFT JOIN trade_detail t ON u.id = t.seller_id
+    AND  (
+    t.created > #{limitTime}
+    OR t.modified > #{limitTime}
+    )
+    WHERE u.is_delete = 0
+    AND u.yn = 1
+    AND u.is_active = 1
+    AND t.id IS NULL
+  </select>
+
+  <update id="updateUserUnActiveFlag">
+    update user
+    <set>
+      is_active = -1,
+    </set>
+    where 1=1
+      and id
+      <foreach collection="idList" open=" IN (" close=")" item="oid"  separator=",">
+        #{oid}
+      </foreach>
+  </update>
+
 </mapper>

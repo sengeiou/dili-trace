@@ -191,16 +191,26 @@
     left join  ( <include refid="noVerifyedBillCount"/>) t_no_verifyed_bill_count on t_no_verifyed_bill_count.group_key=a.area
   </select>
   <sql  id="userCountQuery">
-  select count(1) user_count,area as group_key from(
-    select u.id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
+  select
+    <choose>
+      <when test="isUserActive != null">
+        count(t.is_active=1 or null) user_count,
+      </when>
+      <otherwise>
+        count(1) user_count
+      </otherwise>
+    </choose>
+   area as group_key from(
+    select u.id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from `user` u 
     left join  (
       select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
       left join tally_area_no  
       on r_user_tally_area.tally_area_no_id =tally_area_no.id  
       group by r_user_tally_area.user_id 
-      )t_area on t_area.user_id=u.id
+      ) t_area on t_area.user_id=u.id
      where u.yn=1
+     and u.state = 1
     )t GROUP  by area
 </sql>
 

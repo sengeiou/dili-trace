@@ -1,21 +1,22 @@
 package com.dili.trace.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
 import com.dili.trace.dao.CheckinOutRecordMapper;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.SysConfig;
 import com.dili.trace.dto.TraceReportDto;
 import com.dili.trace.dto.TraceReportQueryDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.google.common.collect.Lists;
-
+import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import one.util.streamex.StreamEx;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class TraceReportService {
@@ -23,7 +24,8 @@ public class TraceReportService {
     RegisterBillMapper billMapper;
     @Autowired
     CheckinOutRecordMapper checkinOutRecordMapper;
-
+    @Autowired
+    SysConfigService sysConfigService;
     public Map<String, TraceReportDto> getTraceBillReportData(TraceReportQueryDto query) {
         query.setGreenBillVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.PASSED.getCode()));
         query.setRedBillVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NO_PASSED.getCode()));
@@ -31,7 +33,21 @@ public class TraceReportService {
                 Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode(), BillVerifyStatusEnum.RETURNED.getCode()));
         query.setNoneVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode()));
 
-
+        String optType = "operation_report_limit_day";
+        String optCategory = "operation_report_limit_day";
+        Integer val =null;
+        SysConfig sysConfig = new SysConfig();
+        sysConfig.setOpt_type(optType);
+        sysConfig.setOpt_category(optCategory);
+        List<SysConfig> configs = sysConfigService.listByExample(sysConfig);
+        if(CollectionUtils.isNotEmpty(configs)){
+            String str = configs.get(0).getOpt_value();
+            if(StringUtils.isNotBlank(str)){
+                int limitDay = Integer.valueOf(str);
+                val=limitDay==0?null:limitDay;
+            }
+        }
+        query.setIsUserActive(val);
         List<TraceReportDto> list =  this.billMapper.selectBillReportData(query);
 
         Map<String, TraceReportDto> areaReportDtoMap = StreamEx.of(list).map(item -> {
