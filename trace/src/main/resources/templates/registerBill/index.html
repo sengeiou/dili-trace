@@ -223,7 +223,8 @@
         }
         return "是";
     }
-     function queryProduct(param,success,error){
+
+    function queryProduct(param,success,error){
   	   var productName=$('#productCombobox').combotree('getText');
   	   var data=[];
   		$.ajax({
@@ -233,9 +234,7 @@
   	  			success(data);
   			}
   		})
-  	
-   }
-  
-    
+    }
+
      </script>
  </#body>

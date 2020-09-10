@@ -63,9 +63,16 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
     public Date selectCurrentTime();
 
     /*
-     * 进场商品产地分布统计
+     * 产地进场重量分布统计
      * @param queryDto
      * @return
      */
     public List<OrigionReportDto> queryOrigionReport(OrigionReportQueryDto queryDto);
+
+    /*
+     * 进场商品产地分布统计
+     * @param queryDto
+     * @return
+     */
+    public List<ProductOrigionReportDto> queryProductOrigionReport(OrigionReportQueryDto queryDto);
 }

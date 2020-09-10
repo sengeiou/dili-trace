@@ -1,4 +1,4 @@
-<#body head_title="产地进场重量分布统计">
+<#body head_title="进场商品产地分布统计">
 <style>
     .textbox-text[readonly] {
         background: #ebebe4;
@@ -16,11 +16,11 @@
             <form id="queryForm" class="easyui-form" method="post" fit="true">
                 <div class="search-wrap">
                     <div class="search-item long-item">
-                        <input class="form-control input-sm easyui-datetimebox" name="startDate" id="startDate" style="width:58%"
-                               labelAlign="right" data-options="label:'进门时间:'" value="${query.startDate}!" required="true" />
+                        <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:58%"
+                               labelAlign="right" data-options="label:'进门时间:'" value="${query.startDate}!" required="true"/>
                         <span style="width: 2%;">-</span>
-                        <input class="form-control input-sm easyui-datetimebox" name="endDate" id="endDate" style="width:39%;"
-                               value="${query.endDate}!" required="true"/>
+                        <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:39%;"
+                               value="${query.endDate}!"required="true" />
                     </div>
                     <div class="search-item">
                         <input type="hidden" name="origionName" id="origionName">
@@ -49,24 +49,25 @@
     <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
     <!-- 表格 -->
-    <div region="center" style="width:100%;" height="auto">
+    <div region="center" style="width:100%;" height="auto" id="origionGridDiv">
         <!-- =========================================================表格========================================================= -->
-        <table class="easyui-datagrid" title="产地进场重量分布统计" id="origionGrid" fitColumns="true" noheader="true"
+        <table class="easyui-datagrid" title="进场商品产地分布统计" id="origionGrid" fitColumns="true" noheader="true"
                pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
                singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
                fit="true" idField="id"
-               data-options="loader:loadOrigionGridData">
+               data-options="loader:loadOrigionGridData,onLoadSuccess:mergeCell">
             <thead>
             <tr>
-                <th width="50%"
+                <th width="35%"
+                    data-options="field:'productName',  align:'center', resizable:'true', fixed:'false'">
+                    品种
+                </th>
+                <th width="35%"
                     data-options="field:'origionName', align:'center', resizable:'true', fixed:'false'">
                     产地
                 </th>
-                <th width="25%"
-                    data-options="field:'billCount',  align:'center', resizable:'true', fixed:'false'">
-                    进场报备单数
-                </th>
-                <th width="25%"
+
+                <th width="30%"
                     data-options="field:'weight',  align:'center', resizable:'true', fixed:'false'">
                     重量(吨)
                 </th>
@@ -86,6 +87,10 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+
+<script src="${contextPath!}/resources/js/xlsx.extendscript.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/xlsx.full.min.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/export.js"></script>
 <script>
 
      function cityLoader(param,success,error) {
@@ -113,9 +118,55 @@
     {
         var startDate = $("#startDate").val().substring(0,10);
         var endDate = $("#endDate").val().substring(0,10);
-        var opts = $('#origionGrid').datagrid("options");
-        opts.title="产地进场重量分布统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
-        doExport('origionGrid');
+        var fileName="进场商品产地分布统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        var sheet = XLSX2.utils.table_to_sheet(document.getElementById('origionGridDiv'));
+        sheet["!cols"] = [{
+            wpx: 150
+        }, {
+            wpx: 350
+        }, {
+            wpx: 70
+        }]; //单元格列宽
+        var titleFont =
+        {
+            name: 'Calibri',
+            sz: 12,
+            color: "blue",
+            bold: true,
+            italic: false,
+            underline: false,
+            height: 20
+        }
+        ;
+        sheet.A1.s = {
+            font:titleFont
+        };
+        sheet.B1.s = {
+            font:titleFont
+        };
+        sheet.C1.s = {
+            font:titleFont
+        }
+
+        openDownloadDialog(sheet2blob(sheet), fileName+".xlsx");
+    }
+
+    function mergeCell(data)
+    {
+        var mark=1;                                                 //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+        for (var i=1; i <data.rows.length; i++) {     //这里循环表格当前的数据
+            if (data.rows[i]['productName'] == data.rows[i-1]['productName']) {   //后一行的值与前一行的值做比较，相同就需要合并
+                mark += 1;
+                $(this).datagrid('mergeCells',{
+                    index: i+1-mark,                 //datagrid的index，表示从第几行开始合并；紫色的内容需是最精髓的，就是记住最开始需要合并的位置
+                    field: 'productName',                 //合并单元格的区域，就是clomun中的filed对应的列
+                    rowspan:mark                   //纵向合并的格数，如果想要横向合并，就使用colspan：mark
+                });
+            }else{
+                mark=1;                                         //一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+            }
+        }
+        $("#origionGridDiv").find("td:hidden").remove();
     }
 
     //表格查询
@@ -129,7 +180,7 @@
         var data=[];
         $.ajax({
             type: "POST",
-            url: "${contextPath}/origionReport/list.action",
+            url: "${contextPath}/productOrigionReport/list.action",
             processData:true,
             dataType: "json",
             data:bindGridMeta2Form("origionGrid", "queryForm"),
@@ -155,7 +206,7 @@
         }
         var opts = $('#origionGrid').datagrid("options");
         if (null == opts.url || "" == opts.url) {
-            opts.url = "${contextPath}/origionReport/list.action";
+            opts.url = "${contextPath}/productOrigionReport/list.action";
         }
 
         if(!$('#queryForm').form("validate")){
