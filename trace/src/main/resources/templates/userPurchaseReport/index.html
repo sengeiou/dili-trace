@@ -1,0 +1,233 @@
+<#body head_title="采购商户交易统计">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+    .subtotal{
+        color:red;
+        font-weight: bold;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item long-item">
+                        <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:58%"
+                               labelAlign="right" data-options="label:'交易确认时间:'" value="${query.startDate}!" required="true"/>
+                        <span style="width: 2%;">-</span>
+                        <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:39%;"
+                               value="${query.endDate}!"required="true" />
+                    </div>
+
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right"
+                               data-options="label:'经营户名称:'" />
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="phone" id="phone" style="width:100%" labelAlign="right"
+                               data-options="label:'手机号码:'" />
+                    </div>
+
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryOrigionReport()">查询</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-export"
+                           onclick="exportReport()">导出</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto" id="userPurchaseGridDiv">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="采购商户交易统计" id="userPurchaseGrid" fitColumns="true" noheader="true"
+               pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+               singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
+               fit="true" idField="id"
+               data-options="loader:loadUserPurchaseGridData,onLoadSuccess:mergeCell">
+            <thead>
+            <tr>
+                <th width="35%"
+                    data-options="field:'userName',  align:'center', resizable:'true', fixed:'false'">
+                    经营户
+                </th>
+                <th width="35%"
+                    data-options="field:'productName',  align:'center', resizable:'true', fixed:'false'">
+                    品种
+                </th>
+
+                <th width="30%"
+                    data-options="field:'weight',  align:'center', resizable:'true', fixed:'false'">
+                    重量(吨)
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+
+<script src="${contextPath!}/resources/js/xlsx.extendscript.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/xlsx.full.min.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/export.js"></script>
+<script>
+
+    function exportReport()
+    {
+        var startDate = $("#startDate").val().substring(0,10);
+        var endDate = $("#endDate").val().substring(0,10);
+        var fileName="采购商户交易统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        var sheet = XLSX2.utils.table_to_sheet(document.getElementById('userPurchaseGridDiv'));
+        sheet["!cols"] = [{
+            wpx: 150
+        }, {
+            wpx: 350
+        }, {
+            wpx: 70
+        }]; //单元格列宽
+        var titleFont =
+        {
+            name: 'Calibri',
+            sz: 12,
+            color: "blue",
+            bold: true,
+            italic: false,
+            underline: false,
+            height: 20
+        }
+        ;
+        sheet.A1.s = {
+            font:titleFont
+        };
+        sheet.B1.s = {
+            font:titleFont
+        };
+        sheet.C1.s = {
+            font:titleFont
+        }
+
+        openDownloadDialog(sheet2blob(sheet), fileName+".xlsx");
+    }
+
+    function mergeCell(data)
+    {
+        var mark=1;                                                 //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+        for (var i=1; i <data.rows.length; i++) {     //这里循环表格当前的数据
+            if (data.rows[i]['userName'] == data.rows[i-1]['userName']) {   //后一行的值与前一行的值做比较，相同就需要合并
+                mark += 1;
+                $(this).datagrid('mergeCells',{
+                    index: i+1-mark,                 //datagrid的index，表示从第几行开始合并；紫色的内容需是最精髓的，就是记住最开始需要合并的位置
+                    field: 'userName',                 //合并单元格的区域，就是clomun中的filed对应的列
+                    rowspan:mark                   //纵向合并的格数，如果想要横向合并，就使用colspan：mark
+                });
+            }else{
+                mark=1;   //一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+            }
+        }
+        $("#userPurchaseGridDiv").find("td:hidden").remove();
+
+        var mark = 1;
+        var rowsLength = data.rows.length;
+        var initData = {};
+        initData = JSON.parse(JSON.stringify(data));
+        console.log(initData);
+        var insertRow = 0;
+        for (var i=1; i <rowsLength; i++) {
+            debugger;
+
+            if (initData.rows[i]['userName'] != initData.rows[i-1]['userName'] && initData.rows[i-1]['userName'] != "<span class=\"subtotal\">合计</span>") {
+                //添加“合计”列
+                $('#userPurchaseGrid').datagrid('insertRow', {
+                    index: i + insertRow, row: {
+                        userName: '<span class="subtotal">合计</span>',
+                        weight: '<span class="subtotal">' + compute("weight", i-mark, mark, initData) + '</span>'
+                    }
+                });
+                insertRow +=1;
+                mark = 1;
+            }
+            else
+            {
+                mark += 1;
+            }
+
+        }
+    }
+
+    //指定列求和
+    function compute(colName, startRow, rowSpan, data) {
+        var total = 0;
+        for (var i = startRow; i < startRow+rowSpan; i++) {
+            total += parseFloat(data.rows[i][colName]);
+        }
+        return total.toFixed(2);
+    }
+
+    //表格查询
+    function loadUserPurchaseGridData(param,success,error){
+
+        var data=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/userPurchaseReport/list.action",
+            processData:true,
+            dataType: "json",
+            data:bindGridMeta2Form("userPurchaseGrid", "queryForm"),
+            async : false,
+            success: function (ret) {
+                if(ret){
+                    data=ret;
+                }
+            },
+            error: function(){
+                data=[]
+            }
+        });
+        success(data);
+    }
+
+    function queryOrigionReport()
+    {
+        var opts = $('#userPurchaseGrid').datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/userPurchaseReport/list.action";
+        }
+
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        $('#userPurchaseGrid').datagrid("reload", bindGridMeta2Form("userPurchaseGrid", "queryForm"));
+    }
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+
+
+</script>
+</#body>

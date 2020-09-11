@@ -1,188 +1,131 @@
-<#body head_title="采购商户交易统计">
-    <style>
-        .textbox-text[readonly] {
-            background: #ebebe4;
-        }
-    </style>
-    <div class="easyui-layout" fit="true">
-        <!-- ====================================================================================================================== -->
-        <!-- 上方布局 -->
-        <!-- ====================================================================================================================== -->
-        <div region="north" height="auto" align="center">
-            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
-            </div>
-            <!-- =========================================================表单========================================================= -->
-            <div class="easyui-panel" style="width:100%;" align="left">
-                <form id="queryForm" class="easyui-form" method="post" fit="true">
-                    <div class="search-wrap">
-                        <div class="search-item long-item">
-                            <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%"
-                                labelAlign="right" data-options="label:'注册时间:'" value="${createdStart}!" />
-                            <span style="width: 2%;">-</span>
-                            <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"
-                                value="${createdEnd}!" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right"
-                                data-options="label:'姓名:'" />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="phone" id="phone" style="width:100%" labelAlign="right"
-                                data-options="label:'手机号:'" />
-                        </div>
-                         <div class="search-item">
-                            <input name="userType" id="userType" style="width:100%;"  panelWidth="auto"
-                                panelHeight="auto" label="类型:" labelAlign="right" />
-                            <#comboProvider _id="userType" _provider='userTypeEnumProvider'
-                                _queryParams='{emptyText:"全部"}' />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="likeTallyAreaNos" id="likeTallyAreaNos"
-                                style="width:100%" labelAlign="right" data-options="label:'理货区号:'" />
-                        </div>
-                        <div class="search-item">
-                            <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;"
-                                labelAlign="right"
-                                data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300',  editable:true,validType:'comboBoxEditvalid[\'salesCityId\']'">
-                            </select>
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="plates" id="plates" style="width:100%"
-                                labelAlign="right" data-options="label:'车牌:'" />
-                        </div>
-                        <div class="search-item">
-                            <select class="easyui-combobox" name="hasBusinessLicense" id="hasBusinessLicense"
-                                style="width:100%;" editable="false" panelHeight="auto" data-options="label:'营业执照'"
-                                labelAlign="right">
-                                <option value="">全部</option>
-                                <option value="true">有</option>
-                                <option value="false">无</option>
-                            </select>
-                        </div>
-                        <div class="search-item">
-                            <input name="state" id="state" style="width:100%;" editable="false" panelWidth="auto"
-                                panelHeight="auto" label="状态:" labelAlign="right" />
-                            <#comboProvider _id="state" _provider='enabledStateProvider'
-                                _queryParams='{emptyText:"全部"}' />
-                        </div>
-                        <div class="search-wrap-btn">
-                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                                onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
-                                onclick="clearQueryForm()">清除</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
+<#body head_title="产地进场重量分布统计">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
         </div>
-        <!-- ====================================================================================================================== -->
-        <!-- 中央布局 -->
-        <!-- ====================================================================================================================== -->
-        <!-- 表格 -->
-        <div region="center" style="width:100%;" height="auto">
-            <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="客户列表" id="userGrid" fitColumns="true" noheader="true"
-                pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
-                singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
-                fit="true" idField="id"
-                data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
-                <thead>
-                    <tr>
-                        <th width="10%"
-                            data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            注册时间
-                        </th>
-                        <th width="4%"
-                            data-options="field:'id',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            ID
-                        </th>
-                        <th width="6%"
-                            data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            名称
-                        </th>
-                        <th width="6%"
-                            data-options="field:'legalPerson',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            法人
-                        </th>
-                        <th width="8%"
-                            data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            手机号
-                        </th>
-                        <th width="10%"
-                            data-options="field:'cardNo',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            身份证号
-                        </th>
-                           <th width="5%"
-                            data-options="field:'userType',_provider:'userTypeEnumProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            类型
-                        </th>
-                        <th width="10%"
-                            data-options="field:'tallyAreaNos',formatter:blankFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            理货区号
-                        </th>
-                        <th width="10%"
-                            data-options="field:'salesCityName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            销地城市
-                        </th>
-                        <th width="8%"
-                            data-options="field:'plates',   sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            车牌
-                        </th>
-                        <th width="10%"
-                            data-options="field:'businessLicenseUrl',formatter:function(val){return val?'有':'无'},   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            营业执照
-                        </th>
-                        <th width="5%"
-                            data-options="field:'state',_provider:'enabledStateProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            状态
-                        </th>
-                        <th width="6%"
-                            data-options="field:'qrStatus',_provider:'userQrStatusEnumProvider', formatter:userQrStatusFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            二维码
-                        </th>
-                    </tr>
-                </thead>
-            </table>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item long-item">
+                        <input class="form-control input-sm easyui-datetimebox" name="startDate" id="startDate" style="width:58%"
+                               labelAlign="right" data-options="label:'交易确认时间:'" value="${query.startDate}!" required="true" />
+                        <span style="width: 2%;">-</span>
+                        <input class="form-control input-sm easyui-datetimebox" name="endDate" id="endDate" style="width:39%;"
+                               value="${query.endDate}!" required="true"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right"
+                               data-options="label:'品种:'" />
+                    </div>
+
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryOrigionReport()">查询</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-export"
+                           onclick="exportReport()">导出</a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-    
     <!-- ====================================================================================================================== -->
-    <!-- style & script 分隔线 -->
+    <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
-     <script src="http://base.nong12.com/static/log/log.build.js"></script>
-     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
-     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
-     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
-     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
-     <#user_indexJs />
-     <script>
-        function selectCity(cthis, id, name) {
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="采购商品交易统计" id="purchaseGoodsGrid" fitColumns="true" noheader="true"
+               pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+               singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
+               fit="true" idField="id"
+               data-options="loader:loadPurchaseGoodsGridData">
+            <thead>
+                <th width="50%"
+                    data-options="field:'productName', align:'center', resizable:'true', fixed:'false'">
+                    品种
+                </th>
+                <th width="50%"
+                    data-options="field:'weight',  align:'center', resizable:'true', fixed:'false'">
+                    采购重量(吨)
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
 
-            $('#_salesCityId').combobox('setValue', id);
-            $('#_salesCityId').combobox('setText', name);
-            $('#_salesCityName').val(name);
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
 
+    function exportReport()
+    {
+        var startDate = $("#startDate").val().substring(0,10);
+        var endDate = $("#endDate").val().substring(0,10);
+        var opts = $('#purchaseGoodsGrid').datagrid("options");
+        opts.title="采购商品交易统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        doExport('purchaseGoodsGrid');
+    }
 
-        }
-        function userQrStatusFormatter(value, rowData, rowIndex) {
-            var qrStatus = rowData['$_qrStatus'];
-            var text=$('<span></span>');
-            if ($.type(qrStatus) == 'number') {
-                if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.GREEN.getCode()}') {
-                    text.css('color','green');
-                   // text.html('查看');
-                } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.YELLOW.getCode()}') {
-                    text.css('color','yellow');
-                   // text.html('审核');
-                } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.RED.getCode()}') {
-                    text.css('color','red');
-                   // text.html('审核');
+    //表格查询
+    function loadPurchaseGoodsGridData(param,success,error){
+        var data=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/purchaseGoodsReport/list.action",
+            processData:true,
+            dataType: "json",
+            data:bindGridMeta2Form("purchaseGoodsGrid", "queryForm"),
+            async : false,
+            success: function (ret) {
+                if(ret){
+                    data=ret;
                 }
+            },
+            error: function(){
+                data=[]
             }
-            return   text.html(value)[0].outerHTML;
+        });
+        success(data);
+    }
+
+    function queryOrigionReport()
+    {
+        var opts = $('#purchaseGoodsGrid').datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/purchaseGoodsReport/list.action";
         }
 
-    </script>
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        $('#purchaseGoodsGrid').datagrid("reload", bindGridMeta2Form("purchaseGoodsGrid", "queryForm"));
+    }
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+
+
+</script>
 </#body>
