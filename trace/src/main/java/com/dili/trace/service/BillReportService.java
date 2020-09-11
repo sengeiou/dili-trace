@@ -109,7 +109,7 @@ public class BillReportService {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
         for (int i = 0; i < limitDay; i++) {
-            baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 1) + " DAY) AS reportDate ";
+            baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 2) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
         Date createStart = DateUtils.addDays(createEnd, 0 - limitDay);
@@ -139,7 +139,7 @@ public class BillReportService {
         Map<String, Object> map = new HashMap<>(16);
         //每一天都需要一条数据，查询一个当天的记录
         for (int i = 0; i < limitDay; i++) {
-            baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 1) + " DAY) AS reportDate ";
+            baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 2) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
         Date createStart = DateUtils.addDays(createEnd, 0 - limitDay);
@@ -193,6 +193,7 @@ public class BillReportService {
             BigDecimal result = b.divide(userDecimal, 4, BigDecimal.ROUND_HALF_UP);
             t.setTradeRatio(result.multiply(new BigDecimal(mult)));
         });
+        resultList.sort(Comparator.comparing(TradeReportDto::getReportDate));
         return resultList;
     }
 
