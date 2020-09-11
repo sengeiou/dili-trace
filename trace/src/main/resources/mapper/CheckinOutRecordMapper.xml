@@ -118,4 +118,69 @@
         </if>
         GROUP BY r.`user_id`, r.`created`
     </select>
+
+    <select id="getUserBillReport" resultType="com.dili.trace.api.input.TradeReportDto">
+        SELECT a.reportDate,IFNULL(b.billCount,0) billCount
+        FROM (
+            SELECT CURDATE() AS reportDate
+            ${baseDay}
+        ) a LEFT JOIN (
+          SELECT DATE(r.created) AS DATETIME, COUNT(DISTINCT u.id) AS billCount
+          FROM register_bill r
+          JOIN user u ON r.user_id = u.id
+            AND u.is_delete=0
+            AND u.validate_state=40
+            AND u.state=1
+            AND u.yn=1
+          WHERE r.is_checkin=1
+          AND r.verify_status=20
+          AND r.is_deleted = 0
+        <![CDATA[ AND r.created > #{createdStart}]]>
+        <![CDATA[ AND r.created < #{createdEnd}]]>
+          GROUP BY DATE(r.created)
+        ) b ON a.reportDate = b.datetime
+        ORDER BY a.reportDate
+    </select>
+
+    <select id="getUserBuyerTradeReport" resultType="com.dili.trace.api.input.TradeReportDto">
+        SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount
+        FROM (
+            SELECT CURDATE() AS reportDate
+            ${baseDay}
+        ) a LEFT JOIN (
+          SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount
+          FROM trade_order t
+          JOIN USER u ON t.buyer_id = u.id
+            AND u.is_delete=0
+            AND u.validate_state=40
+            AND u.state=1
+            AND u.yn=1
+          WHERE t.order_status=10
+        <![CDATA[ AND t.created > #{createdStart}]]>
+        <![CDATA[ AND t.created < #{createdEnd}]]>
+          GROUP BY DATE(t.created)
+        ) b ON a.reportDate = b.datetime
+        ORDER BY a.reportDate
+    </select>
+
+    <select id="getUserSellerTradeReport" resultType="com.dili.trace.api.input.TradeReportDto">
+        SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount
+        FROM (
+            SELECT CURDATE() AS reportDate
+            ${baseDay}
+        ) a LEFT JOIN (
+          SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount
+          FROM trade_order t
+          JOIN USER u ON t.seller_id = u.id
+            AND u.is_delete=0
+            AND u.validate_state=40
+            AND u.state=1
+            AND u.yn=1
+          WHERE t.order_status=10
+        <![CDATA[ AND t.created > #{createdStart}]]>
+        <![CDATA[ AND t.created < #{createdEnd}]]>
+          GROUP BY DATE(t.created)
+        ) b ON a.reportDate = b.datetime
+        ORDER BY a.reportDate
+    </select>
 </mapper>

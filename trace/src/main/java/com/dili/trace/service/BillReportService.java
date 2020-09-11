@@ -1,34 +1,43 @@
 package com.dili.trace.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.DateUtils;
+import com.dili.trace.api.input.TradeReportDto;
 import com.dili.trace.dao.CheckinOutRecordMapper;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.BillReportDto;
 import com.dili.trace.dto.BillReportQueryDto;
+import com.dili.trace.enums.ValidateStateEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-
+import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class BillReportService {
     @Autowired
     CheckinOutRecordMapper checkinOutRecordMapper;
-
+    @Autowired
+    UserService userService;
 
     public EasyuiPageOutput listEasyuiPage(BillReportQueryDto query) throws Exception {
-		BasePage<BillReportDto> listPageBillReport=this.listPageBillReport(query);
-		long total = listPageBillReport.getTotalItem();
+        BasePage<BillReportDto> listPageBillReport = this.listPageBillReport(query);
+        long total = listPageBillReport.getTotalItem();
         List results = ValueProviderUtils.buildDataByProvider(query, listPageBillReport.getDatas());
-		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
+        return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
 
 
     }
+
     public BasePage<BillReportDto> listPageBillReport(BillReportQueryDto query) {
         if (query.getPage() == null || query.getPage() <= 0) {
             query.setPage(1);
@@ -65,11 +74,11 @@ public class BillReportService {
         //         dynamicSql.insert(0, "(").append(")");
         //     }
         // }
-        
+
         // if(dynamicSql.length()>0){
         //     query.setDynamicSql(dynamicSql.toString());
         // }
-        
+
 
         List<BillReportDto> list = this.checkinOutRecordMapper.queryBillReport(query);
 
@@ -83,5 +92,80 @@ public class BillReportService {
         result.setStartIndex(page.getStartRow());
         return result;
 
+    }
+
+    public List<TradeReportDto> getUserBillReport(int limitDay) {
+        String baseDay = "";
+        Map<String, Object> map = new HashMap<>(16);
+        for (int i = 0; i < limitDay; i++) {
+            baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 1) + " DAY) AS reportDate ";
+        }
+        Date createEnd = new Date();
+        Date createStart = DateUtils.addDays(createEnd, 0 - limitDay);
+        createStart = DateUtils.formatDate2DateTimeStart(createStart);
+        createEnd = DateUtils.formatDate2DateTimeEnd(createEnd);
+        String createStartStr = DateUtils.format(createStart);
+        String createEndStr = DateUtils.format(createEnd);
+        map.put("baseDay", baseDay);
+        map.put("createdStart", createStartStr);
+        map.put("createdEnd", createEndStr);
+        List<TradeReportDto> list = checkinOutRecordMapper.getUserBillReport(map);
+
+        int userCount = getUserCount();
+        BigDecimal userDecimal = new BigDecimal(userCount);
+        StreamEx.of(list).nonNull().forEach(t -> {
+            BigDecimal b = new BigDecimal(t.getBillCount());
+            BigDecimal result = b.divide(userDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
+            t.setBillRatio(result);
+        });
+        return list;
+    }
+
+    public List<TradeReportDto> getUserTradeReport(int limitDay) {
+        String baseDay = "";
+        Map<String, Object> map = new HashMap<>(16);
+        for (int i = 0; i < limitDay; i++) {
+            baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 1) + " DAY) AS reportDate ";
+        }
+        Date createEnd = new Date();
+        Date createStart = DateUtils.addDays(createEnd, 0 - limitDay);
+        createStart = DateUtils.formatDate2DateTimeStart(createStart);
+        createEnd = DateUtils.formatDate2DateTimeEnd(createEnd);
+        String createStartStr = DateUtils.format(createStart);
+        String createEndStr = DateUtils.format(createEnd);
+        map.put("baseDay", baseDay);
+        map.put("createdStart", createStartStr);
+        map.put("createdEnd", createEndStr);
+        List<TradeReportDto> buyList = checkinOutRecordMapper.getUserBuyerTradeReport(map);
+        List<TradeReportDto> sellerList = checkinOutRecordMapper.getUserSellerTradeReport(map);
+
+        int userCount = getUserCount();
+        BigDecimal userDecimal = new BigDecimal(userCount);
+        if (CollectionUtils.isEmpty(buyList)) {
+            buyList = new ArrayList<>(16);
+        }
+        if (CollectionUtils.isNotEmpty(sellerList)) {
+            buyList.addAll(sellerList);
+        }
+        StreamEx.of(buyList).nonNull().forEach(t -> {
+            BigDecimal b = new BigDecimal(t.getTradeCount());
+            BigDecimal result = b.divide(userDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
+            t.setTradeRatio(result);
+        });
+        return buyList;
+    }
+
+    private int getUserCount() {
+        int resultCount = 0;
+        User user = DTOUtils.newDTO(User.class);
+        Integer normal = 1;
+        Long noDelte = new Long(0);
+        user.setValidateState(ValidateStateEnum.PASSED.getCode());
+        user.setIsDelete(noDelte);
+        user.setYn(YnEnum.YES.getCode());
+        user.setState(normal);
+        List<User> userList = userService.listByExample(user);
+        resultCount = userList.size();
+        return resultCount;
     }
 }
