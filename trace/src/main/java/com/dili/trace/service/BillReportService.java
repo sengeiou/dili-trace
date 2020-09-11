@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -18,11 +19,15 @@ import com.github.pagehelper.PageHelper;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class BillReportService {
@@ -33,6 +38,7 @@ public class BillReportService {
     @Autowired
     SysConfigService sysConfigService;
 
+    private static final Logger logger = LoggerFactory.getLogger(BillReportService.class);
 
     public EasyuiPageOutput listEasyuiPage(BillReportQueryDto query) throws Exception {
         BasePage<BillReportDto> listPageBillReport = this.listPageBillReport(query);
@@ -108,7 +114,7 @@ public class BillReportService {
         Date createEnd = new Date();
         Date createStart = DateUtils.addDays(createEnd, 0 - limitDay);
         createStart = DateUtils.formatDate2DateTimeStart(createStart);
-        createEnd = DateUtils.formatDate2DateTimeEnd(createEnd);
+        createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
         String createStartStr = DateUtils.format(createStart);
         String createEndStr = DateUtils.format(createEnd);
         map.put("baseDay", baseDay);
@@ -116,13 +122,14 @@ public class BillReportService {
         map.put("createdEnd", createEndStr);
         List<TradeReportDto> list = checkinOutRecordMapper.getUserBillReport(map);
 
-        String userType="bill";
+        String userType = "bill";
         int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
+        int mult =100;
         StreamEx.of(list).nonNull().forEach(t -> {
             BigDecimal b = new BigDecimal(t.getBillCount());
-            BigDecimal result = b.divide(userDecimal,2, BigDecimal.ROUND_HALF_UP);
-            t.setBillRatio(result);
+            BigDecimal result = b.divide(userDecimal, 4, BigDecimal.ROUND_HALF_UP);
+            t.setBillRatio(result.multiply(new BigDecimal(mult)));
         });
         return list;
     }
@@ -130,13 +137,14 @@ public class BillReportService {
     public List<TradeReportDto> getUserTradeReport(int limitDay) {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
+        //每一天都需要一条数据，查询一个当天的记录
         for (int i = 0; i < limitDay; i++) {
             baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 1) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
         Date createStart = DateUtils.addDays(createEnd, 0 - limitDay);
         createStart = DateUtils.formatDate2DateTimeStart(createStart);
-        createEnd = DateUtils.formatDate2DateTimeEnd(createEnd);
+        createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
         String createStartStr = DateUtils.format(createStart);
         String createEndStr = DateUtils.format(createEnd);
         map.put("baseDay", baseDay);
@@ -145,36 +153,47 @@ public class BillReportService {
         List<TradeReportDto> buyList = checkinOutRecordMapper.getUserBuyerTradeReport(map);
         List<TradeReportDto> sellerList = checkinOutRecordMapper.getUserSellerTradeReport(map);
 
-        String userType="trade";
+        String userType = "trade";
         int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
         if (CollectionUtils.isEmpty(buyList)) {
             buyList = new ArrayList<>(16);
         }
-        /*if (CollectionUtils.isNotEmpty(sellerList)) {
-            Map<Date,List<TradeReportDto>> buyMap=buyList.stream().collect(Collectors.groupingBy(TradeReportDto::getReportDate));
-            for(TradeReportDto sd:sellerList){
-                if(buyMap.containsKey(sd.getReportDate())){
-                    TradeReportDto buIt= buyMap.get(sd.getReportDate()).get(0);
-                    int resultCount=sd.getTradeCount()+buIt.getTradeCount();
-                    buIt.setTradeCount(resultCount);
-                    buyMap.put(sd.getReportDate(),Arrays.asList(buIt));
-                }
-            }
-            buyList.stream().forEach(b->{
-
+        List<TradeReportDto> resultList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(sellerList)) {
+            buyList.addAll(sellerList);
+            buyList.parallelStream().collect(Collectors.groupingBy(o -> o.getReportDate())).forEach((id, tr) -> {
+                tr.stream().reduce((a, b) -> {
+                    //同一天，非同一经营户相加
+                    int total = 0;
+                    if (StringUtils.isNotBlank(a.getUserIds()) && StringUtils.isNotBlank(b.getUserIds())) {
+                        List<String> userIdList = Arrays.asList(a.getUserIds().split(","));
+                        List<String> bList = Arrays.asList(b.getUserIds().split(","));
+                        List<String> collect = Stream.of(userIdList, bList)
+                                .flatMap(Collection::stream)
+                                .distinct()
+                                .collect(Collectors.toList());
+                        logger.info("userList1:"+ JSON.toJSONString(userIdList));
+                        logger.info("userList2:"+ JSON.toJSONString(bList));
+                        logger.info("userList result:"+ JSON.toJSONString(collect));
+                        total = collect.size();
+                    } else {
+                        total = a.getTradeCount() + b.getTradeCount();
+                    }
+                    TradeReportDto totalItem = new TradeReportDto();
+                    totalItem.setReportDate(a.getReportDate());
+                    totalItem.setTradeCount(total);
+                    return totalItem;
+                }).ifPresent(resultList::add);
             });
-            List<TradeReportDto> listAllDistinct = buyList.stream().distinct().collect(toList());
-            System.out.println("---得到去重并集 listAllDistinct---");
-            listAllDistinct.parallelStream().forEachOrdered(System.out :: println);
-
-        }*/
-        StreamEx.of(buyList).nonNull().forEach(t -> {
+        }
+        int mult =100;
+        StreamEx.of(resultList).nonNull().forEach(t -> {
             BigDecimal b = new BigDecimal(t.getTradeCount());
-            BigDecimal result = b.divide(userDecimal,2, BigDecimal.ROUND_HALF_UP);
-            t.setTradeRatio(result);
+            BigDecimal result = b.divide(userDecimal, 4, BigDecimal.ROUND_HALF_UP);
+            t.setTradeRatio(result.multiply(new BigDecimal(mult)));
         });
-        return buyList;
+        return resultList;
     }
 
     private int getUserCount(String userType) {

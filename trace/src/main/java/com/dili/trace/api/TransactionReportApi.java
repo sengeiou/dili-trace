@@ -38,6 +38,9 @@ public class TransactionReportApi {
                 return BaseOutput.failure("param is null");
             }
             int limitDay = Integer.valueOf(daySize);
+            if(limitDay>0){
+                limitDay=limitDay-1;
+            }
             List<TradeReportDto> resultList= billReportService.getUserBillReport(limitDay);
             return BaseOutput.success().setData(resultList);
         } catch (TraceBusinessException e) {
@@ -56,6 +59,9 @@ public class TransactionReportApi {
                 return BaseOutput.failure("param is null");
             }
             int limitDay = Integer.valueOf(daySize);
+            if(limitDay>0){
+                limitDay=limitDay-1;
+            }
             List<TradeReportDto> resultList= billReportService.getUserTradeReport(limitDay);
             return BaseOutput.success().setData(resultList);
         } catch (TraceBusinessException e) {

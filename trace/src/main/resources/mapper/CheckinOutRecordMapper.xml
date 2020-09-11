@@ -125,7 +125,9 @@
             SELECT CURDATE() AS reportDate
             ${baseDay}
         ) a LEFT JOIN (
-          SELECT DATE(r.created) AS DATETIME, COUNT(DISTINCT u.id) AS billCount
+          SELECT
+            DATE(r.created) AS DATETIME,
+            COUNT(DISTINCT u.id) AS billCount
           FROM register_bill r
           JOIN user u ON r.user_id = u.id
             AND u.is_delete=0
@@ -143,12 +145,13 @@
     </select>
 
     <select id="getUserBuyerTradeReport" resultType="com.dili.trace.api.input.TradeReportDto">
-        SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount
+        SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount,userIds
         FROM (
             SELECT CURDATE() AS reportDate
             ${baseDay}
         ) a LEFT JOIN (
-          SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount
+          SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount,
+            GROUP_CONCAT(DISTINCT u.id) userIds
           FROM trade_order t
           JOIN user u ON t.buyer_id = u.id
             AND u.is_delete=0
@@ -164,12 +167,13 @@
     </select>
 
     <select id="getUserSellerTradeReport" resultType="com.dili.trace.api.input.TradeReportDto">
-        SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount
+        SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount,userIds
         FROM (
             SELECT CURDATE() AS reportDate
             ${baseDay}
         ) a LEFT JOIN (
-          SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount
+          SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount,
+            GROUP_CONCAT(DISTINCT u.id) userIds
           FROM trade_order t
           JOIN user u ON t.seller_id = u.id
             AND u.is_delete=0

@@ -16,6 +16,15 @@ public class TradeReportDto {
     private Integer tradeCount;
     private String createdStart;
     private String createdEnd;
+    private String userIds;
+
+    public String getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(String userIds) {
+        this.userIds = userIds;
+    }
 
     public Integer getBillCount() {
         return billCount;
