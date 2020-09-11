@@ -162,7 +162,7 @@
     AND u.is_active=-1
     AND u.id=b.user_id
     AND b.is_deleted=0
-    AND ( b.created > #{limitTime} OR b.modified > #{limitTime})
+    <![CDATA[AND ( b.created > #{limitTime} OR b.modified > #{limitTime})]]>
   </update>
 
   <update id="updateUserActiveByBuyer">
@@ -174,7 +174,7 @@
     AND u.yn=1
     AND u.is_active=-1
     AND u.id=t.buyer_id
-    AND ( t.created > #{limitTime} OR t.modified > #{limitTime})
+    <![CDATA[AND ( t.created > #{limitTime} OR t.modified > #{limitTime})]]>
   </update>
 
   <update id="updateUserActiveBySeller">
@@ -186,7 +186,7 @@
     AND u.yn=1
     AND u.is_active=-1
     AND u.id=t.seller_id
-    AND ( t.created > #{limitTime} OR t.modified > #{limitTime})
+    <![CDATA[AND ( t.created > #{limitTime} OR t.modified > #{limitTime})]]>
   </update>
 
   <select id="getActiveUserListByBill" resultType="com.dili.trace.domain.User" >
@@ -195,10 +195,7 @@
     user u
     LEFT JOIN register_bill b ON u.id = b.user_id
     AND b.is_deleted = 0
-    AND  (
-    b.created > #{limitTime}
-    OR b.modified > #{limitTime}
-    )
+    <![CDATA[AND  (b.created > #{limitTime} OR b.modified > #{limitTime})]]>
     WHERE u.is_delete = 0
     AND u.yn = 1
     AND u.is_active = 1
@@ -210,10 +207,7 @@
     FROM
     user u
     LEFT JOIN trade_detail t ON u.id = t.buyer_id
-    AND  (
-    t.created > #{limitTime}
-    OR t.modified > #{limitTime}
-    )
+    <![CDATA[ AND  (t.created > #{limitTime} OR t.modified > #{limitTime} ) ]]>
     WHERE u.is_delete = 0
     AND u.yn = 1
     AND u.is_active = 1
@@ -225,10 +219,7 @@
     FROM
     user u
     LEFT JOIN trade_detail t ON u.id = t.seller_id
-    AND  (
-    t.created > #{limitTime}
-    OR t.modified > #{limitTime}
-    )
+    <![CDATA[ AND  ( t.created > #{limitTime} OR t.modified > #{limitTime} ) ]]>
     WHERE u.is_delete = 0
     AND u.yn = 1
     AND u.is_active = 1
