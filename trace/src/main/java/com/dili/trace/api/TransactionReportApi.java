@@ -32,12 +32,12 @@ public class TransactionReportApi {
 
     @ApiOperation(value = "报备单统计", notes = "报备单统计")
     @RequestMapping(value = "/userBillReport.api", method = RequestMethod.GET)
-    public BaseOutput userBillReport(@RequestParam String queryDay) {
+    public BaseOutput userBillReport(@RequestParam String daySize) {
         try {
-            if(StringUtils.isBlank(queryDay)){
+            if(StringUtils.isBlank(daySize)){
                 return BaseOutput.failure("param is null");
             }
-            int limitDay = Integer.valueOf(queryDay);
+            int limitDay = Integer.valueOf(daySize);
             List<TradeReportDto> resultList= billReportService.getUserBillReport(limitDay);
             return BaseOutput.success().setData(resultList);
         } catch (TraceBusinessException e) {
@@ -50,12 +50,12 @@ public class TransactionReportApi {
 
     @ApiOperation(value = "交易单统计", notes = "交易单统计")
     @RequestMapping(value = "/userTradeReport.api", method = RequestMethod.GET)
-    public BaseOutput userTradeReport(@RequestParam String queryDay) {
+    public BaseOutput userTradeReport(@RequestParam String daySize) {
         try {
-            if(StringUtils.isBlank(queryDay)){
+            if(StringUtils.isBlank(daySize)){
                 return BaseOutput.failure("param is null");
             }
-            int limitDay = Integer.valueOf(queryDay);
+            int limitDay = Integer.valueOf(daySize);
             List<TradeReportDto> resultList= billReportService.getUserTradeReport(limitDay);
             return BaseOutput.success().setData(resultList);
         } catch (TraceBusinessException e) {

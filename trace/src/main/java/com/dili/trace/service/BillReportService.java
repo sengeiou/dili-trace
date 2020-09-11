@@ -7,6 +7,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.TradeReportDto;
 import com.dili.trace.dao.CheckinOutRecordMapper;
+import com.dili.trace.domain.SysConfig;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.BillReportDto;
 import com.dili.trace.dto.BillReportQueryDto;
@@ -16,6 +17,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,9 @@ public class BillReportService {
     CheckinOutRecordMapper checkinOutRecordMapper;
     @Autowired
     UserService userService;
+    @Autowired
+    SysConfigService sysConfigService;
+
 
     public EasyuiPageOutput listEasyuiPage(BillReportQueryDto query) throws Exception {
         BasePage<BillReportDto> listPageBillReport = this.listPageBillReport(query);
@@ -111,11 +116,12 @@ public class BillReportService {
         map.put("createdEnd", createEndStr);
         List<TradeReportDto> list = checkinOutRecordMapper.getUserBillReport(map);
 
-        int userCount = getUserCount();
+        String userType="bill";
+        int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
         StreamEx.of(list).nonNull().forEach(t -> {
             BigDecimal b = new BigDecimal(t.getBillCount());
-            BigDecimal result = b.divide(userDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal result = b.divide(userDecimal,2, BigDecimal.ROUND_HALF_UP);
             t.setBillRatio(result);
         });
         return list;
@@ -139,33 +145,63 @@ public class BillReportService {
         List<TradeReportDto> buyList = checkinOutRecordMapper.getUserBuyerTradeReport(map);
         List<TradeReportDto> sellerList = checkinOutRecordMapper.getUserSellerTradeReport(map);
 
-        int userCount = getUserCount();
+        String userType="trade";
+        int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
         if (CollectionUtils.isEmpty(buyList)) {
             buyList = new ArrayList<>(16);
         }
-        if (CollectionUtils.isNotEmpty(sellerList)) {
-            buyList.addAll(sellerList);
-        }
+        /*if (CollectionUtils.isNotEmpty(sellerList)) {
+            Map<Date,List<TradeReportDto>> buyMap=buyList.stream().collect(Collectors.groupingBy(TradeReportDto::getReportDate));
+            for(TradeReportDto sd:sellerList){
+                if(buyMap.containsKey(sd.getReportDate())){
+                    TradeReportDto buIt= buyMap.get(sd.getReportDate()).get(0);
+                    int resultCount=sd.getTradeCount()+buIt.getTradeCount();
+                    buIt.setTradeCount(resultCount);
+                    buyMap.put(sd.getReportDate(),Arrays.asList(buIt));
+                }
+            }
+            buyList.stream().forEach(b->{
+
+            });
+            List<TradeReportDto> listAllDistinct = buyList.stream().distinct().collect(toList());
+            System.out.println("---得到去重并集 listAllDistinct---");
+            listAllDistinct.parallelStream().forEachOrdered(System.out :: println);
+
+        }*/
         StreamEx.of(buyList).nonNull().forEach(t -> {
             BigDecimal b = new BigDecimal(t.getTradeCount());
-            BigDecimal result = b.divide(userDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal result = b.divide(userDecimal,2, BigDecimal.ROUND_HALF_UP);
             t.setTradeRatio(result);
         });
         return buyList;
     }
 
-    private int getUserCount() {
+    private int getUserCount(String userType) {
         int resultCount = 0;
-        User user = DTOUtils.newDTO(User.class);
-        Integer normal = 1;
-        Long noDelte = new Long(0);
-        user.setValidateState(ValidateStateEnum.PASSED.getCode());
-        user.setIsDelete(noDelte);
-        user.setYn(YnEnum.YES.getCode());
-        user.setState(normal);
-        List<User> userList = userService.listByExample(user);
-        resultCount = userList.size();
+        String optType = "statisticBaseUser";
+        String optCategory = userType;
+        SysConfig config = new SysConfig();
+        config.setOpt_type(optType);
+        config.setOpt_category(optCategory);
+        List<SysConfig> sysConfigList = sysConfigService.listByExample(config);
+        if (CollectionUtils.isNotEmpty(sysConfigList)) {
+            String optValue = sysConfigList.get(0).getOpt_value();
+            if (StringUtils.isNotBlank(optValue)) {
+                resultCount = Integer.valueOf(optValue);
+            }
+        }
+        if (resultCount == 0) {
+            User user = DTOUtils.newDTO(User.class);
+            Integer normal = 1;
+            Long noDelte = new Long(0);
+            user.setValidateState(ValidateStateEnum.PASSED.getCode());
+            user.setIsDelete(noDelte);
+            user.setYn(YnEnum.YES.getCode());
+            user.setState(normal);
+            List<User> userList = userService.listByExample(user);
+            resultCount = userList.size();
+        }
         return resultCount;
     }
 }

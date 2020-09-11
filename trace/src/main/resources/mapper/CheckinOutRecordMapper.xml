@@ -150,7 +150,7 @@
         ) a LEFT JOIN (
           SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount
           FROM trade_order t
-          JOIN USER u ON t.buyer_id = u.id
+          JOIN user u ON t.buyer_id = u.id
             AND u.is_delete=0
             AND u.validate_state=40
             AND u.state=1
@@ -171,7 +171,7 @@
         ) a LEFT JOIN (
           SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount
           FROM trade_order t
-          JOIN USER u ON t.seller_id = u.id
+          JOIN user u ON t.seller_id = u.id
             AND u.is_delete=0
             AND u.validate_state=40
             AND u.state=1
