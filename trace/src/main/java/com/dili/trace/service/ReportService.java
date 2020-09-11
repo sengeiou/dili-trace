@@ -1,8 +1,6 @@
 package com.dili.trace.service;
 
-import com.dili.trace.dto.OrigionReportDto;
-import com.dili.trace.dto.OrigionReportQueryDto;
-import com.dili.trace.dto.ProductOrigionReportDto;
+import com.dili.trace.dto.*;
 
 import java.util.List;
 
@@ -21,4 +19,20 @@ public interface ReportService{
      * @return
      */
     List<ProductOrigionReportDto> productOrigionReportList(OrigionReportQueryDto queryDto);
+
+    /**
+     * 采购商品交易统计
+     * @param queryDto
+     * @return
+     */
+    List<PurchaseGoodsReportDto> purchaseGoodsReportList(PurchaseGoodsReportQueryDto queryDto);
+
+    /**
+     * 采购商户交易统计
+     * @param queryDto
+     * @return
+     */
+    List<PurchaseGoodsReportDto> purchaseGoodsReportList(UserPurchaseReportQueryDto queryDto);
+
+
 }

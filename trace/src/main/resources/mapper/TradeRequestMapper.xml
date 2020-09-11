@@ -92,4 +92,56 @@
     </if>
   </select>
 
+  <select id="queryPurchaseGoodsReportList" parameterType="com.dili.trace.dto.PurchaseGoodsReportQueryDto"
+          resultType="com.dili.trace.dto.PurchaseGoodsReportDto">
+    SELECT c.`full_name` as product_name,
+    round(SUM(IF(d.weight_unit=1,d.stock_weight*0.0005,d.stock_weight*0.001)),2) as weight
+    FROM `trade_request` t, trade_order o, `trade_detail` d, product_stock p, category c
+    WHERE o.`order_status`=10
+    <if test="startDate != null">
+      <![CDATA[AND t.`handle_time`>=#{startDate}]]>
+    </if>
+    <if test="endDate != null">
+      <![CDATA[AND t.`handle_time`<=#{endDate}]]>
+    </if>
+    <if test="productName != null and productName != ''">
+    and c.full_name like #{productName}
+    </if>
+    AND t.`return_status`!=20
+    AND t.trade_order_id = o.id AND t.id = d.`trade_request_id`
+    AND d.`product_stock_id`=p.`id` AND p.`product_id`=c.`id`
+    GROUP BY c.`full_name` order by weight desc
+
+  </select>
+
+  <select id="queryUserPurchaseReportList" parameterType="com.dili.trace.dto.UserPurchaseReportQueryDto"
+          resultType="com.dili.trace.dto.PurchaseGoodsReportDto">
+    SELECT user.name as user_name, c.`full_name` as product_name,
+    round(SUM(IF(d.weight_unit=1,d.stock_weight*0.0005,d.stock_weight*0.001)),2) as weight
+    FROM `trade_request` t, trade_order o, `trade_detail` d, product_stock p, category c, user user
+    WHERE o.`order_status`=10
+    <if test="startDate != null">
+      <![CDATA[AND t.`handle_time`>=#{startDate}]]>
+    </if>
+    <if test="endDate != null">
+      <![CDATA[AND t.`handle_time`<=#{endDate}]]>
+    </if>
+    <if test="userName != null and userName != ''">
+      and user.name like #{userName}
+    </if>
+    <if test="phone != null and phone != ''">
+      and user.phone like #{phone}
+    </if>
+    AND t.`return_status`!=20
+    AND t.trade_order_id = o.id AND t.id = d.`trade_request_id`
+    AND d.`product_stock_id`=p.`id` AND p.`product_id`=c.`id`
+    and user.id = t.buyer_id
+    GROUP BY user.name, c.`full_name` order by user.name, weight desc
+
+  </select>
+
+
+
+
+
 </mapper>
