@@ -122,7 +122,7 @@
     <select id="getUserBillReport" resultType="com.dili.trace.api.input.TradeReportDto">
         SELECT a.reportDate,IFNULL(b.billCount,0) billCount
         FROM (
-            SELECT CURDATE() AS reportDate
+            SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS reportDate
             ${baseDay}
         ) a LEFT JOIN (
           SELECT
@@ -147,7 +147,7 @@
     <select id="getUserBuyerTradeReport" resultType="com.dili.trace.api.input.TradeReportDto">
         SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount,userIds
         FROM (
-            SELECT CURDATE() AS reportDate
+            SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS reportDate
             ${baseDay}
         ) a LEFT JOIN (
           SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount,
@@ -169,7 +169,7 @@
     <select id="getUserSellerTradeReport" resultType="com.dili.trace.api.input.TradeReportDto">
         SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount,userIds
         FROM (
-            SELECT CURDATE() AS reportDate
+            SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS reportDate
             ${baseDay}
         ) a LEFT JOIN (
           SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount,

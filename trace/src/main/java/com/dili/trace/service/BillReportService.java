@@ -108,11 +108,13 @@ public class BillReportService {
     public List<TradeReportDto> getUserBillReport(int limitDay) {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
+        limitDay=limitDay-1;
         for (int i = 0; i < limitDay; i++) {
             baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 2) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
-        Date createStart = DateUtils.addDays(createEnd, 0 - limitDay);
+        int startDay = -1-limitDay;
+        Date createStart = DateUtils.addDays(createEnd, startDay);
         createStart = DateUtils.formatDate2DateTimeStart(createStart);
         createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
         String createStartStr = DateUtils.format(createStart);
@@ -138,11 +140,13 @@ public class BillReportService {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
         //每一天都需要一条数据，查询一个当天的记录
+        limitDay=limitDay-1;
         for (int i = 0; i < limitDay; i++) {
             baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 2) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
-        Date createStart = DateUtils.addDays(createEnd, 0 - limitDay);
+        int startDay = -1-limitDay;
+        Date createStart = DateUtils.addDays(createEnd, startDay);
         createStart = DateUtils.formatDate2DateTimeStart(createStart);
         createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
         String createStartStr = DateUtils.format(createStart);
