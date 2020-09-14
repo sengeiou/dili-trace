@@ -105,12 +105,12 @@ public class BillReportService {
     public List<TradeReportDto> getUserBillReport(int limitDay) {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
-        limitDay = limitDay - 1;
+        limitDay=limitDay-1;
         for (int i = 0; i < limitDay; i++) {
             baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 2) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
-        int startDay = -1 - limitDay;
+        int startDay = -1-limitDay;
         Date createStart = DateUtils.addDays(createEnd, startDay);
         createStart = DateUtils.formatDate2DateTimeStart(createStart);
         createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
@@ -124,10 +124,13 @@ public class BillReportService {
         String userType = "bill";
         int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
-        int mult = 100;
+        int mult =100;
         StreamEx.of(list).nonNull().forEach(t -> {
             BigDecimal b = new BigDecimal(t.getBillCount());
             BigDecimal result = b.divide(userDecimal, 4, BigDecimal.ROUND_HALF_UP);
+            if(BigDecimal.ONE.compareTo(result)<0){
+                result=BigDecimal.ONE;
+            }
             t.setBillRatio(result.multiply(new BigDecimal(mult)));
         });
         return list;
@@ -137,63 +140,31 @@ public class BillReportService {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
         //每一天都需要一条数据，查询一个当天的记录
-        limitDay = limitDay - 1;
+        limitDay=limitDay-1;
         for (int i = 0; i < limitDay; i++) {
             baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 2) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
-        int startDay = -1 - limitDay;
+        int startDay = -1-limitDay;
         Date createStart = DateUtils.addDays(createEnd, startDay);
         createStart = DateUtils.formatDate2DateTimeStart(createStart);
         createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
         String createStartStr = DateUtils.format(createStart);
         String createEndStr = DateUtils.format(createEnd);
-
         String userType = "trade";
         int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
-
         map.put("baseDay", baseDay);
         map.put("createdStart", createStartStr);
         map.put("createdEnd", createEndStr);
         List<TradeReportDto> resultList = checkinOutRecordMapper.getUserSellerTradeReport(map);
-        /*List<TradeReportDto> sellerList = checkinOutRecordMapper.getUserSellerTradeReport(map);
-        List<TradeReportDto> buyList = checkinOutRecordMapper.getUserBuyerTradeReport(map);
-        if (CollectionUtils.isEmpty(buyList)) {
-            buyList = new ArrayList<>(16);
-        }
-        List<TradeReportDto> resultList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(sellerList)) {
-            buyList.addAll(sellerList);
-            buyList.parallelStream().collect(Collectors.groupingBy(o -> o.getReportDate())).forEach((id, tr) -> {
-                tr.stream().reduce((a, b) -> {
-                    //同一天，非同一经营户相加
-                    int total = 0;
-                    if (StringUtils.isNotBlank(a.getUserIds()) && StringUtils.isNotBlank(b.getUserIds())) {
-                        List<String> userIdList = Arrays.asList(a.getUserIds().split(","));
-                        List<String> bList = Arrays.asList(b.getUserIds().split(","));
-                        List<String> collect = Stream.of(userIdList, bList)
-                                .flatMap(Collection::stream)
-                                .distinct()
-                                .collect(Collectors.toList());
-                        logger.info("userList1:"+ JSON.toJSONString(userIdList));
-                        logger.info("userList2:"+ JSON.toJSONString(bList));
-                        logger.info("userList result:"+ JSON.toJSONString(collect));
-                        total = collect.size();
-                    } else {
-                        total = a.getTradeCount() + b.getTradeCount();
-                    }
-                    TradeReportDto totalItem = new TradeReportDto();
-                    totalItem.setReportDate(a.getReportDate());
-                    totalItem.setTradeCount(total);
-                    return totalItem;
-                }).ifPresent(resultList::add);
-            });
-        }*/
-        int mult = 100;
+        int mult =100;
         StreamEx.of(resultList).nonNull().forEach(t -> {
             BigDecimal b = new BigDecimal(t.getTradeCount());
             BigDecimal result = b.divide(userDecimal, 4, BigDecimal.ROUND_HALF_UP);
+            if(BigDecimal.ONE.compareTo(result)<0){
+                result=BigDecimal.ONE;
+            }
             t.setTradeRatio(result.multiply(new BigDecimal(mult)));
         });
         resultList.sort(Comparator.comparing(TradeReportDto::getReportDate));
