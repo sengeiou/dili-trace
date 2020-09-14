@@ -1,6 +1,5 @@
 package com.dili.trace.service;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -26,8 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class BillReportService {
@@ -108,12 +105,12 @@ public class BillReportService {
     public List<TradeReportDto> getUserBillReport(int limitDay) {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
-        limitDay=limitDay-1;
+        limitDay = limitDay - 1;
         for (int i = 0; i < limitDay; i++) {
             baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 2) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
-        int startDay = -1-limitDay;
+        int startDay = -1 - limitDay;
         Date createStart = DateUtils.addDays(createEnd, startDay);
         createStart = DateUtils.formatDate2DateTimeStart(createStart);
         createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
@@ -127,7 +124,7 @@ public class BillReportService {
         String userType = "bill";
         int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
-        int mult =100;
+        int mult = 100;
         StreamEx.of(list).nonNull().forEach(t -> {
             BigDecimal b = new BigDecimal(t.getBillCount());
             BigDecimal result = b.divide(userDecimal, 4, BigDecimal.ROUND_HALF_UP);
@@ -140,26 +137,28 @@ public class BillReportService {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
         //每一天都需要一条数据，查询一个当天的记录
-        limitDay=limitDay-1;
+        limitDay = limitDay - 1;
         for (int i = 0; i < limitDay; i++) {
             baseDay += "  UNION ALL   SELECT DATE_SUB(CURDATE(), INTERVAL " + (i + 2) + " DAY) AS reportDate ";
         }
         Date createEnd = new Date();
-        int startDay = -1-limitDay;
+        int startDay = -1 - limitDay;
         Date createStart = DateUtils.addDays(createEnd, startDay);
         createStart = DateUtils.formatDate2DateTimeStart(createStart);
         createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
         String createStartStr = DateUtils.format(createStart);
         String createEndStr = DateUtils.format(createEnd);
-        map.put("baseDay", baseDay);
-        map.put("createdStart", createStartStr);
-        map.put("createdEnd", createEndStr);
-        List<TradeReportDto> buyList = checkinOutRecordMapper.getUserBuyerTradeReport(map);
-        List<TradeReportDto> sellerList = checkinOutRecordMapper.getUserSellerTradeReport(map);
 
         String userType = "trade";
         int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
+
+        map.put("baseDay", baseDay);
+        map.put("createdStart", createStartStr);
+        map.put("createdEnd", createEndStr);
+        List<TradeReportDto> resultList = checkinOutRecordMapper.getUserSellerTradeReport(map);
+        /*List<TradeReportDto> sellerList = checkinOutRecordMapper.getUserSellerTradeReport(map);
+        List<TradeReportDto> buyList = checkinOutRecordMapper.getUserBuyerTradeReport(map);
         if (CollectionUtils.isEmpty(buyList)) {
             buyList = new ArrayList<>(16);
         }
@@ -190,8 +189,8 @@ public class BillReportService {
                     return totalItem;
                 }).ifPresent(resultList::add);
             });
-        }
-        int mult =100;
+        }*/
+        int mult = 100;
         StreamEx.of(resultList).nonNull().forEach(t -> {
             BigDecimal b = new BigDecimal(t.getTradeCount());
             BigDecimal result = b.divide(userDecimal, 4, BigDecimal.ROUND_HALF_UP);
