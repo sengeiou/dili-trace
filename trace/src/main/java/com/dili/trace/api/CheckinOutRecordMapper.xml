@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.CheckinOutRecordMapper">
+  
+
+        
+    <select id="queryBillReport" parameterType="com.dili.trace.dto.BillReportQueryDto" resultType="com.dili.trace.dto.BillReportDto">
+
+        select 
+        register_bill.id as bill_id
+        ,register_bill.code as bill_code
+        ,register_bill.name as user_name
+        ,register_bill.plate 
+        ,register_bill.brand_name
+        ,register_bill.preserve_type 
+        ,register_bill.origin_name 
+        ,register_bill.verify_status  
+        ,register_bill.product_name
+        ,register_bill.weight
+        ,register_bill.weight_unit 
+        ,register_bill.created AS 'bill_created'
+        ,register_bill.is_deleted 
+        ,register_bill.bill_type 
+        ,u.phone
+        ,u.tally_area_nos
+        ,u.legal_person
+        ,checkinout_record.created AS 'checkin_created'
+        ,checkinout_record.status AS checkin_status
+        from register_bill left join trade_detail on register_bill.id=trade_detail.bill_id
+        left join checkinout_record on checkinout_record.id=trade_detail.checkin_record_id
+        left join `user` u on register_bill.user_id=u.id
+        where trade_detail.parent_id is null
+
+    <if test="billCreatedStart != null  and billCreatedStart != ''">
+        <![CDATA[ AND #{billCreatedStart}<=register_bill.created ]]>
+    </if>
+    <if test="billCreatedEnd != null  and billCreatedEnd != ''">
+        <![CDATA[AND register_bill.created <=#{billCreatedEnd}]]>
+    </if>
+    <if test="verifyStatus != null">
+        AND register_bill.verify_status =#{verifyStatus}
+    </if>
+    <if test="likeProductName != null  and likeProductName != ''">
+        AND register_bill.product_name like '%${likeProductName}%'
+    </if>
+    <if test="productId != null">
+        AND register_bill.product_id =#{productId}
+    </if>
+    <if test="originId != null">
+        AND register_bill.origin_id =#{originId}
+    </if>
+    <if test="likePlate != null and likePlate != ''">
+        AND register_bill.plate like '%${likePlate}%'
+    </if>
+    <if test="likeCode != null and likeCode != ''">
+        AND register_bill.code like '%${likeCode}%'
+    </if>
+    <if test="likeUserName != null and likeUserName != ''">
+        AND register_bill.name like '%${likeUserName}%'
+    </if>
+    
+    <if test="includeUnCheckin == true">
+        <![CDATA[AND (checkinout_record.`status` is null or checkinout_record.`status`<>10)]]>
+    </if>
+    <if test="includeUnCheckin == false">
+        AND checkinout_record.`status`=10
+    </if>
+
+    <if test="checkinCreatedStart != null  and checkinCreatedStart != ''">
+        AND <![CDATA[  #{checkinCreatedStart}<=checkinout_record.created ]]>
+    </if>
+    <if test="checkinCreatedEnd != null  and checkinCreatedEnd != ''">
+        AND   <![CDATA[ checkinout_record.created <=#{checkinCreatedEnd}]]>
+    </if>
+    <if test="isDeleted !=null">
+        AND register_bill.`is_deleted`=#{isDeleted}
+    </if>
+    order by  register_bill.created desc
+
+    </select>
+
+    <select id="groupCountCommonBillByColor"  parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+        select color as group_key,count(1) as billCount from (
+            select case when verify_status=30 then 'RED' when verify_status =20 then 'GREEN' else 'YELLOW' end  as color ,bill_id from checkinout_record
+            where bill_type=#{billType}
+        <if test="createdStart != null">
+            <![CDATA[ AND #{createdStart}<=checkinout_record.created ]]>
+          </if>
+          <if test="createdEnd != null">
+            <![CDATA[AND checkinout_record.created <=#{createdEnd}]]>
+          </if>
+
+        )t group by color
+    </select>
+    <select id="groupCountSupplementBillByColor"  parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
+        select count(1) as billCount from (
+            select distinct bill_id from checkinout_record
+            where bill_type=#{billType}
+        <if test="createdStart != null">
+            <![CDATA[ AND #{createdStart}<=checkinout_record.created ]]>
+          </if>
+          <if test="createdEnd != null">
+            <![CDATA[AND checkinout_record.created <=#{createdEnd}]]>
+          </if>
+
+        )t 
+    </select>
+
+    <select id="selectCheckInReport" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.ReportCheckInDto">
+        SELECT r.`created` inTime, r.`user_id` thirdAccId, GROUP_CONCAT(r.`bill_id`) thirdEnterIds
+        FROM `checkinout_record` r
+        WHERE r.inout=10
+        <if test="modifiedEnd != null">
+            <![CDATA[AND r.modified <=#{modifiedEnd}]]>
+        </if>
+        <if test="modifiedStart != null">
+            <![CDATA[AND r.modified >#{modifiedStart}]]>
+        </if>
+        GROUP BY r.`user_id`, r.`created`
+    </select>
+
+    <select id="getUserBillReport" resultType="com.dili.trace.api.input.TradeReportDto">
+        SELECT a.reportDate,IFNULL(b.billCount,0) billCount
+        FROM (
+            SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS reportDate
+            ${baseDay}
+        ) a LEFT JOIN (
+          SELECT
+            DATE(r.created) AS DATETIME,
+            COUNT(DISTINCT u.id) AS billCount
+          FROM register_bill r
+          JOIN user u ON r.user_id = u.id
+            AND u.is_delete=0
+            AND u.validate_state=40
+            AND u.state=1
+            AND u.yn=1
+          WHERE r.is_checkin=1
+          AND r.verify_status=20
+          AND r.is_deleted = 0
+        <![CDATA[ AND r.created > #{createdStart}]]>
+        <![CDATA[ AND r.created < #{createdEnd}]]>
+          GROUP BY DATE(r.created)
+        ) b ON a.reportDate = b.datetime
+        ORDER BY a.reportDate
+    </select>
+
+    <select id="getUserBuyerTradeReport" resultType="com.dili.trace.api.input.TradeReportDto">
+        SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount,userIds
+        FROM (
+            SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS reportDate
+            ${baseDay}
+        ) a LEFT JOIN (
+          SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount,
+            GROUP_CONCAT(DISTINCT u.id) userIds
+          FROM trade_order t
+          JOIN user u ON t.buyer_id = u.id
+            AND u.is_delete=0
+            AND u.validate_state=40
+            AND u.state=1
+            AND u.yn=1
+          WHERE t.order_status=10
+        <![CDATA[ AND t.created > #{createdStart}]]>
+        <![CDATA[ AND t.created < #{createdEnd}]]>
+          GROUP BY DATE(t.created)
+        ) b ON a.reportDate = b.datetime
+        ORDER BY a.reportDate
+    </select>
+
+    <select id="getUserSellerTradeReport" resultType="com.dili.trace.api.input.TradeReportDto">
+        SELECT a.reportDate,IFNULL(b.tradeCount,0) tradeCount,userIds
+        FROM (
+            SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS reportDate
+            ${baseDay}
+        ) a LEFT JOIN (
+          SELECT DATE(t.created) AS DATETIME, COUNT(DISTINCT u.id) AS tradeCount,
+            GROUP_CONCAT(DISTINCT u.id) userIds
+          FROM trade_order t
+          JOIN user u ON t.seller_id = u.id
+            AND u.is_delete=0
+            AND u.validate_state=40
+            AND u.state=1
+            AND u.yn=1
+          WHERE t.order_status=10
+        <![CDATA[ AND t.created > #{createdStart}]]>
+        <![CDATA[ AND t.created < #{createdEnd}]]>
+          GROUP BY DATE(t.created)
+        ) b ON a.reportDate = b.datetime
+        ORDER BY a.reportDate
+    </select>
+</mapper>
