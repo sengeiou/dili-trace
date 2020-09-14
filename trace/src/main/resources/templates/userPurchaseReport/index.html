@@ -28,7 +28,7 @@
                     </div>
 
                     <div class="search-item">
-                        <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right"
+                        <input class="easyui-textbox" name="userName" id="userName" style="width:100%" labelAlign="right"
                                data-options="label:'经营户名称:'" />
                     </div>
                     <div class="search-item">
@@ -95,42 +95,69 @@
 <script src="${contextPath!}/resources/js/xlsx-style/xlsx.full.min.js"></script>
 <script src="${contextPath!}/resources/js/xlsx-style/export.js"></script>
 <script>
-
+    var totalColumns = [];
     function exportReport()
     {
+        $(".datagrid-f :hidden").remove();
         var startDate = $("#startDate").val().substring(0,10);
         var endDate = $("#endDate").val().substring(0,10);
         var fileName="采购商户交易统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
         var sheet = XLSX2.utils.table_to_sheet(document.getElementById('userPurchaseGridDiv'));
         sheet["!cols"] = [{
-            wpx: 150
-        }, {
             wpx: 350
+        }, {
+            wpx: 250
         }, {
             wpx: 70
         }]; //单元格列宽
-        var titleFont =
-        {
-            name: 'Calibri',
-            sz: 12,
-            color: "blue",
-            bold: true,
-            italic: false,
-            underline: false,
-            height: 20
-        }
+        var borderAll = {  //单元格外侧框线
+            top: {
+                style: 'thin'
+            },
+            bottom: {
+                style: 'thin'
+            },
+            left: {
+                style: 'thin'
+            },
+            right: {
+                style: 'thin'
+            }
+        };
+
+        var  alignment = {
+            vertical: 'center',
+            horizontal: 'center'
+        };
+        var titleColumnArray = ["A1","B1","C1"];
+        setSheetStyle(sheet, titleColumnArray);
+
+        var totoalFont =
+            {
+                name: 'Courier New',
+                sz: 10,
+                color: {rgb:"ff0000"},
+                bold: true
+            }
         ;
-        sheet.A1.s = {
-            font:titleFont
-        };
-        sheet.B1.s = {
-            font:titleFont
-        };
-        sheet.C1.s = {
-            font:titleFont
+
+        for(var i=0;i<totalColumns.length;i++)
+        {
+            var columnNameA = "A"+totalColumns[i];
+            var columnNameC = "C"+totalColumns[i];
+            sheet[columnNameA].s = {
+                font:totoalFont,
+                alignment:alignment,
+                border: borderAll
+            }
+            sheet[columnNameC].s = {
+                font:totoalFont,
+                alignment:alignment,
+                border: borderAll
+            }
         }
 
-        openDownloadDialog(sheet2blob(sheet), fileName+".xlsx");
+        openDownloadDialog(sheet2blob(sheet,fileName+".xlsx"), fileName+".xlsx");
     }
 
     function mergeCell(data)
@@ -154,12 +181,11 @@
         var rowsLength = data.rows.length;
         var initData = {};
         initData = JSON.parse(JSON.stringify(data));
-        console.log(initData);
         var insertRow = 0;
-        for (var i=1; i <rowsLength; i++) {
-            debugger;
 
-            if (initData.rows[i]['userName'] != initData.rows[i-1]['userName'] && initData.rows[i-1]['userName'] != "<span class=\"subtotal\">合计</span>") {
+        for (var i=1; i <rowsLength+1; i++) {
+
+            if ((i != rowsLength && initData.rows[i]['userName'] != initData.rows[i-1]['userName']) || i == rowsLength) {
                 //添加“合计”列
                 $('#userPurchaseGrid').datagrid('insertRow', {
                     index: i + insertRow, row: {
@@ -167,6 +193,7 @@
                         weight: '<span class="subtotal">' + compute("weight", i-mark, mark, initData) + '</span>'
                     }
                 });
+                totalColumns[insertRow] = i+ insertRow+2;
                 insertRow +=1;
                 mark = 1;
             }

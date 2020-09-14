@@ -6,6 +6,7 @@ public class PurchaseGoodsReportDto {
     private String productName;
     private BigDecimal weight;
     private String userName;
+    private BigDecimal totalWeight;
 
     public String getProductName() {
         return productName;
@@ -29,5 +30,13 @@ public class PurchaseGoodsReportDto {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public BigDecimal getTotalWeight() {
+        return totalWeight;
+    }
+
+    public void setTotalWeight(BigDecimal totalWeight) {
+        this.totalWeight = totalWeight;
     }
 }

@@ -14,6 +14,7 @@ function sheet2blob(sheet, sheetName) {
     };
     var wbout = XLSX.write(workbook, wopts);
     var blob = new Blob([s2ab(wbout)], {type:"application/octet-stream"});
+
     // 字符串转ArrayBuffer
     function s2ab(s) {
         var buf = new ArrayBuffer(s.length);
@@ -46,4 +47,62 @@ function openDownloadDialog(url, saveName)
         event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     }
     aLink.dispatchEvent(event);
+}
+
+function setSheetStyle(sheet,titleColumnArray)
+{
+    var borderAll = {  //单元格外侧框线
+        top: {
+            style: 'thin'
+        },
+        bottom: {
+            style: 'thin'
+        },
+        left: {
+            style: 'thin'
+        },
+        right: {
+            style: 'thin'
+        }
+    };
+
+    var  alignment = {
+        vertical: 'center',
+        horizontal: 'center'
+    };
+
+    var titleFont = {
+        name: 'Courier New',
+        sz: 11,
+        color: {rgb:"0066CC"},
+        bold: true,
+        italic: false,
+        underline: false,
+        height: 20
+    };
+
+    var titleS = {
+        font:titleFont,
+        alignment:alignment,
+        fill:{fgColor:{rgb:"C0C0C0"}},
+        border: borderAll
+    };
+
+    for (var b in sheet) {
+        sheet[b].s = {
+            alignment: {
+                vertical: 'center',
+                horizontal: 'center'
+            },
+            border: borderAll,
+            font:{
+                name: 'Courier New',
+                sz: 10
+            }
+        }
+    };
+    for(var i=0;i<titleColumnArray.length;i++)
+    {
+        sheet[titleColumnArray[i]].s = titleS;
+    }
 }

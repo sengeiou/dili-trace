@@ -116,6 +116,7 @@
 
     function exportReport()
     {
+        $(".datagrid-f :hidden").remove();
         var startDate = $("#startDate").val().substring(0,10);
         var endDate = $("#endDate").val().substring(0,10);
         var fileName="进场商品产地分布统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
@@ -127,28 +128,9 @@
         }, {
             wpx: 70
         }]; //单元格列宽
-        var titleFont =
-        {
-            name: 'Calibri',
-            sz: 12,
-            color: "blue",
-            bold: true,
-            italic: false,
-            underline: false,
-            height: 20
-        }
-        ;
-        sheet.A1.s = {
-            font:titleFont
-        };
-        sheet.B1.s = {
-            font:titleFont
-        };
-        sheet.C1.s = {
-            font:titleFont
-        }
-
-        openDownloadDialog(sheet2blob(sheet), fileName+".xlsx");
+        var titleColumnArray = ["A1","B1","C1"];
+        setSheetStyle(sheet, titleColumnArray);
+        openDownloadDialog(sheet2blob(sheet,fileName+".xlsx"), fileName+".xlsx");
     }
 
     function mergeCell(data)
