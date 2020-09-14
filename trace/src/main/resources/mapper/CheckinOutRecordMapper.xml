@@ -134,8 +134,8 @@
             AND u.validate_state=40
             AND u.state=1
             AND u.yn=1
-          WHERE r.is_checkin=1
-          AND r.verify_status=20
+          WHERE 
+           r.verify_status=20
           AND r.is_deleted = 0
         <![CDATA[ AND r.created > #{createdStart}]]>
         <![CDATA[ AND r.created < #{createdEnd}]]>
