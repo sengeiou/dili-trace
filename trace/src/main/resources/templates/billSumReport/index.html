@@ -57,11 +57,11 @@
             <tr>
                 <th width="25%"
                     data-options="field:'userName', align:'center', resizable:'true', fixed:'false'">
-                    经营户
+                    经营户（报备进场）
                 </th>
                 <th width="10%"
                     data-options="field:'billCount',  align:'center', resizable:'true', fixed:'false'">
-                    报备单总数
+                    报备单总数（已进门）
                 </th>
                 <th width="10%"
                     data-options="field:'varietyCount',  align:'center', resizable:'true', fixed:'false'">
@@ -69,7 +69,7 @@
                 </th>
                 <th width="7%"
                     data-options="field:'weight',  align:'center', resizable:'true', fixed:'false'">
-                    重量(吨)
+                    进场重量(吨)
                 </th>
             </tr>
             </thead>
@@ -124,7 +124,7 @@
         var data=[];
         $.ajax({
             type: "POST",
-            url: "${contextPath}/billSumReportController/listPage.action",
+            url: "${contextPath}/billSumReport/listPage.action",
             processData:true,
             dataType: "json",
             data:bindGridMeta2Form("billSumGrid", "queryForm"),
@@ -145,7 +145,7 @@
     {
         var opts = $('#billSumGrid').datagrid("options");
         if (null == opts.url || "" == opts.url) {
-            opts.url = "${contextPath}/billSumReportController/listPage.action";
+            opts.url = "${contextPath}/billSumReport/listPage.action";
         }
 
         if(!$('#queryForm').form("validate")){

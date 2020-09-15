@@ -29,7 +29,7 @@
     <select id="getBillSumReportList" parameterType="com.dili.trace.dto.BillSumReportDto"
             resultType="com.dili.trace.dto.BillSumReportDto">
         SELECT
-        b.name userName,
+        COUNT(DISTINCT b.name) userName,
         ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 2 ) weight,
         COUNT(1) billCount,
         COUNT(DISTINCT b.product_id) varietyCount
@@ -51,7 +51,6 @@
         <if test="endDate != null ">
             <![CDATA[AND b.modified <= #{endDate} ]]>
         </if>
-        GROUP BY b.name
         ORDER BY weight DESC
     </select>
 
