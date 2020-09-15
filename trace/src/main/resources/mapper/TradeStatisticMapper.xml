@@ -80,6 +80,6 @@
             <if test="endDate != null ">
                 <![CDATA[AND b.modified <= #{endDate} ]]>
             </if>
-            GROUP BY b.name,b.product_name WITH ROLLUP
+            GROUP BY b.name,b.product_name
     </select>
 </mapper>
