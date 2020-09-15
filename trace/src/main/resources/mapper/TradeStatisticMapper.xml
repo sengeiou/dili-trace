@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.TradeStatisticMapper">
+
+    <select id="getCommodityWeightReportList" parameterType="com.dili.trace.dto.CommodityWeightReportDto"
+            resultType="com.dili.trace.dto.CommodityWeightReportDto">
+        SELECT
+        b.product_name varietyName,
+        ROUND(0.0005*IFNULL(SUM(CASE WHEN b.weight_unit=1 THEN IFNULL(b.weight,0) ELSE 2*IFNULL(b.weight,0) END),0),2) weight,
+        COUNT(1) approachBillCount
+        FROM
+        register_bill b
+        WHERE b.is_checkin=1
+        AND b.is_deleted=0
+        AND b.verify_status=20
+        <if test="likeVarietyName!=null and likeVarietyName!='' ">
+            AND b.product_name like concat('%',#{likeVarietyName},'%')
+        </if>
+        <if test="createdStart != null ">
+            <![CDATA[AND b.modified >= #{createdStart} ]]>
+        </if>
+        <if test="createdEnd != null ">
+            <![CDATA[AND b.modified <= #{createdEnd} ]]>
+        </if>
+        GROUP BY b.product_name
+        ORDER BY weight DESC
+    </select>
+
+    <select id="getBillSumReportList" parameterType="com.dili.trace.dto.BillSumReportDto"
+            resultType="com.dili.trace.dto.BillSumReportDto">
+        SELECT
+        b.name userName,
+        ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 2 ) weight,
+        COUNT(1) billCount,
+        COUNT(DISTINCT b.product_id) varietyCount
+        FROM
+        register_bill b
+        JOIN user u ON b.user_id=u.id
+        WHERE b.is_checkin = 1
+        AND b.is_deleted = 0
+        AND b.verify_status = 20
+        <if test="userName!=null and userName!='' ">
+            AND b.name like concat('%',#{userName},'%')
+        </if>
+        <if test="phone!=null and phone!='' ">
+            AND u.phone like concat('%',#{phone},'%')
+        </if>
+        <if test="startDate != null ">
+            <![CDATA[AND b.modified >= #{startDate} ]]>
+        </if>
+        <if test="endDate != null ">
+            <![CDATA[AND b.modified <= #{endDate} ]]>
+        </if>
+        GROUP BY b.name
+        ORDER BY weight DESC
+    </select>
+
+    <select id="getMerchantReportList" parameterType="com.dili.trace.dto.BillSumReportDto"
+            resultType="com.dili.trace.dto.BillSumReportDto">
+            SELECT
+            IFNULL(b.name, '合计') userName,
+            COUNT(1) billCount,
+            IFNULL(b.product_name, '合计') varietyName,
+            ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 2 ) weight
+            FROM
+            register_bill b
+            JOIN user u
+            ON b.user_id = u.id
+            WHERE b.is_checkin = 1
+            AND b.is_deleted = 0
+            AND b.verify_status = 20
+            <if test="userName!=null and userName!='' ">
+                AND b.name like concat('%',#{userName},'%')
+            </if>
+            <if test="phone!=null and phone!='' ">
+                AND u.phone like concat('%',#{phone},'%')
+            </if>
+            <if test="startDate != null ">
+                <![CDATA[AND b.modified >= #{startDate} ]]>
+            </if>
+            <if test="endDate != null ">
+                <![CDATA[AND b.modified <= #{endDate} ]]>
+            </if>
+            GROUP BY b.name,b.product_name WITH ROLLUP
+    </select>
+</mapper>
