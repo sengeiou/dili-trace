@@ -11,13 +11,15 @@
     <div region="north" height="auto" align="center">
         <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
         </div>
+        <input type="hidden" name="startDateOriginal" id="startDateOriginal" value="${query.startDate!}"/>
+        <input type="hidden" name="endDateOriginal" id="endDateOriginal" value="${query.endDate!}"/>
         <!-- =========================================================表单========================================================= -->
         <div class="easyui-panel" style="width:100%;" align="left">
             <form id="queryForm" class="easyui-form" method="post" fit="true">
                 <div class="search-wrap">
                     <div class="search-item long-item">
                         <input class="easyui-datetimebox" name="startDate" id="startDate" style="width:58%"
-                               labelAlign="right" data-options="label:'进门时间:'" value="${query.startDate}!" required="true"/>
+                               labelAlign="right" data-options="label:'<span class=\'red\'>*</span>进门时间:'" value="${query.startDate}!" required="true"/>
                         <span style="width: 2%;">-</span>
                         <input class="easyui-datetimebox" name="endDate" id="endDate" style="width:39%;"
                                value="${query.endDate}!"required="true" />
@@ -200,6 +202,8 @@
     //清空表单
     function clearQueryForm() {
         $('#queryForm').form('clear');
+        $("#startDate").datetimebox("setValue",$("#startDateOriginal").val());
+        $("#endDate").datetimebox("setValue",$("#endDateOriginal").val());
     }
 
 

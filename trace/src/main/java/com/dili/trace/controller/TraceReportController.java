@@ -27,6 +27,7 @@ public class TraceReportController {
 
         // TraceReportQueryDto query=new TraceReportQueryDto();
         // query.setReadonly(readonly);
+        System.out.println("xxxxxxxxxxtest");
         if(query.getReadonly()==null){
             query.setReadonly(false);
         }
