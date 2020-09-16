@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -808,21 +809,24 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
      */
     private void updateUserUnActive(Map<String, Object> map) {
         List<User> unActiveListBill = getActualDao().getActiveUserListByBill(map);
-        List<User> unActiveListBuyer = getActualDao().getActiveUserListByBuyer(map);
         List<User> unActiveListSeller = getActualDao().getActiveUserListBySeller(map);
-        List<Long> billList = new ArrayList<>();
-        List<Long> buyList = new ArrayList<>();
-        List<Long> sellList = new ArrayList<>();
+        CopyOnWriteArrayList<Long> billList = new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<Long> sellList = new CopyOnWriteArrayList<>();
+        //去活跃 未激活、禁用用户
+        Integer activeFlag = 1;
+        User user = DTOUtils.newDTO(User.class);
+        user.setIsActive(activeFlag);
+        user.mset(IDTO.AND_CONDITION_EXPR, " ( state=0 or yn=-1 )");
+        List<User> userList = listByExample(user);
+        List<Long> sUserList = StreamEx.of(userList).nonNull().map(User::getId).collect(toList());
+        if (CollectionUtils.isNotEmpty(sUserList)) {
+            LOGGER.info("---用户状态去活跃集合 relustList---" + JSON.toJSONString(sUserList));
+            getActualDao().updateUserUnActiveFlag(sUserList);
+        }
         //无报备单用户
         if (CollectionUtils.isNotEmpty(unActiveListBill)) {
             StreamEx.of(unActiveListBill).nonNull().forEach(b -> {
                 billList.add(b.getId());
-            });
-        }
-        //无购买交易用户
-        if (CollectionUtils.isNotEmpty(unActiveListBuyer)) {
-            StreamEx.of(unActiveListBuyer).nonNull().forEach(b -> {
-                buyList.add(b.getId());
             });
         }
         //无销售交易用户
@@ -835,19 +839,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (CollectionUtils.isEmpty(billList)) {
             return;
         }
-        //用户已购买交易
-        if (CollectionUtils.isEmpty(unActiveListBuyer)) {
-            return;
-        }
         //用户已销售交易
         if (CollectionUtils.isEmpty(unActiveListSeller)) {
             return;
         }
 
-        List<Long> resultFow = billList.stream().filter(item -> buyList.contains(item)).collect(toList());
-        List<Long> resultList = resultFow.stream().filter(r -> sellList.contains(r)).collect(toList());
-        System.out.println("---去活跃集合 relustList---" + JSON.toJSONString(resultList));
-
+        List<Long> resultList = billList.stream().filter(r -> sellList.contains(r)).collect(toList());
+        LOGGER.info("---去活跃集合 relustList---" + JSON.toJSONString(resultList));
         if (CollectionUtils.isNotEmpty(resultList)) {
             getActualDao().updateUserUnActiveFlag(resultList);
         }
