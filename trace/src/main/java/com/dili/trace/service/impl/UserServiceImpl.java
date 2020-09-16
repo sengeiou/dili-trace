@@ -813,12 +813,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         CopyOnWriteArrayList<Long> billList = new CopyOnWriteArrayList<>();
         CopyOnWriteArrayList<Long> sellList = new CopyOnWriteArrayList<>();
         //去活跃 未激活、禁用用户
-        Integer activeFlag=1;
+        Integer activeFlag = 1;
         User user = DTOUtils.newDTO(User.class);
         user.setIsActive(activeFlag);
-        user.mset(IDTO.AND_CONDITION_EXPR," ( state=0 or yn=-1 )");
-        List<User> userList=listByExample(user);
-        List<Long> sUserList= StreamEx.of(userList).nonNull().map(User::getId).collect(toList());
+        user.mset(IDTO.AND_CONDITION_EXPR, " ( state=0 or yn=-1 )");
+        List<User> userList = listByExample(user);
+        List<Long> sUserList = StreamEx.of(userList).nonNull().map(User::getId).collect(toList());
         if (CollectionUtils.isNotEmpty(sUserList)) {
             LOGGER.info("---用户状态去活跃集合 relustList---" + JSON.toJSONString(sUserList));
             getActualDao().updateUserUnActiveFlag(sUserList);
