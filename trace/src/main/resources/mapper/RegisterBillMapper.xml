@@ -211,6 +211,7 @@
       ) t_area on t_area.user_id=u.id
      where u.yn=1
      and u.state = 1
+     and u.validate_state=40
     )t GROUP  by area
 </sql>
 
