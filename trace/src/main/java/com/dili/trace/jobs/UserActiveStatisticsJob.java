@@ -27,7 +27,7 @@ public class UserActiveStatisticsJob implements CommandLineRunner {
     /**
      * 每天中午12点更新一次数据
      */
-    @Scheduled(cron = "0 50 11 * * ?")
+    @Scheduled(cron = "0 0/10 9-22 * * ?")
     public void pushData() {
         try {
             updateUserActive();
