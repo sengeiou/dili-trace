@@ -160,6 +160,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		});
 	}
 
+
 	public void rollbackUserQrStatusForOrderReturn(Long tradeRequestId, Long userId) throws ParseException {
 		if (tradeRequestId != null) {
 			UserQrHistory domain = new UserQrHistory();

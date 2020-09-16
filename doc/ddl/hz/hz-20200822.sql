@@ -133,4 +133,5 @@ LEFT JOIN (SELECT u.id FROM user_store u
 GROUP BY u.store_name) n ON n.id=s.id
 WHERE n.id IS NULL) tmp
 SET u.store_name=tmp.new_store_name
-WHERE u.id=tmp.id;
+WHERE u.id=tmp.id
+;
