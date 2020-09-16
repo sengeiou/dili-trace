@@ -1,0 +1,136 @@
+<#body head_title="产地进场重量分布统计">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <input type="hidden" name="startDateOriginal" id="startDateOriginal" value="${query.startDate!}"/>
+        <input type="hidden" name="endDateOriginal" id="endDateOriginal" value="${query.endDate!}"/>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item long-item">
+                        <input class="form-control input-sm easyui-datetimebox" name="startDate" id="startDate" style="width:58%"
+                               labelAlign="right" data-options="label:'<span class=\'red\'>*</span>交易确认时间:'" value="${query.startDate}!" required="true" />
+                        <span style="width: 2%;">-</span>
+                        <input class="form-control input-sm easyui-datetimebox" name="endDate" id="endDate" style="width:39%;"
+                               value="${query.endDate}!" required="true"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="productName" id="productName" style="width:100%" labelAlign="right"
+                               data-options="label:'品种:'" />
+                    </div>
+
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryOrigionReport()">查询</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-export"
+                           onclick="exportReport()">导出</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="采购商品交易统计" id="purchaseGoodsGrid" fitColumns="true" noheader="true"
+               pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+               singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
+               fit="true" idField="id"
+               data-options="loader:loadPurchaseGoodsGridData">
+            <thead>
+                <th width="50%"
+                    data-options="field:'productName', align:'center', resizable:'true', fixed:'false'">
+                    品种
+                </th>
+                <th width="50%"
+                    data-options="field:'weight',  align:'center', resizable:'true', fixed:'false'">
+                    采购重量(吨)
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
+
+    function exportReport()
+    {
+        var startDate = $("#startDate").val().substring(0,10);
+        var endDate = $("#endDate").val().substring(0,10);
+        var opts = $('#purchaseGoodsGrid').datagrid("options");
+        opts.title="采购商品交易统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        debugger;
+        doExport('purchaseGoodsGrid');
+    }
+
+    //表格查询
+    function loadPurchaseGoodsGridData(param,success,error){
+        var data=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/purchaseGoodsReport/list.action",
+            processData:true,
+            dataType: "json",
+            data:bindGridMeta2Form("purchaseGoodsGrid", "queryForm"),
+            async : false,
+            success: function (ret) {
+                if(ret){
+                    data=ret;
+                }
+            },
+            error: function(){
+                data=[]
+            }
+        });
+        success(data);
+    }
+
+    function queryOrigionReport()
+    {
+        var opts = $('#purchaseGoodsGrid').datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/purchaseGoodsReport/list.action";
+        }
+
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        $('#purchaseGoodsGrid').datagrid("reload", bindGridMeta2Form("purchaseGoodsGrid", "queryForm"));
+    }
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+        $("#startDate").datetimebox("setValue",$("#startDateOriginal").val());
+        $("#endDate").datetimebox("setValue",$("#endDateOriginal").val());
+    }
+
+
+</script>
+</#body>

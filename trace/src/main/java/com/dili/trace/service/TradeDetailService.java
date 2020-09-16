@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
@@ -230,12 +231,14 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			buyerBatchStock.setTradeDetailNum(buyerBatchStockItem.getTradeDetailNum() + 1);
 			buyerBatchStock.setStockWeight(buyerBatchStockItem.getStockWeight().add(tradeWeight));
 			buyerTradeDetail.setStockWeight(tradeWeight);
+			buyerTradeDetail.setIsBatched(TFEnum.TRUE.getCode());
 		}
 		else
 		{
 			buyerTradeDetail.setSoftWeight(tradeWeight);
 			buyerTradeDetail.setStockWeight(BigDecimal.ZERO);
 			buyerTradeDetail.setSaleStatus(SaleStatusEnum.NOT_FOR_SALE.getCode());
+			buyerTradeDetail.setIsBatched(TFEnum.FALSE.getCode());
 		}
 
 		buyerTradeDetail.setTotalWeight(tradeWeight);
@@ -345,11 +348,6 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		e.and().andIn("parentId", parentIdList);
 		return this.getDao().selectByExample(e);
 
-	}
-
-	public void udpateTradePushAway(Long tradeDetailId, BigDecimal pushAwayWeight)
-	{
-		tradeDetailMapper.updatePushAway(tradeDetailId, pushAwayWeight);
 	}
 
 }

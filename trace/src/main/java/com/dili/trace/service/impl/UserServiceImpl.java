@@ -15,19 +15,18 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.components.ManageSystemComponent;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserStore;
-import com.dili.trace.domain.WxApp;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.ManagerInfoDto;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.enums.MessageReceiverEnum;
 import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.enums.MessageTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
@@ -48,6 +47,8 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -95,6 +96,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Autowired
     ManageSystemComponent manageSystemComponent;
 
+    @Autowired
+    SysConfigService sysConfigService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -233,9 +236,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (StringUtils.isBlank(user.getMarketName())) {
             user.setMarketName(userPO.getMarketName());
         }
+        Integer validateAllow = 40;
+        Integer needPush = 1;
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
         this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
+        user.setModified(new Date());
+        if (validateAllow.equals(userPO.getValidateState())) {
+            user.setIsPush(needPush);
+        }
         updateSelective(user);
         this.tallyAreaNoService.saveOrUpdateTallyAreaNo(userPO.getId(), tallyAreaNos);
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
@@ -243,9 +252,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         this.sessionRedisService.updateUser(this.get(user.getId()));
 
-        Integer valialow = 40;
         //发送消息
-        if (!valialow.equals(user.getValidateState())) {
+        if (!validateAllow.equals(user.getValidateState())) {
             sendMessageByManage(user.getName(), user.getId());
         }
         // this.updateUserQrItem(user.getId());
@@ -266,7 +274,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         messageInputDto.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
         messageInputDto.setSourceBusinessId(userId);
         messageInputDto.setEventMessageContentParam(new String[]{userName});
-        messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        messageInputDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
 
         List<ManagerInfoDto> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
         Set<Long> managerIdSet = new HashSet<>();
@@ -275,8 +283,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         });
         Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
         messageInputDto.setReceiverIdArray(managerId);
-        Map<String, Object> smsMap=new HashMap<>();
-        smsMap.put("userName",userName);
+        Map<String, Object> smsMap = new HashMap<>();
+        smsMap.put("userName", userName);
         messageInputDto.setSmsContentParam(smsMap);
         messageService.addMessage(messageInputDto);
     }
@@ -293,7 +301,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             plateList.add(plates);
         }
 
-        return plateList.stream().filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toList());
+        return plateList.stream().filter(StringUtils::isNotBlank).map(String::trim).collect(toList());
 
     }
 
@@ -410,6 +418,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (!YnEnum.YES.getCode().equals(user.getYn())) {
             return BaseOutput.failure("数据已被删除");
         }
+        Integer needPush = 1;
+        user.setModified(new Date());
+        user.setIsPush(needPush);
         if (enable) {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             this.updateSelective(user);
@@ -456,7 +467,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         List<DTO> users = out.getRows();
         List<Long> userIdList = users.stream().map(o -> {
             return (Long) o.get("id");
-        }).collect(Collectors.toList());
+        }).collect(toList());
         Map<Long, List<UserPlate>> userPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
         List<DTO> userList = users.stream().map(u -> {
             Long userId = (Long) u.get("id");
@@ -468,7 +479,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 u.put("plates", "");
             }
             return u;
-        }).collect(Collectors.toList());
+        }).collect(toList());
         out.setRows(userList);
 
         return out;
@@ -489,6 +500,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setState(EnabledStateEnum.DISABLED.getCode());
         user.setYn(YnEnum.NO.getCode());
         user.setIsDelete(user.getId());
+        user.setOpenId("");
+        user.setModified(new Date());
         this.updateSelective(user);
 
         // 删除用户车牌信息
@@ -539,10 +552,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (ValidateStateEnum.UNCERT.getCode() != user.getValidateState()) {
             return BaseOutput.failure("当前状态不能审核");
         }
-        ;
+        Integer needPush = 1;
         // 审核通过
         if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {
             sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(), null, operatorUser);
+            user.setIsPush(needPush);
+            user.setIsActive(needPush);
         } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {
             // 审核不通过
             sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(), input.getRefuseReason(), operatorUser);
@@ -552,6 +567,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         user.setValidateState(input.getValidateState());
+        user.setModified(new Date());
         int retRows = update(user);
         if (retRows > 0) {
             return BaseOutput.success("用户资料审核申请已通过");
@@ -707,6 +723,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         User openuser = DTOUtils.newDTO(User.class);
         openuser.setOpenId(openid);
+        openuser.setYn(YnEnum.YES.getCode());
         return null != getActualDao().selectOne(openuser);
     }
 
@@ -742,5 +759,108 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         qrOutput.setBase64QRImg(base64Img);
         return qrOutput;
     }
+
+    @Override
+    public void updateUserIsPushFlag(Integer isPush, List<Long> userIdList) {
+        if (CollectionUtils.isEmpty(userIdList)) {
+            LOGGER.error("updateUserIsPushFlag :userIdList IS NULL");
+            return;
+        }
+        if (null == isPush) {
+            LOGGER.error("updateUserIsPushFlag :isPush IS NULL");
+            return;
+        }
+        getActualDao().updateUserIsPushFlag(isPush, userIdList);
+    }
+
+    @Override
+    public void updateUserActiveByTime() {
+        String optType = "operation_report_limit_day";
+        String optCategory = "operation_report_limit_day";
+        SysConfig sysConfig = new SysConfig();
+        sysConfig.setOpt_type(optType);
+        sysConfig.setOpt_category(optCategory);
+        List<SysConfig> sysConfigList = sysConfigService.listByExample(sysConfig);
+        //未配置活跃限定天数，则不计算活跃
+        if (CollectionUtils.isEmpty(sysConfigList)) {
+            return;
+        }
+        //活跃限定天数为0，则不计算活跃
+        String val = sysConfigList.get(0).getOpt_value();
+        int limitDay = Integer.valueOf(val);
+        if (limitDay <= 0) {
+            return;
+        }
+        limitDay = 0 - limitDay;
+        Map<String, Object> activeMap = processActiveMap(limitDay);
+        //patch活跃
+        getActualDao().updateUserActiveByBill(activeMap);
+        getActualDao().updateUserActiveByBuyer(activeMap);
+        getActualDao().updateUserActiveBySeller(activeMap);
+        //patch不活跃
+        updateUserUnActive(activeMap);
+    }
+
+    /**
+     * 更新用户去活跃
+     *
+     * @param map
+     */
+    private void updateUserUnActive(Map<String, Object> map) {
+        List<User> unActiveListBill = getActualDao().getActiveUserListByBill(map);
+        List<User> unActiveListBuyer = getActualDao().getActiveUserListByBuyer(map);
+        List<User> unActiveListSeller = getActualDao().getActiveUserListBySeller(map);
+        List<Long> billList = new ArrayList<>();
+        List<Long> buyList = new ArrayList<>();
+        List<Long> sellList = new ArrayList<>();
+        //无报备单用户
+        if (CollectionUtils.isNotEmpty(unActiveListBill)) {
+            StreamEx.of(unActiveListBill).nonNull().forEach(b -> {
+                billList.add(b.getId());
+            });
+        }
+        //无购买交易用户
+        if (CollectionUtils.isNotEmpty(unActiveListBuyer)) {
+            StreamEx.of(unActiveListBuyer).nonNull().forEach(b -> {
+                buyList.add(b.getId());
+            });
+        }
+        //无销售交易用户
+        if (CollectionUtils.isNotEmpty(unActiveListSeller)) {
+            StreamEx.of(unActiveListSeller).nonNull().forEach(b -> {
+                sellList.add(b.getId());
+            });
+        }
+        //用户已存在报备单
+        if (CollectionUtils.isEmpty(billList)) {
+            return;
+        }
+        //用户已购买交易
+        if (CollectionUtils.isEmpty(unActiveListBuyer)) {
+            return;
+        }
+        //用户已销售交易
+        if (CollectionUtils.isEmpty(unActiveListSeller)) {
+            return;
+        }
+
+        List<Long> resultFow = billList.stream().filter(item -> buyList.contains(item)).collect(toList());
+        List<Long> resultList = resultFow.stream().filter(r -> sellList.contains(r)).collect(toList());
+        System.out.println("---去活跃集合 relustList---" + JSON.toJSONString(resultList));
+
+        if (CollectionUtils.isNotEmpty(resultList)) {
+            getActualDao().updateUserUnActiveFlag(resultList);
+        }
+    }
+
+    private Map<String, Object> processActiveMap(int limitDay) {
+        Map<String, Object> activeMap = new HashMap<>(16);
+        Date limitDate = new Date();
+        limitDate = DateUtils.addDays(limitDate, limitDay);
+        String limitDateStr = DateUtils.format(limitDate, "yyyy-MM-dd HH:mm:ss");
+        activeMap.put("limitTime", limitDateStr);
+        return activeMap;
+    }
+
 
 }

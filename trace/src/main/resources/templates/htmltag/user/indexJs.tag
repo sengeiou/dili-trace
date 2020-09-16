@@ -99,12 +99,77 @@
                 );
             }
         });
+    }
 
-
+    function activeUser(){
+        var selected = _userGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal('警告','请选中一条数据', 'warning');
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/user/activeUser.action",
+            data: {id: selected.id,is_active: 1},
+            processData:true,
+            dataType: "json",
+            async : true,
+            success : function(ret) {
+                if(ret.success){
+                    _userGrid.datagrid("reload");
+                }else{
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error : function() {
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
 
     }
 
+    function unActiveUser(){
+        var selected = _userGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal('警告','请选中一条数据', 'warning');
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/user/activeUser.action",
+            data: {id: selected.id,is_active: -1},
+            processData:true,
+            dataType: "json",
+            async : true,
+            success : function(ret) {
+                if(ret.success){
+                    _userGrid.datagrid("reload");
+                }else{
+                    swal(
+                        '错误',
+                        ret.result,
+                        'error'
+                    );
+                }
+            },
+            error : function() {
+                swal(
+                    '错误',
+                    '远程访问失败',
+                    'error'
+                );
+            }
+        });
 
+    }
     //根据主键删除
     function del() {
         var selected = _userGrid.datagrid("getSelected");

@@ -126,8 +126,8 @@
   <select id="listUserByStoreName" resultType="com.dili.trace.api.output.UserOutput">
     select u.id, if(s.store_name = '' or s.store_name is null, u.name, s.store_name) as name,
     u.tally_area_nos, u.market_name, u.business_license_url,u.user_type from user u left join user_store s
-    on (u.id=s.user_id) where u.id != #{userId} and u.name like #{queryCondition} or s.store_name like #{queryCondition}
-    or u.tally_area_nos like #{queryCondition}
+    on (u.id=s.user_id) where u.id != #{userId} and u.yn = 1 and (u.name like #{queryCondition} or s.store_name like #{queryCondition}
+    or u.tally_area_nos like #{queryCondition})
   </select>
 
   <select id="getUserByUserId" resultType="com.dili.trace.api.output.UserOutput">
@@ -135,5 +135,107 @@
     u.tally_area_nos, u.market_name, u.business_license_url from user u left join user_store s
     on (u.id=s.user_id) where u.id = #{id}
   </select>
+
+  <update id="updateUserIsPushFlag">
+    update user
+    <set>
+        <if test="isPush != null">
+          is_push = #{isPush},
+        </if>
+    </set>
+      where 1=1
+      <if test="idList!=null and idList.size()>0">
+        and id
+        <foreach collection="idList" open=" IN (" close=")" item="oid"  separator=",">
+          #{oid}
+        </foreach>
+      </if>
+  </update>
+
+  <update id="updateUserActiveByBill">
+    update user u,register_bill b
+    <set>
+      u.is_active=1
+    </set>
+    where u.is_delete=0
+    AND u.yn=1
+    AND u.is_active=-1
+    AND u.id=b.user_id
+    AND b.is_deleted=0
+    <![CDATA[AND ( b.created > #{limitTime} OR b.modified > #{limitTime})]]>
+  </update>
+
+  <update id="updateUserActiveByBuyer">
+    update user u,trade_detail t
+    <set>
+      u.is_active=1
+    </set>
+    where u.is_delete=0
+    AND u.yn=1
+    AND u.is_active=-1
+    AND u.id=t.buyer_id
+    <![CDATA[AND ( t.created > #{limitTime} OR t.modified > #{limitTime})]]>
+  </update>
+
+  <update id="updateUserActiveBySeller">
+    update user u,trade_detail t
+    <set>
+      u.is_active=1
+    </set>
+    where u.is_delete=0
+    AND u.yn=1
+    AND u.is_active=-1
+    AND u.id=t.seller_id
+    <![CDATA[AND ( t.created > #{limitTime} OR t.modified > #{limitTime})]]>
+  </update>
+
+  <select id="getActiveUserListByBill" resultType="com.dili.trace.domain.User" >
+    SELECT u.id,u.name,u.is_delete,u.is_active
+    FROM
+    user u
+    LEFT JOIN register_bill b ON u.id = b.user_id
+    AND b.is_deleted = 0
+    <![CDATA[AND  (b.created > #{limitTime} OR b.modified > #{limitTime})]]>
+    WHERE u.is_delete = 0
+    AND u.yn = 1
+    AND u.is_active = 1
+    AND b.id IS NULL
+  </select>
+
+  <select id="getActiveUserListByBuyer" resultType="com.dili.trace.domain.User" >
+    SELECT u.id,u.name,u.is_delete,u.is_active
+    FROM
+    user u
+    LEFT JOIN trade_detail t ON u.id = t.buyer_id
+    <![CDATA[ AND  (t.created > #{limitTime} OR t.modified > #{limitTime} ) ]]>
+    WHERE u.is_delete = 0
+    AND u.yn = 1
+    AND u.is_active = 1
+    AND t.id IS NULL
+  </select>
+
+  <select id="getActiveUserListBySeller" resultType="com.dili.trace.domain.User" >
+    SELECT u.id,u.name,u.is_delete,u.is_active
+    FROM
+    user u
+    LEFT JOIN trade_detail t ON u.id = t.seller_id
+    <![CDATA[ AND  ( t.created > #{limitTime} OR t.modified > #{limitTime} ) ]]>
+    WHERE u.is_delete = 0
+    AND u.yn = 1
+    AND u.is_active = 1
+    AND t.id IS NULL
+  </select>
+
+  <update id="updateUserUnActiveFlag">
+    update user
+    <set>
+      is_active = -1,
+    </set>
+    where 1=1
+      and id
+      <foreach collection="idList" open=" IN (" close=")" item="oid"  separator=",">
+        #{oid}
+      </foreach>
+  </update>
 
 </mapper>

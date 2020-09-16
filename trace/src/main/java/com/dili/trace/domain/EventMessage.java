@@ -48,6 +48,9 @@ public class EventMessage extends BaseDomain {
     @Column(name = "read_flag")
     private Integer readFlag;
 
+    @Transient
+    private Integer sourceOrderStatus;
+
     @Override
     public Long getId() {
         return id;
@@ -56,6 +59,14 @@ public class EventMessage extends BaseDomain {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getSourceOrderStatus() {
+        return sourceOrderStatus;
+    }
+
+    public void setSourceOrderStatus(Integer sourceOrderStatus) {
+        this.sourceOrderStatus = sourceOrderStatus;
     }
 
     public String getTitle() {

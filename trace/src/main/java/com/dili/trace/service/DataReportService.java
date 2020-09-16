@@ -1,5 +1,31 @@
 package com.dili.trace.service;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.dili.common.exception.TraceBusinessException;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.redis.service.RedisUtil;
+import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.ThirdPartyReportData;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.thirdparty.report.*;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.ReportDtoTypeEnum;
+import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.glossary.TFEnum;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.Maps;
+import com.jayway.jsonpath.*;
+import one.util.streamex.StreamEx;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -9,42 +35,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import com.dili.common.exception.TraceBusinessException;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.redis.service.RedisUtil;
-import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.ThirdPartyReportData;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.thirdparty.report.AccessTokenDto;
-import com.dili.trace.dto.thirdparty.report.CodeCountDto;
-import com.dili.trace.dto.thirdparty.report.MarketCountDto;
-import com.dili.trace.dto.thirdparty.report.RegionCountDto;
-import com.dili.trace.dto.thirdparty.report.ReportCountDto;
-import com.dili.trace.dto.thirdparty.report.ReportDto;
-import com.dili.trace.dto.thirdparty.report.UnqualifiedPdtInfo;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.glossary.TFEnum;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.Maps;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ParseContext;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.http.HttpUtil;
-import one.util.streamex.StreamEx;
-import tk.mybatis.mapper.annotation.RegisterMapper;
 
 /**
  * 数据上报接口服务
@@ -222,7 +212,6 @@ public class DataReportService {
     /**
      * 刷新token或者返回当前有效的token
      * 
-     * @param forceRefresh 是否强制刷新
      */
     private Optional<String> getAccessToken() {
         String redisKey = this.accessTokeyRedisKey();
@@ -336,5 +325,247 @@ public class DataReportService {
             logger.error(e.getMessage(), e);
             throw new TraceBusinessException("请求上报数据接口出错");
         }
+    }
+
+    protected BaseOutput postJson(String url, Object reportDto, Optional<OperatorUser> optUser, ReportDtoTypeEnum reportType) {
+
+        ThirdPartyReportData thirdPartyReportData = new ThirdPartyReportData();
+        thirdPartyReportData.setCreated(new Date());
+        thirdPartyReportData.setModified(new Date());
+
+        String data = JSON.toJSONStringWithDateFormat(reportDto,"yyyy-MM-dd HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+        thirdPartyReportData.setData(data);
+        String jsonBody = thirdPartyReportData.getData();
+
+        BaseOutput out = this.postJson(url, this.buildHeaderMap(), jsonBody, doc -> {
+            Boolean success = doc.read("$.success");
+            if (success != null && success) {
+                return BaseOutput.success();
+            } else {
+                String msg = doc.read("$.msg");
+                return BaseOutput.failure(msg);
+            }
+        });
+        thirdPartyReportData.setSuccess(out.isSuccess() ? 1 : 0);
+        thirdPartyReportData.setMsg(out.getMessage());
+        optUser.ifPresent(u -> {
+            thirdPartyReportData.setOperatorId(u.getId());
+            thirdPartyReportData.setOperatorName(u.getName());
+        });
+        thirdPartyReportData.setName(reportType.getName());
+        thirdPartyReportData.setType(reportType.getCode());
+        logger.info("Insert info :{}", JSON.toJSONString(thirdPartyReportData));
+        try {
+            this.thirdPartyReportDataService.insertSelective(thirdPartyReportData);
+        } catch (Exception e) {
+            logger.error("Insert error:", e);
+        }
+
+        return out;
+    }
+
+    /**
+     * 商品大类新增/修改
+     *
+     * @author Lily
+     * @param categoryDto 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
+     */
+    public BaseOutput reportCategory(List<CategoryDto> categoryDto, Optional<OperatorUser> optUser) {
+        logger.info("上报:商品大类新增/修改");
+        String path = "/thirdParty/bigClass/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.categoryBigLevel);
+    }
+
+    /**
+     * 商品二级类目新增/修改
+     *
+     * @author Lily
+     * @param categoryDto 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
+     */
+    public BaseOutput reportSecondCategory(List<CategorySecondDto> categoryDto, Optional<OperatorUser> optUser) {
+        logger.info("上报:商品二级类目新增/修改");
+        String path = "/thirdParty/smallClass/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.categorySmallLevel);
+    }
+
+    /**
+     * 商品二级类目新增/修改
+     *
+     * @param goodsDto
+     * @return
+     */
+    public BaseOutput reportGoods(List<GoodsDto> goodsDto, Optional<OperatorUser> optUser) {
+        logger.info("上报:商品新增/修改");
+        String path = "/thirdParty/goods/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, goodsDto, optUser, ReportDtoTypeEnum.goods);
+    }
+
+    /**
+     * 经营户新增/编辑
+     *
+     * @param reportUserDtos
+     * @return
+     */
+    public BaseOutput reportUserSaveUpdate(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:经营户新增/编辑");
+        String path = "/thirdParty/account/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserSave);
+    }
+
+    /**
+     * 经营户作废
+     *
+     * @param reportUserDtos
+     * @return
+     */
+    public BaseOutput reportUserDelete(ReportUserDeleteDto reportUserDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:经营户作废");
+        String path = "/thirdParty/account/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserDelete);
+    }
+
+    /**
+     * 食安码新增/修改
+     * @param pushList
+     * @param optUser
+     */
+    public BaseOutput reportUserQrCode(List<ReportQrCodeDto> pushList, Optional<OperatorUser> optUser) {
+        logger.info("上报:食安码新增/编辑");
+        String path = "/thirdParty/code/updateAccount";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, pushList, optUser, ReportDtoTypeEnum.userQrCode);
+    }
+    /**
+     * 报备新增/编辑
+     *
+     * @author Alvin
+     * @param reportRegisterBillDtos 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
+     */
+    public BaseOutput reportRegisterBill(List<ReportRegisterBillDto> reportRegisterBillDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:报备新增/编辑");
+        String path = "/thirdParty/enterBase/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportRegisterBillDtos, optUser, ReportDtoTypeEnum.registerBill);
+    }
+
+    /**
+     * 报备新增/编辑
+     *
+     * @author Asa
+     * @param reportRegisterBillDeleteDto 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
+     */
+    public BaseOutput reportRegisterBillDelete(ReportRegisterBillDeleteDto reportRegisterBillDeleteDto, Optional<OperatorUser> optUser) {
+        logger.info("上报:报备报废");
+        String path = "/thirdParty/enterBase/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportRegisterBillDeleteDto, optUser, ReportDtoTypeEnum.registerBillDelete);
+    }
+
+    /**
+     * 进门
+     *
+     * @author Lily
+     * @param checkInDtos 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
+     */
+    public BaseOutput reportCheckIn(List<ReportCheckInDto> checkInDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:进门");
+        String path = "/thirdParty/inDoor/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, checkInDtos, optUser, ReportDtoTypeEnum.inDoor);
+    }
+
+    /**
+     * 上游新增/修改
+     *
+     * @param upStreamDtos
+     * @return
+     */
+    public BaseOutput reportUpStream(List<UpStreamDto> upStreamDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:上游新增/修改");
+        String path = "/thirdParty/upstreamOwn/saveOrUpdate";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, upStreamDtos, optUser, ReportDtoTypeEnum.upstream);
+    }
+
+    /**
+     * 上游新增/修改
+     *
+     * @param downStreamDtos
+     * @return
+     */
+    public BaseOutput reportDownStream(List<DownStreamDto> downStreamDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:下游新增/修改");
+        String path = "/thirdParty/downStream/saveOrUpdate";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, downStreamDtos, optUser, ReportDtoTypeEnum.downstream);
+    }
+
+    /**
+     * 扫码交易
+     *
+     * @author Alvin
+     * @param scanCodeOrderDtos 需要发送的数据
+     * @param optUser 操作人信息
+     * @return BaseOutput 返回成功或失败信息
+     */
+    public BaseOutput reportScanCodeOrder(List<ReportScanCodeOrderDto> scanCodeOrderDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:扫码交易");
+        String path = "/thirdParty/order/sc";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, scanCodeOrderDtos, optUser, ReportDtoTypeEnum.scanCodeOrder);
+    }
+
+    /**
+     * 扫码交易作废
+     *
+     * @param reportDeletedOrder
+     * @return
+     */
+    public BaseOutput reportDeletedScanCodeOrder(ReportDeletedOrderDto reportDeletedOrder, Optional<OperatorUser> optUser) {
+        logger.info("上报:扫码交易作废");
+        String path = "/thirdParty/order/sc/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportDeletedOrder, optUser, ReportDtoTypeEnum.deleteScanCodeOrder);
+    }
+
+    /**
+     * 配送交易
+     *
+     * @param deliveryOrderDtos
+     * @return
+     */
+    public BaseOutput reportDeliveryOrder(List<ReportDeliveryOrderDto> deliveryOrderDtos, Optional<OperatorUser> optUser) {
+        logger.info("上报:配送交易");
+        String path = "/thirdParty/order/delivery";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, deliveryOrderDtos, optUser, ReportDtoTypeEnum.deliveryOrder);
+    }
+
+    /**
+     * 配送交易作废
+     *
+     * @param reportDeletedOrder
+     * @return
+     */
+    public BaseOutput reportDeletedDeliveryOrder(ReportDeletedOrderDto reportDeletedOrder, Optional<OperatorUser> optUser) {
+        logger.info("上报:扫码交易作废");
+        String path = "/thirdParty/order/delivery/delete";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportDeletedOrder, optUser, ReportDtoTypeEnum.deleteDeliveryOrder);
     }
 }

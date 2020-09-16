@@ -10,17 +10,24 @@ import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.input.TradeRequestHandleDto;
 import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.output.UserOutput;
+import com.dili.trace.dao.TradeDetailMapper;
+import com.dili.trace.dao.TradeRequestMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.glossary.YnEnum;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.nutz.json.Json;
 import org.slf4j.Logger;
@@ -30,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -53,6 +61,19 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     ImageCertService imageCertService;
     @Autowired
     MessageService messageService;
+
+    @Autowired
+    UserStoreService userStoreService;
+
+    @Autowired
+    TradeRequestMapper tradeRequestMapper;
+
+    @Autowired
+    UserQrHistoryService userQrHistoryService;
+
+    public TradeRequestMapper getActualDao() {
+        return (TradeRequestMapper) getDao();
+    }
 
     /**
      * 检查参数是否正确
@@ -112,10 +133,18 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     //下单消息
                     String productName = "商品名称:" + request.getProductName() + "重量:" + request.getTradeWeight() + WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName() + "订单编号:" + request.getCode();
                     addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName);
-
+                    // 卖家下单
+                    userQrHistoryService.createUserQrHistoryForOrder(request.getId(),buyerId);
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
+        StreamEx.of(list).forEach( td -> {
+            TradeRequest request = new TradeRequest();
+            request.setHandleTime(new Date());
+            request.setId(td.getId());
+            this.updateSelective(request);
+        });
+
         return list;
 
     }
@@ -158,7 +187,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      *
      * @param sellerId
      * @param buyerId
-     * @param tradeRequestType
+     * @param tradeOrderItem
      * @param input
      * @return
      */
@@ -327,7 +356,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
      *
      * @param sellerId
      * @param buyerId
-     * @param tradeRequestType
+     * @param
      * @param batchStockInputList
      * @return
      */
@@ -516,6 +545,14 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                 this.batchStockService.updateSelective(sellerBatchStock);
                 this.tradeDetailService.updateSelective(sellerTradeDetail);
             });
+
+
+            try {
+                userQrHistoryService.rollbackUserQrStatusForOrderReturn(tradeRequestItem.getId(),tradeRequestItem.getBuyerId());
+            } catch (ParseException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage(), e);
+            }
         }
 
         return tradeRequest.getId();
@@ -574,6 +611,28 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return upStreamDto;
     }
 
+    public BasePage<TradeRequest> listPageForStatusOrder(TradeRequestInputDto dto,Long userId){
+        dto.setBuyerId(userId);
+        dto.setOrderStatus(TradeOrderStatusEnum.FINISHED.getCode());
+        if (dto.getPage() == null || dto.getPage() < 0) {
+            dto.setPage(1);
+        }
+        if (dto.getRows() == null || dto.getRows() <= 0) {
+            dto.setRows(10);
+        }
+        PageHelper.startPage(dto.getPage(), dto.getRows());
+        List<TradeRequest> list = this.tradeRequestMapper.queryListByOrderStatus(dto);
+        Page<TradeRequest> page = (Page) list;
+        BasePage<TradeRequest> result = new BasePage<TradeRequest>();
+        result.setDatas(list);
+        result.setPage(page.getPageNum());
+        result.setRows(page.getPageSize());
+        result.setTotalItem(Integer.parseInt(String.valueOf(page.getTotal())));
+        result.setTotalPage(page.getPages());
+        result.setStartIndex(page.getStartRow());
+        return result;
+    }
+
     public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest,
                                                                           Long userId) {
         tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR, "(buyer_id=" + userId + " OR seller_id=" + userId + ")");
@@ -596,34 +655,63 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
         StreamEx.of(tradeDetailList).forEach(td -> {
             if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
+                ProductStock productStock = this.batchStockService.selectByIdForUpdate(td.getProductStockId())
+                        .orElseThrow(() -> {
+                            return new TraceBusinessException("操作库存失败");
+                        });
                 TradeDetail tradeDetail = new TradeDetail();
                 tradeDetail.setId(td.getId());
                 tradeDetail.setStockWeight(td.getSoftWeight());
                 tradeDetail.setSoftWeight(BigDecimal.ZERO);
                 tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                tradeDetail.setIsBatched(TFEnum.TRUE.getCode());
                 this.tradeDetailService.updateSelective(tradeDetail);
 
-                ProductStock productStock = this.batchStockService.get(td.getProductStockId());
                 ProductStock productStockUpdate = new ProductStock();
                 productStockUpdate.setId(td.getProductStockId());
                 productStockUpdate.setStockWeight(productStock.getStockWeight().add(td.getSoftWeight()));
                 productStockUpdate.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
                 this.batchStockService.updateSelective(productStockUpdate);
+
+
             } else if (handleStatus.equals(TradeOrderStatusEnum.CANCELLED.getCode())) {
                 TradeDetail parentTradeDetail = this.tradeDetailService.get(td.getParentId());
                 TradeDetail parentTradeDetailForUpdate = new TradeDetail();
                 parentTradeDetailForUpdate.setId(parentTradeDetail.getId());
                 parentTradeDetailForUpdate.setStockWeight(parentTradeDetail.getStockWeight().add(td.getSoftWeight()));
+
+                ProductStock productStock = this.batchStockService.selectByIdForUpdate(parentTradeDetail.getProductStockId())
+                        .orElseThrow(() -> {
+                            return new TraceBusinessException("操作库存失败");
+                        });
+
+                BigDecimal totalStockWeight = productStock.getStockWeight().add(td.getSoftWeight());
+                ProductStock productStockUpdate = new ProductStock();
+                productStockUpdate.setId(productStock.getId());
+                productStockUpdate.setStockWeight(totalStockWeight);
+                if (parentTradeDetail.getStockWeight().compareTo(BigDecimal.ZERO) <= 0
+                        && parentTradeDetailForUpdate.getStockWeight().compareTo(BigDecimal.ZERO) > 0) {
+
+                    productStockUpdate.setTradeDetailNum(productStock.getTradeDetailNum() + 1);
+                    parentTradeDetailForUpdate.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
+                    parentTradeDetailForUpdate.setIsBatched(TFEnum.TRUE.getCode());
+                }
                 this.tradeDetailService.updateSelective(parentTradeDetailForUpdate);
+                this.batchStockService.updateSelective(productStockUpdate);
             }
         });
+
+        TradeRequest request = new TradeRequest();
+        request.setHandleTime(new Date());
+        request.setId(tradeRequestId);
+        this.updateSelective(request);
+
         //完成发送消息
         if (handleStatus.equals(TradeOrderStatusEnum.FINISHED.getCode())) {
             //下单消息--一个单一个消息方便跳转页面
-            StreamEx.of(tradeDetailList).forEach(td -> {
-                String productName = "商品名称:" + td.getProductName() + ",  重量:" + td.getSoftWeight() + "(" + WeightUnitEnum.fromCode(td.getWeightUnit()).get().getName() + "),  订单编号:" + tradeRequest.getCode();
-                addMessage(td.getSellerId(), td.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName);
-            });
+            String productName = "商品名称:" + tradeRequest.getProductName() + ",  重量:" + tradeRequest.getTradeWeight() + "(" + WeightUnitEnum.fromCode(tradeRequest.getWeightUnit()).get().getName() + "),  订单编号:" + tradeRequest.getCode();
+            addMessage(tradeRequest.getSellerId(), tradeRequest.getBuyerId(), tradeRequest.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE.getCode(), MessageTypeEnum.BUYERORDER.getCode(), null, productName);
+            userQrHistoryService.createUserQrHistoryForOrder(tradeRequest.getId(), tradeRequest.getBuyerId());
         }
     }
 
@@ -643,7 +731,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         messageInputDto.setEventMessageContentParam(new String[]{tradeNo});
         messageInputDto.setSourceBusinessType(businessType);
         messageInputDto.setSourceBusinessId(businessId);
-        messageInputDto.setReceiverType(MessageStateEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        messageInputDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
         //增加卖家短信
         Map<String, Object> sellmap = new HashMap<>();
         sellmap.put("userName", sendUserId);
@@ -664,11 +752,16 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         List<UserOutput> outPutDtoList = new ArrayList<>();
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
             UserOutput outPutDto = new UserOutput();
-
             User user = this.userService.get(td);
-            if (user != null) {
+            if (user != null && user.getYn().equals(YnEnum.YES.getCode())) {
                 outPutDto.setId(td);
+                UserStore userStore = new UserStore();
+                userStore.setUserId(td);
                 outPutDto.setName(user.getName());
+                UserStore userStoreExists = StreamEx.of(userStoreService.list(userStore)).nonNull().findFirst().orElse(null);
+                if (userStoreExists != null && StringUtils.isNoneBlank(userStoreExists.getStoreName())) {
+                    outPutDto.setName(userStoreExists.getStoreName());
+                }
                 outPutDto.setBusinessLicenseUrl(user.getBusinessLicenseUrl());
                 outPutDto.setTallyAreaNos(user.getTallyAreaNos());
                 outPutDto.setMarketName(user.getMarketName());
@@ -677,5 +770,15 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
             }
         });
         return outPutDtoList;
+    }
+
+    /**
+     * 查询近7天有买商品的用户
+     * @param user
+     * @return
+     */
+    public List<Long> selectBuyerIdWithouTradeRequest(UserListDto user)
+    {
+        return getActualDao().selectBuyerIdWithouTradeRequest(user);
     }
 }

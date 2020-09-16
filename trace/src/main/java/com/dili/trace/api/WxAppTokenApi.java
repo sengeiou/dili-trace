@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class WxAppTokenApi {
             String appId = null;
             appId = wxInfo.get("appId");
             if (StringUtils.isBlank(appId)) {
-                throw new RuntimeException("appId 不能为空");
+                return BaseOutput.failure("appId 不能为空");
             }
             WxApp wxapp = new WxApp();
             wxapp.setAppId(appId);
@@ -60,6 +61,9 @@ public class WxAppTokenApi {
             upconApp.setAppId(appId);
             wxAppService.updateByExample(upwxApp, upconApp);
             return BaseOutput.success().setData("初始化成功");
+        } catch (TraceBusinessException e) {
+            log.error("初始化小程序access_token失败", e);
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("init_access_token异常", e);
             return BaseOutput.failure("初始化失败").setData(e.getMessage());
@@ -73,10 +77,13 @@ public class WxAppTokenApi {
         try {
             String appId = wxInfo.get("appId");
             if (StringUtils.isBlank(appId)) {
-                throw new RuntimeException("appId 不能为空");
+                return BaseOutput.failure("appId 不能为空");
             }
             WxApp wxapp = getWxAppByAppId(appId);
             return BaseOutput.success("查询成功").setData(wxapp.getAccessToken());
+        } catch (TraceBusinessException e) {
+            log.error("获取小程序access_token失败", e);
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("get_access_token异常", e);
             return BaseOutput.failure(e.getMessage());
@@ -90,14 +97,17 @@ public class WxAppTokenApi {
             log.info("getWxOpenidUnionId param:" + wxInfo.toString());
             String jsCode = wxInfo.get("js_code");
             if (StringUtils.isBlank(jsCode)) {
-                throw new TraceBusinessException("js_code 不能为空");
+                return BaseOutput.failure("js_code 不能为空");
             }
             String appId = wxInfo.get("appId");
             if (StringUtils.isBlank(appId)) {
-                throw new RuntimeException("appId 不能为空");
+                return BaseOutput.failure("appId 不能为空");
             }
             String session = wxAppService.getSessionKey(jsCode, appId);
             return BaseOutput.success("查询成功").setData(JSON.parse(session));
+        } catch (TraceBusinessException e) {
+            log.error("获取授权信息失败", e);
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("getWxOpenidUnionId异常", e);
             return BaseOutput.failure(e.getMessage());
@@ -110,18 +120,21 @@ public class WxAppTokenApi {
         try {
             String appId = wxInfo.get("appId");
             if (StringUtils.isBlank(appId)) {
-                throw new RuntimeException("appId 不能为空");
+                return BaseOutput.failure("appId 不能为空");
             }
 
             String openId = wxInfo.get("openId");
             if (StringUtils.isBlank(openId)) {
-                throw new RuntimeException("openId 不能为空");
+                return BaseOutput.failure("openId 不能为空");
             }
             WxApp wxApp = getWxAppByAppId(appId);
             String accessToken = wxApp.getAccessToken();
             String userinfo = wxAppService.getUserinfo(appId, openId, accessToken);
             ObjectMapper objectMapper = new ObjectMapper();
             return BaseOutput.success("查询成功").setData(objectMapper.readTree(userinfo));
+        } catch (TraceBusinessException e) {
+            log.error("获取用户信息", e);
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("get_userinfo异常", e);
             return BaseOutput.failure(e.getMessage());
@@ -145,10 +158,9 @@ public class WxAppTokenApi {
                 return BaseOutput.failure("参数错误");
             }
 
-            /*
             sessionKey = URLDecoder.decode(sessionKey, "UTF-8");
             encryptedData = URLDecoder.decode(encryptedData, "UTF-8");
-            iv = URLDecoder.decode(iv, "UTF-8");*/
+            iv = URLDecoder.decode(iv, "UTF-8");
 
             log.info("decodePhone decode sessionKey:" + sessionKey
                     + ",encryptedData:" + encryptedData + ",iv:" + iv);
@@ -160,11 +172,13 @@ public class WxAppTokenApi {
             AppletPhone phone = JSON.parseObject(decryStr, new TypeReference<AppletPhone>() {
             });
             return BaseOutput.success().setData(phone);
+        } catch (TraceBusinessException e) {
+            log.error("解密手机号码错误", e);
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             log.error("解密手机号码错误", e);
-            BaseOutput.failure(e.getMessage());
+            return BaseOutput.failure("解密手机号码错误");
         }
-        return BaseOutput.failure("error");
     }
 
     /**

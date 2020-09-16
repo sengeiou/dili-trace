@@ -1,21 +1,20 @@
 package com.dili.trace.controller;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.Map;
-
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.dto.TraceReportDto;
 import com.dili.trace.dto.TraceReportQueryDto;
 import com.dili.trace.service.TraceReportService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/traceReport")
@@ -28,8 +27,9 @@ public class TraceReportController {
 
         // TraceReportQueryDto query=new TraceReportQueryDto();
         // query.setReadonly(readonly);
+        System.out.println("xxxxxxxxxxtest");
         if(query.getReadonly()==null){
-            query.setReadonly(true);
+            query.setReadonly(false);
         }
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime splitTime=now.withHour(20).withMinute(30).withSecond(0);

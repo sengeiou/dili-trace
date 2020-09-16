@@ -58,11 +58,4 @@
     ) t order by created desc
   </select>
 
-  <update id="updatePushAway" parameterType="java.lang.Object">
-        update trade_detail
-        set stock_weight = stock_weight - #{pushAwayWeight},
-            pushaway_weight = pushaway_weight + #{pushAwayWeight}
-        where id = #{id}
-  </update>
-  
 </mapper>

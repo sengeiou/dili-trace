@@ -1,12 +1,19 @@
 package com.dili.trace.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.enums.BillVerifyStatusEnum;
@@ -26,6 +33,8 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 	UserService userService;
 	@Autowired
 	RegisterBillService registerBillService;
+	@Autowired
+	TradeRequestService tradeRequestService;
 
 	public void run(String... args) {
 
@@ -48,7 +57,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 					.orElse(UserQrStatusEnum.BLACK.getDesc());
 
 			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
-			userQrHistory.setContent("最近七天无报备" + ",变为" + color + "码");
+			userQrHistory.setContent("最近七天无报备且无交易单" + ",变为" + color + "码");
 			this.insertSelective(userQrHistory);
 			return userQrHistory;
 		});
@@ -126,6 +135,68 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		});
 	}
 
+	public UserQrHistory createUserQrHistoryForOrder(Long tradeRequestId, Long userId) {
+		if (userId == null) {
+			return null;
+		}
+		User userItem = this.userService.get(userId);
+		if (userItem == null) {
+			return null;
+		}
+		Integer qrStatus = UserQrStatusEnum.GREEN.getCode();
+		this.updateUserQrStatus(userItem.getId(), UserQrStatusEnum.GREEN.getCode());
+
+		return this.findLatestUserQrHistoryByUserId(userItem.getId()).filter(qrhis -> {
+			return Objects.equal(qrhis.getQrStatus(), qrStatus);
+		}).orElseGet(() -> {
+			String color = UserQrStatusEnum.fromCode(qrStatus).map(UserQrStatusEnum::getDesc)
+					.orElse(UserQrStatusEnum.GREEN.getDesc());
+
+			UserQrHistory userQrHistory = this.buildUserQrHistory(userItem, qrStatus);
+			userQrHistory.setContent("订单交易完成, 变为" + color + "码");
+			userQrHistory.setTradeRequestId(tradeRequestId);
+			this.insertSelective(userQrHistory);
+			return userQrHistory;
+		});
+	}
+
+	public void rollbackUserQrStatusForOrderReturn(Long tradeRequestId, Long userId) throws ParseException {
+		if (tradeRequestId != null) {
+			UserQrHistory domain = new UserQrHistory();
+			// domain.setBillId(deletedBillId);
+			domain.setIsValid(TFEnum.FALSE.getCode());
+
+			UserQrHistory condition = new UserQrHistory();
+			condition.setTradeRequestId(tradeRequestId);
+			condition.setUserId(userId);
+			this.updateSelectiveByExample(domain, condition);
+
+			UserQrHistory query = new UserQrHistory();
+			query.setUserId(userId);
+			query.setPage(1);
+			query.setRows(1);
+			query.setSort("id");
+			query.setOrder("desc");
+			query.setIsValid(TFEnum.TRUE.getCode());
+			Integer userQrStatus = this.listPageByExample(query).getDatas().stream().findFirst()
+					.map(UserQrHistory::getQrStatus).orElse(UserQrStatusEnum.BLACK.getCode());
+			this.updateUserQrStatus(userId, userQrStatus);
+
+		}
+	}
+
+	protected Date start(LocalDateTime now) {
+		Date start = Date.from(
+				now.minusDays(6).atZone(ZoneId.systemDefault()).toInstant());
+		return start;
+	}
+
+	protected Date end(LocalDateTime now) {
+		Date end = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
+		return end;
+	}
+
+
 	/**
 	 * 禁止删除的报备单对应的状态记录，并恢复到前一个有效的用户二维码颜色
 	 * 
@@ -188,6 +259,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 		query.setOrder("desc");
 		query.setPage(1);
 		query.setRows(1);
+		query.setIsValid(TFEnum.TRUE.getCode());
 		return StreamEx.of(this.listPageByExample(query).getDatas()).findFirst();
 	}
 

@@ -7,63 +7,59 @@ package com.dili.trace.enums;
  */
 public enum MessageStateEnum {
 
-	/**
-	 * 未读
-	 */
-	UNREAD(0, "未读"),
-	/**
-	 * 已读
-	 */
-	READ(1, "已读"),
+    /**
+     * 未读
+     */
+    UNREAD(0, "未读"),
+    /**
+     * 已读
+     */
+    READ(1, "已读"),
 
-	/**
-	 * 消息业务类型-用户
-	 */
-	BUSINESS_TYPE_USER(10,"用户"),
+    /**
+     * 消息业务类型-用户
+     */
+    BUSINESS_TYPE_USER(10, "用户"),
 
-	/**
-	 * 消息业务类型-报备
-	 */
-	BUSINESS_TYPE_BILL(20,"报备"),
+    /**
+     * 消息业务类型-报备
+     */
+    BUSINESS_TYPE_BILL(20, "报备"),
 
-	/**
-	 * 消息业务类型-交易
-	 */
-	BUSINESS_TYPE_TRADE(30,"购买"),
+    /**
+     * 消息业务类型-报备(场内审核)
+     */
+    BUSINESS_TYPE_FIELD_BILL(21, "场内审核"),
 
-	/**
-	 * 消息业务类型-交易
-	 */
-	BUSINESS_TYPE_TRADE_SELL(40,"销售"),
+    /**
+     * 消息业务类型-交易
+     */
+    BUSINESS_TYPE_TRADE(30, "购买"),
 
-	/**
-	 * 消息接收人类型-普通
-	 */
-	MESSAGE_RECEIVER_TYPE_NORMAL(10,"普通"),
+    /**
+     * 消息业务类型-交易
+     */
+    BUSINESS_TYPE_TRADE_SELL(40, "销售"),
 
-	/**
-	 * 消息接收人类型-管理员
-	 */
-	MESSAGE_RECEIVER_TYPE_MANAGER(20,"管理员"),
-	;
+    ;
 
-	private String name;
-	private Integer code;
+    private String name;
+    private Integer code;
 
-	MessageStateEnum(Integer code, String name) {
-		this.code = code;
-		this.name = name;
-	}
+    MessageStateEnum(Integer code, String name) {
+        this.code = code;
+        this.name = name;
+    }
 
-	public boolean equalsToCode(Integer code) {
-		return this.getCode().equals(code);
-	}
+    public boolean equalsToCode(Integer code) {
+        return this.getCode().equals(code);
+    }
 
-	public Integer getCode() {
-		return code;
-	}
+    public Integer getCode() {
+        return code;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 }

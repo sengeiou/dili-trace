@@ -1,0 +1,185 @@
+<#body head_title="商户进场重量统计报表">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item long-item">
+                        <input class="form-control input-sm easyui-datetimebox" name="startDate" id="startDate" style="width:58%"
+                               labelAlign="right" data-options="label:'进门时间:'" value="${startDate}!" required="true" />
+                        <span style="width: 2%;">-</span>
+                        <input class="form-control input-sm easyui-datetimebox" name="endDate" id="endDate" style="width:39%;"
+                               value="${endDate}!" required="true"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="userName" id="userName" style="width:100%" labelAlign="right"
+                               data-options="label:'经营户:'" />
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="phone" id="phone" style="width:100%" labelAlign="right"
+                               data-options="label:'手机号码:'" />
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="varietyName" id="varietyName" style="width:100%" labelAlign="right"
+                               data-options="label:'品种:'" />
+                    </div>
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryOrigionReport()">查询</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-export"
+                           onclick="exportReport()">导出</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto" id="merchantReportDiv">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="商户进场重量统计" id="billSumGrid" fitColumns="true" noheader="true"
+               pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+               singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
+               fit="true" idField="id"
+               data-options="loader:loadbillSumGridData,onLoadSuccess:mergeCell">
+            <thead>
+            <tr>
+                <th width="25%"
+                    data-options="field:'userName', align:'center', resizable:'true', fixed:'false'">
+                    经营户
+                </th>
+                <th width="10%"
+                    data-options="field:'billCount',  align:'center', resizable:'true', fixed:'false'">
+                    报备单总数（已进门）
+                </th>
+                <th width="10%"
+                    data-options="field:'varietyName',  align:'center', resizable:'true', fixed:'false'">
+                    品种
+                </th>
+                <th width="7%"
+                    data-options="field:'weight',  align:'center', resizable:'true', fixed:'false'">
+                    重量(吨)
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script src="${contextPath!}/resources/js/xlsx.extendscript.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/xlsx.full.min.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/export.js"></script>
+<script>
+
+    function mergeCell(data)
+    {
+        var mark=1;                                                 //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+        for (var i=1; i <data.rows.length; i++) {     //这里循环表格当前的数据
+            if (data.rows[i]['userName'] == data.rows[i-1]['userName']) {   //后一行的值与前一行的值做比较，相同就需要合并
+                mark += 1;
+                $(this).datagrid('mergeCells',{
+                    index: i+1-mark,                 //datagrid的index，表示从第几行开始合并；紫色的内容需是最精髓的，就是记住最开始需要合并的位置
+                    field: 'userName',                 //合并单元格的区域，就是clomun中的filed对应的列
+                    rowspan:mark                   //纵向合并的格数，如果想要横向合并，就使用colspan：mark
+                });
+                $(this).datagrid('mergeCells',{
+                    index: i+1-mark,                 //datagrid的index，表示从第几行开始合并；紫色的内容需是最精髓的，就是记住最开始需要合并的位置
+                    field: 'billCount',                 //合并单元格的区域，就是clomun中的filed对应的列
+                    rowspan:mark                   //纵向合并的格数，如果想要横向合并，就使用colspan：mark
+                });
+            }else{
+                mark=1;                                         //一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+            }
+        }
+        $("#merchantReportDiv").find("td:hidden").remove();
+    }
+
+    function exportReport()
+    {
+        $(".datagrid-f :hidden").remove();
+        var startDate = $("#startDate").val().substring(0,10);
+        var endDate = $("#endDate").val().substring(0,10);
+        var fileName="进场商品产地分布统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        var sheet = XLSX2.utils.table_to_sheet(document.getElementById('merchantReportDiv'));
+        sheet["!cols"] = [{
+            wpx: 150
+        }, {
+            wpx: 160
+        }, {
+            wpx: 248
+        }, {
+            wpx: 77
+        }]; //单元格列宽
+        var titleColumnArray = ["A1","B1","C1","D1"];
+        setSheetStyle(sheet, titleColumnArray);
+        openDownloadDialog(sheet2blob(sheet,fileName+".xlsx"), fileName+".xlsx");
+    }
+
+    //表格查询
+    function loadbillSumGridData(param,success,error){
+        var data=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/merchantWeightReport/listPage.action",
+            processData:true,
+            dataType: "json",
+            data:bindGridMeta2Form("billSumGrid", "queryForm"),
+            async : false,
+            success: function (ret) {
+                if(ret){
+                    data=ret;
+                }
+            },
+            error: function(){
+                data=[]
+            }
+        });
+        success(data);
+    }
+
+    function queryOrigionReport()
+    {
+        var opts = $('#billSumGrid').datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/merchantWeightReport/listPage.action";
+        }
+
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        $('#billSumGrid').datagrid("reload", bindGridMeta2Form("billSumGrid", "queryForm"));
+    }
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+
+
+</script>
+</#body>

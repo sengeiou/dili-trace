@@ -439,13 +439,15 @@ public class UserApi {
             }
             userService.userBindWeChat(openid, Long.valueOf(user_id));
             return BaseOutput.success();
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("微信用户绑定失败", e);
             return BaseOutput.failure(e.getMessage());
         }
     }
 
-    @ApiOperation(value = "wx用户绑定查询", notes = "微信用户绑定")
+    @ApiOperation(value = "wx用户绑定弹窗查询", notes = "微信用户绑定")
     @GetMapping(value = "/getUserBindWeChat.api")
     public BaseOutput getUserBindWeChat(@RequestParam String user_id) {
         logger.info("微信用户绑定查询，user_id:" + user_id);
@@ -453,6 +455,31 @@ public class UserApi {
             User user = userService.get(Long.valueOf(user_id));
             Boolean needTip = checkNeedTip(user);
             return BaseOutput.success().setData(needTip);
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error("微信用户绑定查询失败", e);
+            BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.failure("error");
+    }
+
+    @ApiOperation(value = "wx查询微信是否绑定用户", notes = "微信绑定用户")
+    @GetMapping(value = "/validateWeChatBindUser.api")
+    public BaseOutput validateWeChatBindUser(@RequestParam String open_id) {
+        logger.info("微信用户绑定查询，open_id:" + open_id);
+        try {
+            User user = DTOUtils.newDTO(User.class);
+            user.setOpenId(open_id);
+            List<User> userList = userService.listByExample(user);
+            Boolean isBind = false;
+            //微信已绑定
+            if (!userList.isEmpty()) {
+                isBind = true;
+            }
+            return BaseOutput.success().setData(isBind);
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("微信用户绑定查询失败", e);
             BaseOutput.failure(e.getMessage());
@@ -467,6 +494,8 @@ public class UserApi {
         try {
             userService.confirmBindWeChatTip(user_id);
             return BaseOutput.success();
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("wx用户绑定确认提示", e);
             BaseOutput.failure(e.getMessage());

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
@@ -19,22 +21,26 @@ import java.util.UUID;
  */
 public class WxServerUtil {
 
+    private static Logger log = LoggerFactory.getLogger(WxServerUtil.class);
+
     public static Map<String, Object> getAccessToken(String appid, String secret)
             throws JsonMappingException, JsonProcessingException {
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret="
                 + secret;
+        Map<String, Object> map = new HashMap<>();
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.getForObject(url, String.class);
         if (response == null) {
-            throw new RuntimeException("获取失败，未接收到响应结果");
+            log.error("获取失败，未接收到响应结果");
+            return map;
         }
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode resData = objectMapper.readTree(response);
         String errcode = "errcode";
         if (resData.has(errcode)) {
-            throw new RuntimeException(resData.get("errmsg").asText());
+            log.error(resData.get("errmsg").asText());
+            return map;
         }
-        Map<String, Object> map = new HashMap<>();
         map.put("access_token", resData.get("access_token").asText());
         map.put("expires_in", resData.get("expires_in").intValue());
         return map;

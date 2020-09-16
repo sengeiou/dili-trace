@@ -23,7 +23,7 @@
                                 value="${createdEnd}!" />
                         </div>
                         <div class="search-item">
-                            <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right"
+                            <input class="easyui-textbox" name="likeName" id="likeName" style="width:100%" labelAlign="right"
                                 data-options="label:'姓名:'" />
                         </div>
                         <div class="search-item">
@@ -96,7 +96,7 @@
                             data-options="field:'id',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             ID
                         </th>
-                        <th width="6%"
+                        <th width="18%"
                             data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             名称
                         </th>
@@ -104,11 +104,11 @@
                             data-options="field:'legalPerson',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             法人
                         </th>
-                        <th width="8%"
+                        <th width="6%"
                             data-options="field:'phone', formatter:phoneFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             手机号
                         </th>
-                        <th width="10%"
+                        <th width="8%"
                             data-options="field:'cardNo',formatter:cardNoFormatter,   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             身份证号
                         </th>
@@ -128,13 +128,17 @@
                             data-options="field:'plates',   sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             车牌
                         </th>
-                        <th width="10%"
+                        <th width="5%"
                             data-options="field:'businessLicenseUrl',formatter:function(val){return val?'有':'无'},   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             营业执照
                         </th>
                         <th width="5%"
                             data-options="field:'state',_provider:'enabledStateProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                             状态
+                        </th>
+                        <th width="5%"
+                            data-options="field:'isActive',_provider:'userActiveEnumProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            活跃
                         </th>
                         <th width="6%"
                             data-options="field:'qrStatus',_provider:'userQrStatusEnumProvider', formatter:userQrStatusFormatter,  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">

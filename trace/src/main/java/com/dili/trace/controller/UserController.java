@@ -1,15 +1,5 @@
 package com.dili.trace.controller;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Resource;
-
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BaseInfoRpcService;
@@ -20,10 +10,8 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.QrItemTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.jobs.UpdateUserQrStatusJob;
@@ -31,23 +19,22 @@ import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
 import com.dili.trace.util.MaskUserInfo;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -76,8 +63,9 @@ public class UserController {
 		// modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		// modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
 		LocalDateTime now = LocalDateTime.now();
-		modelMap.put("createdStart", now.withYear(2019).withMonth(1).withDayOfMonth(1)
-				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
+//		modelMap.put("createdStart", now.withYear(2019).withMonth(1).withDayOfMonth(1)
+//				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
+		modelMap.put("createdStart", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
 		modelMap.put("createdEnd", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
 
 		// modelMap.put("cities", this.queryCitys());
@@ -276,4 +264,22 @@ public class UserController {
 
 	}
 
+	@RequestMapping(value = "/activeUser.action", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public BaseOutput activeUser(Long id,Integer is_active) {
+		try {
+			User user = DTOUtils.newDTO(User.class);
+			user.setId(id);
+			user.setIsActive(is_active);
+			int count=this.userService.updateSelective(user);
+			if(count==0){
+				return BaseOutput.failure();
+			}
+			return BaseOutput.success();
+		} catch (Exception e) {
+			LOGGER.error("激活失败", e);
+			return BaseOutput.failure();
+		}
+
+	}
 }

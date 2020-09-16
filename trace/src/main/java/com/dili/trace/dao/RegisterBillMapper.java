@@ -1,18 +1,17 @@
 package com.dili.trace.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.TraceReportDto;
-import com.dili.trace.dto.TraceReportQueryDto;
-import com.dili.trace.dto.UserListDto;
+import com.dili.trace.dto.*;
 import com.dili.trace.dto.thirdparty.report.RegionCountInfo;
 import com.dili.trace.dto.thirdparty.report.ReportCountDto;
 
+import com.dili.trace.dto.thirdparty.report.ReportRegisterBillDto;
 import org.apache.ibatis.annotations.Select;
 
 public interface RegisterBillMapper extends MyMapper<RegisterBill> {
@@ -53,4 +52,27 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
      */
     public List<ReportCountDto> selectReportCountData(RegisterBillDto billDto);
 
+    /**
+     * 报备检测数据统计
+     */
+    public List<ReportRegisterBillDto> selectRegisterBillReport(RegisterBillDto billDto);
+
+    /**
+     * 查询数据库当前时间
+     */
+    public Date selectCurrentTime();
+
+    /*
+     * 产地进场重量分布统计
+     * @param queryDto
+     * @return
+     */
+    public List<OrigionReportDto> queryOrigionReport(OrigionReportQueryDto queryDto);
+
+    /*
+     * 进场商品产地分布统计
+     * @param queryDto
+     * @return
+     */
+    public List<ProductOrigionReportDto> queryProductOrigionReport(OrigionReportQueryDto queryDto);
 }

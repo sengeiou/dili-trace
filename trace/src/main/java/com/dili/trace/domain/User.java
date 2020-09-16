@@ -321,4 +321,30 @@ public interface User extends IBaseDomain {
      * @param confirm_date
      */
     void setConfirmDate(Date confirm_date);
+
+    /**
+     * 用户上报标志位
+     * @return
+     */
+    @Column(name = "`is_push`")
+    Integer getIsPush();
+
+    /**
+     * 用户上报标志位
+     * @param is_push
+     */
+    void setIsPush(Integer is_push);
+
+    /**
+     * 用户活跃标志位
+     * @return
+     */
+    @Column(name = "`is_active`")
+    Integer getIsActive();
+
+    /**
+     * 用户活跃标志位
+     * @param is_active
+     */
+    void setIsActive(Integer is_active);
 }

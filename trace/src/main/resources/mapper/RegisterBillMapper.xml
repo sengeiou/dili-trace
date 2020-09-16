@@ -191,16 +191,26 @@
     left join  ( <include refid="noVerifyedBillCount"/>) t_no_verifyed_bill_count on t_no_verifyed_bill_count.group_key=a.area
   </select>
   <sql  id="userCountQuery">
-  select count(1) user_count,area as group_key from(
-    select u.id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
+  select
+    <choose>
+      <when test="isUserActive != null">
+        count(t.is_active=1 or null) user_count,
+      </when>
+      <otherwise>
+        count(1) user_count,
+      </otherwise>
+    </choose>
+   area as group_key from(
+    select u.id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from `user` u 
     left join  (
       select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
       left join tally_area_no  
       on r_user_tally_area.tally_area_no_id =tally_area_no.id  
       group by r_user_tally_area.user_id 
-      )t_area on t_area.user_id=u.id
+      ) t_area on t_area.user_id=u.id
      where u.yn=1
+     and u.state = 1
     )t GROUP  by area
 </sql>
 
@@ -419,6 +429,7 @@
   (select sum(case when weight_unit=1 then total_weight /2 else total_weight end) transactionTotal,count(1) transactionBatch
     from trade_detail 
     where trade_detail.parent_id is not null
+    and trade_detail.sale_status = 10
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
     </if>
@@ -453,5 +464,69 @@
     )unqualifiedPdt
 </select>
 
+  <select id="selectRegisterBillReport" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.ReportRegisterBillDto">
+    SELECT b.`operator_name` approvalName,b.`verify_status` approvalStatus,b.`operation_time` approvalTime,b.`brand_name` brand,
+      b.`created` enterTime, REPLACE(b.`origin_name`,',','-') productionStr,
+      b.`spec_name` specification, b.`user_id` thirdAccId, b.`id` thirdEnterId, b.`product_id` thirdGoodsId, c.`name` thirdGoodsName,
+      b.`upstream_id` thirdUpId, b.`plate` transporterId, IF(b.`weight_unit`=1,'斤','公斤') unitName, b.`weight` enterNum
+    FROM `register_bill` b
+    JOIN `category` c ON b.product_id = c.id
+    WHERE 1=1
+      <if test="modifiedEnd != null">
+          <![CDATA[AND b.modified <=#{modifiedEnd}]]>
+      </if>
+      <if test="modifiedStart != null">
+          <![CDATA[AND b.modified >#{modifiedStart}]]>
+      </if>
+        <if test="isDeleted != null">
+        <![CDATA[AND b.is_deleted = #{isDeleted}]]>
+      </if>
+  </select>
+
+  <select id="selectCurrentTime" resultType="java.util.Date">
+    SELECT CURRENT_TIMESTAMP
+  </select>
+
+  <select id="queryOrigionReport" resultType="com.dili.trace.dto.OrigionReportDto"
+          parameterType="com.dili.trace.dto.OrigionReportQueryDto">
+    SELECT r.`origin_name` as origion_name, COUNT(1) as bill_count, round(SUM(IF(weight_unit=1,weight*0.0005,weight*0.001)),2) as weight
+    FROM register_bill r WHERE r.`is_checkin`=1 AND r.is_deleted=0
+    <if test="startDate != null">
+      <![CDATA[AND r.`operation_time`>=#{startDate}]]>
+    </if>
+    <if test="endDate != null">
+      <![CDATA[AND r.`operation_time`<=#{endDate}]]>
+    </if>
+    <if test="origionName != null and origionName != ''">
+        AND r.`origin_name` LIKE #{origionName}
+    </if>
+    <if test="productName != null and productName != ''">
+      AND r.`product_name` LIKE #{productName}
+    </if>
+
+    GROUP BY r.`origin_name` order by weight desc;
+
+  </select>
+
+  <select id="queryProductOrigionReport" resultType="com.dili.trace.dto.ProductOrigionReportDto"
+          parameterType="com.dili.trace.dto.OrigionReportQueryDto">
+    SELECT r.`origin_name` as origion_name, c.full_name as product_name, round(SUM(IF(weight_unit=1,weight*0.0005,weight*0.001)),2) as weight
+    FROM register_bill r, category c WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.product_id=c.id
+    <if test="startDate != null">
+      <![CDATA[AND r.`operation_time`>=#{startDate}]]>
+    </if>
+    <if test="endDate != null">
+      <![CDATA[AND r.`operation_time`<=#{endDate}]]>
+    </if>
+    <if test="origionName != null and origionName != ''">
+      AND r.`origin_name` LIKE #{origionName}
+    </if>
+    <if test="productName != null and productName != ''">
+      AND c.`full_name` LIKE #{productName}
+    </if>
+
+    GROUP BY c.full_name, r.`origin_name` order by c.full_name, weight desc;
+
+  </select>
 
 </mapper>
