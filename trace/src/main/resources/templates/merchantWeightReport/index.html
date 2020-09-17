@@ -130,7 +130,7 @@
         $(".datagrid-f :hidden").remove();
         var startDate = $("#startDate").val().substring(0,10);
         var endDate = $("#endDate").val().substring(0,10);
-        var fileName="进场商品产地分布统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        var fileName="商户进场重量统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
         var sheet = XLSX2.utils.table_to_sheet(document.getElementById('merchantReportDiv'));
         sheet["!cols"] = [{
             wpx: 150
