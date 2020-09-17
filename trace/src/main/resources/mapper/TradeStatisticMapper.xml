@@ -66,13 +66,16 @@
             FROM
             register_bill b
             JOIN `checkinout_record` c ON b.id=c.`bill_id`
-            JOIN user u
+            JOIN `user` u
             ON b.user_id = u.id
             WHERE b.is_checkin = 1
             AND b.is_deleted = 0
             AND b.verify_status = 20
             <if test="userName!=null and userName!='' ">
                 AND b.name like concat('%',#{userName},'%')
+            </if>
+            <if test="varietyName!=null and varietyName!='' ">
+                AND b.product_name like concat('%',#{varietyName},'%')
             </if>
             <if test="phone!=null and phone!='' ">
                 AND u.phone like concat('%',#{phone},'%')
@@ -84,5 +87,7 @@
                 <![CDATA[AND c.created <= #{endDate} ]]>
             </if>
             GROUP BY b.name,b.product_name
+            ORDER BY weight DESC
     </select>
+
 </mapper>
