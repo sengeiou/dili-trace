@@ -65,7 +65,7 @@
                 </th>
                 <th width="10%"
                     data-options="field:'billCount',  align:'center', resizable:'true', fixed:'false'">
-                    报备单总数（已进门）
+                    进场报备单总数
                 </th>
                 <th width="10%"
                     data-options="field:'varietyName',  align:'center', resizable:'true', fixed:'false'">
@@ -116,6 +116,12 @@
                 mark=1;                                         //一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
             }
         }
+        $("#merchantReportDiv").find("tr").each(function(){
+            let td_txt = $(this).find("td").text();
+            if(td_txt.indexOf("合计")>=0||td_txt.indexOf("总计")>=0){
+                $(this).css("color","red");
+            }
+        });
         $("#merchantReportDiv").find("td:hidden").remove();
     }
 
@@ -124,7 +130,7 @@
         $(".datagrid-f :hidden").remove();
         var startDate = $("#startDate").val().substring(0,10);
         var endDate = $("#endDate").val().substring(0,10);
-        var fileName="进场商品产地分布统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        var fileName="商户进场重量统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
         var sheet = XLSX2.utils.table_to_sheet(document.getElementById('merchantReportDiv'));
         sheet["!cols"] = [{
             wpx: 150

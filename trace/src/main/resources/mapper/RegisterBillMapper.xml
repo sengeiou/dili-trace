@@ -211,7 +211,8 @@
       ) t_area on t_area.user_id=u.id
      where u.yn=1
      and u.state = 1
-    )t GROUP  by area
+     and u.validate_state=40
+    ) t GROUP  by area
 </sql>
 
 <sql id="billCountQuery">
@@ -489,13 +490,14 @@
 
   <select id="queryOrigionReport" resultType="com.dili.trace.dto.OrigionReportDto"
           parameterType="com.dili.trace.dto.OrigionReportQueryDto">
-    SELECT r.`origin_name` as origion_name, COUNT(1) as bill_count, round(SUM(IF(weight_unit=1,weight*0.0005,weight*0.001)),2) as weight
-    FROM register_bill r WHERE r.`is_checkin`=1 AND r.is_deleted=0
+    SELECT r.`origin_name` as origion_name, COUNT(1) as bill_count,
+    round(SUM(IF(r.weight_unit=1,r.weight*0.0005,r.weight*0.001)),2) as weight
+    FROM register_bill r, checkinout_record c WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = c.bill_id
     <if test="startDate != null">
-      <![CDATA[AND r.`operation_time`>=#{startDate}]]>
+      <![CDATA[AND c.`created`>=#{startDate}]]>
     </if>
     <if test="endDate != null">
-      <![CDATA[AND r.`operation_time`<=#{endDate}]]>
+      <![CDATA[AND c.`created`<=#{endDate}]]>
     </if>
     <if test="origionName != null and origionName != ''">
         AND r.`origin_name` LIKE #{origionName}
@@ -510,22 +512,24 @@
 
   <select id="queryProductOrigionReport" resultType="com.dili.trace.dto.ProductOrigionReportDto"
           parameterType="com.dili.trace.dto.OrigionReportQueryDto">
-    SELECT r.`origin_name` as origion_name, c.full_name as product_name, round(SUM(IF(weight_unit=1,weight*0.0005,weight*0.001)),2) as weight
-    FROM register_bill r, category c WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.product_id=c.id
+    SELECT r.`origin_name` as origion_name, r.product_name as product_name,
+    round(SUM(IF(r.weight_unit=1,r.weight*0.0005,r.weight*0.001)),2) as weight
+    FROM register_bill r, checkinout_record ch
+    WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = ch.bill_id
     <if test="startDate != null">
-      <![CDATA[AND r.`operation_time`>=#{startDate}]]>
+      <![CDATA[AND ch.`created`>=#{startDate}]]>
     </if>
     <if test="endDate != null">
-      <![CDATA[AND r.`operation_time`<=#{endDate}]]>
+      <![CDATA[AND ch.`created`<=#{endDate}]]>
     </if>
     <if test="origionName != null and origionName != ''">
       AND r.`origin_name` LIKE #{origionName}
     </if>
     <if test="productName != null and productName != ''">
-      AND c.`full_name` LIKE #{productName}
+      AND r.`product_name` LIKE #{productName}
     </if>
 
-    GROUP BY c.full_name, r.`origin_name` order by c.full_name, weight desc;
+    GROUP BY r.product_name, r.`origin_name` order by r.product_name,  weight desc, r.origin_name;
 
   </select>
 

@@ -10,6 +10,7 @@
         COUNT(1) approachBillCount
         FROM
         register_bill b
+        JOIN `checkinout_record` c ON b.id=c.`bill_id`
         WHERE b.is_checkin=1
         AND b.is_deleted=0
         AND b.verify_status=20
@@ -17,10 +18,10 @@
             AND b.product_name like concat('%',#{likeVarietyName},'%')
         </if>
         <if test="createdStart != null ">
-            <![CDATA[AND b.modified >= #{createdStart} ]]>
+            <![CDATA[AND c.created >= #{createdStart} ]]>
         </if>
         <if test="createdEnd != null ">
-            <![CDATA[AND b.modified <= #{createdEnd} ]]>
+            <![CDATA[AND c.created <= #{createdEnd} ]]>
         </if>
         GROUP BY b.product_name
         ORDER BY weight DESC
@@ -35,6 +36,7 @@
         COUNT(DISTINCT b.product_id) varietyCount
         FROM
         register_bill b
+        JOIN `checkinout_record` c ON b.id=c.`bill_id`
         JOIN user u ON b.user_id=u.id
         WHERE b.is_checkin = 1
         AND b.is_deleted = 0
@@ -46,10 +48,10 @@
             AND u.phone like concat('%',#{phone},'%')
         </if>
         <if test="startDate != null ">
-            <![CDATA[AND b.modified >= #{startDate} ]]>
+            <![CDATA[AND c.created  >= #{startDate} ]]>
         </if>
         <if test="endDate != null ">
-            <![CDATA[AND b.modified <= #{endDate} ]]>
+            <![CDATA[AND c.created <= #{endDate} ]]>
         </if>
         ORDER BY weight DESC
     </select>
@@ -63,7 +65,8 @@
             ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 2 ) weight
             FROM
             register_bill b
-            JOIN user u
+            JOIN `checkinout_record` c ON b.id=c.`bill_id`
+            JOIN `user` u
             ON b.user_id = u.id
             WHERE b.is_checkin = 1
             AND b.is_deleted = 0
@@ -71,15 +74,20 @@
             <if test="userName!=null and userName!='' ">
                 AND b.name like concat('%',#{userName},'%')
             </if>
+            <if test="varietyName!=null and varietyName!='' ">
+                AND b.product_name like concat('%',#{varietyName},'%')
+            </if>
             <if test="phone!=null and phone!='' ">
                 AND u.phone like concat('%',#{phone},'%')
             </if>
             <if test="startDate != null ">
-                <![CDATA[AND b.modified >= #{startDate} ]]>
+                <![CDATA[AND c.created >= #{startDate} ]]>
             </if>
             <if test="endDate != null ">
-                <![CDATA[AND b.modified <= #{endDate} ]]>
+                <![CDATA[AND c.created <= #{endDate} ]]>
             </if>
             GROUP BY b.name,b.product_name
+            ORDER BY weight DESC
     </select>
+
 </mapper>

@@ -15,6 +15,15 @@ public class BillSumReportDto {
     private BigDecimal weight;
     private String phone;
     private String varietyName;
+    private BigDecimal userWeight;
+
+    public BigDecimal getUserWeight() {
+        return userWeight;
+    }
+
+    public void setUserWeight(BigDecimal userWeight) {
+        this.userWeight = userWeight;
+    }
 
     public String getVarietyName() {
         return varietyName;
