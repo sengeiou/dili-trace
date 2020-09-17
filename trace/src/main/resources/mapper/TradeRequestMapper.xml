@@ -94,9 +94,9 @@
 
   <select id="queryPurchaseGoodsReportList" parameterType="com.dili.trace.dto.PurchaseGoodsReportQueryDto"
           resultType="com.dili.trace.dto.PurchaseGoodsReportDto">
-    SELECT c.`full_name` as product_name,
+    SELECT t.`product_name` as product_name,
     round(SUM(IF(d.weight_unit=1,d.stock_weight*0.0005,d.stock_weight*0.001)),2) as weight
-    FROM `trade_request` t, trade_order o, `trade_detail` d, product_stock p, category c
+    FROM `trade_request` t, trade_order o, `trade_detail` d, product_stock p
     WHERE o.`order_status`=10
     <if test="startDate != null">
       <![CDATA[AND t.`handle_time`>=#{startDate}]]>
@@ -105,20 +105,20 @@
       <![CDATA[AND t.`handle_time`<=#{endDate}]]>
     </if>
     <if test="productName != null and productName != ''">
-    and c.full_name like #{productName}
+    and t.product_name like #{productName}
     </if>
     AND t.`return_status`!=20
     AND t.trade_order_id = o.id AND t.id = d.`trade_request_id`
-    AND d.`product_stock_id`=p.`id` AND p.`product_id`=c.`id`
-    GROUP BY c.`full_name` order by weight desc
+    AND d.`product_stock_id`=p.`id`
+    GROUP BY t.`product_name` order by weight desc
 
   </select>
 
   <select id="queryUserPurchaseReportList" parameterType="com.dili.trace.dto.UserPurchaseReportQueryDto"
           resultType="com.dili.trace.dto.PurchaseGoodsReportDto">
-    SELECT user.name as user_name, c.`full_name` as product_name,
+    SELECT user.name as user_name, t.`product_name` as product_name,
     round(SUM(IF(d.weight_unit=1,d.stock_weight*0.0005,d.stock_weight*0.001)),2) as weight
-    FROM `trade_request` t, trade_order o, `trade_detail` d, product_stock p, category c, user user
+    FROM `trade_request` t, trade_order o, `trade_detail` d, product_stock p, user user
     WHERE o.`order_status`=10
     <if test="startDate != null">
       <![CDATA[AND t.`handle_time`>=#{startDate}]]>
@@ -134,9 +134,9 @@
     </if>
     AND t.`return_status`!=20
     AND t.trade_order_id = o.id AND t.id = d.`trade_request_id`
-    AND d.`product_stock_id`=p.`id` AND p.`product_id`=c.`id`
+    AND d.`product_stock_id`=p.`id`
     and user.id = t.buyer_id
-    GROUP BY user.name, c.`full_name` order by user.name, weight desc
+    GROUP BY user.name, t.`product_name` order by user.name, weight desc
 
   </select>
 
