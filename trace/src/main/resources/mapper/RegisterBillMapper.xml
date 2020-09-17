@@ -212,7 +212,7 @@
      where u.yn=1
      and u.state = 1
      and u.validate_state=40
-    )t GROUP  by area
+    ) t GROUP  by area
 </sql>
 
 <sql id="billCountQuery">
