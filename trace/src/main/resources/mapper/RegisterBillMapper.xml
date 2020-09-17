@@ -512,10 +512,10 @@
 
   <select id="queryProductOrigionReport" resultType="com.dili.trace.dto.ProductOrigionReportDto"
           parameterType="com.dili.trace.dto.OrigionReportQueryDto">
-    SELECT r.`origin_name` as origion_name, c.full_name as product_name,
+    SELECT r.`origin_name` as origion_name, r.product_name as product_name,
     round(SUM(IF(r.weight_unit=1,r.weight*0.0005,r.weight*0.001)),2) as weight
-    FROM register_bill r, category c, checkinout_record ch
-    WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.product_id=c.id and r.id = ch.bill_id
+    FROM register_bill r, checkinout_record ch
+    WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = ch.bill_id
     <if test="startDate != null">
       <![CDATA[AND ch.`created`>=#{startDate}]]>
     </if>
@@ -526,10 +526,10 @@
       AND r.`origin_name` LIKE #{origionName}
     </if>
     <if test="productName != null and productName != ''">
-      AND c.`full_name` LIKE #{productName}
+      AND r.`product_name` LIKE #{productName}
     </if>
 
-    GROUP BY c.full_name, r.`origin_name` order by c.full_name, weight desc;
+    GROUP BY r.product_name, r.`origin_name` order by r.product_name,  weight desc, r.origin_name;
 
   </select>
 
