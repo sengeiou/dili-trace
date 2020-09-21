@@ -184,7 +184,7 @@
         var initData = {};
         initData = JSON.parse(JSON.stringify(data));
         var insertRow = 0;
-
+        totalColumns = [];
         for (var i=1; i <rowsLength+1; i++) {
 
             if ((i != rowsLength && initData.rows[i]['userName'] != initData.rows[i-1]['userName']) || i == rowsLength) {

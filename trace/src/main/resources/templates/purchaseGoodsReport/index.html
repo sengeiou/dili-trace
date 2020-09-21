@@ -85,7 +85,6 @@
         var endDate = $("#endDate").val().substring(0,10);
         var opts = $('#purchaseGoodsGrid').datagrid("options");
         opts.title="采购商品交易统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
-        debugger;
         doExport('purchaseGoodsGrid');
     }
 
