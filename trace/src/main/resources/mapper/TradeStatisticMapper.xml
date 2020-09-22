@@ -57,7 +57,7 @@
     <select id="getMerchantReportList" parameterType="com.dili.trace.dto.BillSumReportDto"
             resultType="com.dili.trace.dto.BillSumReportDto">
             SELECT
-            IFNULL(b.user_id, '合计') userName,
+            IFNULL(u.name, '合计') userName,
             COUNT(1) billCount,
             IFNULL(b.product_name, '合计') varietyName,
             ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 2 ) weight
@@ -83,7 +83,7 @@
             <if test="endDate != null ">
                 <![CDATA[AND c.created <= #{endDate} ]]>
             </if>
-            GROUP BY b.name,b.product_name
+            GROUP BY b.user_id,b.product_name
             ORDER BY weight DESC
     </select>
 
