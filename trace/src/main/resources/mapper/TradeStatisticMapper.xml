@@ -13,7 +13,6 @@
         JOIN `checkinout_record` c ON b.id=c.`bill_id`
         WHERE b.is_checkin=1
         AND b.is_deleted=0
-        AND b.verify_status=20
         <if test="likeVarietyName!=null and likeVarietyName!='' ">
             AND b.product_name like concat('%',#{likeVarietyName},'%')
         </if>
@@ -40,7 +39,6 @@
         JOIN user u ON b.user_id=u.id
         WHERE b.is_checkin = 1
         AND b.is_deleted = 0
-        AND b.verify_status = 20
         <if test="userName!=null and userName!='' ">
             AND b.name like concat('%',#{userName},'%')
         </if>
@@ -70,7 +68,6 @@
             ON b.user_id = u.id
             WHERE b.is_checkin = 1
             AND b.is_deleted = 0
-            AND b.verify_status = 20
             <if test="userName!=null and userName!='' ">
                 AND b.name like concat('%',#{userName},'%')
             </if>

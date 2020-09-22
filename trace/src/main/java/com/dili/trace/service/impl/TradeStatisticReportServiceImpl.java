@@ -7,6 +7,8 @@ import com.dili.trace.dto.CommodityWeightReportDto;
 import com.dili.trace.service.TradeStatisticReportService;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 @Service
 @EnableRetry
 public class TradeStatisticReportServiceImpl implements TradeStatisticReportService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TradeStatisticReportServiceImpl.class);
 
     @Autowired
     private TradeStatisticMapper tradeStatisticMapper;
@@ -83,7 +87,7 @@ public class TradeStatisticReportServiceImpl implements TradeStatisticReportServ
         totalBillSum.setBillCount(totalBillCount);
         totalBillSum.setWeight(BigDecimal.valueOf(totalWeight).setScale(2, BigDecimal.ROUND_HALF_UP));
         billResult.add(totalBillSum);
-        System.out.print("经营户进场重量统计:" + JSON.toJSONString(billResult));
+        logger.info("经营户进场重量统计:" + JSON.toJSONString(billResult));
 
         List<BillSumReportDto> result = new ArrayList<>(billResult);
         return result;
