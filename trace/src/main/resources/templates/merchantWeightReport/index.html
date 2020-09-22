@@ -11,6 +11,8 @@
     <div region="north" height="auto" align="center">
         <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
         </div>
+        <input type="hidden" name="startDateOriginal" id="startDateOriginal" value="${startDate}!"/>
+        <input type="hidden" name="endDateOriginal" id="endDateOriginal" value="${endDate}!"/>
         <!-- =========================================================表单========================================================= -->
         <div class="easyui-panel" style="width:100%;" align="left">
             <form id="queryForm" class="easyui-form" method="post" fit="true">
@@ -205,6 +207,8 @@
     //清空表单
     function clearQueryForm() {
         $('#queryForm').form('clear');
+        $("#startDate").datetimebox("setValue",$("#startDateOriginal").val());
+        $("#endDate").datetimebox("setValue",$("#endDateOriginal").val());
     }
 
 
