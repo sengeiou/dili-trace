@@ -143,6 +143,27 @@
         }]; //单元格列宽
         var titleColumnArray = ["A1","B1","C1","D1"];
         setSheetStyle(sheet, titleColumnArray);
+        console.log(sheet);
+        var ref = sheet["!ref"];
+        var total= Number(ref.slice(4));
+        var map = new Map();
+        for(var i=1;i<=total;i++){
+            var obj = sheet["A"+i];
+            var B_obj = sheet["B"+i];
+            var D_obj = sheet["D"+i];
+            if(obj==undefined){
+                continue;
+            }
+            console.log(obj.v);
+            if("合计"==obj.v || "总计" == obj.v){
+                obj.s.font.color={"rgb":"ff0000"};
+                map.set(i,obj.v);
+            }
+            if(map.has(i)){
+                B_obj.s.font.color={"rgb":"ff0000"};
+                D_obj.s.font.color={"rgb":"ff0000"};
+            }
+        }
         openDownloadDialog(sheet2blob(sheet,fileName+".xlsx"), fileName+".xlsx");
     }
 
