@@ -6,21 +6,21 @@ import com.dili.trace.dto.*;
 import com.dili.trace.service.ReportService;
 import com.dili.trace.util.CollectorsUtil;
 import one.util.streamex.StreamEx;
-import org.jooq.SelectSeekLimitStep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 
+/**
+ * @author lily
+ */
 @Service
 @EnableRetry
 public class ReportServiceImpl implements ReportService{
@@ -44,7 +44,8 @@ public class ReportServiceImpl implements ReportService{
                 ProductOrigionReportDto::getProductName));
         List<ProductOrigionReportDto> finalList = new ArrayList<>();
         StreamEx.ofValues(map).forEach(mapList -> {
-            if(mapList.size() >= 5)
+            int mapSub= 5;
+            if(mapList.size() >= mapSub)
             {
                 finalList.addAll(mapList.subList(0,5));
             }

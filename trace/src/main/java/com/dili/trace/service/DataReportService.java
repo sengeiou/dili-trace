@@ -257,7 +257,7 @@ public class DataReportService {
 
         return this.postJson(url, Maps.newHashMap(), data, doc -> {
             Boolean success = doc.read("$.success");
-            System.out.println(success);
+            logger.info(String.valueOf(success));
             if (success != null && success) {
                 String accessToken = doc.read("$.data.token");
                 return BaseOutput.success().setData(accessToken);

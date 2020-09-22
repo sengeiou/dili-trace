@@ -11,6 +11,7 @@ import com.dili.trace.domain.SysConfig;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.BillReportDto;
 import com.dili.trace.dto.BillReportQueryDto;
+import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.github.pagehelper.Page;
@@ -121,7 +122,7 @@ public class BillReportService {
         map.put("createdEnd", createEndStr);
         List<TradeReportDto> list = checkinOutRecordMapper.getUserBillReport(map);
 
-        String userType = "bill";
+        String userType = SysConfigTypeEnum.CATEGORY_BILL.getCode();
         int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
         int mult =100;
@@ -151,7 +152,7 @@ public class BillReportService {
         createEnd = DateUtils.formatDate2DateTimeStart(createEnd);
         String createStartStr = DateUtils.format(createStart);
         String createEndStr = DateUtils.format(createEnd);
-        String userType = "trade";
+        String userType = SysConfigTypeEnum.CATEGORY_TRADE.getCode();
         int userCount = getUserCount(userType);
         BigDecimal userDecimal = new BigDecimal(userCount);
         map.put("baseDay", baseDay);
@@ -174,7 +175,7 @@ public class BillReportService {
 
     private int getUserCount(String userType) {
         int resultCount = 0;
-        String optType = "statisticBaseUser";
+        String optType = SysConfigTypeEnum.STATISTIC_BASE_USER.getCode();
         String optCategory = userType;
         SysConfig config = new SysConfig();
         config.setOpt_type(optType);

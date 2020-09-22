@@ -7,6 +7,7 @@ import com.dili.trace.dto.TraceReportDto;
 import com.dili.trace.dto.TraceReportQueryDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.SysConfigTypeEnum;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -18,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * @author asa.lee
+ */
 @Service
 public class TraceReportService {
     @Autowired
@@ -33,8 +37,8 @@ public class TraceReportService {
                 Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode(), BillVerifyStatusEnum.RETURNED.getCode()));
         query.setNoneVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode()));
 
-        String optType = "operation_report_limit_day";
-        String optCategory = "operation_report_limit_day";
+        String optType = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
+        String optCategory = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
         Integer val =null;
         SysConfig sysConfig = new SysConfig();
         sysConfig.setOpt_type(optType);
