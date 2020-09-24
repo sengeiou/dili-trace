@@ -26,10 +26,7 @@ import com.dili.trace.dto.ManagerInfoDto;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
-import com.dili.trace.enums.MessageReceiverEnum;
-import com.dili.trace.enums.MessageStateEnum;
-import com.dili.trace.enums.MessageTypeEnum;
-import com.dili.trace.enums.ValidateStateEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
 import com.dili.trace.util.QRCodeUtil;
@@ -776,8 +773,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Override
     public void updateUserActiveByTime() {
-        String optType = "operation_report_limit_day";
-        String optCategory = "operation_report_limit_day";
+        String optType = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
+        String optCategory = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
         SysConfig sysConfig = new SysConfig();
         sysConfig.setOpt_type(optType);
         sysConfig.setOpt_category(optCategory);

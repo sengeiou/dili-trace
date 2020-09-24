@@ -44,7 +44,7 @@
     <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
     <!-- 表格 -->
-    <div region="center" style="width:100%;" height="auto">
+    <div region="center" style="width:100%;" height="auto" id="commodityGridDiv">
         <!-- =========================================================表格========================================================= -->
         <table class="easyui-datagrid" title=商品进场重量统计" id="commodityGrid" fitColumns="true" noheader="true"
                pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
@@ -81,6 +81,9 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script src="${contextPath!}/resources/js/xlsx.extendscript.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/xlsx.full.min.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/export.js"></script>
 <script>
 
     function cityLoader(param,success,error) {
@@ -106,11 +109,26 @@
 
     function exportReport()
     {
-        var createdStart = $("#createdStart").val().substring(0,10);
-        var createdEnd = $("#createdEnd").val().substring(0,10);
-        var opts = $('#commodityGrid').datagrid("options");
-        opts.title="商品进场重量统计"+createdStart.replace(/-/g,"")+"-"+createdEnd.replace(/-/g,"");
-        doExport('commodityGrid');
+        $("#commodityGridDiv").find("td:hidden").remove();
+        $(".datagrid-f :hidden").remove();
+        var startDate = $("#createdStart").val().substring(0,10);
+        var endDate = $("#createdEnd").val().substring(0,10);
+        //var opts = $('#commodityGrid').datagrid("options");
+        //opts.title="商品进场重量统计"+createdStart.replace(/-/g,"")+"-"+createdEnd.replace(/-/g,"");
+        //doExport('commodityGrid');
+        var fileName="商品进场重量统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        var sheet = XLSX2.utils.table_to_sheet(document.getElementById('commodityGridDiv'));
+        console.log(sheet);
+        sheet["!cols"] = [{
+            wpx: 150
+        }, {
+            wpx: 160
+        }, {
+            wpx: 148
+        }]; //单元格列宽
+        var titleColumnArray = ["A1","B1","C1"];
+        setSheetStyle(sheet, titleColumnArray);
+        openDownloadDialog(sheet2blob(sheet,fileName+".xlsx"), fileName+".xlsx");
     }
 
     //表格查询

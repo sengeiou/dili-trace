@@ -45,7 +45,7 @@
     <!-- 中央布局 -->
     <!-- ====================================================================================================================== -->
     <!-- 表格 -->
-    <div region="center" style="width:100%;" height="auto">
+    <div region="center" style="width:100%;" height="auto" id="purchaseGoodsGridDiv">
         <!-- =========================================================表格========================================================= -->
         <table class="easyui-datagrid" title="采购商品交易统计" id="purchaseGoodsGrid" fitColumns="true" noheader="true"
                pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
@@ -77,15 +77,32 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script src="${contextPath!}/resources/js/xlsx.extendscript.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/xlsx.full.min.js"></script>
+<script src="${contextPath!}/resources/js/xlsx-style/export.js"></script>
 <script>
 
     function exportReport()
     {
+        $("#purchaseGoodsGridDiv").find("td:hidden").remove();
+        $(".datagrid-f :hidden").remove();
         var startDate = $("#startDate").val().substring(0,10);
         var endDate = $("#endDate").val().substring(0,10);
-        var opts = $('#purchaseGoodsGrid').datagrid("options");
-        opts.title="采购商品交易统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
-        doExport('purchaseGoodsGrid');
+        //var opts = $('#purchaseGoodsGrid').datagrid("options");
+        //opts.title="采购商品交易统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        //doExport('purchaseGoodsGrid');
+
+        var fileName="采购商品交易统计"+startDate.replace(/-/g,"")+"-"+endDate.replace(/-/g,"");
+        var sheet = XLSX2.utils.table_to_sheet(document.getElementById('purchaseGoodsGridDiv'));
+        console.log(sheet);
+        sheet["!cols"] = [{
+            wpx: 250
+        }, {
+            wpx: 260
+        }]; //单元格列宽
+        var titleColumnArray = ["A1","B1"];
+        setSheetStyle(sheet, titleColumnArray);
+        openDownloadDialog(sheet2blob(sheet,fileName+".xlsx"), fileName+".xlsx");
     }
 
     //表格查询
