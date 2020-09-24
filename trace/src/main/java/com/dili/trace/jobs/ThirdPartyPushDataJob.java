@@ -78,7 +78,6 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
     }
 
     /**
@@ -281,13 +280,21 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             //如果最新的一条记录是变更为无效记录（报备单删除），则取当前用户最新有效二维码变更记录
             List<UserQrHistory> userQrHistories = qList.getValue();
             Set<Long> userIdSet = new HashSet<>();
-            userQrHistories.stream().sorted(Comparator.comparing(UserQrHistory::getModified).reversed()).forEachOrdered(s -> {
+            /*userQrHistories.stream().sorted(Comparator.comparing(UserQrHistory::getModified).reversed()).forEachOrdered(s -> {
                 if (isValidate.equals(s.getIsValid())) {
                     resultQrHisList.add(s);
                 } else {
                     userIdSet.add(s.getUserId());
                 }
-            });
+            });*/
+
+            UserQrHistory latestQr= userQrHistories.stream().max(Comparator.comparing(UserQrHistory::getModified)).orElse(null);
+            if (isValidate.equals(latestQr.getIsValid())) {
+                resultQrHisList.add(latestQr);
+            } else {
+                userIdSet.add(latestQr.getUserId());
+            }
+
             //如果最新记录是变更为无效记录（报备单删除），则取当前用户最新有效二维码变更记录
             boolean onlyVoid = CollectionUtils.isNotEmpty(userIdSet) && userIdSet.size() == userQrHistories.size();
             if (onlyVoid) {
