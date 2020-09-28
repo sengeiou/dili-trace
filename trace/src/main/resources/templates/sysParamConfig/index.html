@@ -1,0 +1,256 @@
+<#body head_title="系统参数配置">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true" style="margin-left:5px;width:80%">
+    <div region="north" height="auto" align="center" style="margin-top: 50px">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <div class="easyui-panel" style="width:80%;" align="left">
+            <form id="queryForm" style="display: none" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="instructions" id="instructions" style="width:100%" labelAlign="right"
+                               data-options="label:'配置参数名称:'" value="运营报表" />
+                    </div>
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryList()">查询</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:80%;" height="auto" id="sysConfigGridDiv">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="系统参数配置" id="sysConfigGrid" fitColumns="true" noheader="true"
+               pagination="false" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+               singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc" align="center"
+               fit="true" idField="id"
+               data-options="loader:loadSysConfigGridData">
+            <thead>
+            <tr>
+                <th width="25%"
+                    data-options="field:'instructions', align:'center', resizable:'true', fixed:'false'">
+                    配置参数名称
+                </th>
+                <th width="14%"
+                    data-options="field:'optType',  align:'center', resizable:'true', fixed:'false'">
+                    配置类型
+                </th>
+                <th width="14%"
+                    data-options="field:'optCategory',  align:'center', resizable:'true', fixed:'false'">
+                    配置分类
+                </th>
+                <th width="10%"
+                    data-options="field:'optValue',  align:'center', resizable:'true', fixed:'false'">
+                    配置值
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="用户新增"
+     style="padding:20px" modal="true" border="thin" closed="true"
+     data-options="
+				iconCls: 'icon-edit',
+				height: 350,
+				buttons: [{
+					text:'确认',
+					iconCls:'icon-ok',
+					handler:saveOrUpdate
+				},{
+					text:'取消',
+					iconCls:'icon-cancel',
+					handler:function(){
+						$('#dlg').dialog('close');
+					}
+				}]
+			">
+    <form id="_form" class="easyui-form" method="post" fit="true">
+        <input name="_id" id="_id" type="hidden">
+        <input name="_userId" id="_userId" type="hidden">
+        <table width="430px">
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_instructions" id="_instructions" style="width:100%"
+                           data-options="label:'配置参数名称*:', validType:'length[1,50]',required:true" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_optType" id="_optType" style="width:100%"
+                           data-options="label:'配置类型:'" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_optCategory" id="_optCategory" style="width:100%"
+                           data-options="label:'配置分类:'" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-textbox" name="_optValue" id="_optValue" style="width:100%"
+                           data-options="label:'配置值:',validType:['number','length[1,50]'],required:true" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+</div>
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
+
+    //表格查询
+    function loadSysConfigGridData(param,success,error){
+        var data=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/sysParamConfig/listPage.action",
+            processData:true,
+            dataType: "json",
+            data:bindGridMeta2Form("sysConfigGrid", "queryForm"),
+            async : false,
+            success: function (ret) {
+                if(ret){
+                    data=ret;
+                }
+            },
+            error: function(){
+                data=[]
+            }
+        });
+        success(data);
+    }
+
+    function queryList()
+    {
+        var opts = $('#sysConfigGrid').datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/sysParamConfig/listPage.action";
+        }
+
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        $('#sysConfigGrid').datagrid("reload", bindGridMeta2Form("sysConfigGrid", "queryForm"));
+    }
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+    /**
+     * 初始化用户列表组件
+     */
+    $(function () {
+        initUserGrid();
+    })
+    function initUserGrid() {
+        window._userGrid = $('#sysConfigGrid');
+        var pager = _userGrid.datagrid('getPager');
+        var toolbar = [
+            <#resource method="post" url="sysParamConfig/index.html#update">
+            {
+                iconCls:'icon-edit',
+                text:'修改',
+                handler:function(){
+                    openUpdate();
+                }
+            },
+            </#resource>
+            <#resource method="post" url="sysParamConfig/index.html#back">
+            {
+                iconCls:'icon-undo',
+                text:'返回',
+                handler:function(){
+                    parent.closeWin('view_win');
+                }
+            },
+            </#resource>
+            ];
+                _userGrid.datagrid({
+                    toolbar: toolbar
+                });
+                pager.pagination({
+                    <#controls_paginationOpts />,
+            });
+    }
+    //打开修改窗口
+    function openUpdate(){
+        var selected = $("#sysConfigGrid").datagrid("getSelected");
+        if (null == selected) {
+            swal('警告','请选中一条数据', 'warning');
+            return;
+        }
+
+        $('#dlg').dialog("setTitle","配置参数修改");
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+
+        $('#_form').form('clear');
+        formFocus("_form", "_type");
+        var formData = $.extend({},selected);
+        formData = addKeyStartWith(getOriginalData(formData),"_");
+        $('#_form').form('load', formData);
+        $('#_addressId').combobox('setText',formData._mergedAddress);
+    }
+
+    function saveOrUpdate(){
+        var _formData = removeKeyStartWith($("#_form").serializeObject(),"_");
+        var _url = null;
+        var isNewData=false;
+        //没有id就新增
+        if(_formData.id == null || _formData.id==""){
+            _url = "${contextPath}/sysParamConfig/insert.action";
+        }else{//有id就修改
+            _url = "${contextPath}/sysParamConfig/update.action";
+            isNewData=true;
+        }
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: _formData,
+            dataType: "json",
+            async : true,
+           // contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if(data.code=="200"){
+                    _userGrid.datagrid("reload");
+                    $('#dlg').dialog('close');
+                }else{
+                    swal('错误',data.result, 'error');
+                }
+            },
+            error: function(){
+                swal('错误', '远程访问失败', 'error');
+            }
+        });
+    }
+    function goBack(){
+        var partenPage = window.parent;
+        partenPage.openWin('${contextPath}/traceReport/index.html'); //父窗口model中定义的函数
+    }
+
+</script>
+</#body>

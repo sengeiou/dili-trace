@@ -178,11 +178,11 @@ public class BillReportService {
         String optType = SysConfigTypeEnum.STATISTIC_BASE_USER.getCode();
         String optCategory = userType;
         SysConfig config = new SysConfig();
-        config.setOpt_type(optType);
-        config.setOpt_category(optCategory);
+        config.setOptType(optType);
+        config.setOptCategory(optCategory);
         List<SysConfig> sysConfigList = sysConfigService.listByExample(config);
         if (CollectionUtils.isNotEmpty(sysConfigList)) {
-            String optValue = sysConfigList.get(0).getOpt_value();
+            String optValue = sysConfigList.get(0).getOptValue();
             if (StringUtils.isNotBlank(optValue)) {
                 resultCount = Integer.valueOf(optValue);
             }

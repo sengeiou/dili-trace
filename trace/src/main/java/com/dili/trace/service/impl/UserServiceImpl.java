@@ -776,15 +776,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         String optType = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
         String optCategory = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
         SysConfig sysConfig = new SysConfig();
-        sysConfig.setOpt_type(optType);
-        sysConfig.setOpt_category(optCategory);
+        sysConfig.setOptType(optType);
+        sysConfig.setOptCategory(optCategory);
         List<SysConfig> sysConfigList = sysConfigService.listByExample(sysConfig);
         //未配置活跃限定天数，则不计算活跃
         if (CollectionUtils.isEmpty(sysConfigList)) {
             return;
         }
         //活跃限定天数为0，则不计算活跃
-        String val = sysConfigList.get(0).getOpt_value();
+        String val = sysConfigList.get(0).getOptValue();
         int limitDay = Integer.valueOf(val);
         if (limitDay <= 0) {
             return;
