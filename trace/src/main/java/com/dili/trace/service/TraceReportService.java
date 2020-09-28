@@ -41,11 +41,11 @@ public class TraceReportService {
         String optCategory = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
         Integer val =null;
         SysConfig sysConfig = new SysConfig();
-        sysConfig.setOpt_type(optType);
-        sysConfig.setOpt_category(optCategory);
+        sysConfig.setOptType(optType);
+        sysConfig.setOptCategory(optCategory);
         List<SysConfig> configs = sysConfigService.listByExample(sysConfig);
         if(CollectionUtils.isNotEmpty(configs)){
-            String str = configs.get(0).getOpt_value();
+            String str = configs.get(0).getOptValue();
             if(StringUtils.isNotBlank(str)){
                 int limitDay = Integer.valueOf(str);
                 val=limitDay==0?null:limitDay;

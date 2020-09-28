@@ -21,13 +21,13 @@ public class SysConfig extends BaseDomain {
     private String instructions;
 
     @Column(name = "opt_type")
-    private String opt_type;
+    private String optType;
 
     @Column(name = "opt_category")
-    private String opt_category;
+    private String optCategory;
 
     @Column(name = "opt_value")
-    private String opt_value;
+    private String optValue;
 
     public Long getId() {
         return id;
@@ -45,27 +45,27 @@ public class SysConfig extends BaseDomain {
         this.instructions = instructions;
     }
 
-    public String getOpt_type() {
-        return opt_type;
+    public String getOptType() {
+        return optType;
     }
 
-    public void setOpt_type(String opt_type) {
-        this.opt_type = opt_type;
+    public void setOptType(String optType) {
+        this.optType = optType;
     }
 
-    public String getOpt_category() {
-        return opt_category;
+    public String getOptCategory() {
+        return optCategory;
     }
 
-    public void setOpt_category(String opt_category) {
-        this.opt_category = opt_category;
+    public void setOptCategory(String optCategory) {
+        this.optCategory = optCategory;
     }
 
-    public String getOpt_value() {
-        return opt_value;
+    public String getOptValue() {
+        return optValue;
     }
 
-    public void setOpt_value(String opt_value) {
-        this.opt_value = opt_value;
+    public void setOptValue(String optValue) {
+        this.optValue = optValue;
     }
 }
