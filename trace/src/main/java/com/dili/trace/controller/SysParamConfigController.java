@@ -64,6 +64,12 @@ public class SysParamConfigController {
                 String queParam = " instructions LIKE '%" + query.getInstructions() + "%' ";
                 queSysConfig.setMetadata(IDTO.AND_CONDITION_EXPR, queParam);
             }
+            if (StringUtils.isNotBlank(query.getOptType())) {
+                queSysConfig.setOptType(query.getOptType());
+            }
+            if (StringUtils.isNotBlank(query.getOptCategory())) {
+                queSysConfig.setOptCategory(query.getOptCategory());
+            }
             List<SysConfig> list = sysConfigService.listByExample(queSysConfig);
             return  list;
         } catch (TraceBusinessException e) {
