@@ -6,7 +6,7 @@
             resultType="com.dili.trace.dto.CommodityWeightReportDto">
         SELECT
         b.product_name varietyName,
-        ROUND(0.0005*IFNULL(SUM(CASE WHEN b.weight_unit=1 THEN IFNULL(b.weight,0) ELSE 2*IFNULL(b.weight,0) END),0),2) weight,
+        ROUND(0.0005*IFNULL(SUM(CASE WHEN b.weight_unit=1 THEN IFNULL(b.weight,0) ELSE 2*IFNULL(b.weight,0) END),0),3) weight,
         COUNT(1) approachBillCount
         FROM
         register_bill b
@@ -30,7 +30,7 @@
             resultType="com.dili.trace.dto.BillSumReportDto">
         SELECT
         COUNT(DISTINCT b.user_id) userName,
-        ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 2 ) weight,
+        ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 3 ) weight,
         COUNT(1) billCount,
         COUNT(DISTINCT b.product_id) varietyCount
         FROM
@@ -60,7 +60,7 @@
             IFNULL(u.name, '合计') userName,
             COUNT(1) billCount,
             IFNULL(b.product_name, '合计') varietyName,
-            ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 2 ) weight
+            ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 3 ) weight
             FROM
             register_bill b
             JOIN `checkinout_record` c ON b.id=c.`bill_id`
