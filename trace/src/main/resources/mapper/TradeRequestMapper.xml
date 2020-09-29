@@ -94,57 +94,54 @@
 
   <select id="queryPurchaseGoodsReportList" parameterType="com.dili.trace.dto.PurchaseGoodsReportQueryDto"
           resultType="com.dili.trace.dto.PurchaseGoodsReportDto">
-    SELECT t.`product_name` as product_name,
-    round(SUM(IF(d.weight_unit=1,d.stock_weight*0.0005,d.stock_weight*0.001)),2) as weight
-    FROM `trade_request` t, trade_order o, `trade_detail` d, product_stock p, user u
-    WHERE o.`order_status`=10
-    <if test="startDate != null">
-      <![CDATA[AND t.`handle_time`>=#{startDate}]]>
-    </if>
-    <if test="endDate != null">
-      <![CDATA[AND t.`handle_time`<=#{endDate}]]>
-    </if>
-    <if test="productName != null and productName != ''">
-    and t.product_name like #{productName}
-    </if>
-    AND t.`return_status`!=20
-    AND t.trade_order_id = o.id AND t.id = d.`trade_request_id`
-    AND d.`product_stock_id`=p.`id`
-    AND u.id = t.buyer_id
-    AND u.state=1
-    AND u.validate_state=40
-    AND u.yn=1
-    GROUP BY t.`product_name` order by weight desc
+      SELECT t.`product_name` AS product_name,
+      ROUND(SUM(IF(t.weight_unit=1,t.`trade_weight`*0.0005,t.trade_weight*0.001)),2) AS weight
+      FROM `trade_request` t, trade_order o, `user` u
+      WHERE o.`order_status`=10
+      <if test="startDate != null">
+          <![CDATA[AND t.`handle_time`>=#{startDate}]]>
+      </if>
+      <if test="endDate != null">
+          <![CDATA[AND t.`handle_time`<=#{endDate}]]>
+      </if>
+      <if test="productName != null and productName != ''">
+          AND t.product_name LIKE #{productName}
+      </if>
+      AND t.`return_status`!=20
+      AND t.trade_order_id = o.id
+      AND u.id = t.buyer_id
+      AND u.state=1
+      AND u.validate_state=40
+      AND u.yn=1
+      GROUP BY t.`product_name` ORDER BY weight DESC
 
   </select>
 
   <select id="queryUserPurchaseReportList" parameterType="com.dili.trace.dto.UserPurchaseReportQueryDto"
           resultType="com.dili.trace.dto.PurchaseGoodsReportDto">
-    SELECT user.name as user_name, t.`product_name` as product_name,
-    round(SUM(IF(d.weight_unit=1,d.stock_weight*0.0005,d.stock_weight*0.001)),2) as weight
-    FROM `trade_request` t, trade_order o, `trade_detail` d, product_stock p, user user
-    WHERE o.`order_status`=10
-    <if test="startDate != null">
-      <![CDATA[AND t.`handle_time`>=#{startDate}]]>
-    </if>
-    <if test="endDate != null">
-      <![CDATA[AND t.`handle_time`<=#{endDate}]]>
-    </if>
-    <if test="userName != null and userName != ''">
-      and user.name like #{userName}
-    </if>
-    <if test="phone != null and phone != ''">
-      and user.phone like #{phone}
-    </if>
-    AND t.`return_status`!=20
-    AND t.trade_order_id = o.id AND t.id = d.`trade_request_id`
-    AND d.`product_stock_id`=p.`id`
-    AND user.id = t.buyer_id
-    AND user.state=1
-    AND user.validate_state=40
-    AND user.yn=1
-    GROUP BY t.buyer_id, t.`product_name` order by user.name, weight desc
-
+      SELECT user.name AS user_name, t.`product_name` AS product_name,
+      ROUND(SUM(IF(t.weight_unit=1,t.`trade_weight`*0.0005,t.trade_weight*0.001)),2) AS weight
+      FROM `trade_request` t, trade_order o, `user` user
+      WHERE o.`order_status`=10
+      <if test="startDate != null">
+          <![CDATA[AND t.`handle_time`>=#{startDate}]]>
+      </if>
+      <if test="endDate != null">
+          <![CDATA[AND t.`handle_time`<=#{endDate}]]>
+      </if>
+      <if test="userName != null and userName != ''">
+          and user.name like #{userName}
+      </if>
+      <if test="phone != null and phone != ''">
+          and user.phone like #{phone}
+      </if>
+      AND t.`return_status`!=20
+      AND t.trade_order_id = o.id
+      AND user.id = t.buyer_id
+      AND user.state=1
+      AND user.validate_state=40
+      AND user.yn=1
+      GROUP BY t.buyer_id, t.`product_name` ORDER BY user.name, weight DESC
   </select>
 
 
