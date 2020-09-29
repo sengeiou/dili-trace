@@ -85,7 +85,7 @@ public class TradeStatisticReportServiceImpl implements TradeStatisticReportServ
         BillSumReportDto totalBillSum = new BillSumReportDto();
         totalBillSum.setUserName(totalEndStr);
         totalBillSum.setBillCount(totalBillCount);
-        totalBillSum.setWeight(BigDecimal.valueOf(totalWeight).setScale(2, BigDecimal.ROUND_HALF_UP));
+        totalBillSum.setWeight(BigDecimal.valueOf(totalWeight).setScale(3, BigDecimal.ROUND_HALF_UP));
         billResult.add(totalBillSum);
         logger.info("经营户进场重量统计:" + JSON.toJSONString(billResult));
 

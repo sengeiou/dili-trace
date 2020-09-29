@@ -95,7 +95,7 @@
   <select id="queryPurchaseGoodsReportList" parameterType="com.dili.trace.dto.PurchaseGoodsReportQueryDto"
           resultType="com.dili.trace.dto.PurchaseGoodsReportDto">
       SELECT t.`product_name` AS product_name,
-      ROUND(SUM(IF(t.weight_unit=1,t.`trade_weight`*0.0005,t.trade_weight*0.001)),2) AS weight
+      ROUND(SUM(IF(t.weight_unit=1,t.`trade_weight`*0.0005,t.trade_weight*0.001)),3) AS weight
       FROM `trade_request` t, trade_order o, `user` u
       WHERE o.`order_status`=10
       <if test="startDate != null">
@@ -120,7 +120,7 @@
   <select id="queryUserPurchaseReportList" parameterType="com.dili.trace.dto.UserPurchaseReportQueryDto"
           resultType="com.dili.trace.dto.PurchaseGoodsReportDto">
       SELECT user.name AS user_name, t.`product_name` AS product_name,
-      ROUND(SUM(IF(t.weight_unit=1,t.`trade_weight`*0.0005,t.trade_weight*0.001)),2) AS weight
+      ROUND(SUM(IF(t.weight_unit=1,t.`trade_weight`*0.0005,t.trade_weight*0.001)),3) AS weight
       FROM `trade_request` t, trade_order o, `user` user
       WHERE o.`order_status`=10
       <if test="startDate != null">
