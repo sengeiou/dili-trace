@@ -36,7 +36,7 @@
     -->
     id, code, register_source, tally_area_no, name, id_card_no, addr,phone, user_id,sample_code,
     plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
-    detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version, 
+    detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version,
     created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -185,13 +185,14 @@
     left join  ( <include refid="userCountQuery"/>) t_user_count on t_user_count.group_key=a.area
     left join  ( <include refid="billCountQuery"/>) t_bill_count on t_bill_count.group_key=a.area
     left join  ( <include refid="tradeDetailBuyerCount"/>) t_trade_detail_buyer_count on t_trade_detail_buyer_count.group_key=a.area
+    left join  ( <include refid="accountUsageCount"/>) t_usage_count on t_usage_count.group_key=a.area
     left join  ( <include refid="greenBillCount"/>) t_green_bill_count on t_green_bill_count.group_key=a.area
     left join  ( <include refid="yellowBillCount"/>) t_yellow_bill_count on t_yellow_bill_count.group_key=a.area
     left join  ( <include refid="redBillCount"/>) t_red_bill_count on t_red_bill_count.group_key=a.area
     left join  ( <include refid="noVerifyedBillCount"/>) t_no_verifyed_bill_count on t_no_verifyed_bill_count.group_key=a.area
   </select>
   <sql  id="userCountQuery">
-  select
+    select
     <choose>
       <when test="isUserActive != null">
         count(t.is_active=1 or null) user_count,
@@ -200,31 +201,42 @@
         count(1) user_count,
       </otherwise>
     </choose>
-   area as group_key from(
+    area as group_key from(
     select u.id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
-    from `user` u 
+    from `user` u
     left join  (
-      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
-      left join tally_area_no  
-      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
-      group by r_user_tally_area.user_id 
-      ) t_area on t_area.user_id=u.id
-     where u.yn=1
-     and u.state = 1
-     and u.validate_state=40
+    select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+    left join tally_area_no
+    on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    group by r_user_tally_area.user_id
+    ) t_area on t_area.user_id=u.id
+    where u.yn=1
+    and u.state = 1
+    and u.validate_state=40
     ) t GROUP  by area
-</sql>
+  </sql>
 
-<sql id="billCountQuery">
-  select count(1) bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
-    from register_bill 
+  <sql id="billCountQuery">
+    select
+    <choose>
+      <when test="isUserActive != null">
+        count(t.is_active=1 or null) bill_count,
+      </when>
+      <otherwise>
+        count(1) bill_count,
+      </otherwise>
+    </choose>
+    area as group_key
+    from(
+    select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
+    from register_bill
+    JOIN `user` u ON u.id=register_bill.user_id
     left join  (
-      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
-      left join tally_area_no  
-      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
-      group by r_user_tally_area.user_id 
-      )t_area on t_area.user_id=register_bill.user_id 
+    select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+    left join tally_area_no
+    on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    group by r_user_tally_area.user_id
+    )t_area on t_area.user_id=register_bill.user_id
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -233,18 +245,29 @@
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
     </if>
     )t GROUP  by area
-</sql>
+  </sql>
 
-<sql id="tradeDetailBuyerCount">
-  select count(1) trade_detail_buyer_count,area as group_key from(
-    select distinct trade_detail.buyer_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
-    from trade_detail 
+  <sql id="tradeDetailBuyerCount">
+    select
+    <choose>
+      <when test="isUserActive != null">
+        count(t.is_active=1 or null) trade_detail_buyer_count,
+      </when>
+      <otherwise>
+        count(1) trade_detail_buyer_count,
+      </otherwise>
+    </choose>
+    area as group_key
+    from(
+    select distinct trade_detail.buyer_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
+    from trade_detail
+    JOIN `user` u ON u.id=trade_detail.buyer_id
     left join  (
-      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
-      left join tally_area_no  
-      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
-      group by r_user_tally_area.user_id 
-      )t_area on t_area.user_id=trade_detail.buyer_id 
+    select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+    left join tally_area_no
+    on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    group by r_user_tally_area.user_id
+    )t_area on t_area.user_id=trade_detail.buyer_id
     where  trade_detail.parent_id IS NOT NULL
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
@@ -253,18 +276,77 @@
       <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
     </if>
     )t GROUP  by area
-</sql>
+  </sql>
 
-<sql id="greenBillCount">
-  select count(1) green_bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
-    from register_bill 
+    <sql id="accountUsageCount">
+        select count(1) usageCount, area as group_key
+        from(
+          select distinct user_id, is_active, area from (
+            select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or
+            t_area.area='Others') then 'Others' else t_area.area end area
+            from register_bill
+            JOIN `user` u ON u.id=register_bill.user_id
+            left join (
+            select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+            left join tally_area_no
+            on r_user_tally_area.tally_area_no_id =tally_area_no.id
+            group by r_user_tally_area.user_id
+            )t_area on t_area.user_id=register_bill.user_id
+            where register_bill.is_deleted=0
+            <if test="createdStart != null">
+                <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+            </if>
+            <if test="createdEnd != null">
+                <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+            </if>
+            <if test="isUserActive != null">
+                <![CDATA[AND (u.is_active=1 or u.is_active is null)]]>
+            </if>
+            union all
+            select distinct trade_detail.buyer_id as user_id,u.is_active,case when (t_area.area is null or
+            t_area.area='Others') then 'Others' else t_area.area end area
+            from trade_detail
+            JOIN `user` u ON u.id=trade_detail.buyer_id
+            left join (
+            select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+            left join tally_area_no
+            on r_user_tally_area.tally_area_no_id =tally_area_no.id
+            group by r_user_tally_area.user_id
+            )t_area on t_area.user_id=trade_detail.buyer_id
+            where trade_detail.parent_id IS NOT NULL
+            <if test="createdStart != null">
+                <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
+            </if>
+            <if test="createdEnd != null">
+                <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
+            </if>
+            <if test="isUserActive != null">
+                <![CDATA[AND (u.is_active=1 or u.is_active is null)]]>
+            </if>
+          ) t_union
+        )t GROUP  by area
+    </sql>
+
+  <sql id="greenBillCount">
+    select
+    <choose>
+      <when test="isUserActive != null">
+        count(t.is_active=1 or null) green_bill_count,
+      </when>
+      <otherwise>
+        count(1) green_bill_count,
+      </otherwise>
+    </choose>
+    area as group_key from(
+    select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
+    from register_bill
+    JOIN `user` u ON u.id=register_bill.user_id
     left join  (
-      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
-      left join tally_area_no  
-      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
-      group by r_user_tally_area.user_id 
-      )t_area on t_area.user_id=register_bill.user_id 
+    select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+    left join tally_area_no
+    on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    group by r_user_tally_area.user_id
+    )t_area on t_area.user_id=register_bill.user_id
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -278,22 +360,31 @@
         #{verifyStatus}
       </foreach>
     </if>
-
-    
     )t GROUP  by area
-</sql>
+  </sql>
 
 
-<sql id="yellowBillCount">
-  select count(1) yellow_bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
-    from register_bill 
+  <sql id="yellowBillCount">
+    select
+    <choose>
+      <when test="isUserActive != null">
+        count(t.is_active=1 or null) yellow_bill_count,
+      </when>
+      <otherwise>
+        count(1) yellow_bill_count,
+      </otherwise>
+    </choose>
+    area as group_key
+    from(
+    select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
+    from register_bill
+    JOIN `user` u ON u.id=register_bill.user_id
     left join  (
-      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
-      left join tally_area_no  
-      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
-      group by r_user_tally_area.user_id 
-      )t_area on t_area.user_id=register_bill.user_id 
+    select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+    left join tally_area_no
+    on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    group by r_user_tally_area.user_id
+    )t_area on t_area.user_id=register_bill.user_id
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -308,35 +399,46 @@
         #{verifyStatus}
       </foreach>
     </if>
-      AND register_bill.user_id not in(
-        select  register_bill.user_id 
-        from register_bill where register_bill.is_deleted=0
-        <if test="createdStart != null">
-          <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
-        </if>
-        <if test="createdEnd != null">
-          <![CDATA[AND register_bill.created <=#{createdEnd}]]>
-        </if>
-        <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
-          AND register_bill.verify_status
-          <foreach collection="greenBillVerifyStatus" open="IN (" close=")" item="verifyStatus"  separator=",">
-            #{verifyStatus}
-          </foreach>
-        </if>
-      )
+    AND register_bill.user_id not in(
+    select  register_bill.user_id
+    from register_bill where register_bill.is_deleted=0
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
+      AND register_bill.verify_status
+      <foreach collection="greenBillVerifyStatus" open="IN (" close=")" item="verifyStatus"  separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
+    )
     )t GROUP  by area
-</sql>
+  </sql>
 
-<sql id="redBillCount">
-  select count(1) red_bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
-    from register_bill 
+  <sql id="redBillCount">
+    select
+    <choose>
+      <when test="isUserActive != null">
+        count(t.is_active=1 or null) red_bill_count,
+      </when>
+      <otherwise>
+        count(1) red_bill_count,
+      </otherwise>
+    </choose>
+    area as group_key
+    from(
+    select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
+    from register_bill
+    JOIN `user` u ON u.id=register_bill.user_id
     left join  (
-      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
-      left join tally_area_no  
-      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
-      group by r_user_tally_area.user_id 
-      )t_area on t_area.user_id=register_bill.user_id 
+    select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+    left join tally_area_no
+    on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    group by r_user_tally_area.user_id
+    )t_area on t_area.user_id=register_bill.user_id
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -353,42 +455,53 @@
     </if>
 
     AND register_bill.user_id not in(
-      select  register_bill.user_id 
-      from register_bill where register_bill.is_deleted=0
-     <if test="createdStart != null">
-        <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
-      </if>
-      <if test="createdEnd != null">
-        <![CDATA[AND register_bill.created <=#{createdEnd}]]>
-      </if>
-      AND ( <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
-         register_bill.verify_status
-        <foreach collection="greenBillVerifyStatus" open="IN (" close=")" item="verifyStatus"  separator=",">
-          #{verifyStatus}
-        </foreach>
-      </if>
-      <if test="yellowBillVerifyStatus!=null and yellowBillVerifyStatus.size()>0">
-        OR register_bill.verify_status
-        <foreach collection="yellowBillVerifyStatus" open=" IN (" close=")" item="verifyStatus"  separator=",">
-          #{verifyStatus}
-        </foreach>
-      </if>
+    select  register_bill.user_id
+    from register_bill where register_bill.is_deleted=0
+    <if test="createdStart != null">
+      <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    AND ( <if test="greenBillVerifyStatus!=null and greenBillVerifyStatus.size()>0">
+    register_bill.verify_status
+    <foreach collection="greenBillVerifyStatus" open="IN (" close=")" item="verifyStatus"  separator=",">
+      #{verifyStatus}
+    </foreach>
+  </if>
+    <if test="yellowBillVerifyStatus!=null and yellowBillVerifyStatus.size()>0">
+      OR register_bill.verify_status
+      <foreach collection="yellowBillVerifyStatus" open=" IN (" close=")" item="verifyStatus"  separator=",">
+        #{verifyStatus}
+      </foreach>
+    </if>
     )
     )
 
     )t GROUP  by area
-</sql>
+  </sql>
 
-<sql id="noVerifyedBillCount">
-  select count(1) no_verifyed_bill_count,area as group_key from(
-    select distinct register_bill.user_id as user_id,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
-    from register_bill 
+  <sql id="noVerifyedBillCount">
+    select
+    <choose>
+      <when test="isUserActive != null">
+        count(t.is_active=1 or null) no_verifyed_bill_count,
+      </when>
+      <otherwise>
+        count(1) no_verifyed_bill_count,
+      </otherwise>
+    </choose>
+    area as group_key
+    from(
+    select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
+    from register_bill
+    JOIN `user` u ON u.id=register_bill.user_id
     left join  (
-      select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
-      left join tally_area_no  
-      on r_user_tally_area.tally_area_no_id =tally_area_no.id  
-      group by r_user_tally_area.user_id 
-      )t_area on t_area.user_id=register_bill.user_id 
+    select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+    left join tally_area_no
+    on r_user_tally_area.tally_area_no_id =tally_area_no.id
+    group by r_user_tally_area.user_id
+    )t_area on t_area.user_id=register_bill.user_id
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -403,21 +516,21 @@
       </foreach>
     </if>
     )t GROUP  by area
-</sql>
+  </sql>
 
 
 
 
-<select id="selectRegionCountData" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.RegionCountInfo">
+  <select id="selectRegionCountData" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.RegionCountInfo">
     select case when LOCATE(',',origin_name)>0 then SUBSTRING(origin_name,1,LOCATE(',',origin_name)-1) else origin_name end as region_name,sum(case when weight_unit=1 then weight/2 else weight end) weight
-    from register_bill 
+    from register_bill
     where register_bill.is_deleted=0
     group by case when LOCATE(',',origin_name)>0 then SUBSTRING(origin_name,1,LOCATE(',',origin_name)-1) else origin_name end
-</select>
+  </select>
 
-<select id="selectReportCountData" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.ReportCountDto">
-  select * from (select sum(case when weight_unit=1 then weight/2 else weight end) reportTotal,count(1) reportBatch,0 AS checkBatch
-    from register_bill 
+  <select id="selectReportCountData" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.ReportCountDto">
+    select * from (select sum(case when weight_unit=1 then weight/2 else weight end) reportTotal,count(1) reportBatch,0 AS checkBatch
+    from register_bill
     where register_bill.is_deleted=0
     <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
@@ -425,10 +538,10 @@
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
     </if>
-  )report,
-    
-  (select sum(case when weight_unit=1 then total_weight /2 else total_weight end) transactionTotal,count(1) transactionBatch
-    from trade_detail 
+    )report,
+
+    (select sum(case when weight_unit=1 then total_weight /2 else total_weight end) transactionTotal,count(1) transactionBatch
+    from trade_detail
     where trade_detail.parent_id is not null
     and trade_detail.sale_status = 10
     <if test="createdStart != null">
@@ -438,10 +551,10 @@
       <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
     </if>
     )trans
-    
-     ,
+
+    ,
     (select   count(1) unqualifiedBatch
-    from register_bill 
+    from register_bill
     where register_bill.is_deleted=0
     and verify_status =30
     <if test="createdStart != null">
@@ -451,9 +564,9 @@
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
     </if>
     )unqualified,
-    
-   (select   count(distinct product_id ) unqualifiedPdtCount
-    from register_bill 
+
+    (select   count(distinct product_id ) unqualifiedPdtCount
+    from register_bill
     where register_bill.is_deleted=0
     and verify_status =30
     <if test="createdStart != null">
@@ -463,25 +576,25 @@
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
     </if>
     )unqualifiedPdt
-</select>
+  </select>
 
   <select id="selectRegisterBillReport" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.thirdparty.report.ReportRegisterBillDto">
     SELECT b.`operator_name` approvalName,b.`verify_status` approvalStatus,b.`operation_time` approvalTime,b.`brand_name` brand,
-      b.`created` enterTime, REPLACE(b.`origin_name`,',','-') productionStr,
-      b.`spec_name` specification, b.`user_id` thirdAccId, b.`id` thirdEnterId, b.`product_id` thirdGoodsId, c.`name` thirdGoodsName,
-      b.`upstream_id` thirdUpId, b.`plate` transporterId, IF(b.`weight_unit`=1,'斤','公斤') unitName, b.`weight` enterNum
+    b.`created` enterTime, REPLACE(b.`origin_name`,',','-') productionStr,
+    b.`spec_name` specification, b.`user_id` thirdAccId, b.`id` thirdEnterId, b.`product_id` thirdGoodsId, c.`name` thirdGoodsName,
+    b.`upstream_id` thirdUpId, b.`plate` transporterId, IF(b.`weight_unit`=1,'斤','公斤') unitName, b.`weight` enterNum
     FROM `register_bill` b
     JOIN `category` c ON b.product_id = c.id
     WHERE 1=1
-      <if test="modifiedEnd != null">
-          <![CDATA[AND b.modified <=#{modifiedEnd}]]>
-      </if>
-      <if test="modifiedStart != null">
-          <![CDATA[AND b.modified >#{modifiedStart}]]>
-      </if>
-        <if test="isDeleted != null">
-        <![CDATA[AND b.is_deleted = #{isDeleted}]]>
-      </if>
+    <if test="modifiedEnd != null">
+      <![CDATA[AND b.modified <=#{modifiedEnd}]]>
+    </if>
+    <if test="modifiedStart != null">
+      <![CDATA[AND b.modified >#{modifiedStart}]]>
+    </if>
+    <if test="isDeleted != null">
+      <![CDATA[AND b.is_deleted = #{isDeleted}]]>
+    </if>
   </select>
 
   <select id="selectCurrentTime" resultType="java.util.Date">
@@ -500,7 +613,7 @@
       <![CDATA[AND c.`created`<=#{endDate}]]>
     </if>
     <if test="origionName != null and origionName != ''">
-        AND r.`origin_name` LIKE #{origionName}
+      AND r.`origin_name` LIKE #{origionName}
     </if>
     <if test="productName != null and productName != ''">
       AND r.`product_name` LIKE #{productName}

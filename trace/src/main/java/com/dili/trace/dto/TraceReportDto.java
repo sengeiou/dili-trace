@@ -8,6 +8,7 @@ public class TraceReportDto {
     private Integer userCount;
     private Integer billCount;
     private Integer tradeDetailBuyerCount;
+    private Integer usageCount;
     private BigDecimal percentage;
 
     private Integer greenBillCount;
@@ -20,7 +21,7 @@ public class TraceReportDto {
         }
         BigDecimal uc=  new BigDecimal(this.userCount);
         if(BigDecimal.ZERO.compareTo(uc)!=0){
-          this.percentage=  new BigDecimal(this.billCount).add( new BigDecimal(this.tradeDetailBuyerCount)).multiply(BigDecimal.valueOf(100)).divide(uc,2,RoundingMode.HALF_UP);
+          this.percentage=  new BigDecimal(this.usageCount).multiply(BigDecimal.valueOf(100)).divide(uc,2,RoundingMode.HALF_UP);
         }
         return this.percentage;
     }
@@ -33,6 +34,9 @@ public class TraceReportDto {
         }
         if(this.tradeDetailBuyerCount==null){
             this.tradeDetailBuyerCount=0;
+        }
+        if (this.usageCount==null){
+            this.usageCount=0;
         }
         if(this.greenBillCount==null){
             this.greenBillCount=0;
@@ -56,6 +60,9 @@ public class TraceReportDto {
         }
         if(dto.getTradeDetailBuyerCount()!=null){
             this.setTradeDetailBuyerCount(this.getTradeDetailBuyerCount()+  dto.getTradeDetailBuyerCount());
+        }
+        if(dto.getUsageCount() != null){
+           this.setUsageCount(this.getUsageCount() + dto.getUsageCount());
         }
         if(dto.getGreenBillCount()!=null){
             this.setGreenBillCount(this.getGreenBillCount()+dto.getGreenBillCount());
@@ -202,4 +209,11 @@ public class TraceReportDto {
         this.groupKey = groupKey;
     }
 
+    public Integer getUsageCount() {
+        return usageCount;
+    }
+
+    public void setUsageCount(Integer usageCount) {
+        this.usageCount = usageCount;
+    }
 }
