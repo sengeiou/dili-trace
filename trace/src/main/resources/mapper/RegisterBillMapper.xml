@@ -185,7 +185,7 @@
     left join  ( <include refid="userCountQuery"/>) t_user_count on t_user_count.group_key=a.area
     left join  ( <include refid="billCountQuery"/>) t_bill_count on t_bill_count.group_key=a.area
     left join  ( <include refid="tradeDetailBuyerCount"/>) t_trade_detail_buyer_count on t_trade_detail_buyer_count.group_key=a.area
-    left join  ( <include refid="accountUsageCount"/>) t_usage_count on t_usage_count.group_key=a.area
+<!--    left join  ( <include refid="accountUsageCount"/>) t_usage_count on t_usage_count.group_key=a.area-->
     left join  ( <include refid="greenBillCount"/>) t_green_bill_count on t_green_bill_count.group_key=a.area
     left join  ( <include refid="yellowBillCount"/>) t_yellow_bill_count on t_yellow_bill_count.group_key=a.area
     left join  ( <include refid="redBillCount"/>) t_red_bill_count on t_red_bill_count.group_key=a.area
