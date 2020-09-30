@@ -21,7 +21,7 @@ public class TraceReportDto {
         }
         BigDecimal uc=  new BigDecimal(this.userCount);
         if(BigDecimal.ZERO.compareTo(uc)!=0){
-          this.percentage=  new BigDecimal(this.usageCount).multiply(BigDecimal.valueOf(100)).divide(uc,2,RoundingMode.HALF_UP);
+          this.percentage=  new BigDecimal(this.billCount).add( new BigDecimal(this.tradeDetailBuyerCount)).multiply(BigDecimal.valueOf(100)).divide(uc,2,RoundingMode.HALF_UP);
         }
         return this.percentage;
     }
