@@ -185,6 +185,7 @@
     left join  ( <include refid="userCountQuery"/>) t_user_count on t_user_count.group_key=a.area
     left join  ( <include refid="billCountQuery"/>) t_bill_count on t_bill_count.group_key=a.area
     left join  ( <include refid="tradeDetailBuyerCount"/>) t_trade_detail_buyer_count on t_trade_detail_buyer_count.group_key=a.area
+    left join  ( <include refid="accountUsageCount"/>) t_usage_count on t_usage_count.group_key=a.area
     left join  ( <include refid="greenBillCount"/>) t_green_bill_count on t_green_bill_count.group_key=a.area
     left join  ( <include refid="yellowBillCount"/>) t_yellow_bill_count on t_yellow_bill_count.group_key=a.area
     left join  ( <include refid="redBillCount"/>) t_red_bill_count on t_red_bill_count.group_key=a.area
@@ -276,6 +277,55 @@
     </if>
     )t GROUP  by area
   </sql>
+
+    <sql id="accountUsageCount">
+        select count(1) usageCount, area as group_key
+        from(
+          select distinct user_id, is_active, area from (
+            select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or
+            t_area.area='Others') then 'Others' else t_area.area end area
+            from register_bill
+            JOIN `user` u ON u.id=register_bill.user_id
+            left join (
+            select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+            left join tally_area_no
+            on r_user_tally_area.tally_area_no_id =tally_area_no.id
+            group by r_user_tally_area.user_id
+            )t_area on t_area.user_id=register_bill.user_id
+            where register_bill.is_deleted=0
+            <if test="createdStart != null">
+                <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
+            </if>
+            <if test="createdEnd != null">
+                <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+            </if>
+            <if test="isUserActive != null">
+                <![CDATA[AND (u.is_active=1 or u.is_active is null)]]>
+            </if>
+            union all
+            select distinct trade_detail.buyer_id as user_id,u.is_active,case when (t_area.area is null or
+            t_area.area='Others') then 'Others' else t_area.area end area
+            from trade_detail
+            JOIN `user` u ON u.id=trade_detail.buyer_id
+            left join (
+            select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
+            left join tally_area_no
+            on r_user_tally_area.tally_area_no_id =tally_area_no.id
+            group by r_user_tally_area.user_id
+            )t_area on t_area.user_id=trade_detail.buyer_id
+            where trade_detail.parent_id IS NOT NULL
+            <if test="createdStart != null">
+                <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
+            </if>
+            <if test="createdEnd != null">
+                <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
+            </if>
+            <if test="isUserActive != null">
+                <![CDATA[AND (u.is_active=1 or u.is_active is null)]]>
+            </if>
+          ) t_union
+        )t GROUP  by area
+    </sql>
 
   <sql id="greenBillCount">
     select
