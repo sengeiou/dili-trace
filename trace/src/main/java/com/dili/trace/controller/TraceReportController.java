@@ -44,7 +44,9 @@ public class TraceReportController {
             query.setCreatedStart(start);
             query.setCreatedEnd(end);
         }
-        
+
+        // 设置活跃度查询条件
+        this.traceReportService.settingUserActive(query);
         
 
         Map<String, TraceReportDto>data= this.traceReportService.getTraceBillReportData(query);

@@ -37,21 +37,7 @@ public class TraceReportService {
                 Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode(), BillVerifyStatusEnum.RETURNED.getCode()));
         query.setNoneVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode()));
 
-        String optType = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
-        String optCategory = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
-        Integer val =null;
-        SysConfig sysConfig = new SysConfig();
-        sysConfig.setOptType(optType);
-        sysConfig.setOptCategory(optCategory);
-        List<SysConfig> configs = sysConfigService.listByExample(sysConfig);
-        if(CollectionUtils.isNotEmpty(configs)){
-            String str = configs.get(0).getOptValue();
-            if(StringUtils.isNotBlank(str)){
-                int limitDay = Integer.valueOf(str);
-                val=limitDay==0?null:limitDay;
-            }
-        }
-        query.setIsUserActive(val);
+        // settingUserActive(query);
         List<TraceReportDto> list =  this.billMapper.selectBillReportData(query);
 
         Map<String, TraceReportDto> areaReportDtoMap = StreamEx.of(list).map(item -> {
@@ -99,6 +85,24 @@ public class TraceReportService {
         areaReportDtoMap.put("Total", total);
         return areaReportDtoMap;
 
+    }
+
+    public void settingUserActive(TraceReportQueryDto query) {
+        String optType = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
+        String optCategory = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
+        Integer val =null;
+        SysConfig sysConfig = new SysConfig();
+        sysConfig.setOptType(optType);
+        sysConfig.setOptCategory(optCategory);
+        List<SysConfig> configs = sysConfigService.listByExample(sysConfig);
+        if(CollectionUtils.isNotEmpty(configs)){
+            String str = configs.get(0).getOptValue();
+            if(StringUtils.isNotBlank(str)){
+                int limitDay = Integer.valueOf(str);
+                val=limitDay==0?null:limitDay;
+            }
+        }
+        query.setIsUserActive(val);
     }
 
     public Map<String,TraceReportDto> getCommonCheckinReportData(TraceReportQueryDto query) {
