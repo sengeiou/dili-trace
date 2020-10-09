@@ -34,6 +34,7 @@ public class SysParamConfigController {
     @Autowired
     SysConfigService sysConfigService;
 
+
     @ApiOperation("跳转到页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -46,9 +47,9 @@ public class SysParamConfigController {
         SysConfig sysConfig = new SysConfig();
         sysConfig.setOptType(SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode());
         sysConfig.setOptCategory(SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode());
-        List<SysConfig> sysConfigList  = this.sysConfigService.listByExample(sysConfig);
-        if(CollectionUtils.isNotEmpty(sysConfigList)){
-            sysConfig=sysConfigList.get(0);
+        List<SysConfig> sysConfigList = this.sysConfigService.listByExample(sysConfig);
+        if (CollectionUtils.isNotEmpty(sysConfigList)) {
+            sysConfig = sysConfigList.get(0);
         }
         modelMap.put("sysConfigItem", sysConfig);
         return "sysParamConfig/view";
@@ -71,7 +72,7 @@ public class SysParamConfigController {
                 queSysConfig.setOptCategory(query.getOptCategory());
             }
             List<SysConfig> list = sysConfigService.listByExample(queSysConfig);
-            return  list;
+            return list;
         } catch (TraceBusinessException e) {
             logger.error(e.getMessage());
             return null;
@@ -86,12 +87,32 @@ public class SysParamConfigController {
     public @ResponseBody
     BaseOutput update(SysConfig query) {
         try {
-            logger.info("update SysConfig:"+ JSON.toJSONString(query));
-            if(null==query.getId()){
+            logger.info("update SysConfig:" + JSON.toJSONString(query));
+            if (null == query.getId()) {
                 return BaseOutput.failure("ID IS NULL");
             }
             sysConfigService.updateSelective(query);
-            return  BaseOutput.success();
+            return BaseOutput.success();
+        } catch (TraceBusinessException e) {
+            logger.error(e.getMessage());
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return BaseOutput.failure(e.getMessage());
+        }
+    }
+
+    @ApiOperation("修改运营报表天数")
+    @RequestMapping(value = "/updateTraceReportLimitDay.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput updateTraceReportLimitDay(SysConfig query) {
+        try {
+            logger.info("update SysConfig:" + JSON.toJSONString(query));
+            if (null == query.getId()) {
+                return BaseOutput.failure("ID IS NULL");
+            }
+            sysConfigService.updateTraceReportLimitDay(query);
+            return BaseOutput.success();
         } catch (TraceBusinessException e) {
             logger.error(e.getMessage());
             return BaseOutput.failure(e.getMessage());

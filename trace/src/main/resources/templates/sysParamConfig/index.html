@@ -208,7 +208,7 @@
         if(_formData.id == null || _formData.id==""){
             _url = "${contextPath}/sysParamConfig/insert.action";
         }else{//有id就修改
-            _url = "${contextPath}/sysParamConfig/update.action";
+            _url = "${contextPath}/sysParamConfig/updateTraceReportLimitDay.action";
             isNewData=true;
         }
         $.ajax({
@@ -217,6 +217,16 @@
             data: _formData,
             dataType: "json",
             async : true,
+            beforeSend: function () {
+                $.messager.progress({
+                    title: '提示',
+                    msg: '处理中，请稍候……',
+                    text: ''
+                });
+            },
+            complete: function () {
+                $.messager.progress('close');
+            },
            // contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if(data.code=="200"){
