@@ -10,7 +10,7 @@
         COUNT(1) approachBillCount
         FROM
         register_bill b
-        JOIN `checkinout_record` c ON b.id=c.`bill_id`
+        JOIN `checkinout_record` c ON b.id=c.`bill_id` and b.market_id = c.market_id
         WHERE b.is_checkin=1
         AND b.is_deleted=0
         <if test="likeVarietyName!=null and likeVarietyName!='' ">
@@ -21,6 +21,9 @@
         </if>
         <if test="createdEnd != null ">
             <![CDATA[AND c.created <= #{createdEnd} ]]>
+        </if>
+        <if test="marketId != null">
+            AND b.market_id = #{marketId}
         </if>
         GROUP BY b.product_name
         ORDER BY weight DESC
@@ -35,8 +38,8 @@
         COUNT(DISTINCT b.product_id) varietyCount
         FROM
         register_bill b
-        JOIN `checkinout_record` c ON b.id=c.`bill_id`
-        JOIN user u ON b.user_id=u.id
+        JOIN `checkinout_record` c ON b.id=c.`bill_id` AND b.market_id = c.market_id
+        JOIN user u ON b.user_id=u.id AND b.market_id = u.market_id
         WHERE b.is_checkin = 1
         AND b.is_deleted = 0
         <if test="userName!=null and userName!='' ">
@@ -51,6 +54,9 @@
         <if test="endDate != null ">
             <![CDATA[AND c.created <= #{endDate} ]]>
         </if>
+        <if test="marketId != null">
+            AND b.market_id = #{marketId}
+        </if>
         ORDER BY weight DESC
     </select>
 
@@ -63,9 +69,8 @@
             ROUND(0.0005 * IFNULL( SUM( CASE WHEN b.weight_unit = 1 THEN IFNULL(b.weight, 0) ELSE 2 * IFNULL(b.weight, 0) END ), 0 ), 3 ) weight
             FROM
             register_bill b
-            JOIN `checkinout_record` c ON b.id=c.`bill_id`
-            JOIN `user` u
-            ON b.user_id = u.id
+            JOIN `checkinout_record` c ON b.id=c.`bill_id` AND b.market_id = c.market_id
+            JOIN `user` u ON b.user_id = u.id AND b.market_id = u.market_id
             WHERE b.is_checkin = 1
             AND b.is_deleted = 0
             <if test="userName!=null and userName!='' ">
@@ -82,6 +87,9 @@
             </if>
             <if test="endDate != null ">
                 <![CDATA[AND c.created <= #{endDate} ]]>
+            </if>
+            <if test="marketId != null">
+                AND b.market_id = #{marketId}
             </if>
             GROUP BY b.user_id,b.product_name
             ORDER BY weight DESC

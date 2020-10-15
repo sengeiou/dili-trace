@@ -16,6 +16,7 @@ public class BillSumReportDto {
     private String phone;
     private String varietyName;
     private BigDecimal userWeight;
+    private Long marketId;
 
     public BigDecimal getUserWeight() {
         return userWeight;
@@ -87,5 +88,13 @@ public class BillSumReportDto {
 
     public void setWeight(BigDecimal weight) {
         this.weight = weight;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
     }
 }

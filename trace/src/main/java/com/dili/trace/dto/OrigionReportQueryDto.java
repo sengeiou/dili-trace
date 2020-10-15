@@ -5,6 +5,7 @@ public class OrigionReportQueryDto {
     private String endDate;
     private String origionName;
     private String productName;
+    private Long marketId;
 
     public String getStartDate() {
         return startDate;
@@ -36,5 +37,13 @@ public class OrigionReportQueryDto {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
     }
 }

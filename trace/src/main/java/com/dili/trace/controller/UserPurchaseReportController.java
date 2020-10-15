@@ -6,6 +6,7 @@ import com.dili.trace.dto.PurchaseGoodsReportDto;
 import com.dili.trace.dto.PurchaseGoodsReportQueryDto;
 import com.dili.trace.dto.UserPurchaseReportQueryDto;
 import com.dili.trace.service.ReportService;
+import com.dili.trace.util.MarketUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -57,6 +58,7 @@ public class UserPurchaseReportController {
         {
             goodsReport.setPhone("%"+phone+"%");
         }
+        goodsReport.setMarketId(MarketUtil.returnMarket());
         return reportService.purchaseGoodsReportList(goodsReport);
     }
 }

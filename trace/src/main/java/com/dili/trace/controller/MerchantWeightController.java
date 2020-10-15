@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.trace.dto.BillSumReportDto;
 import com.dili.trace.service.TradeStatisticReportService;
+import com.dili.trace.util.MarketUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class MerchantWeightController {
     @RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody
     List<BillSumReportDto> list(BillSumReportDto query) {
+        query.setMarketId(MarketUtil.returnMarket());
         List<BillSumReportDto> list = tradeStatisticReportService.getMerchantReportList(query);
         return list;
     }

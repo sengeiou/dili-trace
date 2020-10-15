@@ -114,60 +114,60 @@ public class ThirdPartyReportController {
                 return this.dataReportService.marketCount(dto, opt);
             } else if (ReportDtoTypeEnum.thirdUserDelete.equalsToCode(reportData.getType())) {
                 ReportUserDeleteDto dto = mapper.readValue(json, ReportUserDeleteDto.class);
-                return this.dataReportService.reportUserDelete(dto, opt);
+                return this.dataReportService.reportUserDelete(dto, opt,null);
             } else if (ReportDtoTypeEnum.thirdUserSave.equalsToCode(reportData.getType())) {
                 List<ReportUserDto> dto = mapper.readValue(json, new TypeReference<List<ReportUserDto>>() {
                 });
-                return this.dataReportService.reportUserSaveUpdate(dto, opt);
+                return this.dataReportService.reportUserSaveUpdate(dto, opt,null);
             } else if (ReportDtoTypeEnum.userQrCode.equalsToCode(reportData.getType())) {
                 List<ReportQrCodeDto> dto = mapper.readValue(json, new TypeReference<List<ReportQrCodeDto>>() {
                 });
-                return this.dataReportService.reportUserQrCode(dto, opt);
+                return this.dataReportService.reportUserQrCode(dto, opt,null);
             } else if (ReportDtoTypeEnum.categoryBigLevel.equalsToCode(reportData.getType())) {
                 List<CategoryDto> dto = mapper.readValue(json, new TypeReference<List<CategoryDto>>() {
                 });
-                return this.dataReportService.reportCategory(dto, opt);
+                return this.dataReportService.reportCategory(dto, opt,null);
             } else if (ReportDtoTypeEnum.categorySmallLevel.equalsToCode(reportData.getType())) {
                 List<CategorySecondDto> dto = mapper.readValue(json, new TypeReference<List<CategorySecondDto>>() {
                 });
-                return this.dataReportService.reportSecondCategory(dto, opt);
+                return this.dataReportService.reportSecondCategory(dto, opt,null);
             } else if (ReportDtoTypeEnum.goods.equalsToCode(reportData.getType())) {
                 List<GoodsDto> dto = mapper.readValue(json, new TypeReference<List<GoodsDto>>() {
                 });
-                return this.dataReportService.reportGoods(dto, opt);
+                return this.dataReportService.reportGoods(dto, opt,null);
             } else if (ReportDtoTypeEnum.registerBill.equalsToCode(reportData.getType())) {
                 List<ReportRegisterBillDto> dto = mapper.readValue(json, new TypeReference<List<ReportRegisterBillDto>>() {
                 });
-                return this.dataReportService.reportRegisterBill(dto, opt);
+                return this.dataReportService.reportRegisterBill(dto, opt,null);
             } else if (ReportDtoTypeEnum.upstream.equalsToCode(reportData.getType())) {
                 List<UpStreamDto> dto = mapper.readValue(json, new TypeReference<List<UpStreamDto>>() {
                 });
-                return this.dataReportService.reportUpStream(dto, opt);
+                return this.dataReportService.reportUpStream(dto, opt,null);
             } else if (ReportDtoTypeEnum.downstream.equalsToCode(reportData.getType())) {
                 List<DownStreamDto> dto = mapper.readValue(json, new TypeReference<List<DownStreamDto>>() {
                 });
-                return this.dataReportService.reportDownStream(dto, opt);
+                return this.dataReportService.reportDownStream(dto, opt,null);
             } else if (ReportDtoTypeEnum.scanCodeOrder.equalsToCode(reportData.getType())) {
                 List<ReportScanCodeOrderDto> dto = mapper.readValue(json, new TypeReference<List<ReportScanCodeOrderDto>>() {
                 });
-                return this.dataReportService.reportScanCodeOrder(dto, opt);
+                return this.dataReportService.reportScanCodeOrder(dto, opt,null);
             } else if (ReportDtoTypeEnum.deliveryOrder.equalsToCode(reportData.getType())) {
                 List<ReportDeliveryOrderDto> dto = mapper.readValue(json, new TypeReference<List<ReportDeliveryOrderDto>>() {
                 });
-                return this.dataReportService.reportDeliveryOrder(dto, opt);
+                return this.dataReportService.reportDeliveryOrder(dto, opt,null);
             } else if (ReportDtoTypeEnum.inDoor.equalsToCode(reportData.getType())) {
                 List<ReportCheckInDto> dto = mapper.readValue(json, new TypeReference<List<ReportCheckInDto>>() {
                 });
-                return this.dataReportService.reportCheckIn(dto, opt);
+                return this.dataReportService.reportCheckIn(dto, opt,null);
             } else if (ReportDtoTypeEnum.deleteScanCodeOrder.equalsToCode(reportData.getType())) {
                 ReportDeletedOrderDto dto = mapper.readValue(json, ReportDeletedOrderDto.class);
-                return this.dataReportService.reportDeletedScanCodeOrder(dto, opt);
+                return this.dataReportService.reportDeletedScanCodeOrder(dto, opt,null);
             } else if (ReportDtoTypeEnum.deleteDeliveryOrder.equalsToCode(reportData.getType())) {
                 ReportDeletedOrderDto dto = mapper.readValue(json, ReportDeletedOrderDto.class);
-                return this.dataReportService.reportDeletedDeliveryOrder(dto, opt);
+                return this.dataReportService.reportDeletedDeliveryOrder(dto, opt,null);
             } else if (ReportDtoTypeEnum.registerBillDelete.equalsToCode(reportData.getType())) {
                 ReportRegisterBillDeleteDto dto = mapper.readValue(json, ReportRegisterBillDeleteDto.class);
-                return this.dataReportService.reportRegisterBillDelete(dto, opt);
+                return this.dataReportService.reportRegisterBillDelete(dto, opt,null);
             }else {
                 return BaseOutput.failure("数据错误");
             }

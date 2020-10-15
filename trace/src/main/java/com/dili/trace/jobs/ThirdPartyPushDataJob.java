@@ -65,6 +65,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Autowired
     private UpStreamService upStreamService;
 
+    @Autowired
+    private MarketService marketService;
+
     @Value("${current.baseWebPath}")
     private String baseWebPath;
     @Value("${push.batch.size}")
@@ -79,6 +82,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        pushData();
+        pushRegisterBillData();
     }
 
     /**
@@ -87,8 +92,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        try {
-            List<Market> marketList = MarketUtil.getAllMarket();
+        try { List<Market> marketList = marketService.list(new Market());
             for (Market market : marketList) {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();
@@ -136,7 +140,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public void pushRegisterBillData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            List<Market> marketList = MarketUtil.getAllMarket();
+            List<Market> marketList = marketService.list(new Market());
             for (Market market : marketList) {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();

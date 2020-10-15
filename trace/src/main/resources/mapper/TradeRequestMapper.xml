@@ -119,9 +119,13 @@
       <if test="productName != null and productName != ''">
           AND t.product_name LIKE #{productName}
       </if>
+      <if test="marketId != null">
+          AND t.buyer_market_id = #{marketId} AND t.seller_market_id = #{marketId}
+      </if>
       AND t.`return_status`!=20
       AND t.trade_order_id = o.id
       AND u.id = t.buyer_id
+      AND t.buyer_market_id = u.market_id
       AND u.state=1
       AND u.validate_state=40
       AND u.yn=1
@@ -147,9 +151,13 @@
       <if test="phone != null and phone != ''">
           and user.phone like #{phone}
       </if>
+      <if test="marketId != null">
+          AND t.buyer_market_id = #{marketId} AND t.seller_market_id = #{marketId}
+      </if>
       AND t.`return_status`!=20
       AND t.trade_order_id = o.id
       AND user.id = t.buyer_id
+      AND user.market_id = t.buyer_market_id
       AND user.state=1
       AND user.validate_state=40
       AND user.yn=1
