@@ -41,6 +41,10 @@ public class Category extends BaseDomain {
 	@Column(name = "`modified`")
 	private Date modified;
 
+	@ApiModelProperty(value = "市场ID")
+	@Column(name = "market_id")
+	private Long marketId;
+
 	public Date getCreated() {
 		return created;
 	}
@@ -104,4 +108,11 @@ public class Category extends BaseDomain {
 		this.level = level;
 	}
 
+	public Long getMarketId() {
+		return marketId;
+	}
+
+	public void setMarketId(Long marketId) {
+		this.marketId = marketId;
+	}
 }

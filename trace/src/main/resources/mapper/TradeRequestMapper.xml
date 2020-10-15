@@ -39,6 +39,9 @@
       <if test="modifiedStart != null">
         <![CDATA[AND o.modified >#{modifiedStart}]]>
       </if>
+      <if test="marketId != null">
+          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
+      </if>
   </select>
 
   <select id="selectDeliveryOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportDeliveryOrderDto">
@@ -52,6 +55,9 @@
       </if>
       <if test="modifiedStart != null">
         <![CDATA[AND o.modified >#{modifiedStart}]]>
+      </if>
+      <if test="marketId != null">
+          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
       </if>
   </select>
 
@@ -77,6 +83,9 @@
     <if test="modifiedStart != null">
       <![CDATA[AND r.modified >#{modifiedStart}]]>
     </if>
+      <if test="marketId != null">
+          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
+      </if>
   </select>
 
   <select id="selectDeletedDeliveryOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportDeletedOrderDto">
@@ -90,6 +99,9 @@
     <if test="modifiedStart != null">
       <![CDATA[AND r.modified >#{modifiedStart}]]>
     </if>
+      <if test="marketId != null">
+          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
+      </if>
   </select>
 
   <select id="queryPurchaseGoodsReportList" parameterType="com.dili.trace.dto.PurchaseGoodsReportQueryDto"

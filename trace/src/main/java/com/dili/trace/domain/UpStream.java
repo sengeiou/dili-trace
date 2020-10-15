@@ -119,6 +119,10 @@ public class UpStream extends BaseDomain {
     @Column(name = "upORdown")
     private Integer upORdown;
 
+    @ApiModelProperty(value = "市场ID")
+    @Column(name = "market_id")
+    private Long marketId;
+
     public Long getSourceUserId() {
 		return sourceUserId;
 	}
@@ -364,4 +368,11 @@ public class UpStream extends BaseDomain {
         this.operationLicenseUrl = operationLicenseUrl;
     }
 
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
 }

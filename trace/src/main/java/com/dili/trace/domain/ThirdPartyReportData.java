@@ -52,7 +52,9 @@ public class ThirdPartyReportData extends BaseDomain {
     @Column(name = "`operator_id`")
     private Long operatorId;
 
-    
+    @ApiModelProperty(value = "市场ID")
+    @Column(name = "market_id")
+    private Long marketId;
 
     /**
      * @return Long return the id
@@ -196,4 +198,11 @@ public class ThirdPartyReportData extends BaseDomain {
         this.type = type;
     }
 
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
 }

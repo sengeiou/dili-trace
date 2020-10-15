@@ -9,9 +9,10 @@ import java.util.Date;
 public class ThirdPartyPushData extends BaseDomain {
 
     public ThirdPartyPushData() {}
-    public ThirdPartyPushData(String interfaceName, String tableName) {
+    public ThirdPartyPushData(String interfaceName, String tableName, Long marketId) {
         this.interfaceName = interfaceName;
         this.tableName = tableName;
+        this.marketId = marketId;
     }
 
     @Id
@@ -30,6 +31,9 @@ public class ThirdPartyPushData extends BaseDomain {
 
     @Column(name = "created")
     private Date created;
+
+    @Column(name = "market_id")
+    private Long marketId;
 
     @Override
     public Long getId() {
@@ -71,5 +75,13 @@ public class ThirdPartyPushData extends BaseDomain {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
     }
 }

@@ -181,7 +181,11 @@
   </select>
   <select id="selectBillReportData"  parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
 
-    select * from (select DISTINCT  area from tally_area_no)a
+    select * from (select DISTINCT  area from tally_area_no
+    WHERE 1 = 1
+    <if test="marketId != null">
+      AND market_id = #{marketId}
+    </if>)a
     left join  ( <include refid="userCountQuery"/>) t_user_count on t_user_count.group_key=a.area
     left join  ( <include refid="billCountQuery"/>) t_bill_count on t_bill_count.group_key=a.area
     left join  ( <include refid="tradeDetailBuyerCount"/>) t_trade_detail_buyer_count on t_trade_detail_buyer_count.group_key=a.area
@@ -213,6 +217,9 @@
     where u.yn=1
     and u.state = 1
     and u.validate_state=40
+    <if test="marketId != null">
+      AND u.market_id = #{marketId}
+    </if>
     ) t GROUP  by area
   </sql>
 
@@ -230,7 +237,7 @@
     from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -243,6 +250,9 @@
     </if>
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     )t GROUP  by area
   </sql>
@@ -262,6 +272,9 @@
     select distinct trade_detail.buyer_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from trade_detail
     JOIN `user` u ON u.id=trade_detail.buyer_id
+    <if test="marketId != null">
+      AND u.market_id = #{marketId}
+    </if>
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -340,7 +353,7 @@
     area as group_key from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -360,6 +373,9 @@
         #{verifyStatus}
       </foreach>
     </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     )t GROUP  by area
   </sql>
 
@@ -378,7 +394,7 @@
     from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -398,6 +414,9 @@
       <foreach collection="yellowBillVerifyStatus" open=" IN (" close=")" item="verifyStatus"  separator=",">
         #{verifyStatus}
       </foreach>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     AND register_bill.user_id not in(
     select  register_bill.user_id
@@ -432,7 +451,7 @@
     from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -453,7 +472,9 @@
         #{verifyStatus}
       </foreach>
     </if>
-
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     AND register_bill.user_id not in(
     select  register_bill.user_id
     from register_bill where register_bill.is_deleted=0
@@ -495,7 +516,7 @@
     from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -514,6 +535,9 @@
       <foreach collection="noneVerifyStatus" open=" IN (" close=")" item="verifyStatus" separator=",">
         #{verifyStatus}
       </foreach>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     )t GROUP  by area
   </sql>
@@ -594,6 +618,9 @@
     </if>
     <if test="isDeleted != null">
       <![CDATA[AND b.is_deleted = #{isDeleted}]]>
+    </if>
+    <if test="marketId != null">
+      AND b.market_id = #{marketId}
     </if>
   </select>
 

@@ -197,6 +197,10 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`is_deleted`")
 	private Integer isDeleted;
 
+	@ApiModelProperty(value = "市场ID")
+	@Column(name = "market_id")
+	private Long marketId;
+
 	@Transient
 	private List<ImageCert> imageCerts;
 
@@ -703,5 +707,13 @@ public class RegisterBill extends BaseDomain {
 
 	public void setUpStreamName(String upStreamName) {
 		this.upStreamName = upStreamName;
+	}
+
+	public Long getMarketId() {
+		return marketId;
+	}
+
+	public void setMarketId(Long marketId) {
+		this.marketId = marketId;
 	}
 }
