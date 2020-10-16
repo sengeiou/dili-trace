@@ -62,6 +62,7 @@ public class ThirdPartyReportController {
     @RequestMapping(value = "/listPage.action", method = RequestMethod.POST)
     @ResponseBody
     public String listPage(ModelMap modelMap, ThirdPartyReportDataQueryDto input) throws Exception {
+        input.setMarketId(MarketUtil.returnMarket());
         input = BeanMapUtil.trimBean(input);
         return thirdPartyReportDataService.listEasyuiPageByExample(input, true).toString();
     }
