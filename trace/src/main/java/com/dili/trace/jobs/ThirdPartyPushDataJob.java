@@ -90,7 +90,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
-        try { List<Market> marketList = marketService.list(new Market());
+        try {
+            List<Market> marketList = marketService.list(new Market());
             for (Market market : marketList) {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();
