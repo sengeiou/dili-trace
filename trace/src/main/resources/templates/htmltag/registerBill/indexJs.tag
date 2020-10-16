@@ -3,7 +3,7 @@ var currentUser={"depId":"${user.departmentId!}"
 	,"id":"${user.id!}"
 	,"realName":"${user.realName!}"
 	,"userName":"${user.userName!}"
-	,"depName":"${user.firmName!}"};N
+	,"depName":"${user.firmName!}"};
 	
  function onBeforeLoad(param) {
     var firstLoad = $(this).attr("firstLoad");
