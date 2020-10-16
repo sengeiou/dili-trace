@@ -1,7 +1,7 @@
 package com.dili.trace.beetl;
 
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.beetl.core.tag.Tag;
 import org.slf4j.Logger;

@@ -1,13 +1,10 @@
 package com.dili.common.config;
 
-import java.util.concurrent.TimeUnit;
-
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.interceptor.LoginInterceptor;
 import com.dili.common.interceptor.SessionInterceptor;
 import com.dili.common.interceptor.SignInterceptor;
-import com.diligrp.manage.sdk.session.SessionFilter;
-
+import com.dili.uap.sdk.session.SessionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
