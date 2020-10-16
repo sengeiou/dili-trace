@@ -1,9 +1,9 @@
 <script type="text/javascript">
-var currentUser={"depId":"${user.depId!}"
+var currentUser={"depId":"${user.departmentId!}"
 	,"id":"${user.id!}"
 	,"realName":"${user.realName!}"
 	,"userName":"${user.userName!}"
-	,"depName":"${user.depName!}"};
+	,"depName":"${user.firmName!}"};N
 	
  function onBeforeLoad(param) {
     var firstLoad = $(this).attr("firstLoad");
