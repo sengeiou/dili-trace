@@ -1,19 +1,18 @@
 package com.dili.trace.api.components;
 
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.SystemPermissionCheckService;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.RSAUtils;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.dto.ManagerInfoDto;
 import com.dili.trace.dto.OperatorUser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.UserRpc;
+import com.dili.uap.sdk.session.SessionContext;
 import com.jayway.jsonpath.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.codec.binary.Base64;
@@ -39,6 +38,8 @@ public class ManageSystemComponent {
     private String publicKey;
     @Autowired
     private SystemPermissionCheckService systemPermissionCheckService;
+    @Autowired
+    private UserRpc userRpc;
 
     private String hz_admin_authUrl = "user/index.html#list";
 
@@ -144,50 +145,26 @@ public class ManageSystemComponent {
      * @param authUrl
      * @return
      */
-    public List<ManagerInfoDto> findUserByUserResource(String authUrl) {
-        String requestUrl = (this.manageDomainPath.trim() + "/api/user/findUserByUserResource.do");
+    public List<User> findUserByUserResource(String authUrl) {
         try {
-            Map<String, Object> dataMap = new HashMap<String, Object>();
-            dataMap.put("url", authUrl);
-            String respBody = HttpUtil.post(requestUrl, dataMap);
+            //根据权限code获取有这个权限code的用户列表
+            BaseOutput<List<User>> usersByResourceCodeList = userRpc.findCurrentFirmUsersByResourceCode(SessionContext.getSessionContext().getUserTicket().getFirmCode()
+                    , authUrl);
 
-            Configuration conf = Configuration.builder().options(Option.SUPPRESS_EXCEPTIONS).build();
-            ParseContext parseContext = JsonPath.using(conf);
-            DocumentContext docCtx = parseContext.parse(respBody);
-
-            String msg = docCtx.read("$.msg");
-
-            String code = docCtx.read("$.code");
-
-            if ("200".equals(code)) {
-                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                Object objectData = docCtx.read("$.data");
-                List<ManagerInfoDto> data = mapper.readValue(mapper.writeValueAsString(objectData), new TypeReference<List<ManagerInfoDto>>() {
-                });
-                return data;
-            } else {
-                throw new TraceBusinessException(msg);
-            }
-
+            return usersByResourceCodeList.getData();
         } catch (Exception e) {
-            if (!(e instanceof TraceBusinessException)) {
-                logger.error(e.getMessage(), e);
-                throw new TraceBusinessException("远程请求出错");
-            } else {
-                throw (TraceBusinessException) e;
-            }
-
+            throw (TraceBusinessException) e;
         }
 
     }
 
-    public List<ManagerInfoDto> getAdminUser() {
+    public List<User> getAdminUser() {
         return findUserByUserResource(hz_admin_authUrl);
     }
 
     public boolean isAdminUser(Long userId) {
-        Map<Long, ManagerInfoDto> managerMap = new HashMap<>();
-        List<ManagerInfoDto> managers = findUserByUserResource(hz_admin_authUrl);
+        Map<Long, User> managerMap = new HashMap<>();
+        List<User> managers = findUserByUserResource(hz_admin_authUrl);
         StreamEx.of(managers).nonNull().forEach(m -> {
             managerMap.put(m.getId(), m);
         });
