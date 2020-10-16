@@ -72,8 +72,9 @@ public class DataReportService {
      * @param marketCountDto
      * @return
      */
-    public BaseOutput marketCount(MarketCountDto marketCountDto, Optional<OperatorUser> optUser) {
+    public BaseOutput marketCount(MarketCountDto marketCountDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:市场经营户数据统计");
+        setMarketInfo(market);
         String path = "/nfwlApi/marketCount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, marketCountDto, optUser);
@@ -92,14 +93,15 @@ public class DataReportService {
      * @param reportCountDto
      * @return
      */
-    public BaseOutput reportCount(ReportCountDto reportCountDto, Optional<OperatorUser> optUser) {
+    public BaseOutput reportCount(ReportCountDto reportCountDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:报备检测数据统计");
+        setMarketInfo(market);
         String path = "/nfwlApi/reportCount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportCountDto, optUser);
     }
 
-    public BaseOutput reportCount(Optional<OperatorUser> optUser,LocalDateTime startDateTime,LocalDateTime endDateTime, int checkBatch) {
+    public BaseOutput reportCount(Optional<OperatorUser> optUser,LocalDateTime startDateTime,LocalDateTime endDateTime, int checkBatch, Market market) {
         logger.info("上报:报备检测数据统计");
 
         RegisterBillDto billDto = new RegisterBillDto();
@@ -111,6 +113,7 @@ public class DataReportService {
 
         billDto.setCreatedStart(DateUtil.format(start, "yyyy-MM-dd HH:mm:ss"));
         billDto.setCreatedEnd(DateUtil.format(end, "yyyy-MM-dd HH:mm:ss"));
+        billDto.setMarketId(market.getId());
         ReportCountDto reportCountDto = StreamEx.ofNullable(this.registerBillMapper.selectReportCountData(billDto))
                 .nonNull().flatCollection(Function.identity()).findFirst().orElse(new ReportCountDto());
         reportCountDto.setUpdateTime(updateTime);
@@ -149,7 +152,7 @@ public class DataReportService {
             reportCountDto.setCheckBatch(0);
         }
 
-        return this.reportCount(reportCountDto, optUser);
+        return this.reportCount(reportCountDto, optUser, market);
     }
 
     /**
@@ -158,8 +161,9 @@ public class DataReportService {
      * @param regionCountDto
      * @return
      */
-    public BaseOutput regionCount(RegionCountDto regionCountDto, Optional<OperatorUser> optUser) {
+    public BaseOutput regionCount(RegionCountDto regionCountDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:品种产地排名统计数据");
+        setMarketInfo(market);
         String path = "/nfwlApi/regionCount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, regionCountDto, optUser);
@@ -171,8 +175,9 @@ public class DataReportService {
      * @param codeCountDto
      * @return
      */
-    public BaseOutput codeCount(CodeCountDto codeCountDto, Optional<OperatorUser> optUser) {
+    public BaseOutput codeCount(CodeCountDto codeCountDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:三色码状态数据统计");
+        setMarketInfo(market);
         String path = "/nfwlApi/codeCount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, codeCountDto, optUser);
@@ -277,6 +282,7 @@ public class DataReportService {
         ThirdPartyReportData thirdPartyReportData = new ThirdPartyReportData();
         thirdPartyReportData.setCreated(new Date());
         thirdPartyReportData.setModified(new Date());
+        thirdPartyReportData.setMarketId(this.marketId);
 
         try {
             String data = reportDto.toJson();

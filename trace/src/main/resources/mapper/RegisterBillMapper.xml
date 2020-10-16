@@ -549,6 +549,9 @@
     select case when LOCATE(',',origin_name)>0 then SUBSTRING(origin_name,1,LOCATE(',',origin_name)-1) else origin_name end as region_name,sum(case when weight_unit=1 then weight/2 else weight end) weight
     from register_bill
     where register_bill.is_deleted=0
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     group by case when LOCATE(',',origin_name)>0 then SUBSTRING(origin_name,1,LOCATE(',',origin_name)-1) else origin_name end
   </select>
 
@@ -561,6 +564,9 @@
     </if>
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     )report,
 
@@ -587,6 +593,9 @@
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
     </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     )unqualified,
 
     (select   count(distinct product_id ) unqualifiedPdtCount
@@ -598,6 +607,9 @@
     </if>
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     )unqualifiedPdt
   </select>

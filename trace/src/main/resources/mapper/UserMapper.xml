@@ -113,6 +113,9 @@
   <select id="groupByQrStatus"  resultType="com.dili.trace.api.output.UserOutput">
     select qr_status,count(1) cnt from `user`
     where yn=1
+    <if test="marketId != null">
+      AND market_id = #{marketId}
+    </if>
     <if test="qrStatusList!=null and qrStatusList.size()>0">
       and qr_status
       <foreach collection="qrStatusList" open=" IN (" close=")" item="qrStatus"  separator=",">
