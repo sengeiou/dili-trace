@@ -21,57 +21,55 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
-	@Bean
-	public SessionFilter sessionFilter() {
-		return new SessionFilter();
-	}
+    @Autowired
+    private SessionFilter sessionFilter;
 
-	@Bean
-	public FilterRegistrationBean sessionFilterRegistration() {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(sessionFilter());
-		registration.addUrlPatterns("/*");
-		// registration.addInitParameter("confPath", "conf/manage.properties");
-		registration.setName("sessionFilter");
-		registration.setOrder(1);
-		return registration;
-	}
+    @Bean
+    public FilterRegistrationBean sessionFilterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(sessionFilter);
 
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/image/**")
-				.addResourceLocations("file:" + defaultConfiguration.getImageDirectory()).setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));
-	}
+        registration.addUrlPatterns("*.html", "*.action");
+        registration.setName("sessionFilter");
+        registration.setOrder(1);
+        return registration;
+    }
 
-	@Autowired
-	private DefaultConfiguration defaultConfiguration;
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/image/**")
+                .addResourceLocations("file:" + defaultConfiguration.getImageDirectory()).setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));
+    }
 
-	@Bean
-	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public LoginSessionContext sessionContext() {
-		return new LoginSessionContext();
-	}
+    @Autowired
+    private DefaultConfiguration defaultConfiguration;
 
-	@Bean
-	public SessionInterceptor sessionInterceptor() {
-		return new SessionInterceptor();
-	}
+    @Bean
+    @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+    public LoginSessionContext sessionContext() {
+        return new LoginSessionContext();
+    }
 
-	@Bean
-	public LoginInterceptor loginInterceptor() {
-		return new LoginInterceptor();
-	}
+    @Bean
+    public SessionInterceptor sessionInterceptor() {
+        return new SessionInterceptor();
+    }
 
-	@Bean
-	public SignInterceptor signInterceptor() {
-		return new SignInterceptor();
-	}
+    @Bean
+    public LoginInterceptor loginInterceptor() {
+        return new LoginInterceptor();
+    }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(sessionInterceptor()).addPathPatterns("/api/**");
-		registry.addInterceptor(loginInterceptor()).addPathPatterns("/api/**");
-		registry.addInterceptor(signInterceptor()).addPathPatterns("/api/**");
-	}
+    @Bean
+    public SignInterceptor signInterceptor() {
+        return new SignInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(sessionInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(loginInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(signInterceptor()).addPathPatterns("/api/**");
+    }
 
 }
