@@ -350,10 +350,15 @@ public interface User extends IBaseDomain {
 
     /**
      * 经营户卡号
+     * * @return
      */
     @ApiModelProperty(value = "经营户卡号")
     @Column(name = "`third_party_code`")
     String getThirdPartyCode();
 
-    void setThirdPartyCode(String ThirdPartyCode);
+    /**
+     * 经营户卡号
+     * @param thirdPartyCode
+     */
+    void setThirdPartyCode(String thirdPartyCode);
 }
