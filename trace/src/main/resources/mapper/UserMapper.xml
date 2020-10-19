@@ -28,13 +28,15 @@
     <result column="business_categories" jdbcType="VARCHAR" property="businessCategories" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+    <result column="third_party_code" jdbcType="VARCHAR" property="thirdPartyCode" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
     -->
     id, user_name, phone, card_no, addr, card_no_url, tally_area_nos, business_license_url,market_id,market_name,qr_status,source,
-    sales_city_id, sales_city_name, state, pwd, created, modified,name,validate_state,vocation_type,business_category_ids,business_categories
+    sales_city_id, sales_city_name, state, pwd, created, modified,name,validate_state,vocation_type,business_category_ids,business_categories,
+    third_party_code
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
