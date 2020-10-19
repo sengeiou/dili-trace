@@ -347,4 +347,13 @@ public interface User extends IBaseDomain {
      * @param is_active
      */
     void setIsActive(Integer is_active);
+
+    /**
+     * 经营户卡号
+     */
+    @ApiModelProperty(value = "经营户卡号")
+    @Column(name = "`third_party_code`")
+    String getThirdPartyCode();
+
+    void setThirdPartyCode(String ThirdPartyCode);
 }
