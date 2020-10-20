@@ -166,6 +166,12 @@ public class RegisterHead extends BaseDomain {
 	@Transient
 	private String weightUnitName;
 
+	@Transient
+	private List<ImageCert> imageCerts;
+
+	@Transient
+	private List<RegisterBill> registerBills;
+
 	@Override
 	public Long getId() {
 		return id;
@@ -454,5 +460,21 @@ public class RegisterHead extends BaseDomain {
 
 	public void setWeightUnitName(String weightUnitName) {
 		this.weightUnitName = weightUnitName;
+	}
+
+	public List<ImageCert> getImageCerts() {
+		return imageCerts;
+	}
+
+	public void setImageCerts(List<ImageCert> imageCerts) {
+		this.imageCerts = imageCerts;
+	}
+
+	public List<RegisterBill> getRegisterBills() {
+		return registerBills;
+	}
+
+	public void setRegisterBills(List<RegisterBill> registerBills) {
+		this.registerBills = registerBills;
 	}
 }

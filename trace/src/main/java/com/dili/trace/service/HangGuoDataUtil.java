@@ -15,6 +15,7 @@ import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.glossary.hanguo.HangGuoGoodsLevelEnum;
 import com.dili.trace.glossary.hanguo.HangGuoVocationTypeEnum;
 import one.util.streamex.StreamEx;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import sun.misc.BASE64Decoder;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -305,10 +305,11 @@ public class HangGuoDataUtil {
         imgPath += DateUtils.format(new Date(), "yyyyMM");
         // 生成jpeg图片
         imgPath += "/" + memberNo + "." + ImageFileTypeEnum.JPEG_TYPE.getName();
-        BASE64Decoder decoder = new BASE64Decoder();
+        //BASE64Decoder decoder = new BASE64Decoder();
         try {
             // Base64解码
-            byte[] bytes = decoder.decodeBuffer(img64Str);
+            byte[] bytes = Base64.decodeBase64(img64Str);
+            //byte[] bytes = decoder.decodeBuffer(img64Str);
             for (int i = 0; i < bytes.length; ++i) {
                 // 调整异常数据
                 if (bytes[i] < 0) {
