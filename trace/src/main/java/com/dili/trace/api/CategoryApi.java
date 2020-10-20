@@ -51,7 +51,7 @@ public class CategoryApi {
 	@RequestMapping(value = "/listCategoryByCondition", method = RequestMethod.POST)
 	public BaseOutput<List<Category>> listCategoryByCondition(@RequestBody CategoryListInput category) {
 		try {
-			List<Category> list = this.categoryService.listCategoryByKeyword(category.getKeyword(),category.getLevel(),category.getParentId());
+			List<Category> list = this.categoryService.listCategoryByKeyword(category.getKeyword(), category.getLevel(), category.getParentId(), category.getMarketId());
 			return BaseOutput.success().setData(list);
 		} catch (Exception e) {
 			LOGGER.error("listCityByCondition", e);
