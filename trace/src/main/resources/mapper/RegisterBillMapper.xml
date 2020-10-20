@@ -29,6 +29,17 @@
     <result column="latest_pd_result" jdbcType="VARCHAR" property="latestPdResult" />
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
     <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+    <result column="market_id" jdbcType="VARCHAR" property="marketId" />
+    <result column="register_head_code" jdbcType="VARCHAR" property="registerHeadCode" />
+    <result column="third_party_code" jdbcType="VARCHAR" property="thirdPartyCode" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="measure_type" jdbcType="TINYINT" property="measureType" />
+    <result column="piece_num" jdbcType="DECIMAL" property="pieceNum" />
+    <result column="piece_weight" jdbcType="DECIMAL" property="pieceWeight" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="delete_user" jdbcType="VARCHAR" property="deleteUser" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -37,7 +48,9 @@
     id, code, register_source, tally_area_no, name, id_card_no, addr,phone, user_id,sample_code,
     plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version,
-    created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result
+    created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result,
+    market_id, register_head_code, third_party_code, area, measure_type, piece_num, piece_weight,
+    remark, create_user, delete_user, delete_time
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
