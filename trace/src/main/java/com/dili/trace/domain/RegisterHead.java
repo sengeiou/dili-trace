@@ -162,6 +162,10 @@ public class RegisterHead extends BaseDomain {
 	@Column(name = "market_id")
 	private Long marketId;
 
+
+	@Transient
+	private String weightUnitName;
+
 	@Override
 	public Long getId() {
 		return id;
@@ -442,5 +446,13 @@ public class RegisterHead extends BaseDomain {
 
 	public void setMarketId(Long marketId) {
 		this.marketId = marketId;
+	}
+
+	public String getWeightUnitName() {
+		return weightUnitName;
+	}
+
+	public void setWeightUnitName(String weightUnitName) {
+		this.weightUnitName = weightUnitName;
 	}
 }

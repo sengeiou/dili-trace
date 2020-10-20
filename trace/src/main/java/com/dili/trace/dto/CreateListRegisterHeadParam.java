@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class CreateListRegisterHeadParam {
 	private Long userId;
+	private Long marketId;
 
 	public Long getUserId() {
 		return userId;
@@ -20,13 +21,21 @@ public class CreateListRegisterHeadParam {
 		this.userId = userId;
 	}
 
-	private List<CreateRegisterHeadInputDto> registerHeads;
+	private List<CreateRegisterHeadInputDto> registerBills;
 
-	public List<CreateRegisterHeadInputDto> getRegisterHeads() {
-		return registerHeads;
+	public List<CreateRegisterHeadInputDto> getRegisterBills() {
+		return registerBills;
 	}
 
-	public void setRegisterHeads(List<CreateRegisterHeadInputDto> registerHeads) {
-		this.registerHeads = registerHeads;
+	public void setRegisterBills(List<CreateRegisterHeadInputDto> registerBills) {
+		this.registerBills = registerBills;
+	}
+
+	public Long getMarketId() {
+		return marketId;
+	}
+
+	public void setMarketId(Long marketId) {
+		this.marketId = marketId;
 	}
 }
