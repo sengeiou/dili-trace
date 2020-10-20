@@ -10,22 +10,22 @@ import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.TradeDetailBillOutput;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.*;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,13 +55,7 @@ public class ClientRegisterHeadApi {
 	ImageCertService imageCertService;
 
 	@Autowired
-	TradeDetailService tradeDetailService;
-
-	@Autowired
-	UpStreamService upStreamService;
-
-	@Autowired
-	TradeRequestService tradeRequestService;
+	RegisterBillService registerBillService;
 
 	@ApiOperation(value = "获取进门主台账单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterHead", dataType = "RegisterHead", value = "获取进门主台账单列表")
@@ -186,5 +180,49 @@ public class ClientRegisterHeadApi {
 			return BaseOutput.failure("服务端出错");
 		}
 		return BaseOutput.success();
+	}
+
+	@ApiOperation("查看进门主台账单")
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/viewRegisterHead.api", method = {RequestMethod.GET})
+	public BaseOutput<RegisterHead> viewRegisterHead(@RequestParam Long id) {
+		try {
+			RegisterHead registerHead = registerHeadService.get(id);
+
+			List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, BillTypeEnum.MASTER_BILL.getCode());
+			registerHead.setImageCerts(imageCerts);
+			return BaseOutput.success().setData(registerHead);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error("查询进门主台账单数据出错", e);
+			return BaseOutput.failure("查询进门主台账单数据出错");
+		}
+	}
+
+	@ApiOperation("分批详情")
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/viewPartialRegisterHead.api", method = {RequestMethod.GET})
+	public BaseOutput<RegisterHead> viewPartialRegisterHead(@RequestParam String code) {
+		try {
+			RegisterHead registerHead = new RegisterHead();
+			registerHead.setCode(code);
+			List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
+			if(CollectionUtils.isNotEmpty(registerHeadList)){
+				registerHead = registerHeadList.get(0);
+			} else {
+				return BaseOutput.failure("没有进门主台账单");
+			}
+			RegisterBill registerBill = new RegisterBill();
+			registerBill.setRegisterHeadCode(code);
+			List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
+			registerHead.setRegisterBills(registerBills);
+			return BaseOutput.success().setData(registerHead);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error("查询分批详情出错", e);
+			return BaseOutput.failure("查询分批详情数据出错");
+		}
 	}
 }
