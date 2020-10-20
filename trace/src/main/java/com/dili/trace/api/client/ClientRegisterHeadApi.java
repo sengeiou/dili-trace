@@ -60,14 +60,14 @@ public class ClientRegisterHeadApi {
 	@ApiOperation(value = "获取进门主台账单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterHead", dataType = "RegisterHead", value = "获取进门主台账单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-	public BaseOutput<List<RegisterHead>> listPage(@RequestBody RegisterHeadDto input) {
+	public BaseOutput<BasePage<RegisterHead>> listPage(@RequestBody RegisterHeadDto input) {
 		logger.info("获取进门主台账单列表:{}", JSON.toJSONString(input));
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 
 			logger.info("获取进门主台账单列表 操作用户:{}", userId);
 			input.setUserId(userId);
-			List<RegisterHead> registerHeadList = registerHeadService.list(input);
+			BasePage<RegisterHead> registerHeadList = registerHeadService.listPageByExample(input);
 			return BaseOutput.success().setData(registerHeadList);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
