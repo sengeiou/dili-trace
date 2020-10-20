@@ -172,4 +172,11 @@ public interface UserService extends BaseService<User, Long> {
      * 根据时间更新用户活跃标志位
      */
     void updateUserActiveByTime();
+
+    /**
+     * 通过姓名/手机号/经营户卡号关键字查询用户信息
+     *
+     * @param input
+     */
+    public BasePage<User> findUserByKeyword(UserListDto input);
 }
