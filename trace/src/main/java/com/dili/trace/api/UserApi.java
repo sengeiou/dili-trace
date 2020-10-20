@@ -350,11 +350,13 @@ public class UserApi {
 
     }
 
-    @ApiOperation(value = "通过姓名关键字查询用户信息", notes = "通过姓名关键字查询用户信息")
+    @ApiOperation(value = "通过姓名/手机号/经营户卡号关键字查询用户信息", notes = "通过姓名/手机号/经营户卡号关键字查询用户信息")
     @RequestMapping(value = "/findUserByLikeName.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<User>> findUserByLikeName(UserListDto input) {
         try {
-            if (input == null || StringUtils.isBlank(input.getLikeName())) {
+            if (input == null || StringUtils.isBlank(input.getLikeName())
+                    || StringUtils.isBlank(input.getLikePhone())
+                    || StringUtils.isBlank(input.getLikeThirdPartyCode())) {
                 return BaseOutput.success().setData(BasePageUtil.empty(input.getPage(), input.getRows()));
             }
             BasePage<User> source = this.userService.listPageByExample(input);

@@ -61,4 +61,31 @@ public interface UserListDto extends User {
 
     void setUserId(Long userId);
 
+    /**
+     * 手机号模糊查询
+     * @return
+     */
+    @Column(name = "phone")
+    @Like
+    String getLikePhone();
+
+    /**
+     * 手机号模糊查询
+     * @param likePhone
+     */
+    void setLikePhone(String likePhone);
+
+    /**
+     * 经营户卡号模糊查询
+     * @return
+     */
+    @Column(name = "third_party_code")
+    @Like
+    String getLikeThirdPartyCode();
+
+    /**
+     * 经营户卡号模糊查询
+     * @param likeThirdPartyCode
+     */
+    void setLikeThirdPartyCode(String likeThirdPartyCode);
 }
