@@ -107,6 +107,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			query.setSourceUserId(upStreamDto.getSourceUserId());
 			query.setTelphone(upStreamDto.getTelphone());
 			query.setUpORdown(upStreamDto.getUpORdown());
+			query.setMarketId(upStreamDto.getMarketId());
 
 			List<UpStream> upStreamList = listByExample(query);
 			if (CollUtil.isEmpty(upStreamList)) {
