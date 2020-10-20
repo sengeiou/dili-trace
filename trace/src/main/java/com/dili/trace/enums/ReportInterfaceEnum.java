@@ -2,6 +2,7 @@ package com.dili.trace.enums;
 
 /**
  * 与天下粮仓对接的接口定义常量
+ *
  * @author asa.lee
  */
 
@@ -81,6 +82,29 @@ public enum ReportInterfaceEnum {
      * 经营户作废
      */
     USER_DELETE("user_delete", "经营户作废"),
+
+    /**
+     * 杭果经营户
+     */
+    HANGGUO_USER("hangguo_user", "杭果经营户上报"),
+
+
+    /**
+     * 杭果商品
+     */
+    HANGGUO_GOODS("hangguo_goods", "杭果商品上报"),
+
+
+    /**
+     * 杭果检测数据上报
+     */
+    HANGGUO_INSPECTION("hangguo_inspection", "杭果检测数据上报"),
+
+
+    /**
+     * 杭果不合格处置数据上报
+     */
+    HANGGUO_DISPOSE("hangguo_dispose", "杭果不合格处置数据上报"),
     ;
 
     private String name;

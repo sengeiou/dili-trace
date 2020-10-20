@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author asa.lee
  */
-public class ReportUserDto  {
+public class ReportUserDto {
     private String marketId;
     private String accountName;
     private Integer accountType;
@@ -22,6 +22,25 @@ public class ReportUserDto  {
     private Integer status;
     private String telphone;
     private String thirdAccId;
+
+    private String idCard;
+    private String tel;
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
 
     public String getMarketId() {
         return marketId;
