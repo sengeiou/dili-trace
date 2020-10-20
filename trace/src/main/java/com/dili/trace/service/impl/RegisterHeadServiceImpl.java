@@ -1,0 +1,273 @@
+package com.dili.trace.service.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.service.BizNumberFunction;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.api.input.CreateRegisterHeadInputDto;
+import com.dili.trace.dao.RegisterHeadMapper;
+import com.dili.trace.domain.*;
+import com.dili.trace.dto.*;
+import com.dili.trace.enums.*;
+import com.dili.trace.glossary.BizNumberType;
+import com.dili.trace.glossary.TFEnum;
+import com.dili.trace.glossary.YnEnum;
+import com.dili.trace.service.*;
+import com.diligrp.manage.sdk.domain.UserTicket;
+import com.diligrp.manage.sdk.session.SessionContext;
+import one.util.streamex.StreamEx;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
+/**
+ * 进门主台账单接口实现
+ *
+ * @author Lily
+ */
+@Service
+@Transactional
+public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long> implements RegisterHeadService {
+    private static final Logger logger = LoggerFactory.getLogger(RegisterHeadServiceImpl.class);
+
+    @Autowired
+    BizNumberFunction bizNumberFunction;
+
+    @Autowired
+    UserPlateService userPlateService;
+
+    @Autowired
+    ImageCertService imageCertService;
+
+    @Autowired
+    BrandService brandService;
+
+    public RegisterHeadMapper getActualDao() {
+        return (RegisterHeadMapper) getDao();
+    }
+
+    @Override
+    public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, User user,
+                                     Optional<OperatorUser> operatorUser) {
+        if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
+            throw new TraceBusinessException("用户未审核通过不能创建报备单");
+        }
+
+        return StreamEx.of(registerHeads).nonNull().map(dto -> {
+            logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
+            RegisterHead registerHead = dto.build(user);
+            return this.createRegisterHead(registerHead, dto.getImageCertList(), operatorUser);
+        }).toList();
+    }
+
+    @Override
+    public String listPage(RegisterHeadDto input) throws Exception {
+        return this.listEasyuiPageByExample(input, true).toString();
+    }
+
+    @Transactional
+    @Override
+    public Long createRegisterHead(RegisterHead registerHead, List<ImageCert> imageCertList,
+                                   Optional<OperatorUser> operatorUser) {
+        this.checkRegisterHead(registerHead);
+
+        UserTicket user = SessionContext.getSessionContext().getUserTicket();
+        registerHead.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_HEAD));
+        registerHead.setWeight(registerHead.getPieceNum().multiply(registerHead.getPieceWeight()));
+        operatorUser.ifPresent(op -> {
+            registerHead.setCreateUser(op.getName());
+            registerHead.setCreated(new Date());
+            registerHead.setModifyUser(op.getName());
+            registerHead.setModified(new Date());
+        });
+        registerHead.setIsDeleted(TFEnum.FALSE.getCode());
+        registerHead.setActive(TFEnum.TRUE.getCode());
+        registerHead.setVersion(1);
+
+        registerHead.setIdCardNo(StringUtils.trimToEmpty(registerHead.getIdCardNo()).toUpperCase());
+        // 车牌转大写
+        String plate = StreamEx.ofNullable(registerHead.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
+                .map(String::toUpperCase).findFirst().orElse(null);
+        registerHead.setPlate(plate);
+
+        // 保存车牌
+        this.userPlateService.checkAndInsertUserPlate(registerHead.getUserId(), plate);
+
+        // 保存报备单
+        int result = super.saveOrUpdate(registerHead);
+        if (result == 0) {
+            logger.error("新增进门主台账单数据库执行失败" + JSON.toJSONString(registerHead));
+            throw new TraceBusinessException("创建失败");
+        }
+
+        // 保存图片
+        imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        if (imageCertList.isEmpty()) {
+            throw new TraceBusinessException("请上传凭证");
+        }
+        this.imageCertService.insertImageCert(imageCertList, registerHead.getId());
+
+        // 创建/更新品牌信息并更新brandId字段值
+        this.brandService.createOrUpdateBrand(registerHead.getBrandName(), registerHead.getUserId())
+                .ifPresent(brandId -> {
+                    RegisterHead bill = new RegisterHead();
+                    bill.setBrandId(brandId);
+                    bill.setId(registerHead.getId());
+                    this.updateSelective(bill);
+                });
+        return registerHead.getId();
+    }
+
+    /**
+     * 检查用户输入参数
+     *
+     * @param registerHead
+     * @return
+     */
+    private BaseOutput checkRegisterHead(RegisterHead registerHead) {
+        if (!BillTypeEnum.fromCode(registerHead.getBillType()).isPresent()) {
+            throw new TraceBusinessException("单据类型错误");
+        }
+        if (registerHead.getUpStreamId() == null) {
+            throw new TraceBusinessException("上游企业不能为空");
+        }
+        if (StringUtils.isBlank(registerHead.getName())) {
+            logger.error("业户姓名不能为空");
+            throw new TraceBusinessException("业户姓名不能为空");
+        }
+        if (registerHead.getUserId() == null) {
+            logger.error("业户ID不能为空");
+            throw new TraceBusinessException("业户ID不能为空");
+        }
+
+        if (StringUtils.isBlank(registerHead.getProductName()) || registerHead.getProductId() == null) {
+            logger.error("商品名称不能为空");
+            throw new TraceBusinessException("商品名称不能为空");
+        }
+        if (StringUtils.isBlank(registerHead.getOriginName()) || registerHead.getOriginId() == null) {
+            logger.error("商品产地不能为空");
+            throw new TraceBusinessException("商品产地不能为空");
+        }
+        if (registerHead.getPieceWeight() == null) {
+            logger.error("商品件重不能为空");
+            throw new TraceBusinessException("商品件重不能为空");
+        }
+        if (registerHead.getPieceNum() == null) {
+            logger.error("商品件数不能为空");
+            throw new TraceBusinessException("商品件数不能为空");
+        }
+        if (BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
+            logger.error("商品件重不能小于0");
+            throw new TraceBusinessException("商品件重不能小于0");
+        }
+        if (registerHead.getWeightUnit() == null) {
+            logger.error("重量单位不能为空");
+            throw new TraceBusinessException("重量单位不能为空");
+        }
+         return BaseOutput.success();
+    }
+
+    @Transactional
+    @Override
+    public Long doEdit(RegisterHead input, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser) {
+        if (input == null || input.getId() == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterHead headItem = this.getAndCheckById(input.getId())
+                .orElseThrow(() -> new TraceBusinessException("数据不存在"));
+        // 车牌转大写
+        String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
+                .findFirst().orElse(null);
+        input.setPlate(plate);
+        // 保存车牌
+        this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
+
+        input.setReason("");
+        operatorUser.ifPresent(op -> {
+            input.setModifyUser(op.getName());
+            input.setModified(new Date());
+        });
+
+        this.updateSelective(input);
+
+        imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        if (imageCertList.isEmpty()) {
+            throw new TraceBusinessException("请上传凭证");
+        }
+        // 保存图片
+        this.imageCertService.insertImageCert(imageCertList, input.getId());
+
+        this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId());
+        return input.getId();
+    }
+
+    @Transactional
+    @Override
+    public Optional<RegisterHead> getAndCheckById(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+        RegisterHead headItem = this.get(id);
+        if (headItem == null) {
+            return Optional.empty();
+        }
+        if (TFEnum.TRUE.equalsCode(headItem.getIsDeleted())) {
+            throw new TraceBusinessException("进门主台账单已经被删除");
+        }
+        return Optional.of(headItem);
+    }
+
+    @Transactional
+    @Override
+    public Long doDelete(Long id, Long userId, Optional<OperatorUser> operatorUser) {
+        if (id == null || userId == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterHead headItem = this.getAndCheckById(id).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+        if (!userId.equals(headItem.getUserId())) {
+            throw new TraceBusinessException("没有权限删除数据");
+        }
+        RegisterHead registerHead = new RegisterHead();
+        registerHead.setId(headItem.getId());
+        registerHead.setIsDeleted(TFEnum.TRUE.getCode());
+
+        operatorUser.ifPresent(op -> {
+            registerHead.setDeleteUser(op.getName());
+            registerHead.setDeleteTime(new Date());
+        });
+        this.updateSelective(registerHead);
+        return id;
+    }
+
+    @Transactional
+    @Override
+    public Long doUpdateActive(CreateRegisterHeadInputDto dto, Long userId, Optional<OperatorUser> operatorUser) {
+        if (dto.getId() == null || userId == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+        if (!userId.equals(headItem.getUserId())) {
+            throw new TraceBusinessException("没有权限启用/关闭数据");
+        }
+        RegisterHead registerHead = new RegisterHead();
+        registerHead.setId(headItem.getId());
+        registerHead.setActive(dto.getActive());
+
+        operatorUser.ifPresent(op -> {
+            registerHead.setModifyUser(op.getName());
+            registerHead.setModified(new Date());
+        });
+        this.updateSelective(registerHead);
+        return dto.getId();
+    }
+}
