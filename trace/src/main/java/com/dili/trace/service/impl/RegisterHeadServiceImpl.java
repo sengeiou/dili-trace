@@ -83,7 +83,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
         UserTicket user = SessionContext.getSessionContext().getUserTicket();
         registerHead.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_HEAD));
-        registerHead.setWeight(registerHead.getPieceNum().multiply(registerHead.getPieceWeight()));
         operatorUser.ifPresent(op -> {
             registerHead.setCreateUser(op.getName());
             registerHead.setCreated(new Date());
