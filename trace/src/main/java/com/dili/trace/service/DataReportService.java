@@ -68,7 +68,7 @@ public class DataReportService {
 
     /**
      * 市场经营户数据统计
-     * 
+     *
      * @param marketCountDto
      * @return
      */
@@ -82,14 +82,14 @@ public class DataReportService {
 
     /**
      * 报备检测数据统计
-     * 
+     *
      * @param reportCountDto
      * @return
      */
 
     /**
      * 报备检测数据统计
-     * 
+     *
      * @param reportCountDto
      * @return
      */
@@ -101,11 +101,11 @@ public class DataReportService {
         return this.postJson(url, reportCountDto, optUser);
     }
 
-    public BaseOutput reportCount(Optional<OperatorUser> optUser,LocalDateTime startDateTime,LocalDateTime endDateTime, int checkBatch, Market market) {
+    public BaseOutput reportCount(Optional<OperatorUser> optUser, LocalDateTime startDateTime, LocalDateTime endDateTime, int checkBatch, Market market) {
         logger.info("上报:报备检测数据统计");
 
         RegisterBillDto billDto = new RegisterBillDto();
-       
+
         Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault()).toInstant());
         Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
@@ -157,7 +157,7 @@ public class DataReportService {
 
     /**
      * 品种产地排名统计数据
-     * 
+     *
      * @param regionCountDto
      * @return
      */
@@ -171,7 +171,7 @@ public class DataReportService {
 
     /**
      * 三色码状态数据统计
-     * 
+     *
      * @param codeCountDto
      * @return
      */
@@ -185,7 +185,7 @@ public class DataReportService {
 
     /**
      * 创建header对象
-     * 
+     *
      * @return
      */
     protected Map<String, String> buildHeaderMap() {
@@ -203,7 +203,7 @@ public class DataReportService {
 
     /**
      * 刷新token或者返回当前有效的token
-     * 
+     *
      * @param forceRefresh 是否强制刷新
      */
     public String refreshToken(boolean forceRefresh) {
@@ -219,7 +219,6 @@ public class DataReportService {
 
     /**
      * 刷新token或者返回当前有效的token
-     * 
      */
     private Optional<String> getAccessToken() {
         String redisKey = this.accessTokeyRedisKey();
@@ -234,7 +233,7 @@ public class DataReportService {
 
     /**
      * 请求接口获得最新token
-     * 
+     *
      * @return
      */
     protected String getLatestToken() {
@@ -250,7 +249,9 @@ public class DataReportService {
         }
     }
 
-    /** token在redis的key */
+    /**
+     * token在redis的key
+     */
     private String accessTokeyRedisKey() {
         return "TRACE_THIRDPARTY_REPORT_TOKEN";
     }
@@ -317,7 +318,7 @@ public class DataReportService {
     }
 
     private BaseOutput postJson(String url, Map<String, String> headeMap, String jsonBody,
-            Function<DocumentContext, BaseOutput> parseFun) {
+                                Function<DocumentContext, BaseOutput> parseFun) {
 
         try {
 
@@ -343,7 +344,7 @@ public class DataReportService {
         thirdPartyReportData.setModified(new Date());
         thirdPartyReportData.setMarketId(this.marketId);
 
-        String data = JSON.toJSONStringWithDateFormat(reportDto,"yyyy-MM-dd HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+        String data = JSON.toJSONStringWithDateFormat(reportDto, "yyyy-MM-dd HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
         thirdPartyReportData.setData(data);
         String jsonBody = thirdPartyReportData.getData();
 
@@ -377,11 +378,11 @@ public class DataReportService {
     /**
      * 商品大类新增/修改
      *
-     * @author Lily
      * @param categoryDto 需要发送的数据
-     * @param optUser 操作人信息
-     * @param market 市场信息
+     * @param optUser     操作人信息
+     * @param market      市场信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Lily
      */
     public BaseOutput reportCategory(List<CategoryDto> categoryDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:商品大类新增/修改");
@@ -394,10 +395,10 @@ public class DataReportService {
     /**
      * 商品二级类目新增/修改
      *
-     * @author Lily
      * @param categoryDto 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser     操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Lily
      */
     public BaseOutput reportSecondCategory(List<CategorySecondDto> categoryDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:商品二级类目新增/修改");
@@ -451,6 +452,7 @@ public class DataReportService {
 
     /**
      * 食安码新增/修改
+     *
      * @param pushList
      * @param optUser
      */
@@ -461,13 +463,14 @@ public class DataReportService {
         String url = this.reportContextUrl + path;
         return this.postJson(url, pushList, optUser, ReportDtoTypeEnum.userQrCode);
     }
+
     /**
      * 报备新增/编辑
      *
-     * @author Alvin
      * @param reportRegisterBillDtos 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser                操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Alvin
      */
     public BaseOutput reportRegisterBill(List<ReportRegisterBillDto> reportRegisterBillDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:报备新增/编辑");
@@ -480,10 +483,10 @@ public class DataReportService {
     /**
      * 报备新增/编辑
      *
-     * @author Asa
      * @param reportRegisterBillDeleteDto 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser                     操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Asa
      */
     public BaseOutput reportRegisterBillDelete(ReportRegisterBillDeleteDto reportRegisterBillDeleteDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:报备报废");
@@ -496,10 +499,10 @@ public class DataReportService {
     /**
      * 进门
      *
-     * @author Lily
      * @param checkInDtos 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser     操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Lily
      */
     public BaseOutput reportCheckIn(List<ReportCheckInDto> checkInDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:进门");
@@ -540,10 +543,10 @@ public class DataReportService {
     /**
      * 扫码交易
      *
-     * @author Alvin
      * @param scanCodeOrderDtos 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser           操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Alvin
      */
     public BaseOutput reportScanCodeOrder(List<ReportScanCodeOrderDto> scanCodeOrderDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:扫码交易");
@@ -595,7 +598,63 @@ public class DataReportService {
         return this.postJson(url, reportDeletedOrder, optUser, ReportDtoTypeEnum.deleteDeliveryOrder);
     }
 
-    public void setMarketInfo(Market market){
+    /**
+     * 杭果经营户接口
+     *
+     * @param reportUserDtos
+     * @return
+     */
+    public BaseOutput reportFruitsUser(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser, Market market) {
+        logger.info("上报:杭果经营户");
+        setMarketInfo(market);
+        String path = "/thirdParty/ckeck/account";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.HangGuoUser);
+    }
+
+    /**
+     * 杭果商品接口
+     *
+     * @param goodsDtoList
+     * @return
+     */
+    public BaseOutput reportFruitsGoods(List<GoodsDto> goodsDtoList, Optional<OperatorUser> optUser, Market market) {
+        logger.info("上报:杭果商品");
+        setMarketInfo(market);
+        String path = "/thirdParty/check/goods";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, goodsDtoList, optUser, ReportDtoTypeEnum.HangGuoGoods);
+    }
+
+    /**
+     * 杭果检测数据接口
+     *
+     * @param inspectionDtos
+     * @return
+     */
+    public BaseOutput reportFruitsInspection(List<ReportInspectionDto> inspectionDtos, Optional<OperatorUser> optUser, Market market) {
+        logger.info("上报:杭果检测数据");
+        setMarketInfo(market);
+        String path = "/thirdParty/detection/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, inspectionDtos, optUser, ReportDtoTypeEnum.HangGuoInspection);
+    }
+
+    /**
+     * 杭果不合格处置数据接口
+     *
+     * @param inspectionDtos
+     * @return
+     */
+    public BaseOutput reportFruitsUnqualifiedDisposal(List<ReportUnqualifiedDisposalDto> inspectionDtos, Optional<OperatorUser> optUser, Market market) {
+        logger.info("上报:杭果不合格处置数据");
+        setMarketInfo(market);
+        String path = "/thirdParty/check/fail/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, inspectionDtos, optUser, ReportDtoTypeEnum.HangGuoUnqualifiedInspection);
+    }
+
+    public void setMarketInfo(Market market) {
         this.marketId = market.getId();
         this.reportContextUrl = market.getContextUrl();
         this.appId = String.valueOf(market.getAppId());
