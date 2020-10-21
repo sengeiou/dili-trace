@@ -263,12 +263,12 @@ public class ClientRegisterHeadApi {
 				return BaseOutput.failure("没有进门主台账单");
 			}
 			// 解析状态输出到前台
-			if(registerHead.getActive() != null && YesOrNoEnum.YES.getCode() == registerHead.getActive()){
+			if(registerHead.getActive() != null && YesOrNoEnum.YES.getCode().equals(registerHead.getActive())){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.ACTIVE.getDesc());
-            } else if(registerHead.getActive() != null && YesOrNoEnum.NO.getCode() == registerHead.getActive()){
+            } else if(registerHead.getActive() != null && YesOrNoEnum.NO.getCode().equals(registerHead.getActive())){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.UNACTIVE.getDesc());
             }
-            if(registerHead.getIsDeleted() != null && YesOrNoEnum.YES.getCode() == registerHead.getIsDeleted()){
+            if(registerHead.getIsDeleted() != null && YesOrNoEnum.YES.getCode().equals(registerHead.getIsDeleted())){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.DELETED.getDesc());
             }
 			UpStream upStream = upStreamService.get(registerHead.getUpStreamId());
