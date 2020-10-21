@@ -41,6 +41,11 @@ public enum MessageStateEnum {
      */
     BUSINESS_TYPE_TRADE_SELL(40, "销售"),
 
+    /**
+     * 消息业务类型-报备
+     */
+    BUSINESS_TYPE_FORM_BILL(50, "进门登记"),
+
     ;
 
     private String name;

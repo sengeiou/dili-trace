@@ -6,6 +6,7 @@ import com.dili.trace.api.input.CreateRegisterBillInputDto;
 
 public class CreateListBillParam {
 	private Long userId;
+	private Long marketId;
 
 	public Long getUserId() {
 		return userId;
@@ -23,5 +24,13 @@ public class CreateListBillParam {
 
 	public void setRegisterBills(List<CreateRegisterBillInputDto> registerBills) {
 		this.registerBills = registerBills;
+	}
+
+	public Long getMarketId() {
+		return marketId;
+	}
+
+	public void setMarketId(Long marketId) {
+		this.marketId = marketId;
 	}
 }
