@@ -1025,6 +1025,38 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                     + keyword + "%') OR third_party_code like '%"+keyword+"%' )";
         }
         return Optional.ofNullable(sql);
+    }
 
+    @Transactional
+    @Override
+    public Long doDelete(CreateRegisterBillInputDto dto, Long userId, Optional<OperatorUser> operatorUser) {
+        if (dto == null || userId == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterBill billItem = this.getAndCheckById(dto.getBillId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+        if (!userId.equals(billItem.getUserId())) {
+            throw new TraceBusinessException("没有权限删除数据");
+        }
+        if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+            throw new TraceBusinessException("不能删除已进门数据");
+        }
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
+            throw new TraceBusinessException("不能删除审核未通过数据");
+        }
+        RegisterBill bill = new RegisterBill();
+        bill.setId(billItem.getBillId());
+        bill.setIsDeleted(dto.getIsDeleted());
+
+        operatorUser.ifPresent(op -> {
+            bill.setOperatorName(op.getName());
+            bill.setOperatorId(op.getId());
+            bill.setOperationTime(new Date());
+            bill.setDeleteUser(op.getName());
+            bill.setDeleteTime(new Date());
+        });
+        this.updateSelective(bill);
+        this.registerBillHistoryService.createHistory(billItem.getBillId());
+        this.userQrHistoryService.rollbackUserQrStatus(bill.getId(), billItem.getUserId());
+        return dto.getBillId();
     }
 }

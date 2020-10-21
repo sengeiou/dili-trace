@@ -130,7 +130,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 
 	/**
 	 * 删除报备单
-	 * @param input
+	 * @param userId
 	 * @param operatorUser
 	 * @return
 	 */
@@ -189,4 +189,13 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public BasePage<RegisterBill> listPageApi(RegisterBillDto input);
+
+	/**
+	 * 删除进门登记单
+	 * @param dto
+	 * @param userId
+	 * @param operatorUser
+	 * @return
+	 */
+	public Long doDelete(CreateRegisterBillInputDto dto,Long userId,Optional<OperatorUser> operatorUser);
 }

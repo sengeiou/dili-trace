@@ -82,6 +82,9 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "查验状态")
 	private Integer verifyStatus;
 
+	@ApiModelProperty(value = "是否废弃")
+	private Integer isDeleted;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -373,5 +376,13 @@ public class CreateRegisterBillInputDto {
 
 	public void setVerifyStatus(Integer verifyStatus) {
 		this.verifyStatus = verifyStatus;
+	}
+
+	public Integer getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Integer isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 }

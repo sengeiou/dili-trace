@@ -94,7 +94,7 @@ public class ClientRegisterFormBillApi {
 			}
 			logger.info("保存多个进门登记单操作用户:{}，{}", operatorUser.getId(), operatorUser.getName());
 			List<Long> idList = this.registerBillService.createRegisterFormBillList(registerBills,
-					userService.get(operatorUser.getId()), Optional.empty(), createListBillParam.getMarketId());
+					userService.get(createListBillParam.getUserId()), Optional.empty(), createListBillParam.getMarketId());
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -113,12 +113,10 @@ public class ClientRegisterFormBillApi {
 		}
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
-
-			User user = userService.get(operatorUser.getId());
-			if (user == null) {
+			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-
+			User user = userService.get(operatorUser.getId());
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存进门登记单:{}", JSON.toJSONString(registerBill));
 			this.registerBillService.doEditFormBill(registerBill, dto.getImageCertList(), Optional.empty());
@@ -140,13 +138,11 @@ public class ClientRegisterFormBillApi {
 		}
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
-
-			User user = userService.get(operatorUser.getId());
-			if (user == null) {
+			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			logger.info("作废进门登记单:billId:{},userId:{}", dto.getBillId(), user.getId());
-			this.registerBillService.doDelete(dto.getBillId(), user.getId(), Optional.empty());
+			logger.info("作废进门登记单:billId:{},userId:{}", dto.getBillId(), operatorUser.getId());
+			this.registerBillService.doDelete(dto, operatorUser.getId(), Optional.empty());
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -165,6 +161,9 @@ public class ClientRegisterFormBillApi {
 				return BaseOutput.failure("参数错误");
 			}
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			if (operatorUser == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
 			RegisterBill input = new RegisterBill();
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
