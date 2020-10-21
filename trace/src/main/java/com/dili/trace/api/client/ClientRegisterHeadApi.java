@@ -269,7 +269,7 @@ public class ClientRegisterHeadApi {
             } else if(registerHead.getActive() != null && YesOrNoEnum.NO.getCode() == registerHead.getActive()){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.UNACTIVE.getDesc());
             }
-            if(registerHead.getIsDeleted() != null && YesOrNoEnum.NO.getCode() == registerHead.getIsDeleted()){
+            if(registerHead.getIsDeleted() != null && YesOrNoEnum.YES.getCode() == registerHead.getIsDeleted()){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.DELETED.getDesc());
             }
 			RegisterBill registerBill = new RegisterBill();
