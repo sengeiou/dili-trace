@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -263,12 +264,12 @@ public class ClientRegisterHeadApi {
 				return BaseOutput.failure("没有进门主台账单");
 			}
 			// 解析状态输出到前台
-			if(registerHead.getActive() != null && RegisgterHeadStatusEnum.ACTIVE.getCode() == registerHead.getActive()){
+			if(registerHead.getActive() != null && YesOrNoEnum.YES.getCode() == registerHead.getActive()){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.ACTIVE.getDesc());
-            } else if(registerHead.getActive() != null && RegisgterHeadStatusEnum.UNACTIVE.getCode() == registerHead.getActive()){
+            } else if(registerHead.getActive() != null && YesOrNoEnum.NO.getCode() == registerHead.getActive()){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.UNACTIVE.getDesc());
             }
-            if(registerHead.getIsDeleted() != null && RegisgterHeadStatusEnum.DELETED.getCode() == registerHead.getIsDeleted()){
+            if(registerHead.getIsDeleted() != null && YesOrNoEnum.NO.getCode() == registerHead.getIsDeleted()){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.DELETED.getDesc());
             }
 			RegisterBill registerBill = new RegisterBill();
