@@ -5,6 +5,8 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
+import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.dao.RegisterHeadMapper;
 import com.dili.trace.domain.*;
@@ -12,11 +14,11 @@ import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.*;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +60,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
     @Override
     public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, User user,
-                                     Optional<OperatorUser> operatorUser) {
+                                             Optional<OperatorUser> operatorUser, Long marketId) {
         if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
             throw new TraceBusinessException("用户未审核通过不能创建报备单");
         }
@@ -66,6 +68,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
             RegisterHead registerHead = dto.build(user);
+            registerHead.setMarketId(marketId);
             return this.createRegisterHead(registerHead, dto.getImageCertList(), operatorUser);
         }).toList();
     }
@@ -83,7 +86,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
         UserTicket user = SessionContext.getSessionContext().getUserTicket();
         registerHead.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_HEAD));
-        registerHead.setWeight(registerHead.getPieceNum().multiply(registerHead.getPieceWeight()));
         operatorUser.ifPresent(op -> {
             registerHead.setCreateUser(op.getName());
             registerHead.setCreated(new Date());
@@ -115,7 +117,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (imageCertList.isEmpty()) {
             throw new TraceBusinessException("请上传凭证");
         }
-        this.imageCertService.insertImageCert(imageCertList, registerHead.getId());
+        this.imageCertService.insertImageCert(imageCertList, registerHead.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerHead.getBrandName(), registerHead.getUserId())
@@ -205,7 +207,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBusinessException("请上传凭证");
         }
         // 保存图片
-        this.imageCertService.insertImageCert(imageCertList, input.getId());
+        this.imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId());
         return input.getId();
@@ -269,5 +271,34 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         });
         this.updateSelective(registerHead);
         return dto.getId();
+    }
+
+    public BasePage<RegisterHead> listPageApi(RegisterHeadDto input){
+
+        StringBuilder sql = new StringBuilder();
+        buildLikeKeyword(input).ifPresent(sql::append);
+        if(sql.length() > 0){
+            input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
+        }
+
+        BasePage<RegisterHead> registerHeadBasePage = listPageByExample(input);
+        if(null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())){
+            registerHeadBasePage.getDatas().forEach(e ->{
+                e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
+            });
+        }
+        return registerHeadBasePage;
+    }
+
+    private Optional<String> buildLikeKeyword(RegisterHeadDto query) {
+        String sql = null;
+        if (StringUtils.isNotBlank(query.getKeyword())) {
+            String keyword = query.getKeyword().trim();
+            sql = "( product_name like '%" + keyword + "%'  OR user_id in(select id from `user` u where u.name like '%"
+                    + keyword + "%' OR legal_person like '%" + keyword + "%' OR phone like '%"
+                    + keyword + "%') OR third_party_code like '%"+keyword+"%' )";
+        }
+        return Optional.ofNullable(sql);
+
     }
 }

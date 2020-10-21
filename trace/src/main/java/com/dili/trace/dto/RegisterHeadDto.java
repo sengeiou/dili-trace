@@ -5,6 +5,8 @@ import com.dili.trace.domain.RegisterHead;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * 进门主台账单实体类扩展
@@ -22,6 +24,9 @@ public class RegisterHeadDto extends RegisterHead {
 	@Operator(Operator.LITTLE_EQUAL_THAN)
 	private String createdEnd;
 
+	@Transient
+	private String keyword;
+
 	public String getCreatedStart() {
 		return createdStart;
 	}
@@ -36,5 +41,13 @@ public class RegisterHeadDto extends RegisterHead {
 
 	public void setCreatedEnd(String createdEnd) {
 		this.createdEnd = createdEnd;
+	}
+
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
 	}
 }

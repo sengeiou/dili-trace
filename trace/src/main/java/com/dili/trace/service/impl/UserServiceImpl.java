@@ -857,5 +857,28 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         return activeMap;
     }
 
+    @Override
+    public BasePage<User>  findUserByKeyword(UserListDto input) {
+        PageHelper.startPage(input.getPage(), input.getRows());
+        List<User> userList = new ArrayList<User>();
+        if (StringUtils.isBlank(input.getKeyword())) {
+            userList = new ArrayList<User>();
+        } else {
+            Example e = new Example(User.class);
+            e.or().orLike("third_party_code", "%" + input.getKeyword().trim() + "%").orLike("name", "%" + input.getKeyword().trim() + "%")
+                    .orLike("phone", "%" + input.getKeyword().trim() + "%");
+            userList =  this.getDao().selectByExample(e);
+        }
+
+        Page<User> page = (Page) userList;
+        BasePage<User> result = new BasePage<User>();
+        result.setDatas(userList);
+        result.setPage(page.getPageNum());
+        result.setRows(page.getPageSize());
+        result.setTotalItem(Integer.parseInt(String.valueOf(page.getTotal())));
+        result.setTotalPage(page.getPages());
+        result.setStartIndex(page.getStartRow());
+        return result;
+    }
 
 }

@@ -1,10 +1,9 @@
 package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
-import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
@@ -28,10 +27,11 @@ public interface RegisterHeadService extends BaseService<RegisterHead, Long> {
 	 * @param registerHeads
 	 * @param user
 	 * @param operatorUser
+	 * @param marketId
 	 * @return
 	 */
 	public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, User user,
-									 Optional<OperatorUser> operatorUser);
+											 Optional<OperatorUser> operatorUser, Long marketId);
 
 	/**
 	 * 创建单个进门主台账单
@@ -77,4 +77,17 @@ public interface RegisterHeadService extends BaseService<RegisterHead, Long> {
 	 * @return
 	 */
 	public Long doUpdateActive(CreateRegisterHeadInputDto dto, Long userId, Optional<OperatorUser> operatorUser);
+
+
+
+	/**
+	 *
+	 * @Author guzman.liu
+	 * @Description
+	 * 给小程序提供查询 主台账的接口
+	 * @Date 2020/10/20 16:04
+	 * @return
+	 */
+	public BasePage<RegisterHead> listPageApi(RegisterHeadDto input);
+
 }

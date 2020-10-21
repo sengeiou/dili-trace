@@ -350,13 +350,11 @@ public class UserApi {
 
     }
 
-    @ApiOperation(value = "通过姓名/手机号/经营户卡号关键字查询用户信息", notes = "通过姓名/手机号/经营户卡号关键字查询用户信息")
+    @ApiOperation(value = "通过姓名关键字查询用户信息", notes = "通过姓关键字查询用户信息")
     @RequestMapping(value = "/findUserByLikeName.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<User>> findUserByLikeName(UserListDto input) {
         try {
-            if (input == null || StringUtils.isBlank(input.getLikeName())
-                    || StringUtils.isBlank(input.getLikePhone())
-                    || StringUtils.isBlank(input.getLikeThirdPartyCode())) {
+            if (input == null || StringUtils.isBlank(input.getLikeName())) {
                 return BaseOutput.success().setData(BasePageUtil.empty(input.getPage(), input.getRows()));
             }
             BasePage<User> source = this.userService.listPageByExample(input);
@@ -366,6 +364,32 @@ public class UserApi {
                 user.setName(u.getName());
                 user.setLegalPerson(u.getLegalPerson());
                 user.setUserType(u.getUserType());
+                return user;
+            });
+            return BaseOutput.success().setData(page);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("查询出错");
+        }
+
+    }
+
+    @ApiOperation(value = "通过姓名/手机号/经营户卡号关键字查询用户信息", notes = "通过姓名/手机号/经营户卡号关键字查询用户信息")
+    @RequestMapping(value = "/findUserByKeyword.api", method = RequestMethod.POST)
+    public BaseOutput<BasePage<User>> findUserByKeyword(UserListDto input) {
+        try {
+            if (input == null || StringUtils.isBlank(input.getKeyword())) {
+                return BaseOutput.success().setData(BasePageUtil.empty(input.getPage(), input.getRows()));
+            }
+            BasePage<User> source = this.userService.findUserByKeyword(input);
+            BasePage<User> page = BasePageUtil.convert(source, (u) -> {
+                User user = DTOUtils.newDTO(User.class);
+                user.setId(u.getId());
+                user.setName(u.getName());
+                user.setLegalPerson(u.getLegalPerson());
+                user.setThirdPartyCode(u.getThirdPartyCode());
+                user.setPhone(u.getPhone());
                 return user;
             });
             return BaseOutput.success().setData(page);

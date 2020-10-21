@@ -47,6 +47,10 @@ public class ImageCert extends BaseDomain {
 	@Column(name = "`modified`")
 	private Date modified;
 
+	@ApiModelProperty(value = "单据类型。1-报备单 2-检测单 3-检测不合格处置单 4-进门主台账单。默认为1")
+	@Column(name = "`bill_type`")
+	private Integer billType;
+
 	@Transient
 	private String certTypeName;
 	
@@ -91,9 +95,6 @@ public class ImageCert extends BaseDomain {
 		this.certType = certType;
 	}
 
-
-
-
     /**
      * @return Long return the billId
      */
@@ -116,5 +117,11 @@ public class ImageCert extends BaseDomain {
         return ImageCertTypeEnum.fromCode(this.getCertType()).map(ImageCertTypeEnum::getName).orElse("");
     }
 
+	public Integer getBillType() {
+		return billType;
+	}
 
+	public void setBillType(Integer billType) {
+		this.billType = billType;
+	}
 }
