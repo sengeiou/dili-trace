@@ -12,10 +12,12 @@ import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.dto.RegisterHeadDto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -178,4 +180,13 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doVerifyFormCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser);
+
+	/**
+	 *
+	 * @Description
+	 * 给小程序提供查询接口
+	 * * @Date 2020/10/21 16:04
+	 * @return
+	 */
+	public BasePage<RegisterBill> listPageApi(RegisterBillDto input);
 }

@@ -1002,4 +1002,29 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         // 更新用户颜色码
         this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
     }
+
+    @Override
+    public BasePage<RegisterBill> listPageApi(RegisterBillDto input){
+
+        StringBuilder sql = new StringBuilder();
+        buildFormLikeKeyword(input).ifPresent(sql::append);
+        if(sql.length() > 0){
+            input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
+        }
+
+        BasePage<RegisterBill> registerBillBasePage = listPageByExample(input);
+        return registerBillBasePage;
+    }
+
+    private Optional<String> buildFormLikeKeyword(RegisterBillDto query) {
+        String sql = null;
+        if (StringUtils.isNotBlank(query.getKeyword())) {
+            String keyword = query.getKeyword().trim();
+            sql = "( product_name like '%" + keyword + "%'  OR user_id in(select id from `user` u where u.name like '%"
+                    + keyword + "%' OR legal_person like '%" + keyword + "%' OR phone like '%"
+                    + keyword + "%') OR third_party_code like '%"+keyword+"%' )";
+        }
+        return Optional.ofNullable(sql);
+
+    }
 }

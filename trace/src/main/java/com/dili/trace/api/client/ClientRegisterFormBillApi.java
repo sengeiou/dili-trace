@@ -66,7 +66,7 @@ public class ClientRegisterFormBillApi {
 			logger.info("获取进门登记单列表 操作用户:{}", userId);
 			input.setSort("created");
 			input.setOrder("desc");
-			BasePage basePage = this.registerBillService.listPageByExample(input);
+			BasePage<RegisterBill> basePage = this.registerBillService.listPageApi(input);
 			return BaseOutput.success().setData(basePage);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
