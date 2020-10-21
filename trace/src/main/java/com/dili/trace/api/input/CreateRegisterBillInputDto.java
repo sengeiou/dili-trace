@@ -79,6 +79,9 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "备注")
 	private String remark;
 
+	@ApiModelProperty(value = "查验状态")
+	private Integer verifyStatus;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -116,6 +119,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setArea(this.getArea());
 		registerBill.setPackaging(this.getPackaging());
 		registerBill.setRemark(this.getRemark());
+		registerBill.setVerifyStatus(this.getVerifyStatus());
 		return registerBill;
 	}
 
@@ -361,5 +365,13 @@ public class CreateRegisterBillInputDto {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Integer getVerifyStatus() {
+		return verifyStatus;
+	}
+
+	public void setVerifyStatus(Integer verifyStatus) {
+		this.verifyStatus = verifyStatus;
 	}
 }

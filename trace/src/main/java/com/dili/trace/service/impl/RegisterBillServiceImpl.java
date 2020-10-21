@@ -816,7 +816,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                                    Optional<OperatorUser> operatorUser) {
         this.checkBill(registerBill);
 
-        registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
         registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
         registerBill.setState(RegisterBillStateEnum.NEW.getCode());
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
@@ -839,11 +838,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setModified(new Date());
         registerBill.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
 
-        // 补单直接进门状态
-        if (BillTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getBillType())) {
-            registerBill.setIsCheckin(YnEnum.YES.getCode());
-        } else {
+        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())) {
             registerBill.setIsCheckin(YnEnum.NO.getCode());
+        } else {
+            registerBill.setIsCheckin(YnEnum.YES.getCode());
+        }
+        if (BillVerifyStatusEnum.PASSED.equalsToCode(registerBill.getVerifyStatus())) {
+            registerBill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
         }
 
         // 保存车牌
@@ -918,11 +920,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             input.setOperationTime(new Date());
         });
 
-        // 补单直接进门状态
-        if (BillTypeEnum.SUPPLEMENT.equalsToCode(input.getBillType())) {
-            input.setIsCheckin(YnEnum.YES.getCode());
-        } else {
+        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(input.getVerifyStatus())) {
             input.setIsCheckin(YnEnum.NO.getCode());
+        } else {
+            input.setIsCheckin(YnEnum.YES.getCode());
+        }
+        if (BillVerifyStatusEnum.PASSED.equalsToCode(input.getVerifyStatus())) {
+            input.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
         }
 
         this.updateSelective(input);

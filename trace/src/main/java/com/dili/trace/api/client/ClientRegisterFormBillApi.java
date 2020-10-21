@@ -47,16 +47,12 @@ public class ClientRegisterFormBillApi {
 
 	@Autowired
 	private LoginSessionContext sessionContext;
+	
 	@Autowired
 	UserService userService;
+
 	@Autowired
 	ImageCertService imageCertService;
-	@Autowired
-	TradeDetailService tradeDetailService;
-	@Autowired
-	UpStreamService upStreamService;
-	@Autowired
-	TradeRequestService tradeRequestService;
 
 	@ApiOperation(value = "获取进门登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
