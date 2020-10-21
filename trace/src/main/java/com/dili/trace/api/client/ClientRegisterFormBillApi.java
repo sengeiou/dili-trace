@@ -4,17 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
+import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
-import com.dili.trace.api.output.TradeDetailBillOutput;
 import com.dili.trace.api.output.VerifyBillInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.RegisterHead;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
@@ -54,6 +51,9 @@ public class ClientRegisterFormBillApi {
 
 	@Autowired
 	ImageCertService imageCertService;
+
+	@Autowired
+	UpStreamService upStreamService;
 
 	@ApiOperation(value = "获取进门登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
@@ -180,13 +180,16 @@ public class ClientRegisterFormBillApi {
 
 	@ApiOperation("查看进门登记单")
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/viewRegisterHead.api", method = {RequestMethod.GET})
-	public BaseOutput<RegisterHead> viewRegisterHead(@RequestParam Long id) {
+	@RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
+	public BaseOutput<RegisterHead> viewRegisterBill(@RequestParam BaseDomain baseDomain) {
 		try {
-			RegisterBill registerBill = registerBillService.get(id);
+			RegisterBill registerBill = registerBillService.get(baseDomain.getId());
 
-			List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, BillTypeEnum.REGISTER_FORM_BILL.getCode());
+			List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
 			registerBill.setImageCerts(imageCerts);
+
+			UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
+			registerBill.setUpStreamName(upStream.getName());
 			return BaseOutput.success().setData(registerBill);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

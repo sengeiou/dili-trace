@@ -59,7 +59,6 @@ public class ClientRegisterHeadApi {
 	@Autowired
 	RegisterBillService registerBillService;
 
-
 	@Autowired
 	UpStreamService upStreamService;
 
