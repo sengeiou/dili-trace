@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -17,6 +18,7 @@ import com.dili.trace.dto.RegisterHeadDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -162,6 +164,7 @@ public class ClientRegisterHeadApi {
 				return BaseOutput.failure("未登陆用户");
 			}
 			User user = userService.get(dto.getUserId());
+
 			RegisterHead registerHead = dto.build(user);
 			logger.info("修改进门主台账单:{}", JSON.toJSONString(registerHead));
 			this.registerHeadService.doEdit(registerHead, dto.getImageCertList(), Optional.empty());
@@ -183,6 +186,7 @@ public class ClientRegisterHeadApi {
 		}
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+
 			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
@@ -232,6 +236,11 @@ public class ClientRegisterHeadApi {
 
 			UpStream upStream = upStreamService.get(registerHead.getUpStreamId());
 			registerHead.setUpStreamName(upStream.getName());
+
+            RegisterBill registerBill = new RegisterBill();
+            registerBill.setRegisterHeadCode(registerHead.getCode());
+            List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
+            registerHead.setRegisterBills(registerBills);
 			return BaseOutput.success().setData(registerHead);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -254,17 +263,18 @@ public class ClientRegisterHeadApi {
 			} else {
 				return BaseOutput.failure("没有进门主台账单");
 			}
-			UpStream upStream = upStreamService.get(registerHead.getUpStreamId());
-			registerHead.setUpStreamName(upStream.getName());
+			// 解析状态输出到前台
+			if(registerHead.getActive() != null && YesOrNoEnum.YES.getCode() == registerHead.getActive()){
+                registerHead.setStatusStr( RegisgterHeadStatusEnum.ACTIVE.getDesc());
+            } else if(registerHead.getActive() != null && YesOrNoEnum.NO.getCode() == registerHead.getActive()){
+                registerHead.setStatusStr( RegisgterHeadStatusEnum.UNACTIVE.getDesc());
+            }
+            if(registerHead.getIsDeleted() != null && YesOrNoEnum.NO.getCode() == registerHead.getIsDeleted()){
+                registerHead.setStatusStr( RegisgterHeadStatusEnum.DELETED.getDesc());
+            }
 			RegisterBill registerBill = new RegisterBill();
 			registerBill.setRegisterHeadCode(code);
 			List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
-			if(null != registerBills && CollectionUtils.isNotEmpty(registerBills)){
-				registerBills.forEach(e ->{
-					List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(e.getBillId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
-					e.setImageCerts(imageCerts);
-				});
-			}
 			registerHead.setRegisterBills(registerBills);
 			return BaseOutput.success().setData(registerHead);
 		} catch (TraceBusinessException e) {
