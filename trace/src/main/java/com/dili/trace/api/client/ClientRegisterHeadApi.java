@@ -159,11 +159,10 @@ public class ClientRegisterHeadApi {
 		}
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
-
-			User user = userService.get(operatorUser.getId());
-			if (user == null) {
+			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
+			User user = userService.get(dto.getUserId());
 
 			RegisterHead registerHead = dto.build(user);
 			logger.info("修改进门主台账单:{}", JSON.toJSONString(registerHead));

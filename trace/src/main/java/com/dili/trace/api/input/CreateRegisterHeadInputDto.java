@@ -68,11 +68,13 @@ public class CreateRegisterHeadInputDto {
 	private String remark;
 
 	@ApiModelProperty(value = "是否启用")
-
 	private Integer active;
 
     @ApiModelProperty(value = "是否废弃")
 	private Integer isDeleted;
+
+	@ApiModelProperty(value = "经营户ID")
+    private Long userId;
 
 	/**
 	 * 图片证明列表
@@ -267,4 +269,12 @@ public class CreateRegisterHeadInputDto {
     public void setIsDeleted(Integer isDeleted) {
         this.isDeleted = isDeleted;
     }
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 }
