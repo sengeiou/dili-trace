@@ -3,10 +3,10 @@
 <mapper namespace="com.dili.trace.dao.HangGuoDataMapper">
 
     <insert id="bachInsertCommodityList" parameterType="java.util.List" useGeneratedKeys="true">
-        insert into category(name,full_name,level,created,modified,market_id)
+        insert into category(name,full_name,level,created,modified,market_id,type,specification,code,parent_code)
         values
         <foreach collection="list" item="co" separator=",">
-            (#{co.name},#{co.fullName},#{co.level},#{co.created},#{co.modified},#{co.marketId})
+            (#{co.name},#{co.fullName},#{co.level},#{co.created},#{co.modified},#{co.marketId},#{co.type},#{co.specification},#{co.code},#{co.parentCode})
         </foreach>
     </insert>
 
@@ -15,7 +15,7 @@
         SET c2.parent_id=c.id
         WHERE c.code=c2.parent_code
         AND c2.parent_code IS NOT NULL
-        AND c2.created=#{created}
+        AND DATE(c2.created) = DATE(#{created})
     </update>
 
     <select id="getUserListByThirdPartyCode" parameterType="java.util.List"
@@ -141,18 +141,18 @@
     <select id="getCategoryListByThirdCode" parameterType="java.util.List"
             resultType="com.dili.trace.domain.Category">
         select
-        id
-        parent_id
-        name
-        full_name
-        level
-        created
-        modified
-        market_id
-        code
-        is_show
-        type
-        specification
+        id,
+        parent_id,
+        name,
+        full_name,
+        level,
+        created,
+        modified,
+        market_id,
+        code,
+        is_show,
+        type,
+        specification,
         parent_code
         from category
         where
@@ -167,7 +167,7 @@
         where
         code
         <foreach collection="list" open=" IN (" close=")" item="thirdCode" separator=",">
-            #{thirdCode}
+            #{thirdCode.code}
         </foreach>
     </delete>
 
@@ -187,7 +187,8 @@
         </foreach>
     </insert>
 
-    <select id="getBillTradeDetailListByBillIds" parameterType="java.util.List">
+    <select id="getBillTradeDetailListByBillIds" parameterType="java.util.List"
+            resultType="com.dili.trace.domain.TradeDetail">
         SELECT
         id,
         parent_id,
@@ -214,15 +215,15 @@
         batch_no,
         parent_batch_no,
         pushaway_weight,
-        soft_weight,
-        register_no
+        soft_weight
         FROM trade_detail
         WHERE bill_id
         <foreach collection="list" open=" IN (" close=")" item="billId" separator=",">
             #{billId}
         </foreach>
     </select>
-    <select id="getProductStockListByIds" parameterType="java.util.List">
+    <select id="getProductStockListByIds" parameterType="java.util.List"
+            resultType="com.dili.trace.domain.ProductStock">
         select
         id,
         preserve_type,
@@ -250,27 +251,61 @@
 
     <update id="updateTradeReportListByBeyondAmount">
         update third_hangguo_trade_data
-        set report_falg=3
+        set report_flag=3
         where amount >= 500000
     </update>
 
-    <select id="selectTradeReportListByHandleFlag">
+    <select id="selectTradeReportListByHandleFlag" parameterType="com.dili.trace.domain.hangguo.HangGuoTrade"
+            resultType="com.dili.trace.domain.hangguo.HangGuoTrade">
         select
         id,order_date,supplier_no,supplier_name,batch_no,item_number,item_name,unit,origin_no,
         origin_name,position_no,position_name,price,package_number,number,amount,weight,
         trade_no,pos_no,pay_way,member_no,member_name,total_amount,operator,payer,
-        pay_no,register_no,handle_flag,report_falg,hadle_remark
+        pay_no,register_no,handle_flag,report_flag,handle_remark
         from third_hangguo_trade_data
-        where handle_flag=3
+        where handle_flag=#{handleFlag}
     </select>
 
-
-    <update id="batchUpdateCacheTradeHandleFlagToTrue">
+    <update id="batchUpdateCacheTrade">
         update third_hangguo_trade_data
         set handle_flag=#{handleFlag}
         where id
+        <foreach collection="list" open=" IN (" close=")" item="trade" separator=",">
+            #{trade.id}
+        </foreach>
+    </update>
+    <select id="getRegisterBillByIds" parameterType="java.util.List" resultType="com.dili.trace.domain.RegisterBill">
+        select
+        id,code,sample_code,name,id_card_no,addr,phone,user_id,plate,
+        state,sales_type,product_name,product_id,origin_id,origin_name,weight,operator_id,
+        operator_name,sample_source,detect_state,latest_detect_record_id,latest_detect_operator,
+        latest_detect_time,latest_pd_result,version,created,modified,upstream_id,complete,verify_status,
+        weight_unit,preserve_type,verify_type,spec_name,bill_type,brand_id,brand_name,truck_type,tally_area_no,
+        reason,is_checkin,checkin_status,checkout_status,is_deleted,operation_time,market_id,register_head_code,
+        third_party_code,area,measure_type,piece_num,piece_weight,remark,create_user,delete_user,delete_time,
+        packaging,order_type
+        from register_bill
+        where
+        id
         <foreach collection="list" open=" IN (" close=")" item="id" separator=",">
             #{id}
         </foreach>
-    </update>
+    </select>
+
+    <insert id="batchInsertTradeDetail" parameterType="java.util.List">
+        insert into trade_detail(
+        parent_id,bill_id,checkin_record_id,checkout_record_id,checkin_status,
+        checkout_status,sale_status,trade_type,buyer_id,buyer_name,seller_id,seller_name,
+        product_name,stock_weight,total_weight,weight_unit,product_stock_id,trade_request_id,created,modified,
+        is_batched,batch_no,parent_batch_no,pushaway_weight,soft_weight
+        )
+        values
+        <foreach collection="list" item="t" separator=",">
+            (#{t.parentId},#{t.billId},#{t.checkinRecordId},#{t.checkoutRecordId},#{t.checkinStatus},
+            #{t.checkoutStatus},#{t.saleStatus},#{t.tradeType},#{t.buyerId},#{t.buyerName},#{t.sellerId},#{t.sellerName},
+            #{t.productName},#{t.stockWeight},#{t.totalWeight},#{t.weightUnit},#{t.productStockId},#{t.tradeRequestId},
+            #{t.created},#{t.modified},#{t.isBatched},#{t.batchNo},#{t.parentBatchNo},#{t.pushawayWeight},#{t.softWeight})
+        </foreach>
+    </insert>
+
 </mapper>

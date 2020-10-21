@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoCommodity;
@@ -16,7 +17,7 @@ import com.dili.trace.glossary.hanguo.HangGuoGoodsLevelEnum;
 import com.dili.trace.glossary.hanguo.HangGuoVocationTypeEnum;
 import one.util.streamex.StreamEx;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +78,7 @@ public class HangGuoDataUtil {
         try {
             List<String> codeList = StreamEx.of(infoList).nonNull().map(c -> c.getMemberNo()).collect(Collectors.toList());
             //已存在用户list
-            List<User> updateList = hangGuoDataService.getUserListByThirdPartyCode(codeList);
+            List<User> updateList = getUserListByThirdPartyCode(codeList);
             Set<String> existsUserSet = new HashSet<>();
             StreamEx.of(updateList).nonNull().forEach(u -> {
                 existsUserSet.add(u.getThirdPartyCode());
@@ -119,11 +120,9 @@ public class HangGuoDataUtil {
             return;
         }
         try {
-            //新增到缓存表
-            hangGuoDataService.batchInsert(list);
             //已存在用户list
             List<String> codeList = StreamEx.of(list).nonNull().map(c -> c.getSupplierNo()).collect(Collectors.toList());
-            List<User> updateList = hangGuoDataService.getUserListByThirdPartyCode(codeList);
+            List<User> updateList = getUserListByThirdPartyCode(codeList);
             Set<String> existsUserSet = new HashSet<>();
             StreamEx.of(updateList).nonNull().forEach(u -> {
                 existsUserSet.add(u.getThirdPartyCode());
@@ -157,7 +156,7 @@ public class HangGuoDataUtil {
             return;
         }
         List<String> list = StreamEx.of(commodityList).nonNull().map(c -> c.getItemNumber()).collect(Collectors.toList());
-        List<Category> existsCateGoryList = hangGuoDataService.getCategoryListByThirdCode(list);
+        List<Category> existsCateGoryList = getCategoryListByThirdCode(list);
 
         Set<String> existsCodeSet = new HashSet<>();
         StreamEx.of(existsCateGoryList).nonNull().forEach(u -> {
@@ -216,7 +215,9 @@ public class HangGuoDataUtil {
     }
 
     private Map<String, User> getUserMap() {
-        List<User> userList = userService.list(null);
+        User u = DTOUtils.newDTO(User.class);
+        u.mset(IDTO.AND_CONDITION_EXPR, " third_party_code IS NOT NULL");
+        List<User> userList = userService.listByExample(u);
         return StreamEx.of(userList).nonNull().collect(Collectors.toMap(User::getThirdPartyCode, user -> user, (a, b) -> a));
     }
 
@@ -227,9 +228,15 @@ public class HangGuoDataUtil {
         HangGuoTrade trade = new HangGuoTrade();
         trade.setHandleFlag(DataHandleFlagEnum.PENDING_HANDLE.getCode());
         List<HangGuoTrade> tradeList = hangGuoDataService.selectTradeReportListByHandleFlag(trade);
-        List<HangGuoTrade> collect = StreamEx.of(tradeList).nonNull().filter(t -> !userMap.containsKey(t.getMemberNo()) || !userMap.containsKey(t.getSupplierNo()) || !categoryMap.containsKey(t.getItemNumber())).collect(Collectors.toList());
+        String handleRemark = "交易单对应商品或用户无法关联，标记为暂不处理";
+        List<HangGuoTrade> collect = StreamEx.of(tradeList).nonNull().filter(t -> !userMap.containsKey(t.getMemberNo())
+                || !userMap.containsKey(t.getSupplierNo()) || !categoryMap.containsKey(t.getItemNumber())).collect(Collectors.toList());
+        StreamEx.of(collect).nonNull().forEach(c -> c.setHandleRemark(handleRemark));
         if (CollectionUtils.isNotEmpty(collect)) {
-            hangGuoDataService.batchUpdateCacheTradeHandleFlagToFalse(collect);
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("list", collect);
+            map.put("handleFlag", DataHandleFlagEnum.UN_NEED_HANDLE.getCode());
+            hangGuoDataService.batchUpdateCacheTradeHandleFlag(map);
         }
     }
 
@@ -255,7 +262,12 @@ public class HangGuoDataUtil {
                 trades.add(c);
             }
         });
-        hangGuoDataService.batchUpdateCacheTradeHandleFlagToTrue(trades);
+        if (CollectionUtils.isNotEmpty(trades)) {
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("list", trades);
+            map.put("handleFlag", DataHandleFlagEnum.PENDING_HANDLE.getCode());
+            hangGuoDataService.batchUpdateCacheTradeHandleFlag(map);
+        }
     }
 
     /**
@@ -484,6 +496,7 @@ public class HangGuoDataUtil {
         sellerUser.setModified(createTime);
         sellerUser.setCreated(createTime);
         sellerUser.setYn(YnEnum.YES.getCode());
+        sellerUser.setValidateState(ValidateStateEnum.PASSED.getCode());
 
         return sellerUser;
     }
@@ -544,6 +557,9 @@ public class HangGuoDataUtil {
             category.setSpecification(c.getItemUnitName());
             category.setCode(c.getItemNumber());
             category.setCreated(createTime);
+            category.setModified(createTime);
+            category.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
+            category.setType(CommodityTypeEnum.SUPPLEMENT.getCode());
             setCommodityLevel(category, c);
 
             varietySet.add(c.getCategoryNumber());
@@ -603,6 +619,7 @@ public class HangGuoDataUtil {
      *
      * @param createTime
      */
+    @Deprecated
     private void addTradeListBackup(Date createTime) {
 
         HangGuoTrade trade = new HangGuoTrade();
@@ -619,8 +636,8 @@ public class HangGuoDataUtil {
         //用户，商品
         userCode = StreamEx.of(userCode).nonNull().distinct().collect(Collectors.toList());
         commodityCode = StreamEx.of(commodityCode).nonNull().distinct().collect(Collectors.toList());
-        List<User> userList = hangGuoDataService.getUserListByThirdPartyCode(userCode);
-        List<Category> categoryList = hangGuoDataService.getCategoryListByThirdCode(commodityCode);
+        List<User> userList = getUserListByThirdPartyCode(userCode);
+        List<Category> categoryList = getCategoryListByThirdCode(commodityCode);
         Map<String, User> userMap = StreamEx.of(userList).nonNull().collect(Collectors.toMap(User::getThirdPartyCode, user -> user, (key1, key2) -> key1));
         Map<String, Category> categoryMap = StreamEx.of(categoryList).nonNull().collect(Collectors.toMap(Category::getCode, category -> category, (key1, key2) -> key1));
 
@@ -653,54 +670,6 @@ public class HangGuoDataUtil {
         productStockService.batchUpdate(updateStock);
     }
 
-    /**
-     * 新增交易单
-     *
-     * @param createTime
-     */
-    private void addTradeList(Date createTime) {
-
-        HangGuoTrade trade = new HangGuoTrade();
-        trade.setHandleFlag(DataHandleFlagEnum.PENDING_HANDLE.getCode());
-        List<HangGuoTrade> tradeList = hangGuoDataService.selectTradeReportListByHandleFlag(trade);
-        List<String> userCode = StreamEx.of(tradeList).map(t -> t.getSupplierNo()).collect(Collectors.toList());
-        List<String> commodityCode = new ArrayList<>();
-        for (HangGuoTrade t : tradeList) {
-            if (t != null) {
-                userCode.add(t.getMemberNo());
-                commodityCode.add(t.getItemNumber());
-            }
-        }
-        //用户，商品
-        userCode = StreamEx.of(userCode).nonNull().distinct().collect(Collectors.toList());
-        commodityCode = StreamEx.of(commodityCode).nonNull().distinct().collect(Collectors.toList());
-        List<User> userList = hangGuoDataService.getUserListByThirdPartyCode(userCode);
-        List<Category> categoryList = hangGuoDataService.getCategoryListByThirdCode(commodityCode);
-        Map<String, User> userMap = StreamEx.of(userList).nonNull().collect(Collectors.toMap(User::getThirdPartyCode, user -> user, (key1, key2) -> key1));
-        Map<String, Category> categoryMap = StreamEx.of(categoryList).nonNull().collect(Collectors.toMap(Category::getCode, category -> category, (key1, key2) -> key1));
-
-        //报备单id
-        List<String> billIds = StreamEx.of(tradeList).nonNull().map(t -> t.getRegisterId()).collect(Collectors.toList());
-
-        List<TradeDetail> orderDetailList = hangGuoDataService.getBillTradeDetailListByBillIds(billIds);
-        //报备单库存map
-        Map<Long, TradeDetail> billMap = StreamEx.of(orderDetailList).nonNull().collect(Collectors.toMap(TradeDetail::getBillId, Function.identity(), (a, b) -> a));
-        //新增主单
-        List<TradeOrder> addTradeList = getTradeOrderList(tradeList, userMap, createTime);
-
-        tradeOrderService.batchInsert(addTradeList);
-        Map<String, TradeOrder> orderMap = StreamEx.of(addTradeList).nonNull().collect(Collectors.toMap(TradeOrder::getTradeNo, Function.identity(), (key1, key2) -> key1));
-
-        //新增request
-        List<TradeRequest> addTradeRequestList = getTradeOrderRequestList(tradeList, userMap, categoryMap, orderMap, billMap, createTime);
-        tradeRequestService.batchInsert(addTradeRequestList);
-        Map<String, TradeRequest> tradeRequestMap = StreamEx.of(addTradeRequestList).nonNull().collect(Collectors.toMap(TradeRequest::getTradeNo, Function.identity(), (a, b) -> a));
-        //新增detail
-        List<TradeDetail> addDetailList = getTradeOrderDetailRequestList(tradeList, userMap, categoryMap, billMap, tradeRequestMap, createTime);
-        tradeDetailService.batchInsert(addDetailList);
-
-    }
-
     private List<ProductStock> beforehandReductionStockWeight(List<TradeDetail> addDetailList, Map<Long, ProductStock> productStockMap) {
         List<ProductStock> updateStockList = new ArrayList<>();
         Integer weightUnitMagnification = 2;
@@ -725,6 +694,109 @@ public class HangGuoDataUtil {
     }
 
     /**
+     * 新增交易单
+     *
+     * @param createTime
+     */
+    private void addTradeList(Date createTime) {
+
+        List<HangGuoTrade> tradeList = getPendingHandleTradeList();
+        if (CollectionUtils.isEmpty(tradeList)) {
+            logger.info("处理交易单数据为空");
+            return;
+        }
+        List<String> userCode = StreamEx.of(tradeList).map(t -> t.getSupplierNo()).collect(Collectors.toList());
+        List<String> commodityCode = new ArrayList<>();
+        List<String> billNos = new ArrayList<>();
+        for (HangGuoTrade t : tradeList) {
+            if (t != null) {
+                userCode.add(t.getMemberNo());
+                commodityCode.add(t.getItemNumber());
+                if (StringUtils.isNotBlank(t.getRegisterNo())) {
+                    billNos.add(t.getRegisterNo());
+                }
+            }
+        }
+        //用户，商品
+        userCode = StreamEx.of(userCode).nonNull().distinct().collect(Collectors.toList());
+        commodityCode = StreamEx.of(commodityCode).nonNull().distinct().collect(Collectors.toList());
+        billNos = StreamEx.of(billNos).nonNull().distinct().collect(Collectors.toList());
+        List<User> userList = getUserListByThirdPartyCode(userCode);
+        List<Category> categoryList = getCategoryListByThirdCode(commodityCode);
+        Map<String, User> userMap = StreamEx.of(userList).nonNull().collect(Collectors.toMap(User::getThirdPartyCode, user -> user, (key1, key2) -> key1));
+        Map<String, Category> categoryMap = StreamEx.of(categoryList).nonNull().collect(Collectors.toMap(Category::getCode, category -> category, (key1, key2) -> key1));
+
+        //报备单库存map
+        Map<Long, TradeDetail> billMap = new HashMap<>(16);
+        if (CollectionUtils.isNotEmpty(billNos)) {
+            billMap = getTradeBillMap(billNos);
+        }
+        //新增主单
+        List<TradeOrder> addTradeList = getTradeOrderList(tradeList, userMap, createTime);
+        if (CollectionUtils.isNotEmpty(addTradeList)) {
+            tradeOrderService.batchInsert(addTradeList);
+        }
+        Map<String, TradeOrder> orderMap = StreamEx.of(addTradeList).nonNull().collect(Collectors.toMap(TradeOrder::getTradeNo, Function.identity(), (key1, key2) -> key1));
+
+        //新增request
+        List<TradeRequest> addTradeRequestList = getTradeOrderRequestList(tradeList, userMap, categoryMap, orderMap, billMap, createTime);
+        if (CollectionUtils.isNotEmpty(addTradeRequestList)) {
+            tradeRequestService.batchInsert(addTradeRequestList);
+        }
+        Map<String, TradeRequest> tradeRequestMap = StreamEx.of(addTradeRequestList).nonNull().collect(Collectors.toMap(TradeRequest::getTradeNo, Function.identity(), (a, b) -> a));
+        //新增detail
+        List<TradeDetail> addDetailList = getTradeOrderDetailRequestList(tradeList, userMap, categoryMap, billMap, tradeRequestMap, createTime);
+        if (CollectionUtils.isNotEmpty(addDetailList)) {
+            hangGuoDataService.batchInsertTradeDetail(addDetailList);
+        }
+
+        //更新标志位
+        updateCacheTradeHandleFlag(DataHandleFlagEnum.PROCESSED.getCode(), tradeList);
+
+    }
+
+    private Map<Long, TradeDetail> getTradeBillMap(List<String> billNos) {
+        List<RegisterBill> billList = hangGuoDataService.getRegisterBillByIds(billNos);
+        List<String> billIds = StreamEx.of(billList).nonNull().map(b -> b.getCode()).collect(Collectors.toList());
+        List<TradeDetail> orderDetailList = hangGuoDataService.getBillTradeDetailListByBillIds(billIds);
+        return StreamEx.of(orderDetailList).nonNull().collect(Collectors.toMap(TradeDetail::getBillId, Function.identity(), (a, b) -> a));
+    }
+
+    private void updateCacheTradeHandleFlag(Integer handleFlag, List<HangGuoTrade> tradeList) {
+        if (CollectionUtils.isNotEmpty(tradeList)) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("list", tradeList);
+            map.put("handleFlag", handleFlag);
+            hangGuoDataService.batchUpdateCacheTradeHandleFlag(map);
+        }
+    }
+
+    private List<Category> getCategoryListByThirdCode(List<String> commodityCode) {
+        if (CollectionUtils.isEmpty(commodityCode)) {
+            return null;
+        }
+        return hangGuoDataService.getCategoryListByThirdCode(commodityCode);
+    }
+
+    private List<User> getUserListByThirdPartyCode(List<String> userCode) {
+        if (CollectionUtils.isEmpty(userCode)) {
+            return null;
+        }
+        return hangGuoDataService.getUserListByThirdPartyCode(userCode);
+    }
+
+    /**
+     * 待处理交易数据
+     *
+     * @return
+     */
+    private List<HangGuoTrade> getPendingHandleTradeList() {
+        HangGuoTrade trade = new HangGuoTrade();
+        trade.setHandleFlag(DataHandleFlagEnum.PENDING_HANDLE.getCode());
+        return hangGuoDataService.selectTradeReportListByHandleFlag(trade);
+    }
+
+    /**
      * 生成交易单详情
      *
      * @param tradeList
@@ -740,7 +812,15 @@ public class HangGuoDataUtil {
         List<TradeDetail> detailList = new ArrayList<>();
         Integer isBatched = 1;
         StreamEx.of(tradeList).nonNull().forEach(t -> {
-            TradeDetail detail = billMap.get(t.getRegisterId());
+            Long parentId = null;
+            Long checkInId = null;
+            Long billId = Long.valueOf(-1);
+            if (null != billMap && !billMap.isEmpty()) {
+                TradeDetail detail = billMap.get(t.getRegisterId());
+                parentId = detail.getId();
+                checkInId = detail.getCheckinRecordId();
+                billId = detail.getBillId();
+            }
 
             Long buyId = userMap.get(t.getMemberNo()).getId();
             String buyName = userMap.get(t.getMemberNo()).getName();
@@ -751,13 +831,12 @@ public class HangGuoDataUtil {
             String nowDate = DateUtils.format(DateUtils.getCurrentDate());
             Long tradeRequestId = tradeRequestMap.get(t.getTradeNo()).getId();
 
-            String billId = t.getRegisterId();
             TradeDetail tradeDetail = new TradeDetail();
-            tradeDetail.setCheckinRecordId(detail.getCheckinRecordId());
+            tradeDetail.setCheckinRecordId(checkInId);
 
-            tradeDetail.setBillId(Long.valueOf(billId));
+            tradeDetail.setBillId(billId);
 
-            tradeDetail.setParentId(detail.getId());
+            tradeDetail.setParentId(parentId);
             tradeDetail.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());
             tradeDetail.setCheckoutStatus(CheckoutStatusEnum.NONE.getCode());
             tradeDetail.setSaleStatus(SaleStatusEnum.FOR_SALE.getCode());
@@ -810,7 +889,10 @@ public class HangGuoDataUtil {
             Long orderId = orderMap.get(t.getTradeNo()).getId();
             Long buyMarketId = userMap.get(t.getMemberNo()).getMarketId();
             Long sellerMarketId = userMap.get(t.getSupplierNo()).getMarketId();
-            TradeDetail detail = billMap.get(t.getRegisterId());
+            Long productStockId = null;
+            if (null != billMap && !billMap.isEmpty()) {
+                productStockId = billMap.get(t.getRegisterId()).getProductStockId();
+            }
             String productName = categoryMap.get(t.getItemNumber()).getName();
             TradeRequest request = new TradeRequest();
             request.setBuyerId(buyId);
@@ -819,7 +901,7 @@ public class HangGuoDataUtil {
             request.setSellerName(sellerName);
             request.setTradeWeight(new BigDecimal(t.getWeight()));
             request.setTradeOrderId(orderId);
-            request.setProductStockId(detail.getProductStockId());
+            request.setProductStockId(productStockId);
             request.setCreated(createTime);
             request.setModified(createTime);
             request.setReturnStatus(TradeReturnStatusEnum.NONE.getCode());
@@ -828,6 +910,7 @@ public class HangGuoDataUtil {
             request.setProductName(productName);
             request.setHandleTime(createTime);
             request.setTradeNo(t.getTradeNo());
+            requestList.add(request);
         });
         return requestList;
     }
@@ -859,6 +942,7 @@ public class HangGuoDataUtil {
             order.setCreated(createTime);
             order.setModified(createTime);
             order.setTradeNo(t.getTradeNo());
+            orderList.add(order);
         });
         return orderList;
     }

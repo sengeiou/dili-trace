@@ -1,14 +1,12 @@
 package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.Category;
-import com.dili.trace.domain.ProductStock;
-import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author asa.lee
@@ -90,24 +88,32 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
     void updateTradeReportListByBeyondAmount();
 
     /**
-     * 更新无需处理交易数据未待处理
-     *
-     * @param trades
-     */
-    void batchUpdateCacheTradeHandleFlagToTrue(List<HangGuoTrade> trades);
-
-    /**
-     * 更新待处理交易数据为无需处理
-     *
-     * @param trades
-     */
-    void batchUpdateCacheTradeHandleFlagToFalse(List<HangGuoTrade> trades);
-
-    /**
      * 查询的交易数据
      *
      * @param trade
      * @return
      */
     List<HangGuoTrade> selectTradeReportListByHandleFlag(HangGuoTrade trade);
+
+    /**
+     * 根据报备单id获取报备单号
+     *
+     * @param ids
+     * @return
+     */
+    List<RegisterBill> getRegisterBillByIds(List<String> ids);
+
+    /**
+     * 批量插入tradeList（由于Column同名导致batchinsert无法调用）
+     *
+     * @param addDetailList
+     */
+    void batchInsertTradeDetail(List<TradeDetail> addDetailList);
+
+    /**
+     * 更新交易数据处理标志位
+     *
+     * @param map
+     */
+    void batchUpdateCacheTradeHandleFlag(Map<String, Object> map);
 }
