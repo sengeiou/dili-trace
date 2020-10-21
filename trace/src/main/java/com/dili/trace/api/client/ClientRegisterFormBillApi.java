@@ -9,12 +9,16 @@ import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.TradeDetailBillOutput;
+import com.dili.trace.api.output.VerifyBillInputDto;
+import com.dili.trace.api.output.VerifyStatusCountOutputDto;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -23,10 +27,7 @@ import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class ClientRegisterFormBillApi {
 
 	@Autowired
 	private LoginSessionContext sessionContext;
-	
+
 	@Autowired
 	UserService userService;
 
@@ -63,7 +64,8 @@ public class ClientRegisterFormBillApi {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 
 			logger.info("获取进门登记单列表 操作用户:{}", userId);
-			input.setUserId(userId);
+			input.setSort("created");
+			input.setOrder("desc");
 			BasePage basePage = this.registerBillService.listPageByExample(input);
 			return BaseOutput.success().setData(basePage);
 		} catch (TraceBusinessException e) {
@@ -152,5 +154,66 @@ public class ClientRegisterFormBillApi {
 			return BaseOutput.failure("服务端出错");
 		}
 		return BaseOutput.success();
+	}
+
+	@ApiOperation(value = "进门登记单审核(通过/进门/不通过/退回/进门待检)")
+	@RequestMapping(value = "/doVerify.api", method = RequestMethod.POST)
+	public BaseOutput<Long> doVerify(@RequestBody VerifyBillInputDto inputDto) {
+		logger.info("进门登记单审核(通过/进门/不通过/退回/进门待检):{}", inputDto.getBillId());
+		try {
+			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
+				return BaseOutput.failure("参数错误");
+			}
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			RegisterBill input = new RegisterBill();
+			input.setId(inputDto.getBillId());
+			input.setVerifyStatus(inputDto.getVerifyStatus());
+			input.setReason(inputDto.getReason());
+			Long id = this.registerBillService.doVerifyFormCheckIn(input,Optional.ofNullable(operatorUser));
+			return BaseOutput.success().setData(id);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
+	}
+
+	@ApiOperation("查看进门登记单")
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/viewRegisterHead.api", method = {RequestMethod.GET})
+	public BaseOutput<RegisterHead> viewRegisterHead(@RequestParam Long id) {
+		try {
+			RegisterBill registerBill = registerBillService.get(id);
+
+			List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, BillTypeEnum.REGISTER_FORM_BILL.getCode());
+			registerBill.setImageCerts(imageCerts);
+			return BaseOutput.success().setData(registerBill);
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error("查询进门主台账单数据出错", e);
+			return BaseOutput.failure("查询进门主台账单数据出错");
+		}
+	}
+
+	/**
+	 * 不同审核状态数据统计
+	 */
+	@RequestMapping(value = "/countByVerifyStatus.api", method = { RequestMethod.POST })
+	public BaseOutput<List<VerifyStatusCountOutputDto>> countByVerifyStatus(@RequestBody RegisterBillDto query) {
+
+		try {
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			query.setBillType(BillTypeEnum.NONE.getCode());
+			List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
+			return BaseOutput.success().setData(list);
+
+		} catch (TraceBusinessException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return BaseOutput.failure("操作失败：服务端出错");
+		}
 	}
 }

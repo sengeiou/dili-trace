@@ -169,4 +169,13 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doEditFormBill(RegisterBill registerBill,List<ImageCert> imageCertList,Optional<OperatorUser> operatorUser);
+
+	/**
+	 * 进门登记单审核(通过/进门/不通过/退回/进门待检)
+	 *
+	 * @param input
+	 * @param operatorUser
+	 * @return
+	 */
+	public Long doVerifyFormCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser);
 }
