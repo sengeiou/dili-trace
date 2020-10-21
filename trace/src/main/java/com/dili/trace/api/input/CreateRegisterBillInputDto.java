@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Column;
+
 public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "报备单ID")
 	private Long billId;
@@ -56,6 +58,30 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "上游企业ID")
 	private Long upStreamId;
 
+	@ApiModelProperty(value = "主台账编号")
+	private String registerHeadCode;
+
+	@ApiModelProperty(value = "计量类型。10-计件 20-计重。默认计件。")
+	private Integer measureType;
+
+	@ApiModelProperty(value = "件数")
+	private BigDecimal pieceNum;
+
+	@ApiModelProperty(value = "件重")
+	private BigDecimal pieceWeight;
+
+	@ApiModelProperty(value = "区号")
+	private String area;
+
+	@ApiModelProperty(value = "包装")
+	private String packaging;
+
+	@ApiModelProperty(value = "备注")
+	private String remark;
+
+	@ApiModelProperty(value = "查验状态")
+	private Integer verifyStatus;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -71,6 +97,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setTallyAreaNo(user.getTallyAreaNos());
 		registerBill.setAddr(user.getAddr());
 		registerBill.setIdCardNo(user.getCardNo());
+		registerBill.setThirdPartyCode(user.getThirdPartyCode());
 		registerBill.setWeight(this.getWeight());
 		registerBill.setWeightUnit(this.getWeightUnit());
 		registerBill.setOriginId(this.getOriginId());
@@ -85,6 +112,14 @@ public class CreateRegisterBillInputDto {
 		registerBill.setBrandName(StringUtils.trim(this.getBrandName()));
 		registerBill.setPlate(this.getPlate());
 		registerBill.setUpStreamId(this.getUpStreamId());
+		registerBill.setRegisterHeadCode(this.getRegisterHeadCode());
+		registerBill.setMeasureType(this.getMeasureType());
+		registerBill.setPieceNum(this.getPieceNum());
+		registerBill.setPieceWeight(this.getPieceWeight());
+		registerBill.setArea(this.getArea());
+		registerBill.setPackaging(this.getPackaging());
+		registerBill.setRemark(this.getRemark());
+		registerBill.setVerifyStatus(this.getVerifyStatus());
 		return registerBill;
 	}
 
@@ -276,4 +311,67 @@ public class CreateRegisterBillInputDto {
         this.upStreamId = upStreamId;
     }
 
+	public String getRegisterHeadCode() {
+		return registerHeadCode;
+	}
+
+	public void setRegisterHeadCode(String registerHeadCode) {
+		this.registerHeadCode = registerHeadCode;
+	}
+
+	public Integer getMeasureType() {
+		return measureType;
+	}
+
+	public void setMeasureType(Integer measureType) {
+		this.measureType = measureType;
+	}
+
+	public BigDecimal getPieceNum() {
+		return pieceNum;
+	}
+
+	public void setPieceNum(BigDecimal pieceNum) {
+		this.pieceNum = pieceNum;
+	}
+
+	public BigDecimal getPieceWeight() {
+		return pieceWeight;
+	}
+
+	public void setPieceWeight(BigDecimal pieceWeight) {
+		this.pieceWeight = pieceWeight;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	public String getPackaging() {
+		return packaging;
+	}
+
+	public void setPackaging(String packaging) {
+		this.packaging = packaging;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Integer getVerifyStatus() {
+		return verifyStatus;
+	}
+
+	public void setVerifyStatus(Integer verifyStatus) {
+		this.verifyStatus = verifyStatus;
+	}
 }

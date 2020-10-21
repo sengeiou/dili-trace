@@ -241,6 +241,14 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`delete_time`")
 	private Date deleteTime;
 
+	@ApiModelProperty(value = "包装")
+	@Column(name = "`packaging`")
+	private String packaging;
+
+	@ApiModelProperty(value = "订单类型 1.报备单 2.进门登记单")
+	@Column(name = "`order_type`")
+	private Integer orderType;
+
 	@Transient
 	private List<ImageCert> imageCerts;
 
@@ -835,5 +843,21 @@ public class RegisterBill extends BaseDomain {
 
 	public void setDeleteTime(Date deleteTime) {
 		this.deleteTime = deleteTime;
+	}
+
+	public String getPackaging() {
+		return packaging;
+	}
+
+	public void setPackaging(String packaging) {
+		this.packaging = packaging;
+	}
+
+	public Integer getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(Integer orderType) {
+		this.orderType = orderType;
 	}
 }

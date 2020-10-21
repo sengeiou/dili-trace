@@ -40,6 +40,8 @@
     <result column="create_user" jdbcType="VARCHAR" property="createUser" />
     <result column="delete_user" jdbcType="VARCHAR" property="deleteUser" />
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="packaging" jdbcType="VARCHAR" property="packaging" />
+    <result column="order_type" jdbcType="TINYINT" property="orderType" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -50,7 +52,7 @@
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version,
     created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result,
     market_id, register_head_code, third_party_code, area, measure_type, piece_num, piece_weight,
-    remark, create_user, delete_user, delete_time
+    remark, create_user, delete_user, delete_time, packaging, order_type
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--

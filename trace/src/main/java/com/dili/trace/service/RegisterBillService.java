@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -136,4 +137,36 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 
 
 	public Map<Integer, Map<String,List<RegisterBill>>> listPageCheckInData(RegisterBillDto query);
+
+	/**
+	 * 创建多个进门登记单
+	 *
+	 * @param registerBills
+	 * @param user
+	 * @param operatorUser
+	 * @param marketId
+	 * @return
+	 */
+	public List<Long> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+											 Optional<OperatorUser> operatorUser, Long marketId);
+
+	/**
+	 * 创建单个报备单
+	 *
+	 * @param registerBill
+	 * @param imageCertList
+	 * @param operatorUser
+	 * @return
+	 */
+	Long createRegisterFormBill(RegisterBill registerBill, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser);
+
+	/**
+	 * 修改单个进门登记单
+	 *
+	 * @param registerBill
+	 * @param imageCertList
+	 * @param operatorUser
+	 * @return
+	 */
+	public Long doEditFormBill(RegisterBill registerBill,List<ImageCert> imageCertList,Optional<OperatorUser> operatorUser);
 }

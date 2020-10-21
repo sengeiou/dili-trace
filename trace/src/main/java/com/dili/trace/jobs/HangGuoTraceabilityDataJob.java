@@ -39,9 +39,24 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Date endTime = this.registerBillMapper.selectCurrentTime();
         List<HangGuoUser> memberList = this.getMemberList(endTime);
-        if (!CollectionUtils.isEmpty(memberList)) {
+        List<HangGuoCommodity> goodsCategory = getGoodsCategory(endTime);
+        List<HangGuoTrade> tradeList = getTradeList(endTime);
+        /*if (!CollectionUtils.isEmpty(memberList)) {
             hangGuoDataUtil.createHangGuoMember(memberList, endTime);
-        }
+        }*/
+
+        /*if(!CollectionUtils.isEmpty(memberList)){
+            hangGuoDataUtil.createHangGuoSupplier(memberList,endTime);
+        }*/
+
+        /*if(!CollectionUtils.isEmpty(goodsCategory)){
+            hangGuoDataUtil.createCommodity(goodsCategory,endTime);
+        }*/
+
+        /*if(!CollectionUtils.isEmpty(tradeList)){
+            hangGuoDataUtil.createTrade(tradeList,endTime);
+        }*/
+
     }
 
     /**
@@ -90,18 +105,90 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     }
 
     private List<HangGuoTrade> getTradeList(Date endTime) {
-        List<HangGuoTrade> tradeList= new ArrayList<>();
+        List<HangGuoTrade> tradeList = testTrade();
+        return tradeList;
+    }
+
+    private List<HangGuoTrade> testTrade() {
+        List<HangGuoTrade> tradeList = new ArrayList<>();
+        for(int i =1;i<3;i++){
+            HangGuoTrade trade = new HangGuoTrade();
+            trade.setOrderDate("2020-09-25T05:17:27");
+            trade.setSupplierNo("000502");
+            trade.setSupplierName("宋敏");
+            trade.setBatchNo("2009031655");
+            trade.setItemNumber("2010129");
+            trade.setItemName("葡萄(巨峰)");
+            trade.setUnit("辽宁统");
+            trade.setOriginNo("016");
+            trade.setOriginName("辽宁");
+            trade.setPositionNo("016");
+            trade.setPositionName("辽宁");
+            trade.setPrice("47");
+            trade.setPackageNumber("2");
+            trade.setNumber("16");
+            trade.setAmount("90");
+            trade.setWeight("28");
+            trade.setTradeNo("19404990");
+            trade.setPosNo("194");
+            trade.setPayWay("会员卡");
+            trade.setMemberNo("000501");
+            trade.setMemberName("赵兰芳0");
+            trade.setTotalAmount("90");
+            trade.setOperator("孟建丽");
+            trade.setPayer("孟建丽");
+            trade.setPayNo("82653791");
+            tradeList.add(trade);
+        }
         return tradeList;
     }
 
     private List<HangGuoUser> getMemberList(Date endTime) {
+        List<HangGuoUser> hangGuoUserList = testUser();
+        return hangGuoUserList;
+    }
+
+
+    private List<HangGuoUser> getSupplierList(Date endTime) {
+        List<HangGuoUser> hangGuoUserList = testUser();
+        return hangGuoUserList;
+    }
+
+    private List<HangGuoCommodity> getGoodsCategory(Date endTime) {
+        List<HangGuoCommodity> commodityList = testCommodity();
+        return commodityList;
+    }
+
+    private List<HangGuoCommodity> testCommodity() {
+        List<HangGuoCommodity> commodityList = new ArrayList<>();
+        HangGuoCommodity commodity = new HangGuoCommodity();
+        HangGuoCommodity commodity2 = new HangGuoCommodity();
+        commodity.setFirstCateg("2");
+        commodity.setSecondCateg("201");
+        commodity.setCategoryNumber("201012");
+        commodity.setItemNumber("201012");
+        commodity.setItemName("杭果苹果");
+        commodity.setItemUnitName("陕西同1");
+        commodity2.setFirstCateg("2");
+        commodity2.setSecondCateg("201");
+        commodity2.setCategoryNumber("201012");
+        commodity2.setItemNumber("2010129");
+        commodity2.setItemName("杭果苹果");
+        commodity2.setItemUnitName("陕西同12");
+
+        commodityList.add(commodity);
+        commodityList.add(commodity2);
+        return commodityList;
+    }
+
+    private List<HangGuoUser> testUser() {
         List<HangGuoUser> hangGuoUserList = new ArrayList<>();
-        for(int i=0;i<4;i++){
+        for (int i = 0; i < 4; i++) {
             HangGuoUser user = new HangGuoUser();
             user.setSupplierNo("000501");
-            user.setSupplierName("赵兰芳"+i);
+            user.setSupplierName("赵兰芳" + i);
             user.setMemberNo("000501");
-            user.setName("赵兰芳"+i);
+            user.setName("赵兰芳" + i);
             user.setCredentialType("1");
             user.setCredentialName("身份证");
             user.setCredentialNumber("62262877032148");
@@ -120,17 +207,14 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             user.setOperateAddr("operateAddr");
             user.setEffectiveDate(new Date());
             user.setRemarkMemo("备注");
+            user.setWhereis("余杭区良渚");
+            user.setOperateType("个体批发");
+            user.setPhoneNum("13122222222");
+            user.setStatus(1);
+            user.setCreditLimit("0");
             hangGuoUserList.add(user);
         }
         return hangGuoUserList;
-    }
-
-    private List<HangGuoUser> getSupplierList(Date endTime) {
-        return null;
-    }
-
-    private List<HangGuoCommodity> getGoodsCategory(Date endTime) {
-        return null;
     }
 
     public static void main(String[] args) {
