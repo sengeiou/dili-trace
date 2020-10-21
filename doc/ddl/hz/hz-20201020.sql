@@ -16,6 +16,7 @@ CREATE TABLE `register_head` (
   `piece_num` decimal(10,3) DEFAULT NULL COMMENT '件数',
   `piece_weight` decimal(10,3) DEFAULT NULL COMMENT '件重',
   `weight` decimal(10,3) NOT NULL COMMENT '总重量',
+  `remain_weight` decimal(10,3) NOT NULL COMMENT '剩余重量',
   `weight_unit` int(11) NOT NULL COMMENT '重量单位。1-斤 2-公斤。默认1。',
   `upstream_id` bigint(20) NOT NULL COMMENT '上游id',
   `spec_name` varchar(20) DEFAULT NULL COMMENT '规格',
