@@ -187,12 +187,11 @@ public class ClientRegisterHeadApi {
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
 
-			User user = userService.get(operatorUser.getId());
-			if (user == null) {
+			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			logger.info("作废进门主台账单:billId:{},userId:{}", dto.getId(), user.getId());
-			this.registerHeadService.doDelete(dto.getId(), user.getId(), Optional.empty());
+			logger.info("作废进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
+			this.registerHeadService.doDelete(dto, operatorUser.getId(), Optional.empty());
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -211,13 +210,11 @@ public class ClientRegisterHeadApi {
 		}
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
-
-			User user = userService.get(operatorUser.getId());
-			if (user == null) {
+			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), user.getId());
-			this.registerHeadService.doUpdateActive(dto, user.getId(), Optional.empty());
+			logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
+			this.registerHeadService.doUpdateActive(dto, operatorUser.getId(), Optional.empty());
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

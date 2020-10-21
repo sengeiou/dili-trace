@@ -237,24 +237,21 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
     @Transactional
     @Override
-    public Long doDelete(Long id, Long userId, Optional<OperatorUser> operatorUser) {
-        if (id == null || userId == null) {
+    public Long doDelete(CreateRegisterHeadInputDto dto, Long userId, Optional<OperatorUser> operatorUser) {
+        if (dto == null || userId == null) {
             throw new TraceBusinessException("参数错误");
         }
-        RegisterHead headItem = this.getAndCheckById(id).orElseThrow(() -> new TraceBusinessException("数据不存在"));
-        if (!userId.equals(headItem.getUserId())) {
-            throw new TraceBusinessException("没有权限删除数据");
-        }
+        RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
         RegisterHead registerHead = new RegisterHead();
         registerHead.setId(headItem.getId());
-        registerHead.setIsDeleted(TFEnum.TRUE.getCode());
+        registerHead.setIsDeleted(dto.getIsDeleted());
 
         operatorUser.ifPresent(op -> {
             registerHead.setDeleteUser(op.getName());
             registerHead.setDeleteTime(new Date());
         });
         this.updateSelective(registerHead);
-        return id;
+        return dto.getId();
     }
 
     @Transactional
@@ -264,9 +261,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBusinessException("参数错误");
         }
         RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
-        if (!userId.equals(headItem.getUserId())) {
-            throw new TraceBusinessException("没有权限启用/关闭数据");
-        }
         RegisterHead registerHead = new RegisterHead();
         registerHead.setId(headItem.getId());
         registerHead.setActive(dto.getActive());

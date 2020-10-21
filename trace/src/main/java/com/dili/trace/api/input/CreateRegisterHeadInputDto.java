@@ -68,7 +68,11 @@ public class CreateRegisterHeadInputDto {
 	private String remark;
 
 	@ApiModelProperty(value = "是否启用")
+
 	private Integer active;
+
+    @ApiModelProperty(value = "是否废弃")
+	private Integer isDeleted;
 
 	/**
 	 * 图片证明列表
@@ -255,4 +259,12 @@ public class CreateRegisterHeadInputDto {
 	public void setActive(Integer active) {
 		this.active = active;
 	}
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }
