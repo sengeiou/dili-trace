@@ -944,4 +944,119 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
         return input.getId();
     }
+
+    @Transactional
+    @Override
+    public Long doVerifyFormCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser) {
+        if (input == null || input.getId() == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterBill billItem = this.getAndCheckById(input.getId())
+                .orElseThrow(() -> new TraceBusinessException("数据不存在"));
+
+        this.doVerifyForm(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
+        //新增消息
+        addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        return billItem.getId();
+    }
+
+    private void doVerifyForm(RegisterBill billItem, Integer verifyStatus, String reason,
+                          Optional<OperatorUser> operatorUser) {
+        BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
+                .orElseThrow(() -> new TraceBusinessException("数据错误"));
+
+        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(verifyStatus)
+                .orElseThrow(() -> new TraceBusinessException("参数错误"));
+
+        logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
+                toVerifyState.getName());
+        if (!BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+            throw new TraceBusinessException("当前状态不能进行数据操作");
+        }
+        if (BillVerifyStatusEnum.NONE == toVerifyState) {
+            throw new TraceBusinessException("不支持的操作");
+        }
+        if (fromVerifyState == toVerifyState) {
+            throw new TraceBusinessException("状态不能相同");
+        }
+
+        // 更新当前报务单数据
+        RegisterBill bill = new RegisterBill();
+        bill.setId(billItem.getId());
+        bill.setVerifyStatus(toVerifyState.getCode());
+        operatorUser.ifPresent(op -> {
+            bill.setOperatorId(op.getId());
+            bill.setOperatorName(op.getName());
+            bill.setOperationTime(new Date());
+        });
+
+        bill.setReason(StringUtils.trimToEmpty(reason));
+        if (BillVerifyStatusEnum.PASSED == toVerifyState) {
+            bill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
+        }
+        bill.setModified(new Date());
+        this.updateSelective(bill);
+        // 创建审核历史数据
+        this.registerBillHistoryService.createHistory(billItem.getId());
+
+        // 更新用户颜色码
+        this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
+    }
+
+    @Override
+    public BasePage<RegisterBill> listPageApi(RegisterBillDto input){
+
+        StringBuilder sql = new StringBuilder();
+        buildFormLikeKeyword(input).ifPresent(sql::append);
+        if(sql.length() > 0){
+            input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
+        }
+
+        BasePage<RegisterBill> registerBillBasePage = listPageByExample(input);
+        return registerBillBasePage;
+    }
+
+    private Optional<String> buildFormLikeKeyword(RegisterBillDto query) {
+        String sql = null;
+        if (StringUtils.isNotBlank(query.getKeyword())) {
+            String keyword = query.getKeyword().trim();
+            sql = "( product_name like '%" + keyword + "%'  OR user_id in(select id from `user` u where u.name like '%"
+                    + keyword + "%' OR legal_person like '%" + keyword + "%' OR phone like '%"
+                    + keyword + "%') OR third_party_code like '%"+keyword+"%' )";
+        }
+        return Optional.ofNullable(sql);
+    }
+
+    @Transactional
+    @Override
+    public Long doDelete(CreateRegisterBillInputDto dto, Long userId, Optional<OperatorUser> operatorUser) {
+        if (dto == null || userId == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterBill billItem = this.getAndCheckById(dto.getBillId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+        if (!userId.equals(billItem.getUserId())) {
+            throw new TraceBusinessException("没有权限删除数据");
+        }
+        if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+            throw new TraceBusinessException("不能删除已进门数据");
+        }
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
+            throw new TraceBusinessException("不能删除审核未通过数据");
+        }
+        RegisterBill bill = new RegisterBill();
+        bill.setId(billItem.getBillId());
+        bill.setIsDeleted(dto.getIsDeleted());
+
+        operatorUser.ifPresent(op -> {
+            bill.setOperatorName(op.getName());
+            bill.setOperatorId(op.getId());
+            bill.setOperationTime(new Date());
+            bill.setDeleteUser(op.getName());
+            bill.setDeleteTime(new Date());
+        });
+        this.updateSelective(bill);
+        this.registerBillHistoryService.createHistory(billItem.getBillId());
+        this.userQrHistoryService.rollbackUserQrStatus(bill.getId(), billItem.getUserId());
+        return dto.getBillId();
+    }
 }
