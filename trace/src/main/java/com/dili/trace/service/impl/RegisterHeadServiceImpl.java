@@ -54,6 +54,9 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     @Autowired
     BrandService brandService;
 
+    @Autowired
+    UpStreamService upStreamService;
+
     public RegisterHeadMapper getActualDao() {
         return (RegisterHeadMapper) getDao();
     }
@@ -117,7 +120,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         if (imageCertList.isEmpty()) {
             throw new TraceBusinessException("请上传凭证");
         }
-        this.imageCertService.insertImageCert(imageCertList, registerHead.getId(), BillTypeEnum.MASTER_BILL.getCode());
+        imageCertService.insertImageCert(imageCertList, registerHead.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerHead.getBrandName(), registerHead.getUserId())
@@ -160,15 +163,18 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("商品产地不能为空");
             throw new TraceBusinessException("商品产地不能为空");
         }
-        if (registerHead.getPieceWeight() == null) {
+        if (registerHead.getPieceWeight() == null && registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode()) ) {
             logger.error("商品件重不能为空");
             throw new TraceBusinessException("商品件重不能为空");
         }
-        if (registerHead.getPieceNum() == null) {
+        if (registerHead.getPieceNum() == null && registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode())) {
             logger.error("商品件数不能为空");
             throw new TraceBusinessException("商品件数不能为空");
         }
-        if (BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
+        if (registerHead.getPieceNum() == null &&
+                registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode()) &&
+                BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
+
             logger.error("商品件重不能小于0");
             throw new TraceBusinessException("商品件重不能小于0");
         }
@@ -207,7 +213,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBusinessException("请上传凭证");
         }
         // 保存图片
-        this.imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
+        imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId());
         return input.getId();
@@ -231,24 +237,21 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
     @Transactional
     @Override
-    public Long doDelete(Long id, Long userId, Optional<OperatorUser> operatorUser) {
-        if (id == null || userId == null) {
+    public Long doDelete(CreateRegisterHeadInputDto dto, Long userId, Optional<OperatorUser> operatorUser) {
+        if (dto == null || userId == null) {
             throw new TraceBusinessException("参数错误");
         }
-        RegisterHead headItem = this.getAndCheckById(id).orElseThrow(() -> new TraceBusinessException("数据不存在"));
-        if (!userId.equals(headItem.getUserId())) {
-            throw new TraceBusinessException("没有权限删除数据");
-        }
+        RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
         RegisterHead registerHead = new RegisterHead();
         registerHead.setId(headItem.getId());
-        registerHead.setIsDeleted(TFEnum.TRUE.getCode());
+        registerHead.setIsDeleted(dto.getIsDeleted());
 
         operatorUser.ifPresent(op -> {
             registerHead.setDeleteUser(op.getName());
             registerHead.setDeleteTime(new Date());
         });
         this.updateSelective(registerHead);
-        return id;
+        return dto.getId();
     }
 
     @Transactional
@@ -258,9 +261,6 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             throw new TraceBusinessException("参数错误");
         }
         RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
-        if (!userId.equals(headItem.getUserId())) {
-            throw new TraceBusinessException("没有权限启用/关闭数据");
-        }
         RegisterHead registerHead = new RegisterHead();
         registerHead.setId(headItem.getId());
         registerHead.setActive(dto.getActive());

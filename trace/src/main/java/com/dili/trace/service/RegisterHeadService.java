@@ -62,12 +62,12 @@ public interface RegisterHeadService extends BaseService<RegisterHead, Long> {
 
 	/**
 	 * 作废进门主台账单
-	 * @param id
+	 * @param dto
 	 * @param userId
 	 * @param operatorUser
 	 * @return
 	 */
-	public Long doDelete(Long id, Long userId, Optional<OperatorUser> operatorUser);
+	public Long doDelete(CreateRegisterHeadInputDto dto, Long userId, Optional<OperatorUser> operatorUser);
 
 	/**
 	 * 启用/关闭进门主台账单

@@ -70,6 +70,12 @@ public class CreateRegisterHeadInputDto {
 	@ApiModelProperty(value = "是否启用")
 	private Integer active;
 
+    @ApiModelProperty(value = "是否废弃")
+	private Integer isDeleted;
+
+	@ApiModelProperty(value = "经营户ID")
+    private Long userId;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -82,6 +88,7 @@ public class CreateRegisterHeadInputDto {
 		registerHead.setName(user.getName());
 		registerHead.setAddr(user.getAddr());
 		registerHead.setIdCardNo(user.getCardNo());
+		registerHead.setPhone(user.getPhone());
 		registerHead.setThirdPartyCode(user.getThirdPartyCode());
 		registerHead.setBillType(this.getBillType());
 		registerHead.setProductId(this.getProductId());
@@ -253,5 +260,21 @@ public class CreateRegisterHeadInputDto {
 
 	public void setActive(Integer active) {
 		this.active = active;
+	}
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 }

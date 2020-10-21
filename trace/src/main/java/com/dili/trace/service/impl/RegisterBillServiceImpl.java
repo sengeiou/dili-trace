@@ -172,7 +172,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (imageCertList.isEmpty()) {
             throw new TraceBusinessException("请上传凭证");
         }
-        this.imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
+        imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
 
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId())
@@ -324,7 +324,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBusinessException("请上传凭证");
         }
         // 保存图片
-        this.imageCertService.insertImageCert(imageCertList, input.getId());
+        imageCertService.insertImageCert(imageCertList, input.getId());
 
         this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(td -> {
             TradeDetail updatableRecord = new TradeDetail();
@@ -589,7 +589,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     /**
      * 根据报备单数量更新用户状态到黑码
      *
-     * @param dto
+     * @param
      * @return
      */
     public void updateAllUserQrStatusByRegisterBillNum(Date createdStart, Date createdEnd) {
@@ -719,7 +719,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 }).findFirst().orElse(new RegisterBill());
 
         List<ImageCert> imageCertList = StreamEx.ofNullable(registerBill.getId()).nonNull().flatMap(bid -> {
-            return this.imageCertService.findImageCertListByBillId(bid).stream();
+            return imageCertService.findImageCertListByBillId(bid).stream();
         }).toList();
 
         String upStreamName = StreamEx.ofNullable(registerBill.getUpStreamId()).nonNull().map(upStreamId -> {
