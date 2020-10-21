@@ -10,7 +10,6 @@ import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.input.TradeRequestHandleDto;
 import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.output.UserOutput;
-import com.dili.trace.dao.TradeDetailMapper;
 import com.dili.trace.dao.TradeRequestMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.MessageInputDto;
@@ -134,11 +133,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
                     String productName = "商品名称:" + request.getProductName() + "重量:" + request.getTradeWeight() + WeightUnitEnum.fromCode(request.getWeightUnit()).get().getName() + "订单编号:" + request.getCode();
                     addMessage(sellerId, buyerId, request.getId(), MessageStateEnum.BUSINESS_TYPE_TRADE_SELL.getCode(), MessageTypeEnum.SALERORDER.getCode(), request.getCode(), productName);
                     // 卖家下单
-                    userQrHistoryService.createUserQrHistoryForOrder(request.getId(),buyerId);
+                    userQrHistoryService.createUserQrHistoryForOrder(request.getId(), buyerId);
                     return this.hanleRequest(request, tradeDetailInputList, TradeOrderTypeEnum.BUY);
                 }).toList();
         // this.createUpStreamAndDownStream(sellerId, buyerId);
-        StreamEx.of(list).forEach( td -> {
+        StreamEx.of(list).forEach(td -> {
             TradeRequest request = new TradeRequest();
             request.setHandleTime(new Date());
             request.setId(td.getId());
@@ -548,7 +547,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
 
             try {
-                userQrHistoryService.rollbackUserQrStatusForOrderReturn(tradeRequestItem.getId(),tradeRequestItem.getBuyerId());
+                userQrHistoryService.rollbackUserQrStatusForOrderReturn(tradeRequestItem.getId(), tradeRequestItem.getBuyerId());
             } catch (ParseException e) {
                 e.printStackTrace();
                 logger.error(e.getMessage(), e);
@@ -611,7 +610,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return upStreamDto;
     }
 
-    public BasePage<TradeRequest> listPageForStatusOrder(TradeRequestInputDto dto,Long userId){
+    public BasePage<TradeRequest> listPageForStatusOrder(TradeRequestInputDto dto, Long userId) {
         dto.setBuyerId(userId);
         dto.setOrderStatus(TradeOrderStatusEnum.FINISHED.getCode());
         if (dto.getPage() == null || dto.getPage() < 0) {
@@ -774,11 +773,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     /**
      * 查询近7天有买商品的用户
+     *
      * @param user
      * @return
      */
-    public List<Long> selectBuyerIdWithouTradeRequest(UserListDto user)
-    {
+    public List<Long> selectBuyerIdWithouTradeRequest(UserListDto user) {
         return getActualDao().selectBuyerIdWithouTradeRequest(user);
     }
+
 }

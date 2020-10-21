@@ -1,48 +1,84 @@
 package com.dili.trace.domain.hangguo;
 
+import javax.persistence.*;
+
 /**
  * 杭果交易单
  *
  * @author asa.lee
  */
+@Table(name = "third_hangguo_trade_data")
 public class HangGuoTrade {
+
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(name = "order_date")
     private String orderDate;
     /**
      * 供应商
      */
+    @Column(name = "supplier_no")
     private String supplierNo;
+    @Column(name = "supplier_name")
     private String supplierName;
     /**
      * 报备单id
      */
-    private String registerId;
-    private String batchNo;
-    private String itemNumber;
-    private String itemName;
-    private String unit;
-    private String originNo;
-    private String originName;
-    private String positionNo;
-    private String positionName;
-    private String price;
-    private String packageNumber;
-    private String number;
-    private String amount;
-    private String weight;
-    private String tradeNo;
-    private String posNo;
-    private String payWay;
-    private String memberNo;
-    private String memberName;
-    private String totalAmount;
-    private String operator;
-    private String payer;
-    private String payNo;
+    @Column(name = "register_no")
     private String registerNo;
+    @Transient
+    private String registerId;
+    @Column(name = "batch_no")
+    private String batchNo;
+    @Column(name = "item_number")
+    private String itemNumber;
+    @Column(name = "item_name")
+    private String itemName;
+    @Column(name = "unit")
+    private String unit;
+    @Column(name = "origin_no")
+    private String originNo;
+    @Column(name = "origin_name")
+    private String originName;
+    @Column(name = "position_no")
+    private String positionNo;
+    @Column(name = "position_name")
+    private String positionName;
+    @Column(name = "price")
+    private String price;
+    @Column(name = "package_number")
+    private String packageNumber;
+    @Column(name = "number")
+    private String number;
+    @Column(name = "amount")
+    private String amount;
+    @Column(name = "weight")
+    private String weight;
+    @Column(name = "trade_no")
+    private String tradeNo;
+    @Column(name = "pos_no")
+    private String posNo;
+    @Column(name = "pay_way")
+    private String payWay;
+    @Column(name = "member_no")
+    private String memberNo;
+    @Column(name = "member_name")
+    private String memberName;
+    @Column(name = "total_amount")
+    private String totalAmount;
+    @Column(name = "operator")
+    private String operator;
+    @Column(name = "payer")
+    private String payer;
+    @Column(name = "pay_no")
+    private String payNo;
+    @Column(name = "handle_flag")
     private Integer handleFlag;
+    @Column(name = "report_flag")
     private Integer reportFlag;
-    private String hadleRemark;
+    @Column(name = "handle_remark")
+    private String handleRemark;
 
     public Integer getHandleFlag() {
         return handleFlag;
@@ -60,12 +96,12 @@ public class HangGuoTrade {
         this.reportFlag = reportFlag;
     }
 
-    public String getHadleRemark() {
-        return hadleRemark;
+    public String getHandleRemark() {
+        return handleRemark;
     }
 
-    public void setHadleRemark(String hadleRemark) {
-        this.hadleRemark = hadleRemark;
+    public void setHandleRemark(String handleRemark) {
+        this.handleRemark = handleRemark;
     }
 
     public String getRegisterNo() {

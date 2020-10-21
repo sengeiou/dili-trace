@@ -16,18 +16,21 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 插入商品数据到正式表
+     *
      * @param commodityList
      */
     void bachInsertCommodityList(@Param("list") List<Category> commodityList);
 
     /**
      * 更新商品正式表杭果商品数据patentId
+     *
      * @param category
      */
     void updateHangGuoCommodityParent(Category category);
 
     /**
      * 根据第三方编码获取更新列表
+     *
      * @param list
      * @return
      */
@@ -35,12 +38,14 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 根据第三方编码更新用户信息
+     *
      * @param updateUserList
      */
     void batchUpdateUserByThirdCode(@Param("list") List<User> updateUserList);
 
     /**
      * 根据第三方编码更新商品信息
+     *
      * @param tradeList
      * @return
      */
@@ -48,18 +53,21 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 根据第三方编码刪除商品信息
+     *
      * @param categoryList
      */
     void deleteHangGuoCommodityByThirdCode(@Param("list") List<Category> categoryList);
 
     /**
      * 插入交易缓存表
+     *
      * @param tradeList
      */
     void bachInsertCacheTradeList(@Param("list") List<HangGuoTrade> tradeList);
 
     /**
      * 根据报备单id获取报备详情
+     *
      * @param billIds
      * @return
      */
@@ -67,6 +75,7 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 根基id获取库存
+     *
      * @param stockIdList
      * @return
      */
@@ -79,6 +88,7 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 查询所有交易数据
+     *
      * @param trade
      * @return
      */
@@ -86,8 +96,23 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 更新交易数据标志位
+     *
      * @param map
      */
     void batchUpdateCacheTrade(Map<String, Object> map);
 
+    /**
+     * 获取报备单编号
+     *
+     * @param ids
+     * @return
+     */
+    List<RegisterBill> getRegisterBillByIds(List<String> ids);
+
+    /**
+     * 批量插入tradeDetail
+     *
+     * @param addDetailList
+     */
+    void batchInsertTradeDetail(List<TradeDetail> addDetailList);
 }

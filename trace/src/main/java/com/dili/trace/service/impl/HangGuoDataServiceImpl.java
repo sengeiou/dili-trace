@@ -3,13 +3,9 @@ package com.dili.trace.service.impl;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.HangGuoDataMapper;
-import com.dili.trace.domain.Category;
-import com.dili.trace.domain.ProductStock;
-import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
-import com.dili.trace.enums.DataHandleFlagEnum;
 import com.dili.trace.service.HangGuoDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,24 +79,23 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     }
 
     @Override
-    public void batchUpdateCacheTradeHandleFlagToTrue(List<HangGuoTrade> trades) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("list", trades);
-        map.put("handleFlag", DataHandleFlagEnum.PENDING_HANDLE.getCode());
-        hangGuoDataMapper.batchUpdateCacheTrade(map);
-    }
-
-    @Override
-    public void batchUpdateCacheTradeHandleFlagToFalse(List<HangGuoTrade> trades) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("list", trades);
-        map.put("handleFlag", DataHandleFlagEnum.UN_NEED_HANDLE.getCode());
-        hangGuoDataMapper.batchUpdateCacheTrade(map);
-    }
-
-    @Override
     public List<HangGuoTrade> selectTradeReportListByHandleFlag(HangGuoTrade trade) {
         return hangGuoDataMapper.selectTradeReportListByHandleFlag(trade);
+    }
+
+    @Override
+    public List<RegisterBill> getRegisterBillByIds(List<String> ids) {
+        return hangGuoDataMapper.getRegisterBillByIds(ids);
+    }
+
+    @Override
+    public void batchInsertTradeDetail(List<TradeDetail> addDetailList) {
+        hangGuoDataMapper.batchInsertTradeDetail(addDetailList);
+    }
+
+    @Override
+    public void batchUpdateCacheTradeHandleFlag(Map<String, Object> map) {
+        hangGuoDataMapper.batchUpdateCacheTrade(map);
     }
 
 }
