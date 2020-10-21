@@ -207,10 +207,11 @@ public class ClientRegisterFormBillApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			query.setBillType(BillTypeEnum.NONE.getCode());
-			List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
+			if (operatorUser == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
 			return BaseOutput.success().setData(list);
-
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
