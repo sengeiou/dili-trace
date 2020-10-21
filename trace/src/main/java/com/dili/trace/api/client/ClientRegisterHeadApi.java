@@ -4,21 +4,19 @@ import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBusinessException;
+import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
-import com.dili.trace.domain.CheckinOutRecord;
-import com.dili.trace.api.output.TradeDetailBillOutput;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.RegisterHead;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.*;
+import com.dili.trace.domain.*;
+import com.dili.trace.dto.CreateListRegisterHeadParam;
+import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterHeadDto;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -60,6 +58,10 @@ public class ClientRegisterHeadApi {
 
 	@Autowired
 	RegisterBillService registerBillService;
+
+
+	@Autowired
+	UpStreamService upStreamService;
 
 	@ApiOperation(value = "获取进门主台账单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterHead", dataType = "RegisterHead", value = "获取进门主台账单列表")
@@ -227,13 +229,16 @@ public class ClientRegisterHeadApi {
 
 	@ApiOperation("查看进门主台账单")
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/viewRegisterHead.api", method = {RequestMethod.GET})
-	public BaseOutput<RegisterHead> viewRegisterHead(@RequestParam Long id) {
+	@RequestMapping(value = "/viewRegisterHead.api", method = {RequestMethod.POST})
+	public BaseOutput<RegisterHead> viewRegisterHead(@RequestBody BaseDomain baseDomain) {
 		try {
-			RegisterHead registerHead = registerHeadService.get(id);
+			RegisterHead registerHead = registerHeadService.get(baseDomain.getId());
 
-			List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, BillTypeEnum.MASTER_BILL.getCode());
-			registerHead.setImageCerts(imageCerts);
+			List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.MASTER_BILL.getCode());
+			registerHead.setImageCertList(imageCerts);
+
+			UpStream upStream = upStreamService.get(registerHead.getUpStreamId());
+			registerHead.setUpStreamName(upStream.getName());
 			return BaseOutput.success().setData(registerHead);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

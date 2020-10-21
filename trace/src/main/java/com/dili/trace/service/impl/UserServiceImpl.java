@@ -865,7 +865,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             userList = new ArrayList<User>();
         } else {
             Example e = new Example(User.class);
-            e.or().orLike("third_party_code", "%" + input.getKeyword().trim() + "%").orLike("name", "%" + input.getKeyword().trim() + "%")
+            e.or().orLike("thirdPartyCode", "%" + input.getKeyword().trim() + "%").orLike("name", "%" + input.getKeyword().trim() + "%")
                     .orLike("phone", "%" + input.getKeyword().trim() + "%");
             userList =  this.getDao().selectByExample(e);
         }
