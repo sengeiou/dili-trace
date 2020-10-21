@@ -53,9 +53,9 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             hangGuoDataUtil.createCommodity(goodsCategory,endTime);
         }*/
 
-        if(!CollectionUtils.isEmpty(tradeList)){
+        /*if(!CollectionUtils.isEmpty(tradeList)){
             hangGuoDataUtil.createTrade(tradeList,endTime);
-        }
+        }*/
 
     }
 
