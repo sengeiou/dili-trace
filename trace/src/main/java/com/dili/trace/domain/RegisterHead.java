@@ -175,6 +175,9 @@ public class RegisterHead extends BaseDomain {
 	@Transient
 	private String upStreamName;
 
+	@Transient
+	private String statusStr;
+
 	@Override
 	public Long getId() {
 		return id;
@@ -487,5 +490,13 @@ public class RegisterHead extends BaseDomain {
 
 	public void setUpStreamName(String upStreamName) {
 		this.upStreamName = upStreamName;
+	}
+
+	public String getStatusStr() {
+		return statusStr;
+	}
+
+	public void setStatusStr(String statusStr) {
+		this.statusStr = statusStr;
 	}
 }

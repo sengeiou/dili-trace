@@ -17,6 +17,7 @@ import com.dili.trace.dto.RegisterHeadDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -235,6 +236,11 @@ public class ClientRegisterHeadApi {
 
 			UpStream upStream = upStreamService.get(registerHead.getUpStreamId());
 			registerHead.setUpStreamName(upStream.getName());
+
+            RegisterBill registerBill = new RegisterBill();
+            registerBill.setRegisterHeadCode(registerHead.getCode());
+            List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
+            registerHead.setRegisterBills(registerBills);
 			return BaseOutput.success().setData(registerHead);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -257,6 +263,15 @@ public class ClientRegisterHeadApi {
 			} else {
 				return BaseOutput.failure("没有进门主台账单");
 			}
+			// 解析状态输出到前台
+			if(registerHead.getActive() != null && RegisgterHeadStatusEnum.ACTIVE.getCode() == registerHead.getActive()){
+                registerHead.setStatusStr( RegisgterHeadStatusEnum.ACTIVE.getDesc());
+            } else if(registerHead.getActive() != null && RegisgterHeadStatusEnum.UNACTIVE.getCode() == registerHead.getActive()){
+                registerHead.setStatusStr( RegisgterHeadStatusEnum.UNACTIVE.getDesc());
+            }
+            if(registerHead.getIsDeleted() != null && RegisgterHeadStatusEnum.DELETED.getCode() == registerHead.getIsDeleted()){
+                registerHead.setStatusStr( RegisgterHeadStatusEnum.DELETED.getDesc());
+            }
 			RegisterBill registerBill = new RegisterBill();
 			registerBill.setRegisterHeadCode(code);
 			List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
