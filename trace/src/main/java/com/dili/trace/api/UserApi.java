@@ -387,6 +387,7 @@ public class UserApi {
                 User user = DTOUtils.newDTO(User.class);
                 user.setId(u.getId());
                 user.setName(u.getName());
+                user.setLegalPerson(u.getLegalPerson());
                 user.setThirdPartyCode(u.getThirdPartyCode());
                 user.setPhone(u.getPhone());
                 return user;
