@@ -867,6 +867,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             Example e = new Example(User.class);
             e.or().orLike("thirdPartyCode", "%" + input.getKeyword().trim() + "%").orLike("name", "%" + input.getKeyword().trim() + "%")
                     .orLike("phone", "%" + input.getKeyword().trim() + "%");
+            e.and().andEqualTo("state", EnabledStateEnum.ENABLED.getCode());
+            e.and().andEqualTo("yn", YnEnum.YES.getCode());
             userList =  this.getDao().selectByExample(e);
         }
 
