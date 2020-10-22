@@ -1030,12 +1030,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBusinessException("参数错误");
         }
         RegisterBill billItem = this.getAndCheckById(dto.getBillId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
-        if (!userId.equals(billItem.getUserId())) {
-            throw new TraceBusinessException("没有权限删除数据");
-        }
-        if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
-            throw new TraceBusinessException("不能删除已进门数据");
-        }
+//        if (!userId.equals(billItem.getUserId())) {
+//            throw new TraceBusinessException("没有权限删除数据");
+//        }
+//        if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+//            throw new TraceBusinessException("不能删除已进门数据");
+//        }
         if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
             throw new TraceBusinessException("不能删除审核未通过数据");
         }
