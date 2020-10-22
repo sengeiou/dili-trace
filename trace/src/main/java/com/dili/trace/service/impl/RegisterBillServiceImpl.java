@@ -633,6 +633,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query) {
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn(query));
         query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         return this.listPageByExample(query);
     }
 
@@ -650,6 +651,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public BasePage<RegisterBill> listPageAfterCheckinVerifyBill(RegisterBillDto query) {
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn(query));
         query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         return this.listPageByExample(query);
     }
 
