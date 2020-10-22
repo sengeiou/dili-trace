@@ -181,7 +181,7 @@ public class ClientRegisterFormBillApi {
 	@ApiOperation("查看进门登记单")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
-	public BaseOutput<RegisterHead> viewRegisterBill(@RequestParam BaseDomain baseDomain) {
+	public BaseOutput<RegisterHead> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
 		try {
 			RegisterBill registerBill = registerBillService.get(baseDomain.getId());
 
@@ -207,10 +207,11 @@ public class ClientRegisterFormBillApi {
 
 		try {
 			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			query.setBillType(BillTypeEnum.NONE.getCode());
-			List<VerifyStatusCountOutputDto>list= this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
+			if (operatorUser == null) {
+				return BaseOutput.failure("未登陆用户");
+			}
+			List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
 			return BaseOutput.success().setData(list);
-
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

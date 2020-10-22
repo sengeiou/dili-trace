@@ -18,7 +18,6 @@ import com.dili.trace.dto.RegisterHeadDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.RegisgterHeadStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -264,17 +263,25 @@ public class ClientRegisterHeadApi {
 				return BaseOutput.failure("没有进门主台账单");
 			}
 			// 解析状态输出到前台
-			if(registerHead.getActive() != null && YesOrNoEnum.YES.getCode() == registerHead.getActive()){
+			if(registerHead.getActive() != null && YesOrNoEnum.YES.getCode().equals(registerHead.getActive())){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.ACTIVE.getDesc());
-            } else if(registerHead.getActive() != null && YesOrNoEnum.NO.getCode() == registerHead.getActive()){
+            } else if(registerHead.getActive() != null && YesOrNoEnum.NO.getCode().equals(registerHead.getActive())){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.UNACTIVE.getDesc());
             }
-            if(registerHead.getIsDeleted() != null && YesOrNoEnum.YES.getCode() == registerHead.getIsDeleted()){
+            if(registerHead.getIsDeleted() != null && YesOrNoEnum.YES.getCode().equals(registerHead.getIsDeleted())){
                 registerHead.setStatusStr( RegisgterHeadStatusEnum.DELETED.getDesc());
             }
+			UpStream upStream = upStreamService.get(registerHead.getUpStreamId());
+			registerHead.setUpStreamName(upStream.getName());
 			RegisterBill registerBill = new RegisterBill();
 			registerBill.setRegisterHeadCode(code);
 			List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
+			if(null != registerBills && CollectionUtils.isNotEmpty(registerBills)){
+				registerBills.forEach(e ->{
+					List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(e.getBillId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+					e.setImageCerts(imageCerts);
+				});
+			}
 			registerHead.setRegisterBills(registerBills);
 			return BaseOutput.success().setData(registerHead);
 		} catch (TraceBusinessException e) {

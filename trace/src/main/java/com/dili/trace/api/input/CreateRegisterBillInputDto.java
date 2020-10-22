@@ -100,6 +100,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setTallyAreaNo(user.getTallyAreaNos());
 		registerBill.setAddr(user.getAddr());
 		registerBill.setIdCardNo(user.getCardNo());
+		registerBill.setPhone(user.getPhone());
 		registerBill.setThirdPartyCode(user.getThirdPartyCode());
 		registerBill.setWeight(this.getWeight());
 		registerBill.setWeightUnit(this.getWeightUnit());

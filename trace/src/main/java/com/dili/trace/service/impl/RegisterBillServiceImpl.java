@@ -798,10 +798,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Override
     public List<Long> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
                                      Optional<OperatorUser> operatorUser, Long marketId) {
-        if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
-            throw new TraceBusinessException("用户未审核通过不能创建进门登记单");
-        }
-
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存进门登记单:" + JSON.toJSONString(dto));
             RegisterBill registerBill = dto.build(user);
