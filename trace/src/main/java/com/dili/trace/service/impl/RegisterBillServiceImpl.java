@@ -859,7 +859,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.registerBillHistoryService.createHistory(registerBill.getBillId());
         // 保存图片
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty()) {
+        if (imageCertList.isEmpty() && !BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
             throw new TraceBusinessException("请上传凭证");
         }
         imageCertService.insertImageCert(imageCertList, registerBill.getBillId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
@@ -931,7 +931,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.registerBillHistoryService.createHistory(billItem.getBillId());
 
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty()) {
+        if (imageCertList.isEmpty() && !BillVerifyStatusEnum.RETURNED.equalsToCode(input.getVerifyStatus())) {
             throw new TraceBusinessException("请上传凭证");
         }
         // 保存图片
