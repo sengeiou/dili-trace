@@ -1064,7 +1064,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBusinessException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
-        query.setIsDeleted(TFEnum.FALSE.getCode());
+        //query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
         return this.countByVerifyStatus(query);
     }
 

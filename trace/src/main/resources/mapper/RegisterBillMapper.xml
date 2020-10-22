@@ -177,6 +177,12 @@
     <if test="isDeleted != null">
       AND is_deleted =#{isDeleted}
     </if>
+    <if test="marketId != null">
+      AND market_id =#{marketId}
+    </if>
+    <if test="orderType != null">
+      AND order_type =#{orderType}
+    </if>
     group by verify_status
   </select>
 
