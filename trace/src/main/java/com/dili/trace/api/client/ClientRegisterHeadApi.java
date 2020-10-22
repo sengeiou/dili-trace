@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -78,6 +79,7 @@ public class ClientRegisterHeadApi {
 			if(null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())){
 				registerHeadBasePage.getDatas().forEach(e ->{
 					e.setWeightUnitName(WeightUnitEnum.fromCode(e.getWeightUnit()).get().getName());
+					e.setBillTypeName(BillTypeEnum.fromCode(e.getBillType()).get().getName());
 				});
 			}
 
