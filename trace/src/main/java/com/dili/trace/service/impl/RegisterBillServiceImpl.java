@@ -215,8 +215,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 throw new TraceBusinessException("车牌不能为空");
             }
         }
-        if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
-            throw new TraceBusinessException("商品类型错误");
+        if (!OrderTypeEnum.REGISTER_FORM_BILL.getCode().equals(registerBill.getOrderType())) {
+            if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
+                throw new TraceBusinessException("商品类型错误");
+            }
         }
         if (StringUtils.isBlank(registerBill.getName())) {
             logger.error("业户姓名不能为空");
@@ -802,6 +804,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             logger.info("循环保存进门登记单:" + JSON.toJSONString(dto));
             RegisterBill registerBill = dto.build(user);
             registerBill.setMarketId(marketId);
+            registerBill.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
             return this.createRegisterFormBill(registerBill, dto.getImageCertList(), operatorUser);
         }).toList();
     }
@@ -832,7 +835,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 .map(String::toUpperCase).findFirst().orElse(null);
         registerBill.setPlate(plate);
         registerBill.setModified(new Date());
-        registerBill.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
 
         // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
         if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())) {
