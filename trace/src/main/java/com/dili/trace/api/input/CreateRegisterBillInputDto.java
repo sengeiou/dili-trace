@@ -85,6 +85,9 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "是否废弃")
 	private Integer isDeleted;
 
+	@ApiModelProperty(value = "经营户ID")
+	private Long userId;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -385,5 +388,13 @@ public class CreateRegisterBillInputDto {
 
 	public void setIsDeleted(Integer isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 }

@@ -116,7 +116,7 @@ public class ClientRegisterFormBillApi {
 			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			User user = userService.get(operatorUser.getId());
+			User user = userService.get(dto.getUserId());
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存进门登记单:{}", JSON.toJSONString(registerBill));
 			this.registerBillService.doEditFormBill(registerBill, dto.getImageCertList(), Optional.empty());
