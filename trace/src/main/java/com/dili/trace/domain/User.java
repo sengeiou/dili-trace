@@ -543,7 +543,7 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`charge_rate`")
-    String getChargeRate();
+    BigDecimal getChargeRate();
 
     /**
      * 手续费折扣率

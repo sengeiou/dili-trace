@@ -19,7 +19,7 @@ public class ReportInspectionDto {
     private String checker;
     private String goodName;
     private String goodsCode;
-    private String marketId;
+    private Long marketId;
 
     public Long getId() {
         return id;
@@ -118,11 +118,11 @@ public class ReportInspectionDto {
         this.goodsCode = goodsCode;
     }
 
-    public String getMarketId() {
+    public Long getMarketId() {
         return marketId;
     }
 
-    public void setMarketId(String marketId) {
+    public void setMarketId(Long marketId) {
         this.marketId = marketId;
     }
 }

@@ -58,7 +58,7 @@ public class ThirdDataReportService {
         reportUser.setCustType(userType);
         reportUser.setLegal(info.getLegalPerson());
         reportUser.setLicense(info.getLicense());
-        reportUser.setMarketId(String.valueOf(platformMarketId));
+        reportUser.setMarketId(platformMarketId);
         Integer userStatus = 0;
         //目标系统 0：正常，1：冻结：2:作废
         //现有 yn为1为正常/-1为删除 state为0禁用/1启用，

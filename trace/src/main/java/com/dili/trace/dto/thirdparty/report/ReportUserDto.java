@@ -6,7 +6,7 @@ import java.util.List;
  * @author asa.lee
  */
 public class ReportUserDto {
-    private String marketId;
+    private Long marketId;
     private String accountName;
     private Integer accountType;
     private String address;
@@ -42,11 +42,11 @@ public class ReportUserDto {
         this.tel = tel;
     }
 
-    public String getMarketId() {
+    public Long getMarketId() {
         return marketId;
     }
 
-    public void setMarketId(String marketId) {
+    public void setMarketId(Long marketId) {
         this.marketId = marketId;
     }
 
