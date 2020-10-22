@@ -63,7 +63,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * 商品信息、供应商信息、会员信息每六小时调用一次
      */
     //@Scheduled(cron = "0 0 */6 * * ?")
-    public void pushData() {
+    public void getData() {
         try {
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品信息
@@ -91,7 +91,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * 交易数据每小时调用一次
      */
     //@Scheduled(cron = "0 0 */1 * * ?")
-    public void pushTradeData() {
+    public void getTradeData() {
         try {
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品信息

@@ -125,6 +125,16 @@ public class ThirdDataReportService {
             }
             userImgList.add(imgDto);
         }
+        //证件照
+        if (StringUtils.isNotBlank(info.getCredentialUrl())) {
+            String url = info.getCredentialUrl();
+            ReportUserImgDto imgDto = new ReportUserImgDto();
+            imgDto.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
+            if (StringUtils.isNotBlank(url)) {
+                imgDto.setPicUrl(baseWebPath + url);
+            }
+            userImgList.add(imgDto);
+        }
         return userImgList;
     }
 

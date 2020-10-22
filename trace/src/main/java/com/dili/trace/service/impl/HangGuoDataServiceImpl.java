@@ -98,4 +98,19 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
         hangGuoDataMapper.batchUpdateCacheTrade(map);
     }
 
+    @Override
+    public List<CheckOrderData> getCheckOrderDataList(List<CheckOrder> headList) {
+        return hangGuoDataMapper.getCheckOrderDataList(headList);
+    }
+
+    @Override
+    public List<CheckOrder> getReportCheckOrderList(CheckOrder checkOrder) {
+        return hangGuoDataMapper.getReportCheckOrderList(checkOrder);
+    }
+
+    @Override
+    public List<CheckOrderDispose> getReportCheckOrderDisposeList(CheckOrderDispose dispose) {
+        return hangGuoDataMapper.getReportCheckOrderDisposeList(dispose);
+    }
+
 }

@@ -6,19 +6,15 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.Category;
-import com.dili.trace.domain.Market;
-import com.dili.trace.domain.ThirdPartyPushData;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.thirdparty.report.GoodsDto;
-import com.dili.trace.dto.thirdparty.report.ReportInspectionDto;
-import com.dili.trace.dto.thirdparty.report.ReportUserDto;
-import com.dili.trace.enums.CommodityTypeEnum;
-import com.dili.trace.enums.ReportInterfaceEnum;
+import com.dili.trace.dto.thirdparty.report.*;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.service.*;
+import com.sun.xml.internal.ws.api.message.HeaderList;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * 对接天下粮仓入口，通过定时任务每5min调用天下粮仓的接口
@@ -52,6 +47,10 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     private CategoryService categoryService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private HangGuoDataService hangGuoDataService;
+    @Autowired
+    private ImageCertService imageCertService;
 
 
     @Value("${current.baseWebPath}")
@@ -61,6 +60,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        //pushData();
     }
 
     /**
@@ -93,11 +93,89 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         }
     }
 
-    private void pushFruitsUnqualifiedInspectionData(Optional<OperatorUser> optUser, Date endTime, Market market) {
+    private BaseOutput pushFruitsUnqualifiedInspectionData(Optional<OperatorUser> optUser, Date endTime, Market market) {
+        Date updateTime = null;
+        boolean newPushFlag = true;
+        Long marketId = market.getId();
+        String platformMarketId = String.valueOf(market.getPlatformMarketId());
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.HANGGUO_DISPOSE.getCode(), marketId);
 
+        if (pushData == null) {
+            updateTime = endTime;
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName(ReportInterfaceEnum.HANGGUO_DISPOSE.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.HANGGUO_DISPOSE.getName());
+            pushData.setPushTime(endTime);
+            pushData.setMarketId(marketId);
+        } else {
+            updateTime = pushData.getPushTime();
+            newPushFlag = false;
+        }
+        List<ReportUnqualifiedDisposalDto> disposalDtos = getReportDisposeList();
+        logger.info("Report Hangguo Unqualified Disposal Dto ： " + JSON.toJSONString(disposalDtos));
+        BaseOutput baseOutput = this.dataReportService.reportFruitsUnqualifiedDisposal(disposalDtos, optUser, market);
+        if (baseOutput.isSuccess()) {
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.HANGGUO_DISPOSE.getName(), baseOutput.getMessage());
+        }
+        return baseOutput;
     }
 
-    private void pushFruitsInspectionData(Optional<OperatorUser> optUser, Date endTime, Market market) {
+    private List<ReportUnqualifiedDisposalDto> getReportDisposeList() {
+
+        List<CheckOrderDispose> disposeList = getReportCheckOrderDisposeList();
+        List<ReportUnqualifiedDisposalDto> reportList = transformationDisposeExample(disposeList);
+        String ids = getCheckDisposeIds(disposeList);
+        Map<Long, List<ImageCert>> imageCertMap = getCheckOrderImgMap(ids);
+
+        StreamEx.of(reportList).nonNull().forEach(h -> {
+            List<ImageCert> imgList = imageCertMap.get(h.getId());
+            List<ReportInspectionImgDto> reportImgList = new ArrayList<>();
+            List<ReportInspectionItemDto> itemDtoList = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(imgList)) {
+                reportImgList = StreamEx.of(imgList).nonNull().map(m -> {
+                    ReportInspectionImgDto reportImg = new ReportInspectionImgDto();
+                    reportImg.setCredentialName(ImageCertBillTypeEnum.INSPECTION_TYPE.getName());
+                    reportImg.setPicUrl(m.getUrl());
+                    return reportImg;
+                }).collect(Collectors.toList());
+                h.setCheckFailImgList(reportImgList);
+            }
+        });
+        return reportList;
+    }
+
+    private String getCheckDisposeIds(List<CheckOrderDispose> disposeList) {
+        List<String> idList = StreamEx.of(disposeList).nonNull().map(h -> String.valueOf(h.getId())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(idList)) {
+            return idList.stream().collect(Collectors.joining("','"));
+        }
+        return null;
+    }
+
+    private List<ReportUnqualifiedDisposalDto> transformationDisposeExample(List<CheckOrderDispose> disposeList) {
+        return StreamEx.of(disposeList).nonNull().map(m -> {
+            ReportUnqualifiedDisposalDto r = new ReportUnqualifiedDisposalDto();
+            r.setMarketId(m.getMarketId());
+            r.setChuZhiType(m.getDisposeType());
+            r.setCheckNo(m.getCheckNo());
+            r.setChuZhiDate(m.getDisposeDate());
+            r.setChuZhiDesc(m.getDisposeDesc());
+            r.setChuZhier(m.getDisposeUser());
+            r.setChuZhiNum(m.getDisposeNum());
+            r.setChuZhiResult(m.getDisposeResult());
+            return r;
+        }).collect(Collectors.toList());
+    }
+
+    private List<CheckOrderDispose> getReportCheckOrderDisposeList() {
+        CheckOrderDispose dispose = new CheckOrderDispose();
+        dispose.setReportFlag(CheckOrderReportFlagEnum.PROCESSED.getCode());
+        return hangGuoDataService.getReportCheckOrderDisposeList(dispose);
+    }
+
+    private BaseOutput pushFruitsInspectionData(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
         boolean newPushFlag = true;
         Long marketId = market.getId();
@@ -117,10 +195,102 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         }
 
         List<ReportInspectionDto> inspectionDtoList = getReportInspectionList();
-
+        logger.info("Report Hangguo checkOrder Dto ： " + JSON.toJSONString(inspectionDtoList));
+        BaseOutput baseOutput = this.dataReportService.reportFruitsInspection(inspectionDtoList, optUser, market);
+        if (baseOutput.isSuccess()) {
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.HANGGUO_INSPECTION.getName(), baseOutput.getMessage());
+        }
+        return baseOutput;
     }
 
     private List<ReportInspectionDto> getReportInspectionList() {
+        List<CheckOrder> checkOrderList = getReportCheckOrderList();
+        List<ReportInspectionDto> headList = transformationExample(checkOrderList);
+        String ids = getCheckIds(headList);
+        Map<Long, List<ImageCert>> imageCertMap = getCheckOrderImgMap(ids);
+
+        Map<Long, List<CheckOrderData>> valueMap = getCheckOrderDataMap(checkOrderList);
+        StreamEx.of(headList).nonNull().forEach(h -> {
+            List<ImageCert> imgList = imageCertMap.get(h.getId());
+            List<CheckOrderData> dataList = valueMap.get(h.getId());
+            List<ReportInspectionImgDto> reportImgList = new ArrayList<>();
+            List<ReportInspectionItemDto> itemDtoList = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(imgList)) {
+                reportImgList = StreamEx.of(imgList).nonNull().map(m -> {
+                    ReportInspectionImgDto reportImg = new ReportInspectionImgDto();
+                    reportImg.setCredentialName(ImageCertBillTypeEnum.INSPECTION_TYPE.getName());
+                    reportImg.setPicUrl(m.getUrl());
+                    return reportImg;
+                }).collect(Collectors.toList());
+                h.setCheckImgList(reportImgList);
+            }
+            if (CollectionUtils.isNotEmpty(dataList)) {
+                itemDtoList = StreamEx.of(dataList).nonNull().map(m -> {
+                    ReportInspectionItemDto reportvalue = new ReportInspectionItemDto();
+                    reportvalue.setNormalValue(m.getNormalValue());
+                    reportvalue.setProject(m.getProject());
+                    reportvalue.setResult(m.getResult());
+                    reportvalue.setValue(m.getValue());
+                    return reportvalue;
+                }).collect(Collectors.toList());
+                h.setCheckItem(itemDtoList);
+            }
+        });
+        return headList;
+    }
+
+    private List<ReportInspectionDto> transformationExample(List<CheckOrder> checkOrderList) {
+        return StreamEx.of(checkOrderList).nonNull().map(c -> {
+            ReportInspectionDto re = new ReportInspectionDto();
+            re.setId(c.getId());
+            re.setChecker(c.getChecker());
+            re.setCheckImgList(c.getCheckImgList());
+            re.setCheckItem(c.getCheckItem());
+            re.setCheckNo(c.getCheckNo());
+            re.setCheckOrgName(c.getCheckOrgName());
+            re.setCheckResult(c.getCheckResult());
+            re.setCheckTime(c.getCheckTime());
+            re.setCheckType(c.getCheckType());
+            re.setGoodName(c.getGoodName());
+            re.setGoodsCode(c.getGoodsCode());
+            re.setMarketId(c.getMarketId());
+            return re;
+        }).collect(Collectors.toList());
+    }
+
+    private List<CheckOrder> getReportCheckOrderList() {
+        CheckOrder checkOrder = new CheckOrder();
+        checkOrder.setReportFlag(CheckOrderReportFlagEnum.PROCESSED.getCode());
+        return hangGuoDataService.getReportCheckOrderList(checkOrder);
+    }
+
+    private Map<Long, List<CheckOrderData>> getCheckOrderDataMap(List<CheckOrder> headList) {
+        CheckOrderData da = new CheckOrderData();
+        if (CollectionUtils.isEmpty(headList)) {
+            return null;
+        }
+        List<CheckOrderData> dataList = hangGuoDataService.getCheckOrderDataList(headList);
+        return StreamEx.of(dataList).nonNull().collect(Collectors.groupingBy(CheckOrderData::getCheckId));
+    }
+
+    private Map<Long, List<ImageCert>> getCheckOrderImgMap(String ids) {
+        ImageCert imageCert = new ImageCert();
+        imageCert.setBillType(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode());
+        if (StringUtils.isNotBlank(ids)) {
+            imageCert.setMetadata(IDTO.AND_CONDITION_EXPR, " bill_id in ('" + ids + "')");
+        }
+        List<ImageCert> imageCerts = imageCertService.listByExample(imageCert);
+        return StreamEx.of(imageCerts).nonNull().collect(Collectors.groupingBy(ImageCert::getBillId));
+    }
+
+
+    private String getCheckIds(List<ReportInspectionDto> headList) {
+        List<String> idList = StreamEx.of(headList).nonNull().map(h -> String.valueOf(h.getId())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(idList)) {
+            return idList.stream().collect(Collectors.joining("','"));
+        }
         return null;
     }
 
@@ -209,7 +379,8 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         }
 
         Category category = new Category();
-        category.setType(CommodityTypeEnum.SUPPLEMENT.getCode());
+        category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
+        category.setIsShow(CategoryIsShowEnum.IS_SHOW.getCode());
         if (!newPushFlag) {
             category.setMetadata(IDTO.AND_CONDITION_EXPR, " created >= '" + DateUtils.format(updateTime) + "'");
         }
