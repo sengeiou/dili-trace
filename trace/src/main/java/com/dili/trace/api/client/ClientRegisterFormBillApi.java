@@ -181,7 +181,7 @@ public class ClientRegisterFormBillApi {
 	@ApiOperation("查看进门登记单")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
-	public BaseOutput<RegisterHead> viewRegisterBill(@RequestParam BaseDomain baseDomain) {
+	public BaseOutput<RegisterHead> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
 		try {
 			RegisterBill registerBill = registerBillService.get(baseDomain.getId());
 
