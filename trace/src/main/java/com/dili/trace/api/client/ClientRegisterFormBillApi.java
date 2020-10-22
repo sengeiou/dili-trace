@@ -210,7 +210,7 @@ public class ClientRegisterFormBillApi {
 			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
-			List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
+			List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseFormBill(query);
 			return BaseOutput.success().setData(list);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

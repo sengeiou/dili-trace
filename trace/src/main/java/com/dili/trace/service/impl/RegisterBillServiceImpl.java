@@ -1055,4 +1055,27 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.userQrHistoryService.rollbackUserQrStatus(bill.getId(), billItem.getUserId());
         return dto.getBillId();
     }
+
+    @Override
+    public List<VerifyStatusCountOutputDto> countByVerifyStatuseFormBill(RegisterBillDto query) {
+        if (query == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
+        query.setIsDeleted(TFEnum.FALSE.getCode());
+        return this.countByVerifyStatus(query);
+    }
+
+    private String dynamicSQLFormBill(RegisterBillDto query) {
+        List<String> sqlList = new ArrayList<>();
+        this.buildFormLikeKeyword(query).ifPresent(sql -> {
+            sqlList.add(sql);
+        });
+        sqlList.add("(is_checkin=" + YnEnum.NO.getCode()
+                + " OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
+                + BillVerifyStatusEnum.PASSED.getCode() + ") OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status"
+                + BillVerifyStatusEnum.RETURNED.getCode() +" ))");
+
+        return StreamEx.of(sqlList).joining(" AND ");
+    }
 }

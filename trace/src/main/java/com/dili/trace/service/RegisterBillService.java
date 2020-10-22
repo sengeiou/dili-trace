@@ -198,4 +198,12 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long doDelete(CreateRegisterBillInputDto dto,Long userId,Optional<OperatorUser> operatorUser);
+
+	/**
+	 * 统计不同审核状态进门登记单数据
+	 *
+	 * @param query
+	 * @return
+	 */
+	public List<VerifyStatusCountOutputDto> countByVerifyStatuseFormBill(RegisterBillDto query);
 }
