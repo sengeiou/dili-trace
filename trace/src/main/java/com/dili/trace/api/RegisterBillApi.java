@@ -107,7 +107,12 @@ public class RegisterBillApi {
                 query.setRows(row);
             }
             List<RegisterBill> billList = registerBillService.listByExample(query);
-            List<String> billNos = StreamEx.of(billList).nonNull().map(b -> b.getCode()).collect(Collectors.toList());
+            List<RegisterBillQueryInputDto> billNos = StreamEx.of(billList).nonNull().map(b -> {
+                RegisterBillQueryInputDto inp = new RegisterBillQueryInputDto();
+                inp.setBillId(b.getCode());
+                return inp;
+            }).collect(Collectors.toList());
+
             return BaseOutput.success().setData(billNos);
 
         } catch (TraceBusinessException e) {
