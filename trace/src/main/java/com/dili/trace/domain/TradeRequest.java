@@ -96,15 +96,169 @@ public class TradeRequest extends BaseDomain {
 	@Transient
 	private String orderStatusName;
 
-	@Transient
-	private String tradeNo;
+	@Column(name = "`third_trade_no`")
+	private String thirdTradeNo;
 
-	public String getTradeNo() {
-		return tradeNo;
+    @Column(name = "`batch_no`")
+    private String batchNo;
+
+    @Column(name = "`origin_name`")
+    private String originName;
+
+    @Column(name = "`position_no`")
+    private String positionNo;
+
+    @Column(name = "`position_name`")
+    private String positionName;
+
+    @Column(name = "`price`")
+    private String price;
+
+    @Column(name = "`package_number`")
+    private String packageNumber;
+
+    @Column(name = "`number`")
+    private String number;
+
+    @Column(name = "`amount`")
+    private String amount;
+
+	@Column(name = "`pos_no`")
+	private String posNo;
+
+	@Column(name = "`pay_way`")
+	private String payWay;
+
+	@Column(name = "`total_amount`")
+	private String totalAmount;
+
+	@Column(name = "`operator`")
+	private String operator;
+
+	@Column(name = "`payer`")
+	private String payer;
+
+	@Column(name = "`pay_no`")
+	private String payNo;
+
+	public String getBatchNo() {
+		return batchNo;
 	}
 
-	public void setTradeNo(String tradeNo) {
-		this.tradeNo = tradeNo;
+	public void setBatchNo(String batchNo) {
+		this.batchNo = batchNo;
+	}
+
+	public String getOriginName() {
+		return originName;
+	}
+
+	public void setOriginName(String originName) {
+		this.originName = originName;
+	}
+
+	public String getPositionNo() {
+		return positionNo;
+	}
+
+	public void setPositionNo(String positionNo) {
+		this.positionNo = positionNo;
+	}
+
+	public String getPositionName() {
+		return positionName;
+	}
+
+	public void setPositionName(String positionName) {
+		this.positionName = positionName;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
+	}
+
+	public String getPackageNumber() {
+		return packageNumber;
+	}
+
+	public void setPackageNumber(String packageNumber) {
+		this.packageNumber = packageNumber;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	public String getPosNo() {
+		return posNo;
+	}
+
+	public void setPosNo(String posNo) {
+		this.posNo = posNo;
+	}
+
+	public String getPayWay() {
+		return payWay;
+	}
+
+	public void setPayWay(String payWay) {
+		this.payWay = payWay;
+	}
+
+	public String getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(String totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
+
+	public String getPayer() {
+		return payer;
+	}
+
+	public void setPayer(String payer) {
+		this.payer = payer;
+	}
+
+	public String getPayNo() {
+		return payNo;
+	}
+
+	public void setPayNo(String payNo) {
+		this.payNo = payNo;
+	}
+
+	public String getThirdTradeNo() {
+		return thirdTradeNo;
+	}
+
+	public void setThirdTradeNo(String thirdTradeNo) {
+		this.thirdTradeNo = thirdTradeNo;
 	}
 
 	public Date getHandleTime() {

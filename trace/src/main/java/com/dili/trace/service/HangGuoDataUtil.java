@@ -655,7 +655,7 @@ public class HangGuoDataUtil {
         //新增request
         List<TradeRequest> addTradeRequestList = getTradeOrderRequestList(tradeList, userMap, categoryMap, orderMap, billMap, createTime);
         tradeRequestService.batchInsert(addTradeRequestList);
-        Map<String, TradeRequest> tradeRequestMap = StreamEx.of(addTradeRequestList).nonNull().collect(Collectors.toMap(TradeRequest::getTradeNo, Function.identity(), (a, b) -> a));
+        Map<String, TradeRequest> tradeRequestMap = StreamEx.of(addTradeRequestList).nonNull().collect(Collectors.toMap(TradeRequest::getThirdTradeNo, Function.identity(), (a, b) -> a));
         //新增detail
         List<TradeDetail> addDetailList = getTradeOrderDetailRequestList(tradeList, userMap, categoryMap, billMap, tradeRequestMap, createTime);
         tradeDetailService.batchInsert(addDetailList);
@@ -742,7 +742,7 @@ public class HangGuoDataUtil {
         if (CollectionUtils.isNotEmpty(addTradeRequestList)) {
             tradeRequestService.batchInsert(addTradeRequestList);
         }
-        Map<String, TradeRequest> tradeRequestMap = StreamEx.of(addTradeRequestList).nonNull().collect(Collectors.toMap(TradeRequest::getTradeNo, Function.identity(), (a, b) -> a));
+        Map<String, TradeRequest> tradeRequestMap = StreamEx.of(addTradeRequestList).nonNull().collect(Collectors.toMap(TradeRequest::getThirdTradeNo, Function.identity(), (a, b) -> a));
         //新增detail
         List<TradeDetail> addDetailList = getTradeOrderDetailRequestList(tradeList, userMap, categoryMap, billMap, tradeRequestMap, createTime);
         if (CollectionUtils.isNotEmpty(addDetailList)) {
@@ -908,7 +908,21 @@ public class HangGuoDataUtil {
             request.setWeightUnit(WeightUnitEnum.KILO.getCode());
             request.setProductName(productName);
             request.setHandleTime(createTime);
-            request.setTradeNo(t.getTradeNo());
+            request.setThirdTradeNo(t.getTradeNo());
+            request.setBatchNo(t.getBatchNo());
+            request.setOriginName(t.getOriginName());
+            request.setPositionNo(t.getPositionNo());
+            request.setPositionName(t.getPositionName());
+            request.setPrice(t.getPrice());
+            request.setPackageNumber(t.getPackageNumber());
+            request.setNumber(t.getNumber());
+            request.setAmount(t.getAmount());
+            request.setPosNo(t.getPosNo());
+            request.setPayWay(t.getPayWay());
+            request.setTotalAmount(t.getTotalAmount());
+            request.setOperator(t.getOperator());
+            request.setPayer(t.getPayer());
+            request.setPayNo(t.getPayNo());
             requestList.add(request);
         });
         return requestList;
