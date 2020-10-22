@@ -864,7 +864,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (imageCertList.isEmpty()) {
             throw new TraceBusinessException("请上传凭证");
         }
-        this.imageCertService.insertImageCert(imageCertList, registerBill.getBillId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+        imageCertService.insertImageCert(imageCertList, registerBill.getBillId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
 
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId())
@@ -938,7 +938,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBusinessException("请上传凭证");
         }
         // 保存图片
-        this.imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+        imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
 
         this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
         this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
