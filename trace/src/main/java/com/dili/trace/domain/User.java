@@ -9,6 +9,7 @@ import com.dili.trace.enums.VocationTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -549,7 +550,7 @@ public interface User extends IBaseDomain {
      *
      * @param charge_rate
      */
-    void setChargeRate(String charge_rate);
+    void setChargeRate(BigDecimal charge_rate);
 
     /**
      * 包装管理费折扣率
@@ -557,14 +558,14 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`manger_rate`")
-    String getMangerRate();
+    BigDecimal getMangerRate();
 
     /**
      * 包装管理费折扣率
      *
      * @param manger_rate
      */
-    void setMangerRate(String manger_rate);
+    void setMangerRate(BigDecimal manger_rate);
 
     /**
      * 仓储费折扣率
@@ -572,14 +573,14 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`storage_rate`")
-    String getStorageRate();
+    BigDecimal getStorageRate();
 
     /**
      * 仓储费折扣率
      *
      * @param storage_rate
      */
-    void setStorageRate(String storage_rate);
+    void setStorageRate(BigDecimal storage_rate);
 
     /**
      * 员工考核折扣率
@@ -587,14 +588,14 @@ public interface User extends IBaseDomain {
      * @return
      */
     @Column(name = "`assess_rate`")
-    String getAssessRate();
+    BigDecimal getAssessRate();
 
     /**
      * 员工考核折扣率
      *
      * @param assess_rate
      */
-    void setAssessRate(String assess_rate);
+    void setAssessRate(BigDecimal assess_rate);
 
     /**
      * 折扣率批准人

@@ -32,8 +32,10 @@ public class CheckOrderDispose extends BaseDomain {
     private String disposeResult;
     @Column(name = "`dispose_type`")
     private String disposeType;
-    @Column(name = "`dispose_user`")
+    @Column(name = "`disposer`")
     private String disposeUser;
+    @Column(name = "`disposer_id`")
+    private String disposerId;
     @Column(name = "`report_flag`")
     private Integer reportFlag;
     @Transient
@@ -49,6 +51,14 @@ public class CheckOrderDispose extends BaseDomain {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDisposerId() {
+        return disposerId;
+    }
+
+    public void setDisposerId(String disposerId) {
+        this.disposerId = disposerId;
     }
 
     public String getCheckNo() {

@@ -41,7 +41,7 @@ public class Category extends BaseDomain {
 
 	@ApiModelProperty(value = "登记显示")
 	@Column(name = "`is_show`")
-	private String isShow;
+	private Integer isShow;
 
 	@ApiModelProperty(value = "市场id")
 	@Column(name = "`market_id`")
@@ -91,11 +91,11 @@ public class Category extends BaseDomain {
         this.specification = specification;
     }
 
-    public String getIsShow() {
+	public Integer getIsShow() {
 		return isShow;
 	}
 
-	public void setIsShow(String isShow) {
+	public void setIsShow(Integer isShow) {
 		this.isShow = isShow;
 	}
 

@@ -341,7 +341,7 @@
         report_flag
         from check_order
         where 1=1
-        <if test="report_flag != null">
+        <if test="reportFlag != null">
            and report_flag = #{reportFlag}
         </if>
         <if test="id != null">
@@ -359,8 +359,9 @@
         dispose_num,
         dispose_result,
         dispose_type,
-        dispose_user,
-        report_flag,
+        disposer,
+        disposer_id,
+        report_flag
         from
         check_order_dispose
         where

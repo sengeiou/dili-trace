@@ -12,6 +12,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -198,9 +199,9 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             user.setPhoneNumber("85681038 小");
             user.setStatus(1);
             user.setAddr("addr");
-            user.setChargeRate("100");
-            user.setMangerRate("101");
-            user.setAssessRate("102");
+            user.setChargeRate(new BigDecimal(100));
+            user.setMangerRate(new BigDecimal(101));
+            user.setAssessRate(new BigDecimal(111));
             user.setApprover("apper");
             user.setSupplierType("临时客户");
             user.setIdAddr("甘肃省礼县江口乡茨");

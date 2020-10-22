@@ -2,10 +2,12 @@ package com.dili.trace.domain.hangguo;
 
 import com.dili.ss.domain.BaseDomain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * 杭果溯源，经营户、会员信息
+ *
  * @author asa.lee
  */
 public class HangGuoUser extends BaseDomain {
@@ -19,59 +21,59 @@ public class HangGuoUser extends BaseDomain {
      */
     private String supplierName;
     /**
-     *证件类型
+     * 证件类型
      */
     private String credentialType;
     /**
-     *证件名称
+     * 证件名称
      */
     private String credentialName;
     /**
-     *证件号码
+     * 证件号码
      */
     private String credentialNumber;
     /**
-     *性别
+     * 性别
      */
     private String sex;
     /**
-     *营业执照号
+     * 营业执照号
      */
     private String liscensNo;
     /**
-     *移动电话
+     * 移动电话
      */
     private String mobileNumber;
     /**
-     *固定电话
+     * 固定电话
      */
     private String phoneNumber;
     /**
-     *供应商状态
+     * 供应商状态
      */
     private Integer status;
     /**
-     *住宅地址
+     * 住宅地址
      */
     private String addr;
     /**
-     *手续费折扣率
+     * 手续费折扣率
      */
-    private String chargeRate;
+    private BigDecimal chargeRate;
     /**
-     *包装管理费折扣率
+     * 包装管理费折扣率
      */
-    private String mangerRate;
+    private BigDecimal mangerRate;
     /**
-     *仓储费折扣率
+     * 仓储费折扣率
      */
-    private String storageRate;
+    private BigDecimal storageRate;
     /**
-     *员工考核折扣率
+     * 员工考核折扣率
      */
-    private String assessRate;
+    private BigDecimal assessRate;
     /**
-     *折扣率批准人
+     * 折扣率批准人
      */
     private String approver;
     /**
@@ -79,25 +81,25 @@ public class HangGuoUser extends BaseDomain {
      */
     private String supplierType;
     /**
-     *身份证地址
+     * 身份证地址
      */
     private String idAddr;
     /**
-     *经营地址(通讯
+     * 经营地址(通讯
      * 地址)
      */
     private String operateAddr;
     /**
-     *卡有效期
+     * 卡有效期
      */
     private Date effectiveDate;
     /**
-     *备注
+     * 备注
      */
     private String remarkMemo;
 
     /**
-     *备注
+     * 备注
      */
     private String name;
     /**
@@ -105,17 +107,17 @@ public class HangGuoUser extends BaseDomain {
      */
     private String memberNo;
     /**
-     *发卡日期
+     * 发卡日期
      */
     private Date enableDate;
 
     /**
-     *经营性质
+     * 经营性质
      */
     private String operateType;
 
     /**
-     *联系电话
+     * 联系电话
      */
     private String phoneNum;
 
@@ -273,35 +275,35 @@ public class HangGuoUser extends BaseDomain {
         this.addr = addr;
     }
 
-    public String getChargeRate() {
+    public BigDecimal getChargeRate() {
         return chargeRate;
     }
 
-    public void setChargeRate(String chargeRate) {
+    public void setChargeRate(BigDecimal chargeRate) {
         this.chargeRate = chargeRate;
     }
 
-    public String getMangerRate() {
+    public BigDecimal getMangerRate() {
         return mangerRate;
     }
 
-    public void setMangerRate(String mangerRate) {
+    public void setMangerRate(BigDecimal mangerRate) {
         this.mangerRate = mangerRate;
     }
 
-    public String getStorageRate() {
+    public BigDecimal getStorageRate() {
         return storageRate;
     }
 
-    public void setStorageRate(String storageRate) {
+    public void setStorageRate(BigDecimal storageRate) {
         this.storageRate = storageRate;
     }
 
-    public String getAssessRate() {
+    public BigDecimal getAssessRate() {
         return assessRate;
     }
 
-    public void setAssessRate(String assessRate) {
+    public void setAssessRate(BigDecimal assessRate) {
         this.assessRate = assessRate;
     }
 
