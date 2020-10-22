@@ -10,7 +10,7 @@ CREATE TABLE `countries` (
     `cname` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     PRIMARY KEY (`id`) USING BTREE,
     KEY `countries_code_index` (`code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 insert into `countries` (`code`, `cname`) values('ARG','阿根廷');
 insert into `countries` (`code`, `cname`) values('AUS','澳大利亚');
