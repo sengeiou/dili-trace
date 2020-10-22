@@ -78,37 +78,37 @@ public class RegisterBillApi {
 
     @ApiOperation(value = "获取报备单列表")
     @RequestMapping(value = "/queryBillNo", method = RequestMethod.POST)
-    @InterceptConfiguration(loginRequired = false,signRequired = true)
-    public BaseOutput<RegisterBillOutputDto> queryBillNo(@RequestBody RegisterBillQueryInputDto inputDto,HttpServletRequest request) {
+    @InterceptConfiguration(loginRequired = false, signRequired = true)
+    public BaseOutput<RegisterBillOutputDto> queryBillNo(@RequestBody RegisterBillQueryInputDto inputDto, HttpServletRequest request) {
         boolean isValidate = inputDto == null || inputDto.getSupplierId() == null;
         if (isValidate) {
             return BaseOutput.failure("参数错误");
         }
 
-        logger.info("获取报备单列表->billId:{},SupplierId:{}", inputDto.getBillId(),inputDto.getSupplierId());
+        logger.info("获取报备单列表->billId:{},SupplierId:{}", inputDto.getBillId(), inputDto.getSupplierId());
         try {
             User user = DTOUtils.newDTO(User.class);
             user.setThirdPartyCode(inputDto.getSupplierId());
             user.setYn(YnEnum.YES.getCode());
             List<User> userList = userService.listByExample(user);
-            Long userId =null;
+            Long userId = null;
             Integer row = 10;
             String billNo = inputDto.getBillId();
-            if(CollectionUtils.isNotEmpty(userList)){
-                userId=userList.get(0).getId();
+            if (CollectionUtils.isNotEmpty(userList)) {
+                userId = userList.get(0).getId();
             }
             RegisterBill query = new RegisterBill();
             query.setUserId(userId);
-            if(StringUtils.isNotBlank(billNo)){
-                query.setMetadata(IDTO.AND_CONDITION_EXPR," code like '%"+billNo+"%'");
-            }else{
+            if (StringUtils.isNotBlank(billNo)) {
+                query.setMetadata(IDTO.AND_CONDITION_EXPR, " code like '%" + billNo + "%'");
+            } else {
                 query.setOrder("desc");
                 query.setSort("created");
                 query.setRows(row);
             }
             List<RegisterBill> billList = registerBillService.listByExample(query);
-            List<String> billNOs = StreamEx.of(billList).nonNull().map(b->b.getCode()).collect(Collectors.toList());
-            return BaseOutput.success().setData(billNOs);
+            List<String> billNos = StreamEx.of(billList).nonNull().map(b -> b.getCode()).collect(Collectors.toList());
+            return BaseOutput.success().setData(billNos);
 
         } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
