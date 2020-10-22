@@ -87,7 +87,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
                                    Optional<OperatorUser> operatorUser) {
         this.checkRegisterHead(registerHead);
 
-        UserTicket user = SessionContext.getSessionContext().getUserTicket();
+        registerHead.setRemainWeight(registerHead.getWeight());
         registerHead.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_HEAD));
         operatorUser.ifPresent(op -> {
             registerHead.setCreateUser(op.getName());
@@ -205,6 +205,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             input.setModifyUser(op.getName());
             input.setModified(new Date());
         });
+        input.setRemainWeight(input.getWeight());
 
         this.updateSelective(input);
 
