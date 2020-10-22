@@ -60,7 +60,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-//        pushData();
+       // pushData();
     }
 
     /**
@@ -188,7 +188,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         Date updateTime = null;
         boolean newPushFlag = true;
         Long marketId = market.getId();
-        String platformMarketId = String.valueOf(market.getPlatformMarketId());
+        Long platformMarketId =  market.getPlatformMarketId();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.HANGGUO_INSPECTION.getCode(), marketId);
 
         if (pushData == null) {
@@ -203,7 +203,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             newPushFlag = false;
         }
 
-        List<ReportInspectionDto> inspectionDtoList = getReportInspectionList();
+        List<ReportInspectionDto> inspectionDtoList = getReportInspectionList(platformMarketId);
         logger.info("Report Hangguo checkOrder Dto ： " + JSON.toJSONString(inspectionDtoList));
         if (CollectionUtils.isEmpty(inspectionDtoList)) {
             logger.info("report checkOrder is null");
@@ -218,12 +218,12 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private List<ReportInspectionDto> getReportInspectionList() {
+    private List<ReportInspectionDto> getReportInspectionList(Long platformMarketId) {
         List<CheckOrder> checkOrderList = getReportCheckOrderList();
         if (CollectionUtils.isEmpty(checkOrderList)) {
             return null;
         }
-        List<ReportInspectionDto> headList = transformationExample(checkOrderList);
+        List<ReportInspectionDto> headList = transformationExample(checkOrderList,platformMarketId);
         String ids = getCheckIds(headList);
         Map<Long, List<ImageCert>> imageCertMap = getCheckOrderImgMap(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode(), ids);
 
@@ -259,7 +259,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         return headList;
     }
 
-    private List<ReportInspectionDto> transformationExample(List<CheckOrder> checkOrderList) {
+    private List<ReportInspectionDto> transformationExample(List<CheckOrder> checkOrderList, Long platformMarketId) {
         return StreamEx.of(checkOrderList).nonNull().map(c -> {
             ReportInspectionDto re = new ReportInspectionDto();
             re.setId(c.getId());
@@ -273,7 +273,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             re.setCheckType(c.getCheckType());
             re.setGoodName(c.getGoodName());
             re.setGoodsCode(c.getGoodsCode());
-            re.setMarketId(c.getMarketId());
+            re.setMarketId(platformMarketId);
             return re;
         }).collect(Collectors.toList());
     }
@@ -324,7 +324,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         Date updateTime = null;
         boolean newPushFlag = true;
         Long marketId = market.getId();
-        String platformMarketId = String.valueOf(market.getPlatformMarketId());
+        Long platformMarketId =  market.getPlatformMarketId();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.HANGGUO_USER.getCode(), marketId);
 
         if (pushData == null) {
@@ -340,7 +340,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         }
 
         User user = DTOUtils.newDTO(User.class);
-        user.setMarketId(Long.valueOf(platformMarketId));
+        user.setMarketId(market.getId());
         if (!newPushFlag) {
             user.mset(IDTO.AND_CONDITION_EXPR, " modified >= '" + DateUtils.format(updateTime) + "'");
         }
