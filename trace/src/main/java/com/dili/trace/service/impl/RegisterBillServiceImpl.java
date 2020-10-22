@@ -890,7 +890,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             //主台账单的剩余重量小于进门登记单的总重量时给出提示
             BigDecimal remianWeight = registerHead.getRemainWeight();
             BigDecimal billWeight = registerBill.getWeight();
-            if (remianWeight.compareTo(billWeight) == -1) {
+            if (remianWeight == null || (remianWeight != null && remianWeight.compareTo(billWeight) == -1)) {
                 throw new TraceBusinessException("进门登记单的总重量大于主台账单的剩余重量，不可新增");
             }
 
