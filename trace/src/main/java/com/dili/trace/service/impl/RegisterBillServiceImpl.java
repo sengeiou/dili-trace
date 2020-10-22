@@ -905,7 +905,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         input.setPlate(plate);
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
-        input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
         input.setModified(new Date());
 
         input.setOperatorName(null);
