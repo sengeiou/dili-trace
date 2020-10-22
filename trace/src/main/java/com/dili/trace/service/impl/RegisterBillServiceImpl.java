@@ -1075,7 +1075,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         });
         sqlList.add("(is_checkin=" + YnEnum.NO.getCode()
                 + " OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
-                + BillVerifyStatusEnum.PASSED.getCode() + ") OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status"
+                + BillVerifyStatusEnum.PASSED.getCode() + ") OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
                 + BillVerifyStatusEnum.RETURNED.getCode() +" ))");
 
         return StreamEx.of(sqlList).joining(" AND ");
