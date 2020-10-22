@@ -182,6 +182,9 @@ public class RegisterHead extends BaseDomain {
 	@Transient
 	private String statusStr;
 
+	@Transient
+	private String billTypeName;
+
 	@Override
 	public Long getId() {
 		return id;
@@ -510,5 +513,13 @@ public class RegisterHead extends BaseDomain {
 
 	public void setStatusStr(String statusStr) {
 		this.statusStr = statusStr;
+	}
+
+	public String getBillTypeName() {
+		return billTypeName;
+	}
+
+	public void setBillTypeName(String billTypeName) {
+		this.billTypeName = billTypeName;
 	}
 }
