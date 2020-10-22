@@ -78,7 +78,7 @@ public class RegisterBillApi {
 
     @ApiOperation(value = "获取报备单列表")
     @RequestMapping(value = "/queryBillNo", method = RequestMethod.POST)
-    @InterceptConfiguration(loginRequired = false, signRequired = true)
+    @InterceptConfiguration(loginRequired = false, signRequired = true,signValue = "cGFzczk4NzYyMDIw")
     public BaseOutput<RegisterBillOutputDto> queryBillNo(@RequestBody RegisterBillQueryInputDto inputDto, HttpServletRequest request) {
         boolean isValidate = inputDto == null || inputDto.getSupplierId() == null;
         if (isValidate) {
