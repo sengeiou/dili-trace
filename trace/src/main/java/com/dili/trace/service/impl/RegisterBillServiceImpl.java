@@ -875,11 +875,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
 
         //进门登记单新增消息
-        Integer businessType=MessageStateEnum.BUSINESS_TYPE_FORM_BILL.getCode();
+        /*Integer businessType=MessageStateEnum.BUSINESS_TYPE_FORM_BILL.getCode();
         if(BillTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getBillType())){
             businessType=MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
         }
-        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());*/
         return registerBill.getId();
     }
 
@@ -905,7 +905,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         input.setPlate(plate);
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
-        input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
         input.setModified(new Date());
 
         input.setOperatorName(null);
@@ -954,7 +953,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         this.doVerifyForm(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
         //新增消息
-        addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        //addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
         return billItem.getId();
     }
 
