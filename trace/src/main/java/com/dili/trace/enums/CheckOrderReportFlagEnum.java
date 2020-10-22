@@ -8,28 +8,32 @@ import java.util.Optional;
  * @author asa.lee
  */
 
-public enum CommodityTypeEnum {
+public enum CheckOrderReportFlagEnum {
 
     /**
-     * 正常商品
+     * 未处理
      */
-    NONE(1, "正常商品"),
+    UNTREATED(-1, "未处理"),
     /**
-     * 检测商品
+     * 已处理
      */
-    SUPPLEMENT(2, "检测商品"),
+    PROCESSED(1, "已处理"),
+    /**
+     * 已上报
+     */
+    REPORTED(2, "已上报"),
     ;
 
     private String name;
     private Integer code;
 
-    CommodityTypeEnum(Integer code, String name) {
+    CheckOrderReportFlagEnum(Integer code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static Optional<CommodityTypeEnum> fromCode(Integer code) {
-        return StreamEx.of(CommodityTypeEnum.values()).filterBy(CommodityTypeEnum::getCode, code).findFirst();
+    public static Optional<CheckOrderReportFlagEnum> fromCode(Integer code) {
+        return StreamEx.of(CheckOrderReportFlagEnum.values()).filterBy(CheckOrderReportFlagEnum::getCode, code).findFirst();
     }
 
     public boolean equalsToCode(Integer code) {

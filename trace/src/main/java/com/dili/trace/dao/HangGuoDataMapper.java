@@ -115,4 +115,22 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
      * @param addDetailList
      */
     void batchInsertTradeDetail(List<TradeDetail> addDetailList);
+
+    /**
+     * 获取检测详情
+     * @param headList
+     * @return
+     */
+    List<CheckOrderData> getCheckOrderDataList(List<CheckOrder> headList);
+    /**
+     * 获取检测主单
+     * @param checkOrder
+     */
+    List<CheckOrder> getReportCheckOrderList(CheckOrder checkOrder);
+    /**
+     * 不合格处置主单
+     * @param dispose
+     * @return
+     */
+    List<CheckOrderDispose> getReportCheckOrderDisposeList(CheckOrderDispose dispose);
 }

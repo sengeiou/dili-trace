@@ -1,20 +1,30 @@
 package com.dili.trace.dto.thirdparty.report;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author asa.lee
  */
 public class ReportUnqualifiedDisposalDto {
+    private Long id;
     private List<ReportInspectionImgDto> checkFailImgList;
     private String checkNo;
-    private String chuZhiDate;
+    private Date chuZhiDate;
     private String chuZhiDesc;
     private String chuZhiNum;
     private String chuZhiResult;
     private String chuZhiType;
     private String chuZhier;
-    private String marketId;
+    private Long marketId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public List<ReportInspectionImgDto> getCheckFailImgList() {
         return checkFailImgList;
@@ -32,11 +42,11 @@ public class ReportUnqualifiedDisposalDto {
         this.checkNo = checkNo;
     }
 
-    public String getChuZhiDate() {
+    public Date getChuZhiDate() {
         return chuZhiDate;
     }
 
-    public void setChuZhiDate(String chuZhiDate) {
+    public void setChuZhiDate(Date chuZhiDate) {
         this.chuZhiDate = chuZhiDate;
     }
 
@@ -80,11 +90,11 @@ public class ReportUnqualifiedDisposalDto {
         this.chuZhier = chuZhier;
     }
 
-    public String getMarketId() {
+    public Long getMarketId() {
         return marketId;
     }
 
-    public void setMarketId(String marketId) {
+    public void setMarketId(Long marketId) {
         this.marketId = marketId;
     }
 }

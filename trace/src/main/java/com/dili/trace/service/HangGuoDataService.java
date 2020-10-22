@@ -116,4 +116,24 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      * @param map
      */
     void batchUpdateCacheTradeHandleFlag(Map<String, Object> map);
+
+    /**
+     * 获取检测值
+     * @param headList
+     * @return
+     */
+    List<CheckOrderData> getCheckOrderDataList(List<CheckOrder> headList);
+
+    /**
+     * 获取检测主单
+     * @param checkOrder
+     */
+    List<CheckOrder> getReportCheckOrderList(CheckOrder checkOrder);
+
+    /**
+     * 不合格处置主单
+     * @param dispose
+     * @return
+     */
+    List<CheckOrderDispose> getReportCheckOrderDisposeList(CheckOrderDispose dispose);
 }

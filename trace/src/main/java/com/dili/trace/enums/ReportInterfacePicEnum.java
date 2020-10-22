@@ -30,6 +30,11 @@ public enum ReportInterfacePicEnum {
      * 身份证反面
      */
     ID_CARD_REVERSE(50, "身份证反面"),
+
+    /**
+     * 证件照片
+     */
+    CERTIFICATE(60, "证件照片"),
     ;
 
     private String name;

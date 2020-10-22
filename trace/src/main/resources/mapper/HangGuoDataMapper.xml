@@ -130,7 +130,6 @@
             <if test="supplierType != null">
                 supplier_type = #{supplierType},
             </if>
-
         </set>
         where third_party_code
         <foreach collection="list" open=" IN (" close=")" item="thirdCode" separator=",">
@@ -308,4 +307,63 @@
         </foreach>
     </insert>
 
+    <select id="getCheckOrderDataList" parameterType="java.util.List" resultType="com.dili.trace.domain.CheckOrderData">
+        select
+        id,
+        check_id,
+        project,
+        normal_value,
+        result,
+        `value`
+        from
+        check_data
+        where
+        check_id
+        <foreach collection="list" open=" IN (" close=")" item="t" separator=",">
+            #{t.id}
+        </foreach>
+    </select>
+    <select id="getReportCheckOrderList" parameterType="com.dili.trace.domain.CheckOrder"
+            resultType="com.dili.trace.domain.CheckOrder">
+        select
+        id,
+        id_card,
+        check_no,
+        check_org_code,
+        check_org_name,
+        check_result,
+        check_time,
+        check_type,
+        checker,
+        goods_name,
+        goods_code,
+        market_id,
+        report_flag
+        from check_order
+        where 1=1
+        <if test="report_flag != null">
+           and report_flag = #{reportFlag}
+        </if>
+        <if test="id != null">
+           and id = #{id}
+        </if>
+    </select>
+    <select id="getReportCheckOrderDisposeList" parameterType="com.dili.trace.domain.CheckOrderDispose"
+            resultType="com.dili.trace.domain.CheckOrderDispose">
+        select
+        id,
+        check_no,
+        market_id,
+        dispose_date,
+        dispose_desc,
+        dispose_num,
+        dispose_result,
+        dispose_type,
+        dispose_user,
+        report_flag,
+        from
+        check_order_dispose
+        where
+          report_flag = #{reportFlag}
+    </select>
 </mapper>

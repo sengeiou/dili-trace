@@ -300,6 +300,7 @@ public class HangGuoDataUtil {
             User user = DTOUtils.newDTO(User.class);
             user.setThirdPartyCode(p.getKey());
             user.setCredentialUrl(p.getValue());
+            user.setModified(createTime);
             updateUserList.add(user);
         });
         if (CollectionUtils.isNotEmpty(updateUserList)) {
@@ -317,11 +318,9 @@ public class HangGuoDataUtil {
         imgPath += DateUtils.format(new Date(), "yyyyMM");
         // 生成jpeg图片
         imgPath += "/" + memberNo + "." + ImageFileTypeEnum.JPEG_TYPE.getName();
-        //BASE64Decoder decoder = new BASE64Decoder();
         try {
             // Base64解码
             byte[] bytes = Base64.decodeBase64(img64Str);
-            //byte[] bytes = decoder.decodeBuffer(img64Str);
             for (int i = 0; i < bytes.length; ++i) {
                 // 调整异常数据
                 if (bytes[i] < 0) {
@@ -516,7 +515,7 @@ public class HangGuoDataUtil {
         hangGuoDataService.bachInsertCommodityList(categoryList);
         //patch
         Category category = new Category();
-        category.setType(CommodityTypeEnum.SUPPLEMENT.getCode());
+        category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
         category.setCreated(createTime);
         hangGuoDataService.updateHangGuoCommodityParent(category);
     }
@@ -534,7 +533,7 @@ public class HangGuoDataUtil {
         hangGuoDataService.bachInsertCommodityList(categoryList);
         //patch当天杭果商品的parent_id
         Category category = new Category();
-        category.setType(CommodityTypeEnum.SUPPLEMENT.getCode());
+        category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
         category.setCreated(createTime);
         hangGuoDataService.updateHangGuoCommodityParent(category);
     }
@@ -559,7 +558,7 @@ public class HangGuoDataUtil {
             category.setCreated(createTime);
             category.setModified(createTime);
             category.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
-            category.setType(CommodityTypeEnum.SUPPLEMENT.getCode());
+            category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
             setCommodityLevel(category, c);
 
             varietySet.add(c.getCategoryNumber());

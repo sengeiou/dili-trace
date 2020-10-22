@@ -1,25 +1,67 @@
-package com.dili.trace.dto.thirdparty.report;
+package com.dili.trace.domain;
 
+import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.dto.thirdparty.report.ReportInspectionImgDto;
+import com.dili.trace.dto.thirdparty.report.ReportInspectionItemDto;
+
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author asa.lee
  */
-public class ReportInspectionDto {
+@Table(name = "check_order")
+public class CheckOrder extends BaseDomain {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
     private Long id;
+    @Column(name = "`id_card`")
     private String idCard;
-    private List<ReportInspectionImgDto> checkImgList;
-    private List<ReportInspectionItemDto> checkItem;
+
+    @Column(name = "`check_no`")
     private String checkNo;
+    @Column(name = "`check_org_code`")
+    private String checkOrgCode;
+    @Column(name = "`check_org_name`")
     private String checkOrgName;
+    @Column(name = "`check_result`")
     private String checkResult;
+    @Column(name = "`check_time`")
     private Date checkTime;
+    @Column(name = "`check_type`")
     private String checkType;
+    @Column(name = "`checker`")
     private String checker;
+    @Column(name = "`goods_name`")
     private String goodName;
+    @Column(name = "`goods_code`")
     private String goodsCode;
+    @Column(name = "`market_id`")
     private String marketId;
+    @Column(name = "`report_flag`")
+    private Integer reportFlag;
+    @Transient
+    private List<ReportInspectionImgDto> checkImgList;
+    @Transient
+    private List<ReportInspectionItemDto> checkItem;
+
+    public Date getCheckTime() {
+        return checkTime;
+    }
+
+    public String getCheckOrgCode() {
+        return checkOrgCode;
+    }
+
+    public void setCheckOrgCode(String checkOrgCode) {
+        this.checkOrgCode = checkOrgCode;
+    }
+
+    public void setCheckTime(Date checkTime) {
+        this.checkTime = checkTime;
+    }
 
     public Long getId() {
         return id;
@@ -29,12 +71,12 @@ public class ReportInspectionDto {
         this.id = id;
     }
 
-    public Date getCheckTime() {
-        return checkTime;
+    public Integer getReportFlag() {
+        return reportFlag;
     }
 
-    public void setCheckTime(Date checkTime) {
-        this.checkTime = checkTime;
+    public void setReportFlag(Integer reportFlag) {
+        this.reportFlag = reportFlag;
     }
 
     public String getIdCard() {
@@ -84,7 +126,6 @@ public class ReportInspectionDto {
     public void setCheckResult(String checkResult) {
         this.checkResult = checkResult;
     }
-
 
     public String getCheckType() {
         return checkType;
