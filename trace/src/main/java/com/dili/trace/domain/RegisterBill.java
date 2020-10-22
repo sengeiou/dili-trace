@@ -258,6 +258,12 @@ public class RegisterBill extends BaseDomain {
 	@Transient
 	private List<TradePushLog> tradePushLogs;
 
+	@Transient
+	private BigDecimal headWeight;
+
+	@Transient
+	private BigDecimal remainWeight;
+
 	public List<TradePushLog> getTradePushLogs() {
 		return tradePushLogs;
 	}
@@ -859,5 +865,21 @@ public class RegisterBill extends BaseDomain {
 
 	public void setOrderType(Integer orderType) {
 		this.orderType = orderType;
+	}
+
+	public BigDecimal getHeadWeight() {
+		return headWeight;
+	}
+
+	public void setHeadWeight(BigDecimal headWeight) {
+		this.headWeight = headWeight;
+	}
+
+	public BigDecimal getRemainWeight() {
+		return remainWeight;
+	}
+
+	public void setRemainWeight(BigDecimal remainWeight) {
+		this.remainWeight = remainWeight;
 	}
 }

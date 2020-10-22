@@ -21,6 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,9 @@ public class ClientRegisterFormBillApi {
 
 	@Autowired
 	UpStreamService upStreamService;
+
+	@Autowired
+	RegisterHeadService registerHeadService;
 
 	@ApiOperation(value = "获取进门登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
@@ -181,7 +185,7 @@ public class ClientRegisterFormBillApi {
 	@ApiOperation("查看进门登记单")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
-	public BaseOutput<RegisterHead> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
+	public BaseOutput<RegisterBill> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
 		try {
 			RegisterBill registerBill = registerBillService.get(baseDomain.getId());
 
@@ -190,6 +194,20 @@ public class ClientRegisterFormBillApi {
 
 			UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
 			registerBill.setUpStreamName(upStream.getName());
+
+			//获取主台账单的总重量与剩余总重量
+			if (BillTypeEnum.PARTIAL.getCode().equals(registerBill.getBillType())) {
+				RegisterHead registerHead = new RegisterHead();
+				registerHead.setCode(registerBill.getRegisterHeadCode());
+				List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
+				if(CollectionUtils.isNotEmpty(registerHeadList)){
+					registerHead = registerHeadList.get(0);
+				} else {
+					return BaseOutput.failure("未找到主台账单");
+				}
+				registerBill.setHeadWeight(registerHead.getWeight());
+				registerBill.setRemainWeight(registerHead.getRemainWeight());
+			}
 			return BaseOutput.success().setData(registerBill);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

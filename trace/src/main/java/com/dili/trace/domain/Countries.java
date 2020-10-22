@@ -2,7 +2,6 @@ package com.dili.trace.domain;
 
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.dto.IBaseDomain;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
@@ -32,13 +31,6 @@ public class Countries  extends BaseDomain {
     @Column(name = "`cname`")
     private String cname;
 
-    /**
-     * 拼音简写
-     */
-    @ApiModelProperty(value = "备注")
-    @Column(name = "`remark`")
-    private String remark;
-
     public Long getId() {
         return id;
     }
@@ -61,13 +53,5 @@ public class Countries  extends BaseDomain {
 
     public void setCname(String cname) {
         this.cname = cname;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
     }
 }

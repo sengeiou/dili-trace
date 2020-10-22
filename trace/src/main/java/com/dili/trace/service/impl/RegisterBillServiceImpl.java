@@ -24,6 +24,7 @@ import com.diligrp.manage.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Autowired
     TradeRequestService tradeRequestService;
 
+    @Autowired
+    RegisterHeadService registerHeadService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -873,6 +876,27 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                     this.updateSelective(bill);
                 });
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
+
+        //更新主台账单剩余重量
+        if (BillTypeEnum.PARTIAL.getCode().equals(registerBill.getBillType())) {
+            RegisterHead registerHead = new RegisterHead();
+            registerHead.setCode(registerBill.getRegisterHeadCode());
+            List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
+            if(CollectionUtils.isNotEmpty(registerHeadList)){
+                registerHead = registerHeadList.get(0);
+            } else {
+                throw new TraceBusinessException("未找到主台账单");
+            }
+            //主台账单的剩余重量小于进门登记单的总重量时给出提示
+            BigDecimal remianWeight = registerHead.getRemainWeight();
+            BigDecimal billWeight = registerBill.getWeight();
+            if (remianWeight == null || (remianWeight != null && remianWeight.compareTo(billWeight) == -1)) {
+                throw new TraceBusinessException("进门登记单的总重量大于主台账单的剩余重量，不可新增");
+            }
+
+            registerHead.setRemainWeight(remianWeight.subtract(billWeight));
+            registerHeadService.updateSelective(registerHead);
+        }
 
         //进门登记单新增消息
         /*Integer businessType=MessageStateEnum.BUSINESS_TYPE_FORM_BILL.getCode();

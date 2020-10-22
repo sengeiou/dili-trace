@@ -86,6 +86,10 @@ public class RegisterHead extends BaseDomain {
 	@Column(name = "`weight`")
 	private BigDecimal weight;
 
+	@ApiModelProperty(value = "剩余重量")
+	@Column(name = "`remain_weight`")
+	private BigDecimal remainWeight;
+
 	@ApiModelProperty(value = "重量单位。1-斤 2-公斤。默认1")
 	@Column(name = "`weight_unit`")
 	private Integer weightUnit;
@@ -306,6 +310,14 @@ public class RegisterHead extends BaseDomain {
 
 	public void setWeight(BigDecimal weight) {
 		this.weight = weight;
+	}
+
+	public BigDecimal getRemainWeight() {
+		return remainWeight;
+	}
+
+	public void setRemainWeight(BigDecimal remainWeight) {
+		this.remainWeight = remainWeight;
 	}
 
 	public Integer getWeightUnit() {

@@ -20,6 +20,7 @@
     <result column="piece_num" property="pieceNum" />
     <result column="piece_weight" property="pieceWeight" />
     <result column="weight" property="weight" />
+      <result column="remain_weight" property="remainWeight" />
     <result column="weight_unit" property="weightUnit" />
     <result column="upstream_id" property="upstreamId" />
     <result column="spec_name" property="specName" />
@@ -58,6 +59,7 @@
                 piece_num,
                 piece_weight,
                 weight,
+                remain_weight,
                 weight_unit,
                 upstream_id,
                 spec_name,
