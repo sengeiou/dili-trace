@@ -167,10 +167,16 @@ public class RegisterHead extends BaseDomain {
 	private String weightUnitName;
 
 	@Transient
-	private List<ImageCert> imageCerts;
+	private List<ImageCert> imageCertList;
 
 	@Transient
 	private List<RegisterBill> registerBills;
+
+	@Transient
+	private String upStreamName;
+
+	@Transient
+	private String statusStr;
 
 	@Override
 	public Long getId() {
@@ -462,12 +468,12 @@ public class RegisterHead extends BaseDomain {
 		this.weightUnitName = weightUnitName;
 	}
 
-	public List<ImageCert> getImageCerts() {
-		return imageCerts;
+	public List<ImageCert> getImageCertList() {
+		return imageCertList;
 	}
 
-	public void setImageCerts(List<ImageCert> imageCerts) {
-		this.imageCerts = imageCerts;
+	public void setImageCertList(List<ImageCert> imageCertList) {
+		this.imageCertList = imageCertList;
 	}
 
 	public List<RegisterBill> getRegisterBills() {
@@ -476,5 +482,21 @@ public class RegisterHead extends BaseDomain {
 
 	public void setRegisterBills(List<RegisterBill> registerBills) {
 		this.registerBills = registerBills;
+	}
+
+	public String getUpStreamName() {
+		return upStreamName;
+	}
+
+	public void setUpStreamName(String upStreamName) {
+		this.upStreamName = upStreamName;
+	}
+
+	public String getStatusStr() {
+		return statusStr;
+	}
+
+	public void setStatusStr(String statusStr) {
+		this.statusStr = statusStr;
 	}
 }

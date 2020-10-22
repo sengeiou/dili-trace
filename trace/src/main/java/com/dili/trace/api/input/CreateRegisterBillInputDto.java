@@ -79,6 +79,12 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "备注")
 	private String remark;
 
+	@ApiModelProperty(value = "查验状态")
+	private Integer verifyStatus;
+
+	@ApiModelProperty(value = "是否废弃")
+	private Integer isDeleted;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -94,6 +100,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setTallyAreaNo(user.getTallyAreaNos());
 		registerBill.setAddr(user.getAddr());
 		registerBill.setIdCardNo(user.getCardNo());
+		registerBill.setPhone(user.getPhone());
 		registerBill.setThirdPartyCode(user.getThirdPartyCode());
 		registerBill.setWeight(this.getWeight());
 		registerBill.setWeightUnit(this.getWeightUnit());
@@ -116,6 +123,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setArea(this.getArea());
 		registerBill.setPackaging(this.getPackaging());
 		registerBill.setRemark(this.getRemark());
+		registerBill.setVerifyStatus(this.getVerifyStatus());
 		return registerBill;
 	}
 
@@ -361,5 +369,21 @@ public class CreateRegisterBillInputDto {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Integer getVerifyStatus() {
+		return verifyStatus;
+	}
+
+	public void setVerifyStatus(Integer verifyStatus) {
+		this.verifyStatus = verifyStatus;
+	}
+
+	public Integer getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Integer isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 }

@@ -1,10 +1,5 @@
 package com.dili.trace.api.client;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.Resource;
-
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
@@ -19,14 +14,11 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillInputDto;
-import com.dili.trace.service.ImageCertService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.TradeDetailService;
-import com.dili.trace.service.TradeRequestService;
-import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
-
+import com.dili.trace.service.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by wangguofeng

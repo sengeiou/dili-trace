@@ -46,7 +46,10 @@ public class TallyAreaNo extends BaseDomain {
 
 	@Column(name = "`modified`")
     private Date modified;
-    
+
+    @ApiModelProperty(value = "市场ID")
+    @Column(name = "`market_id`")
+    private String marketId;
 
     /**
      * @return Long return the id
@@ -133,4 +136,11 @@ public class TallyAreaNo extends BaseDomain {
         this.area = area;
     }
 
+    public String getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(String marketId) {
+        this.marketId = marketId;
+    }
 }
