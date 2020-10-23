@@ -97,7 +97,13 @@
   </update>
 
   <select id="countGroupByValidateState" parameterType="com.dili.trace.domain.User" resultType="com.dili.trace.api.output.UserOutput">
-    SELECT validate_state validateState,COUNT(1) numbers from `user` u where  yn=1  GROUP BY validate_state
+    SELECT validate_state validateState,COUNT(1) numbers
+    from `user` u
+    where  yn = 1
+    <if test="marketId != null">
+      and market_id = #{marketId}
+    </if>
+    GROUP BY validate_state
   </select>
 
   <select id="listUserByQuery" parameterType="com.dili.trace.api.input.UserInput" resultType="com.dili.trace.api.output.UserOutput">
@@ -106,6 +112,9 @@
     where yn=1
     <if test="validateState != null">
       and validate_state = #{validateState}
+    </if>
+    <if test="marketId != null">
+      and market_id = #{marketId}
     </if>
     <if test="keyword != null">
       and (name LIKE CONCAT('%',#{keyword},'%')  or tally_area_nos LIKE CONCAT('%',#{keyword},'%'))
