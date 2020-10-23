@@ -12,6 +12,7 @@ public class BillReportQueryDto extends BaseDomain {
     private String checkinCreatedEnd;
 
     private Boolean includeUnCheckin;
+
     private String likeCode;
 
     private String likeUserName;
@@ -27,11 +28,10 @@ public class BillReportQueryDto extends BaseDomain {
     private String likePlate;
     
     private String dynamicSql;
-    
-    
+
     private Integer isDeleted;
 
-    
+    private Integer orderType;
 
     /**
      * @return String return the billCreatedStart
@@ -241,4 +241,17 @@ public class BillReportQueryDto extends BaseDomain {
         this.isDeleted = isDeleted;
     }
 
+    /**
+     * @return Integer return the orderType
+     */
+    public Integer getOrderType() {
+        return orderType;
+    }
+
+    /**
+     * @param orderType the orderType to set
+     */
+    public void setOrderType(Integer orderType) {
+        this.orderType = orderType;
+    }
 }
