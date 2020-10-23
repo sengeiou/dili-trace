@@ -167,7 +167,8 @@
       GROUP BY t.buyer_id, t.`product_name` ORDER BY user.name, weight DESC
   </select>
 
-<select id="getThirdPartySourceData">
+<select id="getThirdPartySourceData" parameterType="com.dili.trace.domain.ThirdPartySourceData"
+    resultType="com.dili.trace.domain.ThirdPartySourceData">
     select
     id,
     name,
