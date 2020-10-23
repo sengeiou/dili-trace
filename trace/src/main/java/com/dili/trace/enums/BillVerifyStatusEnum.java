@@ -27,7 +27,12 @@ public enum BillVerifyStatusEnum {
 	/**
 	 * 不通过
 	 */
-	NO_PASSED(30, "不通过"),;
+	NO_PASSED(30, "不通过"),
+
+	/**
+	 * 不通过
+	 */
+	DELETED(40, "作废"),;
 
 	private String name;
 	private Integer code;

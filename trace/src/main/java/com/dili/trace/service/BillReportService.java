@@ -11,6 +11,7 @@ import com.dili.trace.domain.SysConfig;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.BillReportDto;
 import com.dili.trace.dto.BillReportQueryDto;
+import com.dili.trace.enums.OrderTypeEnum;
 import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.YnEnum;
@@ -39,6 +40,7 @@ public class BillReportService {
     private static final Logger logger = LoggerFactory.getLogger(BillReportService.class);
 
     public EasyuiPageOutput listEasyuiPage(BillReportQueryDto query) throws Exception {
+        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         BasePage<BillReportDto> listPageBillReport = this.listPageBillReport(query);
         long total = listPageBillReport.getTotalItem();
         List results = ValueProviderUtils.buildDataByProvider(query, listPageBillReport.getDatas());
