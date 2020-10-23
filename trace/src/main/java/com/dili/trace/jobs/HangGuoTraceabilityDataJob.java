@@ -1,9 +1,12 @@
 package com.dili.trace.jobs;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.ThirdPartySourceData;
 import com.dili.trace.domain.hangguo.HangGuoCommodity;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
+import com.dili.trace.service.HangGuoDataService;
 import com.dili.trace.service.HangGuoDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,9 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
     @Autowired
     HangGuoDataUtil hangGuoDataUtil;
+
+    @Autowired
+    HangGuoDataService hangGuoDataService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -161,7 +167,16 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     }
 
     private List<HangGuoCommodity> testCommodity() {
-        List<HangGuoCommodity> commodityList = new ArrayList<>();
+        ThirdPartySourceData que = new ThirdPartySourceData();
+        que.setName("");
+        que.setType(1);
+        ThirdPartySourceData commodityData=hangGuoDataService.getThirdPartySourceData(que);
+        if(null==commodityData){
+            return null;
+        }
+        String data = commodityData.getData();
+        List<HangGuoCommodity> commodityList = JSON.parseArray(data, HangGuoCommodity.class);
+        /*List<HangGuoCommodity> commodityList = new ArrayList<>();
         HangGuoCommodity commodity = new HangGuoCommodity();
         HangGuoCommodity commodity2 = new HangGuoCommodity();
         commodity.setFirstCateg("2");
@@ -178,7 +193,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         commodity2.setItemUnitName("陕西同12");
 
         commodityList.add(commodity);
-        commodityList.add(commodity2);
+        commodityList.add(commodity2);*/
         return commodityList;
     }
 

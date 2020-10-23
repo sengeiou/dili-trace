@@ -105,6 +105,10 @@ public enum ReportInterfaceEnum {
      * 杭果不合格处置数据上报
      */
     HANGGUO_DISPOSE("hangguo_dispose", "杭果不合格处置数据上报"),
+    /**
+     * 杭果交易数据上报
+     */
+    HANGGUO_TRADE("hangguo_trade", "杭果交易数据上报"),
     ;
 
     private String name;

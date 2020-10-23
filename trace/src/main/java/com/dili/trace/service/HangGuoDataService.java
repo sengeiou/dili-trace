@@ -125,8 +125,9 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
     List<CheckOrderData> getCheckOrderDataList(List<CheckOrder> headList);
 
     /**
-     * 获取检测主单
+     *
      * @param checkOrder
+     * @return
      */
     List<CheckOrder> getReportCheckOrderList(CheckOrder checkOrder);
 
@@ -136,4 +137,17 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      * @return
      */
     List<CheckOrderDispose> getReportCheckOrderDisposeList(CheckOrderDispose dispose);
+
+    /**
+     * 获取来源缓存表数据
+     * @param que
+     * @return
+     */
+    ThirdPartySourceData getThirdPartySourceData(ThirdPartySourceData que);
+
+    /**
+     * 插入缓存表数据
+     * @param addSource
+     */
+    void insertThirdPartySourceData(ThirdPartySourceData addSource);
 }

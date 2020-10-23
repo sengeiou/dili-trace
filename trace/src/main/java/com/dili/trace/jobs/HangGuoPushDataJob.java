@@ -12,7 +12,6 @@ import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.service.*;
-import com.sun.xml.internal.ws.api.message.HeaderList;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +23,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +58,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-       // pushData();
+        // pushData();
     }
 
     /**
@@ -92,6 +90,64 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             logger.error(e.getMessage(), e);
         }
     }
+
+    //@Scheduled(cron = "0 */5 * * * ?")
+    public void pushHangGuoTradeData() {
+        Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
+        try {
+            List<Market> marketList = marketService.list(new Market());
+            for (Market market : marketList) {
+                Long appId = market.getAppId();
+                String appSecret = market.getAppSecret();
+                String contextUrl = market.getContextUrl();
+                boolean isHangGuo = market.getName().indexOf("杭果") != -1 && appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl);
+                if (isHangGuo) {
+                    Date endTime = this.registerBillMapper.selectCurrentTime();
+                    //交易单
+                    this.pushFruitsTradeData(optUser, endTime, market);
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private BaseOutput pushFruitsTradeData(Optional<OperatorUser> optUser, Date endTime, Market market) {
+        Date updateTime = null;
+        boolean newPushFlag = true;
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.HANGGUO_DISPOSE.getCode(), marketId);
+
+        if (pushData == null) {
+            updateTime = endTime;
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName(ReportInterfaceEnum.HANGGUO_DISPOSE.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.HANGGUO_DISPOSE.getName());
+            pushData.setPushTime(endTime);
+            pushData.setMarketId(marketId);
+        } else {
+            updateTime = pushData.getPushTime();
+            newPushFlag = false;
+        }
+        List<ReportScanCodeOrderDto> partTrade = getFruitsTradeData(platformMarketId);
+        if (CollectionUtils.isEmpty(partTrade)) {
+            logger.info("Report Hangguo Unqualified Disposal IS NULL");
+            return BaseOutput.success("Report Hangguo Unqualified Disposal IS NULL");
+        }
+        BaseOutput baseOutput = this.dataReportService.reportScanCodeOrder(partTrade, optUser, market);
+        if (baseOutput.isSuccess()) {
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+        } else {
+            logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.HANGGUO_GOODS.getName(), baseOutput.getMessage());
+        }
+        return baseOutput;
+    }
+
+    private List<ReportScanCodeOrderDto> getFruitsTradeData(Long platformMarketId) {
+        return null;
+    }
+
 
     private BaseOutput pushFruitsUnqualifiedInspectionData(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
@@ -188,7 +244,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         Date updateTime = null;
         boolean newPushFlag = true;
         Long marketId = market.getId();
-        Long platformMarketId =  market.getPlatformMarketId();
+        Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.HANGGUO_INSPECTION.getCode(), marketId);
 
         if (pushData == null) {
@@ -223,7 +279,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         if (CollectionUtils.isEmpty(checkOrderList)) {
             return null;
         }
-        List<ReportInspectionDto> headList = transformationExample(checkOrderList,platformMarketId);
+        List<ReportInspectionDto> headList = transformationExample(checkOrderList, platformMarketId);
         String ids = getCheckIds(headList);
         Map<Long, List<ImageCert>> imageCertMap = getCheckOrderImgMap(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode(), ids);
 
@@ -324,7 +380,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         Date updateTime = null;
         boolean newPushFlag = true;
         Long marketId = market.getId();
-        Long platformMarketId =  market.getPlatformMarketId();
+        Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.HANGGUO_USER.getCode(), marketId);
 
         if (pushData == null) {
