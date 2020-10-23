@@ -24,6 +24,7 @@ import com.diligrp.manage.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Autowired
     TradeRequestService tradeRequestService;
 
+    @Autowired
+    RegisterHeadService registerHeadService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -147,6 +150,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 .map(String::toUpperCase).findFirst().orElse(null);
         registerBill.setPlate(plate);
         registerBill.setModified(new Date());
+        registerBill.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
 
         // 补单直接进门状态
         if (BillTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getBillType())) {
@@ -171,7 +175,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (imageCertList.isEmpty()) {
             throw new TraceBusinessException("请上传凭证");
         }
-        this.imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
+        imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
 
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId())
@@ -214,8 +218,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 throw new TraceBusinessException("车牌不能为空");
             }
         }
-        if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
-            throw new TraceBusinessException("商品类型错误");
+        if (!OrderTypeEnum.REGISTER_FORM_BILL.getCode().equals(registerBill.getOrderType())) {
+            if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
+                throw new TraceBusinessException("商品类型错误");
+            }
         }
         if (StringUtils.isBlank(registerBill.getName())) {
             logger.error("业户姓名不能为空");
@@ -323,7 +329,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBusinessException("请上传凭证");
         }
         // 保存图片
-        this.imageCertService.insertImageCert(imageCertList, input.getId());
+        imageCertService.insertImageCert(imageCertList, input.getId());
 
         this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(td -> {
             TradeDetail updatableRecord = new TradeDetail();
@@ -363,6 +369,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             bill.setOperatorName(op.getName());
             bill.setOperatorId(op.getId());
             bill.setOperationTime(new Date());
+            bill.setDeleteUser(op.getName());
+            bill.setDeleteTime(new Date());
         });
         this.updateSelective(bill);
         this.registerBillHistoryService.createHistory(billItem.getBillId());
@@ -586,7 +594,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     /**
      * 根据报备单数量更新用户状态到黑码
      *
-     * @param dto
+     * @param
      * @return
      */
     public void updateAllUserQrStatusByRegisterBillNum(Date createdStart, Date createdEnd) {
@@ -625,6 +633,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query) {
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn(query));
         query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         return this.listPageByExample(query);
     }
 
@@ -642,6 +651,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     public BasePage<RegisterBill> listPageAfterCheckinVerifyBill(RegisterBillDto query) {
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn(query));
         query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         return this.listPageByExample(query);
     }
 
@@ -716,7 +726,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 }).findFirst().orElse(new RegisterBill());
 
         List<ImageCert> imageCertList = StreamEx.ofNullable(registerBill.getId()).nonNull().flatMap(bid -> {
-            return this.imageCertService.findImageCertListByBillId(bid).stream();
+            return imageCertService.findImageCertListByBillId(bid).stream();
         }).toList();
 
         String upStreamName = StreamEx.ofNullable(registerBill.getUpStreamId()).nonNull().map(upStreamId -> {
@@ -792,4 +802,314 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }).toList();
     }
 
+    @Override
+    public List<Long> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+                                     Optional<OperatorUser> operatorUser, Long marketId) {
+        return StreamEx.of(registerBills).nonNull().map(dto -> {
+            logger.info("循环保存进门登记单:" + JSON.toJSONString(dto));
+            RegisterBill registerBill = dto.build(user);
+            registerBill.setMarketId(marketId);
+            registerBill.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
+            return this.createRegisterFormBill(registerBill, dto.getImageCertList(), operatorUser);
+        }).toList();
+    }
+
+    @Transactional
+    @Override
+    public Long createRegisterFormBill(RegisterBill registerBill, List<ImageCert> imageCertList,
+                                   Optional<OperatorUser> operatorUser) {
+        this.checkBill(registerBill);
+
+        registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
+        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
+        registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
+        registerBill.setVersion(1);
+        registerBill.setCreated(new Date());
+        registerBill.setIsCheckin(YnEnum.NO.getCode());
+        registerBill.setIsDeleted(TFEnum.FALSE.getCode());
+        operatorUser.ifPresent(op -> {
+            registerBill.setOperatorName(op.getName());
+            registerBill.setOperatorId(op.getId());
+            registerBill.setOperationTime(new Date());
+
+            registerBill.setCreateUser(op.getName());
+        });
+        registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
+        // 车牌转大写
+        String plate = StreamEx.ofNullable(registerBill.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
+                .map(String::toUpperCase).findFirst().orElse(null);
+        registerBill.setPlate(plate);
+        registerBill.setModified(new Date());
+
+        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(registerBill.getVerifyStatus())) {
+            registerBill.setIsCheckin(YnEnum.NO.getCode());
+        } else {
+            registerBill.setIsCheckin(YnEnum.YES.getCode());
+        }
+        if (BillVerifyStatusEnum.PASSED.equalsToCode(registerBill.getVerifyStatus())) {
+            registerBill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
+        }
+
+        // 保存车牌
+        this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
+
+        // 保存进门登记单
+        int result = super.saveOrUpdate(registerBill);
+        if (result == 0) {
+            logger.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
+            throw new TraceBusinessException("创建失败");
+        }
+        // 创建审核历史数据
+        this.registerBillHistoryService.createHistory(registerBill.getBillId());
+        // 保存图片
+        imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        if (imageCertList.isEmpty() && !BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
+            throw new TraceBusinessException("请上传凭证");
+        }
+        imageCertService.insertImageCert(imageCertList, registerBill.getBillId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+
+        // 创建/更新品牌信息并更新brandId字段值
+        this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId())
+                .ifPresent(brandId -> {
+                    RegisterBill bill = new RegisterBill();
+                    bill.setBrandId(brandId);
+                    bill.setId(registerBill.getId());
+                    this.updateSelective(bill);
+                });
+        this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
+
+        //更新主台账单剩余重量
+        if (BillTypeEnum.PARTIAL.getCode().equals(registerBill.getBillType())) {
+            RegisterHead registerHead = new RegisterHead();
+            registerHead.setCode(registerBill.getRegisterHeadCode());
+            List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
+            if(CollectionUtils.isNotEmpty(registerHeadList)){
+                registerHead = registerHeadList.get(0);
+            } else {
+                throw new TraceBusinessException("未找到主台账单");
+            }
+            //主台账单的剩余重量小于进门登记单的总重量时给出提示
+            BigDecimal remianWeight = registerHead.getRemainWeight();
+            BigDecimal billWeight = registerBill.getWeight();
+            if (remianWeight == null || (remianWeight != null && remianWeight.compareTo(billWeight) == -1)) {
+                throw new TraceBusinessException("进门登记单的总重量大于主台账单的剩余重量，不可新增");
+            }
+
+            registerHead.setRemainWeight(remianWeight.subtract(billWeight));
+            registerHeadService.updateSelective(registerHead);
+        }
+
+        //进门登记单新增消息
+        /*Integer businessType=MessageStateEnum.BUSINESS_TYPE_FORM_BILL.getCode();
+        if(BillTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getBillType())){
+            businessType=MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
+        }
+        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());*/
+        return registerBill.getId();
+    }
+
+    @Transactional
+    @Override
+    public Long doEditFormBill(RegisterBill input, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser) {
+        if (input == null || input.getId() == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterBill billItem = this.getAndCheckById(input.getId())
+                .orElseThrow(() -> new TraceBusinessException("数据不存在"));
+
+        if (BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
+                || BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+            // 待审核，或者已退回状态可以进行数据修改
+        } else {
+            throw new TraceBusinessException("当前状态不能修改数据");
+        }
+
+        // 车牌转大写
+        String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
+                .findFirst().orElse(null);
+        input.setPlate(plate);
+        // 保存车牌
+        this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
+        input.setModified(new Date());
+
+        input.setOperatorName(null);
+        input.setOperatorId(null);
+        input.setOperationTime(null);
+        input.setReason("");
+        operatorUser.ifPresent(op -> {
+            input.setOperatorName(op.getName());
+            input.setOperatorId(op.getId());
+            input.setOperationTime(new Date());
+        });
+
+        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(input.getVerifyStatus())) {
+            input.setIsCheckin(YnEnum.NO.getCode());
+        } else {
+            input.setIsCheckin(YnEnum.YES.getCode());
+        }
+        if (BillVerifyStatusEnum.PASSED.equalsToCode(input.getVerifyStatus())) {
+            input.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
+        }
+
+        this.updateSelective(input);
+        this.registerBillHistoryService.createHistory(billItem.getBillId());
+
+        imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        if (imageCertList.isEmpty() && !BillVerifyStatusEnum.RETURNED.equalsToCode(input.getVerifyStatus())) {
+            throw new TraceBusinessException("请上传凭证");
+        }
+        // 保存图片
+        imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+
+        this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
+        this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
+        return input.getId();
+    }
+
+    @Transactional
+    @Override
+    public Long doVerifyFormCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser) {
+        if (input == null || input.getId() == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterBill billItem = this.getAndCheckById(input.getId())
+                .orElseThrow(() -> new TraceBusinessException("数据不存在"));
+
+        this.doVerifyForm(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
+        //新增消息
+        //addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        return billItem.getId();
+    }
+
+    private void doVerifyForm(RegisterBill billItem, Integer verifyStatus, String reason,
+                          Optional<OperatorUser> operatorUser) {
+        BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
+                .orElseThrow(() -> new TraceBusinessException("数据错误"));
+
+        BillVerifyStatusEnum toVerifyState = BillVerifyStatusEnum.fromCode(verifyStatus)
+                .orElseThrow(() -> new TraceBusinessException("参数错误"));
+
+        logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
+                toVerifyState.getName());
+        if (!BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
+            throw new TraceBusinessException("当前状态不能进行数据操作");
+        }
+        if (BillVerifyStatusEnum.NONE == toVerifyState) {
+            throw new TraceBusinessException("不支持的操作");
+        }
+        if (fromVerifyState == toVerifyState) {
+            throw new TraceBusinessException("状态不能相同");
+        }
+
+        // 更新当前报务单数据
+        RegisterBill bill = new RegisterBill();
+        bill.setId(billItem.getId());
+        bill.setVerifyStatus(toVerifyState.getCode());
+        operatorUser.ifPresent(op -> {
+            bill.setOperatorId(op.getId());
+            bill.setOperatorName(op.getName());
+            bill.setOperationTime(new Date());
+        });
+
+        bill.setReason(StringUtils.trimToEmpty(reason));
+        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
+        if (BillVerifyStatusEnum.NO_PASSED == toVerifyState) {
+            bill.setIsCheckin(YnEnum.NO.getCode());
+        } else {
+            bill.setIsCheckin(YnEnum.YES.getCode());
+        }
+        if (BillVerifyStatusEnum.PASSED == toVerifyState) {
+            bill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
+        }
+        bill.setModified(new Date());
+        this.updateSelective(bill);
+        // 创建审核历史数据
+        this.registerBillHistoryService.createHistory(billItem.getId());
+
+        // 更新用户颜色码
+        this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
+    }
+
+    @Override
+    public BasePage<RegisterBill> listPageApi(RegisterBillDto input){
+
+        StringBuilder sql = new StringBuilder();
+        buildFormLikeKeyword(input).ifPresent(sql::append);
+        if(sql.length() > 0){
+            input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
+        }
+
+        BasePage<RegisterBill> registerBillBasePage = listPageByExample(input);
+        return registerBillBasePage;
+    }
+
+    private Optional<String> buildFormLikeKeyword(RegisterBillDto query) {
+        String sql = null;
+        if (StringUtils.isNotBlank(query.getKeyword())) {
+            String keyword = query.getKeyword().trim();
+            sql = "( product_name like '%" + keyword + "%'  OR user_id in(select id from `user` u where u.name like '%"
+                    + keyword + "%' OR legal_person like '%" + keyword + "%' OR phone like '%"
+                    + keyword + "%') OR third_party_code like '%"+keyword+"%' )";
+        }
+        return Optional.ofNullable(sql);
+    }
+
+    @Transactional
+    @Override
+    public Long doDelete(CreateRegisterBillInputDto dto, Long userId, Optional<OperatorUser> operatorUser) {
+        if (dto == null || userId == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        RegisterBill billItem = this.getAndCheckById(dto.getBillId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+//        if (!userId.equals(billItem.getUserId())) {
+//            throw new TraceBusinessException("没有权限删除数据");
+//        }
+//        if (YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+//            throw new TraceBusinessException("不能删除已进门数据");
+//        }
+        if (BillVerifyStatusEnum.NO_PASSED.equalsToCode(billItem.getVerifyStatus())) {
+            throw new TraceBusinessException("不能删除审核未通过数据");
+        }
+        RegisterBill bill = new RegisterBill();
+        bill.setId(billItem.getBillId());
+        bill.setIsDeleted(dto.getIsDeleted());
+
+        operatorUser.ifPresent(op -> {
+            bill.setOperatorName(op.getName());
+            bill.setOperatorId(op.getId());
+            bill.setOperationTime(new Date());
+            bill.setDeleteUser(op.getName());
+            bill.setDeleteTime(new Date());
+        });
+        this.updateSelective(bill);
+        this.registerBillHistoryService.createHistory(billItem.getBillId());
+        this.userQrHistoryService.rollbackUserQrStatus(bill.getId(), billItem.getUserId());
+        return dto.getBillId();
+    }
+
+    @Override
+    public List<VerifyStatusCountOutputDto> countByVerifyStatuseFormBill(RegisterBillDto query) {
+        if (query == null) {
+            throw new TraceBusinessException("参数错误");
+        }
+        query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
+        //query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
+        return this.countByVerifyStatus(query);
+    }
+
+    private String dynamicSQLFormBill(RegisterBillDto query) {
+        List<String> sqlList = new ArrayList<>();
+        this.buildFormLikeKeyword(query).ifPresent(sql -> {
+            sqlList.add(sql);
+        });
+        sqlList.add("(is_checkin=" + YnEnum.NO.getCode()
+                + " OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
+                + BillVerifyStatusEnum.PASSED.getCode() + ") OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
+                + BillVerifyStatusEnum.RETURNED.getCode() +" ))");
+
+        return StreamEx.of(sqlList).joining(" AND ");
+    }
 }

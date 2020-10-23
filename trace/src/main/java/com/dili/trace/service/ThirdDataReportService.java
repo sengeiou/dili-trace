@@ -32,7 +32,7 @@ public class ThirdDataReportService {
     private Integer userStatusNormal = 1;
     private Integer userStatusDelete = -1;
 
-    public ReportUserDto reprocessUser(User info) {
+    public ReportUserDto reprocessUser(User info, Long platformMarketId) {
         ReportUserDto reportUser = new ReportUserDto();
         reportUser.setAccountName(info.getName());
         //个人10 企业20 转换 1企业2个人
@@ -58,7 +58,7 @@ public class ThirdDataReportService {
         reportUser.setCustType(userType);
         reportUser.setLegal(info.getLegalPerson());
         reportUser.setLicense(info.getLicense());
-        reportUser.setMarketId(String.valueOf(marketId));
+        reportUser.setMarketId(platformMarketId);
         Integer userStatus = 0;
         //目标系统 0：正常，1：冻结：2:作废
         //现有 yn为1为正常/-1为删除 state为0禁用/1启用，
@@ -125,10 +125,20 @@ public class ThirdDataReportService {
             }
             userImgList.add(imgDto);
         }
+        //证件照
+        if (StringUtils.isNotBlank(info.getCredentialUrl())) {
+            String url = info.getCredentialUrl();
+            ReportUserImgDto imgDto = new ReportUserImgDto();
+            imgDto.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
+            if (StringUtils.isNotBlank(url)) {
+                imgDto.setPicUrl(baseWebPath + url);
+            }
+            userImgList.add(imgDto);
+        }
         return userImgList;
     }
 
-    public List<ReportQrCodeDto> reprocessUserQrCode(List<UserQrHistory> list) {
+    public List<ReportQrCodeDto> reprocessUserQrCode(List<UserQrHistory> list, Long platformMarketId) {
         Map<Long, List<UserQrHistory>> groupByPriceMap = StreamEx.of(list).nonNull().collect(Collectors.groupingBy(UserQrHistory::getUserId));
         List<ReportQrCodeDto> qrCodeDtos = new ArrayList<>();
         for (Map.Entry<Long, List<UserQrHistory>> map : groupByPriceMap.entrySet()) {
@@ -139,7 +149,7 @@ public class ThirdDataReportService {
             ReportQrCodeDto reportQrCodeDto = new ReportQrCodeDto();
             reportQrCodeDto.setThirdAccId(String.valueOf(userId));
             reportQrCodeDto.setCode(codeContent);
-            reportQrCodeDto.setMarketId(String.valueOf(marketId));
+            reportQrCodeDto.setMarketId(String.valueOf(platformMarketId));
 
             List<UserQrHistory> sortQrList = map.getValue();
             //按修改时间排序

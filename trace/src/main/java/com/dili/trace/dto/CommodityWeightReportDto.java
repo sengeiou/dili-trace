@@ -15,6 +15,7 @@ public class CommodityWeightReportDto {
     private String likeVarietyName;
     private Integer approachBillCount;
     private BigDecimal weight;
+    private Long marketId;
 
     public Date getCreated() {
         return created;
@@ -70,5 +71,13 @@ public class CommodityWeightReportDto {
 
     public void setWeight(BigDecimal weight) {
         this.weight = weight;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
     }
 }

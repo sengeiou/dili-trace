@@ -17,6 +17,7 @@ import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.Category;
+import com.dili.trace.domain.Market;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
@@ -32,13 +33,10 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
-import com.dili.trace.service.CategoryService;
-import com.dili.trace.service.DataReportService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.ThirdPartyReportDataService;
-import com.dili.trace.service.UserService;
+import com.dili.trace.service.*;
 import com.google.common.collect.Lists;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,20 +52,27 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(ThirdPartyReportJob.class);
     @Autowired
     DataReportService dataReportService;
+
     @Autowired
     ThirdPartyReportDataService thirdPartyReportDataService;
 
     @Autowired
     UserService userService;
+
     @Autowired
     UserMapper userMapper;
+
     @Autowired
     CategoryService categoryService;
+
     @Autowired
     RegisterBillMapper registerBillMapper;
 
     @Autowired
     RegisterBillService registerBillService;
+
+    @Autowired
+    private MarketService marketService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -92,10 +97,18 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     public void reportData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            this.marketCount(optUser);
-            this.regionCount(optUser);
-            this.reportCount(optUser);
-            this.codeCount(optUser);
+            List<Market> marketList = marketService.list(new Market());
+            for (Market market : marketList) {
+                Long appId = market.getAppId();
+                String appSecret = market.getAppSecret();
+                String contextUrl = market.getContextUrl();
+                if (appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl)) {
+                    this.marketCount(optUser, market);
+                    this.regionCount(optUser, market);
+                    this.reportCount(optUser, market);
+                    this.codeCount(optUser, market);
+                }
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -118,12 +131,15 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         logger.info("---结束清理数据---");
     }
 
-    public BaseOutput marketCount(Optional<OperatorUser> optUser) {
+    public BaseOutput marketCount(Optional<OperatorUser> optUser, Market market) {
+        Long marketId = market.getId();
         User query = DTOUtils.newDTO(User.class);
+        query.setMarketId(marketId);
         query.setYn(YesOrNoEnum.YES.getCode());
         Integer userCount = this.userService.countUser(query);
 
         Category category = new Category();
+        category.setMarketId(marketId);
         Integer categoryCount = this.categoryService.count(category);
 
         MarketCountDto marketCountDto = new MarketCountDto();
@@ -131,26 +147,27 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         marketCountDto.setSubjectCount(categoryCount == null ? 0 : categoryCount);
         marketCountDto.setUpdateTime(new Date());
 
-        return this.dataReportService.marketCount(marketCountDto, optUser);
+        return this.dataReportService.marketCount(marketCountDto, optUser, market);
 
     }
 
-    public BaseOutput reportCount(Optional<OperatorUser> optUser, Integer checkBatch) {
+    public BaseOutput reportCount(Optional<OperatorUser> optUser, Integer checkBatch, Market market) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startDateTime= now.withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime endDateTime = now;
-        return this.dataReportService.reportCount(optUser,startDateTime,endDateTime, 0);
+        return this.dataReportService.reportCount(optUser,startDateTime,endDateTime, 0, market);
 
     }
 
-    public BaseOutput reportCount(Optional<OperatorUser> optUser) {
-        return this.reportCount(optUser, null);
+    public BaseOutput reportCount(Optional<OperatorUser> optUser, Market market) {
+        return this.reportCount(optUser, null, market);
 
     }
 
-    public BaseOutput regionCount(Optional<OperatorUser> optUser) {
+    public BaseOutput regionCount(Optional<OperatorUser> optUser, Market market) {
 
         RegisterBillDto billDto = new RegisterBillDto();
+        billDto.setMarketId(market.getId());
         Date updateTime = new Date();
         List<RegionCountInfo> infoList = StreamEx.ofNullable(this.registerBillMapper.selectRegionCountData(billDto))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
@@ -160,13 +177,13 @@ public class ThirdPartyReportJob implements CommandLineRunner {
 
         RegionCountDto regionCountDto = new RegionCountDto();
         regionCountDto.setInfo(infoList);
-        return this.dataReportService.regionCount(regionCountDto, optUser);
+        return this.dataReportService.regionCount(regionCountDto, optUser, market);
 
     }
 
-    public BaseOutput codeCount(Optional<OperatorUser> optUser) {
+    public BaseOutput codeCount(Optional<OperatorUser> optUser, Market market) {
         List<UserOutput> userOutputList = this.userMapper.groupByQrStatus(Lists.newArrayList(
-                UserQrStatusEnum.GREEN.getCode(), UserQrStatusEnum.YELLOW.getCode(), UserQrStatusEnum.RED.getCode()));
+                UserQrStatusEnum.GREEN.getCode(), UserQrStatusEnum.YELLOW.getCode(), UserQrStatusEnum.RED.getCode()), market.getId());
         Map<Integer, Integer> qrStatusMap = StreamEx.of(userOutputList).toMap(UserOutput::getQrStatus,
                 UserOutput::getCnt);
         Date updateTime = new Date();
@@ -179,10 +196,12 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         User yellowQuery = DTOUtils.newDTO(User.class);
         yellowQuery.setYn(YesOrNoEnum.YES.getCode());
         yellowQuery.setQrStatus(UserQrStatusEnum.YELLOW.getCode());
+        yellowQuery.setMarketId(market.getId());
 
         User redQuery = DTOUtils.newDTO(User.class);
         redQuery.setYn(YesOrNoEnum.YES.getCode());
         redQuery.setQrStatus(UserQrStatusEnum.RED.getCode());
+        redQuery.setMarketId(market.getId());
 
         List<WaringInfoDto> warninfoList = StreamEx.of(this.userService.listByExample(yellowQuery))
                 .append(this.userService.listByExample(redQuery)).map(u -> {
@@ -199,7 +218,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
                 }).toList();
 
         codeCountDto.setWarningInfo(warninfoList);
-        return this.dataReportService.codeCount(codeCountDto, optUser);
+        return this.dataReportService.codeCount(codeCountDto, optUser, market);
 
     }
 

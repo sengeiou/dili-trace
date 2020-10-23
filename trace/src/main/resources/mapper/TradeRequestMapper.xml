@@ -39,6 +39,9 @@
       <if test="modifiedStart != null">
         <![CDATA[AND o.modified >#{modifiedStart}]]>
       </if>
+      <if test="marketId != null">
+          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
+      </if>
   </select>
 
   <select id="selectDeliveryOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportDeliveryOrderDto">
@@ -52,6 +55,9 @@
       </if>
       <if test="modifiedStart != null">
         <![CDATA[AND o.modified >#{modifiedStart}]]>
+      </if>
+      <if test="marketId != null">
+          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
       </if>
   </select>
 
@@ -77,6 +83,9 @@
     <if test="modifiedStart != null">
       <![CDATA[AND r.modified >#{modifiedStart}]]>
     </if>
+      <if test="marketId != null">
+          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
+      </if>
   </select>
 
   <select id="selectDeletedDeliveryOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportDeletedOrderDto">
@@ -90,6 +99,9 @@
     <if test="modifiedStart != null">
       <![CDATA[AND r.modified >#{modifiedStart}]]>
     </if>
+      <if test="marketId != null">
+          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
+      </if>
   </select>
 
   <select id="queryPurchaseGoodsReportList" parameterType="com.dili.trace.dto.PurchaseGoodsReportQueryDto"
@@ -107,9 +119,13 @@
       <if test="productName != null and productName != ''">
           AND t.product_name LIKE #{productName}
       </if>
+      <if test="marketId != null">
+          AND t.buyer_market_id = #{marketId} AND t.seller_market_id = #{marketId}
+      </if>
       AND t.`return_status`!=20
       AND t.trade_order_id = o.id
       AND u.id = t.buyer_id
+      AND t.buyer_market_id = u.market_id
       AND u.state=1
       AND u.validate_state=40
       AND u.yn=1
@@ -135,9 +151,13 @@
       <if test="phone != null and phone != ''">
           and user.phone like #{phone}
       </if>
+      <if test="marketId != null">
+          AND t.buyer_market_id = #{marketId} AND t.seller_market_id = #{marketId}
+      </if>
       AND t.`return_status`!=20
       AND t.trade_order_id = o.id
       AND user.id = t.buyer_id
+      AND user.market_id = t.buyer_market_id
       AND user.state=1
       AND user.validate_state=40
       AND user.yn=1

@@ -6,6 +6,16 @@ public class GoodsDto {
     private String thirdGoodsId;
     private String thirdSmallClassId;
 
+    private String goodsCode;
+
+    public String getGoodsCode() {
+        return goodsCode;
+    }
+
+    public void setGoodsCode(String goodsCode) {
+        this.goodsCode = goodsCode;
+    }
+
     public String getMarketId() {
         return marketId;
     }

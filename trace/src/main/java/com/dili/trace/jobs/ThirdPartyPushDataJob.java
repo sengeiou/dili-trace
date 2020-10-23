@@ -19,6 +19,7 @@ import com.dili.trace.enums.ReportInterfaceEnum;
 import com.dili.trace.enums.ReportInterfacePicEnum;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.service.*;
+import com.dili.trace.util.MarketUtil;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Autowired
     private UpStreamService upStreamService;
 
+    @Autowired
+    private MarketService marketService;
+
     @Value("${current.baseWebPath}")
     private String baseWebPath;
     @Value("${push.batch.size}")
@@ -74,7 +78,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     /**
      * marketId统一使用330110800
      */
-    private String marketId = "330110800";
+    //private String marketId = "330110800";
 
     @Override
     public void run(String... args) throws Exception {
@@ -87,37 +91,45 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            Date endTime = this.registerBillMapper.selectCurrentTime();
-            // 商品大类新增/修改
-            this.pushBigCategory(optUser);
-            // 商品二级类目新增/修改
-            this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser, endTime);
-            // 商品新增/修改
-            this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser, endTime);
-            // 上游新增编辑
-            this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser, endTime);
-            // 下游新增/编辑
-            this.pushStream(ReportInterfaceEnum.UPSTREAM_DOWN.getCode(), ReportInterfaceEnum.UPSTREAM_DOWN.getName(), 20, optUser, endTime);
-            // 进门
-            this.reportCheckIn(optUser, endTime);
-            // 配送交易
-            this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getCode(), ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getName(), 10, optUser, endTime);
-            // 配送交易作废
-            this.reportOrderDelete(ReportInterfaceEnum.TRADE_REQUEST_DELIVERY_DELETE.getCode(), ReportInterfaceEnum.TRADE_REQUEST_DELIVERY_DELETE.getName(),
-                    10, optUser, endTime);
-            // 扫码交易
-            this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_SCAN.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN.getName(), 20, optUser, endTime);
-            // 扫码交易作废
-            this.reportOrderDelete(ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getName(),
-                    20, optUser, endTime);
-            //食安码新增/修改
-            this.pushUserQrCode(optUser, endTime);
-            //经营户新增/修改
-            this.pushUserSaveUpdate(optUser, endTime);
-            //经营户作废
-            this.pushUserDelete(optUser, endTime);
-            // 报备作废
-            this.reportRegisterBillDelete(optUser, endTime);
+            List<Market> marketList = marketService.list(new Market());
+            for (Market market : marketList) {
+                Long appId = market.getAppId();
+                String appSecret = market.getAppSecret();
+                String contextUrl = market.getContextUrl();
+                if(appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl)){
+                    Date endTime = this.registerBillMapper.selectCurrentTime();
+                    // 商品大类新增/修改
+                    this.pushBigCategory(optUser, market);
+                    // 商品二级类目新增/修改
+                    this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser, endTime, market);
+                    // 商品新增/修改
+                    this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser, endTime, market);
+                    // 上游新增编辑
+                    this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser, endTime, market);
+                    // 下游新增/编辑
+                    this.pushStream(ReportInterfaceEnum.UPSTREAM_DOWN.getCode(), ReportInterfaceEnum.UPSTREAM_DOWN.getName(), 20, optUser, endTime, market);
+                    // 进门
+                    this.reportCheckIn(optUser, endTime, market);
+                    // 配送交易
+                    this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getCode(), ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getName(), 10, optUser, endTime, market);
+                    // 配送交易作废
+                    this.reportOrderDelete(ReportInterfaceEnum.TRADE_REQUEST_DELIVERY_DELETE.getCode(), ReportInterfaceEnum.TRADE_REQUEST_DELIVERY_DELETE.getName(),
+                            10, optUser, endTime, market);
+                    // 扫码交易
+                    this.reportOrder(ReportInterfaceEnum.TRADE_REQUEST_SCAN.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN.getName(), 20, optUser, endTime, market);
+                    // 扫码交易作废
+                    this.reportOrderDelete(ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getCode(), ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getName(),
+                            20, optUser, endTime, market);
+                    //食安码新增/修改
+                    this.pushUserQrCode(optUser, endTime, market);
+                    //经营户新增/修改
+                    this.pushUserSaveUpdate(optUser, endTime, market);
+                    //经营户作废
+                    this.pushUserDelete(optUser, endTime, market);
+                    // 报备作废
+                    this.reportRegisterBillDelete(optUser, endTime, market);
+                }
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -127,9 +139,17 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public void pushRegisterBillData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            Date endTime = this.registerBillMapper.selectCurrentTime();
-            // 报备新增/编辑
-            this.reportRegisterBill(optUser, endTime);
+            List<Market> marketList = marketService.list(new Market());
+            for (Market market : marketList) {
+                Long appId = market.getAppId();
+                String appSecret = market.getAppSecret();
+                String contextUrl = market.getContextUrl();
+                if (appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl)) {
+                    Date endTime = this.registerBillMapper.selectCurrentTime();
+                    // 报备新增/编辑
+                    this.reportRegisterBill(optUser, endTime, market);
+                }
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -140,11 +160,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
      *
      * @param optUser 操作人信息
      */
-    private void pushBigCategory(Optional<OperatorUser> optUser) {
+    private void pushBigCategory(Optional<OperatorUser> optUser, Market market) {
         String tableName = ReportInterfaceEnum.BIG_CATEGORY.getCode();
         String interfaceName = ReportInterfaceEnum.BIG_CATEGORY.getName();
+        Long marketId = market.getId();
         ThirdPartyPushData thirdPartyPushData =
-                thirdPartyPushDataService.getThredPartyPushData(tableName);
+                thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         if (thirdPartyPushData == null) {
             PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
             List<CategoryDto> categoryDtos = new ArrayList<>();
@@ -157,11 +178,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 i++;
             }
             ;
-            BaseOutput baseOutput = this.dataReportService.reportCategory(categoryDtos, optUser);
+            BaseOutput baseOutput = this.dataReportService.reportCategory(categoryDtos, optUser, market);
             if (baseOutput.isSuccess()) {
                 ThirdPartyPushData pushData = new ThirdPartyPushData();
                 pushData.setTableName(tableName);
                 pushData.setInterfaceName(interfaceName);
+                pushData.setMarketId(marketId);
                 this.thirdPartyPushDataService.updatePushTime(pushData);
             } else {
                 logger.error("上报:商品大类新增/修改 失败，原因:{}", baseOutput.getMessage());
@@ -175,17 +197,20 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
      * @param optUser
      */
     private void pushCategory(String tableName, String interfaceName,
-                              Integer level, Optional<OperatorUser> optUser, Date endTime) {
+                              Integer level, Optional<OperatorUser> optUser, Date endTime, Market market) {
         String categorySmallClass = "category_smallClass";
         String categoryGoods = "category_goods";
+        Long marketId = market.getId();
         ThirdPartyPushData thirdPartyPushData =
-                thirdPartyPushDataService.getThredPartyPushData(tableName);
+                thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Category category = new Category();
         category.setLevel(level);
+        category.setMarketId(marketId);
         List<Category> categories = categoryService.list(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
+        pushData.setMarketId(marketId);
         BaseOutput baseOutput = new BaseOutput();
         if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
@@ -207,7 +232,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 i++;
             }
             if (categoryDtos.size() > 0) {
-                baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser);
+                baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser, market);
                 if (baseOutput.isSuccess()) {
                     this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
                 } else {
@@ -228,7 +253,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 }
             });
             if (categoryDtos.size() > 0) {
-                baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser);
+                baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser, market);
                 if (baseOutput.isSuccess()) {
                     this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
                 } else {
@@ -238,17 +263,20 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
-    private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser, Date endTime) {
+    private BaseOutput pushUserQrCode(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
         boolean newPushFlag = true;
         Integer isValidate = 1;
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER_QR_HISTORY.getCode());
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER_QR_HISTORY.getCode(), marketId);
         if (pushData == null) {
             updateTime = endTime;
             pushData = new ThirdPartyPushData();
             pushData.setTableName(ReportInterfaceEnum.USER_QR_HISTORY.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.USER_QR_HISTORY.getName());
             pushData.setPushTime(endTime);
+            pushData.setMarketId(marketId);
         } else {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
@@ -262,6 +290,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Map<Long, String> userMap = new HashMap<>(16);
         User user = DTOUtils.newDTO(User.class);
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
+        user.setMarketId(marketId);
 
         allQrHistories = userQrHistoryService.listByExample(null);
         StreamEx.ofNullable(userService.list(user)).nonNull().flatCollection(Function.identity()).forEach(u -> {
@@ -310,7 +339,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             }
         });
 
-        List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(resultQrHisList);
+        List<ReportQrCodeDto> pushList = thirdDataReportService.reprocessUserQrCode(resultQrHisList, platformMarketId);
         logger.info("ReportQrCodeDto ： " + JSON.toJSONString(pushList));
         // 分批上报--由于数据结构较为庞大与其他分批不同，单独分批
         BaseOutput baseOutput = new BaseOutput("200", "成功");
@@ -322,7 +351,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             Integer endPos = i == part ? pushList.size() : (i + 1) * batchSize;
             List<ReportQrCodeDto> partBills = pushList.subList(i * batchSize, endPos);
             if (CollectionUtils.isNotEmpty(partBills)) {
-                baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser);
+                baseOutput = this.dataReportService.reportUserQrCode(partBills, optUser, market);
             }
         }
 
@@ -334,20 +363,23 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private BaseOutput pushUserSaveUpdate(Optional<OperatorUser> optUser, Date endTime) {
+    private BaseOutput pushUserSaveUpdate(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
         boolean newPushFlag = true;
         Integer normalUserType = 1;
         Integer isPush = 1;
         Integer pushed = -1;
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
         List<ReportUserDto> reportUserDtoList = new ArrayList<>();
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER.getCode());
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER.getCode(), marketId);
         if (pushData == null) {
             updateTime = endTime;
             pushData = new ThirdPartyPushData();
             pushData.setTableName(ReportInterfaceEnum.USER.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.USER.getName());
             pushData.setPushTime(endTime);
+            pushData.setMarketId(marketId);
         } else {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
@@ -360,11 +392,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //1为需要上报
         queUser.setIsPush(isPush);
         queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state = 40");
+        queUser.setMarketId(marketId);
         StreamEx.ofNullable(this.userService.listByExample(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
             //push后修改了用户信息
             if (finalNewPushFlag || finalUpdateTime.compareTo(info.getModified()) < 0) {
-                ReportUserDto reportUser = thirdDataReportService.reprocessUser(info);
+                ReportUserDto reportUser = thirdDataReportService.reprocessUser(info, platformMarketId);
                 reportUserDtoList.add(reportUser);
                 return true;
             }
@@ -381,7 +414,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             Integer endPos = i == part ? reportUserDtoList.size() : (i + 1) * batchSize;
             List<ReportUserDto> partBills = reportUserDtoList.subList(i * batchSize, endPos);
             if (CollectionUtils.isNotEmpty(partBills)) {
-                baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser);
+                baseOutput = this.dataReportService.reportUserSaveUpdate(partBills, optUser, market);
                 List<Long> userIdList = StreamEx.ofNullable(partBills)
                         .nonNull().flatCollection(Function.identity()).map(userDto -> Long.valueOf(userDto.getThirdAccId())).toList();
                 if (CollectionUtils.isNotEmpty(userIdList)) {
@@ -397,16 +430,19 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private BaseOutput pushUserDelete(Optional<OperatorUser> optUser, Date endTime) {
+    private BaseOutput pushUserDelete(Optional<OperatorUser> optUser, Date endTime, Market market) {
         Date updateTime = null;
         boolean newPushFlag = true;
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER_DELETE.getCode());
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER_DELETE.getCode(), marketId);
         if (pushData == null) {
             updateTime = endTime;
             pushData = new ThirdPartyPushData();
             pushData.setTableName(ReportInterfaceEnum.USER_DELETE.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.USER_DELETE.getName());
             pushData.setPushTime(updateTime);
+            pushData.setMarketId(marketId);
         } else {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
@@ -418,7 +454,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //没有push过则将所有作废记录push
         if (finalNewPushFlag) {
             //首次push不需要将原作废经营户上报
-            ThirdPartyPushData pushUser = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER.getCode());
+            ThirdPartyPushData pushUser = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.USER.getCode(), marketId);
             //未push经营户新增修改数据时不上报
             if (null == pushUser) {
                 queUser.mset(IDTO.AND_CONDITION_EXPR, " id = -1 ");
@@ -430,12 +466,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         } else {
             queUser.mset(IDTO.AND_CONDITION_EXPR, " yn = -1 and validate_state <> 10 and modified > '" + sqlPushTime + "'");
         }
+        queUser.setMarketId(marketId);
         List<User> userList = this.userService.listByExample(queUser);
         // 分批上报
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         if (CollectionUtils.isNotEmpty(userList)) {
             ReportUserDeleteDto reportUser = new ReportUserDeleteDto();
-            reportUser.setMarketId(marketId);
+            reportUser.setMarketId(String.valueOf(platformMarketId));
             List<String> thirdAccIds = new ArrayList<>();
             StreamEx.ofNullable(userList)
                     .nonNull().flatCollection(Function.identity()).map(info -> {
@@ -446,7 +483,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             logger.info("thirdAccIds:" + JSON.toJSONString(thirdAccIds));
             reportUser.setThirdAccIds(String.join(",", thirdAccIds));
             // 分批上报
-            baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser);
+            baseOutput = this.dataReportService.reportUserDelete(reportUser, optUser, market);
             if (baseOutput.isSuccess()) {
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             } else {
@@ -459,10 +496,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     }
 
 
-    public BaseOutput reportRegisterBill(Optional<OperatorUser> optUser, Date endTime) {
+    public BaseOutput reportRegisterBill(Optional<OperatorUser> optUser, Date endTime, Market market) {
         String tableName = ReportInterfaceEnum.REGISTER_BILL.getCode();
         String interfaceName = ReportInterfaceEnum.REGISTER_BILL.getName();
         Integer noDelete = 0;
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
         // verify_status "待审核"0, "已退回10, "已通过20, "不通过30
         // approvalStatus 审核状态 0-默认未审核 1-通过 2-退回 3-未通过
         Map<Integer, Integer> statusMap = new HashMap<>(16);
@@ -472,10 +511,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         statusMap.put(30, 3);
 
         // 查询待上报的报备单
-        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         RegisterBillDto billDto = new RegisterBillDto();
         billDto.setIsDeleted(noDelete);
         billDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        billDto.setMarketId(marketId);
         if (thirdPartyPushData != null) {
             billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
         }
@@ -484,7 +524,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 .nonNull().flatCollection(Function.identity()).map(bill -> {
                     // 状态映射
                     bill.setApprovalStatus(statusMap.get(bill.getApprovalStatus()));
-                    bill.setMarketId(marketId);
+                    bill.setMarketId(String.valueOf(platformMarketId));
                     billIdList.add(Long.valueOf(bill.getThirdEnterId()));
                     return bill;
                 }).toList();
@@ -505,12 +545,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? billList.size() : (i + 1) * batchSize;
             List<ReportRegisterBillDto> partBills = billList.subList(i * batchSize, endPos);
-            baseOutput = this.dataReportService.reportRegisterBill(partBills, optUser);
+            baseOutput = this.dataReportService.reportRegisterBill(partBills, optUser, market);
         }
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName, marketId) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.REGISTER_BILL.getName(), baseOutput.getMessage());
@@ -537,14 +577,16 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         });
     }
 
-    public BaseOutput reportCheckIn(Optional<OperatorUser> optUser, Date endTime) {
-
+    public BaseOutput reportCheckIn(Optional<OperatorUser> optUser, Date endTime, Market market) {
         String tableName = ReportInterfaceEnum.CHECK_INOUT_RECORD.getCode();
         String interfaceName = ReportInterfaceEnum.CHECK_INOUT_RECORD.getName();
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
 
         // 查询待上报的进门单
-        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         RegisterBillDto queryDto = new RegisterBillDto();
+        queryDto.setMarketId(marketId);
         queryDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
         if (thirdPartyPushData != null) {
             queryDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
@@ -552,7 +594,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 
         List<ReportCheckInDto> checkInList = StreamEx.ofNullable(this.checkinOutRecordMapper.selectCheckInReport(queryDto))
                 .nonNull().flatCollection(Function.identity()).map(checkIn -> {
-                    checkIn.setMarketId(marketId);
+                    checkIn.setMarketId(String.valueOf(platformMarketId));
                     return checkIn;
                 }).toList();
 
@@ -569,12 +611,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? checkInList.size() : (i + 1) * batchSize;
             List<ReportCheckInDto> partBills = checkInList.subList(i * batchSize, endPos);
-            baseOutput = this.dataReportService.reportCheckIn(partBills, optUser);
+            baseOutput = this.dataReportService.reportCheckIn(partBills, optUser, market);
         }
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName, marketId) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.CHECK_INOUT_RECORD.getName(), baseOutput.getMessage());
@@ -582,9 +624,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    public BaseOutput reportOrder(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser, Date endTime) {
+    public BaseOutput reportOrder(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser, Date endTime, Market market) {
         // 查询待上报的交易单
-        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        Long marketId = market.getId();
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         PushDataQueryDto queryDto = new PushDataQueryDto();
         queryDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
         queryDto.setOrderType(type);
@@ -592,11 +635,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             queryDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
         }
 
-        BaseOutput baseOutput = reportOrderLogic(type, optUser, queryDto);
+        BaseOutput baseOutput = reportOrderLogic(type, optUser, queryDto, market);
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName, marketId) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         } else {
             String name = type == 10 ? ReportInterfaceEnum.TRADE_REQUEST_DELIVERY.getName() : ReportInterfaceEnum.TRADE_REQUEST_SCAN.getName();
@@ -605,15 +648,17 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private BaseOutput reportOrderLogic(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto) {
+    private BaseOutput reportOrderLogic(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto, Market market) {
         BaseOutput baseOutput = new BaseOutput("200", "成功");
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
         List<String> requestIdList = new ArrayList<>();
+        queryDto.setMarketId(marketId);
         // 10-配送交易 20-扫码交易
         if (type == 10) {
-
             List<ReportDeliveryOrderDto> deliveryOrderList = StreamEx.ofNullable(this.tradeRequestMapper.selectDeliveryOrderReport(queryDto))
                     .nonNull().flatCollection(Function.identity()).map(order -> {
-                        order.setMarketId(marketId);
+                        order.setMarketId(String.valueOf(platformMarketId));
                         order.setThirdQrCode(this.baseWebPath + "/user?userId=" + order.getThirdDsId());
                         requestIdList.add(order.getThirdOrderId());
                         return order;
@@ -637,12 +682,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             for (int i = 0; i <= part; i++) {
                 Integer endPos = i == part ? deliveryOrderList.size() : (i + 1) * batchSize;
                 List<ReportDeliveryOrderDto> partBills = deliveryOrderList.subList(i * batchSize, endPos);
-                baseOutput = this.dataReportService.reportDeliveryOrder(partBills, optUser);
+                baseOutput = this.dataReportService.reportDeliveryOrder(partBills, optUser, market);
             }
         } else {
             List<ReportScanCodeOrderDto> scanOrderList = StreamEx.ofNullable(this.tradeRequestMapper.selectScanOrderReport(queryDto))
                     .nonNull().flatCollection(Function.identity()).map(order -> {
-                        order.setMarketId(marketId);
+                        order.setMarketId(String.valueOf(platformMarketId));
                         order.setThirdQrCode(this.baseWebPath + "/user?userId=" + order.getThirdBuyId());
                         requestIdList.add(order.getThirdOrderId());
                         return order;
@@ -666,18 +711,20 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? scanOrderList.size() : (i + 1) * batchSize;
                 List<ReportScanCodeOrderDto> partBills = scanOrderList.subList(i * batchSize, endPos);
 
-                baseOutput = this.dataReportService.reportScanCodeOrder(partBills, optUser);
+                baseOutput = this.dataReportService.reportScanCodeOrder(partBills, optUser, market);
             }
         }
         return baseOutput;
     }
 
-    public BaseOutput reportOrderDelete(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser, Date endTime) {
+    public BaseOutput reportOrderDelete(String tableName, String interfaceName, Integer type, Optional<OperatorUser> optUser, Date endTime, Market market) {
         // 查询待上报的交易单(退回单)
-        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        Long marketId = market.getId();
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         PushDataQueryDto queryDto = new PushDataQueryDto();
         queryDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
         queryDto.setOrderType(type);
+        queryDto.setMarketId(marketId);
         if (thirdPartyPushData != null) {
             queryDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
         }
@@ -685,14 +732,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         // 10-配送交易 20-扫码交易
         if (type == 20) {
-            baseOutput = reportDeletedScanCodeOrder(type, optUser, queryDto);
+            baseOutput = reportDeletedScanCodeOrder(type, optUser, queryDto, market);
         } else {
-            baseOutput = reportDeletedDeliveryOrder(type, optUser, queryDto);
+            baseOutput = reportDeletedDeliveryOrder(type, optUser, queryDto, market);
         }
 
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName, marketId) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         } else {
             String name = type == 10 ? ReportInterfaceEnum.TRADE_REQUEST_DELIVERY_DELETE.getName() : ReportInterfaceEnum.TRADE_REQUEST_SCAN_DELETE.getName();
@@ -701,35 +748,39 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    private BaseOutput reportDeletedScanCodeOrder(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto) {
+    private BaseOutput reportDeletedScanCodeOrder(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto, Market market) {
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         ReportDeletedOrderDto reportDeletedOrder = this.tradeRequestMapper.selectDeletedScanOrderReport(queryDto);
         if (reportDeletedOrder == null) {
             return baseOutput;
         }
-        reportDeletedOrder.setMarketId(marketId);
+        Long platformMarketId = market.getPlatformMarketId();
+        reportDeletedOrder.setMarketId(String.valueOf(platformMarketId));
 
-        return this.dataReportService.reportDeletedScanCodeOrder(reportDeletedOrder, optUser);
+        return this.dataReportService.reportDeletedScanCodeOrder(reportDeletedOrder, optUser, market);
     }
 
-    private BaseOutput reportDeletedDeliveryOrder(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto) {
+    private BaseOutput reportDeletedDeliveryOrder(Integer type, Optional<OperatorUser> optUser, PushDataQueryDto queryDto, Market market) {
         BaseOutput baseOutput = new BaseOutput("200", "成功");
         ReportDeletedOrderDto reportDeletedOrder = this.tradeRequestMapper.selectDeletedDeliveryOrderReport(queryDto);
         if (reportDeletedOrder == null) {
             return baseOutput;
         }
-        reportDeletedOrder.setMarketId(marketId);
+        Long platformMarketId = market.getPlatformMarketId();
+        reportDeletedOrder.setMarketId(String.valueOf(platformMarketId));
 
-        return this.dataReportService.reportDeletedDeliveryOrder(reportDeletedOrder, optUser);
+        return this.dataReportService.reportDeletedDeliveryOrder(reportDeletedOrder, optUser, market);
     }
 
 
     private void pushStream(String tableName, String interfaceName,
-                            Integer type, Optional<OperatorUser> optUser, Date endTime) {
+                            Integer type, Optional<OperatorUser> optUser, Date endTime, Market market) {
+        Long marketId = market.getId();
         ThirdPartyPushData thirdPartyPushData =
-                thirdPartyPushDataService.getThredPartyPushData(tableName);
+                thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         UpStream upStream = new UpStream();
         upStream.setUpORdown(type);
+        upStream.setMarketId(marketId);
         upStream.setMetadata(IDTO.AND_CONDITION_EXPR, "source_user_id is not null");
         if (thirdPartyPushData != null) {
             upStream.setMetadata(IDTO.AND_CONDITION_EXPR,
@@ -744,11 +795,12 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
+        pushData.setMarketId(marketId);
         // 上游
         if (type.intValue() == 10) {
-            baseOutput = reportUpStream(optUser, upStreams, pushData, endTime);
+            baseOutput = reportUpStream(optUser, upStreams, pushData, endTime, market);
         } else {
-            baseOutput = reportDownStream(optUser, upStreams, pushData, endTime);
+            baseOutput = reportDownStream(optUser, upStreams, pushData, endTime, market);
         }
 
     }
@@ -762,7 +814,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
      * @param endTime
      * @return
      */
-    private BaseOutput reportUpStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
+    private BaseOutput reportUpStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime, Market market) {
         BaseOutput baseOutput = new BaseOutput();
         List<UpStreamDto> upStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
@@ -820,7 +872,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             upStreamDtos.add(upStreamDto);
         });
         if (upStreamDtos.size() > 0) {
-            baseOutput = dataReportService.reportUpStream(upStreamDtos, optUser);
+            baseOutput = dataReportService.reportUpStream(upStreamDtos, optUser, market);
             if (baseOutput.isSuccess()) {
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             } else {
@@ -839,7 +891,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
      * @param endTime
      * @return
      */
-    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime) {
+    private BaseOutput reportDownStream(Optional<OperatorUser> optUser, List<UpStream> upStreams, ThirdPartyPushData pushData, Date endTime, Market market) {
         BaseOutput baseOutput = new BaseOutput();
         List<DownStreamDto> downStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
@@ -895,7 +947,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             downStreamDtos.add(downStreamDto);
         });
         if (downStreamDtos.size() > 0) {
-            baseOutput = dataReportService.reportDownStream(downStreamDtos, optUser);
+            baseOutput = dataReportService.reportDownStream(downStreamDtos, optUser, market);
             if (baseOutput.isSuccess()) {
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             } else {
@@ -905,18 +957,21 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         return baseOutput;
     }
 
-    public BaseOutput reportRegisterBillDelete(Optional<OperatorUser> optUser, Date endTime) {
+    public BaseOutput reportRegisterBillDelete(Optional<OperatorUser> optUser, Date endTime, Market market) {
         String tableName = ReportInterfaceEnum.REGISTER_BILL_DELETE.getCode();
         String interfaceName = ReportInterfaceEnum.REGISTER_BILL_DELETE.getName();
         Integer isDelete = 1;
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
         // 查询待上报的报备单
-        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName);
+        ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         RegisterBillDto billDto = new RegisterBillDto();
         billDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
         if (thirdPartyPushData != null) {
             billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
         }
         billDto.setIsDeleted(isDelete);
+        billDto.setMarketId(marketId);
         Set<String> billIdSet = new HashSet<>();
         StreamEx.ofNullable(this.registerBillMapper.selectRegisterBillReport(billDto))
                 .nonNull().flatCollection(Function.identity()).forEach(bill -> {
@@ -928,13 +983,13 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
         String billIds = String.join(",", billIdSet);
         ReportRegisterBillDeleteDto deleteDto = new ReportRegisterBillDeleteDto();
-        deleteDto.setMarketId(marketId);
+        deleteDto.setMarketId(String.valueOf(platformMarketId));
         deleteDto.setThirdEnterIds(billIds);
         BaseOutput baseOutput = new BaseOutput("200", "成功");
-        baseOutput = this.dataReportService.reportRegisterBillDelete(deleteDto, optUser);
+        baseOutput = this.dataReportService.reportRegisterBillDelete(deleteDto, optUser, market);
         // 更新 pushtime
         if (baseOutput.isSuccess()) {
-            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName) : thirdPartyPushData;
+            thirdPartyPushData = thirdPartyPushData == null ? new ThirdPartyPushData(interfaceName, tableName, marketId) : thirdPartyPushData;
             this.thirdPartyPushDataService.updatePushTime(thirdPartyPushData, endTime);
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.REGISTER_BILL_DELETE.getName(), baseOutput.getMessage());

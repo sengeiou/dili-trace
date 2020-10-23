@@ -9,7 +9,7 @@ import java.util.Date;
 @Service
 public interface ThirdPartyPushDataService extends BaseService<ThirdPartyPushData,Long> {
 
-    ThirdPartyPushData getThredPartyPushData(String tableName);
+    ThirdPartyPushData getThredPartyPushData(String tableName, Long marketId);
 
     void updatePushTime(ThirdPartyPushData thirdPartyPushData);
 

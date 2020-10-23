@@ -197,6 +197,58 @@ public class RegisterBill extends BaseDomain {
 	@Column(name = "`is_deleted`")
 	private Integer isDeleted;
 
+	@ApiModelProperty(value = "市场ID")
+	@Column(name = "market_id")
+	private Long marketId;
+
+	@ApiModelProperty(value = "主台账编号")
+	@Column(name = "register_head_code")
+	private String registerHeadCode;
+
+	@ApiModelProperty(value = "经营户卡号")
+	@Column(name = "`third_party_code`")
+	private String thirdPartyCode;
+
+	@ApiModelProperty(value = "区号")
+	@Column(name = "`area`")
+	private String area;
+
+	@ApiModelProperty(value = "计量类型。10-计件 20-计重。默认计件。")
+	@Column(name = "`measure_type`")
+	private Integer measureType;
+
+	@ApiModelProperty(value = "件数")
+	@Column(name = "`piece_num`")
+	private BigDecimal pieceNum;
+
+	@ApiModelProperty(value = "件重")
+	@Column(name = "`piece_weight`")
+	private BigDecimal pieceWeight;
+
+	@ApiModelProperty(value = "备注")
+	@Column(name = "`remark`")
+	private String remark;
+
+	@ApiModelProperty(value = "创建人")
+	@Column(name = "`create_user`")
+	private String createUser;
+
+	@ApiModelProperty(value = "作废人")
+	@Column(name = "`delete_user`")
+	private String deleteUser;
+
+	@ApiModelProperty(value = "作废时间")
+	@Column(name = "`delete_time`")
+	private Date deleteTime;
+
+	@ApiModelProperty(value = "包装")
+	@Column(name = "`packaging`")
+	private String packaging;
+
+	@ApiModelProperty(value = "订单类型 1.报备单 2.进门登记单")
+	@Column(name = "`order_type`")
+	private Integer orderType;
+
 	@Transient
 	private List<ImageCert> imageCerts;
 
@@ -205,6 +257,12 @@ public class RegisterBill extends BaseDomain {
 
 	@Transient
 	private List<TradePushLog> tradePushLogs;
+
+	@Transient
+	private BigDecimal headWeight;
+
+	@Transient
+	private BigDecimal remainWeight;
 
 	public List<TradePushLog> getTradePushLogs() {
 		return tradePushLogs;
@@ -703,5 +761,125 @@ public class RegisterBill extends BaseDomain {
 
 	public void setUpStreamName(String upStreamName) {
 		this.upStreamName = upStreamName;
+	}
+
+	public Long getMarketId() {
+		return marketId;
+	}
+
+	public void setMarketId(Long marketId) {
+		this.marketId = marketId;
+	}
+
+	public String getRegisterHeadCode() {
+		return registerHeadCode;
+	}
+
+	public void setRegisterHeadCode(String registerHeadCode) {
+		this.registerHeadCode = registerHeadCode;
+	}
+
+	public String getThirdPartyCode() {
+		return thirdPartyCode;
+	}
+
+	public void setThirdPartyCode(String thirdPartyCode) {
+		this.thirdPartyCode = thirdPartyCode;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	public Integer getMeasureType() {
+		return measureType;
+	}
+
+	public void setMeasureType(Integer measureType) {
+		this.measureType = measureType;
+	}
+
+	public BigDecimal getPieceNum() {
+		return pieceNum;
+	}
+
+	public void setPieceNum(BigDecimal pieceNum) {
+		this.pieceNum = pieceNum;
+	}
+
+	public BigDecimal getPieceWeight() {
+		return pieceWeight;
+	}
+
+	public void setPieceWeight(BigDecimal pieceWeight) {
+		this.pieceWeight = pieceWeight;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getCreateUser() {
+		return createUser;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+	public String getDeleteUser() {
+		return deleteUser;
+	}
+
+	public void setDeleteUser(String deleteUser) {
+		this.deleteUser = deleteUser;
+	}
+
+	public Date getDeleteTime() {
+		return deleteTime;
+	}
+
+	public void setDeleteTime(Date deleteTime) {
+		this.deleteTime = deleteTime;
+	}
+
+	public String getPackaging() {
+		return packaging;
+	}
+
+	public void setPackaging(String packaging) {
+		this.packaging = packaging;
+	}
+
+	public Integer getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(Integer orderType) {
+		this.orderType = orderType;
+	}
+
+	public BigDecimal getHeadWeight() {
+		return headWeight;
+	}
+
+	public void setHeadWeight(BigDecimal headWeight) {
+		this.headWeight = headWeight;
+	}
+
+	public BigDecimal getRemainWeight() {
+		return remainWeight;
+	}
+
+	public void setRemainWeight(BigDecimal remainWeight) {
+		this.remainWeight = remainWeight;
 	}
 }

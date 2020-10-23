@@ -1,0 +1,136 @@
+package com.dili.trace.dao;
+
+import com.dili.ss.base.MyMapper;
+import com.dili.trace.domain.*;
+import com.dili.trace.domain.hangguo.HangGuoTrade;
+import com.dili.trace.domain.hangguo.HangGuoUser;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author asa.lee
+ */
+public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
+
+    /**
+     * 插入商品数据到正式表
+     *
+     * @param commodityList
+     */
+    void bachInsertCommodityList(@Param("list") List<Category> commodityList);
+
+    /**
+     * 更新商品正式表杭果商品数据patentId
+     *
+     * @param category
+     */
+    void updateHangGuoCommodityParent(Category category);
+
+    /**
+     * 根据第三方编码获取更新列表
+     *
+     * @param list
+     * @return
+     */
+    List<User> getUserListByThirdPartyCode(@Param("list") List<String> list);
+
+    /**
+     * 根据第三方编码更新用户信息
+     *
+     * @param updateUserList
+     */
+    void batchUpdateUserByThirdCode(@Param("list") List<User> updateUserList);
+
+    /**
+     * 根据第三方编码更新商品信息
+     *
+     * @param tradeList
+     * @return
+     */
+    List<Category> getCategoryListByThirdCode(@Param("list") List<String> tradeList);
+
+    /**
+     * 根据第三方编码刪除商品信息
+     *
+     * @param categoryList
+     */
+    void deleteHangGuoCommodityByThirdCode(@Param("list") List<Category> categoryList);
+
+    /**
+     * 插入交易缓存表
+     *
+     * @param tradeList
+     */
+    void bachInsertCacheTradeList(@Param("list") List<HangGuoTrade> tradeList);
+
+    /**
+     * 根据报备单id获取报备详情
+     *
+     * @param billIds
+     * @return
+     */
+    List<TradeDetail> getBillTradeDetailListByBillIds(@Param("list") List<String> billIds);
+
+    /**
+     * 根基id获取库存
+     *
+     * @param stockIdList
+     * @return
+     */
+    List<ProductStock> getProductStockListByIds(@Param("list") List<Long> stockIdList);
+
+    /**
+     * 超过金额patch为不上报
+     */
+    void updateTradeReportListByBeyondAmount();
+
+    /**
+     * 查询所有交易数据
+     *
+     * @param trade
+     * @return
+     */
+    List<HangGuoTrade> selectTradeReportListByHandleFlag(HangGuoTrade trade);
+
+    /**
+     * 更新交易数据标志位
+     *
+     * @param map
+     */
+    void batchUpdateCacheTrade(Map<String, Object> map);
+
+    /**
+     * 获取报备单编号
+     *
+     * @param ids
+     * @return
+     */
+    List<RegisterBill> getRegisterBillByIds(List<String> ids);
+
+    /**
+     * 批量插入tradeDetail
+     *
+     * @param addDetailList
+     */
+    void batchInsertTradeDetail(List<TradeDetail> addDetailList);
+
+    /**
+     * 获取检测详情
+     * @param headList
+     * @return
+     */
+    List<CheckOrderData> getCheckOrderDataList(List<CheckOrder> headList);
+    /**
+     * 获取检测主单
+     * @param checkOrder
+     */
+    List<CheckOrder> getReportCheckOrderList(CheckOrder checkOrder);
+    /**
+     * 不合格处置主单
+     * @param dispose
+     * @return
+     */
+    List<CheckOrderDispose> getReportCheckOrderDisposeList(CheckOrderDispose dispose);
+}

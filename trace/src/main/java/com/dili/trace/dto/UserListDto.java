@@ -61,4 +61,20 @@ public interface UserListDto extends User {
 
     void setUserId(Long userId);
 
+
+    /**
+     * 姓名/手机号/经营户卡号模糊查询
+     *
+     * @return
+     */
+    @Column(name = "name")
+    @Like
+    String getKeyword();
+
+    /**
+     * 姓名/手机号/经营户卡号模糊查询
+     *
+     * @param keyword
+     */
+    void setKeyword(String keyword);
 }

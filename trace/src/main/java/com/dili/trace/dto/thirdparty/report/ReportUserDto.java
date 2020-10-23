@@ -5,8 +5,8 @@ import java.util.List;
 /**
  * @author asa.lee
  */
-public class ReportUserDto  {
-    private String marketId;
+public class ReportUserDto {
+    private Long marketId;
     private String accountName;
     private Integer accountType;
     private String address;
@@ -23,11 +23,30 @@ public class ReportUserDto  {
     private String telphone;
     private String thirdAccId;
 
-    public String getMarketId() {
+    private String idCard;
+    private String tel;
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    public Long getMarketId() {
         return marketId;
     }
 
-    public void setMarketId(String marketId) {
+    public void setMarketId(Long marketId) {
         this.marketId = marketId;
     }
 

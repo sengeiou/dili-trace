@@ -19,6 +19,35 @@ public enum BillTypeEnum {
 	 * 补单
 	 */
 	SUPPLEMENT(20, "补单"),
+	/**
+	 * 外冷分批进场
+	 */
+	PARTIAL(30, "外冷分批进场"),
+
+	/**
+	 * 报备单
+	 */
+	REGISTER_BILL(1, "报备单"),
+
+	/**
+	 * 检测单
+	 */
+	CHECK_ORDER(2, "检测单"),
+
+	/**
+	 * 检测不合格处置单
+	 */
+	CHECK_DISPOSE(3, "检测不合格处置单"),
+
+	/**
+	 * 进门主台账单
+	 */
+	MASTER_BILL(4, "进门主台账单"),
+
+	/**
+	 * 进门登记单
+	 */
+	REGISTER_FORM_BILL(5, "进门登记单"),
 
 	;
 

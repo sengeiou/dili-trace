@@ -1,17 +1,10 @@
 package com.dili.trace.domain;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import com.dili.ss.domain.BaseDomain;
-
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @SuppressWarnings("serial")
 @Table(name = "`trade_order`")
@@ -51,9 +44,21 @@ public class TradeOrder extends BaseDomain {
     @Column(name = "`modified`")
     private Date modified;
 
+    @ApiModelProperty(value = "第三方流水号")
+    @Transient
+    private String tradeNo;
+
     @Transient
     public Long getTradeOrderId() {
         return this.id;
+    }
+
+    public String getTradeNo() {
+        return tradeNo;
+    }
+
+    public void setTradeNo(String tradeNo) {
+        this.tradeNo = tradeNo;
     }
 
     /**

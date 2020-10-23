@@ -29,6 +29,19 @@
     <result column="latest_pd_result" jdbcType="VARCHAR" property="latestPdResult" />
     <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
     <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+    <result column="market_id" jdbcType="VARCHAR" property="marketId" />
+    <result column="register_head_code" jdbcType="VARCHAR" property="registerHeadCode" />
+    <result column="third_party_code" jdbcType="VARCHAR" property="thirdPartyCode" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
+    <result column="measure_type" jdbcType="TINYINT" property="measureType" />
+    <result column="piece_num" jdbcType="DECIMAL" property="pieceNum" />
+    <result column="piece_weight" jdbcType="DECIMAL" property="pieceWeight" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="delete_user" jdbcType="VARCHAR" property="deleteUser" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="packaging" jdbcType="VARCHAR" property="packaging" />
+    <result column="order_type" jdbcType="TINYINT" property="orderType" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -37,7 +50,9 @@
     id, code, register_source, tally_area_no, name, id_card_no, addr,phone, user_id,sample_code,
     plate, state, sales_type, product_name, product_id, origin_id, origin_name, weight,
     detect_state, latest_detect_record_id, latest_detect_time, exe_machine_no, version,
-    created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result
+    created, modified,latest_detect_operator,trade_account,operator_id,operator_name,latest_pd_result,
+    market_id, register_head_code, third_party_code, area, measure_type, piece_num, piece_weight,
+    remark, create_user, delete_user, delete_time, packaging, order_type
   </sql>
   <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--
@@ -162,6 +177,12 @@
     <if test="isDeleted != null">
       AND is_deleted =#{isDeleted}
     </if>
+    <if test="marketId != null">
+      AND market_id =#{marketId}
+    </if>
+    <if test="orderType != null">
+      AND order_type =#{orderType}
+    </if>
     group by verify_status
   </select>
 
@@ -181,7 +202,11 @@
   </select>
   <select id="selectBillReportData"  parameterType="com.dili.trace.dto.TraceReportQueryDto" resultType="com.dili.trace.dto.TraceReportDto">
 
-    select * from (select DISTINCT  area from tally_area_no)a
+    select * from (select DISTINCT  area from tally_area_no
+    WHERE 1 = 1
+    <if test="marketId != null">
+      AND market_id = #{marketId}
+    </if>)a
     left join  ( <include refid="userCountQuery"/>) t_user_count on t_user_count.group_key=a.area
     left join  ( <include refid="billCountQuery"/>) t_bill_count on t_bill_count.group_key=a.area
     left join  ( <include refid="tradeDetailBuyerCount"/>) t_trade_detail_buyer_count on t_trade_detail_buyer_count.group_key=a.area
@@ -213,6 +238,9 @@
     where u.yn=1
     and u.state = 1
     and u.validate_state=40
+    <if test="marketId != null">
+      AND u.market_id = #{marketId}
+    </if>
     ) t GROUP  by area
   </sql>
 
@@ -230,7 +258,7 @@
     from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -243,6 +271,9 @@
     </if>
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     )t GROUP  by area
   </sql>
@@ -262,6 +293,9 @@
     select distinct trade_detail.buyer_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from trade_detail
     JOIN `user` u ON u.id=trade_detail.buyer_id
+    <if test="marketId != null">
+      AND u.market_id = #{marketId}
+    </if>
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -340,7 +374,7 @@
     area as group_key from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -360,6 +394,9 @@
         #{verifyStatus}
       </foreach>
     </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     )t GROUP  by area
   </sql>
 
@@ -378,7 +415,7 @@
     from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -398,6 +435,9 @@
       <foreach collection="yellowBillVerifyStatus" open=" IN (" close=")" item="verifyStatus"  separator=",">
         #{verifyStatus}
       </foreach>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     AND register_bill.user_id not in(
     select  register_bill.user_id
@@ -432,7 +472,7 @@
     from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -453,7 +493,9 @@
         #{verifyStatus}
       </foreach>
     </if>
-
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     AND register_bill.user_id not in(
     select  register_bill.user_id
     from register_bill where register_bill.is_deleted=0
@@ -495,7 +537,7 @@
     from(
     select distinct register_bill.user_id as user_id,u.is_active,case when (t_area.area is null or t_area.area='Others') then 'Others' else   t_area.area end area
     from register_bill
-    JOIN `user` u ON u.id=register_bill.user_id
+    JOIN `user` u ON u.id=register_bill.user_id and u.market_id = register_bill.market_id
     left join  (
     select r_user_tally_area.user_id ,min(tally_area_no.area ) area from r_user_tally_area
     left join tally_area_no
@@ -515,6 +557,9 @@
         #{verifyStatus}
       </foreach>
     </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     )t GROUP  by area
   </sql>
 
@@ -525,6 +570,9 @@
     select case when LOCATE(',',origin_name)>0 then SUBSTRING(origin_name,1,LOCATE(',',origin_name)-1) else origin_name end as region_name,sum(case when weight_unit=1 then weight/2 else weight end) weight
     from register_bill
     where register_bill.is_deleted=0
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     group by case when LOCATE(',',origin_name)>0 then SUBSTRING(origin_name,1,LOCATE(',',origin_name)-1) else origin_name end
   </select>
 
@@ -537,6 +585,9 @@
     </if>
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     )report,
 
@@ -563,6 +614,9 @@
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
     </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
+    </if>
     )unqualified,
 
     (select   count(distinct product_id ) unqualifiedPdtCount
@@ -574,6 +628,9 @@
     </if>
     <if test="createdEnd != null">
       <![CDATA[AND register_bill.created <=#{createdEnd}]]>
+    </if>
+    <if test="marketId != null">
+      AND register_bill.market_id = #{marketId}
     </if>
     )unqualifiedPdt
   </select>
@@ -595,6 +652,9 @@
     <if test="isDeleted != null">
       <![CDATA[AND b.is_deleted = #{isDeleted}]]>
     </if>
+    <if test="marketId != null">
+      AND b.market_id = #{marketId}
+    </if>
   </select>
 
   <select id="selectCurrentTime" resultType="java.util.Date">
@@ -605,7 +665,8 @@
           parameterType="com.dili.trace.dto.OrigionReportQueryDto">
     SELECT r.`origin_name` as origion_name, COUNT(1) as bill_count,
     round(SUM(IF(r.weight_unit=1,r.weight*0.0005,r.weight*0.001)),3) as weight
-    FROM register_bill r, checkinout_record c WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = c.bill_id
+    FROM register_bill r, checkinout_record c
+    WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = c.bill_id and r.market_id = c.market_id
     <if test="startDate != null">
       <![CDATA[AND c.`created`>=#{startDate}]]>
     </if>
@@ -618,7 +679,9 @@
     <if test="productName != null and productName != ''">
       AND r.`product_name` LIKE #{productName}
     </if>
-
+    <if test="marketId != null">
+      AND r.market_id = #{marketId}
+    </if>
     GROUP BY r.`origin_name` order by weight desc;
 
   </select>
@@ -628,7 +691,7 @@
     SELECT r.`origin_name` as origion_name, r.product_name as product_name,
     round(SUM(IF(r.weight_unit=1,r.weight*0.0005,r.weight*0.001)),3) as weight
     FROM register_bill r, checkinout_record ch
-    WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = ch.bill_id
+    WHERE r.`is_checkin`=1 AND r.is_deleted=0 and r.id = ch.bill_id and r.market_id = ch.market_id
     <if test="startDate != null">
       <![CDATA[AND ch.`created`>=#{startDate}]]>
     </if>
@@ -640,6 +703,9 @@
     </if>
     <if test="productName != null and productName != ''">
       AND r.`product_name` LIKE #{productName}
+    </if>
+    <if test="marketId != null">
+      AND r.market_id = #{marketId}
     </if>
 
     GROUP BY r.product_name, r.`origin_name` order by r.product_name,  weight desc, r.origin_name;

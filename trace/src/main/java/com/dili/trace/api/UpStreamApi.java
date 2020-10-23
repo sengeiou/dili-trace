@@ -51,6 +51,9 @@ public class UpStreamApi {
         if (userId == null){
             return BaseOutput.failure("未登陆用户");
         }
+        if(query.getSourceUserId() != null){
+            userId = query.getSourceUserId();
+        }
         User user = userService.get(userId);
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
@@ -91,7 +94,14 @@ public class UpStreamApi {
      */
     @RequestMapping(value = "/doCreateUpStream.api", method = RequestMethod.POST)
     public BaseOutput<Long> doCreateUpStream(@RequestBody UpStreamDto input) {
-        User user = userService.get(sessionContext.getAccountId());
+        Long userId = sessionContext.getAccountId();
+        if (userId == null){
+            return BaseOutput.failure("未登陆用户");
+        }
+        if(input.getSourceUserId() != null){
+            userId = input.getSourceUserId();
+        }
+        User user = userService.get(userId);
         if (user == null) {
             return BaseOutput.failure("未登陆用户");
         }

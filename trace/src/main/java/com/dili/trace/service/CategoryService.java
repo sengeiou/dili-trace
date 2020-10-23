@@ -14,8 +14,8 @@ import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class CategoryService extends BaseServiceImpl<Category, Long> {
-	public List<Category> listCategoryByKeyword(String keyword, Integer level, Long parentId) {
-		if (StringUtils.isBlank(keyword) && level == null && parentId == null) {
+	public List<Category> listCategoryByKeyword(String keyword, Integer level, Long parentId, Long marketId) {
+		if (StringUtils.isBlank(keyword) && level == null && parentId == null && marketId == null) {
 			return Lists.newArrayList();
 		}
 		Example e = new Example(Category.class);
@@ -27,6 +27,9 @@ public class CategoryService extends BaseServiceImpl<Category, Long> {
 		}
 		if (parentId != null) {
 			e.and().andEqualTo("parentId", parentId);
+		}
+		if (marketId != null) {
+			e.and().andEqualTo("marketId", marketId);
 		}
 		return this.getDao().selectByExample(e);
 	}

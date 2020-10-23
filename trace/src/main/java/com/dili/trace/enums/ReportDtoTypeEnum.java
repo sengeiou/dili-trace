@@ -102,6 +102,23 @@ public enum ReportDtoTypeEnum {
 	 * 报备作废
 	 */
 	registerBillDelete(190, "报备作废"),
+
+	/**
+	 * 杭果经营户上报
+	 */
+	HangGuoUser(200, "杭果经营户上报"),
+	/**
+	 * 杭果商品信息上报
+	 */
+	HangGuoGoods(210, "杭果商品信息上报"),
+	/**
+	 * 杭果检测信息上报
+	 */
+	HangGuoInspection(220, "杭果检测信息上报"),
+	/**
+	 * 杭果不合格处置上报
+	 */
+	HangGuoUnqualifiedInspection(230, "杭果不合格处置上报"),
 	;
 
 	private String name;

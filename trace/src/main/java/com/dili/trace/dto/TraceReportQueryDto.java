@@ -13,6 +13,7 @@ public class TraceReportQueryDto {
     private List<Integer> redBillVerifyStatus;
     private List<Integer> noneVerifyStatus;
     private Integer isUserActive;
+    private Long marketId;
 
     public Integer getIsUserActive() {
         return isUserActive;
@@ -137,4 +138,17 @@ public class TraceReportQueryDto {
         this.readonly = readonly;
     }
 
+    /**
+     * @return Long marketId the marketId
+     */
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    /**
+     * @param marketId the marketId to set
+     */
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
 }

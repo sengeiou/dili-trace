@@ -9,6 +9,14 @@ public class VerifyStatusCountOutputDto {
 
     private Integer num;
 
+    public VerifyStatusCountOutputDto() {
+    }
+
+    public VerifyStatusCountOutputDto(Integer verifyStatus, Integer num) {
+        this.verifyStatus = verifyStatus;
+        this.num = num;
+    }
+
     public static VerifyStatusCountOutputDto buildDefault(
             BillVerifyStatusEnum verifyStatus) {
         VerifyStatusCountOutputDto dto = new VerifyStatusCountOutputDto();

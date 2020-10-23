@@ -8,13 +8,16 @@ import java.util.Optional;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.dto.RegisterHeadDto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -127,7 +130,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 
 	/**
 	 * 删除报备单
-	 * @param input
+	 * @param userId
 	 * @param operatorUser
 	 * @return
 	 */
@@ -136,4 +139,71 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 
 
 	public Map<Integer, Map<String,List<RegisterBill>>> listPageCheckInData(RegisterBillDto query);
+
+	/**
+	 * 创建多个进门登记单
+	 *
+	 * @param registerBills
+	 * @param user
+	 * @param operatorUser
+	 * @param marketId
+	 * @return
+	 */
+	public List<Long> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+											 Optional<OperatorUser> operatorUser, Long marketId);
+
+	/**
+	 * 创建单个报备单
+	 *
+	 * @param registerBill
+	 * @param imageCertList
+	 * @param operatorUser
+	 * @return
+	 */
+	Long createRegisterFormBill(RegisterBill registerBill, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser);
+
+	/**
+	 * 修改单个进门登记单
+	 *
+	 * @param registerBill
+	 * @param imageCertList
+	 * @param operatorUser
+	 * @return
+	 */
+	public Long doEditFormBill(RegisterBill registerBill,List<ImageCert> imageCertList,Optional<OperatorUser> operatorUser);
+
+	/**
+	 * 进门登记单审核(通过/进门/不通过/退回/进门待检)
+	 *
+	 * @param input
+	 * @param operatorUser
+	 * @return
+	 */
+	public Long doVerifyFormCheckIn(RegisterBill input, Optional<OperatorUser> operatorUser);
+
+	/**
+	 *
+	 * @Description
+	 * 给小程序提供查询接口
+	 * * @Date 2020/10/21 16:04
+	 * @return
+	 */
+	public BasePage<RegisterBill> listPageApi(RegisterBillDto input);
+
+	/**
+	 * 删除进门登记单
+	 * @param dto
+	 * @param userId
+	 * @param operatorUser
+	 * @return
+	 */
+	public Long doDelete(CreateRegisterBillInputDto dto,Long userId,Optional<OperatorUser> operatorUser);
+
+	/**
+	 * 统计不同审核状态进门登记单数据
+	 *
+	 * @param query
+	 * @return
+	 */
+	public List<VerifyStatusCountOutputDto> countByVerifyStatuseFormBill(RegisterBillDto query);
 }

@@ -1,15 +1,9 @@
 package com.dili.trace.domain;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import com.dili.ss.domain.BaseDomain;
-
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.*;
 import java.util.Date;
 
 @Table(name = "`category`")
@@ -40,6 +34,78 @@ public class Category extends BaseDomain {
 	@ApiModelProperty(value = "修改时间")
 	@Column(name = "`modified`")
 	private Date modified;
+
+	@ApiModelProperty(value = "商品编码")
+	@Column(name = "`code`")
+	private String code;
+
+	@ApiModelProperty(value = "登记显示")
+	@Column(name = "`is_show`")
+	private Integer isShow;
+
+	@ApiModelProperty(value = "市场id")
+	@Column(name = "`market_id`")
+	private Long marketId;
+
+    @ApiModelProperty(value = "商品类型")
+    @Column(name = "`type`")
+    private Integer type;
+
+    @ApiModelProperty(value = "商品规格名")
+    @Column(name = "`specification`")
+    private String specification;
+
+	@ApiModelProperty(value = "父级第三方编码")
+	@Column(name = "`parent_code`")
+	private String parentCode;
+
+	public String getParentCode() {
+		return parentCode;
+	}
+
+	public void setParentCode(String parentCode) {
+		this.parentCode = parentCode;
+	}
+
+	public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getSpecification() {
+        return specification;
+    }
+
+    public void setSpecification(String specification) {
+        this.specification = specification;
+    }
+
+	public Integer getIsShow() {
+		return isShow;
+	}
+
+	public void setIsShow(Integer isShow) {
+		this.isShow = isShow;
+	}
+
+	public Long getMarketId() {
+		return marketId;
+	}
+
+	public void setMarketId(Long marketId) {
+		this.marketId = marketId;
+	}
 
 	public Date getCreated() {
 		return created;

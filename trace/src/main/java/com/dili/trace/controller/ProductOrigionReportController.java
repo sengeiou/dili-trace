@@ -4,6 +4,7 @@ import com.dili.ss.util.DateUtils;
 import com.dili.trace.dto.OrigionReportQueryDto;
 import com.dili.trace.dto.ProductOrigionReportDto;
 import com.dili.trace.service.ReportService;
+import com.dili.trace.util.MarketUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -55,6 +56,7 @@ public class ProductOrigionReportController {
         {
             origionReport.setOrigionName("%"+origionName+"%");
         }
+        origionReport.setMarketId(MarketUtil.returnMarket());
         return reportService.productOrigionReportList(origionReport);
     }
 }

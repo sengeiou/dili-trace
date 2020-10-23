@@ -36,7 +36,7 @@ public class TraceReportService {
         query.setYellowBillVerifyStatus(
                 Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode(), BillVerifyStatusEnum.RETURNED.getCode()));
         query.setNoneVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode()));
-
+        query.setMarketId(1L);
         // settingUserActive(query);
         List<TraceReportDto> list =  this.billMapper.selectBillReportData(query);
 

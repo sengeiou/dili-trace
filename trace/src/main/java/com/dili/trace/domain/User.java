@@ -9,11 +9,12 @@ import com.dili.trace.enums.VocationTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
- * 
+ * <p>
  * This file was generated on 2019-07-26 09:20:35.
  */
 @Table(name = "`user`")
@@ -155,7 +156,6 @@ public interface User extends IBaseDomain {
     void setModified(Date modified);
 
     /**
-     * 
      * 0：未删除，非0:已经删除
      */
     @Column(name = "`is_delete`")
@@ -232,7 +232,7 @@ public interface User extends IBaseDomain {
 
     void setQrStatus(Integer qrStatus);
 
-       /**
+    /**
      * {@link com.dili.trace.glossary.UserQrStatusEnum}
      */
     @ApiModelProperty(value = "前一次二维码状态")
@@ -298,6 +298,7 @@ public interface User extends IBaseDomain {
 
     /**
      * 微信openid
+     *
      * @return
      */
     @Column(name = "`open_id`")
@@ -305,12 +306,14 @@ public interface User extends IBaseDomain {
 
     /**
      * 微信openid
+     *
      * @param open_id
      */
     void setOpenId(String open_id);
 
     /**
      * 微信弹窗绑定确认时间
+     *
      * @return
      */
     @Column(name = "`confirm_date`")
@@ -318,12 +321,14 @@ public interface User extends IBaseDomain {
 
     /**
      * 微信弹窗绑定确认时间
+     *
      * @param confirm_date
      */
     void setConfirmDate(Date confirm_date);
 
     /**
      * 用户上报标志位
+     *
      * @return
      */
     @Column(name = "`is_push`")
@@ -331,12 +336,14 @@ public interface User extends IBaseDomain {
 
     /**
      * 用户上报标志位
+     *
      * @param is_push
      */
     void setIsPush(Integer is_push);
 
     /**
      * 用户活跃标志位
+     *
      * @return
      */
     @Column(name = "`is_active`")
@@ -344,7 +351,279 @@ public interface User extends IBaseDomain {
 
     /**
      * 用户活跃标志位
+     *
      * @param is_active
      */
     void setIsActive(Integer is_active);
+
+    /**
+     * 经营户第三方编码
+     *
+     * @return
+     */
+    @Column(name = "`third_party_code`")
+    String getThirdPartyCode();
+
+    /**
+     * 经营户第三方编码
+     *
+     * @param third_party_code
+     */
+    void setThirdPartyCode(String third_party_code);
+
+    /**
+     * 证件类型
+     *
+     * @return
+     */
+    @Column(name = "`credential_type`")
+    String getCredentialType();
+
+    /**
+     * 证件类型
+     *
+     * @param credential_type
+     */
+    void setCredentialType(String credential_type);
+
+    /**
+     * 证件名称
+     *
+     * @return
+     */
+    @Column(name = "`credential_name`")
+    String getCredentialName();
+
+    /**
+     * 证件名称
+     *
+     * @param credential_name
+     */
+    void setCredentialName(String credential_name);
+
+    /**
+     * 证件号码
+     *
+     * @return
+     */
+    @Column(name = "`credential_number`")
+    String getCredentialNumber();
+
+    /**
+     * 证件号码
+     *
+     * @param credential_number
+     */
+    void setCredentialNumber(String credential_number);
+
+
+    /**
+     * 证件号码
+     *
+     * @return
+     */
+    @Column(name = "`credential_url`")
+    String getCredentialUrl();
+
+    /**
+     * 证件号码
+     *
+     * @param credential_url
+     */
+    void setCredentialUrl(String credential_url);
+
+    /**
+     * 身份证地址
+     *
+     * @return
+     */
+    @Column(name = "`id_addr`")
+    String getIdAddr();
+
+    /**
+     * 身份证地址
+     *
+     * @param id_addr
+     */
+    void setIdAddr(String id_addr);
+
+    /**
+     * 商品去向
+     *
+     * @return
+     */
+    @Column(name = "`whereis`")
+    String getWhereis();
+
+    /**
+     * 商品去向
+     *
+     * @param whereis
+     */
+    void setWhereis(String whereis);
+
+    /**
+     * 授信额度
+     *
+     * @return
+     */
+    @Column(name = "`credit_limit`")
+    String getCreditLimit();
+
+    /**
+     * 授信额度
+     *
+     * @param credit_limit
+     */
+    void setCreditLimit(String credit_limit);
+
+    /**
+     * 卡有效期
+     *
+     * @return
+     */
+    @Column(name = "`effective_date`")
+    Date getEffectiveDate();
+
+    /**
+     * 卡有效期
+     *
+     * @param effective_date
+     */
+    void setEffectiveDate(Date effective_date);
+
+    /**
+     * 备注
+     *
+     * @return
+     */
+    @Column(name = "`remark`")
+    String getRemark();
+
+    /**
+     * 备注
+     *
+     * @param remark
+     */
+    void setRemark(String remark);
+
+    /**
+     * 性别
+     *
+     * @return
+     */
+    @Column(name = "`sex`")
+    String getSex();
+
+    /**
+     * 性别
+     *
+     * @param sex
+     */
+    void setSex(String sex);
+
+    /**
+     * 固定电话
+     *
+     * @return
+     */
+    @Column(name = "`fixed_telephone`")
+    String getFixedTelephone();
+
+    /**
+     * 固定电话
+     *
+     * @param fixed_telephone
+     */
+    void setFixedTelephone(String fixed_telephone);
+
+    /**
+     * 手续费折扣率
+     *
+     * @return
+     */
+    @Column(name = "`charge_rate`")
+    BigDecimal getChargeRate();
+
+    /**
+     * 手续费折扣率
+     *
+     * @param charge_rate
+     */
+    void setChargeRate(BigDecimal charge_rate);
+
+    /**
+     * 包装管理费折扣率
+     *
+     * @return
+     */
+    @Column(name = "`manger_rate`")
+    BigDecimal getMangerRate();
+
+    /**
+     * 包装管理费折扣率
+     *
+     * @param manger_rate
+     */
+    void setMangerRate(BigDecimal manger_rate);
+
+    /**
+     * 仓储费折扣率
+     *
+     * @return
+     */
+    @Column(name = "`storage_rate`")
+    BigDecimal getStorageRate();
+
+    /**
+     * 仓储费折扣率
+     *
+     * @param storage_rate
+     */
+    void setStorageRate(BigDecimal storage_rate);
+
+    /**
+     * 员工考核折扣率
+     *
+     * @return
+     */
+    @Column(name = "`assess_rate`")
+    BigDecimal getAssessRate();
+
+    /**
+     * 员工考核折扣率
+     *
+     * @param assess_rate
+     */
+    void setAssessRate(BigDecimal assess_rate);
+
+    /**
+     * 折扣率批准人
+     *
+     * @return
+     */
+    @Column(name = "`approver`")
+    String getApprover();
+
+    /**
+     * 折扣率批准人
+     *
+     * @param approver
+     */
+    void setApprover(String approver);
+
+    /**
+     * 供应商类型（大客户、临时客户）
+     *
+     * @return
+     */
+    @Column(name = "`supplier_type`")
+    String getSupplierType();
+
+    /**
+     * 供应商类型（大客户、临时客户）
+     *
+     * @param supplier_type
+     */
+    void setSupplierType(String supplier_type);
 }

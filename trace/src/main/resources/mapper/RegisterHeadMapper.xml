@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.RegisterHeadMapper">
+
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.RegisterHead" >
+    <result column="id" property="id" />
+    <result column="code" property="code" />
+    <result column="bill_type" property="billType" />
+    <result column="user_id" property="userId" />
+    <result column="name" property="name" />
+    <result column="id_card_no" property="idCardNo" />
+    <result column="third_party_code" property="thirdPartyCode" />
+    <result column="addr" property="addr" />
+    <result column="phone" property="phone" />
+    <result column="plate" property="plate" />
+    <result column="product_id" property="productId" />
+    <result column="product_name" property="productName" />
+    <result column="measure_type" property="measureType" />
+    <result column="piece_num" property="pieceNum" />
+    <result column="piece_weight" property="pieceWeight" />
+    <result column="weight" property="weight" />
+      <result column="remain_weight" property="remainWeight" />
+    <result column="weight_unit" property="weightUnit" />
+    <result column="upstream_id" property="upstreamId" />
+    <result column="spec_name" property="specName" />
+    <result column="origin_id" property="originId" />
+    <result column="origin_name" property="originName" />
+    <result column="brand_id" property="brandId" />
+    <result column="brand_name" property="brandName" />
+    <result column="remark" property="remark" />
+    <result column="create_user" property="createUser" />
+    <result column="created" property="created" />
+    <result column="modify_user" property="modifyUser" />
+    <result column="modified" property="modified" />
+    <result column="is_deleted" property="isDeleted" />
+    <result column="delete_user" property="deleteUser" />
+    <result column="delete_time" property="deleteTime" />
+    <result column="version" property="version" />
+    <result column="reason" property="reason" />
+    <result column="active" property="active" />
+    <result column="market_id" property="marketId" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+                id,
+                code,
+                bill_type,
+                user_id,
+                name,
+                id_card_no,
+                third_party_code,
+                addr,
+                phone,
+                plate,
+                product_id,
+                product_name,
+                measure_type,
+                piece_num,
+                piece_weight,
+                weight,
+                remain_weight,
+                weight_unit,
+                upstream_id,
+                spec_name,
+                origin_id,
+                origin_name,
+                brand_id,
+                brand_name,
+                remark,
+                create_user,
+                created,
+                modify_user,
+                modified,
+                is_deleted,
+                delete_user,
+                delete_time,
+                version,
+                reason,
+                active,
+                market_id
+    </sql>
+
+  <select id="pageList" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM register_head
+    LIMIT #{offset}, #{pageSize}
+  </select>
+
+</mapper>

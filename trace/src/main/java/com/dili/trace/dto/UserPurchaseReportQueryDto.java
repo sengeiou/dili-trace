@@ -5,6 +5,7 @@ public class UserPurchaseReportQueryDto {
     private String endDate;
     private String userName;
     private String phone;
+    private Long marketId;
 
     public String getStartDate() {
         return startDate;
@@ -36,5 +37,13 @@ public class UserPurchaseReportQueryDto {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
     }
 }

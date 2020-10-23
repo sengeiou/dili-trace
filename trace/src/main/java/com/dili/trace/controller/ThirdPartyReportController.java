@@ -1,6 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.domain.Market;
 import com.dili.trace.domain.ThirdPartyReportData;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.ThirdPartyReportDataQueryDto;
@@ -9,9 +10,11 @@ import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.ReportDtoTypeEnum;
 import com.dili.trace.jobs.ThirdPartyReportJob;
 import com.dili.trace.service.DataReportService;
+import com.dili.trace.service.MarketService;
 import com.dili.trace.service.ThirdPartyReportDataService;
 import com.dili.trace.service.TraceReportService;
 import com.dili.trace.util.BeanMapUtil;
+import com.dili.trace.util.MarketUtil;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -47,6 +50,9 @@ public class ThirdPartyReportController {
     @Autowired
     ThirdPartyReportDataService thirdPartyReportDataService;
 
+    @Autowired
+    private MarketService marketService;
+
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap, TraceReportQueryDto query) {
 
@@ -56,6 +62,7 @@ public class ThirdPartyReportController {
     @RequestMapping(value = "/listPage.action", method = RequestMethod.POST)
     @ResponseBody
     public String listPage(ModelMap modelMap, ThirdPartyReportDataQueryDto input) throws Exception {
+        input.setMarketId(MarketUtil.returnMarket());
         input = BeanMapUtil.trimBean(input);
         return thirdPartyReportDataService.listEasyuiPageByExample(input, true).toString();
     }
@@ -76,12 +83,20 @@ public class ThirdPartyReportController {
         if (input == null || input.getCheckBatch() == null || input.getCheckBatch() < 0) {
             return BaseOutput.failure("参数错误");
         }
+        Market market = marketService.get(MarketUtil.returnMarket());
+        if (market == null) {
+            return BaseOutput.failure("市场不存在");
+        }
+        Long appId = market.getAppId();
+        String appSecret = market.getAppSecret();
+        String contextUrl = market.getContextUrl();
+        if (!(appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl))) {            return BaseOutput.failure("市场关联数据有误");
+        }
         Optional<OperatorUser> opt = this.fromSessionContext();
-
-        this.thirdPartyReportJob.codeCount(opt);
-        this.thirdPartyReportJob.marketCount(opt);
-        this.thirdPartyReportJob.regionCount(opt);
-        this.thirdPartyReportJob.reportCount(opt, input.getCheckBatch());
+        this.thirdPartyReportJob.codeCount(opt, market);
+        this.thirdPartyReportJob.marketCount(opt, market);
+        this.thirdPartyReportJob.regionCount(opt, market);
+        this.thirdPartyReportJob.reportCount(opt, input.getCheckBatch(), market);
         return BaseOutput.success();
     }
 
@@ -90,6 +105,16 @@ public class ThirdPartyReportController {
     public BaseOutput reportAgain(ModelMap modelMap, @RequestBody ThirdPartyReportData input) {
         if (input == null || input.getId() == null) {
             return BaseOutput.failure("参数错误");
+        }
+        Market market = marketService.get(MarketUtil.returnMarket());
+        if (market == null) {
+            return BaseOutput.failure("市场不存在");
+        }
+        Long appId = market.getAppId();
+        String appSecret = market.getAppSecret();
+        String contextUrl = market.getContextUrl();
+        if (!(appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl))) {
+            return BaseOutput.failure("市场关联数据有误");
         }
 
         try {
@@ -102,72 +127,72 @@ public class ThirdPartyReportController {
             ObjectMapper mapper = new ObjectMapper();
             if (ReportDtoTypeEnum.codeCount.equalsToCode(reportData.getType())) {
                 CodeCountDto dto = mapper.readValue(json, CodeCountDto.class);
-                return this.dataReportService.codeCount(dto, opt);
+                return this.dataReportService.codeCount(dto, opt, market);
             } else if (ReportDtoTypeEnum.regionCount.equalsToCode(reportData.getType())) {
                 RegionCountDto dto = mapper.readValue(json, RegionCountDto.class);
-                return this.dataReportService.regionCount(dto, opt);
+                return this.dataReportService.regionCount(dto, opt, market);
             } else if (ReportDtoTypeEnum.reportCount.equalsToCode(reportData.getType())) {
                 ReportCountDto dto = mapper.readValue(json, ReportCountDto.class);
-                return this.dataReportService.reportCount(dto, opt);
+                return this.dataReportService.reportCount(dto, opt, market);
             } else if (ReportDtoTypeEnum.marketCount.equalsToCode(reportData.getType())) {
                 MarketCountDto dto = mapper.readValue(json, MarketCountDto.class);
-                return this.dataReportService.marketCount(dto, opt);
+                return this.dataReportService.marketCount(dto, opt, market);
             } else if (ReportDtoTypeEnum.thirdUserDelete.equalsToCode(reportData.getType())) {
                 ReportUserDeleteDto dto = mapper.readValue(json, ReportUserDeleteDto.class);
-                return this.dataReportService.reportUserDelete(dto, opt);
+                return this.dataReportService.reportUserDelete(dto, opt, market);
             } else if (ReportDtoTypeEnum.thirdUserSave.equalsToCode(reportData.getType())) {
                 List<ReportUserDto> dto = mapper.readValue(json, new TypeReference<List<ReportUserDto>>() {
                 });
-                return this.dataReportService.reportUserSaveUpdate(dto, opt);
+                return this.dataReportService.reportUserSaveUpdate(dto, opt, market);
             } else if (ReportDtoTypeEnum.userQrCode.equalsToCode(reportData.getType())) {
                 List<ReportQrCodeDto> dto = mapper.readValue(json, new TypeReference<List<ReportQrCodeDto>>() {
                 });
-                return this.dataReportService.reportUserQrCode(dto, opt);
+                return this.dataReportService.reportUserQrCode(dto, opt, market);
             } else if (ReportDtoTypeEnum.categoryBigLevel.equalsToCode(reportData.getType())) {
                 List<CategoryDto> dto = mapper.readValue(json, new TypeReference<List<CategoryDto>>() {
                 });
-                return this.dataReportService.reportCategory(dto, opt);
+                return this.dataReportService.reportCategory(dto, opt, market);
             } else if (ReportDtoTypeEnum.categorySmallLevel.equalsToCode(reportData.getType())) {
                 List<CategorySecondDto> dto = mapper.readValue(json, new TypeReference<List<CategorySecondDto>>() {
                 });
-                return this.dataReportService.reportSecondCategory(dto, opt);
+                return this.dataReportService.reportSecondCategory(dto, opt, market);
             } else if (ReportDtoTypeEnum.goods.equalsToCode(reportData.getType())) {
                 List<GoodsDto> dto = mapper.readValue(json, new TypeReference<List<GoodsDto>>() {
                 });
-                return this.dataReportService.reportGoods(dto, opt);
+                return this.dataReportService.reportGoods(dto, opt, market);
             } else if (ReportDtoTypeEnum.registerBill.equalsToCode(reportData.getType())) {
                 List<ReportRegisterBillDto> dto = mapper.readValue(json, new TypeReference<List<ReportRegisterBillDto>>() {
                 });
-                return this.dataReportService.reportRegisterBill(dto, opt);
+                return this.dataReportService.reportRegisterBill(dto, opt, market);
             } else if (ReportDtoTypeEnum.upstream.equalsToCode(reportData.getType())) {
                 List<UpStreamDto> dto = mapper.readValue(json, new TypeReference<List<UpStreamDto>>() {
                 });
-                return this.dataReportService.reportUpStream(dto, opt);
+                return this.dataReportService.reportUpStream(dto, opt, market);
             } else if (ReportDtoTypeEnum.downstream.equalsToCode(reportData.getType())) {
                 List<DownStreamDto> dto = mapper.readValue(json, new TypeReference<List<DownStreamDto>>() {
                 });
-                return this.dataReportService.reportDownStream(dto, opt);
+                return this.dataReportService.reportDownStream(dto, opt, market);
             } else if (ReportDtoTypeEnum.scanCodeOrder.equalsToCode(reportData.getType())) {
                 List<ReportScanCodeOrderDto> dto = mapper.readValue(json, new TypeReference<List<ReportScanCodeOrderDto>>() {
                 });
-                return this.dataReportService.reportScanCodeOrder(dto, opt);
+                return this.dataReportService.reportScanCodeOrder(dto, opt, market);
             } else if (ReportDtoTypeEnum.deliveryOrder.equalsToCode(reportData.getType())) {
                 List<ReportDeliveryOrderDto> dto = mapper.readValue(json, new TypeReference<List<ReportDeliveryOrderDto>>() {
                 });
-                return this.dataReportService.reportDeliveryOrder(dto, opt);
+                return this.dataReportService.reportDeliveryOrder(dto, opt, market);
             } else if (ReportDtoTypeEnum.inDoor.equalsToCode(reportData.getType())) {
                 List<ReportCheckInDto> dto = mapper.readValue(json, new TypeReference<List<ReportCheckInDto>>() {
                 });
-                return this.dataReportService.reportCheckIn(dto, opt);
+                return this.dataReportService.reportCheckIn(dto, opt, market);
             } else if (ReportDtoTypeEnum.deleteScanCodeOrder.equalsToCode(reportData.getType())) {
                 ReportDeletedOrderDto dto = mapper.readValue(json, ReportDeletedOrderDto.class);
-                return this.dataReportService.reportDeletedScanCodeOrder(dto, opt);
+                return this.dataReportService.reportDeletedScanCodeOrder(dto, opt, market);
             } else if (ReportDtoTypeEnum.deleteDeliveryOrder.equalsToCode(reportData.getType())) {
                 ReportDeletedOrderDto dto = mapper.readValue(json, ReportDeletedOrderDto.class);
-                return this.dataReportService.reportDeletedDeliveryOrder(dto, opt);
+                return this.dataReportService.reportDeletedDeliveryOrder(dto, opt, market);
             } else if (ReportDtoTypeEnum.registerBillDelete.equalsToCode(reportData.getType())) {
                 ReportRegisterBillDeleteDto dto = mapper.readValue(json, ReportRegisterBillDeleteDto.class);
-                return this.dataReportService.reportRegisterBillDelete(dto, opt);
+                return this.dataReportService.reportRegisterBillDelete(dto, opt, market);
             }else {
                 return BaseOutput.failure("数据错误");
             }
@@ -182,6 +207,16 @@ public class ThirdPartyReportController {
         if (StringUtils.isBlank(input.getCreatedStart()) || StringUtils.isBlank(input.getCreatedEnd())) {
             return BaseOutput.failure("参数错误");
         }
+        Market market = marketService.get(MarketUtil.returnMarket());
+        if (market == null) {
+            return BaseOutput.failure("市场不存在");
+        }
+        Long appId = market.getAppId();
+        String appSecret = market.getAppSecret();
+        String contextUrl = market.getContextUrl();
+        if (!(appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl))) {            return BaseOutput.failure("市场关联数据有误");
+        }
+
         DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         LocalDate start = null;
@@ -221,7 +256,7 @@ public class ThirdPartyReportController {
             return ld.atTime(23, 59, 59);
 
         }).mapKeyValue((k, v) -> {
-            BaseOutput output = this.dataReportService.reportCount(opt, k, v, 0);
+            BaseOutput output = this.dataReportService.reportCount(opt, k, v, 0, market);
             logger.info("success:{},message:{}", output.isSuccess(), output.getMessage());
             return output;
         }).filter(o -> !o.isSuccess()).toList();

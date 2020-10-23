@@ -8,6 +8,7 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.Market;
 import com.dili.trace.domain.ThirdPartyReportData;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
@@ -63,14 +64,17 @@ public class DataReportService {
     @Value("${thirdparty.report.appSecret}")
     protected String appSecret;
 
+    protected Long marketId;
+
     /**
      * 市场经营户数据统计
-     * 
+     *
      * @param marketCountDto
      * @return
      */
-    public BaseOutput marketCount(MarketCountDto marketCountDto, Optional<OperatorUser> optUser) {
+    public BaseOutput marketCount(MarketCountDto marketCountDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:市场经营户数据统计");
+        setMarketInfo(market);
         String path = "/nfwlApi/marketCount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, marketCountDto, optUser);
@@ -78,29 +82,30 @@ public class DataReportService {
 
     /**
      * 报备检测数据统计
-     * 
+     *
      * @param reportCountDto
      * @return
      */
 
     /**
      * 报备检测数据统计
-     * 
+     *
      * @param reportCountDto
      * @return
      */
-    public BaseOutput reportCount(ReportCountDto reportCountDto, Optional<OperatorUser> optUser) {
+    public BaseOutput reportCount(ReportCountDto reportCountDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:报备检测数据统计");
+        setMarketInfo(market);
         String path = "/nfwlApi/reportCount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportCountDto, optUser);
     }
 
-    public BaseOutput reportCount(Optional<OperatorUser> optUser,LocalDateTime startDateTime,LocalDateTime endDateTime, int checkBatch) {
+    public BaseOutput reportCount(Optional<OperatorUser> optUser, LocalDateTime startDateTime, LocalDateTime endDateTime, int checkBatch, Market market) {
         logger.info("上报:报备检测数据统计");
 
         RegisterBillDto billDto = new RegisterBillDto();
-       
+
         Date start = Date.from(startDateTime.atZone(ZoneId.systemDefault()).toInstant());
         Date end = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
@@ -108,6 +113,7 @@ public class DataReportService {
 
         billDto.setCreatedStart(DateUtil.format(start, "yyyy-MM-dd HH:mm:ss"));
         billDto.setCreatedEnd(DateUtil.format(end, "yyyy-MM-dd HH:mm:ss"));
+        billDto.setMarketId(market.getId());
         ReportCountDto reportCountDto = StreamEx.ofNullable(this.registerBillMapper.selectReportCountData(billDto))
                 .nonNull().flatCollection(Function.identity()).findFirst().orElse(new ReportCountDto());
         reportCountDto.setUpdateTime(updateTime);
@@ -146,17 +152,18 @@ public class DataReportService {
             reportCountDto.setCheckBatch(0);
         }
 
-        return this.reportCount(reportCountDto, optUser);
+        return this.reportCount(reportCountDto, optUser, market);
     }
 
     /**
      * 品种产地排名统计数据
-     * 
+     *
      * @param regionCountDto
      * @return
      */
-    public BaseOutput regionCount(RegionCountDto regionCountDto, Optional<OperatorUser> optUser) {
+    public BaseOutput regionCount(RegionCountDto regionCountDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:品种产地排名统计数据");
+        setMarketInfo(market);
         String path = "/nfwlApi/regionCount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, regionCountDto, optUser);
@@ -164,12 +171,13 @@ public class DataReportService {
 
     /**
      * 三色码状态数据统计
-     * 
+     *
      * @param codeCountDto
      * @return
      */
-    public BaseOutput codeCount(CodeCountDto codeCountDto, Optional<OperatorUser> optUser) {
+    public BaseOutput codeCount(CodeCountDto codeCountDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:三色码状态数据统计");
+        setMarketInfo(market);
         String path = "/nfwlApi/codeCount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, codeCountDto, optUser);
@@ -177,7 +185,7 @@ public class DataReportService {
 
     /**
      * 创建header对象
-     * 
+     *
      * @return
      */
     protected Map<String, String> buildHeaderMap() {
@@ -195,7 +203,7 @@ public class DataReportService {
 
     /**
      * 刷新token或者返回当前有效的token
-     * 
+     *
      * @param forceRefresh 是否强制刷新
      */
     public String refreshToken(boolean forceRefresh) {
@@ -211,7 +219,6 @@ public class DataReportService {
 
     /**
      * 刷新token或者返回当前有效的token
-     * 
      */
     private Optional<String> getAccessToken() {
         String redisKey = this.accessTokeyRedisKey();
@@ -226,7 +233,7 @@ public class DataReportService {
 
     /**
      * 请求接口获得最新token
-     * 
+     *
      * @return
      */
     protected String getLatestToken() {
@@ -242,7 +249,9 @@ public class DataReportService {
         }
     }
 
-    /** token在redis的key */
+    /**
+     * token在redis的key
+     */
     private String accessTokeyRedisKey() {
         return "TRACE_THIRDPARTY_REPORT_TOKEN";
     }
@@ -274,6 +283,7 @@ public class DataReportService {
         ThirdPartyReportData thirdPartyReportData = new ThirdPartyReportData();
         thirdPartyReportData.setCreated(new Date());
         thirdPartyReportData.setModified(new Date());
+        thirdPartyReportData.setMarketId(this.marketId);
 
         try {
             String data = reportDto.toJson();
@@ -308,7 +318,7 @@ public class DataReportService {
     }
 
     private BaseOutput postJson(String url, Map<String, String> headeMap, String jsonBody,
-            Function<DocumentContext, BaseOutput> parseFun) {
+                                Function<DocumentContext, BaseOutput> parseFun) {
 
         try {
 
@@ -332,8 +342,9 @@ public class DataReportService {
         ThirdPartyReportData thirdPartyReportData = new ThirdPartyReportData();
         thirdPartyReportData.setCreated(new Date());
         thirdPartyReportData.setModified(new Date());
+        thirdPartyReportData.setMarketId(this.marketId);
 
-        String data = JSON.toJSONStringWithDateFormat(reportDto,"yyyy-MM-dd HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+        String data = JSON.toJSONStringWithDateFormat(reportDto, "yyyy-MM-dd HH:mm:ss", SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
         thirdPartyReportData.setData(data);
         String jsonBody = thirdPartyReportData.getData();
 
@@ -367,13 +378,15 @@ public class DataReportService {
     /**
      * 商品大类新增/修改
      *
-     * @author Lily
      * @param categoryDto 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser     操作人信息
+     * @param market      市场信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Lily
      */
-    public BaseOutput reportCategory(List<CategoryDto> categoryDto, Optional<OperatorUser> optUser) {
+    public BaseOutput reportCategory(List<CategoryDto> categoryDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:商品大类新增/修改");
+        setMarketInfo(market);
         String path = "/thirdParty/bigClass/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.categoryBigLevel);
@@ -382,13 +395,14 @@ public class DataReportService {
     /**
      * 商品二级类目新增/修改
      *
-     * @author Lily
      * @param categoryDto 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser     操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Lily
      */
-    public BaseOutput reportSecondCategory(List<CategorySecondDto> categoryDto, Optional<OperatorUser> optUser) {
+    public BaseOutput reportSecondCategory(List<CategorySecondDto> categoryDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:商品二级类目新增/修改");
+        setMarketInfo(market);
         String path = "/thirdParty/smallClass/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, categoryDto, optUser, ReportDtoTypeEnum.categorySmallLevel);
@@ -400,8 +414,9 @@ public class DataReportService {
      * @param goodsDto
      * @return
      */
-    public BaseOutput reportGoods(List<GoodsDto> goodsDto, Optional<OperatorUser> optUser) {
+    public BaseOutput reportGoods(List<GoodsDto> goodsDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:商品新增/修改");
+        setMarketInfo(market);
         String path = "/thirdParty/goods/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, goodsDto, optUser, ReportDtoTypeEnum.goods);
@@ -413,8 +428,9 @@ public class DataReportService {
      * @param reportUserDtos
      * @return
      */
-    public BaseOutput reportUserSaveUpdate(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser) {
+    public BaseOutput reportUserSaveUpdate(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:经营户新增/编辑");
+        setMarketInfo(market);
         String path = "/thirdParty/account/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserSave);
@@ -426,8 +442,9 @@ public class DataReportService {
      * @param reportUserDtos
      * @return
      */
-    public BaseOutput reportUserDelete(ReportUserDeleteDto reportUserDtos, Optional<OperatorUser> optUser) {
+    public BaseOutput reportUserDelete(ReportUserDeleteDto reportUserDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:经营户作废");
+        setMarketInfo(market);
         String path = "/thirdParty/account/delete";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.thirdUserDelete);
@@ -435,25 +452,29 @@ public class DataReportService {
 
     /**
      * 食安码新增/修改
+     *
      * @param pushList
      * @param optUser
      */
-    public BaseOutput reportUserQrCode(List<ReportQrCodeDto> pushList, Optional<OperatorUser> optUser) {
+    public BaseOutput reportUserQrCode(List<ReportQrCodeDto> pushList, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:食安码新增/编辑");
+        setMarketInfo(market);
         String path = "/thirdParty/code/updateAccount";
         String url = this.reportContextUrl + path;
         return this.postJson(url, pushList, optUser, ReportDtoTypeEnum.userQrCode);
     }
+
     /**
      * 报备新增/编辑
      *
-     * @author Alvin
      * @param reportRegisterBillDtos 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser                操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Alvin
      */
-    public BaseOutput reportRegisterBill(List<ReportRegisterBillDto> reportRegisterBillDtos, Optional<OperatorUser> optUser) {
+    public BaseOutput reportRegisterBill(List<ReportRegisterBillDto> reportRegisterBillDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:报备新增/编辑");
+        setMarketInfo(market);
         String path = "/thirdParty/enterBase/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportRegisterBillDtos, optUser, ReportDtoTypeEnum.registerBill);
@@ -462,13 +483,14 @@ public class DataReportService {
     /**
      * 报备新增/编辑
      *
-     * @author Asa
      * @param reportRegisterBillDeleteDto 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser                     操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Asa
      */
-    public BaseOutput reportRegisterBillDelete(ReportRegisterBillDeleteDto reportRegisterBillDeleteDto, Optional<OperatorUser> optUser) {
+    public BaseOutput reportRegisterBillDelete(ReportRegisterBillDeleteDto reportRegisterBillDeleteDto, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:报备报废");
+        setMarketInfo(market);
         String path = "/thirdParty/enterBase/delete";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportRegisterBillDeleteDto, optUser, ReportDtoTypeEnum.registerBillDelete);
@@ -477,13 +499,14 @@ public class DataReportService {
     /**
      * 进门
      *
-     * @author Lily
      * @param checkInDtos 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser     操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Lily
      */
-    public BaseOutput reportCheckIn(List<ReportCheckInDto> checkInDtos, Optional<OperatorUser> optUser) {
+    public BaseOutput reportCheckIn(List<ReportCheckInDto> checkInDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:进门");
+        setMarketInfo(market);
         String path = "/thirdParty/inDoor/save";
         String url = this.reportContextUrl + path;
         return this.postJson(url, checkInDtos, optUser, ReportDtoTypeEnum.inDoor);
@@ -495,8 +518,9 @@ public class DataReportService {
      * @param upStreamDtos
      * @return
      */
-    public BaseOutput reportUpStream(List<UpStreamDto> upStreamDtos, Optional<OperatorUser> optUser) {
+    public BaseOutput reportUpStream(List<UpStreamDto> upStreamDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:上游新增/修改");
+        setMarketInfo(market);
         String path = "/thirdParty/upstreamOwn/saveOrUpdate";
         String url = this.reportContextUrl + path;
         return this.postJson(url, upStreamDtos, optUser, ReportDtoTypeEnum.upstream);
@@ -508,8 +532,9 @@ public class DataReportService {
      * @param downStreamDtos
      * @return
      */
-    public BaseOutput reportDownStream(List<DownStreamDto> downStreamDtos, Optional<OperatorUser> optUser) {
+    public BaseOutput reportDownStream(List<DownStreamDto> downStreamDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:下游新增/修改");
+        setMarketInfo(market);
         String path = "/thirdParty/downStream/saveOrUpdate";
         String url = this.reportContextUrl + path;
         return this.postJson(url, downStreamDtos, optUser, ReportDtoTypeEnum.downstream);
@@ -518,13 +543,14 @@ public class DataReportService {
     /**
      * 扫码交易
      *
-     * @author Alvin
      * @param scanCodeOrderDtos 需要发送的数据
-     * @param optUser 操作人信息
+     * @param optUser           操作人信息
      * @return BaseOutput 返回成功或失败信息
+     * @author Alvin
      */
-    public BaseOutput reportScanCodeOrder(List<ReportScanCodeOrderDto> scanCodeOrderDtos, Optional<OperatorUser> optUser) {
+    public BaseOutput reportScanCodeOrder(List<ReportScanCodeOrderDto> scanCodeOrderDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:扫码交易");
+        setMarketInfo(market);
         String path = "/thirdParty/order/sc";
         String url = this.reportContextUrl + path;
         return this.postJson(url, scanCodeOrderDtos, optUser, ReportDtoTypeEnum.scanCodeOrder);
@@ -536,8 +562,9 @@ public class DataReportService {
      * @param reportDeletedOrder
      * @return
      */
-    public BaseOutput reportDeletedScanCodeOrder(ReportDeletedOrderDto reportDeletedOrder, Optional<OperatorUser> optUser) {
+    public BaseOutput reportDeletedScanCodeOrder(ReportDeletedOrderDto reportDeletedOrder, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:扫码交易作废");
+        setMarketInfo(market);
         String path = "/thirdParty/order/sc/delete";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportDeletedOrder, optUser, ReportDtoTypeEnum.deleteScanCodeOrder);
@@ -549,8 +576,9 @@ public class DataReportService {
      * @param deliveryOrderDtos
      * @return
      */
-    public BaseOutput reportDeliveryOrder(List<ReportDeliveryOrderDto> deliveryOrderDtos, Optional<OperatorUser> optUser) {
+    public BaseOutput reportDeliveryOrder(List<ReportDeliveryOrderDto> deliveryOrderDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:配送交易");
+        setMarketInfo(market);
         String path = "/thirdParty/order/delivery";
         String url = this.reportContextUrl + path;
         return this.postJson(url, deliveryOrderDtos, optUser, ReportDtoTypeEnum.deliveryOrder);
@@ -562,10 +590,74 @@ public class DataReportService {
      * @param reportDeletedOrder
      * @return
      */
-    public BaseOutput reportDeletedDeliveryOrder(ReportDeletedOrderDto reportDeletedOrder, Optional<OperatorUser> optUser) {
+    public BaseOutput reportDeletedDeliveryOrder(ReportDeletedOrderDto reportDeletedOrder, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:扫码交易作废");
+        setMarketInfo(market);
         String path = "/thirdParty/order/delivery/delete";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportDeletedOrder, optUser, ReportDtoTypeEnum.deleteDeliveryOrder);
+    }
+
+    /**
+     * 杭果经营户接口
+     *
+     * @param reportUserDtos
+     * @return
+     */
+    public BaseOutput reportFruitsUser(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser, Market market) {
+        logger.info("上报:杭果经营户");
+        setMarketInfo(market);
+        String path = "/thirdParty/ckeck/account";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.HangGuoUser);
+    }
+
+    /**
+     * 杭果商品接口
+     *
+     * @param goodsDtoList
+     * @return
+     */
+    public BaseOutput reportFruitsGoods(List<GoodsDto> goodsDtoList, Optional<OperatorUser> optUser, Market market) {
+        logger.info("上报:杭果商品");
+        setMarketInfo(market);
+        String path = "/thirdParty/check/goods";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, goodsDtoList, optUser, ReportDtoTypeEnum.HangGuoGoods);
+    }
+
+    /**
+     * 杭果检测数据接口
+     *
+     * @param inspectionDtos
+     * @return
+     */
+    public BaseOutput reportFruitsInspection(List<ReportInspectionDto> inspectionDtos, Optional<OperatorUser> optUser, Market market) {
+        logger.info("上报:杭果检测数据");
+        setMarketInfo(market);
+        String path = "/thirdParty/detection/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, inspectionDtos, optUser, ReportDtoTypeEnum.HangGuoInspection);
+    }
+
+    /**
+     * 杭果不合格处置数据接口
+     *
+     * @param inspectionDtos
+     * @return
+     */
+    public BaseOutput reportFruitsUnqualifiedDisposal(List<ReportUnqualifiedDisposalDto> inspectionDtos, Optional<OperatorUser> optUser, Market market) {
+        logger.info("上报:杭果不合格处置数据");
+        setMarketInfo(market);
+        String path = "/thirdParty/check/fail/save";
+        String url = this.reportContextUrl + path;
+        return this.postJson(url, inspectionDtos, optUser, ReportDtoTypeEnum.HangGuoUnqualifiedInspection);
+    }
+
+    public void setMarketInfo(Market market) {
+        this.marketId = market.getId();
+        this.reportContextUrl = market.getContextUrl();
+        this.appId = String.valueOf(market.getAppId());
+        this.appSecret = market.getAppSecret();
     }
 }
