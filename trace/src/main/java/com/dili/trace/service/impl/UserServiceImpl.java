@@ -872,6 +872,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             e.and().andEqualTo("state", EnabledStateEnum.ENABLED.getCode());
             e.and().andEqualTo("yn", YnEnum.YES.getCode());
             e.and().andEqualTo("isActive", YnEnum.YES.getCode());
+            e.and().andEqualTo("marketId", input.getMarketId());
             userList =  this.getDao().selectByExample(e);
         }
 
