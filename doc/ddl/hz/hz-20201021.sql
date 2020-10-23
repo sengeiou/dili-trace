@@ -51,7 +51,7 @@ ALTER TABLE register_bill ADD COLUMN piece_weight decimal(10,3) COMMENT '件重'
 ALTER TABLE register_bill ADD COLUMN remark VARCHAR(200) COMMENT '备注';
 ALTER TABLE register_bill ADD COLUMN create_user VARCHAR(50) COMMENT '创建人';
 ALTER TABLE register_bill ADD COLUMN delete_user VARCHAR(50) COMMENT '作废人';
-ALTER TABLE register_bill ADD COLUMN delete_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '作废时间';
+ALTER TABLE register_bill ADD COLUMN delete_time timestamp COMMENT '作废时间';
 ALTER TABLE register_bill ADD COLUMN packaging VARCHAR(20) COMMENT '包装';
 ALTER TABLE register_bill ADD COLUMN order_type tinyint(2) COMMENT '订单类型 1.报备单 2.进门登记单';
 

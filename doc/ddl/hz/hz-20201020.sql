@@ -31,7 +31,7 @@ CREATE TABLE `register_head` (
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `is_deleted` tinyint(2) DEFAULT NULL COMMENT '是否作废。0-否 1-是',
   `delete_user` varchar(50) DEFAULT NULL COMMENT '作废人',
-  `delete_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '作废时间',
+  `delete_time` timestamp DEFAULT NULL COMMENT '作废时间',
   `version` tinyint(4) NOT NULL COMMENT '版本号',
   `reason` varchar(100) DEFAULT NULL COMMENT '原因',
   `active` tinyint(2) DEFAULT NULL COMMENT '是否启用。0-否 1-是',
