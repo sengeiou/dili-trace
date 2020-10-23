@@ -167,41 +167,4 @@
       GROUP BY t.buyer_id, t.`product_name` ORDER BY user.name, weight DESC
   </select>
 
-<select id="getThirdPartySourceData" parameterType="com.dili.trace.domain.ThirdPartySourceData"
-    resultType="com.dili.trace.domain.ThirdPartySourceData">
-    select
-    id,
-    name,
-    type,
-    operator_id,
-    operator_name,
-    data,
-    created,
-    modified,
-    market_id
-     from
-     third_party_source_data
-     where
-     1=1
-    <if test="name != null">
-        AND name=#{name}
-    </if>
-    <if test="type != null">
-        AND type=#{type}
-    </if>
-    <if test="id != null">
-        AND id=#{id}
-    </if>
-</select>
-
-    <insert id="insertThirdPartySourceData" parameterType="com.dili.trace.domain.ThirdPartySourceData">
-        insert into third_party_source_data
-        (name,type,operator_id,operator_name,
-            data,created, modified,market_id)
-        values (
-        {#name},{#type},{#operator_id},{#operator_name},{#data},{#created},{# modified},{#market_id}
-        )
-    </insert>
-
-
 </mapper>
