@@ -29,6 +29,7 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
+import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.QRCodeUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.pagehelper.Page;
@@ -137,6 +138,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
         if (StringUtils.isBlank(user.getMarketName())) {
+            user.setMarketId(MarketUtil.returnMarket());
             user.setMarketName("杭州水产");
         }
         insertSelective(user);
