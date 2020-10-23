@@ -70,7 +70,7 @@ public class ClientRegisterHeadApi {
 	public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody RegisterHeadDto input) {
 		logger.info("获取进门主台账单列表:{}", JSON.toJSONString(input));
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
 			logger.info("获取进门主台账单列表 操作用户:{}", userId);
 			input.setSort("created");
 			input.setOrder("desc");
@@ -133,7 +133,7 @@ public class ClientRegisterHeadApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 
 			List<CreateRegisterHeadInputDto> registerHeads = StreamEx.of(createListRegisterHeadParam.getRegisterBills())
 					.nonNull().toList();
@@ -160,7 +160,7 @@ public class ClientRegisterHeadApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
@@ -186,7 +186,7 @@ public class ClientRegisterHeadApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 
 			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
@@ -210,7 +210,7 @@ public class ClientRegisterHeadApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}

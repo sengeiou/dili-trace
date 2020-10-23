@@ -66,7 +66,7 @@ public class ClientRegisterFormBillApi {
 	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto input) {
 		logger.info("获取进门登记单列表:{}", JSON.toJSONString(input));
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
 
 			logger.info("获取进门登记单列表 操作用户:{}", userId);
 			input.setSort("created");
@@ -90,7 +90,7 @@ public class ClientRegisterFormBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 
 			List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills())
 					.nonNull().toList();
@@ -117,7 +117,7 @@ public class ClientRegisterFormBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
@@ -142,7 +142,7 @@ public class ClientRegisterFormBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
 			if (operatorUser == null) {
 				return BaseOutput.failure("未登陆用户");
 			}
