@@ -12,6 +12,7 @@ import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.glossary.hanguo.HangGuoGoodsLevelEnum;
 import com.dili.trace.glossary.hanguo.HangGuoVocationTypeEnum;
@@ -359,6 +360,7 @@ public class HangGuoDataUtil {
     private User getHangGuoMember(HangGuoUser info, Date createTime) {
         String nullStr = "空";
         Integer version = 0;
+        Integer source = 20;
         User sellerUser = DTOUtils.newDTO(User.class);
         sellerUser.setThirdPartyCode(info.getMemberNo());
         sellerUser.setCreated(info.getEnableDate());
@@ -396,6 +398,7 @@ public class HangGuoDataUtil {
         sellerUser.setModified(createTime);
         sellerUser.setCreated(createTime);
         sellerUser.setYn(YnEnum.YES.getCode());
+        sellerUser.setSource(source);
         return sellerUser;
     }
 
@@ -454,6 +457,7 @@ public class HangGuoDataUtil {
     private User getHangGuoSupplier(HangGuoUser info, Date createTime) {
         String nullStr = "空";
         Integer version = 0;
+        Integer source = 20;
         User sellerUser = DTOUtils.newDTO(User.class);
         sellerUser.setThirdPartyCode(info.getSupplierNo());
         sellerUser.setName(info.getSupplierName());
@@ -496,7 +500,7 @@ public class HangGuoDataUtil {
         sellerUser.setCreated(createTime);
         sellerUser.setYn(YnEnum.YES.getCode());
         sellerUser.setValidateState(ValidateStateEnum.PASSED.getCode());
-
+        sellerUser.setSource(source);
         return sellerUser;
     }
 
@@ -593,6 +597,7 @@ public class HangGuoDataUtil {
         String first = commodity.getFirstCateg().trim();
         String second = commodity.getSecondCateg().trim();
         String categoryCode = commodity.getCategoryNumber().trim();
+        category.setIsShow(CategoryIsShowEnum.IS_SHOW.getCode());
         //商品编码与大类码一致，商品为第一层级.无parentId
         if (goodsCode.equals(first)) {
             category.setLevel(HangGuoGoodsLevelEnum.GOODS_ONE.getCode());
@@ -609,6 +614,7 @@ public class HangGuoDataUtil {
         } else {
             category.setLevel(HangGuoGoodsLevelEnum.GOODS_FIVE.getCode());
             category.setParentCode(categoryCode);
+            category.setIsShow(CategoryIsShowEnum.NOT_SHOW.getCode());
         }
     }
 

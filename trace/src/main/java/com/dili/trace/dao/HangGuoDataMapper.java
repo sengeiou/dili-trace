@@ -133,4 +133,17 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
      * @return
      */
     List<CheckOrderDispose> getReportCheckOrderDisposeList(CheckOrderDispose dispose);
+
+    /**
+     * 查询缓存表
+     * @param que
+     * @return
+     */
+    ThirdPartySourceData getThirdPartySourceData(ThirdPartySourceData que);
+
+    /**
+     * 插入缓存表
+     * @param addSource
+     */
+    void insertThirdPartySourceData(ThirdPartySourceData addSource);
 }

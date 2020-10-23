@@ -33,6 +33,7 @@
       JOIN trade_order o ON (r.trade_order_Id = o.id AND o.order_status = 10)
       JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 20)
       WHERE r.return_status = 0
+      AND r.source_type = 1
       <if test="modifiedEnd != null">
         <![CDATA[AND o.modified <=#{modifiedEnd}]]>
       </if>
@@ -44,22 +45,24 @@
       </if>
   </select>
 
-  <select id="selectDeliveryOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportDeliveryOrderDto">
-    SELECT r.`created` orderTime, r.`buyer_id` thirdDsId, r.`id` thirdOrderId, r.`seller_id` thirdAccId
-      FROM trade_request r
-      JOIN trade_order o ON (r.trade_order_Id = o.id AND o.order_status = 10)
-      JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 10)
-      WHERE r.return_status = 0
-      <if test="modifiedEnd != null">
-        <![CDATA[AND o.modified <=#{modifiedEnd}]]>
-      </if>
-      <if test="modifiedStart != null">
-        <![CDATA[AND o.modified >#{modifiedStart}]]>
-      </if>
-      <if test="marketId != null">
-          AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
-      </if>
-  </select>
+    <select id="selectDeliveryOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto"
+            resultType="com.dili.trace.dto.thirdparty.report.ReportDeliveryOrderDto">
+        SELECT r.`created` orderTime, r.`buyer_id` thirdDsId, r.`id` thirdOrderId, r.`seller_id` thirdAccId
+        FROM trade_request r
+        JOIN trade_order o ON (r.trade_order_Id = o.id AND o.order_status = 10)
+        JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 10)
+        WHERE r.return_status = 0
+        AND r.source_type = 1
+        <if test="modifiedEnd != null">
+            <![CDATA[AND o.modified <=#{modifiedEnd}]]>
+        </if>
+        <if test="modifiedStart != null">
+            <![CDATA[AND o.modified >#{modifiedStart}]]>
+        </if>
+        <if test="marketId != null">
+            AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
+        </if>
+    </select>
 
   <select id="selectOrderDetailReport" parameterType="com.dili.trace.dto.PushDataQueryDto" resultType="com.dili.trace.dto.thirdparty.report.ReportOrderDetailDto">
     SELECT d.`trade_request_id` requestId,d.`id` detailId, d.`total_weight` orderNum, d.`bill_id` thirdEnterId, p.`trade_request_id` thirdOrderParentId,
@@ -164,8 +167,40 @@
       GROUP BY t.buyer_id, t.`product_name` ORDER BY user.name, weight DESC
   </select>
 
+<select id="getThirdPartySourceData">
+    select
+    id,
+    name,
+    type,
+    operator_id,
+    operator_name,
+    data,
+    created,
+    modified,
+    market_id
+     from
+     third_party_source_data
+     where
+     1=1
+    <if test="name != null">
+        AND name=#{name}
+    </if>
+    <if test="type != null">
+        AND type=#{type}
+    </if>
+    <if test="id != null">
+        AND id=#{id}
+    </if>
+</select>
 
-
+    <insert id="insertThirdPartySourceData" parameterType="com.dili.trace.domain.ThirdPartySourceData">
+        insert into third_party_source_data
+        (name,type,operator_id,operator_name,
+            data,created, modified,market_id)
+        values (
+        {#name},{#type},{#operator_id},{#operator_name},{#data},{#created},{# modified},{#market_id}
+        )
+    </insert>
 
 
 </mapper>

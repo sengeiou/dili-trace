@@ -113,4 +113,14 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
         return hangGuoDataMapper.getReportCheckOrderDisposeList(dispose);
     }
 
+    @Override
+    public ThirdPartySourceData getThirdPartySourceData(ThirdPartySourceData que) {
+        return hangGuoDataMapper.getThirdPartySourceData(que);
+    }
+
+    @Override
+    public void insertThirdPartySourceData(ThirdPartySourceData addSource) {
+        hangGuoDataMapper.insertThirdPartySourceData(addSource);
+    }
+
 }
