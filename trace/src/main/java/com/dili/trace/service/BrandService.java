@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,17 +19,20 @@ import tk.mybatis.mapper.entity.Example;
 @Service
 public class BrandService extends BaseServiceImpl<Brand, Long> {
 
-    public Optional<Long> createOrUpdateBrand(String brandName, Long userId) {
+    public Optional<Long> createOrUpdateBrand(String brandName, Long userId, Long marketId) {
         if (StringUtils.isBlank(brandName)) {
             return Optional.empty();
         }
         Brand query = new Brand();
         // query.setUserId(userId);
         query.setBrandName(brandName);
+        query.setMarketId(marketId);
         Brand brandItem = StreamEx.of(this.listByExample(query)).findFirst().orElseGet(() -> {
             Brand brand = new Brand();
             brand.setUserId(userId);
             brand.setBrandName(brandName);
+            brand.setMarketId(marketId);
+            brand.setCreated(new Date());
             this.insertSelective(brand);
             return brand;
         });

@@ -44,7 +44,10 @@ public class Brand extends BaseDomain {
 
 	@Column(name = "`modified`")
     private Date modified;
-    
+
+    @ApiModelProperty(value = "市场ID")
+    @Column(name = "`market_id`")
+    private Long marketId;
 
     /**
      * @return Long return the id
@@ -118,4 +121,11 @@ public class Brand extends BaseDomain {
         this.modified = modified;
     }
 
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
 }
