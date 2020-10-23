@@ -75,6 +75,9 @@
     <if test="isDeleted !=null">
         AND register_bill.`is_deleted`=#{isDeleted}
     </if>
+    <if test="orderType !=null">
+        AND register_bill.`order_type`=#{orderType}
+    </if>
     order by  register_bill.created desc
 
     </select>

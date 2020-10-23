@@ -1097,7 +1097,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
         //query.setIsDeleted(TFEnum.FALSE.getCode());
         query.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
-        return this.countByVerifyStatus(query);
+        List<VerifyStatusCountOutputDto> countList = this.countByVerifyStatus(query);
+
+        query.setIsDeleted(TFEnum.TRUE.getCode());
+        List<RegisterBill> billList = this.listByExample(query);
+        if (billList != null) {
+            countList.stream().forEach(dto -> {
+                if (BillVerifyStatusEnum.DELETED.getCode().equals(dto.getVerifyStatus())){
+                    dto.setNum(billList.size());
+                }
+            });
+        }
+        return countList;
     }
 
     private String dynamicSQLFormBill(RegisterBillDto query) {

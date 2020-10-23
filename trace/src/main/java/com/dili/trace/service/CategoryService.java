@@ -5,6 +5,7 @@ import java.util.List;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.CategoryMapper;
 import com.dili.trace.domain.Category;
+import com.dili.trace.enums.CategoryIsShowEnum;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +32,7 @@ public class CategoryService extends BaseServiceImpl<Category, Long> {
 		if (marketId != null) {
 			e.and().andEqualTo("marketId", marketId);
 		}
+		e.and().andNotEqualTo("isShow", CategoryIsShowEnum.NOT_SHOW.getCode());
 		return this.getDao().selectByExample(e);
 	}
 

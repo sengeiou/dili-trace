@@ -19,7 +19,9 @@ public class RUserCategoryServiceImpl extends BaseServiceImpl<RUserCategory,Long
     @Override
     public BaseOutput dealBatchAdd(List<RUserCategory> rUserCategoryList,Long userId) {
         for (RUserCategory rUserCategory : rUserCategoryList) {
-            rUserCategory.setUserId(userId);
+            if (rUserCategory.getUserId() == null) {
+                rUserCategory.setUserId(userId);
+            }
 
             deleteByExample(rUserCategory);
         }

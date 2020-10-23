@@ -102,7 +102,9 @@ public class CategoryApi {
 		}
 		try{
 			Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			rUserCategory.setUserId(id);
+			if (rUserCategory.getUserId() == null) {
+				rUserCategory.setUserId(id);
+			}
 			rUserCategory.setSort("create_time");
 			rUserCategory.setOrder("desc");
 			BasePage<RUserCategory> out = rUserCategoryService.listPageByExample(rUserCategory);

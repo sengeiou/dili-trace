@@ -91,6 +91,9 @@ public class RegisterBillApi {
             user.setThirdPartyCode(inputDto.getSupplierId());
             user.setYn(YnEnum.YES.getCode());
             List<User> userList = userService.listByExample(user);
+            if(CollectionUtils.isEmpty(userList)){
+                return  BaseOutput.failure("supplierId没有匹配的经营户");
+            }
             Long userId = null;
             Integer row = 10;
             String billNo = inputDto.getBillId();
