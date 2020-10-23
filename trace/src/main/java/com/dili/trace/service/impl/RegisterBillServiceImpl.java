@@ -1101,11 +1101,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         query.setIsDeleted(TFEnum.TRUE.getCode());
         List<RegisterBill> billList = this.listByExample(query);
-        VerifyStatusCountOutputDto dto = VerifyStatusCountOutputDto.buildDefault(BillVerifyStatusEnum.DELETED);
         if (billList != null) {
-            dto.setNum(billList.size());
+            countList.stream().forEach(dto -> {
+                if (BillVerifyStatusEnum.DELETED.getCode().equals(dto.getVerifyStatus())){
+                    dto.setNum(billList.size());
+                }
+            });
         }
-        countList.add(dto);
         return countList;
     }
 
