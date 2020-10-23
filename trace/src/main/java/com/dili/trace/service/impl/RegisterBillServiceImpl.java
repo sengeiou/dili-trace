@@ -1014,6 +1014,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         });
 
         bill.setReason(StringUtils.trimToEmpty(reason));
+        // 查验状态为不通过，进门状态设置为未进门，其他设置为已进门
+        if (BillVerifyStatusEnum.NO_PASSED == toVerifyState) {
+            bill.setIsCheckin(YnEnum.NO.getCode());
+        } else {
+            bill.setIsCheckin(YnEnum.YES.getCode());
+        }
         if (BillVerifyStatusEnum.PASSED == toVerifyState) {
             bill.setVerifyType(VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode());
         }
