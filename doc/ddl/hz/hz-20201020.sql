@@ -6,7 +6,7 @@ CREATE TABLE `register_head` (
   `user_id` bigint(20) NOT NULL COMMENT '业户ID',
   `name` varchar(50) DEFAULT NULL COMMENT '业户姓名',
   `id_card_no` varchar(20) DEFAULT NULL COMMENT '业户身份证号',
-  `third_party_code` varchar(20) NOT NULL COMMENT '经营户卡号',
+  `third_party_code` varchar(20) DEFAULT NULL COMMENT '经营户卡号',
   `addr` varchar(50) DEFAULT NULL COMMENT '业户地址',
   `phone` varchar(20) DEFAULT NULL COMMENT '业户手机',
   `plate` varchar(15) NOT NULL COMMENT '车牌号',
