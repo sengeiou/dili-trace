@@ -27,6 +27,9 @@ public class RegisterHeadDto extends RegisterHead {
 	@Transient
 	private String keyword;
 
+	@Transient
+	private Integer verifyRemainWeight;
+
 	public String getCreatedStart() {
 		return createdStart;
 	}
@@ -49,5 +52,13 @@ public class RegisterHeadDto extends RegisterHead {
 
 	public void setKeyword(String keyword) {
 		this.keyword = keyword;
+	}
+
+	public Integer getVerifyRemainWeight() {
+		return verifyRemainWeight;
+	}
+
+	public void setVerifyRemainWeight(Integer verifyRemainWeight) {
+		this.verifyRemainWeight = verifyRemainWeight;
 	}
 }

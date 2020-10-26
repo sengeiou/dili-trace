@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -280,6 +281,11 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         buildLikeKeyword(input).ifPresent(sql::append);
         if(sql.length() > 0){
             input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
+        }
+
+        // 校验剩余重量大于 0，登记单选择主台账时使用
+        if (Objects.equals(input.getVerifyRemainWeight(), 1)) {
+            input.setMetadata(IDTO.AND_CONDITION_EXPR, "( remain_weight > 0 )");
         }
 
         BasePage<RegisterHead> registerHeadBasePage = listPageByExample(input);
