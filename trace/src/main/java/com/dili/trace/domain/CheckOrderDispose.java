@@ -33,7 +33,7 @@ public class CheckOrderDispose extends BaseDomain {
     @Column(name = "`dispose_type`")
     private String disposeType;
     @Column(name = "`disposer`")
-    private String disposeUser;
+    private String disposer;
     @Column(name = "`disposer_id`")
     private String disposerId;
     @Column(name = "`report_flag`")
@@ -117,12 +117,12 @@ public class CheckOrderDispose extends BaseDomain {
         this.disposeType = disposeType;
     }
 
-    public String getDisposeUser() {
-        return disposeUser;
+    public String getDisposer() {
+        return disposer;
     }
 
-    public void setDisposeUser(String disposeUser) {
-        this.disposeUser = disposeUser;
+    public void setDisposer(String disposer) {
+        this.disposer = disposer;
     }
 
     public Integer getReportFlag() {

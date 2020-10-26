@@ -63,6 +63,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         /*if(!CollectionUtils.isEmpty(tradeList)){
             hangGuoDataUtil.createTrade(tradeList,endTime);
         }*/
+        //getTradeData();
 
     }
 
@@ -70,7 +71,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * 商品信息、供应商信息、会员信息每六小时调用一次
      */
     //@Scheduled(cron = "0 0 */6 * * ?")
-    public void getData() {
+    public void getBaseData() {
         try {
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品信息
@@ -124,24 +125,24 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             trade.setSupplierNo("000502");
             trade.setSupplierName("宋敏");
             trade.setBatchNo("2009031655");
-            trade.setItemNumber("2010129");
+            trade.setItemNumber("21103");
             trade.setItemName("葡萄(巨峰)");
             trade.setUnit("辽宁统");
             trade.setOriginNo("016");
             trade.setOriginName("辽宁");
             trade.setPositionNo("016");
             trade.setPositionName("辽宁");
-            trade.setPrice("47");
-            trade.setPackageNumber("2");
-            trade.setNumber("16");
-            trade.setAmount("90");
+            trade.setPrice(new BigDecimal(5000));
+            trade.setPackageNumber(12);
+            trade.setNumber(12);
+            trade.setAmount(new BigDecimal(600000));
             trade.setWeight("28");
             trade.setTradeNo("19404990");
             trade.setPosNo("194");
             trade.setPayWay("会员卡");
             trade.setMemberNo("000501");
             trade.setMemberName("赵兰芳0");
-            trade.setTotalAmount("90");
+            trade.setTotalAmount(new BigDecimal(90));
             trade.setOperator("孟建丽");
             trade.setPayer("孟建丽");
             trade.setPayNo("82653791");
@@ -168,7 +169,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
     private List<HangGuoCommodity> testCommodity() {
         ThirdPartySourceData que = new ThirdPartySourceData();
-        que.setName("");
+        que.setName("杭果商品");
         que.setType(1);
         ThirdPartySourceData commodityData=hangGuoDataService.getThirdPartySourceData(que);
         if(null==commodityData){
@@ -176,24 +177,6 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         }
         String data = commodityData.getData();
         List<HangGuoCommodity> commodityList = JSON.parseArray(data, HangGuoCommodity.class);
-        /*List<HangGuoCommodity> commodityList = new ArrayList<>();
-        HangGuoCommodity commodity = new HangGuoCommodity();
-        HangGuoCommodity commodity2 = new HangGuoCommodity();
-        commodity.setFirstCateg("2");
-        commodity.setSecondCateg("201");
-        commodity.setCategoryNumber("201012");
-        commodity.setItemNumber("201012");
-        commodity.setItemName("杭果苹果");
-        commodity.setItemUnitName("陕西同1");
-        commodity2.setFirstCateg("2");
-        commodity2.setSecondCateg("201");
-        commodity2.setCategoryNumber("201012");
-        commodity2.setItemNumber("2010129");
-        commodity2.setItemName("杭果苹果");
-        commodity2.setItemUnitName("陕西同12");
-
-        commodityList.add(commodity);
-        commodityList.add(commodity2);*/
         return commodityList;
     }
 

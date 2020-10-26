@@ -12,14 +12,41 @@ public class ReportInspectionDto {
     private List<ReportInspectionImgDto> checkImgList;
     private List<ReportInspectionItemDto> checkItem;
     private String checkNo;
+    private String checkOrgCode;
     private String checkOrgName;
     private String checkResult;
     private Date checkTime;
     private String checkType;
     private String checker;
-    private String goodName;
+    private String goodsName;
     private String goodsCode;
+    private String accountName;
+    private String boothNo;
     private Long marketId;
+
+    public String getCheckOrgCode() {
+        return checkOrgCode;
+    }
+
+    public void setCheckOrgCode(String checkOrgCode) {
+        this.checkOrgCode = checkOrgCode;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    public String getBoothNo() {
+        return boothNo;
+    }
+
+    public void setBoothNo(String boothNo) {
+        this.boothNo = boothNo;
+    }
 
     public Long getId() {
         return id;
@@ -102,12 +129,12 @@ public class ReportInspectionDto {
         this.checker = checker;
     }
 
-    public String getGoodName() {
-        return goodName;
+    public String getGoodsName() {
+        return goodsName;
     }
 
-    public void setGoodName(String goodName) {
-        this.goodName = goodName;
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
     }
 
     public String getGoodsCode() {

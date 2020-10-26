@@ -34,18 +34,61 @@ public class CheckOrder extends BaseDomain {
     private String checkType;
     @Column(name = "`checker`")
     private String checker;
+    @Column(name = "`checker_id`")
+    private Long checkerId;
+
     @Column(name = "`goods_name`")
-    private String goodName;
+    private String goodsName;
     @Column(name = "`goods_code`")
     private String goodsCode;
     @Column(name = "`market_id`")
     private String marketId;
     @Column(name = "`report_flag`")
     private Integer reportFlag;
+
+    @Column(name = "`user_id`")
+    private String userId;
+    @Column(name = "`user_name`")
+    private String userName;
+    @Column(name = "`tally_area_nos`")
+    private String tallyAreaNos;
+
     @Transient
     private List<ReportInspectionImgDto> checkImgList;
     @Transient
     private List<ReportInspectionItemDto> checkItem;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getTallyAreaNos() {
+        return tallyAreaNos;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setTallyAreaNos(String tallyAreaNos) {
+        this.tallyAreaNos = tallyAreaNos;
+    }
+
+    public Long getCheckerId() {
+        return checkerId;
+    }
+
+    public void setCheckerId(Long checkerId) {
+        this.checkerId = checkerId;
+    }
 
     public Date getCheckTime() {
         return checkTime;
@@ -143,12 +186,12 @@ public class CheckOrder extends BaseDomain {
         this.checker = checker;
     }
 
-    public String getGoodName() {
-        return goodName;
+    public String getGoodsName() {
+        return goodsName;
     }
 
-    public void setGoodName(String goodName) {
-        this.goodName = goodName;
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
     }
 
     public String getGoodsCode() {

@@ -4,6 +4,10 @@ import com.dili.ss.base.MyMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
+import com.dili.trace.dto.PushDataQueryDto;
+import com.dili.trace.dto.thirdparty.report.ReportInspectionDto;
+import com.dili.trace.dto.thirdparty.report.ReportScanCodeOrderDto;
+import com.dili.trace.dto.thirdparty.report.ReportUnqualifiedDisposalDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -146,4 +150,23 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
      * @param addSource
      */
     void insertThirdPartySourceData(ThirdPartySourceData addSource);
+
+    /**
+     * 获取杭果交易数据
+     * @param queryDto
+     * @return
+     */
+    List<ReportScanCodeOrderDto> getHangGuoScanOrderReport(PushDataQueryDto queryDto);
+
+    /**
+     * 更新检测主单上报标志位
+     * @param inspectionDtoList
+     */
+    void updateCheckOrderReportFlag(List<ReportInspectionDto> inspectionDtoList);
+
+    /**
+     * 更新检测处置单上报标志位
+     * @param disposalDtos
+     */
+    void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos);
 }

@@ -12,7 +12,6 @@ import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.glossary.hanguo.HangGuoGoodsLevelEnum;
 import com.dili.trace.glossary.hanguo.HangGuoVocationTypeEnum;
@@ -229,13 +228,13 @@ public class HangGuoDataUtil {
         HangGuoTrade trade = new HangGuoTrade();
         trade.setHandleFlag(DataHandleFlagEnum.PENDING_HANDLE.getCode());
         List<HangGuoTrade> tradeList = hangGuoDataService.selectTradeReportListByHandleFlag(trade);
-        String handleRemark = "交易单对应商品或用户无法关联，标记为暂不处理";
         List<HangGuoTrade> collect = StreamEx.of(tradeList).nonNull().filter(t -> !userMap.containsKey(t.getMemberNo())
                 || !userMap.containsKey(t.getSupplierNo()) || !categoryMap.containsKey(t.getItemNumber())).collect(Collectors.toList());
-        StreamEx.of(collect).nonNull().forEach(c -> c.setHandleRemark(handleRemark));
         if (CollectionUtils.isNotEmpty(collect)) {
+            String handleRemark = "交易单对应商品或用户无法关联，标记为暂不处理";
             Map<String, Object> map = new HashMap<>(16);
             map.put("list", collect);
+            map.put("handleRemark",handleRemark);
             map.put("handleFlag", DataHandleFlagEnum.UN_NEED_HANDLE.getCode());
             hangGuoDataService.batchUpdateCacheTradeHandleFlag(map);
         }
@@ -531,6 +530,7 @@ public class HangGuoDataUtil {
      * @param createTime
      */
     private void addCateGory(List<HangGuoCommodity> commodityList, Date createTime) {
+
         List<Category> categoryList = conversionCommodityList(commodityList, createTime);
 
         //先将杭果商品插入到溯源系统
@@ -540,6 +540,44 @@ public class HangGuoDataUtil {
         category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
         category.setCreated(createTime);
         hangGuoDataService.updateHangGuoCommodityParent(category);
+    }
+
+    /**
+     * 获取商品等级
+     *
+     * @param category
+     * @param commodity
+     * @return
+     */
+    private void setCommodityLevel(Category category, HangGuoCommodity commodity) {
+        String goodsCode = commodity.getItemNumber().trim();
+        String first = commodity.getFirstCateg().trim();
+        String second = commodity.getSecondCateg().trim();
+        String categoryCode = commodity.getCategoryNumber().trim();
+        category.setIsShow(CategoryIsShowEnum.IS_SHOW.getCode());
+        //商品编码与大类码一致，商品为第一层级.无parentId
+        if (goodsCode.equals(first)) {
+            category.setLevel(HangGuoGoodsLevelEnum.GOODS_ONE.getCode());
+        }
+        //商品编码与小类码一致，商品为第二层级
+        else if (goodsCode.equals(second)) {
+            category.setLevel(HangGuoGoodsLevelEnum.GOODS_TWO.getCode());
+            category.setParentCode(first);
+        }
+        //商品编码与品种码一致，商品为第三层级
+        else if (goodsCode.equals(categoryCode)) {
+            category.setLevel(HangGuoGoodsLevelEnum.GOODS_THREE.getCode());
+            category.setParentCode(second);
+        } else {
+            category.setLevel(HangGuoGoodsLevelEnum.GOODS_FIVE.getCode());
+            Integer psize = 5;
+            String parentGoodsCode = categoryCode;
+            if (categoryCode.length() > psize) {
+                parentGoodsCode = categoryCode.substring(0, categoryCode.length() - 1);
+            }
+            category.setParentCode(parentGoodsCode);
+            category.setIsShow(CategoryIsShowEnum.NOT_SHOW.getCode());
+        }
     }
 
     /**
@@ -583,39 +621,6 @@ public class HangGuoDataUtil {
             }
         });
         return categoryList;
-    }
-
-    /**
-     * 获取商品等级
-     *
-     * @param category
-     * @param commodity
-     * @return
-     */
-    private void setCommodityLevel(Category category, HangGuoCommodity commodity) {
-        String goodsCode = commodity.getItemNumber().trim();
-        String first = commodity.getFirstCateg().trim();
-        String second = commodity.getSecondCateg().trim();
-        String categoryCode = commodity.getCategoryNumber().trim();
-        category.setIsShow(CategoryIsShowEnum.IS_SHOW.getCode());
-        //商品编码与大类码一致，商品为第一层级.无parentId
-        if (goodsCode.equals(first)) {
-            category.setLevel(HangGuoGoodsLevelEnum.GOODS_ONE.getCode());
-        }
-        //商品编码与小类码一致，商品为第二层级
-        else if (goodsCode.equals(second)) {
-            category.setLevel(HangGuoGoodsLevelEnum.GOODS_TWO.getCode());
-            category.setParentCode(first);
-        }
-        //商品编码与品种码一致，商品为第三层级
-        else if (goodsCode.equals(categoryCode)) {
-            category.setLevel(HangGuoGoodsLevelEnum.GOODS_THREE.getCode());
-            category.setParentCode(second);
-        } else {
-            category.setLevel(HangGuoGoodsLevelEnum.GOODS_FIVE.getCode());
-            category.setParentCode(categoryCode);
-            category.setIsShow(CategoryIsShowEnum.NOT_SHOW.getCode());
-        }
     }
 
 
@@ -886,6 +891,8 @@ public class HangGuoDataUtil {
      */
     private List<TradeRequest> getTradeOrderRequestList(List<HangGuoTrade> tradeList, Map<String, User> userMap, Map<String, Category> categoryMap, Map<String, TradeOrder> orderMap, Map<Long, TradeDetail> billMap, Date createTime) {
         List<TradeRequest> requestList = new ArrayList<>();
+        Integer reportMaxAmountInt = 500000;
+        BigDecimal reportMaxAmount = new BigDecimal(reportMaxAmountInt);
         StreamEx.of(tradeList).nonNull().forEach(t -> {
             Long buyId = userMap.get(t.getMemberNo()).getId();
             String buyName = userMap.get(t.getMemberNo()).getName();
@@ -929,6 +936,12 @@ public class HangGuoDataUtil {
             request.setOperator(t.getOperator());
             request.setPayer(t.getPayer());
             request.setPayNo(t.getPayNo());
+            request.setSourceType(TradeRequestSourceTypeEnum.THIRD_HANGGUO.getCode());
+            if(null!=t.getAmount()&&t.getAmount().compareTo(reportMaxAmount)>=0){
+                request.setReportFlag(CheckOrderReportFlagEnum.UNTREATED.getCode());
+            }else{
+                request.setReportFlag(CheckOrderReportFlagEnum.PROCESSED.getCode());
+            }
             requestList.add(request);
         });
         return requestList;
