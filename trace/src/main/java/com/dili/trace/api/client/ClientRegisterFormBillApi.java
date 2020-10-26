@@ -99,7 +99,7 @@ public class ClientRegisterFormBillApi {
 			}
 			logger.info("保存多个进门登记单操作用户:{}，{}", operatorUser.getId(), operatorUser.getName());
 			List<Long> idList = this.registerBillService.createRegisterFormBillList(registerBills,
-					userService.get(createListBillParam.getUserId()), Optional.empty(), createListBillParam.getMarketId());
+					userService.get(createListBillParam.getUserId()), Optional.of(operatorUser), createListBillParam.getMarketId());
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
