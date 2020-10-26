@@ -12,7 +12,10 @@ public enum ReportInterfaceEnum {
      * 商品大类新增/修改
      */
     BIG_CATEGORY("category_bigClass", "商品大类新增/修改"),
-
+    /**
+     * 商品大类新增/修改
+     */
+    FRUITS_BIG_CATEGORY("fruits_category_bigClass", "杭果商品大类新增/修改"),
     /**
      * 商品二级类目新增/修改
      */

@@ -7,33 +7,28 @@ import java.util.Optional;
 /**
  * @author asa.lee
  */
+public enum TradeRequestSourceTypeEnum {
 
-public enum CheckOrderReportFlagEnum {
-
     /**
-     * 未处理/不上报
+     * 系统新增
      */
-    UNTREATED(-1, "未处理"),
+    SYSTEM_CREATE(1, "系统新增"),
     /**
-     * 已处理/待上报
+     * 第三方接口获取-杭果
      */
-    PROCESSED(1, "已处理"),
-    /**
-     * 已上报
-     */
-    REPORTED(2, "已上报"),
+    THIRD_HANGGUO(2, "杭果接口"),
     ;
 
     private String name;
     private Integer code;
 
-    CheckOrderReportFlagEnum(Integer code, String name) {
+    TradeRequestSourceTypeEnum(Integer code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static Optional<CheckOrderReportFlagEnum> fromCode(Integer code) {
-        return StreamEx.of(CheckOrderReportFlagEnum.values()).filterBy(CheckOrderReportFlagEnum::getCode, code).findFirst();
+    public static Optional<TradeRequestSourceTypeEnum> fromCode(Integer code) {
+        return StreamEx.of(TradeRequestSourceTypeEnum.values()).filterBy(TradeRequestSourceTypeEnum::getCode, code).findFirst();
     }
 
     public boolean equalsToCode(Integer code) {

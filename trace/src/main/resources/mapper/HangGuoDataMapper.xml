@@ -3,10 +3,11 @@
 <mapper namespace="com.dili.trace.dao.HangGuoDataMapper">
 
     <insert id="bachInsertCommodityList" parameterType="java.util.List" useGeneratedKeys="true">
-        insert into category(name,full_name,level,created,modified,market_id,type,specification,code,parent_code)
+        insert into
+        category(name,full_name,level,created,modified,market_id,type,specification,code,parent_code,is_show)
         values
         <foreach collection="list" item="co" separator=",">
-            (#{co.name},#{co.fullName},#{co.level},#{co.created},#{co.modified},#{co.marketId},#{co.type},#{co.specification},#{co.code},#{co.parentCode})
+            (#{co.name},#{co.fullName},#{co.level},#{co.created},#{co.modified},#{co.marketId},#{co.type},#{co.specification},#{co.code},#{co.parentCode},#{co.isShow})
         </foreach>
     </insert>
 
@@ -175,13 +176,13 @@
         (order_date,supplier_no,supplier_name,batch_no,item_number,item_name,unit,origin_no,
         origin_name,position_no,position_name,price,package_number,number,amount,weight,
         trade_no,pos_no,pay_way,member_no,member_name,total_amount,operator,payer,
-        pay_no,register_no)
+        pay_no,register_no,create_time)
         values
         <foreach collection="list" item="t" separator=",">
             (#{t.orderDate},#{t.supplierNo},#{t.supplierName},#{t.batchNo},#{t.itemNumber},#{t.itemName},#{t.unit},#{t.originNo},
             #{t.originName},#{t.positionNo},#{t.positionName},#{t.price},#{t.packageNumber},#{t.number},#{t.amount},#{t.weight},
             #{t.tradeNo},#{t.posNo},#{t.payWay},#{t.memberNo},#{t.memberName},#{t.totalAmount},#{t.operator},#{t.payer},
-            #{t.payNo},#{t.registerNo}
+            #{t.payNo},#{t.registerNo},now()
             )
         </foreach>
     </insert>
@@ -252,6 +253,7 @@
         update third_hangguo_trade_data
         set report_flag=3
         where amount >= 500000
+        and handle_flag=1
     </update>
 
     <select id="selectTradeReportListByHandleFlag" parameterType="com.dili.trace.domain.hangguo.HangGuoTrade"
@@ -268,6 +270,9 @@
     <update id="batchUpdateCacheTrade">
         update third_hangguo_trade_data
         set handle_flag=#{handleFlag}
+        <if test="handleRemark != null">
+            ,handle_remark = #{handleRemark}
+        </if>
         where id
         <foreach collection="list" open=" IN (" close=")" item="trade" separator=",">
             #{trade.id}
@@ -326,26 +331,30 @@
     <select id="getReportCheckOrderList" parameterType="com.dili.trace.domain.CheckOrder"
             resultType="com.dili.trace.domain.CheckOrder">
         select
-        id,
-        id_card,
-        check_no,
-        check_org_code,
-        check_org_name,
-        check_result,
-        check_time,
-        check_type,
-        checker,
-        goods_name,
-        goods_code,
-        market_id,
-        report_flag
-        from check_order
+        c.id,
+        c.id_card,
+        c.user_id,
+        c.user_name,
+        c.tally_area_nos,
+        c.check_no,
+        c.check_org_code,
+        c.check_org_name,
+        c.check_result,
+        c.check_time,
+        c.check_type,
+        c.checker,
+        c.checker_id,
+        c.goods_name,
+        c.goods_code,
+        c.market_id,
+        c.report_flag
+        from check_order c
         where 1=1
         <if test="reportFlag != null">
-           and report_flag = #{reportFlag}
+            and c.report_flag = #{reportFlag}
         </if>
         <if test="id != null">
-           and id = #{id}
+            and c.id = #{id}
         </if>
     </select>
     <select id="getReportCheckOrderDisposeList" parameterType="com.dili.trace.domain.CheckOrderDispose"
@@ -403,4 +412,42 @@
         {#name},{#type},{#operator_id},{#operator_name},{#data},{#created},{# modified},{#market_id}
         )
     </insert>
+
+    <select id="getHangGuoScanOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto"
+            resultType="com.dili.trace.dto.thirdparty.report.ReportScanCodeOrderDto">
+        SELECT r.`created` orderTime, r.`buyer_id` thirdBuyId, r.`id` thirdOrderId, r.`seller_id` thirdSellId
+        FROM trade_request r
+        JOIN trade_order o ON (r.trade_order_Id = o.id AND o.order_status = 10)
+        JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 20)
+        WHERE r.return_status = 0
+        AND r.source_type = 2
+        AND r.report_flag = 1
+        <if test="modifiedEnd != null">
+            <![CDATA[AND o.modified <=#{modifiedEnd}]]>
+        </if>
+        <if test="modifiedStart != null">
+            <![CDATA[AND o.modified >#{modifiedStart}]]>
+        </if>
+        <if test="marketId != null">
+            AND r.buyer_market_id = #{marketId} AND r.seller_market_id = #{marketId}
+        </if>
+    </select>
+
+    <update id="updateCheckOrderReportFlag" parameterType="java.util.List">
+        update check_order
+        set report_flag= 2
+        where id
+        <foreach collection="list" open=" IN (" close=")" item="t" separator=",">
+            #{t.id}
+        </foreach>
+    </update>
+
+    <update id="updateCheckOrderDisposeReportFlag" parameterType="java.util.List">
+        update check_order_dispose
+        set report_flag= 2
+        where id
+        <foreach collection="list" open=" IN (" close=")" item="t" separator=",">
+            #{t.id}
+        </foreach>
+    </update>
 </mapper>

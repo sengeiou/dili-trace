@@ -1,6 +1,8 @@
 package com.dili.trace.domain.hangguo;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 杭果交易单
@@ -46,13 +48,13 @@ public class HangGuoTrade {
     @Column(name = "position_name")
     private String positionName;
     @Column(name = "price")
-    private String price;
+    private BigDecimal price;
     @Column(name = "package_number")
-    private String packageNumber;
+    private Integer packageNumber;
     @Column(name = "number")
-    private String number;
+    private Integer number;
     @Column(name = "amount")
-    private String amount;
+    private BigDecimal amount;
     @Column(name = "weight")
     private String weight;
     @Column(name = "trade_no")
@@ -66,7 +68,7 @@ public class HangGuoTrade {
     @Column(name = "member_name")
     private String memberName;
     @Column(name = "total_amount")
-    private String totalAmount;
+    private BigDecimal totalAmount;
     @Column(name = "operator")
     private String operator;
     @Column(name = "payer")
@@ -79,6 +81,16 @@ public class HangGuoTrade {
     private Integer reportFlag;
     @Column(name = "handle_remark")
     private String handleRemark;
+    @Column(name = "create_time")
+    private Date createTime;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public Integer getHandleFlag() {
         return handleFlag;
@@ -216,37 +228,6 @@ public class HangGuoTrade {
         this.positionName = positionName;
     }
 
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getPackageNumber() {
-        return packageNumber;
-    }
-
-    public void setPackageNumber(String packageNumber) {
-        this.packageNumber = packageNumber;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getAmount() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
 
     public String getWeight() {
         return weight;
@@ -296,14 +277,6 @@ public class HangGuoTrade {
         this.memberName = memberName;
     }
 
-    public String getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(String totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
     public String getOperator() {
         return operator;
     }
@@ -326,5 +299,45 @@ public class HangGuoTrade {
 
     public void setPayNo(String payNo) {
         this.payNo = payNo;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getPackageNumber() {
+        return packageNumber;
+    }
+
+    public void setPackageNumber(Integer packageNumber) {
+        this.packageNumber = packageNumber;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
     }
 }

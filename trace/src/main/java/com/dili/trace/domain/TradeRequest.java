@@ -112,16 +112,16 @@ public class TradeRequest extends BaseDomain {
     private String positionName;
 
     @Column(name = "`price`")
-    private String price;
+    private BigDecimal price;
 
     @Column(name = "`package_number`")
-    private String packageNumber;
+    private Integer packageNumber;
 
     @Column(name = "`number`")
-    private String number;
+    private Integer number;
 
     @Column(name = "`amount`")
-    private String amount;
+    private BigDecimal amount;
 
     @Column(name = "`pos_no`")
     private String posNo;
@@ -130,7 +130,7 @@ public class TradeRequest extends BaseDomain {
     private String payWay;
 
     @Column(name = "`total_amount`")
-    private String totalAmount;
+    private BigDecimal totalAmount;
 
     @Column(name = "`operator`")
     private String operator;
@@ -140,6 +140,68 @@ public class TradeRequest extends BaseDomain {
 
     @Column(name = "`pay_no`")
     private String payNo;
+
+    @Column(name = "`source_type`")
+    private Integer sourceType;
+
+    @Column(name = "`report_flag`")
+    private Integer reportFlag;
+
+    public Integer getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(Integer sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public Integer getReportFlag() {
+        return reportFlag;
+    }
+
+    public void setReportFlag(Integer reportFlag) {
+        this.reportFlag = reportFlag;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getPackageNumber() {
+        return packageNumber;
+    }
+
+    public void setPackageNumber(Integer packageNumber) {
+        this.packageNumber = packageNumber;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
 
     public String getBatchNo() {
         return batchNo;
@@ -173,38 +235,6 @@ public class TradeRequest extends BaseDomain {
         this.positionName = positionName;
     }
 
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getPackageNumber() {
-        return packageNumber;
-    }
-
-    public void setPackageNumber(String packageNumber) {
-        this.packageNumber = packageNumber;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getAmount() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
-
     public String getPosNo() {
         return posNo;
     }
@@ -219,14 +249,6 @@ public class TradeRequest extends BaseDomain {
 
     public void setPayWay(String payWay) {
         this.payWay = payWay;
-    }
-
-    public String getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(String totalAmount) {
-        this.totalAmount = totalAmount;
     }
 
     public String getOperator() {

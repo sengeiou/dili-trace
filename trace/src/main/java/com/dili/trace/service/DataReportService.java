@@ -607,7 +607,7 @@ public class DataReportService {
     public BaseOutput reportFruitsUser(List<ReportUserDto> reportUserDtos, Optional<OperatorUser> optUser, Market market) {
         logger.info("上报:杭果经营户");
         setMarketInfo(market);
-        String path = "/thirdParty/ckeck/account";
+        String path = "/thirdParty/check/account";
         String url = this.reportContextUrl + path;
         return this.postJson(url, reportUserDtos, optUser, ReportDtoTypeEnum.HangGuoUser);
     }

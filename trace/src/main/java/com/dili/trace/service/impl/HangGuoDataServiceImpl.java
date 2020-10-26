@@ -6,6 +6,10 @@ import com.dili.trace.dao.HangGuoDataMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
+import com.dili.trace.dto.PushDataQueryDto;
+import com.dili.trace.dto.thirdparty.report.ReportInspectionDto;
+import com.dili.trace.dto.thirdparty.report.ReportScanCodeOrderDto;
+import com.dili.trace.dto.thirdparty.report.ReportUnqualifiedDisposalDto;
 import com.dili.trace.service.HangGuoDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +125,21 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     @Override
     public void insertThirdPartySourceData(ThirdPartySourceData addSource) {
         hangGuoDataMapper.insertThirdPartySourceData(addSource);
+    }
+
+    @Override
+    public List<ReportScanCodeOrderDto> getHangGuoScanOrderReport(PushDataQueryDto queryDto) {
+        return hangGuoDataMapper.getHangGuoScanOrderReport(queryDto);
+    }
+
+    @Override
+    public void updateCheckOrderReportFlag(List<ReportInspectionDto> inspectionDtoList) {
+        hangGuoDataMapper.updateCheckOrderReportFlag(inspectionDtoList);
+    }
+
+    @Override
+    public void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos) {
+        hangGuoDataMapper.updateCheckOrderDisposeReportFlag(disposalDtos);
     }
 
 }

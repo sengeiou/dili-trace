@@ -4,6 +4,10 @@ import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
+import com.dili.trace.dto.PushDataQueryDto;
+import com.dili.trace.dto.thirdparty.report.ReportInspectionDto;
+import com.dili.trace.dto.thirdparty.report.ReportScanCodeOrderDto;
+import com.dili.trace.dto.thirdparty.report.ReportUnqualifiedDisposalDto;
 
 import java.util.List;
 import java.util.Map;
@@ -125,7 +129,7 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
     List<CheckOrderData> getCheckOrderDataList(List<CheckOrder> headList);
 
     /**
-     *
+     *  获取检测主单
      * @param checkOrder
      * @return
      */
@@ -150,4 +154,23 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      * @param addSource
      */
     void insertThirdPartySourceData(ThirdPartySourceData addSource);
+
+    /**
+     * 获取杭果交易数据
+     * @param queryDto
+     * @return
+     */
+    List<ReportScanCodeOrderDto> getHangGuoScanOrderReport(PushDataQueryDto queryDto);
+
+    /**
+     * 更新上报标志位
+     * @param inspectionDtoList
+     */
+    void updateCheckOrderReportFlag(List<ReportInspectionDto> inspectionDtoList);
+
+    /**
+     * 更新处置上报标志位
+     * @param disposalDtos
+     */
+    void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos);
 }
