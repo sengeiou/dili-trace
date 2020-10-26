@@ -162,6 +162,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
+        // 没有市场时默认杭水
+        if (Objects.isNull(registerBill.getMarketId())) {
+            registerBill.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
+        }
+
         // 保存报备单
         int result = super.saveOrUpdate(registerBill);
         if (result == 0) {
