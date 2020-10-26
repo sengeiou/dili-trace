@@ -100,6 +100,10 @@ public class CheckinOutRecord extends BaseDomain {
     @Transient
     private String plate;
 
+    @ApiModelProperty(value = "市场ID")
+    @Column(name = "market_id")
+    private Long marketId;
+
     @Transient
     public String getInoutName(){
        return  CheckinOutTypeEnum.fromCode(this.getInout()).map(CheckinOutTypeEnum::getDesc).orElse("");
@@ -282,4 +286,11 @@ public class CheckinOutRecord extends BaseDomain {
         this.weightUnit = weightUnit;
     }
 
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
 }

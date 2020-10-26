@@ -8,6 +8,7 @@ public class UserInput extends BasePage {
 	private String tallyAreaNos;
 	private String name;
 	private String refuseReason;
+	private Long marketId;
 
 	public String getRefuseReason() {
 		return refuseReason;
@@ -47,5 +48,13 @@ public class UserInput extends BasePage {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Long getMarketId() {
+		return marketId;
+	}
+
+	public void setMarketId(Long marketId) {
+		this.marketId = marketId;
 	}
 }

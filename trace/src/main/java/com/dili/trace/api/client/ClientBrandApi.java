@@ -14,6 +14,7 @@ import com.dili.trace.api.output.BrandOutputDto;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.service.BrandService;
 
+import com.dili.trace.util.MarketUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,9 @@ public class ClientBrandApi {
 				inputDto.setOrder("desc");
 				inputDto.setSort("created");
 			}
+			if (inputDto.getMarketId() == null) {
+				inputDto.setMarketId(MarketUtil.returnMarket());
+			}
 			List<BrandOutputDto>list=StreamEx.of(brandService.listByExample(inputDto)).map(BrandOutputDto::build).toList();
 			return BaseOutput.success().setData(list);
 		} catch (TraceBusinessException e) {
@@ -73,14 +77,22 @@ public class ClientBrandApi {
 		}
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			if (inputDto.getUserId() != null) {
+				userId = inputDto.getUserId();
+			}
 			Brand query=new Brand();
 			// query.setUserId(userId);
 			query.setBrandName(StringUtils.trimToNull(inputDto.getBrandName()));
+			if (inputDto.getMarketId() == null) {
+				query.setMarketId(MarketUtil.returnMarket());
+			} else {
+				query.setMarketId(inputDto.getMarketId());
+			}
 			boolean exists=this.brandService.listByExample(query).size()>0;
 			if(exists){
 				return BaseOutput.failure("已经存在");
 			}
-			this.brandService.createOrUpdateBrand(StringUtils.trimToNull(inputDto.getBrandName()), userId);
+			this.brandService.createOrUpdateBrand(StringUtils.trimToNull(inputDto.getBrandName()), userId, query.getMarketId());
 			return BaseOutput.success();
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

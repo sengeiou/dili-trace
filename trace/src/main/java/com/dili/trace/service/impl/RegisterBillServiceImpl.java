@@ -162,6 +162,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
+        // 没有市场时默认杭水
+        if (Objects.isNull(registerBill.getMarketId())) {
+            registerBill.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
+        }
+
         // 保存报备单
         int result = super.saveOrUpdate(registerBill);
         if (result == 0) {
@@ -178,7 +183,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         imageCertService.insertImageCert(imageCertList, registerBill.getBillId());
 
         // 创建/更新品牌信息并更新brandId字段值
-        this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId())
+        this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId(), registerBill.getMarketId())
                 .ifPresent(brandId -> {
                     RegisterBill bill = new RegisterBill();
                     bill.setBrandId(brandId);
@@ -340,7 +345,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             this.tradeDetailService.updateSelective(updatableRecord);
         });
 
-        this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
+        this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId(), input.getMarketId());
         this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
         return input.getId();
     }
@@ -870,7 +875,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         imageCertService.insertImageCert(imageCertList, registerBill.getBillId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
 
         // 创建/更新品牌信息并更新brandId字段值
-        this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId())
+        this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId(), registerBill.getMarketId())
                 .ifPresent(brandId -> {
                     RegisterBill bill = new RegisterBill();
                     bill.setBrandId(brandId);
@@ -963,7 +968,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         // 保存图片
         imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
 
-        this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId());
+        this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId(), input.getMarketId());
         this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
         return input.getId();
     }

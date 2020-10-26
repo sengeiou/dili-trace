@@ -123,7 +123,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         imageCertService.insertImageCert(imageCertList, registerHead.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         // 创建/更新品牌信息并更新brandId字段值
-        this.brandService.createOrUpdateBrand(registerHead.getBrandName(), registerHead.getUserId())
+        this.brandService.createOrUpdateBrand(registerHead.getBrandName(), registerHead.getUserId(), registerHead.getMarketId())
                 .ifPresent(brandId -> {
                     RegisterHead bill = new RegisterHead();
                     bill.setBrandId(brandId);
@@ -216,7 +216,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         // 保存图片
         imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
-        this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId());
+        this.brandService.createOrUpdateBrand(input.getBrandName(), headItem.getUserId(), input.getMarketId());
         return input.getId();
     }
 
