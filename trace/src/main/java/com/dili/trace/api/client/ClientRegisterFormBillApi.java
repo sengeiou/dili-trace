@@ -124,7 +124,7 @@ public class ClientRegisterFormBillApi {
 			User user = userService.get(dto.getUserId());
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存进门登记单:{}", JSON.toJSONString(registerBill));
-			this.registerBillService.doEditFormBill(registerBill, dto.getImageCertList(), Optional.empty());
+			this.registerBillService.doEditFormBill(registerBill, dto.getImageCertList(), Optional.ofNullable(operatorUser));
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -147,7 +147,7 @@ public class ClientRegisterFormBillApi {
 				return BaseOutput.failure("未登陆用户");
 			}
 			logger.info("作废进门登记单:billId:{},userId:{}", dto.getBillId(), operatorUser.getId());
-			this.registerBillService.doDelete(dto, operatorUser.getId(), Optional.empty());
+			this.registerBillService.doDelete(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
