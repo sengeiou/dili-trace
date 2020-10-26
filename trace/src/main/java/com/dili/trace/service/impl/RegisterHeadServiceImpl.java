@@ -118,9 +118,9 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
         // 保存图片
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty()) {
-            throw new TraceBusinessException("请上传凭证");
-        }
+//        if (imageCertList.isEmpty()) {
+//            throw new TraceBusinessException("请上传凭证");
+//        }
         imageCertService.insertImageCert(imageCertList, registerHead.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         // 创建/更新品牌信息并更新brandId字段值
