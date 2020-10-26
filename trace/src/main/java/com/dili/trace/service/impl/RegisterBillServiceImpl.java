@@ -1100,7 +1100,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBusinessException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
-        //query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setIsDeleted(TFEnum.FALSE.getCode());
         query.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
         List<VerifyStatusCountOutputDto> countList = this.countByVerifyStatus(query);
         query.setIsDeleted(TFEnum.TRUE.getCode());
@@ -1109,9 +1109,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             countList.stream().forEach(dto -> {
                 if (BillVerifyStatusEnum.DELETED.getCode().equals(dto.getVerifyStatus())){
                     dto.setNum(billList.size());
-                }
-                if(BillVerifyStatusEnum.RETURNED.getCode().equals(dto.getVerifyStatus())){
-                    dto.setNum(dto.getNum()-billList.size());
                 }
             });
         }
