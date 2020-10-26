@@ -96,12 +96,14 @@ public class RegisterBillApi {
             }
             Long userId = null;
             Integer row = 10;
+            Integer noDelete = 0;
             String billNo = inputDto.getBillId();
             if (CollectionUtils.isNotEmpty(userList)) {
                 userId = userList.get(0).getId();
             }
             RegisterBill query = new RegisterBill();
             query.setUserId(userId);
+            query.setIsDeleted(noDelete);
             if (StringUtils.isNotBlank(billNo)) {
                 query.setMetadata(IDTO.AND_CONDITION_EXPR, " code like '%" + billNo + "%'");
             } else {
