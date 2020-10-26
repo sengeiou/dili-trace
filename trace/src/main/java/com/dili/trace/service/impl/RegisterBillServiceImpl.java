@@ -1100,10 +1100,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBusinessException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
-        //query.setIsDeleted(TFEnum.FALSE.getCode());
+        query.setIsDeleted(TFEnum.FALSE.getCode());
         query.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
         List<VerifyStatusCountOutputDto> countList = this.countByVerifyStatus(query);
-
         query.setIsDeleted(TFEnum.TRUE.getCode());
         List<RegisterBill> billList = this.listByExample(query);
         if (billList != null) {
@@ -1125,7 +1124,6 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 + " OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
                 + BillVerifyStatusEnum.PASSED.getCode() + ") OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
                 + BillVerifyStatusEnum.RETURNED.getCode() +" ))");
-
         return StreamEx.of(sqlList).joining(" AND ");
     }
 }

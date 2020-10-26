@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 
+import com.dili.ss.domain.annotation.Like;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -50,6 +51,10 @@ public class TallyAreaNo extends BaseDomain {
     @ApiModelProperty(value = "市场ID")
     @Column(name = "`market_id`")
     private String marketId;
+
+    @Column(name="area")
+    @Like(value = Like.BOTH)
+    private String likeAreaName;
 
     /**
      * @return Long return the id
@@ -142,5 +147,13 @@ public class TallyAreaNo extends BaseDomain {
 
     public void setMarketId(String marketId) {
         this.marketId = marketId;
+    }
+
+    public String getLikeAreaName() {
+        return likeAreaName;
+    }
+
+    public void setLikeAreaName(String likeAreaName) {
+        this.likeAreaName = likeAreaName;
     }
 }

@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -117,9 +118,9 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
         // 保存图片
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty()) {
-            throw new TraceBusinessException("请上传凭证");
-        }
+//        if (imageCertList.isEmpty()) {
+//            throw new TraceBusinessException("请上传凭证");
+//        }
         imageCertService.insertImageCert(imageCertList, registerHead.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
         // 创建/更新品牌信息并更新brandId字段值
@@ -280,6 +281,11 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         buildLikeKeyword(input).ifPresent(sql::append);
         if(sql.length() > 0){
             input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
+        }
+
+        // 校验剩余重量大于 0，登记单选择主台账时使用
+        if (Objects.equals(input.getVerifyRemainWeight(), 1)) {
+            input.setMetadata(IDTO.AND_CONDITION_EXPR, "( remain_weight > 0 )");
         }
 
         BasePage<RegisterHead> registerHeadBasePage = listPageByExample(input);
