@@ -168,7 +168,7 @@ public class ClientRegisterHeadApi {
 
 			RegisterHead registerHead = dto.build(user);
 			logger.info("修改进门主台账单:{}", JSON.toJSONString(registerHead));
-			this.registerHeadService.doEdit(registerHead, dto.getImageCertList(), Optional.empty());
+			this.registerHeadService.doEdit(registerHead, dto.getImageCertList(), Optional.ofNullable(operatorUser));
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -192,7 +192,7 @@ public class ClientRegisterHeadApi {
 				return BaseOutput.failure("未登陆用户");
 			}
 			logger.info("作废进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
-			this.registerHeadService.doDelete(dto, operatorUser.getId(), Optional.empty());
+			this.registerHeadService.doDelete(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -215,7 +215,7 @@ public class ClientRegisterHeadApi {
 				return BaseOutput.failure("未登陆用户");
 			}
 			logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
-			this.registerHeadService.doUpdateActive(dto, operatorUser.getId(), Optional.empty());
+			this.registerHeadService.doUpdateActive(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
