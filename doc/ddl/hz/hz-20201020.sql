@@ -9,7 +9,7 @@ CREATE TABLE `register_head` (
   `third_party_code` varchar(20) NOT NULL COMMENT '经营户卡号',
   `addr` varchar(50) DEFAULT NULL COMMENT '业户地址',
   `phone` varchar(20) DEFAULT NULL COMMENT '业户手机',
-  `plate` varchar(15) NOT NULL COMMENT '车牌号',
+  `plate` varchar(15) DEFAULT NULL COMMENT '车牌号',
   `product_id` bigint(20) NOT NULL COMMENT '商品id',
   `product_name` varchar(20) DEFAULT NULL COMMENT '商品名称',
   `measure_type` tinyint(2) NOT NULL COMMENT '计量类型。10-计件 20-计重。默认计件。',
