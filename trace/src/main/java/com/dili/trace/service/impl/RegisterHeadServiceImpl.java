@@ -279,14 +279,21 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
         StringBuilder sql = new StringBuilder();
         buildLikeKeyword(input).ifPresent(sql::append);
+
+        // 校验剩余重量大于 0，登记单选择主台账时使用
+        if (Objects.equals(input.getVerifyRemainWeight(), 1)) {
+            if (StringUtils.isNotBlank(input.getKeyword())) {
+                sql.append(" AND remain_weight > 0 ");
+            } else {
+                sql.append(" remain_weight > 0 ");
+            }
+        }
+
         if(sql.length() > 0){
             input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
         }
 
-        // 校验剩余重量大于 0，登记单选择主台账时使用
-        if (Objects.equals(input.getVerifyRemainWeight(), 1)) {
-            input.setMetadata(IDTO.AND_CONDITION_EXPR, "( remain_weight > 0 )");
-        }
+
 
         BasePage<RegisterHead> registerHeadBasePage = listPageByExample(input);
         if(null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())){
