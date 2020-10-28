@@ -68,7 +68,7 @@ public class ManageSystemComponent {
     public OperatorUser sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
         String loginUrl = (this.manageDomainPath.trim() + "/authenticationApi/login.api");
         try {
-            Map<String, Object> loginMap = new HashMap<String, Object>();
+            Map<String, Object> loginMap = new HashMap<String, Object>(2);
             loginMap.put("userName", username);
             loginMap.put("password", password);
             //加密uap登录接口参数
