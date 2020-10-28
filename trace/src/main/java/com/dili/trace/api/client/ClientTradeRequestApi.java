@@ -270,10 +270,10 @@ public class ClientTradeRequestApi {
 	}
 
 	@RequestMapping(value = "/listSeller.api", method = { RequestMethod.GET })
-	public BaseOutput<List<UserOutput>> listSeller(@RequestParam String queryCondition) {
+	public BaseOutput<List<UserOutput>> listSeller(@RequestParam String queryCondition, @RequestParam Long marketId) {
 		try {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
-			List<UserOutput> list = StreamEx.of(this.userService.listUserByStoreName(userId,"%"+queryCondition+"%")).nonNull().toList();
+			List<UserOutput> list = StreamEx.of(this.userService.listUserByStoreName(userId,"%"+queryCondition+"%", marketId)).nonNull().toList();
 			return BaseOutput.success().setData(list);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());

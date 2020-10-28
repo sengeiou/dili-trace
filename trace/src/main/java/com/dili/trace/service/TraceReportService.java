@@ -7,6 +7,7 @@ import com.dili.trace.dto.TraceReportDto;
 import com.dili.trace.dto.TraceReportQueryDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.MarketIdEnum;
 import com.dili.trace.enums.SysConfigTypeEnum;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
@@ -94,6 +95,7 @@ public class TraceReportService {
         SysConfig sysConfig = new SysConfig();
         sysConfig.setOptType(optType);
         sysConfig.setOptCategory(optCategory);
+        sysConfig.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
         List<SysConfig> configs = sysConfigService.listByExample(sysConfig);
         if(CollectionUtils.isNotEmpty(configs)){
             String str = configs.get(0).getOptValue();

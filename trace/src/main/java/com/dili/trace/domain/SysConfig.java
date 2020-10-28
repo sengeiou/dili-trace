@@ -29,6 +29,9 @@ public class SysConfig extends BaseDomain {
     @Column(name = "opt_value")
     private String optValue;
 
+    @Column(name = "`market_id`")
+    private Long marketId;
+
     public Long getId() {
         return id;
     }
@@ -67,5 +70,13 @@ public class SysConfig extends BaseDomain {
 
     public void setOptValue(String optValue) {
         this.optValue = optValue;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
     }
 }

@@ -5,6 +5,7 @@ import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.SysConfig;
+import com.dili.trace.enums.MarketIdEnum;
 import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.service.SysConfigService;
 import io.swagger.annotations.Api;
@@ -47,6 +48,7 @@ public class SysParamConfigController {
         SysConfig sysConfig = new SysConfig();
         sysConfig.setOptType(SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode());
         sysConfig.setOptCategory(SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode());
+        sysConfig.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
         List<SysConfig> sysConfigList = this.sysConfigService.listByExample(sysConfig);
         if (CollectionUtils.isNotEmpty(sysConfigList)) {
             sysConfig = sysConfigList.get(0);
@@ -71,6 +73,7 @@ public class SysParamConfigController {
             if (StringUtils.isNotBlank(query.getOptCategory())) {
                 queSysConfig.setOptCategory(query.getOptCategory());
             }
+            queSysConfig.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
             List<SysConfig> list = sysConfigService.listByExample(queSysConfig);
             return list;
         } catch (TraceBusinessException e) {
