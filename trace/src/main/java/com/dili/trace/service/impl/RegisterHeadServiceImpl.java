@@ -211,9 +211,9 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         this.updateSelective(input);
 
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty()) {
-            throw new TraceBusinessException("请上传凭证");
-        }
+//        if (imageCertList.isEmpty()) {
+//            throw new TraceBusinessException("请上传凭证");
+//        }
         // 保存图片
         imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.MASTER_BILL.getCode());
 
