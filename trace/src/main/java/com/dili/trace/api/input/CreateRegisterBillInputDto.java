@@ -88,6 +88,9 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "经营户ID")
 	private Long userId;
 
+	@ApiModelProperty(value = "原因")
+	private String reason;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -127,6 +130,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setPackaging(this.getPackaging());
 		registerBill.setRemark(this.getRemark());
 		registerBill.setVerifyStatus(this.getVerifyStatus());
+		registerBill.setReason(this.getReason());
 		return registerBill;
 	}
 
@@ -396,5 +400,13 @@ public class CreateRegisterBillInputDto {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 }
