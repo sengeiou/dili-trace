@@ -8,8 +8,6 @@ import com.dili.trace.dto.OrigionReportQueryDto;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.service.ReportService;
 import com.dili.trace.util.MarketUtil;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
