@@ -411,7 +411,7 @@ public class HangGuoDataUtil {
     }
 
     private User getHangGuoMember(HangGuoUser info, Date createTime) {
-        String nullStr = "空";
+        String nullStr = "''";
         Integer version = 0;
         Integer source = 20;
         User sellerUser = DTOUtils.newDTO(User.class);
@@ -509,7 +509,7 @@ public class HangGuoDataUtil {
      * @return
      */
     private User getHangGuoSupplier(HangGuoUser info, Date createTime) {
-        String nullStr = "空";
+        String nullStr = "''";
         Integer version = 0;
         Integer source = 20;
         User sellerUser = DTOUtils.newDTO(User.class);

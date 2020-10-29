@@ -61,7 +61,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //pushHangGuoTradeData();
+        //pushData();
     }
 
     /**

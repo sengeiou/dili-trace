@@ -93,16 +93,17 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();
                 String contextUrl = market.getContextUrl();
+                Integer marketId = market.getId().intValue();
                 if (appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl)) {
                     Date endTime = this.registerBillMapper.selectCurrentTime();
-                    if (MarketIdEnum.AQUATIC_TYPE.getCode().equals(market.getId())) {
+                    if (marketId.equals(MarketIdEnum.AQUATIC_TYPE.getCode())) {
                         // 商品大类新增/修改
                         this.pushBigCategory(optUser, market);
                         // 商品二级类目新增/修改
                         // 商品新增/修改
                         this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser, endTime, market);
                         this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser, endTime, market);
-                    } else if (MarketIdEnum.FRUIT_TYPE.getCode().equals(market.getId())) {
+                    } else if (marketId.equals(MarketIdEnum.FRUIT_TYPE.getCode())) {
                         // 杭果-商品大类新增/修改
                         this.pushFruitsBigCategory(optUser, market);
                         // 杭果-商品二级类目新增/修改
@@ -206,6 +207,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         String tableName = ReportInterfaceEnum.FRUITS_BIG_CATEGORY.getCode();
         String interfaceName = ReportInterfaceEnum.FRUITS_BIG_CATEGORY.getName();
         Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Integer fruitsBigCategory = 1;
@@ -220,6 +222,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 CategoryDto categoryDto = new CategoryDto();
                 categoryDto.setThirdBigClassName(c.getName());
                 categoryDto.setThirdBigClassId(String.valueOf(c.getId()));
+                categoryDto.setMarketId(String.valueOf(platformMarketId));
                 return categoryDto;
             }).collect(Collectors.toList());
             BaseOutput baseOutput = this.dataReportService.reportCategory(categoryDtos, optUser, market);
@@ -245,6 +248,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         String categorySmallClass = "category_smallClass";
         String categoryGoods = "category_goods";
         Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Category category = new Category();
@@ -274,6 +278,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                         categoryDto.setThirdSmallClassId(td.getId().toString());
                         categoryDto.setSmallClassName(td.getName());
                         categoryDto.setThirdBigClassId(String.valueOf(i));
+                        categoryDto.setMarketId(String.valueOf(platformMarketId));
                         categoryDtos.add(categoryDto);
                     }
                 }
