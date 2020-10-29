@@ -5,8 +5,8 @@ var currentUser={"depId":"${user.depId!}"
 		,"realName":"${user.realName!}"
 		,"userName":"${user.userName!}"
 		,"departmentName":"${department.name!}"};
-		
-		
+
+
     let goodsItemCount = 0;
     $(function () {
         $('#registerSource').focus();

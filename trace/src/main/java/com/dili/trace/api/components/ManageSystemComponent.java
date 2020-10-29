@@ -1,19 +1,27 @@
 package com.dili.trace.api.components;
 
-import cn.hutool.http.HttpUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.Method;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.service.SystemPermissionCheckService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.util.RSAUtils;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.dto.ManagerInfoDto;
 import com.dili.trace.dto.OperatorUser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.UserRpc;
+import com.dili.uap.sdk.session.SessionContext;
 import com.jayway.jsonpath.*;
 import one.util.streamex.StreamEx;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +34,12 @@ public class ManageSystemComponent {
     private static final Logger logger = LoggerFactory.getLogger(ManageSystemComponent.class);
     @Value("${manage.domain}")
     private String manageDomainPath;
+    @Value("${uap.publicKey}")
+    private String publicKey;
+    @Autowired
+    private SystemPermissionCheckService systemPermissionCheckService;
+    @Autowired
+    private UserRpc userRpc;
 
     private String hz_admin_authUrl = "user/index.html#list";
 
@@ -52,17 +66,34 @@ public class ManageSystemComponent {
      * @return
      */
     public OperatorUser sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
-        String loginUrl = (this.manageDomainPath.trim() + "/loginControl/doLoginAPP.do");
-        String checkAuthUrl = (this.manageDomainPath.trim() + "/api/user/checkUserResource.do");
+        String loginUrl = (this.manageDomainPath.trim() + "/authenticationApi/login.api");
         try {
-            Map<String, Object> loginMap = new HashMap<String, Object>();
-            loginMap.put("username", username);
-            loginMap.put("passwd", password);
-            String loginRespBody = HttpUtil.post(loginUrl, loginMap);
-            // {"success":true, "msg":"登录成功！", "sessionId":
-            // "0fff1b6f-51ee-4bdb-9700-6d31854ac2c0", "userId":
-            // 260,"realName":"超级用户","depId":29}
+            Map<String, Object> loginMap = new HashMap<String, Object>(2);
+            loginMap.put("userName", username);
+            loginMap.put("password", password);
+            //加密uap登录接口参数
+            byte[] encryptByPublic = new byte[0];
+            try {
+                byte[] publicKeyBytes = Base64.decodeBase64(publicKey);
+                encryptByPublic = RSAUtils.encryptByPublicKey(JSON.toJSONString(loginMap).getBytes(), publicKeyBytes);
+            } catch (Exception e) {
+                logger.error("uap登录接口参数加密错误!}");
+                throw new TraceBusinessException("登录失败：服务错误");
+            }
+
+            //调用uap登录接口
+            String encryptStr = Base64.encodeBase64String(encryptByPublic);
+            String loginRespBody = new HttpRequest(loginUrl)
+                    .setMethod(Method.POST)
+                    .header("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .body(encryptStr)
+                    .execute()
+                    .body();
+            // {"code":"200",
+            //  "data":{"loginPath":"/","sessionId":"d588eb00-3523-4baa-a741-4b3dfb2266d2","user":{"cellphone":"15088882222","created":"2020-08-13 09:35:56","departmentId":59,"email":"ceshishouguang@diligrp.com","firmCode":"sg","id":85,"locked":"2020-09-27 18:26:16","metadata":{},"modified":"2020-09-27 18:26:16","realName":"测试寿光","serialNumber":"000","state":1,"userName":"test_sg"}
+            // },"message":"登录成功","result":"登录成功","success":true}
             logger.info("loginRespBody={}", loginRespBody);
+
             Configuration conf = Configuration.builder().options(Option.SUPPRESS_EXCEPTIONS).build();
             ParseContext parseContext = JsonPath.using(conf);
             DocumentContext loginDocumentContext = parseContext.parse(loginRespBody);
@@ -72,30 +103,24 @@ public class ManageSystemComponent {
                 throw new TraceBusinessException("登录失败");
             }
 
-            String msg = loginDocumentContext.read("$.msg");
+            String msg = loginDocumentContext.read("$.message");
             if (!success) {
                 throw new TraceBusinessException(msg);
             }
 
-            Long depId = loginDocumentContext.read("$.depId", Long.class);
+            //获取返回数据中的data
+            JSONObject uapLoginInfoData = loginDocumentContext.read("$.data", JSONObject.class);
+            //获取uap返回数据中的user数据
+            JSONObject uapUserInfo = uapLoginInfoData.getJSONObject("user");
 
-            String sessionId = loginDocumentContext.read("$.sessionId");
-            Long userId = loginDocumentContext.read("$.userId", Long.class);
-            String realName = loginDocumentContext.read("$.realName");
+            Long userId = Long.parseLong(uapUserInfo.get("id").toString());
+            //真实名称
+            String realName = (String) uapUserInfo.get("realName");
 
-            Map<String, Object> checkAuthMap = new HashMap<String, Object>();
-            checkAuthMap.put("sessionId", sessionId);
-            checkAuthMap.put("url", identityTypeEnum.getAuthUrl());
 
-            String checkAuthRespBody = HttpUtil.post(checkAuthUrl, checkAuthMap, 20 * 1000);
-            DocumentContext checkAuthDocumentContext = parseContext.parse(checkAuthRespBody);
-            logger.info("checkAuthRespBody={}", checkAuthRespBody);
-            String code = checkAuthDocumentContext.read("$.code");
-            String result = checkAuthDocumentContext.read("$.result");
-            Object data = checkAuthDocumentContext.read("$.data");
-            Object errorData = checkAuthDocumentContext.read("$.errorData");
-
-            if ("200".equals(code)) {
+            // 调用uap权限认证判断用户有没有主页权限
+            boolean checkUrlResult = systemPermissionCheckService.checkUrl(userId, identityTypeEnum.getAuthUrl());
+            if (checkUrlResult) {
                 return new OperatorUser(userId, realName);
             } else {
                 throw new TraceBusinessException("权限不足");
@@ -113,56 +138,33 @@ public class ManageSystemComponent {
 
     }
 
+
     /**
      * 根据权限查询用户信息
      *
      * @param authUrl
      * @return
      */
-    public List<ManagerInfoDto> findUserByUserResource(String authUrl) {
-        String requestUrl = (this.manageDomainPath.trim() + "/api/user/findUserByUserResource.do");
+    public List<User> findUserByUserResource(String authUrl) {
         try {
-            Map<String, Object> dataMap = new HashMap<String, Object>();
-            dataMap.put("url", authUrl);
-            String respBody = HttpUtil.post(requestUrl, dataMap);
+            //根据权限code获取有这个权限code的用户列表
+            BaseOutput<List<User>> usersByResourceCodeList = userRpc.findCurrentFirmUsersByResourceCode(SessionContext.getSessionContext().getUserTicket().getFirmCode()
+                    , authUrl);
 
-            Configuration conf = Configuration.builder().options(Option.SUPPRESS_EXCEPTIONS).build();
-            ParseContext parseContext = JsonPath.using(conf);
-            DocumentContext docCtx = parseContext.parse(respBody);
-
-            String msg = docCtx.read("$.msg");
-
-            String code = docCtx.read("$.code");
-
-            if ("200".equals(code)) {
-                ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                Object objectData = docCtx.read("$.data");
-                List<ManagerInfoDto> data = mapper.readValue(mapper.writeValueAsString(objectData), new TypeReference<List<ManagerInfoDto>>() {
-                });
-                return data;
-            } else {
-                throw new TraceBusinessException(msg);
-            }
-
+            return usersByResourceCodeList.getData();
         } catch (Exception e) {
-            if (!(e instanceof TraceBusinessException)) {
-                logger.error(e.getMessage(), e);
-                throw new TraceBusinessException("远程请求出错");
-            } else {
-                throw (TraceBusinessException) e;
-            }
-
+            throw (TraceBusinessException) e;
         }
 
     }
 
-    public List<ManagerInfoDto> getAdminUser() {
+    public List<User> getAdminUser() {
         return findUserByUserResource(hz_admin_authUrl);
     }
 
     public boolean isAdminUser(Long userId) {
-        Map<Long, ManagerInfoDto> managerMap = new HashMap<>();
-        List<ManagerInfoDto> managers = findUserByUserResource(hz_admin_authUrl);
+        Map<Long, User> managerMap = new HashMap<>();
+        List<User> managers = findUserByUserResource(hz_admin_authUrl);
         StreamEx.of(managers).nonNull().forEach(m -> {
             managerMap.put(m.getId(), m);
         });

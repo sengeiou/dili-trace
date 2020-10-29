@@ -303,7 +303,7 @@
     function initUserGrid() {
         var pager = _userGrid.datagrid('getPager');
         var toolbar=[
-            <#resource method="post" url="user/index.html#add">
+            <#resource method="post" code="user/index.html#add">
             {
                 iconCls:'icon-add',
                 text:'新增',
@@ -312,7 +312,7 @@
                 }
             },
             </#resource>
-            <#resource method="post" url="user/index.html#update">
+            <#resource method="post" code="user/index.html#update">
             {
                 iconCls:'icon-edit',
                 text:'修改',
@@ -321,7 +321,7 @@
                 }
             },
             </#resource>
-            <#resource method="post" url="user/index.html#reset">
+            <#resource method="post" code="user/index.html#reset">
             {
                 iconCls:'icon-reset',
                 text:'重置密码',
@@ -330,7 +330,7 @@
                 }
             },
             </#resource>
-            <#resource method="post" url="user/index.html#enabled">
+            <#resource method="post" code="user/index.html#enabled">
             {
                 iconCls:'icon-play',
                 text:'启用',
@@ -340,7 +340,7 @@
                 }
             },
             </#resource>
-            <#resource method="post" url="user/index.html#disabled">
+            <#resource method="post" code="user/index.html#disabled">
             {
                 iconCls:'icon-stop',
                 text:'禁用',
@@ -350,7 +350,7 @@
                 }
             },
             </#resource>
-            <#resource method="post" url="user/index.html#delete">
+            <#resource method="post" code="user/index.html#delete">
             {
                   iconCls:'icon-undo',
                   text:'删除',
@@ -369,7 +369,7 @@
                     doDetail();
                 }
             },
-            <#resource method="post" url="user/index.html#export">
+            <#resource method="post" code="user/index.html#export">
             {
                 iconCls:'icon-export',
                 text:'导出',
@@ -387,7 +387,7 @@
                 }
             },
             </#resource>
-            <#resource method="post" url="user/index.html#donwload">
+            <#resource method="post" code="user/index.html#donwload">
             {
                 iconCls:'icon-down',
                 text:'下载二维码',

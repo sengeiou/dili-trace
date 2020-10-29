@@ -331,7 +331,7 @@
         function initUserGrid() {
             var pager = _userGrid.datagrid('getPager');
             var toolbar = [
-                <#resource method="post" url="user/index.html#add">
+                <#resource method="post" code="user/index.html#add">
                     {
                         iconCls:'icon-add',
                     text:'开始上报',
@@ -340,7 +340,7 @@
                     }
                 },
                 </#resource>
-                <#resource method="post" url="user/index.html#update">
+                <#resource method="post" code="user/index.html#update">
                     {
                         iconCls:'icon-edit',
                     text:'再次上报',
@@ -349,7 +349,7 @@
                     }
                 },
                 </#resource>
-                <#resource method="post" url="user/index.html#dailyReport">
+                <#resource method="post" code="user/index.html#dailyReport">
                     {
                         iconCls:'icon-edit',
                     text:'历史数据按天上报',

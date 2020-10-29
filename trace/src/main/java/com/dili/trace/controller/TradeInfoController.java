@@ -1,7 +1,5 @@
 package com.dili.trace.controller;
 
-import java.util.List;
-
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.User;
@@ -9,8 +7,8 @@ import com.dili.trace.domain.UserPlate;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.MaskUserInfo;
-import com.diligrp.manage.sdk.session.SessionContext;
-
+import com.dili.uap.sdk.session.SessionContext;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.ApiOperation;
+import java.util.List;
 
 /**
  * 寿光sqlserver库中相关基础信息

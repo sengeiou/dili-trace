@@ -151,7 +151,7 @@
         window._userGrid = $('#sysConfigGrid');
         var pager = _userGrid.datagrid('getPager');
         var toolbar = [
-            <#resource method="post" url="sysParamConfig/index.html#update">
+            <#resource method="post" code="sysParamConfig/index.html#update">
             {
                 iconCls:'icon-edit',
                 text:'修改',
@@ -160,7 +160,7 @@
                 }
             },
             </#resource>
-            <#resource method="post" url="sysParamConfig/index.html#back">
+            <#resource method="post" code="sysParamConfig/index.html#back">
             {
                 iconCls:'icon-undo',
                 text:'返回',

@@ -19,8 +19,8 @@ import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
@@ -193,9 +193,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
 
         //报备单新增消息
-        Integer businessType=MessageStateEnum.BUSINESS_TYPE_BILL.getCode();
-        if(BillTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getBillType())){
-            businessType=MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
+        Integer businessType = MessageStateEnum.BUSINESS_TYPE_BILL.getCode();
+        if (BillTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getBillType())) {
+            businessType = MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
         }
         addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
         return registerBill.getId();
@@ -502,9 +502,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         //管理员
         if (!receiverType.equals(receiverNormal)) {
             // 审核通过增加消息**已通过
-            List<ManagerInfoDto> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
+            List<com.dili.uap.sdk.domain.User> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
             Set<Long> managerIdSet = new HashSet<>();
             StreamEx.of(manageList).nonNull().forEach(s -> {
+                //没有判断用户状态
                 managerIdSet.add(s.getId());
             });
             Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
@@ -608,12 +609,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         dto.setCreatedStart(createdStart);
         dto.setCreatedEnd(createdEnd);
         List<Long> userIdList = this.getActualDao().selectUserIdWithouBill(dto);
-        if(userIdList == null)
-        {
+        if (userIdList == null) {
             userIdList = new ArrayList<>();
         }
         List<Long> buyerIdList = tradeRequestService.selectBuyerIdWithouTradeRequest(dto);
-        if(buyerIdList != null) {
+        if (buyerIdList != null) {
             userIdList.retainAll(buyerIdList);
         }
         StreamEx.of(userIdList).nonNull().forEach(uid -> {

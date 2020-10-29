@@ -22,7 +22,6 @@ import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.dao.UserMapper;
 import com.dili.trace.domain.*;
-import com.dili.trace.dto.ManagerInfoDto;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
@@ -276,9 +275,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         messageInputDto.setEventMessageContentParam(new String[]{userName});
         messageInputDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
 
-        List<ManagerInfoDto> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
+        List<com.dili.uap.sdk.domain.User> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
         Set<Long> managerIdSet = new HashSet<>();
         StreamEx.of(manageList).nonNull().forEach(s -> {
+            //没有判断用户状态
             managerIdSet.add(s.getId());
         });
         Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
