@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -10,7 +11,6 @@ import com.dili.trace.domain.hangguo.HangGuoCommodity;
 import com.dili.trace.domain.hangguo.HangGuoPic;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
-import com.dili.trace.dto.CategoryListInput;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
@@ -25,12 +25,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,19 +47,12 @@ import java.util.stream.Collectors;
 @Service
 public class HangGuoDataUtil {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoDataUtil.class);
-
-    @Value("${current.baseWebPath}")
-    private String baseWebPath;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private HangGuoDataService hangGuoDataService;
-
     @Autowired
     private CodeGenerateService codeGenerateService;
-
     @Autowired
     private TradeOrderService tradeOrderService;
     @Autowired
@@ -66,6 +66,10 @@ public class HangGuoDataUtil {
     @Autowired
     private DefaultConfiguration defaultConfiguration;
 
+    @Value("${thrid.insert.batch.size}")
+    private Integer insertBatchSize;
+    private static final String TRADE_REQUEST_CODE_TYPE = "TRADE_REQUEST_CODE";
+    private Integer reportMaxAmountInt = 300000;
     /**
      * 会员信息
      *
@@ -73,13 +77,18 @@ public class HangGuoDataUtil {
      */
     public void createHangGuoMember(List<HangGuoUser> infoList, Date createTime) {
         if (CollectionUtils.isEmpty(infoList)) {
-            logger.info("获取杭果供应商数据为空");
+            logger.info("===========>获取杭果供应商数据为空");
             return;
         }
+        Long startTime  = DateUtils.getCurrentDate().getTime();
         try {
             List<String> codeList = StreamEx.of(infoList).nonNull().map(c -> c.getMemberNo()).collect(Collectors.toList());
+            Long mapTime = DateUtils.getCurrentDate().getTime();
+            logger.info("===========>生成经营户编码map用时："+(mapTime-startTime));
             //已存在用户list
             List<User> updateList = getUserListByThirdPartyCode(codeList);
+            Long queETime = DateUtils.getCurrentDate().getTime();
+            logger.info("===========>生成查询已存在经营户编码用时："+(queETime-mapTime));
             Set<String> existsUserSet = new HashSet<>();
             StreamEx.of(updateList).nonNull().forEach(u -> {
                 existsUserSet.add(u.getThirdPartyCode());
@@ -95,16 +104,27 @@ public class HangGuoDataUtil {
 
             //新增到经营户正式表
             List<User> userList = getHangGuoMemberList(infoList, createTime);
+            Long pTime = DateUtils.getCurrentDate().getTime();
+            logger.info("===========>生成经营户数据用时："+(pTime-queETime));
             if (CollectionUtils.isNotEmpty(userList)) {
-                addUser(userList);
+                // 分批上报
+                Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
+                // 分批数
+                Integer part = userList.size() / batchSize;
+                for (int i = 0; i <= part; i++) {
+                    Integer endPos = i == part ? userList.size() : (i + 1) * batchSize;
+                    List<User> partBills = userList.subList(i * batchSize, endPos);
+                    addUser(partBills);
+                }
             }
-
+            Long cTime = DateUtils.getCurrentDate().getTime();
+            logger.info("===========>插入经营户数据用时："+(cTime-pTime));
             //更新经营户正式表
             List<User> updateUserList = getHangGuoMemberList(updateHangGuoUserList, createTime);
             if (CollectionUtils.isNotEmpty(updateUserList)) {
                 updateUserByThirdCode(updateUserList);
             }
-
+            logger.info("===========>处理经营户数据总用时："+(cTime-startTime));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -192,19 +212,29 @@ public class HangGuoDataUtil {
         }
 
         //插入交易缓存表
-        hangGuoDataService.batchInsertCacheTradeList(tradeList);
+        Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
+        // 分批数
+        Integer part = tradeList.size() / batchSize;
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i == part ? tradeList.size() : (i + 1) * batchSize;
+            List<HangGuoTrade> partBills = tradeList.subList(i * batchSize, endPos);
+            hangGuoDataService.batchInsertCacheTradeList(partBills);
+        }
+
         //patch标志位
         updateCacheTradeReportFlag(createTime);
 
         //新增交易
         addTradeList(createTime);
+        logger.info("============>>> 处理交易数据用时："+(DateUtils.getCurrentDate().getTime()-createTime.getTime()));
     }
 
     private void updateCacheTradeReportFlag(Date createTime) {
 
         //获取其用户商品集合
-
-        List<Category> categoryList = categoryService.listCategoryByCondition(new CategoryListInput());
+        Category category=new Category();
+        category.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
+        List<Category> categoryList = categoryService.list(category);
         Map<String, User> userMap = getUserMap();
         Map<String, Category> categoryMap = StreamEx.of(categoryList).nonNull().collect(Collectors.toMap(Category::getCode, c -> c, (a, b) -> a));
 
@@ -217,7 +247,8 @@ public class HangGuoDataUtil {
 
     private Map<String, User> getUserMap() {
         User u = DTOUtils.newDTO(User.class);
-        u.mset(IDTO.AND_CONDITION_EXPR, " third_party_code IS NOT NULL");
+        u.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
+        u.setYn(YnEnum.YES.getCode());
         List<User> userList = userService.listByExample(u);
         return StreamEx.of(userList).nonNull().collect(Collectors.toMap(User::getThirdPartyCode, user -> user, (a, b) -> a));
     }
@@ -229,15 +260,26 @@ public class HangGuoDataUtil {
         HangGuoTrade trade = new HangGuoTrade();
         trade.setHandleFlag(DataHandleFlagEnum.PENDING_HANDLE.getCode());
         List<HangGuoTrade> tradeList = hangGuoDataService.selectTradeReportListByHandleFlag(trade);
-        List<HangGuoTrade> collect = StreamEx.of(tradeList).nonNull().filter(t -> !userMap.containsKey(t.getMemberNo())
-                || !userMap.containsKey(t.getSupplierNo()) || !categoryMap.containsKey(t.getItemNumber())).collect(Collectors.toList());
+        List<HangGuoTrade> collect = StreamEx.of(tradeList).nonNull().filter(t -> !userMap.containsKey(t.getMemberNo().trim())
+                || !userMap.containsKey(t.getSupplierNo().trim()) || !categoryMap.containsKey(t.getItemNumber().trim())).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(collect)) {
             String handleRemark = "交易单对应商品或用户无法关联，标记为暂不处理";
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("list", collect);
-            map.put("handleRemark", handleRemark);
-            map.put("handleFlag", DataHandleFlagEnum.UN_NEED_HANDLE.getCode());
-            hangGuoDataService.batchUpdateCacheTradeHandleFlag(map);
+            //分批处理
+            Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
+            // 分批数
+            Integer part = collect.size() / batchSize;
+            for (int i = 0; i <= part; i++) {
+                Integer endPos = i == part ? collect.size() : (i + 1) * batchSize;
+                List<HangGuoTrade> partBills = collect.subList(i * batchSize, endPos);
+
+                Map<String, Object> map = new HashMap<>(16);
+                map.put("list", partBills);
+                map.put("handleRemark",handleRemark);
+                map.put("handleFlag", DataHandleFlagEnum.UN_NEED_HANDLE.getCode());
+                hangGuoDataService.batchUpdateCacheTradeHandleFlag(map);
+            }
+
+
         }
     }
 
@@ -258,16 +300,27 @@ public class HangGuoDataUtil {
 
         List<HangGuoTrade> trades = new ArrayList<>();
         StreamEx.of(tradeList).nonNull().forEach(c -> {
-            boolean needUpdate = userMap.containsKey(c.getMemberNo()) && userMap.containsKey(c.getSupplierNo()) && categoryMap.containsKey(c.getItemNumber());
+            boolean needUpdate = userMap.containsKey(c.getMemberNo().trim()) && userMap.containsKey(c.getSupplierNo().trim()) && categoryMap.containsKey(c.getItemNumber().trim());
             if (needUpdate) {
                 trades.add(c);
             }
         });
+
+
         if (CollectionUtils.isNotEmpty(trades)) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("list", trades);
-            map.put("handleFlag", DataHandleFlagEnum.PENDING_HANDLE.getCode());
-            hangGuoDataService.batchUpdateCacheTradeHandleFlag(map);
+            //分批处理
+            Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
+            // 分批数
+            Integer part = trades.size() / batchSize;
+            for (int i = 0; i <= part; i++) {
+                Integer endPos = i == part ? trades.size() : (i + 1) * batchSize;
+                List<HangGuoTrade> partBills = trades.subList(i * batchSize, endPos);
+
+                Map<String, Object> map = new HashMap<>(16);
+                map.put("list", partBills);
+                map.put("handleFlag", DataHandleFlagEnum.PENDING_HANDLE.getCode());
+                hangGuoDataService.batchUpdateCacheTradeHandleFlag(map);
+            }
         }
     }
 
@@ -376,13 +429,13 @@ public class HangGuoDataUtil {
         sellerUser.setPhone(info.getPhoneNumber());
         sellerUser.setWhereis(info.getWhereis());
         //0非激活1激活
-        sellerUser.setState(info.getStatus());
+        sellerUser.setState(info.getStatusCode());
         sellerUser.setCreditLimit(info.getCreditLimit());
-        sellerUser.setEffectiveDate(info.getEffectiveDate());
+        sellerUser.setEffectiveDate(info.getEffectiveDateTime());
         sellerUser.setRemark(info.getRemarkMemo());
-        if (null != info.getEffectiveDate()) {
+        if (null != info.getEffectiveDateTime()) {
             //有效时间在当前时间之前则为禁用
-            if (info.getEffectiveDate().before(DateUtils.getCurrentDate())) {
+            if (info.getEffectiveDateTime().before(DateUtils.getCurrentDate())) {
                 sellerUser.setState(EnabledStateEnum.DISABLED.getCode());
             }
         }
@@ -399,6 +452,7 @@ public class HangGuoDataUtil {
         sellerUser.setCreated(createTime);
         sellerUser.setYn(YnEnum.YES.getCode());
         sellerUser.setSource(source);
+        sellerUser.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
         return sellerUser;
     }
 
@@ -469,8 +523,7 @@ public class HangGuoDataUtil {
         sellerUser.setPhone(info.getMobileNumber());
         sellerUser.setFixedTelephone(info.getPhoneNumber());
         //0非激活1激活
-        sellerUser.setState(info.getStatus());
-        sellerUser.setAddr(info.getAddr());
+        sellerUser.setState(info.getStatusCode());
         sellerUser.setChargeRate(info.getChargeRate());
         sellerUser.setMangerRate(info.getMangerRate());
         sellerUser.setStorageRate(info.getStorageRate());
@@ -479,16 +532,16 @@ public class HangGuoDataUtil {
         sellerUser.setSupplierType(info.getSupplierType());
         sellerUser.setIdAddr(info.getIdAddr());
         sellerUser.setAddr(info.getOperateAddr());
-        sellerUser.setEffectiveDate(info.getEffectiveDate());
+        sellerUser.setEffectiveDate(info.getEffectiveDateTime());
         sellerUser.setRemark(info.getRemarkMemo());
-        if (null != info.getEffectiveDate()) {
+        if (null != info.getEffectiveDateTime()) {
             //有效时间在当前时间之前则为禁用
-            if (info.getEffectiveDate().before(DateUtils.getCurrentDate())) {
+            if (info.getEffectiveDateTime().before(DateUtils.getCurrentDate())) {
                 sellerUser.setState(EnabledStateEnum.DISABLED.getCode());
             }
         }
 
-        if (IDTypeEnum.ID_CARD.getName().equals(info.getCredentialName())) {
+        if (IDTypeEnum.ID_CARD.getName().equals(info.getCredentialName().trim())) {
             sellerUser.setCardNo(info.getCredentialNumber());
         } else {
             sellerUser.setCardNo(nullStr);
@@ -501,6 +554,7 @@ public class HangGuoDataUtil {
         sellerUser.setYn(YnEnum.YES.getCode());
         sellerUser.setValidateState(ValidateStateEnum.PASSED.getCode());
         sellerUser.setSource(source);
+        sellerUser.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
         return sellerUser;
     }
 
@@ -519,9 +573,8 @@ public class HangGuoDataUtil {
         hangGuoDataService.bachInsertCommodityList(categoryList);
         //patch
         Category category = new Category();
-//        TODO
-//        category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
-//        category.setCreated(createTime);
+        category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
+        category.setCreated(createTime);
         hangGuoDataService.updateHangGuoCommodityParent(category);
     }
 
@@ -539,10 +592,9 @@ public class HangGuoDataUtil {
         hangGuoDataService.bachInsertCommodityList(categoryList);
         //patch当天杭果商品的parent_id
         Category category = new Category();
-//        TODO
-//        category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
-//        category.setCreated(createTime);
-//        hangGuoDataService.updateHangGuoCommodityParent(category);
+        category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
+        category.setCreated(createTime);
+        hangGuoDataService.updateHangGuoCommodityParent(category);
     }
 
     /**
@@ -557,8 +609,6 @@ public class HangGuoDataUtil {
         String first = commodity.getFirstCateg().trim();
         String second = commodity.getSecondCateg().trim();
         String categoryCode = commodity.getCategoryNumber().trim();
-        //        TODO
-        /*
         category.setIsShow(CategoryIsShowEnum.IS_SHOW.getCode());
         //商品编码与大类码一致，商品为第一层级.无parentId
         if (goodsCode.equals(first)) {
@@ -582,7 +632,7 @@ public class HangGuoDataUtil {
             }
             category.setParentCode(parentGoodsCode);
             category.setIsShow(CategoryIsShowEnum.NOT_SHOW.getCode());
-        }*/
+        }
     }
 
     /**
@@ -596,9 +646,6 @@ public class HangGuoDataUtil {
         List<Category> categoryList = new ArrayList();
         //品种集合
         CopyOnWriteArraySet<String> varietySet = new CopyOnWriteArraySet<>();
-
-        //        TODO
-        /*
         StreamEx.of(commodityList).nonNull().forEach(c -> {
             Category category = new Category();
             category.setFullName(c.getItemName());
@@ -627,7 +674,7 @@ public class HangGuoDataUtil {
                     category.setParentCode(parentGoodsCode);
                 }
             }
-        });*/
+        });
         return categoryList;
     }
 
@@ -723,6 +770,24 @@ public class HangGuoDataUtil {
             logger.info("处理交易单数据为空");
             return;
         }
+        //插入交易缓存表
+        Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
+        // 分批数
+        Integer part = tradeList.size() / batchSize;
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i == part ? tradeList.size() : (i + 1) * batchSize;
+            List<HangGuoTrade> partBills = tradeList.subList(i * batchSize, endPos);
+            doPartTrade(partBills,createTime);
+        }
+    }
+
+    /**
+     * 新增交易信息到正式表
+     * @param tradeList
+     * @param createTime
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void doPartTrade(List<HangGuoTrade> tradeList,Date createTime) {
         List<String> userCode = StreamEx.of(tradeList).map(t -> t.getSupplierNo()).collect(Collectors.toList());
         List<String> commodityCode = new ArrayList<>();
         List<String> billNos = new ArrayList<>();
@@ -770,7 +835,6 @@ public class HangGuoDataUtil {
 
         //更新标志位
         updateCacheTradeHandleFlag(DataHandleFlagEnum.PROCESSED.getCode(), tradeList);
-
     }
 
     private Map<Long, TradeDetail> getTradeBillMap(List<String> billNos) {
@@ -881,11 +945,6 @@ public class HangGuoDataUtil {
         return detailList;
     }
 
-    private String getNextCode() {
-        return this.codeGenerateService.nextTradeRequestCode();
-
-    }
-
     /**
      * 生成交易请求
      *
@@ -899,9 +958,21 @@ public class HangGuoDataUtil {
      */
     private List<TradeRequest> getTradeOrderRequestList(List<HangGuoTrade> tradeList, Map<String, User> userMap, Map<String, Category> categoryMap, Map<String, TradeOrder> orderMap, Map<Long, TradeDetail> billMap, Date createTime) {
         List<TradeRequest> requestList = new ArrayList<>();
-        Integer reportMaxAmountInt = 500000;
         BigDecimal reportMaxAmount = new BigDecimal(reportMaxAmountInt);
+        //createTime
+        LocalDateTime dateTime = Instant.ofEpochMilli(createTime.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        String preKey ="prefix";
+        String seqKey ="seq";
+        Map<String, String> map = generNextCode(tradeList.size(), dateTime);
+        String codePrefix = map.get(preKey);
+        String codeSeq = map.get(seqKey);
+        AtomicInteger index=new AtomicInteger(0);
         StreamEx.of(tradeList).nonNull().forEach(t -> {
+            int currentIndex  = index.getAndIncrement();
+            String code = codePrefix;
+            Integer codeSeqInt=Integer.valueOf(codeSeq)+currentIndex;
+            code=code.concat(String.valueOf(codeSeqInt));
+            logger.info("===>生成编号为："+code);
             Long buyId = userMap.get(t.getMemberNo()).getId();
             String buyName = userMap.get(t.getMemberNo()).getName();
             Long sellerId = userMap.get(t.getSupplierNo()).getId();
@@ -925,7 +996,7 @@ public class HangGuoDataUtil {
             request.setCreated(createTime);
             request.setModified(createTime);
             request.setReturnStatus(TradeReturnStatusEnum.NONE.getCode());
-            request.setCode(getNextCode());
+
             request.setWeightUnit(WeightUnitEnum.KILO.getCode());
             request.setProductName(productName);
             request.setHandleTime(createTime);
@@ -945,14 +1016,47 @@ public class HangGuoDataUtil {
             request.setPayer(t.getPayer());
             request.setPayNo(t.getPayNo());
             request.setSourceType(TradeRequestSourceTypeEnum.THIRD_HANGGUO.getCode());
-            if (null != t.getAmount() && t.getAmount().compareTo(reportMaxAmount) >= 0) {
+            if(null!=t.getAmount()&&t.getAmount().compareTo(reportMaxAmount)>=0){
                 request.setReportFlag(CheckOrderReportFlagEnum.UNTREATED.getCode());
-            } else {
+            }else{
                 request.setReportFlag(CheckOrderReportFlagEnum.PROCESSED.getCode());
             }
+            request.setCode(code);
             requestList.add(request);
         });
         return requestList;
+    }
+
+    //@Transactional(propagation = Propagation.REQUIRED)
+    private Map<String,String> generNextCode(int addSize,LocalDateTime now) {
+        int tradeRequestSize=5;
+        String preKey ="prefix";
+        String seqKey ="seq";
+        CodeGenerate codeGenerate = DTOUtils.newDTO(CodeGenerate.class);
+        codeGenerate.setType(TRADE_REQUEST_CODE_TYPE);
+        List<CodeGenerate> codeGenerateList = codeGenerateService.listByExample(codeGenerate);
+        if(CollectionUtils.isNotEmpty(codeGenerateList)){
+            codeGenerate=codeGenerateList.get(0);
+        }
+        if (codeGenerate == null) {
+            throw new TraceBusinessException("生成编号错误");
+        }
+        String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
+        if (!nextSegment.equals(codeGenerate.getSegment())) {
+            codeGenerate.setSeq(1L);
+            codeGenerate.setSegment(nextSegment);
+            codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
+        } else {
+            codeGenerate.setSeq(codeGenerate.getSeq() + addSize);
+            codeGenerate.setModified(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()));
+        }
+        codeGenerateService.updateSelective(codeGenerate);
+        /*return StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment)
+                .concat(StringUtils.leftPad(String.valueOf(codeGenerate.getSeq()), tradeRequestSize, "0"));*/
+        Map<String,String> map = new HashMap<>(16);
+        map.put(preKey,StringUtils.trimToEmpty(codeGenerate.getPrefix()).concat(nextSegment));
+        map.put(seqKey,String.valueOf(codeGenerate.getSeq()));
+        return map;
     }
 
     /**

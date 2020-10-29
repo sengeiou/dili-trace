@@ -494,14 +494,14 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             updateTime = pushData.getPushTime();
             newPushFlag = false;
         }
-//        TODO
-/*        Category category = new Category();
+
+        Category category = new Category();
         category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
         category.setIsShow(CategoryIsShowEnum.IS_SHOW.getCode());
         if (!newPushFlag) {
-            category.setMetadata(IDTO.AND_CONDITION_EXPR, " created >= '" + DateUtils.format(updateTime) + "'");
-        }*/
-        List<Category> allQrHistories = new ArrayList<>();//        TODO categoryService.listByExample(category);
+            category.setMetadata(IDTO.AND_CONDITION_EXPR, " modified >= '" + DateUtils.format(updateTime) + "'");
+        }
+        List<Category> allQrHistories = categoryService.listByExample(category);
         List<GoodsDto> categoryDtos = new ArrayList<>();
         StreamEx.of(allQrHistories).nonNull().forEach(c -> {
             GoodsDto categoryDto = new GoodsDto();

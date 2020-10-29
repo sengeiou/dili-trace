@@ -408,7 +408,7 @@
         (name,type,operator_id,operator_name,
             data,created, modified,market_id)
         values (
-        {#name},{#type},{#operator_id},{#operator_name},{#data},{#created},{# modified},{#market_id}
+        #{name},#{type},#{operatorId},#{operatorName},#{data},#{created},#{modified},#{marketId}
         )
     </insert>
 

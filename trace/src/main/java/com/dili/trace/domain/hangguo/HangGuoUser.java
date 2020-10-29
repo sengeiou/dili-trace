@@ -51,7 +51,9 @@ public class HangGuoUser extends BaseDomain {
     /**
      * 供应商状态
      */
-    private Integer status;
+    private String status;
+
+    private Integer statusCode;
     /**
      * 住宅地址
      */
@@ -92,7 +94,9 @@ public class HangGuoUser extends BaseDomain {
     /**
      * 卡有效期
      */
-    private Date effectiveDate;
+    private String effectiveDate;
+
+    private Date effectiveDateTime;
     /**
      * 备注
      */
@@ -130,6 +134,18 @@ public class HangGuoUser extends BaseDomain {
      * 授信额度
      */
     private String creditLimit;
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Integer getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(Integer statusCode) {
+        this.statusCode = statusCode;
+    }
 
     public String getMemberNo() {
         return memberNo;
@@ -259,14 +275,6 @@ public class HangGuoUser extends BaseDomain {
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
     public String getAddr() {
         return addr;
     }
@@ -339,12 +347,24 @@ public class HangGuoUser extends BaseDomain {
         this.operateAddr = operateAddr;
     }
 
-    public Date getEffectiveDate() {
+    public String getStatus() {
+        return status;
+    }
+
+    public String getEffectiveDate() {
         return effectiveDate;
     }
 
-    public void setEffectiveDate(Date effectiveDate) {
+    public void setEffectiveDate(String effectiveDate) {
         this.effectiveDate = effectiveDate;
+    }
+
+    public Date getEffectiveDateTime() {
+        return effectiveDateTime;
+    }
+
+    public void setEffectiveDateTime(Date effectiveDateTime) {
+        this.effectiveDateTime = effectiveDateTime;
     }
 
     public String getRemarkMemo() {
