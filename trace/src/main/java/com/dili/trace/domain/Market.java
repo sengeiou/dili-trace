@@ -19,6 +19,10 @@ public class Market extends BaseDomain {
     @Column(name = "`id`")
     private Long id;
 
+    @ApiModelProperty(value = "市场编号")
+    @Column(name = "`code`")
+    private String code;
+
     @ApiModelProperty(value = "市场名称")
     @Column(name = "name")
     private String name;
@@ -135,5 +139,13 @@ public class Market extends BaseDomain {
 
     public void setPlatformMarketId(Long platformMarketId) {
         this.platformMarketId = platformMarketId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

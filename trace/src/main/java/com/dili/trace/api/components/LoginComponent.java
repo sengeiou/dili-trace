@@ -73,13 +73,13 @@ public class LoginComponent {
 						// 		loginInput.getLoginIdentityType());
 						return SessionData.fromUser(operatorUser, loginInput.getLoginIdentityType());
 					} else if (LoginIdentityTypeEnum.SYS_MANAGER == identityType) {
-						OperatorUser operatorUser = this.manageSystemComponent.sysManagerLogin(loginInput.getUsername(),
+						return this.manageSystemComponent.sysManagerLogin(loginInput.getUsername(),
 								loginInput.getPassword(), LoginIdentityTypeEnum.SYS_MANAGER);
 //						OperatorUser operatorUser = this.sysManagerLogin(loginInput.getUsername(),
 //								loginInput.getPassword(), LoginIdentityTypeEnum.SYS_MANAGER);
 						// prepareSessionId(operatorUser.getId(), operatorUser.getName(),
 						// 		loginInput.getLoginIdentityType());
-						return SessionData.fromUser(operatorUser, loginInput.getLoginIdentityType());
+						// return SessionData.fromUser(operatorUser, loginInput.getLoginIdentityType());
 					} else {
 						return null;
 					}

@@ -3,6 +3,11 @@ package com.dili.common.service;
 import com.dili.uap.sdk.redis.UserUrlRedis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName SystemPermissionCheckService
@@ -16,6 +21,10 @@ public class SystemPermissionCheckService {
     @Autowired
     private UserUrlRedis userUrlRedis;
 
+    /**
+     * 微信小程序菜单权限前缀
+     */
+    private static final String WECHAT_MENUS_PREFIX = "wechat-";
 
     /**
      * TODO
@@ -29,4 +38,34 @@ public class SystemPermissionCheckService {
     public boolean checkUrl(Long userId, String url) {
         return userUrlRedis.checkUserMenuUrlRight(userId, url);
     }
+
+    /**
+     * 获取用户菜单权限
+     * @param userId
+     * @return
+     */
+    public Set<String> getWeChatUserMenus(Long userId) {
+        Object object = userUrlRedis.getUserMenus(userId);
+        Set<String> userMenus = castSet(object, String.class);
+        if (!CollectionUtils.isEmpty(userMenus)) {
+            return userMenus.stream().filter(m -> m.startsWith(WECHAT_MENUS_PREFIX)).collect(Collectors.toSet());
+        } else {
+            return new HashSet<>();
+        }
+    }
+
+    public static <T> Set<T> castSet(Object obj, Class<T> clazz)
+    {
+        Set<T> result = new HashSet<T>();
+        if(obj instanceof Set<?>)
+        {
+            for (Object o : (Set<?>) obj)
+            {
+                result.add(clazz.cast(o));
+            }
+            return result;
+        }
+        return null;
+    }
+
 }

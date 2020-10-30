@@ -1,20 +1,19 @@
 package com.dili.common.entity;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.dili.trace.domain.Market;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
-
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class SessionData {
     private static final Logger logger = LoggerFactory.getLogger(SessionData.class);
@@ -25,7 +24,9 @@ public class SessionData {
     private String tallyAreaNos;
     private Integer validateState;
     private Integer qrStatus;
+    private Long marketId;
     private String marketName;
+    private Set<String> userWeChatMenus;
 
     private Date loginDateTime;
     private boolean invalidate;
@@ -78,16 +79,21 @@ public class SessionData {
         data.tallyAreaNos = user.getTallyAreaNos();
         data.validateState = user.getValidateState();
         data.qrStatus = user.getQrStatus();
+        data.marketId = user.getMarketId();
         data.marketName = user.getMarketName();
         data.mapData = data.convertThisToMap();
         return data;
     }
 
-    public static SessionData fromUser(OperatorUser user, Integer identityType) {
+    public static SessionData fromUser(OperatorUser user, Integer identityType, Market market, Set<String> userWeChatMenus) {
         SessionData data = new SessionData();
         data.identityType = identityType;
         data.userId = user.getId();
         data.userName = user.getName();
+        data.marketId = market.getId();
+        data.marketName = market.getName();
+        data.userWeChatMenus = userWeChatMenus;
+
         data.mapData = data.convertThisToMap();
         return data;
     }
@@ -232,4 +238,19 @@ public class SessionData {
         return marketName;
     }
 
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public Set<String> getUserWeChatMenus() {
+        return userWeChatMenus;
+    }
+
+    public void setUserWeChatMenus(Set<String> userWeChatMenus) {
+        this.userWeChatMenus = userWeChatMenus;
+    }
 }

@@ -4,12 +4,15 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.Method;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.SystemPermissionCheckService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.RSAUtils;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.domain.Market;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.service.MarketService;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
@@ -23,11 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class ManageSystemComponent {
@@ -40,6 +45,8 @@ public class ManageSystemComponent {
     private SystemPermissionCheckService systemPermissionCheckService;
     @Autowired
     private UserRpc userRpc;
+    @Autowired
+    private MarketService marketService;
 
     private String hz_admin_authUrl = "user/index.html#list";
 
@@ -65,7 +72,7 @@ public class ManageSystemComponent {
      * @param identityTypeEnum
      * @return
      */
-    public OperatorUser sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
+    public SessionData sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
         String loginUrl = (this.manageDomainPath.trim() + "/authenticationApi/login.api");
         try {
             Map<String, Object> loginMap = new HashMap<String, Object>(2);
@@ -116,16 +123,24 @@ public class ManageSystemComponent {
             Long userId = Long.parseLong(uapUserInfo.get("id").toString());
             //真实名称
             String realName = (String) uapUserInfo.get("realName");
+            //市场编码
+            String marketCode = (String) uapUserInfo.get("firmCode");
 
+            // 查询用户小程序权限
+            Set<String> userWeChatMenus = systemPermissionCheckService.getWeChatUserMenus(userId);
+            if (!CollectionUtils.isEmpty(userWeChatMenus)) {
+                // 根据市场code查询市场id
+                Market query = new Market();
+                query.setCode(marketCode);
+                List<Market> markets = marketService.list(query);
+                if (CollectionUtils.isEmpty(markets)) {
+                    throw new TraceBusinessException("市场【"+marketCode+"】不存在");
+                }
 
-            // 调用uap权限认证判断用户有没有主页权限
-            boolean checkUrlResult = systemPermissionCheckService.checkUrl(userId, identityTypeEnum.getAuthUrl());
-            if (checkUrlResult) {
-                return new OperatorUser(userId, realName);
+                return SessionData.fromUser(new OperatorUser(userId, realName), identityTypeEnum.getCode(), markets.get(0), userWeChatMenus);
             } else {
                 throw new TraceBusinessException("权限不足");
             }
-
         } catch (Exception e) {
             if (!(e instanceof TraceBusinessException)) {
                 logger.error(e.getMessage(), e);
@@ -133,9 +148,7 @@ public class ManageSystemComponent {
             } else {
                 throw e;
             }
-
         }
-
     }
 
 
