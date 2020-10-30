@@ -54,6 +54,10 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
         MessageConfig messageConfigParam = new MessageConfig();
         messageConfigParam.setOperation(messageType);
         MessageConfig messageConfig = getDao().selectOne(messageConfigParam);
+        if (messageConfig == null) {
+            logger.info("message config is null");
+            return;
+        }
         String messageFlag = messageConfig.getMessageFlag();
         String smsFlag = messageConfig.getSmsFlag();
         String wechatFlag = messageConfig.getWechatFlag();
