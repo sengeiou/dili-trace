@@ -203,8 +203,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
      * @param optUser 操作人信息
      */
     private void pushFruitsBigCategory(Optional<OperatorUser> optUser, Market market) {
-        String tableName = ReportInterfaceEnum.FRUITS_BIG_CATEGORY.getCode();
-        String interfaceName = ReportInterfaceEnum.FRUITS_BIG_CATEGORY.getName();
+        String tableName = ReportInterfaceEnum.BIG_CATEGORY.getCode();
+        String interfaceName = ReportInterfaceEnum.BIG_CATEGORY.getName();
         Long marketId = market.getId();
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
