@@ -1,11 +1,6 @@
 package com.dili.trace.util;
 
-import com.dili.trace.domain.Market;
 import com.dili.trace.service.MarketService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Description:
@@ -18,6 +13,8 @@ public class MarketUtil {
     private static final Long MARKET_ID = 1L;
 
     public static Long returnMarket(){
-        return MARKET_ID;
+        MarketService marketService = SpringbootUtil.getBean(MarketService.class);
+        Long marketId = marketService.getCurrentLoginMarketId();
+        return marketId;
     }
 }

@@ -45,6 +45,9 @@ public class TraceReportController {
             query.setCreatedEnd(end);
         }
 
+        // 设置市场查询条件
+        // query.setMarketId(MarketUtil.returnMarket());
+
         // 设置活跃度查询条件
         this.traceReportService.settingUserActive(query);
         
