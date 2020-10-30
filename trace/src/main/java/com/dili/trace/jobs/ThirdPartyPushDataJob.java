@@ -16,7 +16,6 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.service.*;
-import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -108,8 +107,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                         this.pushFruitsBigCategory(optUser, market);
                         // 杭果-商品二级类目新增/修改
                         // 杭果-商品新增/修改
-                        this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 2, optUser, endTime, market);
-                        this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 3, optUser, endTime, market);
+                        this.pushFruitsCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 2, optUser, endTime, market);
+                        this.pushFruitsCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 3, optUser, endTime, market);
                     }
                     // 上游新增编辑
                     this.pushStream(ReportInterfaceEnum.UPSTREAM_UP.getCode(), ReportInterfaceEnum.UPSTREAM_UP.getName(), 10, optUser, endTime, market);
@@ -213,10 +212,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Integer fruitsBigCategory = 1;
         if (thirdPartyPushData == null) {
             Category category = new Category();
-            //        TODO
-/*            category.setLevel(fruitsBigCategory);
-            category.setMarketId(marketId);*/
-            List<Category> categories = new ArrayList<>();//TODO categoryService.list(category);
+            category.setLevel(fruitsBigCategory);
+            category.setMarketId(marketId);
+            List<Category> categories = categoryService.list(category);
 
             List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
                 CategoryDto categoryDto = new CategoryDto();
@@ -252,11 +250,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Category category = new Category();
-        //        TODO
-      /*  category.setLevel(level);
+        category.setLevel(level);
         category.setMarketId(marketId);
-        List<Category> categories = categoryService.list(category);*/
-        List<Category> categories = Lists.newArrayList();
+        List<Category> categories = categoryService.list(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -268,11 +264,8 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
             for (PreserveTypeEnum type : preserveTypeEnums) {
                 for (Category td : categories) {
-
-                    //TODO
-       /*            boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                            && td.getModified().compareTo(endTime) <= 0);*/
-                    boolean needPush = true;
+                    boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                            && td.getModified().compareTo(endTime) <= 0);
                     if (needPush) {
                         CategorySecondDto categoryDto = new CategorySecondDto();
                         categoryDto.setThirdSmallClassId(td.getId().toString());
@@ -296,16 +289,83 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         } else if (categoryGoods.equals(tableName)) {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
-                //TODO
-    /*            boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                        && td.getModified().compareTo(endTime) <= 0);*/
-                boolean needPush = true;
+                boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                        && td.getModified().compareTo(endTime) <= 0);
                 if (needPush) {
                     GoodsDto categoryDto = new GoodsDto();
                     categoryDto.setGoodsName(td.getName());
                     categoryDto.setThirdGoodsId(td.getId().toString());
-//TODO
-                    //                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
+                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
+                    categoryDto.setMarketId(String.valueOf(platformMarketId));
+                    categoryDtos.add(categoryDto);
+                }
+            });
+            if (categoryDtos.size() > 0) {
+                baseOutput = this.dataReportService.reportGoods(categoryDtos, optUser, market);
+                if (baseOutput.isSuccess()) {
+                    this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+                } else {
+                    logger.error("上报:{} 失败，原因:{}", interfaceName, baseOutput.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * 上报商品二类/商品新增/修改
+     *
+     * @param optUser
+     */
+    private void pushFruitsCategory(String tableName, String interfaceName,
+                              Integer level, Optional<OperatorUser> optUser, Date endTime, Market market) {
+        String categorySmallClass = "category_smallClass";
+        String categoryGoods = "category_goods";
+        Long marketId = market.getId();
+        Long platformMarketId = market.getPlatformMarketId();
+        ThirdPartyPushData thirdPartyPushData =
+                thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
+        Category category = new Category();
+        category.setLevel(level);
+        category.setMarketId(marketId);
+        List<Category> categories = categoryService.list(category);
+        ThirdPartyPushData pushData = new ThirdPartyPushData();
+        pushData.setTableName(tableName);
+        pushData.setInterfaceName(interfaceName);
+        pushData.setMarketId(marketId);
+        BaseOutput baseOutput = new BaseOutput();
+        if (categorySmallClass.equals(tableName)) {
+            List<CategorySecondDto> categoryDtos = new ArrayList<>();
+                for (Category td : categories) {
+                    boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                            && td.getModified().compareTo(endTime) <= 0);
+                    if (needPush) {
+                        CategorySecondDto categoryDto = new CategorySecondDto();
+                        categoryDto.setThirdSmallClassId(td.getId().toString());
+                        categoryDto.setSmallClassName(td.getName());
+                        categoryDto.setThirdBigClassId(String.valueOf(td.getParentId()));
+                        categoryDto.setMarketId(String.valueOf(platformMarketId));
+                        categoryDtos.add(categoryDto);
+                    }
+                }
+            if (categoryDtos.size() > 0) {
+                baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser, market);
+                if (baseOutput.isSuccess()) {
+                    this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+                } else {
+                    logger.error("上报:{} 失败，原因:{}", interfaceName, baseOutput.getMessage());
+                }
+            }
+        } else if (categoryGoods.equals(tableName)) {
+            List<GoodsDto> categoryDtos = new ArrayList<>();
+            StreamEx.of(categories).forEach(td -> {
+                boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                        && td.getModified().compareTo(endTime) <= 0);
+                if (needPush) {
+                    GoodsDto categoryDto = new GoodsDto();
+                    categoryDto.setGoodsName(td.getName());
+                    categoryDto.setThirdGoodsId(td.getId().toString());
+                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
+                    categoryDto.setMarketId(String.valueOf(platformMarketId));
                     categoryDtos.add(categoryDto);
                 }
             });
@@ -875,6 +935,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         List<UpStreamDto> upStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
             UpStreamDto upStreamDto = new UpStreamDto();
+            upStreamDto.setMarketId(String.valueOf(market.getPlatformMarketId()));
             upStreamDto.setIdCard(td.getIdCard());
             upStreamDto.setLegalPerson(td.getLegalPerson());
             upStreamDto.setLicense(td.getLicense());
@@ -962,6 +1023,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         List<DownStreamDto> downStreamDtos = new ArrayList<>();
         StreamEx.of(upStreams).forEach(td -> {
             DownStreamDto downStreamDto = new DownStreamDto();
+            downStreamDto.setMarketId(String.valueOf(market.getPlatformMarketId()));
             downStreamDto.setIdCard(td.getIdCard());
             downStreamDto.setLegalPerson(td.getLegalPerson());
             downStreamDto.setLicense(td.getLicense());
