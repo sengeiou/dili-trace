@@ -108,6 +108,31 @@ public enum ReportInterfaceEnum {
      * 杭果交易数据上报
      */
     HANGGUO_TRADE("hangguo_trade", "杭果交易数据上报"),
+
+    /**
+     * 远程调用交易数据
+     */
+    SOURCE_HANGGUO_TRADE("source_trade", "远程调用交易数据"),
+    /**
+     * 远程调用供应商数据
+     */
+    SOURCE_HANGGUO_SUPPLIER("source_supplier", "远程调用供应商数据"),
+    /**
+     * 远程调用会员数据
+     */
+    SOURCE_HANGGUO_MEMBER("source_member", "远程调用会员数据"),
+    /**
+     * 远程调用商品数据
+     */
+    SOURCE_HANGGUO_GOODS("source_goods", "远程调用商品数据"),
+    /**
+     * 远程调用供应商证件照数据
+     */
+    SOURCE_HANGGUO_SUPPLIER_PIC("source_supplier_pic", "远程调用供应商证件照数据"),
+    /**
+     * 远程调用会员证件照数据
+     */
+    SOURCE_HANGGUO_MEMBER_PIC("source_member_pic", "远程调用会员证件照数据"),
     ;
 
     private String name;

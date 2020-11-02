@@ -1,31 +1,41 @@
 package com.dili.trace.jobs;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.ThirdPartyPushData;
 import com.dili.trace.domain.ThirdPartySourceData;
+import com.dili.trace.domain.User;
 import com.dili.trace.domain.hangguo.HangGuoCommodity;
+import com.dili.trace.domain.hangguo.HangGuoResult;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.enums.CheckOrderReportFlagEnum;
 import com.dili.trace.enums.MarketIdEnum;
+import com.dili.trace.enums.ReportInterfaceEnum;
 import com.dili.trace.enums.ThirdSourceTypeEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.HangGuoDataService;
 import com.dili.trace.service.HangGuoDataUtil;
+import com.dili.trace.service.ThirdPartyPushDataService;
+import com.dili.trace.service.UserService;
 import one.util.streamex.StreamEx;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,31 +59,38 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     HangGuoDataUtil hangGuoDataUtil;
     @Autowired
     HangGuoDataService hangGuoDataService;
-
+    @Autowired
+    ThirdPartyPushDataService thirdPartyPushDataService;
+    @Autowired
+    UserService userService;
     @Value("${thrid.insert.batch.size}")
     private Integer insertBatchSize;
+    @Value("${thrid.datasource.hangguo.service.url}")
+    private String hangGuoServiceUrl;
+    @Value("${thrid.datasource.hangguo.service.appid}")
+    private String appid;
+    @Value("${thrid.datasource.hangguo.service.key}")
+    private String key;
+
+    //当前时间往前推6小时
+    private Integer generalTimeInterval = -6;
+    //交易数据当前时间往前推1小时
+    private Integer tradeInterval = -1;
+    private String queDateFormatter = "yyyyMMddHH:mm:ss";
 
     @Override
     public void run(String... args) throws Exception {
-        /*Date endTime = this.registerBillMapper.selectCurrentTime();
-        List<HangGuoUser> memberList = this.getMemberList(endTime);
-        List<HangGuoCommodity> goodsCategory = getGoodsCategory(endTime);
-        List<HangGuoTrade> tradeList = getTradeList(endTime);
-        if (!CollectionUtils.isEmpty(memberList)) {
-            hangGuoDataUtil.createHangGuoMember(memberList, endTime);
-        }*/
-
-        /*if(!CollectionUtils.isEmpty(memberList)){
-            hangGuoDataUtil.createHangGuoSupplier(memberList,endTime);
-        }*/
-
-        /*if(!CollectionUtils.isEmpty(goodsCategory)){
-            hangGuoDataUtil.createCommodity(goodsCategory,endTime);
-        }*/
-
-        /*if(!CollectionUtils.isEmpty(tradeList)){
-            hangGuoDataUtil.createTrade(tradeList,endTime);
-        }*/
+       /* Date endTime = this.registerBillMapper.selectCurrentTime();
+        // 商品信息
+        getThirdGoodsData(endTime);
+        //供应商
+        getThirdSupplierData(endTime);
+        //会员
+        getThirdMemberData(endTime);
+        //供应商证件照
+        getThirdSupplierPicData(endTime);
+        //会员证件照
+        getThirdMemberPicData(endTime);*/
         //getTradeData();
 
     }
@@ -86,25 +103,20 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         try {
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品信息
-            List<HangGuoCommodity> categoryList = this.getGoodsCategory(endTime);
-            // 供应商信息
-            List<HangGuoUser> supplierList = this.getSupplierList(endTime);
-            // 会员信息
-            List<HangGuoUser> memberList = this.getMemberList(endTime);
-
-            if (!CollectionUtils.isEmpty(categoryList)) {
-                hangGuoDataUtil.createCommodity(categoryList, endTime);
-            }
-            if (!CollectionUtils.isEmpty(supplierList)) {
-                hangGuoDataUtil.createHangGuoSupplier(supplierList, endTime);
-            }
-            if (!CollectionUtils.isEmpty(memberList)) {
-                hangGuoDataUtil.createHangGuoMember(memberList, endTime);
-            }
+            getThirdGoodsData(endTime);
+            //供应商
+            getThirdSupplierData(endTime);
+            //会员
+            getThirdMemberData(endTime);
+            //供应商证件照
+            getThirdSupplierPicData(endTime);
+            //会员证件照
+            getThirdMemberPicData(endTime);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
+
 
     /**
      * 交易数据每小时调用一次
@@ -123,10 +135,131 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         }
     }
 
+    private void getThirdSupplierPicData(Date endTime) {
+        User user = DTOUtils.newInstance(User.class);
+        user.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
+        user.setYn(YnEnum.YES.getCode());
+        user.mset(IDTO.AND_CONDITION_EXPR, " credential_url IS NULL AND supplier_type IS NOT NULL");
+        List<User> userList = userService.listByExample(user);
+        if (!CollectionUtils.isEmpty(userList)) {
+            String supType = "S";
+            List<User> updateList = new ArrayList<>();
+            StreamEx.of(userList).nonNull().forEach(u -> {
+                String picContent = getSupplierPic(u.getThirdPartyCode(), endTime);
+                String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), supType, picContent);
+                if (StringUtils.isNotBlank(picUrl)) {
+                    u.setCredentialUrl(picUrl);
+                    updateList.add(u);
+                }
+            });
+            if (!CollectionUtils.isEmpty(updateList)) {
+                hangGuoDataService.batchUpdateUserByThirdCode(updateList);
+            }
+        }
+    }
+
+    private void getThirdMemberPicData(Date endTime) {
+        User user = DTOUtils.newInstance(User.class);
+        user.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
+        user.setYn(YnEnum.YES.getCode());
+        user.mset(IDTO.AND_CONDITION_EXPR, " credential_url IS NULL AND supplier_type IS NULL");
+        List<User> userList = userService.listByExample(user);
+        if (!CollectionUtils.isEmpty(userList)) {
+            String memType = "M";
+            List<User> updateList = new ArrayList<>();
+            StreamEx.of(userList).nonNull().forEach(u -> {
+                String picContent = getSupplierPic(u.getThirdPartyCode(), endTime);
+                String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), memType, picContent);
+                if (StringUtils.isNotBlank(picUrl)) {
+                    u.setCredentialUrl(picUrl);
+                    updateList.add(u);
+                }
+            });
+            if (!CollectionUtils.isEmpty(updateList)) {
+                hangGuoDataService.batchUpdateUserByThirdCode(updateList);
+            }
+        }
+    }
+
+
+    private void getThirdMemberData(Date endTime) {
+        Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getCode(), marketId);
+        boolean isFirst = false;
+        if (null == pushData) {
+            isFirst = true;
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getName());
+            pushData.setPushTime(endTime);
+            pushData.setMarketId(marketId);
+        }
+        List<HangGuoUser> memberList = this.getMemberList(endTime, isFirst);
+        if (!CollectionUtils.isEmpty(memberList)) {
+            hangGuoDataUtil.createHangGuoMember(memberList, endTime);
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+        }
+    }
+
+    private void getThirdSupplierData(Date endTime) {
+        Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_SUPPLIER.getCode(), marketId);
+        boolean isFirst = false;
+        if (null == pushData) {
+            isFirst = true;
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_SUPPLIER.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_SUPPLIER.getName());
+            pushData.setPushTime(endTime);
+            pushData.setMarketId(marketId);
+        }
+        // 供应商信息
+        List<HangGuoUser> supplierList = this.getSupplierList(endTime, isFirst);
+        if (!CollectionUtils.isEmpty(supplierList)) {
+            hangGuoDataUtil.createHangGuoSupplier(supplierList, endTime);
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+        }
+    }
+
+    private void getThirdGoodsData(Date endTime) {
+        Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode(), marketId);
+        boolean isFirst = false;
+        if (null == pushData) {
+            isFirst = true;
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getName());
+            pushData.setPushTime(endTime);
+            pushData.setMarketId(marketId);
+        }
+        List<HangGuoCommodity> categoryList = this.getGoodsCategory(endTime, isFirst);
+        if (!CollectionUtils.isEmpty(categoryList)) {
+            hangGuoDataUtil.createCommodity(categoryList, endTime);
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+        }
+    }
+
     private List<HangGuoTrade> getTradeList(Date endTime) {
         List<HangGuoTrade> tradeList = new ArrayList<>();
-        String tradeStr = getTradeDataStr();
+        String tradeStr = null;
 
+        Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getCode(), marketId);
+        boolean isFirst = false;
+        if (null == pushData) {
+            isFirst = true;
+            pushData = new ThirdPartyPushData();
+            pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getCode());
+            pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getName());
+            pushData.setPushTime(endTime);
+            pushData.setMarketId(marketId);
+        }
+
+        HangGuoResult result1 = getHangGuoTradeResult(endTime, isFirst);
+        if (null != result1 && StringUtils.isBlank(result1.getRecode())) {
+            tradeStr = result1.getData();
+        }
         if (StringUtils.isNotBlank(tradeStr)) {
             tradeList = JSON.parseArray(tradeStr, HangGuoTrade.class);
             logger.info("-----===>获取交易数量总数为：" + tradeList.size());
@@ -139,11 +272,17 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? tradeList.size() : (i + 1) * batchSize;
                 List<HangGuoTrade> partBills = tradeList.subList(i * batchSize, endPos);
                 String partStr = JSON.toJSONString(partBills);
-                addSource(partStr, ThirdSourceTypeEnum.TRADE.getCode(), ThirdSourceTypeEnum.TRADE.getDesc(), endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+                addSource(partStr, ThirdSourceTypeEnum.TRADE.getCode(), ThirdSourceTypeEnum.TRADE.getDesc(),
+                        endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
             }
             handleTradeParam(tradeList);
+            this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
         } else {
-            addSource(tradeStr, ThirdSourceTypeEnum.TRADE.getCode(), ThirdSourceTypeEnum.TRADE.getDesc(), endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+            if (null != result1) {
+                tradeStr = JSON.toJSONString(result1);
+            }
+            addSource(tradeStr, ThirdSourceTypeEnum.TRADE.getCode(), ThirdSourceTypeEnum.TRADE.getDesc(),
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
         }
         logger.info("====>end getTradeList time:" + (DateUtils.getCurrentDate().getTime() - endTime.getTime()));
         return tradeList;
@@ -151,21 +290,25 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
     /**
      * 特殊处理参数
+     *
      * @param tradeList
      */
     private void handleTradeParam(List<HangGuoTrade> tradeList) {
     }
 
 
-    private List<HangGuoUser> getMemberList(Date endTime) {
+    private List<HangGuoUser> getMemberList(Date endTime, boolean isFirst) {
         List<HangGuoUser> hangGuoUserList = new ArrayList<>();
         Date startdate = DateUtils.getCurrentDate();
-        String userStr = testUser();
+        String userStr = null;
 
+        HangGuoResult result1 = getHangGuoMemberResult(endTime, isFirst);
+        if (null != result1 && StringUtils.isBlank(result1.getRecode())) {
+            userStr = result1.getData();
+        }
         if (StringUtils.isNotBlank(userStr)) {
             hangGuoUserList = JSON.parseArray(userStr, HangGuoUser.class);
             logger.info("-----===>" + hangGuoUserList.size());
-
             // 分批插入缓存
             Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
             // 分批数
@@ -174,16 +317,134 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? hangGuoUserList.size() : (i + 1) * batchSize;
                 List<HangGuoUser> partBills = hangGuoUserList.subList(i * batchSize, endPos);
                 String partStr = JSON.toJSONString(partBills);
-                addSource(partStr, ThirdSourceTypeEnum.MEMBER.getCode(), ThirdSourceTypeEnum.MEMBER.getDesc(), startdate, MarketIdEnum.FRUIT_TYPE.getCode());
+                addSource(partStr, ThirdSourceTypeEnum.MEMBER.getCode(), ThirdSourceTypeEnum.MEMBER.getDesc(), startdate,
+                        MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
             }
             handleUserParam(hangGuoUserList);
 
         } else {
-            addSource(userStr, ThirdSourceTypeEnum.MEMBER.getCode(), ThirdSourceTypeEnum.MEMBER.getDesc(), startdate, MarketIdEnum.FRUIT_TYPE.getCode());
+            if (null != result1) {
+                userStr = JSON.toJSONString(result1);
+            }
+            addSource(userStr, ThirdSourceTypeEnum.MEMBER.getCode(), ThirdSourceTypeEnum.MEMBER.getDesc(),
+                    startdate, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
         }
         logger.info("====>end getMemberList time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         return hangGuoUserList;
     }
+
+
+    private List<HangGuoUser> getSupplierList(Date endTime, boolean isFirst) {
+        List<HangGuoUser> hangGuoUserList = new ArrayList<>();
+        Date startdate = DateUtils.getCurrentDate();
+        String userStr = null;
+        HangGuoResult result = getHangGuoSupplierResult(endTime, isFirst);
+        if (null != result && StringUtils.isBlank(result.getRecode())) {
+            userStr = result.getData();
+        }
+        if (StringUtils.isNotBlank(userStr)) {
+            hangGuoUserList = JSON.parseArray(userStr, HangGuoUser.class);
+            logger.info("-----===>getSupplierList:" + hangGuoUserList.size());
+            // 分批插入缓存
+            Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
+            // 分批数
+            Integer part = hangGuoUserList.size() / batchSize;
+            for (int i = 0; i <= part; i++) {
+                Integer endPos = i == part ? hangGuoUserList.size() : (i + 1) * batchSize;
+                List<HangGuoUser> partBills = hangGuoUserList.subList(i * batchSize, endPos);
+                String partStr = JSON.toJSONString(partBills);
+                addSource(partStr, ThirdSourceTypeEnum.SUPPLIER.getCode(), ThirdSourceTypeEnum.SUPPLIER.getDesc(),
+                        endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
+            }
+            handleUserParam(hangGuoUserList);
+        } else {
+            if (null != result) {
+                userStr = JSON.toJSONString(result);
+            }
+            addSource(userStr, ThirdSourceTypeEnum.SUPPLIER.getCode(), ThirdSourceTypeEnum.SUPPLIER.getDesc(),
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
+        }
+        logger.info("====>end getMemberList time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
+        return hangGuoUserList;
+    }
+
+    private List<HangGuoCommodity> getGoodsCategory(Date endTime, boolean isFirst) {
+        List<HangGuoCommodity> commodityList = new ArrayList<>();
+        Date startdate = DateUtils.getCurrentDate();
+        String resultStr = null;
+
+        HangGuoResult result = getHangGuoGoodsResult(endTime, isFirst);
+        if (null != result && StringUtils.isBlank(result.getRecode())) {
+            resultStr = result.getData();
+        }
+        if (StringUtils.isNotBlank(resultStr)) {
+            commodityList = JSON.parseArray(resultStr, HangGuoCommodity.class);
+            logger.info("-----===>getGoodsCategory:" + commodityList.size());
+            // 分批插入缓存
+            Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
+            // 分批数
+            Integer part = commodityList.size() / batchSize;
+            for (int i = 0; i <= part; i++) {
+                Integer endPos = i == part ? commodityList.size() : (i + 1) * batchSize;
+                List<HangGuoCommodity> partBills = commodityList.subList(i * batchSize, endPos);
+                String partStr = JSON.toJSONString(partBills);
+                addSource(partStr, ThirdSourceTypeEnum.CATEGORY.getCode(), ThirdSourceTypeEnum.CATEGORY.getDesc(),
+                        endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
+            }
+
+        } else {
+            if (null != result) {
+                resultStr = JSON.toJSONString(result);
+            }
+            addSource(resultStr, ThirdSourceTypeEnum.CATEGORY.getCode(), ThirdSourceTypeEnum.CATEGORY.getDesc(),
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
+        }
+        logger.info("====>end getGoodsCategory time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
+        return commodityList;
+    }
+
+    private String getMemberPic(String memberNo, Date endTime) {
+        String resultStr = null;
+        Date startdate = DateUtils.getCurrentDate();
+        HangGuoResult result = getHangGuoMemberPicResult(memberNo, endTime);
+        if (null != result && StringUtils.isBlank(result.getRecode())) {
+            resultStr = result.getData();
+        }
+        if (StringUtils.isNotBlank(resultStr)) {
+            addSource(resultStr, ThirdSourceTypeEnum.MEMBER_CAR_PIC.getCode(), ThirdSourceTypeEnum.MEMBER_CAR_PIC.getDesc(),
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
+        } else {
+            if (null != result) {
+                resultStr = JSON.toJSONString(result);
+            }
+            addSource(resultStr, ThirdSourceTypeEnum.MEMBER_CAR_PIC.getCode(), ThirdSourceTypeEnum.MEMBER_CAR_PIC.getDesc(),
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
+        }
+        logger.info("====>end getMemberPic time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
+        return resultStr;
+    }
+
+    private String getSupplierPic(String supplierNo, Date endTime) {
+        String resultStr = null;
+        Date startdate = DateUtils.getCurrentDate();
+        HangGuoResult result = getHangGuoSupplierPicResult(supplierNo, endTime);
+        if (null != result && StringUtils.isBlank(result.getRecode())) {
+            resultStr = result.getData();
+        }
+        if (StringUtils.isNotBlank(resultStr)) {
+            addSource(resultStr, ThirdSourceTypeEnum.SUPPLIER_CAR_PIC.getCode(), ThirdSourceTypeEnum.SUPPLIER_CAR_PIC.getDesc(),
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
+        } else {
+            if (null != result) {
+                resultStr = JSON.toJSONString(result);
+            }
+            addSource(resultStr, ThirdSourceTypeEnum.SUPPLIER_CAR_PIC.getCode(), ThirdSourceTypeEnum.SUPPLIER_CAR_PIC.getDesc(),
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
+        }
+        logger.info("====>end getSupplierPic time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
+        return resultStr;
+    }
+
 
     /**
      * 处理非空项和参数转换
@@ -192,7 +453,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      */
     private void handleUserParam(List<HangGuoUser> hangGuoUserList) {
         String active = "激活";
-        String nullStr = "空";
+        String nullStr = "''";
+        String effDateFormatter = "yyyy-MM-dd HH:mm:ss";
         StreamEx.of(hangGuoUserList).nonNull().forEach(u -> {
             if (StringUtils.isNotBlank(u.getStatus()) && active.equals(u.getStatus())) {
                 u.setStatusCode(EnabledStateEnum.ENABLED.getCode());
@@ -201,12 +463,87 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             }
             if (StringUtils.isNotBlank(u.getEffectiveDate())) {
                 //2010022700:00:00
-                u.setEffectiveDateTime(DateUtils.dateStr2Date(u.getEffectiveDate(), "yyyyMMddHH:mm:ss"));
+                u.setEffectiveDateTime(DateUtils.dateStr2Date(u.getEffectiveDate(), effDateFormatter));
             }
             if (StringUtils.isBlank(u.getPhoneNumber())) {
                 u.setPhoneNumber(nullStr);
             }
         });
+    }
+
+    private HangGuoResult getHangGuoMemberPicResult(String memberNo, Date endTime) {
+        String url = "memberidpic";
+        String timp = String.valueOf(new Date().getTime() / 1000L);
+        String mdfive = getGeneralMd5Key(timp, memberNo);
+        url = url + "?appid=" + appid + "&timestamp=" + timp + "&sign=" + mdfive + "&memberno=" + memberNo;
+        return getHangGuoServiceUrlResult(url);
+    }
+
+    private HangGuoResult getHangGuoSupplierPicResult(String supplierNo, Date endTime) {
+        String queDate = supplierNo;
+        String url = "supidpic";
+        String timp = String.valueOf(new Date().getTime() / 1000L);
+        String mdfive = getGeneralMd5Key(timp, queDate);
+        url = url + "?appid=" + appid + "&timestamp=" + timp + "&sign=" + mdfive + "&supplierno=" + queDate;
+        return getHangGuoServiceUrlResult(url);
+    }
+
+    private HangGuoResult getHangGuoGoodsResult(Date endTime, boolean isFirst) {
+        String queDate = "";
+        if (!isFirst) {
+            queDate = DateUtils.format(DateUtils.addHours(endTime, generalTimeInterval), "yyyyMMddHH:mm:ss");
+        }
+        String url = "goodsinfo";
+        String timp = String.valueOf(new Date().getTime() / 1000L);
+        String mdfive = getGoodsMD5(timp);
+        url = url + "?appid=" + appid + "&timestamp=" + timp + "&sign=" + mdfive + "&updatetime=" + queDate;
+        return getHangGuoServiceUrlResult(url);
+    }
+
+    private HangGuoResult getHangGuoTradeResult(Date endTime, boolean isFirst) {
+        String url = "orderdata";
+        String timp = String.valueOf(new Date().getTime() / 1000L);
+        String stime = DateUtils.format(DateUtils.addHours(endTime, tradeInterval), queDateFormatter);
+        String etime = DateUtils.format(endTime, queDateFormatter);
+        String mdfive = getTradeMd5Key(stime, etime, timp);
+        url = url + "?appid=" + appid + "&timestamp=" + timp + "&sign=" + mdfive + "&stime=" + stime + "&etime=" + etime;
+        return getHangGuoServiceUrlResult(url);
+    }
+
+    private HangGuoResult getHangGuoMemberResult(Date endTime, boolean isFirst) {
+        String url = getGeneralUrl(endTime, "memberdata", isFirst);
+        return getHangGuoServiceUrlResult(url);
+    }
+
+    private HangGuoResult getHangGuoSupplierResult(Date endTime, boolean isFirst) {
+        String url = getGeneralUrl(endTime, "supplierdata", isFirst);
+        return getHangGuoServiceUrlResult(url);
+    }
+
+    private String getGeneralUrl(Date endTime, String url, boolean isFirst) {
+        String queDate = "";
+        if (!isFirst) {
+            queDate = DateUtils.format(DateUtils.addHours(endTime, generalTimeInterval), queDateFormatter);
+        }
+        String timp = String.valueOf(new Date().getTime() / 1000L);
+        String mdfive = getGeneralMd5Key(timp, queDate);
+        url = url + "?appid=" + appid + "&timestamp=" + timp + "&sign=" + mdfive + "&updatedtime=" + queDate;
+        return url;
+    }
+
+    private String getTradeMd5Key(String stime, String etime, String timp) {
+        String model = stime + etime + timp + appid + key;
+        return DigestUtils.md5Hex(model).toUpperCase();
+    }
+
+    private String getGeneralMd5Key(String timp, String que) {
+        String model = timp + appid + que + key;
+        return DigestUtils.md5Hex(model).toUpperCase();
+    }
+
+    private String getGoodsMD5(String stime) {
+        String model = stime + appid + key;
+        return DigestUtils.md5Hex(model).toUpperCase();
     }
 
     /**
@@ -218,7 +555,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * @param startdate
      * @param marketId
      */
-    private void addSource(String dataStr, Integer code, String desc, Date startdate, Integer marketId) {
+    private void addSource(String dataStr, Integer code, String desc, Date startdate, Integer marketId, Integer reportFlag) {
         OperatorUser optUser = new OperatorUser(-1L, "auto");
         ThirdPartySourceData sourceData = new ThirdPartySourceData();
         sourceData.setType(code);
@@ -229,149 +566,26 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         sourceData.setMarketId(marketId == null ? null : Long.valueOf(marketId));
         sourceData.setOperatorId(optUser.getId());
         sourceData.setOperatorName(optUser.getName());
+        sourceData.setReportFlag(reportFlag);
         hangGuoDataService.insertThirdPartySourceData(sourceData);
     }
 
-
-    private List<HangGuoUser> getSupplierList(Date endTime) {
-        List<HangGuoUser> hangGuoUserList = new ArrayList<>();
-        Date startdate = DateUtils.getCurrentDate();
-        String userStr = testSupplierUser();
-
-        if (StringUtils.isNotBlank(userStr)) {
-            hangGuoUserList = JSON.parseArray(userStr, HangGuoUser.class);
-            logger.info("-----===>" + hangGuoUserList.size());
-
-            // 分批插入缓存
-            Integer batchSize = (insertBatchSize == null || insertBatchSize == 0) ? 1000 : insertBatchSize;
-            // 分批数
-            Integer part = hangGuoUserList.size() / batchSize;
-            for (int i = 0; i <= part; i++) {
-                Integer endPos = i == part ? hangGuoUserList.size() : (i + 1) * batchSize;
-                List<HangGuoUser> partBills = hangGuoUserList.subList(i * batchSize, endPos);
-                String partStr = JSON.toJSONString(partBills);
-                addSource(partStr, ThirdSourceTypeEnum.SUPPLIER.getCode(), ThirdSourceTypeEnum.SUPPLIER.getDesc(), startdate, MarketIdEnum.FRUIT_TYPE.getCode());
-            }
-            handleUserParam(hangGuoUserList);
-        } else {
-            addSource(userStr, ThirdSourceTypeEnum.SUPPLIER.getCode(), ThirdSourceTypeEnum.SUPPLIER.getDesc(), startdate, MarketIdEnum.FRUIT_TYPE.getCode());
-        }
-        logger.info("====>end getMemberList time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
-        return hangGuoUserList;
-    }
-
-    private String testSupplierUser() {
-        String resule = null;
+    private HangGuoResult getHangGuoServiceUrlResult(String url) {
+        HangGuoResult result = new HangGuoResult();
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String notice = restTemplate.getForObject("http://172.18.188.136:8090/mq/interface_test/suppler"
-                    , String.class);
+            logger.info("===========>>>>getHangGuoServiceUrlResult Url:" + hangGuoServiceUrl + "/" + url);
+            String notice = restTemplate.getForObject(hangGuoServiceUrl + "/" + url, String.class);
             if (StringUtils.isNotBlank(notice)) {
-                resule = notice;
+                result = JSON.parseObject(notice, HangGuoResult.class);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-        return resule;
-    }
-
-    private List<HangGuoCommodity> getGoodsCategory(Date endTime) {
-        List<HangGuoCommodity> commodityList = testCommodity();
-        return commodityList;
-    }
-
-    private List<HangGuoCommodity> testCommodity() {
-        ThirdPartySourceData que = new ThirdPartySourceData();
-        que.setName("杭果商品");
-        que.setType(1);
-        ThirdPartySourceData commodityData = hangGuoDataService.getThirdPartySourceData(que);
-        if (null == commodityData) {
-            return null;
-        }
-        String data = commodityData.getData();
-        List<HangGuoCommodity> commodityList = JSON.parseArray(data, HangGuoCommodity.class);
-        return commodityList;
-    }
-
-    private String testUser() {
-        String resule = null;
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            //String notice = restTemplate.getForObject("http://172.18.188.136:8090/mq/interface_test/member", String.class);
-            String notice = restTemplate.getForObject("http://221.227.109.45:9527/memberdata", String.class);
-            if (StringUtils.isNotBlank(notice)) {
-                resule = notice;
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return resule;
-    }
-
-    private String getTradeDataStr() {
-        String resule = null;
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String notice = restTemplate.getForObject("http://172.18.188.136:8090/mq/interface_test/trade"
-                    , String.class);
-            if (StringUtils.isNotBlank(notice)) {
-                resule = notice;
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return resule;
+        return result;
     }
 
     public static void main(String[] args) throws Exception {
-        //postTest("https://127.0.0.1:8443", "supplierdata");
-        /*String url = "http://localhost:8090/ims/service/receive.do?type=0";
-        String xmlString = "<?xml version=\"1.0\" encoding=\"gbk\"?>";
-        post(url, xmlString);*/
-
-        /*File file = new File("C:\\Users\\asa.lee\\Desktop\\hangguo\\trade_test.json");
-        if(file.exists()){
-            file.delete();
-        }
-        FileOutputStream fos = new FileOutputStream(file);
-        PrintWriter pw = new PrintWriter(fos);
-        pw.write(creatTradeJson());
-        pw.flush();
-        fos.close();*/
-    }
-
-    public static String creatTradeJson() {
-        List<HangGuoTrade> tradeList = new ArrayList(16);
-        for (int i = 1; i < 12000; i++) {
-            HangGuoTrade trade = new HangGuoTrade();
-            trade.setOrderDate("2020-09-25T05:17:27");
-            trade.setSupplierNo("000502");
-            trade.setSupplierName("宋敏");
-            trade.setBatchNo("2009031655");
-            trade.setItemNumber("21103");
-            trade.setItemName("葡萄(巨峰)");
-            trade.setUnit("辽宁统");
-            trade.setOriginNo("016");
-            trade.setOriginName("辽宁");
-            trade.setPositionNo("016");
-            trade.setPositionName("辽宁");
-            trade.setPrice(new BigDecimal(5000));
-            trade.setPackageNumber(12);
-            trade.setNumber(12);
-            trade.setAmount(new BigDecimal(600000));
-            trade.setWeight("28");
-            trade.setTradeNo("19404990"+i);
-            trade.setPosNo("194");
-            trade.setPayWay("会员卡");
-            trade.setMemberNo("000501");
-            trade.setMemberName("赵兰芳0");
-            trade.setTotalAmount(new BigDecimal(600000));
-            trade.setOperator("孟建丽");
-            trade.setPayer("孟建丽");
-            trade.setPayNo("82653791"+i);
-            tradeList.add(trade);
-        }
-        return JSON.toJSONString(tradeList);
     }
 
 }

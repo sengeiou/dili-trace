@@ -22,6 +22,10 @@ public enum CheckOrderReportFlagEnum {
      * 已上报
      */
     REPORTED(2, "已上报"),
+    /**
+     * 获取数据异常
+     */
+    SOURCE_ERROR(-9, "获取数据异常"),
     ;
 
     private String name;

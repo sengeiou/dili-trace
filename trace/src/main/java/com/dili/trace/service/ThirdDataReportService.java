@@ -28,7 +28,6 @@ public class ThirdDataReportService {
     @Value("${current.baseWebPath}")
     private String baseWebPath;
 
-    private Integer marketId = 330110800;
     private Integer userStatusNormal = 1;
     private Integer userStatusDelete = -1;
 

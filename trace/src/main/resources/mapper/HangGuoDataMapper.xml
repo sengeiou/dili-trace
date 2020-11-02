@@ -406,9 +406,9 @@
     <insert id="insertThirdPartySourceData" parameterType="com.dili.trace.domain.ThirdPartySourceData">
         insert into third_party_source_data
         (name,type,operator_id,operator_name,
-            data,created, modified,market_id)
+            data,created, modified,market_id,report_flag)
         values (
-        #{name},#{type},#{operatorId},#{operatorName},#{data},#{created},#{modified},#{marketId}
+        #{name},#{type},#{operatorId},#{operatorName},#{data},#{created},#{modified},#{marketId},#{reportFlag}
         )
     </insert>
 
