@@ -12,11 +12,11 @@ public enum MarketIdEnum {
     /**
      * 杭水市场
      */
-    AQUATIC_TYPE(1, "杭水市场"),
+    AQUATIC_TYPE(1, "杭州水产市场"),
     /**
      * 杭果市场
      */
-    FRUIT_TYPE(2, "杭果市场"),
+    FRUIT_TYPE(2, "杭州水果市场"),
     ;
 
     private String name;

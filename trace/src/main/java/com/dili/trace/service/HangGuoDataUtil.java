@@ -482,6 +482,8 @@ public class HangGuoDataUtil {
         sellerUser.setYn(YnEnum.YES.getCode());
         sellerUser.setSource(source);
         sellerUser.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
+        sellerUser.setMarketName(MarketIdEnum.FRUIT_TYPE.getName());
+        sellerUser.setIsActive(UserActiveEnum.DOWN.getCode());
         return sellerUser;
     }
 
@@ -586,6 +588,8 @@ public class HangGuoDataUtil {
         sellerUser.setValidateState(ValidateStateEnum.PASSED.getCode());
         sellerUser.setSource(source);
         sellerUser.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
+        sellerUser.setMarketName(MarketIdEnum.FRUIT_TYPE.getName());
+        sellerUser.setIsActive(UserActiveEnum.DOWN.getCode());
         return sellerUser;
     }
 
