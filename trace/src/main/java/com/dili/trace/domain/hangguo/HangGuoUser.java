@@ -135,6 +135,16 @@ public class HangGuoUser extends BaseDomain {
      */
     private String creditLimit;
 
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }
