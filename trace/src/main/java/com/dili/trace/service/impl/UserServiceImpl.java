@@ -137,7 +137,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
         if (StringUtils.isBlank(user.getMarketName())) {
-            user.setMarketId(MarketUtil.returnMarket());
+            user.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
             user.setMarketName("杭州水产");
         }
         insertSelective(user);
