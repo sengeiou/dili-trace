@@ -110,15 +110,10 @@ public interface UserService extends BaseService<User, Long> {
 
     /**
      * 微信一键注册
-     *
-     * @param phone
-     * @param wxName
-     * @param code
-     * @param appId
      * @return
      * @throws JsonProcessingException
      */
-    String wxRegister(String phone, String wxName, String openId) throws JsonProcessingException;
+    String wxRegister(User user) throws JsonProcessingException;
 
     /**
      * 微信绑定用户

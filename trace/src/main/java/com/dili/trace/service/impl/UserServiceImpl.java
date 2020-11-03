@@ -253,7 +253,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         //发送消息
         if (!validateAllow.equals(user.getValidateState())) {
-            sendMessageByManage(user.getName(), user.getId());
+            sendMessageByManage(user.getName(), user.getId(), user.getMarketId());
         }
         // this.updateUserQrItem(user.getId());
 
@@ -265,7 +265,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
      * @param userName
      * @param userId
      */
-    private void sendMessageByManage(String userName, Long userId) {
+    private void sendMessageByManage(String userName, Long userId, Long marketId) {
         // 审核通过增加消息
         MessageInputDto messageInputDto = new MessageInputDto();
         messageInputDto.setCreatorId(userId);
@@ -275,7 +275,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         messageInputDto.setEventMessageContentParam(new String[]{userName});
         messageInputDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
 
-        List<com.dili.uap.sdk.domain.User> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
+        List<com.dili.uap.sdk.domain.User> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list", marketId);
         Set<Long> managerIdSet = new HashSet<>();
         StreamEx.of(manageList).nonNull().forEach(s -> {
             //没有判断用户状态
@@ -656,26 +656,25 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public String wxRegister(String phone, String wxName, String openid) throws JsonProcessingException {
+    public String wxRegister(User user) throws JsonProcessingException {
         // 验证手机号是否已注册
-        if (existsAccount(phone)) {
+        if (existsAccount(user.getPhone())) {
             throw new TraceBusinessException("手机号已注册");
         }
-        User user = DTOUtils.newDTO(User.class);
         //验证openid是否已注册
-        if (existsOpenId(openid)) {
+        if (existsOpenId(user.getOpenId())) {
             throw new TraceBusinessException("微信已绑定用户");
         }
-        user.setOpenId(openid);
-        user.setPhone(phone);
-        user.setName(wxName);
         user.setPassword(MD5Util.md5(this.defaultConfiguration.getPassword()));
         user.setCardNo("");
         user.setAddr("");
         user.setValidateState(ValidateStateEnum.CERTREQ.getCode());
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
-        user.setMarketName("杭州水产");
+        if (StringUtils.isBlank(user.getMarketName())) {
+            user.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
+            user.setMarketName("杭州水产");
+        }
         user.setSource(UpStreamSourceEnum.REGISTER.getCode());
         insertSelective(user);
         this.tallyAreaNoService.saveOrUpdateTallyAreaNo(user.getId(), tallyAreaNos);
