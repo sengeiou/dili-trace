@@ -44,10 +44,10 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Date endTime = this.registerBillMapper.selectCurrentTime();
+        /*Date endTime = this.registerBillMapper.selectCurrentTime();
         List<HangGuoUser> memberList = this.getMemberList(endTime);
         List<HangGuoCommodity> goodsCategory = getGoodsCategory(endTime);
-        List<HangGuoTrade> tradeList = getTradeList(endTime);
+        List<HangGuoTrade> tradeList = getTradeList(endTime);*/
         /*if (!CollectionUtils.isEmpty(memberList)) {
             hangGuoDataUtil.createHangGuoMember(memberList, endTime);
         }*/

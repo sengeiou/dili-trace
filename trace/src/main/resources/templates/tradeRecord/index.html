@@ -1,0 +1,210 @@
+<#body head_title="交易列表">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="productName" id="productName" style="width:100%"
+                               labelAlign="right" data-options="label:'商品名:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="productCode" id="productCode" style="width:100%"
+                               labelAlign="right" data-options="label:'商品码:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="buyerName" id="buyerName" style="width:100%"
+                               labelAlign="right" data-options="label:'买家:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="sellerName" id="sellerName" style="width:100%"
+                               labelAlign="right" data-options="label:'卖家:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="buyerNo" id="buyerNo" style="width:100%" labelAlign="right"
+                               data-options="label:'买家卡号:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="sellerNo" id="sellerNo" style="width:100%"
+                               labelAlign="right" data-options="label:'卖家卡号:'"/>
+                    </div>
+                    <div class="search-item long-item">
+                        <input class="easyui-datetimebox" name="orderDateStart" id="orderDateStart" style="width:58%"
+                               labelAlign="right" data-options="label:'交易日期:'" value=""/>
+                        <span style="width: 2%;">-</span>
+                        <input class="easyui-datetimebox" name="orderDateEnd" id="orderDateEnd" style="width:39%;"
+                               value=""/>
+                    </div>
+                    <div class="search-item">
+                        <input name="reportFlag" id="reportFlag" style="width:100%" labelAlign="right"
+                               data-options="label:'是否上报:' "
+                               panelWidth="auto" panelHeight="auto"/>
+                        <#comboProvider _id="reportFlag" _provider='tradeReportFlagEnumProvider'
+                        _queryParams='{emptyText:"--全部--"}'/>
+                    </div>
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryTradeRequestReport()">查询</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto" id="tradeRecordDiv">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="交易列表" id="tradeRecordGrid" fitColumns="true" noheader="true"
+               pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
+               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="orderDate"
+               sortOrder="desc"
+               align="center" fit="true" idField="id"
+        >
+            <thead>
+            <tr>
+                <th width="9%"
+                    data-options="field:'orderDate', _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    交易日期
+                </th>
+                <th width="6%"
+                    data-options="field:'orderStatusName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    交易单状态
+                </th>
+                <th width="10%"
+                    data-options="field:'sellerNo',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    卖家卡号
+                </th>
+                <th width="8%"
+                    data-options="field:'sellerName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    卖家名称
+                </th>
+                <th width="10%"
+                    data-options="field:'buyerNo', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    买家卡号
+                </th>
+                <th width="8%"
+                    data-options="field:'buyerName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    买家名称
+                </th>
+                <th width="10%"
+                    data-options="field:'productCode', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    商品码
+                </th>
+                <th width="10%"
+                    data-options="field:'productName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    商品名称
+                </th>
+                <th width="8%"
+                    data-options="field:'specName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    规格
+                </th>
+                <th width="12%"
+                    data-options="field:'originName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    产地
+                </th>
+                <th width="8%"
+                    data-options="field:'positionNo', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    仓位码
+                </th>
+                <th width="10%"
+                    data-options="field:'positionName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    仓位名称
+                </th>
+                <th width="8%"
+                    data-options="field:'price', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    成交价格
+                </th>
+                <th width="5%"
+                    data-options="field:'packageNumber', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    件数
+                </th>
+                <th width="6%"
+                    data-options="field:'number', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    成交数量
+                </th>
+                <th width="6%"
+                    data-options="field:'amount', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    成交金额
+                </th>
+                <th width="6%"
+                    data-options="field:'tradeWeight', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    重量
+                </th>
+                <th width="10%"
+                    data-options="field:'posNo', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    POS机号
+                </th>
+                <th width="6%"
+                    data-options="field:'payWay', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    支付方式
+                </th>
+                <th width="10%"
+                    data-options="field:'totalAmount', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    总金额
+                </th>
+                <th width="10%"
+                    data-options="field:'payer', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    收款员
+                </th>
+                <th width="10%"
+                    data-options="field:'payNo', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    支付流水号
+                </th>
+                <th width="10%"
+                    data-options="field:'reportFlagStr', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    是否上报
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
+    $(function () {
+        queryTradeRequestReport();
+    })
+
+    //表格查询
+    function queryTradeRequestReport() {
+        var opts = $('#tradeRecordGrid').datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/tradeRecord/listPage.action";
+        }
+        if (!$('#queryForm').form("validate")) {
+            return false;
+        }
+        $('#tradeRecordGrid').datagrid("reload", bindGridMeta2Form("tradeRecordGrid", "queryForm"));
+    }
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+</script>
+</#body>

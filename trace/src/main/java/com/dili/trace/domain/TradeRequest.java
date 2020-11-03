@@ -2,8 +2,10 @@ package com.dili.trace.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
+import com.dili.ss.domain.annotation.Like;
 import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
@@ -28,6 +30,7 @@ public class TradeRequest extends BaseDomain {
     private String code;
 
     @Column(name = "`product_name`")
+    @Like
     private String productName;
 
     @Column(name = "`weight_unit`")
@@ -42,6 +45,7 @@ public class TradeRequest extends BaseDomain {
 
     @ApiModelProperty(value = "买家姓名")
     @Column(name = "`buyer_name`")
+    @Like
     private String buyerName;
 
     @ApiModelProperty(value = "卖家ID")
@@ -50,6 +54,7 @@ public class TradeRequest extends BaseDomain {
 
     @ApiModelProperty(value = "卖家姓名")
     @Column(name = "`seller_name`")
+    @Like
     private String sellerName;
 
     @ApiModelProperty(value = "交易重量")
@@ -136,6 +141,7 @@ public class TradeRequest extends BaseDomain {
     private String operator;
 
     @Column(name = "`payer`")
+    @Like
     private String payer;
 
     @Column(name = "`pay_no`")
@@ -146,6 +152,87 @@ public class TradeRequest extends BaseDomain {
 
     @Column(name = "`report_flag`")
     private Integer reportFlag;
+
+    @Column(name = "`order_date`")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date orderDate;
+
+    @Column(name = "`buyer_no`")
+    @Like
+    private String buyerNo;
+
+    @Column(name = "`seller_no`")
+    @Like
+    private String sellerNo;
+
+    @Column(name = "`product_code`")
+    @Like
+    private String productCode;
+
+    @Transient
+    private Date orderDateStart;
+
+    @Transient
+    private Date orderDateEnd;
+
+    @Transient
+    private String reportFlagStr;
+
+    public String getReportFlagStr() {
+        return reportFlagStr;
+    }
+
+    public void setReportFlagStr(String reportFlagStr) {
+        this.reportFlagStr = reportFlagStr;
+    }
+
+    public Date getOrderDateStart() {
+        return orderDateStart;
+    }
+
+    public void setOrderDateStart(Date orderDateStart) {
+        this.orderDateStart = orderDateStart;
+    }
+
+    public Date getOrderDateEnd() {
+        return orderDateEnd;
+    }
+
+    public void setOrderDateEnd(Date orderDateEnd) {
+        this.orderDateEnd = orderDateEnd;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getBuyerNo() {
+        return buyerNo;
+    }
+
+    public void setBuyerNo(String buyerNo) {
+        this.buyerNo = buyerNo;
+    }
+
+    public String getSellerNo() {
+        return sellerNo;
+    }
+
+    public void setSellerNo(String sellerNo) {
+        this.sellerNo = sellerNo;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
 
     public Integer getSourceType() {
         return sourceType;
