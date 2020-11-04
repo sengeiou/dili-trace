@@ -450,7 +450,8 @@ public class UserApi {
     @RequestMapping(value = "/findUserByKeyword.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<User>> findUserByKeyword(UserListDto input) {
         try {
-            if (input == null || StringUtils.isBlank(input.getKeyword())) {
+            if (input == null || (StringUtils.isBlank(input.getThirdPartyCode())
+                    && StringUtils.isBlank(input.getPhone()) && StringUtils.isBlank(input.getName()))) {
                 return BaseOutput.success().setData(BasePageUtil.empty(input.getPage(), input.getRows()));
             }
             BasePage<User> source = this.userService.findUserByKeyword(input);

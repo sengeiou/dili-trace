@@ -862,12 +862,24 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public BasePage<User>  findUserByKeyword(UserListDto input) {
         PageHelper.startPage(input.getPage(), input.getRows());
         List<User> userList = new ArrayList<User>();
-        if (StringUtils.isBlank(input.getKeyword())) {
+        if (StringUtils.isBlank(input.getThirdPartyCode()) && StringUtils.isBlank(input.getPhone()) && StringUtils.isBlank(input.getName())) {
             userList = new ArrayList<User>();
         } else {
             Example e = new Example(User.class);
-            e.or().orLike("thirdPartyCode", "%" + input.getKeyword().trim() + "%").orLike("name", "%" + input.getKeyword().trim() + "%")
-                    .orLike("phone", "%" + input.getKeyword().trim() + "%");
+            if (StringUtils.isNotBlank(input.getThirdPartyCode())) {
+                e.and().andEqualTo("thirdPartyCode", input.getThirdPartyCode());
+            }
+            if (StringUtils.isNotBlank(input.getPhone())) {
+                e.and().andLike("phone", "%" + input.getPhone().trim() + "%");
+            }
+            if (StringUtils.isNotBlank(input.getName())) {
+                e.and().andLike("name", "%" + input.getName().trim() + "%");
+            }
+
+//            e.or().orLike("thirdPartyCode", "%" + input.getKeyword().trim() + "%")
+//                    .orLike("name", "%" + input.getName().trim() + "%")
+//                    .orLike("phone", "%" + input.getPhone().trim() + "%");
+
             e.and().andEqualTo("state", EnabledStateEnum.ENABLED.getCode());
             e.and().andEqualTo("yn", YnEnum.YES.getCode());
             // e.and().andEqualTo("isActive", YnEnum.YES.getCode());
