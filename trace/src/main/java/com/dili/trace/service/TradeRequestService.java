@@ -224,7 +224,9 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         request.setReturnStatus(TradeReturnStatusEnum.NONE.getCode());
         request.setSellerName(seller.getName());
         request.setSellerId(seller.getId());
+        request.setSellerMarketId(tradeOrderItem.getSellerMarketId());
         request.setBuyerName(buyer.getName());
+        request.setBuyerMarketId(tradeOrderItem.getBuyerMarketId());
         request.setCreated(new Date());
         request.setModified(new Date());
         request.setBuyerId(buyer.getId());

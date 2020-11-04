@@ -103,6 +103,7 @@ public class CreateRegisterBillInputDto {
 		// registerBill.setOperatorId(user.getId());
 		registerBill.setUserId(user.getId());
 		registerBill.setName(user.getName());
+		registerBill.setMarketId(user.getMarketId());
 		registerBill.setTallyAreaNo(user.getTallyAreaNos());
 		registerBill.setAddr(user.getAddr());
 		registerBill.setIdCardNo(user.getCardNo());

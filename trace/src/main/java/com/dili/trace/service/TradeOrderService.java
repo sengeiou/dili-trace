@@ -48,9 +48,11 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         TradeOrder tradeOrder = new TradeOrder();
         tradeOrder.setBuyerId(buyer.getId());
         tradeOrder.setBuyerName(buyer.getName());
+        tradeOrder.setBuyerMarketId(buyer.getMarketId());
 
         tradeOrder.setSellerId(seller.getId());
         tradeOrder.setSellerName(seller.getName());
+        tradeOrder.setSellerMarketId(seller.getMarketId());
         tradeOrder.setOrderStatus(tradeOrderStatusEnum.getCode());
         tradeOrder.setOrderType(orderType.getCode());
         this.insertSelective(tradeOrder);

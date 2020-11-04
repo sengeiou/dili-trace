@@ -439,7 +439,17 @@ public class UserApi {
             if (StringUtils.isBlank(wxName)) {
                 return BaseOutput.failure("未获取到微信昵称");
             }
-            String defaultPassword = userService.wxRegister(phone, wxName, openid);
+            String marketId = userInfo.get("marketId");
+            String marketName = userInfo.get("marketName");
+            User user = DTOUtils.newDTO(User.class);
+            user.setOpenId(openid);
+            user.setPhone(phone);
+            user.setName(wxName);
+            if (!StringUtils.isBlank(marketId)) {
+                user.setMarketId(Long.valueOf(marketId));
+            }
+            user.setMarketName(marketName);
+            String defaultPassword = userService.wxRegister(user);
             userInfo.put("password", defaultPassword);
             return BaseOutput.success().setData(userInfo);
         } catch (TraceBusinessException e) {

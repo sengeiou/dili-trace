@@ -11,6 +11,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.dao.UpStreamMapper;
+import com.dili.trace.domain.Market;
 import com.dili.trace.domain.RUserUpstream;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
@@ -45,6 +46,9 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	@Autowired
 	UserService userService;
+
+	@Autowired
+	MarketService marketService;
 
 	/**
 	 * 分页查询上游信息
@@ -144,6 +148,13 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			JSONObject object = new JSONObject();
 			object.put("phone", upStreamDto.getTelphone());
 			object.put("name", upStreamDto.getName());
+			if (Objects.nonNull(upStreamDto.getMarketId())) {
+				object.put("marketId", upStreamDto.getMarketId());
+				Market market = marketService.get(upStreamDto.getMarketId());
+				if (Objects.nonNull(market)) {
+					object.put("marketName", market.getName());
+				}
+			}
 			if (upStreamDto.getUpstreamType() == UpStreamTypeEnum.CORPORATE.getCode()) {// 企业
 				object.put("legal_person", upStreamDto.getLegalPerson());
 				object.put("license", upStreamDto.getLicense());

@@ -22,6 +22,10 @@ public class TradeOrder extends BaseDomain {
     @Column(name = "`buyer_name`")
     private String buyerName;
 
+    @ApiModelProperty(value = "买家市场")
+    @Column(name = "`buyer_market_id`")
+    private Long buyerMarketId;
+
     @ApiModelProperty(value = "卖家ID")
     @Column(name = "`seller_id`")
     private Long sellerId;
@@ -29,6 +33,10 @@ public class TradeOrder extends BaseDomain {
     @ApiModelProperty(value = "卖家姓名")
     @Column(name = "`seller_name`")
     private String sellerName;
+
+    @ApiModelProperty(value = "卖家市场")
+    @Column(name = "`seller_market_id`")
+    private Long sellerMarketId;
 
     @ApiModelProperty(value = "交易状态")
     @Column(name = "`order_status`")
@@ -187,4 +195,19 @@ public class TradeOrder extends BaseDomain {
         this.orderType = orderType;
     }
 
+    public Long getBuyerMarketId() {
+        return buyerMarketId;
+    }
+
+    public void setBuyerMarketId(Long buyerMarketId) {
+        this.buyerMarketId = buyerMarketId;
+    }
+
+    public Long getSellerMarketId() {
+        return sellerMarketId;
+    }
+
+    public void setSellerMarketId(Long sellerMarketId) {
+        this.sellerMarketId = sellerMarketId;
+    }
 }

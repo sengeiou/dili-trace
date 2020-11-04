@@ -502,7 +502,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         //管理员
         if (!receiverType.equals(receiverNormal)) {
             // 审核通过增加消息**已通过
-            List<com.dili.uap.sdk.domain.User> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list");
+            List<com.dili.uap.sdk.domain.User> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list", billItem.getMarketId());
             Set<Long> managerIdSet = new HashSet<>();
             StreamEx.of(manageList).nonNull().forEach(s -> {
                 //没有判断用户状态

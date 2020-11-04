@@ -29,10 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class ManageSystemComponent {
@@ -158,10 +155,17 @@ public class ManageSystemComponent {
      * @param authUrl
      * @return
      */
-    public List<User> findUserByUserResource(String authUrl) {
+    public List<User> findUserByUserResource(String authUrl, Long marketId) {
         try {
-            //根据权限code获取有这个权限code的用户列表
-            BaseOutput<List<User>> usersByResourceCodeList = userRpc.findCurrentFirmUsersByResourceCode(SessionContext.getSessionContext().getUserTicket().getFirmCode()
+            // 从前端获取 firmCode
+            Market market = marketService.get(marketId);
+            if (market == null || StringUtils.isBlank(market.getCode())) {
+                logger.error("市场用户查询失败。市场【"+marketId+"】不存在或者市场编码未维护！");
+                return new ArrayList<>();
+            }
+
+            //根据权限code获取有这个权限code的用户列表 // SessionContext.getSessionContext().getUserTicket().getFirmCode()
+            BaseOutput<List<User>> usersByResourceCodeList = userRpc.findCurrentFirmUsersByResourceCode(market.getCode()
                     , authUrl);
 
             return usersByResourceCodeList.getData();
@@ -171,13 +175,13 @@ public class ManageSystemComponent {
 
     }
 
-    public List<User> getAdminUser() {
-        return findUserByUserResource(hz_admin_authUrl);
+    public List<User> getAdminUser(Long marketId) {
+        return findUserByUserResource(hz_admin_authUrl, marketId);
     }
 
-    public boolean isAdminUser(Long userId) {
+    public boolean isAdminUser(Long userId, Long marketId) {
         Map<Long, User> managerMap = new HashMap<>();
-        List<User> managers = findUserByUserResource(hz_admin_authUrl);
+        List<User> managers = findUserByUserResource(hz_admin_authUrl, marketId);
         StreamEx.of(managers).nonNull().forEach(m -> {
             managerMap.put(m.getId(), m);
         });
@@ -187,7 +191,7 @@ public class ManageSystemComponent {
     public static void main(String[] args) throws Exception {
         ManageSystemComponent c = new ManageSystemComponent();
         c.manageDomainPath = "http://10.28.10.167";
-        c.findUserByUserResource("http://127.0.0.1/menu/preSave.do");
+        c.findUserByUserResource("http://127.0.0.1/menu/preSave.do", 2L);
     }
 
 }
