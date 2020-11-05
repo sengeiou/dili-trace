@@ -808,7 +808,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public List<Long> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+    public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
                                      Optional<OperatorUser> operatorUser, Long marketId) {
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存进门登记单:" + JSON.toJSONString(dto));
@@ -821,8 +821,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Transactional
     @Override
-    public Long createRegisterFormBill(RegisterBill registerBill, List<ImageCert> imageCertList,
-                                   Optional<OperatorUser> operatorUser) {
+    public RegisterBill createRegisterFormBill(RegisterBill registerBill, List<ImageCert> imageCertList,
+                                               Optional<OperatorUser> operatorUser) {
         this.checkBill(registerBill);
 
         registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
@@ -911,7 +911,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             businessType=MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
         }
         addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());*/
-        return registerBill.getId();
+        return registerBill;
     }
 
     @Transactional

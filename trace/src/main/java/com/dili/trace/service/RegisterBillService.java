@@ -8,16 +8,13 @@ import java.util.Optional;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
-import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.dto.RegisterHeadDto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -176,27 +173,27 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      */
     public Map<Integer, Map<String, List<RegisterBill>>> listPageCheckInData(RegisterBillDto query);
 
-    /**
-     * 创建多个进门登记单
-     *
-     * @param registerBills
-     * @param user
-     * @param operatorUser
-     * @param marketId
-     * @return
-     */
-    public List<Long> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
-                                                 Optional<OperatorUser> operatorUser, Long marketId);
+	/**
+	 * 创建多个进门登记单
+	 *
+	 * @param registerBills
+	 * @param user
+	 * @param operatorUser
+	 * @param marketId
+	 * @return
+	 */
+	public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+											 Optional<OperatorUser> operatorUser, Long marketId);
 
-    /**
-     * 创建单个报备单
-     *
-     * @param registerBill
-     * @param imageCertList
-     * @param operatorUser
-     * @return
-     */
-    Long createRegisterFormBill(RegisterBill registerBill, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser);
+	/**
+	 * 创建单个报备单
+	 *
+	 * @param registerBill
+	 * @param imageCertList
+	 * @param operatorUser
+	 * @return
+	 */
+	RegisterBill createRegisterFormBill(RegisterBill registerBill, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser);
 
     /**
      * 修改单个进门登记单

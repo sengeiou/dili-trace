@@ -16,7 +16,6 @@ import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -26,7 +25,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -94,7 +96,7 @@ public class ClientRegisterFormBillApi {
 	 */
 	@ApiOperation("保存多个进门登记单")
 	@RequestMapping(value = "/createRegisterFormBillList.api", method = RequestMethod.POST)
-	public BaseOutput<List<Long>> createRegisterFormBillList(@RequestBody CreateListBillParam createListBillParam) {
+	public BaseOutput<List<String>> createRegisterFormBillList(@RequestBody CreateListBillParam createListBillParam) {
 		logger.info("保存多个进门登记单:{}", JSON.toJSONString(createListBillParam));
 		if (createListBillParam == null || createListBillParam.getRegisterBills() == null) {
 			return BaseOutput.failure("参数错误");
@@ -108,9 +110,10 @@ public class ClientRegisterFormBillApi {
 				return BaseOutput.failure("没有进门登记单");
 			}
 			logger.info("保存多个进门登记单操作用户:{}，{}", operatorUser.getId(), operatorUser.getName());
-			List<Long> idList = this.registerBillService.createRegisterFormBillList(registerBills,
+			List<RegisterBill> billList = this.registerBillService.createRegisterFormBillList(registerBills,
 					userService.get(createListBillParam.getUserId()), Optional.of(operatorUser), createListBillParam.getMarketId());
-			return BaseOutput.success().setData(idList);
+			List<String> codeList = StreamEx.of(billList).nonNull().map(RegisterBill::getCode).toList();
+			return BaseOutput.success().setData(codeList);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

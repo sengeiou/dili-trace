@@ -52,11 +52,12 @@ public class ClientTallyAreaNoApi {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			logger.info("获取区位列表 操作用户:{}", userId);
 			if (StringUtils.isBlank(inputDto.getOrder())) {
-				inputDto.setOrder("desc");
-				inputDto.setSort("created");
+				inputDto.setOrder("asc");
+				inputDto.setSort("area");
 			}
 			List<TallyAreaNo> list = tallyAreaNoService.listByExample(inputDto);
-			return BaseOutput.success().setData(list);
+			List<TallyAreaNo> distinctTallyAreaNos = StreamEx.of(list).nonNull().distinct(TallyAreaNo::getArea).toList();
+			return BaseOutput.success().setData(distinctTallyAreaNos);
 		} catch (TraceBusinessException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
