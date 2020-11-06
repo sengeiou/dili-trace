@@ -1,0 +1,186 @@
+<#body head_title="新增商品">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="form" class="easyui-form" method="post" fit="true">
+                <input name="id" id="id" type="hidden" value="${goods.id}">
+                <table width="670px">
+                    <tr>
+                        <td style="padding:5px;width:50%">
+                            <input class="easyui-textbox" name="name" id="name" style="width:100%"
+                                   value="${goods.name}"
+                                   data-options="label:'商品名称*:', validType:'length[2,30]',required:true"/>
+                        </td>
+                        <td style="padding:5px;">
+                            <!--<select class="easyui-combobox" name="is_show" id="is_show"
+                                    style="width:100%;" editable="false" panelHeight="auto" data-options="label:'登记显示*:'">
+                                <option value="">请选择</option>
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>-->
+                            <select id="is_show" class="easyui-combobox" name="is_show" style="width:100%;"
+                                    data-options="label:'登记显示*:',panelWidth:'auto',panelMinWidth:'175',
+                                    panelHeight:'auto',panelMaxHeight:'300',value:'${goods.isShow}'">
+                                <% for(goodsShow in goodsShowMap){%>
+                                <option value="${goodsShow.key}">${goodsShow.value}</option>
+                                <%}%>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;width:50%">
+                            <input class="easyui-textbox" name="code" id="code" style="width:100%"
+                                   value="${goods.code}"
+                                   data-options="label:'商品码:'"/>
+                        </td>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="specification" id="specification" style="width:100%"
+                                   value="${goods.specification}"
+                                   data-options="label:'商品规格:'"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;width:50%">
+                            <select id="type" class="easyui-combobox" name="type" style="width:100%;"
+                                    data-options="label:'商品类型*:',panelWidth:'auto',panelMinWidth:'175',
+                                    panelHeight:'auto',panelMaxHeight:'300',value:'${goods.type}'">
+                                <% for(goodsType in goodsTypeMap){%>
+                                <option value="${goodsType.key}">${goodsType.value}</option>
+                                <%}%>
+                            </select>
+                        </td>
+                        <td style="padding:5px;">
+                            <select id="state" class="easyui-combobox" name="state" style="width:100%;"
+                                    data-options="label:'是否启用*:',panelWidth:'auto',panelMinWidth:'175',
+                                    panelHeight:'auto',panelMaxHeight:'300',value:'${goods.state}'">
+                                <% for(goodsState in goodsStateMap){%>
+                                <option value="${goodsState.key}">${goodsState.value}</option>
+                                <%}%>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <input type="button" id="submitFormBtn" style="display: none;">
+            </form>
+            <input name="currentNodeId" id="currentNodeId" type="hidden" value="${currentNodeId}">
+        </div>
+        <div class="easyui-panel">
+            <div id="holdHiddenDiv" style="display: none;">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ====================================================================================================================== -->
+<!-- 中央布局 -->
+<!-- ====================================================================================================================== -->
+<!-- 表格 -->
+
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
+
+    $('#submitFormBtn').click(function () {
+        if (!$('#form').form("validate")) {
+            return;
+        }
+        var _formData = removeKeyStartWith($("#form").serializeObject(), "_");
+        var _url = null;
+        var isNewData = false;
+        //没有id就新增
+        var currentNodeId=$('#currentNodeId').val();
+        if (_formData.id == null || _formData.id == "") {
+            _url = "${contextPath}/goodsManagement/insert.action?currentNodeId="+currentNodeId;
+        } else {//有id就修改
+            _url = "${contextPath}/goodsManagement/update.action";
+            isNewData = true;
+        }
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: JSON.stringify(_formData),
+            processData: true,
+            dataType: "json",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data.code == "200") {
+                    submitLog(isNewData);
+                    window.parent.layer.closeAll();
+                    var node = window.parent.getNode(currentNodeId);
+                    window.parent.renderMenuGrid(node, "goodsGrid");
+                    window.parent.$('#goodsTree').tree('reload');;
+                } else {
+                    swal('错误', data.result, 'error');
+                }
+            },
+            error: function () {
+                swal('错误', '远程访问失败', 'error');
+            }
+        });
+    });
+
+    function submitLog(isNewData) {
+        if (isNewData == true) {
+            var formNewData = $('#form').serializeObject();
+            //console.info(formOldData);
+            //console.info(formNewData);
+            var content = "【ID】：" + formOldData.id;
+            if (formOldData.phone != formNewData.phone) {
+                //手机号
+                content = content + '<br/>【手机号】:从' + formOldData.phone + '"改为"' + formNewData.phone + '"';
+            }
+            if (JSON.stringify(formOldData.tallyAreaNos) != JSON.stringify(formNewData.tallyAreaNos)) {
+                //理货区号
+                content = content + '<br/>【理货区号】:从' + $.makeArray(formOldData.tallyAreaNos).join(',') + '"改为"' + $.makeArray(formNewData.tallyAreaNos).join(',') + '"';
+            }
+            if (JSON.stringify(formOldData.plates) != JSON.stringify(formNewData.plates)) {
+                //车牌号
+                content = content + '<br/>【车牌号】:从' + $.makeArray(formOldData.plates).join(',') + '"改为"' + $.makeArray(formNewData.plates).join(',') + '"';
+            }
+
+            if (formOldData.salesCityName != formNewData.salesCityName) {
+                //销地城市
+                content = content + '<br/>【销地城市】:从' + formOldData.salesCityName + '"改为"' + formNewData.salesCityName + '"';
+            }
+            TLOG.component.operateLog('用户管理', "用户修改", content);
+        }
+
+
+    }
+
+    $(document).ready(function () {
+
+        if ('${goods.type}' == '') {
+            $('#type').combobox('setValue', '${@com.dili.trace.enums.CategoryTypeEnum.NONE.getCode()}');
+        }
+        if ('${goods.isShow}' == '') {
+            $('#is_show').combobox('setValue', '${@com.dili.trace.enums.CategoryIsShowEnum.IS_SHOW.getCode()}');
+        }
+        if ('${goods.state}' == '') {
+            $('#state').combobox('setValue', '${@com.dili.trace.glossary.EnabledStateEnum.ENABLED.getCode()}');
+        }
+        formOldData = $('#form').serializeObject();
+    });
+</script>
+</#body>

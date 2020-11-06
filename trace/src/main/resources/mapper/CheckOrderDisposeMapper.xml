@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.CheckOrderDisposeMapper">
+    <!--- 联合查询分页信息 -->
+    <select id="selectForPage" parameterType="com.dili.trace.dto.CheckOrderDisposeDto" resultType="com.dili.trace.dto.CheckOrderDisposeDto">
+        select d.*
+        FROM check_order_dispose d
+        <include refid="QUERY_WHERE_CLAUSE" />
+        GROUP BY d.id
+        order by ${sort} ${order}
+    </select>
+
+    <!-- 全部条件(更多功能可以通过queryData扩展实现) -->
+    <sql id="QUERY_WHERE_CLAUSE">
+        <where>
+            1 = 1
+            <if test="marketId != null and marketId != ''">
+                and d.market_id = #{marketId}
+            </if>
+            <if test="checkNo != null and checkNo != ''">
+                and d.check_no = #{checkNo}
+            </if>
+            <if test="disposer != null and disposer != ''">
+                and d.disposer = #{disposer}
+            </if>
+            <if test="disposeDateStart != null">
+                and d.dispose_date <![CDATA[   >=  ]]> #{disposeDateStart}
+            </if>
+            <if test="disposeDateEnd != null">
+                and d.dispose_date <![CDATA[   <=  ]]> #{disposeDateEnd}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

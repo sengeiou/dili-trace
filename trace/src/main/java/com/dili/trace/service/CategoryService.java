@@ -1,11 +1,12 @@
 package com.dili.trace.service;
 
 import java.util.List;
-
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.dao.CategoryMapper;
 import com.dili.trace.domain.Category;
 import com.dili.trace.enums.CategoryIsShowEnum;
+import com.dili.trace.glossary.EnabledStateEnum;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,5 +39,34 @@ public class CategoryService extends BaseServiceImpl<Category, Long> {
 
 	public Integer count(Category category) {
 		return ((CategoryMapper) (this.getDao())).selectCount(category);
+	}
+
+	/**
+	 * 根据用户ID，操作启禁用
+	 *
+	 * @param id
+	 * @param enable 是否启用(true-启用，false-禁用)
+	 * @return
+	 */
+	public BaseOutput updateEnable(Long id, Boolean enable){
+		Category category = get(id);
+		if (category == null) {
+			return BaseOutput.failure("数据不存在");
+		}
+		if (enable) {
+			if (EnabledStateEnum.ENABLED.getCode().equals(category.getState())){
+				return BaseOutput.failure("该商品已启用");
+			}
+			category.setState(EnabledStateEnum.ENABLED.getCode());
+			this.updateSelective(category);
+		} else {
+			if (EnabledStateEnum.DISABLED.getCode().equals(category.getState())){
+				System.out.println("该商品已禁用");
+				return BaseOutput.failure("该商品已禁用");
+			}
+			category.setState(EnabledStateEnum.DISABLED.getCode());
+			this.updateSelective(category);
+		}
+		return BaseOutput.success("操作成功");
 	}
 }

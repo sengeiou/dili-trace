@@ -42,7 +42,7 @@ public class CheckOrder extends BaseDomain {
     @Column(name = "`goods_code`")
     private String goodsCode;
     @Column(name = "`market_id`")
-    private String marketId;
+    private Long marketId;
     @Column(name = "`report_flag`")
     private Integer reportFlag;
 
@@ -52,6 +52,28 @@ public class CheckOrder extends BaseDomain {
     private String userName;
     @Column(name = "`tally_area_nos`")
     private String tallyAreaNos;
+    @Column(name = "`inbound_no`")
+    private String inboundNo;
+
+    private CheckOrderData checkOrderData;
+
+    private ImageCert imageCert;
+
+    public ImageCert getImageCert() {
+        return imageCert;
+    }
+
+    public void setImageCert(ImageCert imageCert) {
+        this.imageCert = imageCert;
+    }
+
+    public CheckOrderData getCheckOrderData() {
+        return checkOrderData;
+    }
+
+    public void setCheckOrderData(CheckOrderData checkOrderData) {
+        this.checkOrderData = checkOrderData;
+    }
 
     @Transient
     private List<ReportInspectionImgDto> checkImgList;
@@ -202,11 +224,19 @@ public class CheckOrder extends BaseDomain {
         this.goodsCode = goodsCode;
     }
 
-    public String getMarketId() {
+    public Long getMarketId() {
         return marketId;
     }
 
-    public void setMarketId(String marketId) {
+    public void setMarketId(Long marketId) {
         this.marketId = marketId;
+    }
+
+    public String getInboundNo() {
+        return inboundNo;
+    }
+
+    public void setInboundNo(String inboundNo) {
+        this.inboundNo = inboundNo;
     }
 }

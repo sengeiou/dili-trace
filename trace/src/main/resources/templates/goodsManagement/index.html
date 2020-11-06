@@ -1,0 +1,127 @@
+<#body>
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" id="layoutPanel" fit="true">
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="name" id="name" style="width:100%" labelAlign="right"
+                               data-options="label:'商品名称:'" />
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="code" id="code" style="width:100%" labelAlign="right"
+                               data-options="label:'商品码:'" />
+                    </div>
+                    <div class="search-item">
+                        <input name="type" id="type" style="width:100%;"  panelWidth="auto"
+                               panelHeight="auto" label="商品类型:" labelAlign="right" />
+                        <#comboProvider _id="type" _provider='categoryTypeProvider'
+                        _queryParams='{emptyText:"全部"}' />
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="specification" id="specification"
+                               style="width:100%" labelAlign="right" data-options="label:'商品规格:'" />
+                    </div>
+                    <div class="search-item">
+                        <select class="easyui-combobox" name="isShow" id="is_show"
+                                style="width:100%;" editable="false" panelHeight="auto" data-options="label:'登记显示'"
+                                labelAlign="right">
+                            <option value="">全部</option>
+                            <option value="1">是</option>
+                            <option value="2">否</option>
+                        </select>
+                    </div>
+                    <div class="search-item">
+                        <select class="easyui-combobox" name="state" id="state"
+                                style="width:100%;" editable="false" panelHeight="auto" data-options="label:'是否启用'"
+                                labelAlign="right">
+                            <option value="">全部</option>
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </div>
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryGoodsGrid()">查询</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div style="width: 300px;" height="100%" align="left" data-options="region:'west',title:'商品管理',split:true, hideCollapsedContent:false,expandMode:'dock'" >
+        <ul id="goodsTree" class="easyui-tree" lines="false" url="${contextPath}/goodsManagement/listGoods.action"
+            data-options="onSelect:onSelectTree, loadFilter:treeLoadFilter, _idField:'id', _textField:'name', _parentIdField:'parent_id',
+				onLoadSuccess:onTreeLoadSuccess,animate:true,dnd:true,onBeforeDrop:dragMenu" />
+    </div>
+    <!-- 表格 -->
+    <div id="centerPanel" region="center" height="99%" border="false" align="center">
+        <div class="easyui-layout" fit="true">
+            <!-- =========================================================中上表格========================================================= -->
+            <table class="easyui-datagrid" title="商品列表" id="goodsGrid" fitColumns="true" noheader="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" loadMsg="数据加载中..."
+                   singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="asc" align="center"
+                   fit="true" idField="id"
+                   data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+                <thead>
+                <tr>
+                    <th width="6%"
+                        data-options="field:'id', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        ID
+                    </th>
+                    <th width="14%"
+                        data-options="field:'name',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        名称
+                    </th>
+                    <th width="14%"
+                        data-options="field:'fullName',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        全名
+                    </th>
+                    <th width="8%"
+                        data-options="field:'code',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        商品码
+                    </th>
+                    <th width="14%"
+                        data-options="field:'specification', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        商品规格
+                    </th>
+                    <th width="12%"
+                        data-options="field:'type',_provider:'categoryTypeProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        商品类型
+                    </th>
+                    <th width="8%"
+                        data-options="field:'isShow',_provider:'categoryIsShowProvider',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        显示登记
+                    </th>
+                    <th width="8%"
+                        data-options="field:'state',_provider:'enabledStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        是否启用
+                    </th>
+                    <th width="16%"
+                        data-options="field:'created',_provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        创建时间
+                    </th>
+                </tr>
+                </thead>
+            </table>
+</div>
+</div>
+</div>
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<#goodsManagement_indexJs/>
+</#body>

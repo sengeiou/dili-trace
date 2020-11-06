@@ -1,0 +1,235 @@
+<#body head_title="新增检测登记单">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="form" class="easyui-form" method="post" fit="true">
+                <input name="id" id="id" type="hidden" value="${checkOrderDispose.id}">
+                <table width="800px">
+                    <tr>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="checkNo" id="checkNo" style="width:100%"
+                                   value="${checkOrderDispose.checkNo}"
+                                   data-options="label:'检测批号*:', validType:'length[2,30]',required:true"/>
+                        </td>
+                        <td style="padding:5px;width:33%">
+                            <select id="disposeType" class="easyui-combobox" name="disposeType" style="width:100%;"
+                                    data-options="label:'处置方式*:',panelWidth:'auto',panelMinWidth:'175',
+                                    panelHeight:'auto',panelMaxHeight:'300',value:'${checkOrderDispose.disposeType}'">
+                                <% for(disposeType in disposeTypeMap){%>
+                                <option value="${disposeType.key}">${disposeType.value}</option>
+                                <%}%>
+                            </select>
+                        </td>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-datetimebox" name="disposeDate" id="disposeDate" style="width:100%"
+                                   labelAlign="left" data-options="label:'处置时间*:'" value="${disposeDateString}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="disposer" id="disposer" style="width:100%"
+                                   value="${checkOrderDispose.disposer}"
+                                   data-options="label:'处置人*:', required:true"/>
+                        </td>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="disposeNum" id="disposeNum" style="width:100%"
+                                   value="${checkOrderDispose.disposeNum}"
+                                   data-options="label:'处置数量*:',required:true"/>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;" colspan="2">
+                            <label style="font-size: 14px">处置凭证:</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px; align-content: center;" colspan="2" align="center" >
+                            <div class="fileimg-box" style="margin: 0 auto;float:left" >
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">处置凭证</span>
+                                <input type="file" name="file" id="url" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                                <img class="magnifying">
+                                <input type="hidden" name="url" value="${checkOrderDispose.url}">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;" colspan="2">
+                            <label style="font-size: 14px">处置描述:</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;" colspan="3">
+                            <input class="easyui-textbox" name="disposeDesc" id="disposeDesc" data-options="multiline:true" value="${checkOrderDispose.disposeDesc}" style="width:100%;height:40px">
+                        </td>
+                    </tr>
+                </table>
+                <input type="button" id="submitFormBtn" style="display: none;">
+            </form>
+        </div>
+        <div class="easyui-panel">
+            <div id="holdHiddenDiv" style="display: none;">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ====================================================================================================================== -->
+<!-- 中央布局 -->
+<!-- ====================================================================================================================== -->
+<!-- 表格 -->
+
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
+
+    $('#submitFormBtn').click(function () {
+        if (!$('#form').form("validate")) {
+            return;
+        }
+        var _formData = removeKeyStartWith($("#form").serializeObject(), "_");
+        var _url = null;
+        var isNewData = false;
+        //没有id就新增
+        if (_formData.id == null || _formData.id == "") {
+            _url = "${contextPath}/checkOrderDispose/insert.action";
+        } else {//有id就修改
+            _url = "${contextPath}/checkOrderDispose/update.action";
+            isNewData = true;
+        }
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: JSON.stringify(_formData),
+            processData: true,
+            dataType: "json",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data.code == "200") {
+                    submitLog(isNewData);
+                    window.parent.layer.closeAll();
+                    window.parent.queryCheckOrderDisposeGrid();
+                } else {
+                    swal('错误', data.result, 'error');
+                }
+            },
+            error: function () {
+                swal('错误', '远程访问失败', 'error');
+            }
+        });
+    });
+
+    function submitLog(isNewData) {
+        if (isNewData == true) {
+            var formNewData = $('#form').serializeObject();
+            //console.info(formOldData);
+            //console.info(formNewData);
+            var content = "【ID】：" + formOldData.id;
+            if (formOldData.phone != formNewData.phone) {
+                //手机号
+                content = content + '<br/>【手机号】:从' + formOldData.phone + '"改为"' + formNewData.phone + '"';
+            }
+            if (JSON.stringify(formOldData.tallyAreaNos) != JSON.stringify(formNewData.tallyAreaNos)) {
+                //理货区号
+                content = content + '<br/>【理货区号】:从' + $.makeArray(formOldData.tallyAreaNos).join(',') + '"改为"' + $.makeArray(formNewData.tallyAreaNos).join(',') + '"';
+            }
+            if (JSON.stringify(formOldData.plates) != JSON.stringify(formNewData.plates)) {
+                //车牌号
+                content = content + '<br/>【车牌号】:从' + $.makeArray(formOldData.plates).join(',') + '"改为"' + $.makeArray(formNewData.plates).join(',') + '"';
+            }
+
+            if (formOldData.salesCityName != formNewData.salesCityName) {
+                //销地城市
+                content = content + '<br/>【销地城市】:从' + formOldData.salesCityName + '"改为"' + formNewData.salesCityName + '"';
+            }
+            TLOG.component.operateLog('用户管理', "用户修改", content);
+        }
+
+
+    }
+
+    $(document).ready(function () {
+        console.info('${checkOrderDispose.disposeDate}')
+        if ('${checkOrderDispose.disposeType}' == '') {
+            $('#disposeType').combobox('setValue', '${@com.dili.trace.enums.CheckDisposeTypeEnum.PASS.getCode()}');
+        }
+        if('${checkOrderDispose.url}'!=null && '${checkOrderDispose.url}'!="") {
+            $('#url').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#url').siblings(".magnifying").attr('src', '${checkOrderDispose.url}').show();
+        }
+        initFileUpload();
+        formOldData = $('#form').serializeObject();
+    });
+    function initFileUpload(){
+        $(":file").fileupload({
+            dataType : 'json',
+            formData: {type:4,compress:true},
+            done : function(e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    $(this).siblings(".magnifying").attr('src', url).show();
+                    $(this).siblings("input:hidden").val(url);
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".")+1;
+                var fileType = name.substring(index,name.length);
+                if(!acceptFileTypes.test(fileType)){
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return ;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if(size > (1024*10*1024)){
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return ;
+                }
+                data.submit();
+            }
+        });
+    }
+
+    $('.fileimg-view').on('click', function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+</script>
+</#body>

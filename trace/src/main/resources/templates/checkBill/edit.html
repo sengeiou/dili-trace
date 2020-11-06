@@ -1,0 +1,335 @@
+<#body head_title="新增检测登记单">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="form" class="easyui-form" method="post" fit="true">
+                <input name="id" id="id" type="hidden" value="${checkOrder.id}">
+                <table width="800px">
+                    <tr>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="checkNo" id="checkNo" style="width:100%"
+                                   value="${checkOrder.checkNo}"
+                                   data-options="label:'检测批号*:', validType:'length[2,30]',required:true"/>
+                        </td>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="idCard" id="idCard" style="width:100%"
+                                   value="${checkOrder.idCard}"
+                                   data-options="label:'经营户编号*:', validType:'length[1,30]',required:true"/>
+                        </td>
+                        <td style="padding:5px;width:34%">
+                            <input class="easyui-textbox" name="userName" id="userName" style="width:100%"
+                                   value="${checkOrder.userName}"
+                                   data-options="label:'经营户名称*:', validType:'length[1,30]',required:true,readonly:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="goodsCode" id="goodsCode" style="width:100%"
+                                   value="${checkOrder.goodsCode}"
+                                   data-options="label:'产品编号*:', required:true"/>
+                        </td>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="goodsName" id="goodsName" style="width:100%"
+                                   value="${checkOrder.goodsName}"
+                                   data-options="label:'产品名称*:', validType:'length[2,30]',required:true,readonly:true"/>
+                        </td>
+                        <td style="padding:5px;width:34%">
+                            <input class="easyui-textbox" name="project" id="project" style="width:100%"
+                                   value="${checkOrder.project}"
+                                   data-options="label:'检测项目*:', validType:'length[2,30]',required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="normalValue" id="normalValue" style="width:100%"
+                                   value="${checkOrder.normalValue}"
+                                   data-options="label:'标准值*:', required:true"/>
+                        </td>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="value" id="value" style="width:100%"
+                                   value="${checkOrder.value}"
+                                   data-options="label:'实测值:'"/>
+                        </td>
+                        <td style="padding:5px;width:34%">
+                            <input class="easyui-textbox" name="checker" id="checker" style="width:100%"
+                                   value="${checkOrder.checker}"
+                                   data-options="label:'检测人*:', validType:'length[2,30]',required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="checkOrgName" id="checkOrgName" style="width:100%"
+                                   value="${checkOrder.checkOrgName}"
+                                   data-options="label:'检测机构:', validType:'length[2,30]'"/>
+                        </td>
+                        <td style="padding:5px;width:33%">
+                            <select id="checkType" class="easyui-combobox" name="checkType" style="width:100%;"
+                                    data-options="label:'检测类型*:',panelWidth:'auto',panelMinWidth:'175',
+                                    panelHeight:'auto',panelMaxHeight:'300',value:'${checkOrder.checkType}'">
+                                <% for(checkType in checkTypeMap){%>
+                                <option value="${checkType.key}">${checkType.value}</option>
+                                <%}%>
+                            </select>
+                        </td>
+                        <td style="padding:5px;width:34%">
+                            <select id="checkResult" class="easyui-combobox" name="checkResult" style="width:100%;"
+                                    data-options="label:'检测结果*:',panelWidth:'auto',panelMinWidth:'175',
+                                    panelHeight:'auto',panelMaxHeight:'300',value:'${checkOrder.checkResult}'">
+                                <% for(checkResult in checkResultMap){%>
+                                <option value="${checkResult.key}">${checkResult.value}</option>
+                                <%}%>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-datetimebox" name="checkTime" id="checkTime" style="width:100%"
+                                   labelAlign="left" data-options="label:'检测时间*:'" value="${checkTimeString}!"/>
+                        </td>
+                        <td style="padding:5px;width:33%">
+                            <input class="easyui-textbox" name="inboundNo" id="inboundNo" style="width:100%"
+                                   value="${checkOrder.inboundNo}"
+                                   data-options="label:'进货批次号:', validType:'length[2,30]'"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px; align-content: center;" colspan="2" align="center">
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">检测报告</span>
+                                <input type="file" name="file" id="url"
+                                       data-url="${contextPath!}/action/imageApi/upload"
+                                       multiple="multipart/form-data"/>
+                                <img class="magnifying">
+                                <input type="hidden" name="url" value="${checkOrder.url}">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" id="userId" name="userId" style="display: none;" value="${checkOrder.userId}">
+                <input type="hidden" id="tallyAreaNos" name="tallyAreaNos" style="display: none;"
+                       value="${checkOrder.userId}">
+                <input type="button" id="submitFormBtn" style="display: none;">
+            </form>
+        </div>
+        <div class="easyui-panel">
+            <div id="holdHiddenDiv" style="display: none;">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ====================================================================================================================== -->
+<!-- 中央布局 -->
+<!-- ====================================================================================================================== -->
+<!-- 表格 -->
+
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
+
+    $('#submitFormBtn').click(function () {
+        if (!$('#form').form("validate")) {
+            return;
+        }
+        var _formData = removeKeyStartWith($("#form").serializeObject(), "_");
+        var _url = null;
+        var isNewData = false;
+        //没有id就新增
+        if (_formData.id == null || _formData.id == "") {
+            _url = "${contextPath}/checkBill/insert.action";
+        } else {//有id就修改
+            _url = "${contextPath}/checkBill/update.action";
+            isNewData = true;
+        }
+        $.ajax({
+            type: "POST",
+            url: _url,
+            data: JSON.stringify(_formData),
+            processData: true,
+            dataType: "json",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data.code == "200") {
+                    submitLog(isNewData);
+                    window.parent.layer.closeAll();
+                    window.parent.queryCheckBillGrid();
+                } else {
+                    swal('错误', data.result, 'error');
+                }
+            },
+            error: function () {
+                swal('错误', '远程访问失败', 'error');
+            }
+        });
+    });
+
+    function submitLog(isNewData) {
+        if (isNewData == true) {
+            var formNewData = $('#form').serializeObject();
+            //console.info(formOldData);
+            //console.info(formNewData);
+            var content = "【ID】：" + formOldData.id;
+            if (formOldData.phone != formNewData.phone) {
+                //手机号
+                content = content + '<br/>【手机号】:从' + formOldData.phone + '"改为"' + formNewData.phone + '"';
+            }
+            if (JSON.stringify(formOldData.tallyAreaNos) != JSON.stringify(formNewData.tallyAreaNos)) {
+                //理货区号
+                content = content + '<br/>【理货区号】:从' + $.makeArray(formOldData.tallyAreaNos).join(',') + '"改为"' + $.makeArray(formNewData.tallyAreaNos).join(',') + '"';
+            }
+            if (JSON.stringify(formOldData.plates) != JSON.stringify(formNewData.plates)) {
+                //车牌号
+                content = content + '<br/>【车牌号】:从' + $.makeArray(formOldData.plates).join(',') + '"改为"' + $.makeArray(formNewData.plates).join(',') + '"';
+            }
+
+            if (formOldData.salesCityName != formNewData.salesCityName) {
+                //销地城市
+                content = content + '<br/>【销地城市】:从' + formOldData.salesCityName + '"改为"' + formNewData.salesCityName + '"';
+            }
+            TLOG.component.operateLog('用户管理', "用户修改", content);
+        }
+
+
+    }
+
+    $(document).ready(function () {
+        if ('${checkOrder.checkType}' == '') {
+            $('#checkType').combobox('setValue', '${@com.dili.trace.enums.CheckTypeEnum.QUALITATIVE.getCode()}');
+        }
+        if ('${checkOrder.checkResult}' == '') {
+            $('#checkResult').combobox('setValue', '${@com.dili.trace.enums.CheckResultTypeEnum.PASS.getCode()}');
+        }
+
+        if ('${checkOrder.url}' != null && '${checkOrder.url}' != "") {
+            $('#url').siblings('.fileimg-cover,.fileimg-edit').show();
+            $('#url').siblings(".magnifying").attr('src', '${checkOrder.url}').show();
+        }
+        initFileUpload();
+        userChanged();
+        goodsChanged();
+        formOldData = $('#form').serializeObject();
+    });
+
+    function initFileUpload() {
+        $(":file").fileupload({
+            dataType: 'json',
+            formData: {type: 1, compress: true},
+            done: function (e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    $(this).siblings(".magnifying").attr('src', url).show();
+                    $(this).siblings("input:hidden").val(url);
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".") + 1;
+                var fileType = name.substring(index, name.length);
+                if (!acceptFileTypes.test(fileType)) {
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if (size > (1024 * 10 * 1024)) {
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return;
+                }
+                data.submit();
+            }
+        });
+    }
+
+    $('.fileimg-view').on('click', function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        if (url) {
+            layer.open({
+                title: '图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+
+    function userChanged() {
+        $('#idCard').textbox({
+            onChange: function (value) {
+                $.ajax({
+                    type: "GET",
+                    url: "${contextPath}/checkBill/getUserName.action?idCard=" + $('#idCard').val(),
+                    success: function (data) {
+                        if (data.code == 200) {
+                            console.info(data)
+                            $('#userName').textbox('setValue', data.data.name);
+                            $('#userId').val(data.data.id);
+                            $('#tallyAreaNos').val(data.data.tallyAreaNos);
+                        } else {
+                            $('#userName').textbox('setValue', null);
+                            $('#userId').val(null);
+                            $('#tallyAreaNos').val(null);
+                        }
+                    },
+                    error: function (err) {
+                        $('#userName').textbox('setValue', null);
+                        $('#userId').val(null);
+                        $('#tallyAreaNos').val(null);
+                    }
+                });
+            }
+        });
+    }
+
+    function goodsChanged() {
+        $('#goodsCode').textbox({
+            onChange: function (value) {
+                $.ajax({
+                    type: "GET",
+                    url: "${contextPath}/checkBill/getGoodsName.action?goodsCode=" + $('#goodsCode').val(),
+                    success: function (data) {
+                        if (data.code == 200) {
+                            console.info(data)
+                            $('#goodsName').textbox('setValue', data.data)
+                        } else {
+                            $('#goodsName').textbox('setValue', null)
+                        }
+                    },
+                    error: function (err) {
+                        $('#goodsName').textbox('setValue', null)
+                    }
+                });
+            }
+        });
+    }
+</script>
+</#body>
