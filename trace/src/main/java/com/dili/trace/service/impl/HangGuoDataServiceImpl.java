@@ -1,7 +1,6 @@
 package com.dili.trace.service.impl;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.HangGuoDataMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
@@ -38,8 +37,6 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
 
     @Override
     public void updateHangGuoCommodityParent(Category category) {
-        //TODO
-//        category.setCreated(DateUtils.getCurrentDate());
         hangGuoDataMapper.updateHangGuoCommodityParent(category);
     }
 

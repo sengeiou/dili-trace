@@ -12,7 +12,9 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.PushDataQueryDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.*;
+import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections.CollectionUtils;
@@ -53,7 +55,6 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     @Autowired
     private ImageCertService imageCertService;
 
-
     @Value("${current.baseWebPath}")
     private String baseWebPath;
     @Value("${push.batch.size}")
@@ -61,13 +62,14 @@ public class HangGuoPushDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        //pushHangGuoTradeData();
         //pushData();
     }
 
     /**
      * 每五分钟提交一次数据
      */
-    @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
@@ -95,7 +97,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * ?")
     public void pushHangGuoTradeData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
@@ -144,7 +146,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             return BaseOutput.success("Report Hangguo Unqualified Disposal IS NULL");
         }
 
-        BaseOutput baseOutput=new BaseOutput();
+        BaseOutput baseOutput = new BaseOutput();
         // 分批上报
         Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
         // 分批数
@@ -203,7 +205,18 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             logger.info("Report Hangguo Unqualified Disposal IS NULL");
             return BaseOutput.success("Report Hangguo Unqualified Disposal IS NULL");
         }
-        BaseOutput baseOutput = this.dataReportService.reportFruitsUnqualifiedDisposal(disposalDtos, optUser, market);
+        //BaseOutput baseOutput = this.dataReportService.reportFruitsUnqualifiedDisposal(disposalDtos, optUser, market);
+        BaseOutput baseOutput = new BaseOutput();
+        // 分批上报
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
+        // 分批数
+        Integer part = disposalDtos.size() / batchSize;
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i == part ? disposalDtos.size() : (i + 1) * batchSize;
+            List<ReportUnqualifiedDisposalDto> partBills = disposalDtos.subList(i * batchSize, endPos);
+            baseOutput = this.dataReportService.reportFruitsUnqualifiedDisposal(partBills, optUser, market);
+        }
+
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             hangGuoDataService.updateCheckOrderDisposeReportFlag(disposalDtos);
@@ -297,7 +310,19 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             logger.info("report checkOrder is null");
             return BaseOutput.success("report checkOrder is null");
         }
-        BaseOutput baseOutput = this.dataReportService.reportFruitsInspection(inspectionDtoList, optUser, market);
+        //BaseOutput baseOutput = this.dataReportService.reportFruitsInspection(inspectionDtoList, optUser, market);
+
+        BaseOutput baseOutput = new BaseOutput();
+        // 分批上报
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
+        // 分批数
+        Integer part = inspectionDtoList.size() / batchSize;
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i == part ? inspectionDtoList.size() : (i + 1) * batchSize;
+            List<ReportInspectionDto> partBills = inspectionDtoList.subList(i * batchSize, endPos);
+            baseOutput = this.dataReportService.reportFruitsInspection(partBills, optUser, market);
+        }
+
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             hangGuoDataService.updateCheckOrderReportFlag(inspectionDtoList);
@@ -433,8 +458,11 @@ public class HangGuoPushDataJob implements CommandLineRunner {
 
         User user = DTOUtils.newDTO(User.class);
         user.setMarketId(market.getId());
+        user.setState(EnabledStateEnum.ENABLED.getCode());
+        user.setYn(YnEnum.YES.getCode());
+        user.setValidateState(ValidateStateEnum.PASSED.getCode());
         if (!newPushFlag) {
-            user.mset(IDTO.AND_CONDITION_EXPR, " modified >= '" + DateUtils.format(updateTime) + "'");
+            user.mset(IDTO.AND_CONDITION_EXPR, " modified >= '" + DateUtils.format(updateTime) + "' and phone <> '' and phone <> '''''' ");
         }
         List<User> userList = userService.listByExample(user);
         if (CollectionUtils.isEmpty(userList)) {
@@ -459,7 +487,19 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             logger.info("Report Hangguo User ISNULL");
             return BaseOutput.success("Report Hangguo User ISNULL");
         }
-        BaseOutput baseOutput = this.dataReportService.reportFruitsUser(reportUserDtoList, optUser, market);
+        //BaseOutput baseOutput = this.dataReportService.reportFruitsUser(reportUserDtoList, optUser, market);
+
+        BaseOutput baseOutput = new BaseOutput();
+        // 分批上报
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
+        // 分批数
+        Integer part = reportUserDtoList.size() / batchSize;
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i == part ? reportUserDtoList.size() : (i + 1) * batchSize;
+            List<ReportUserDto> partBills = reportUserDtoList.subList(i * batchSize, endPos);
+            baseOutput = this.dataReportService.reportFruitsUser(partBills, optUser, market);
+        }
+
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
         } else {
@@ -515,7 +555,19 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             logger.info("report Category ISNULL");
             return BaseOutput.success("report Category ISNULL");
         }
-        BaseOutput baseOutput = this.dataReportService.reportFruitsGoods(categoryDtos, optUser, market);
+        //BaseOutput baseOutput = this.dataReportService.reportFruitsGoods(categoryDtos, optUser, market);
+
+        BaseOutput baseOutput = new BaseOutput();
+        // 分批上报
+        Integer batchSize = (pushBatchSize == null || pushBatchSize == 0) ? 64 : pushBatchSize;
+        // 分批数
+        Integer part = categoryDtos.size() / batchSize;
+        for (int i = 0; i <= part; i++) {
+            Integer endPos = i == part ? categoryDtos.size() : (i + 1) * batchSize;
+            List<GoodsDto> partBills = categoryDtos.subList(i * batchSize, endPos);
+            baseOutput = this.dataReportService.reportFruitsGoods(partBills, optUser, market);
+        }
+
         if (baseOutput.isSuccess()) {
             this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
         } else {

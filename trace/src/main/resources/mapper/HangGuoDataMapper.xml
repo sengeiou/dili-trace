@@ -16,6 +16,8 @@
         SET c2.parent_id=c.id
         WHERE c.code=c2.parent_code
         AND c2.parent_code IS NOT NULL
+        AND c.market_id=#{marketId}
+        AND c2.market_id=#{marketId}
         AND DATE(c2.created) = DATE(#{created})
     </update>
 
@@ -33,108 +35,16 @@
         </foreach>
     </select>
 
-    <update id="batchUpdateUserByThirdCode" parameterType="com.dili.trace.domain.User">
-        update user
-        <set>
-            <if test="userName != null">
-                user_name = #{userName,jdbcType=VARCHAR},
-            </if>
-            <if test="phone != null">
-                phone = #{phone,jdbcType=VARCHAR},
-            </if>
-            <if test="cardNo != null">
-                card_no = #{cardNo,jdbcType=VARCHAR},
-            </if>
-            <if test="addr != null">
-                addr = #{addr,jdbcType=VARCHAR},
-            </if>
-            <if test="cardNoUrl != null">
-                card_no_url = #{cardNoUrl,jdbcType=VARCHAR},
-            </if>
-            <if test="tallyAreaNo != null">
-                tally_area_no = #{tallyAreaNo,jdbcType=VARCHAR},
-            </if>
-            <if test="businessLicenseUrl != null">
-                business_license_url = #{businessLicenseUrl,jdbcType=VARCHAR},
-            </if>
-            <if test="salesCityId != null">
-                sales_city_id = #{salesCityId,jdbcType=BIGINT},
-            </if>
-            <if test="salesCityName != null">
-                sales_city_name = #{salesCityName,jdbcType=VARCHAR},
-            </if>
-            <if test="state != null">
-                state = #{state,jdbcType=BIT},
-            </if>
-            <if test="pwd != null">
-                pwd = #{pwd,jdbcType=VARCHAR},
-            </if>
-            <if test="created != null">
-                created = #{created,jdbcType=TIMESTAMP},
-            </if>
-            <if test="modified != null">
-                modified = #{modified,jdbcType=TIMESTAMP},
-            </if>
-
-            <if test="license != null">
-                license = #{license},
-            </if>
-            <if test="credentialType != null">
-                credential_type = #{credentialType},
-            </if>
-            <if test="credentialName != null">
-                credential_name = #{credentialName},
-            </if>
-            <if test="credentialUrl != null">
-                credential_url = #{credentialUrl},
-            </if>
-            <if test="credentialNumber != null">
-                credential_number = #{credentialNumber},
-            </if>
-            <if test="idAddr != null">
-                id_addr = #{idAddr},
-            </if>
-            <if test="whereis != null">
-                whereis = #{whereis},
-            </if>
-            <if test="creditLimit != null">
-                credit_limit = #{creditLimit},
-            </if>
-            <if test="effectiveDate != null">
-                effective_date = #{effectiveDate},
-            </if>
-            <if test="remark != null">
-                remark = #{remark},
-            </if>
-            <if test="sex != null">
-                sex = #{sex},
-            </if>
-            <if test="fixedTelephone != null">
-                fixed_telephone = #{fixedTelephone},
-            </if>
-            <if test="chargeRate != null">
-                charge_rate = #{chargeRate},
-            </if>
-
-            <if test="mangerRate != null">
-                manger_rate = #{mangerRate},
-            </if>
-            <if test="storageRate != null">
-                storage_rate = #{storageRate},
-            </if>
-            <if test="assessRate != null">
-                assess_rate = #{assessRate},
-            </if>
-            <if test="approver != null">
-                approver = #{approver},
-            </if>
-            <if test="supplierType != null">
-                supplier_type = #{supplierType},
-            </if>
-        </set>
-        where third_party_code
-        <foreach collection="list" open=" IN (" close=")" item="thirdCode" separator=",">
-            #{thirdCode}
+    <update id="batchUpdateUserByThirdCode"  parameterType="java.util.List">
+        UPDATE user
+        SET credential_url =
+        <foreach collection="list" item="user" index="index"
+                 separator=" " open="case third_party_code" close="end">
+            when #{user.thirdPartyCode} then #{user.credentialUrl}
+        </foreach>
+        WHERE third_party_code
+        <foreach collection="list" open=" IN (" close=")" item="u" separator=",">
+            #{u.thirdPartyCode}
         </foreach>
     </update>
 

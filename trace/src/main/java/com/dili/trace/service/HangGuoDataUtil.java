@@ -4,7 +4,6 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoCommodity;
@@ -17,9 +16,9 @@ import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.glossary.hanguo.HangGuoGoodsLevelEnum;
 import com.dili.trace.glossary.hanguo.HangGuoVocationTypeEnum;
 import one.util.streamex.StreamEx;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -79,7 +79,7 @@ public class HangGuoDataUtil {
      */
     public void createHangGuoMember(List<HangGuoUser> infoList, Date createTime) {
         if (CollectionUtils.isEmpty(infoList)) {
-            logger.info("===========>获取杭果供应商数据为空");
+            logger.info("===========>获取杭果会员数据为空");
             return;
         }
         Long startTime = DateUtils.getCurrentDate().getTime();
@@ -190,6 +190,13 @@ public class HangGuoDataUtil {
             logger.info("获取杭果商品数据为空");
             return;
         }
+        StreamEx.of(commodityList).nonNull().forEach(c -> {
+            c.setFirstCateg(c.getFirstCateg().trim());
+            c.setSecondCateg(c.getSecondCateg().trim());
+            c.setItemName(c.getItemName().trim());
+            c.setItemNumber(c.getItemNumber().trim());
+            c.setItemUnitName(c.getItemUnitName() == null ? null : c.getItemUnitName().trim());
+        });
         List<String> list = StreamEx.of(commodityList).nonNull().map(c -> c.getItemNumber()).collect(Collectors.toList());
         List<Category> existsCateGoryList = getCategoryListByThirdCode(list);
 
@@ -232,6 +239,10 @@ public class HangGuoDataUtil {
         for (int i = 0; i <= part; i++) {
             Integer endPos = i == part ? tradeList.size() : (i + 1) * batchSize;
             List<HangGuoTrade> partBills = tradeList.subList(i * batchSize, endPos);
+
+            StreamEx.of(partBills).nonNull().forEach(p -> {
+                p.setRegisterNo(p.getRegisterNo().trim());
+            });
             hangGuoDataService.batchInsertCacheTradeList(partBills);
         }
         //patch标志位
@@ -390,17 +401,23 @@ public class HangGuoDataUtil {
     }
 
     private String createPicFile(String memberNo, String img64Str) {
-        if (img64Str == null) {
+        if (StringUtils.isBlank(img64Str)) {
             logger.info("createPicFile IS NULL");
             return null;
         }
+        img64Str = img64Str.trim();
         String imgPath = defaultConfiguration.getImageDirectory() + ImageCertTypeEnum.USER_PHOTO_HANGGUO.getName();
         imgPath += "/";
         imgPath += DateUtils.format(new Date(), "yyyyMM");
+        File filepatch = new File(imgPath);
+        if (!filepatch.exists()) {
+            filepatch.mkdirs();
+        }
         // 生成jpeg图片
-        imgPath += "/" + memberNo + "." + ImageFileTypeEnum.JPEG_TYPE.getName();
+        imgPath += "/" + memberNo.trim() + "." + ImageFileTypeEnum.JPEG_TYPE.getName();
         try {
             // Base64解码
+            logger.info("=====>>pic length:" + img64Str.length());
             byte[] bytes = Base64.decodeBase64(img64Str);
             for (int i = 0; i < bytes.length; ++i) {
                 // 调整异常数据
@@ -455,7 +472,7 @@ public class HangGuoDataUtil {
         sellerUser.setValidateState(ValidateStateEnum.PASSED.getCode());
         sellerUser.setIdAddr(info.getIdAddr());
         sellerUser.setAddr(info.getOperateAddr());
-        sellerUser.setPhone(info.getPhoneNumber());
+        sellerUser.setPhone(info.getPhoneNumber() == null ? nullStr : info.getPhoneNumber());
         sellerUser.setWhereis(info.getWhereis());
         //0非激活1激活
         sellerUser.setState(info.getStatusCode());
@@ -610,6 +627,7 @@ public class HangGuoDataUtil {
         Category category = new Category();
         category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
         category.setCreated(createTime);
+        category.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
         hangGuoDataService.updateHangGuoCommodityParent(category);
     }
 

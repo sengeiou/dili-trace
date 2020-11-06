@@ -317,7 +317,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
      * @param optUser
      */
     private void pushFruitsCategory(String tableName, String interfaceName,
-                              Integer level, Optional<OperatorUser> optUser, Date endTime, Market market) {
+                                    Integer level, Optional<OperatorUser> optUser, Date endTime, Market market) {
         String categorySmallClass = "category_smallClass";
         String categoryGoods = "category_goods";
         Long marketId = market.getId();
@@ -335,18 +335,18 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         BaseOutput baseOutput = new BaseOutput();
         if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
-                for (Category td : categories) {
-                    boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                            && td.getModified().compareTo(endTime) <= 0);
-                    if (needPush) {
-                        CategorySecondDto categoryDto = new CategorySecondDto();
-                        categoryDto.setThirdSmallClassId(td.getId().toString());
-                        categoryDto.setSmallClassName(td.getName());
-                        categoryDto.setThirdBigClassId(String.valueOf(td.getParentId()));
-                        categoryDto.setMarketId(String.valueOf(platformMarketId));
-                        categoryDtos.add(categoryDto);
-                    }
+            for (Category td : categories) {
+                boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                        && td.getModified().compareTo(endTime) <= 0);
+                if (needPush) {
+                    CategorySecondDto categoryDto = new CategorySecondDto();
+                    categoryDto.setThirdSmallClassId(td.getId().toString());
+                    categoryDto.setSmallClassName(td.getName());
+                    categoryDto.setThirdBigClassId(String.valueOf(td.getParentId()));
+                    categoryDto.setMarketId(String.valueOf(platformMarketId));
+                    categoryDtos.add(categoryDto);
                 }
+            }
             if (categoryDtos.size() > 0) {
                 baseOutput = this.dataReportService.reportSecondCategory(categoryDtos, optUser, market);
                 if (baseOutput.isSuccess()) {
@@ -507,7 +507,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         queUser.setYn(normalUserType);
         //1为需要上报
         queUser.setIsPush(isPush);
-        queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state = 40");
+        queUser.mset(IDTO.AND_CONDITION_EXPR, " validate_state = 40 and phone <> '' and phone <> '''''' ");
         queUser.setMarketId(marketId);
         StreamEx.ofNullable(this.userService.listByExample(queUser))
                 .nonNull().flatCollection(Function.identity()).map(info -> {
