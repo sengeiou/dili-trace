@@ -14,6 +14,7 @@ import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
+import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -105,6 +106,8 @@ public class RegisterBillController {
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	
 	public @ResponseBody String listPage(BillReportQueryDto query) throws Exception {
+		// 设置市场查询条件
+		query.setMarketId(MarketUtil.returnMarket());
 		return billReportService.listEasyuiPage(query).toString();
 	}
 	//public @ResponseBody String listPage(RegisterBillDto registerBill) throws Exception {

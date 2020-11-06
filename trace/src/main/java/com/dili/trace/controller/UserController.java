@@ -18,6 +18,7 @@ import com.dili.trace.jobs.UpdateUserQrStatusJob;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UsualAddressService;
+import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -79,6 +80,8 @@ public class UserController {
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(UserListDto user) throws Exception {
+		// 设置市场查询条件
+		user.setMarketId(MarketUtil.returnMarket());
 		EasyuiPageOutput out = this.userService.listEasyuiPageByExample(user);
 		return out.toString();
 	}

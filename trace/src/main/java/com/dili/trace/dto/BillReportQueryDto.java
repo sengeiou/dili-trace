@@ -33,6 +33,8 @@ public class BillReportQueryDto extends BaseDomain {
 
     private Integer orderType;
 
+    private Long marketId;
+
     /**
      * @return String return the billCreatedStart
      */
@@ -253,5 +255,13 @@ public class BillReportQueryDto extends BaseDomain {
      */
     public void setOrderType(Integer orderType) {
         this.orderType = orderType;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
     }
 }

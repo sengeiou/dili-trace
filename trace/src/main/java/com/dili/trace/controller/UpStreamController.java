@@ -16,6 +16,7 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.service.RUserUpStreamService;
 import com.dili.trace.service.UpStreamService;
 import com.dili.trace.service.UserService;
+import com.dili.trace.util.MarketUtil;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -97,6 +98,9 @@ public class UpStreamController {
 				return new EasyuiPageOutput(0, Collections.emptyList()).toString();
 			}
 		}
+
+		// 设置市场查询条件
+		upStreamDto.setMarketId(MarketUtil.returnMarket());
 
 		List<UpStream> upStreams = upStreamService.listByExample(upStreamDto);
 		List<UpStreamDto> upStreamDtos = new ArrayList<>();

@@ -78,6 +78,9 @@
     <if test="orderType !=null">
         AND register_bill.`order_type`=#{orderType}
     </if>
+    <if test="marketId !=null">
+        AND register_bill.`market_id`=#{marketId}
+    </if>
     order by  register_bill.created desc
 
     </select>
