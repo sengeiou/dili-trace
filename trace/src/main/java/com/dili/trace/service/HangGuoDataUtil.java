@@ -860,7 +860,7 @@ public class HangGuoDataUtil {
         billNos = StreamEx.of(billNos).nonNull().distinct().collect(Collectors.toList());
         List<User> userList = getUserListByThirdPartyCode(userCode);
         List<Category> categoryList = getCategoryListByThirdCode(commodityCode);
-        if(CollectionUtils.isEmpty(userList)||CollectionUtils.isEmpty(categoryList)){
+        if (CollectionUtils.isEmpty(userList) || CollectionUtils.isEmpty(categoryList)) {
             logger.info("交易数据没有对应的经营户或者商品,无法关联,不创建正式交易单");
             return;
         }
