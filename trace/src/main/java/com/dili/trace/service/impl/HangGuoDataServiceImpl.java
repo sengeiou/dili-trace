@@ -76,8 +76,8 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     }
 
     @Override
-    public void updateTradeReportListByBeyondAmount() {
-        hangGuoDataMapper.updateTradeReportListByBeyondAmount();
+    public void updateTradeReportListByBeyondAmount(Integer reportMaxAmountInt) {
+        hangGuoDataMapper.updateTradeReportListByBeyondAmount(reportMaxAmountInt);
     }
 
     @Override

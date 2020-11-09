@@ -63,7 +63,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         //pushHangGuoTradeData();
-        //pushData();
+        // pushData();
     }
 
     /**
@@ -461,15 +461,22 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         user.setState(EnabledStateEnum.ENABLED.getCode());
         user.setYn(YnEnum.YES.getCode());
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
+        String addQue = " phone <> '' and phone <> '''''' ";
         if (!newPushFlag) {
-            user.mset(IDTO.AND_CONDITION_EXPR, " modified >= '" + DateUtils.format(updateTime) + "' and phone <> '' and phone <> '''''' ");
+            addQue+=" and  modified >= '" + DateUtils.format(updateTime) + "' ";
         }
+        user.mset(IDTO.AND_CONDITION_EXPR, addQue);
         List<User> userList = userService.listByExample(user);
         if (CollectionUtils.isEmpty(userList)) {
             return BaseOutput.success("NULL USER NEED PUSH");
         }
+        Map<String, List<User>> listMap = StreamEx.of(userList).nonNull().collect(Collectors.groupingBy(u -> u.getName() + "_" + u.getPhone() + "_" + u.getMarketId()));
+        List<User> gourpUser = new ArrayList<>();
+        StreamEx.of(listMap.entrySet()).nonNull().forEach(ul -> {
+            gourpUser.add(ul.getValue().get(0));
+        });
         List<ReportUserDto> reportUserDtoList = new ArrayList<>();
-        StreamEx.of(userList).nonNull().forEach(u -> {
+        StreamEx.of(gourpUser).nonNull().forEach(u -> {
             ReportUserDto userDto = new ReportUserDto();
             userDto.setAccountName(u.getName());
             userDto.setTel(u.getPhone());

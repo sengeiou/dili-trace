@@ -73,15 +73,15 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //getBaseData();
-        //getTradeData();
+        //启动时初始化一次基础数据
+        getBaseData();
     }
 
     /**
      * 商品信息、供应商信息、会员信息每六小时调用一次
      */
     //@Scheduled(cron = "0 */15 * * * ?")
-    //@Scheduled(cron = "0 0 */6 * * ?")
+    @Scheduled(cron = "0 0 */6 * * ?")
     public void getBaseData() {
         try {
             Date endTime = this.registerBillMapper.selectCurrentTime();
@@ -105,7 +105,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * 交易数据每小时调用一次
      */
     //@Scheduled(cron = "0 */10 * * * ?")
-    //@Scheduled(cron = "0 0 */1 * * ?")
+    @Scheduled(cron = "0 0 */1 * * ?")
     public void getTradeData() {
         try {
             Date endTime = this.registerBillMapper.selectCurrentTime();
@@ -209,6 +209,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
         ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode(), marketId);
         boolean isFirst = false;
+        //由于updatetime为预留参数没有实际意义.因此获取了一次后不会再获取,否则又是全量数据
         if (null == pushData) {
             isFirst = true;
             pushData = new ThirdPartyPushData();
@@ -380,15 +381,11 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             resultStr = result.getData();
         }
         if (StringUtils.isNotBlank(resultStr)) {
-            addSource(resultStr, ThirdSourceTypeEnum.MEMBER_CAR_PIC.getCode(), ThirdSourceTypeEnum.MEMBER_CAR_PIC.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
             picList = JSON.parseArray(resultStr, HangGuoPic.class);
         } else {
             if (null != result) {
                 resultStr = JSON.toJSONString(result);
             }
-            addSource(resultStr, ThirdSourceTypeEnum.MEMBER_CAR_PIC.getCode(), ThirdSourceTypeEnum.MEMBER_CAR_PIC.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
         }
         logger.info("====>end getMemberPic time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         if (!CollectionUtils.isEmpty(picList)) {
@@ -406,15 +403,11 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             resultStr = result.getData();
         }
         if (StringUtils.isNotBlank(resultStr)) {
-            addSource(resultStr, ThirdSourceTypeEnum.SUPPLIER_CAR_PIC.getCode(), ThirdSourceTypeEnum.SUPPLIER_CAR_PIC.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
             picList = JSON.parseArray(resultStr, HangGuoPic.class);
         } else {
             if (null != result) {
                 resultStr = JSON.toJSONString(result);
             }
-            addSource(resultStr, ThirdSourceTypeEnum.SUPPLIER_CAR_PIC.getCode(), ThirdSourceTypeEnum.SUPPLIER_CAR_PIC.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
         }
         logger.info("====>end getSupplierPic time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         if (!CollectionUtils.isEmpty(picList)) {

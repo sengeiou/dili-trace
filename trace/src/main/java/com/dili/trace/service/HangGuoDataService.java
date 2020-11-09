@@ -88,8 +88,9 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      * 更新超过金额标志位
      *
      * @return
+     * @param reportMaxAmountInt
      */
-    void updateTradeReportListByBeyondAmount();
+    void updateTradeReportListByBeyondAmount(Integer reportMaxAmountInt);
 
     /**
      * 查询的交易数据

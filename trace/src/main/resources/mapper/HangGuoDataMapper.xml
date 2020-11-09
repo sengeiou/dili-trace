@@ -162,7 +162,7 @@
     <update id="updateTradeReportListByBeyondAmount">
         update third_hangguo_trade_data
         set report_flag=3
-        where amount >= 500000
+        where amount >= #{maxAmount}
         and handle_flag=1
     </update>
 

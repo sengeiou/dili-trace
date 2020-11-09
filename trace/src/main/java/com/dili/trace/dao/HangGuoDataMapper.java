@@ -87,8 +87,9 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
 
     /**
      * 超过金额patch为不上报
+     * @param reportMaxAmountInt
      */
-    void updateTradeReportListByBeyondAmount();
+    void updateTradeReportListByBeyondAmount(@Param("maxAmount") Integer reportMaxAmountInt);
 
     /**
      * 查询所有交易数据

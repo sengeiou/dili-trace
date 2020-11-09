@@ -278,7 +278,7 @@ public class HangGuoDataUtil {
 
     private void updateCacheTradeReportFlagToFalse(Map<String, User> userMap, Map<String, Category> categoryMap, Date createTime) {
         //大于50W的交易金额patch为无需上报
-        hangGuoDataService.updateTradeReportListByBeyondAmount();
+        hangGuoDataService.updateTradeReportListByBeyondAmount(reportMaxAmountInt);
         //交易单对应商品或用户关联不到
         HangGuoTrade trade = new HangGuoTrade();
         trade.setHandleFlag(DataHandleFlagEnum.PENDING_HANDLE.getCode());
