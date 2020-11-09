@@ -273,7 +273,7 @@ public class HangGuoDataUtil {
         u.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
         u.setYn(YnEnum.YES.getCode());
         List<User> userList = userService.listByExample(u);
-        return StreamEx.of(userList).nonNull().collect(Collectors.toMap(User::getThirdPartyCode, user -> user, (a, b) -> a));
+        return StreamEx.of(userList).nonNull().collect(Collectors.toMap(us -> us.getThirdPartyCode(), user -> user, (a, b) -> a));
     }
 
     private void updateCacheTradeReportFlagToFalse(Map<String, User> userMap, Map<String, Category> categoryMap, Date createTime) {
@@ -461,18 +461,18 @@ public class HangGuoDataUtil {
         Integer version = 0;
         Integer source = 20;
         User sellerUser = DTOUtils.newDTO(User.class);
-        sellerUser.setThirdPartyCode(info.getMemberNo());
+        sellerUser.setThirdPartyCode(info.getMemberNo() == null ? null : info.getMemberNo().trim());
         sellerUser.setCreated(info.getEnableDate());
-        sellerUser.setName(info.getName());
-        sellerUser.setCredentialType(info.getCredentialType());
+        sellerUser.setName(info.getName() == null ? null : info.getName().trim());
+        sellerUser.setCredentialType(info.getCredentialType() == null ? null : info.getCredentialType().trim());
         sellerUser.setCredentialName(info.getCredentialName());
-        sellerUser.setCredentialNumber(info.getCredentialNumber());
+        sellerUser.setCredentialNumber(info.getCredentialNumber() == null ? null : info.getCredentialNumber().trim());
         Integer vocationType = getVocationType(info.getOperateType());
         sellerUser.setVocationType(vocationType);
         sellerUser.setValidateState(ValidateStateEnum.PASSED.getCode());
         sellerUser.setIdAddr(info.getIdAddr());
         sellerUser.setAddr(info.getOperateAddr());
-        sellerUser.setPhone(info.getPhoneNumber() == null ? nullStr : info.getPhoneNumber());
+        sellerUser.setPhone(info.getPhoneNumber() == null ? nullStr : info.getPhoneNumber().trim());
         sellerUser.setWhereis(info.getWhereis());
         //0非激活1激活
         sellerUser.setState(info.getStatusCode());
@@ -563,14 +563,14 @@ public class HangGuoDataUtil {
         Integer version = 0;
         Integer source = 20;
         User sellerUser = DTOUtils.newDTO(User.class);
-        sellerUser.setThirdPartyCode(info.getSupplierNo());
-        sellerUser.setName(info.getSupplierName());
+        sellerUser.setThirdPartyCode(info.getSupplierNo() == null ? null : info.getSupplierNo().trim());
+        sellerUser.setName(info.getSupplierName() == null ? null : info.getSupplierName().trim());
         sellerUser.setCredentialType(info.getCredentialType());
         sellerUser.setCredentialName(info.getCredentialName());
-        sellerUser.setCredentialNumber(info.getCredentialNumber());
+        sellerUser.setCredentialNumber(info.getCredentialNumber() == null ? null : info.getCredentialNumber().trim());
         sellerUser.setSex(info.getSex());
         sellerUser.setLicense(info.getLiscensNo());
-        sellerUser.setPhone(info.getMobileNumber());
+        sellerUser.setPhone(info.getMobileNumber() == null ? null : info.getMobileNumber().trim());
         sellerUser.setFixedTelephone(info.getPhoneNumber());
         //0非激活1激活
         sellerUser.setState(info.getStatusCode());
@@ -860,6 +860,10 @@ public class HangGuoDataUtil {
         billNos = StreamEx.of(billNos).nonNull().distinct().collect(Collectors.toList());
         List<User> userList = getUserListByThirdPartyCode(userCode);
         List<Category> categoryList = getCategoryListByThirdCode(commodityCode);
+        if(CollectionUtils.isEmpty(userList)||CollectionUtils.isEmpty(categoryList)){
+            logger.info("交易数据没有对应的经营户或者商品,无法关联,不创建正式交易单");
+            return;
+        }
         Map<String, User> userMap = StreamEx.of(userList).nonNull().collect(Collectors.toMap(User::getThirdPartyCode, user -> user, (key1, key2) -> key1));
         Map<String, Category> categoryMap = StreamEx.of(categoryList).nonNull().collect(Collectors.toMap(Category::getCode, category -> category, (key1, key2) -> key1));
 
@@ -953,19 +957,21 @@ public class HangGuoDataUtil {
             Long billId = Long.valueOf(-1);
             if (null != billMap && !billMap.isEmpty()) {
                 TradeDetail detail = billMap.get(t.getRegisterId());
-                parentId = detail.getId();
-                checkInId = detail.getCheckinRecordId();
-                billId = detail.getBillId();
+                if (null != detail) {
+                    parentId = detail.getId();
+                    checkInId = detail.getCheckinRecordId();
+                    billId = detail.getBillId();
+                }
             }
 
-            Long buyId = userMap.get(t.getMemberNo()).getId();
-            String buyName = userMap.get(t.getMemberNo()).getName();
-            Long sellerId = userMap.get(t.getSupplierNo()).getId();
-            String sellerName = userMap.get(t.getSupplierNo()).getName();
-            String productName = categoryMap.get(t.getItemNumber()).getName();
+            Long buyId = userMap.get(t.getMemberNo().trim()).getId();
+            String buyName = userMap.get(t.getMemberNo().trim()).getName();
+            Long sellerId = userMap.get(t.getSupplierNo().trim()).getId();
+            String sellerName = userMap.get(t.getSupplierNo().trim()).getName();
+            String productName = categoryMap.get(t.getItemNumber().trim()).getName();
             BigDecimal weight = new BigDecimal(t.getWeight());
             String nowDate = DateUtils.format(DateUtils.getCurrentDate());
-            Long tradeRequestId = tradeRequestMap.get(t.getTradeNo()).getId();
+            Long tradeRequestId = tradeRequestMap.get(t.getTradeNo().trim()).getId();
 
             TradeDetail tradeDetail = new TradeDetail();
             tradeDetail.setCheckinRecordId(checkInId);
@@ -1027,18 +1033,20 @@ public class HangGuoDataUtil {
             Integer codeSeqInt = Integer.valueOf(codeSeq) + currentIndex;
             code = code.concat(String.valueOf(codeSeqInt));
             logger.info("===>生成编号为：" + code);
-            Long buyId = userMap.get(t.getMemberNo()).getId();
-            String buyName = userMap.get(t.getMemberNo()).getName();
-            Long sellerId = userMap.get(t.getSupplierNo()).getId();
-            String sellerName = userMap.get(t.getSupplierNo()).getName();
-            Long orderId = orderMap.get(t.getTradeNo()).getId();
-            Long buyMarketId = userMap.get(t.getMemberNo()).getMarketId();
-            Long sellerMarketId = userMap.get(t.getSupplierNo()).getMarketId();
+            Long buyId = userMap.get(t.getMemberNo().trim()).getId();
+            String buyName = userMap.get(t.getMemberNo().trim()).getName();
+            Long sellerId = userMap.get(t.getSupplierNo().trim()).getId();
+            String sellerName = userMap.get(t.getSupplierNo().trim()).getName();
+            Long orderId = orderMap.get(t.getTradeNo().trim()).getId();
+            Long buyMarketId = userMap.get(t.getMemberNo().trim()).getMarketId();
+            Long sellerMarketId = userMap.get(t.getSupplierNo().trim()).getMarketId();
             Long productStockId = null;
-            if (null != billMap && !billMap.isEmpty()) {
-                productStockId = billMap.get(t.getRegisterId()).getProductStockId();
+            if (null != billMap && !billMap.isEmpty() && StringUtils.isNotBlank(t.getRegisterId())) {
+                if (null != billMap.get(t.getRegisterId())) {
+                    productStockId = billMap.get(t.getRegisterId()).getProductStockId();
+                }
             }
-            String productName = categoryMap.get(t.getItemNumber()).getName();
+            String productName = categoryMap.get(t.getItemNumber().trim()).getName();
             TradeRequest request = new TradeRequest();
             request.setBuyerId(buyId);
             request.setBuyerName(buyName);
@@ -1124,12 +1132,12 @@ public class HangGuoDataUtil {
     private List<TradeOrder> getTradeOrderList(List<HangGuoTrade> tradeList, Map<String, User> userMap, Date createTime) {
         List<TradeOrder> orderList = new ArrayList<>();
         StreamEx.of(tradeList).nonNull().forEach(t -> {
-            Long buyId = userMap.get(t.getMemberNo()).getId();
-            String buyName = userMap.get(t.getMemberNo()).getName();
-            Long buyMarketId = userMap.get(t.getMemberNo()).getMarketId();
-            Long sellerId = userMap.get(t.getSupplierNo()).getId();
-            String sellerName = userMap.get(t.getSupplierNo()).getName();
-            Long sellerMarketId = userMap.get(t.getSupplierNo()).getMarketId();
+            Long buyId = userMap.get(t.getMemberNo().trim()).getId();
+            String buyName = userMap.get(t.getMemberNo().trim()).getName();
+            Long buyMarketId = userMap.get(t.getMemberNo().trim()).getMarketId();
+            Long sellerId = userMap.get(t.getSupplierNo().trim()).getId();
+            String sellerName = userMap.get(t.getSupplierNo().trim()).getName();
+            Long sellerMarketId = userMap.get(t.getSupplierNo().trim()).getMarketId();
             TradeOrder order = new TradeOrder();
             order.setBuyerId(buyId);
             order.setBuyerName(buyName);
