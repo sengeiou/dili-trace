@@ -459,6 +459,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Override
     public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception {
+        // 经营户卡号查询，不足6位，左边补0
+        dto.setThirdPartyCode(StringUtils.leftPad(dto.getThirdPartyCode(), 6, "0"));
         this.andCondition(dto).ifPresent(str -> {
             dto.mset(IDTO.AND_CONDITION_EXPR, str);
         });
