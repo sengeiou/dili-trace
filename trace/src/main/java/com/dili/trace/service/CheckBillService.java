@@ -16,10 +16,29 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface CheckBillService extends BaseService<CheckOrder, Long> {
+    /**
+     * 列表查询
+     *
+     * @param domain
+     * @param useProvider
+     * @return
+     * @throws Exception
+     */
     EasyuiPageOutput selectForEasyuiPage(CheckOrderDto domain, boolean useProvider) throws Exception;
-    CheckOrderDto selectAllInfoById(Long id);
-    Integer insertOneToCheckOrder(CheckOrderDto checkOrder);
+
+    /**
+     * 插入到check_data和image-cert表
+     *
+     * @param checkOrder
+     * @param id
+     */
     void insertOtherTable(CheckOrderDto checkOrder,Long id);
+
+    /**
+     * 更新check_data和image-cert表
+     *
+     * @param checkOrder
+     */
     void updateOtherTable(CheckOrderDto checkOrder);
-    void saveExcelData(CheckExcelDto checkExcelDto);
+
 }

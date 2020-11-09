@@ -119,8 +119,8 @@ public class CheckBillController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(CheckOrderDto checkOrder) throws Exception {
-//        checkOrder.setMarketId(MarketUtil.returnMarket());
-        checkOrder.setMarketId(1L);
+        checkOrder.setMarketId(MarketUtil.returnMarket());
+        //checkOrder.setMarketId(1L);
         EasyuiPageOutput out = this.checkBillService.selectForEasyuiPage(checkOrder, true);
         return out.toString();
     }
@@ -133,6 +133,7 @@ public class CheckBillController {
         try {
             checkOrder.setMarketId(MarketUtil.returnMarket());
             checkBillService.insertSelective(checkOrder);
+
             checkBillService.insertOtherTable(checkOrder, checkOrder.getId());
             return BaseOutput.success("新增检测单成功").setData(checkOrder.getId());
         } catch (TraceBusinessException e) {
@@ -252,6 +253,8 @@ public class CheckBillController {
     public @ResponseBody BaseOutput getGoodsNameByCode(@RequestParam Long goodsCode,ModelMap modelMap) {
         try {
             Category category = categoryService.get(goodsCode);
+            category.setMarketId(MarketUtil.returnMarket());
+            //category.setMarketId(1L);
             if(Objects.nonNull(category)){
                 return BaseOutput.successData(category.getName());
             }
@@ -269,10 +272,13 @@ public class CheckBillController {
         User user = DTOUtils.newDTO(User.class);
         user.setCardNo(idCard);
         user.setMarketId(MarketUtil.returnMarket());
+        //user.setMarketId(1L);
         List<User> users = userService.listByExample(user);
         if(CollectionUtils.isNotEmpty(users) && users.size() ==1) {
             return users.get(0);
         }
         return user;
     }
+
+
 }

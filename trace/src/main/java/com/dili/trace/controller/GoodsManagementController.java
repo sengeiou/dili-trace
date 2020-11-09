@@ -21,6 +21,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,8 +71,8 @@ public class GoodsManagementController {
     @ResponseBody
     public String listGoods() throws Exception {
         Category category = new Category();
-//        category.setMarketId(MarketUtil.returnMarket());
-        category.setMarketId(1L);
+        category.setMarketId(MarketUtil.returnMarket());
+        //category.setMarketId(1L);
         return this.categoryService.listEasyuiPage(category,true).toString();
     }
 
@@ -96,8 +97,8 @@ public class GoodsManagementController {
         EasyuiPageOutput easyuiPageOutputBase = this.categoryService.listEasyuiPage(category,true);
         category.setId(null);
         category.setParentId(id);
-//        category.setMarketId(MarketUtil.returnMarket());
-        category.setMarketId(1L);
+        category.setMarketId(MarketUtil.returnMarket());
+        //category.setMarketId(1L);
         EasyuiPageOutput easyuiPageOutput = this.categoryService.listEasyuiPage(category, true);
         List rows = easyuiPageOutput.getRows();
         List rowsBase= easyuiPageOutputBase.getRows();
@@ -126,8 +127,8 @@ public class GoodsManagementController {
         if("".equals(category.getSpecification())){
             category.setSpecification(null);
         }
-//        category.setMarketId(MarketUtil.returnMarket());
-        category.setMarketId(1L);
+        category.setMarketId(MarketUtil.returnMarket());
+        //category.setMarketId(1L);
         EasyuiPageOutput easyuiPageOutput = this.categoryService.listEasyuiPage(category, true);
         return easyuiPageOutput.toString();
     }
@@ -139,13 +140,12 @@ public class GoodsManagementController {
     @RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody BaseOutput<Long> insert(@RequestBody Category category, String currentNodeId) {
         try {
-            Category query = new Category();
-            query.setId(Long.parseLong(currentNodeId));
-            List<Category> querys = categoryService.listByExample(query);
-            if(CollectionUtils.isNotEmpty(querys)){
-                category.setParentId(querys.get(0).getId());
-                category.setLevel(querys.get(0).getLevel()+1);
-                category.setFullName(querys.get(0).getFullName()+","+category.getName());
+            Category categoryById = categoryService.get(Long.parseLong(currentNodeId));
+            if (Objects.nonNull(categoryById)) {
+                category.setParentId(categoryById.getId());
+                category.setLevel(categoryById.getLevel()+1);
+                category.setFullName(categoryById.getFullName()+","+category.getName());
+                category.setParentCode(categoryById.getCode());
             }
             category.setMarketId(MarketUtil.returnMarket());
             categoryService.insertSelective(category);

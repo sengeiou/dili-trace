@@ -201,7 +201,7 @@
     function initCheckBillGrid() {
         var pager = _checkBillGrid.datagrid('getPager');
         var toolbar=[
-            <#resource method="post" url="checkBill/index.html#add">
+            <#resource method="post" code="checkBill/index.html#add">
             {
                 iconCls:'icon-add',
                 text:'新增',
@@ -210,7 +210,7 @@
                 }
             },
     </#resource>
-        <#resource method="post" url="checkBill/index.html#update">
+        <#resource method="post" code="checkBill/index.html#update">
             {
                 iconCls:'icon-edit',
                 text:'修改',
@@ -219,7 +219,7 @@
                 }
             },
     </#resource>
-        <#resource method="post" url="checkBill/index.html#import">
+        <#resource method="post" code="checkBill/index.html#import">
             {
                 iconCls:'icon-save',
                 text:'批量导入',
@@ -229,7 +229,7 @@
                 }
             },
     </#resource>
-    <#resource method="post" url="checkBill/index.html#export">
+    <#resource method="post" code="checkBill/index.html#export">
             {
                 iconCls:'icon-export',
                 text:'导出',

@@ -78,7 +78,7 @@
     function initGoodsGrid() {
         var pager = _goodsGrid.datagrid('getPager');
         var toolbar=[
-            <#resource method="post" url="goodsManagement/index.html#add">
+            <#resource method="post" code="goodsManagement/index.html#add">
             {
                 iconCls:'icon-add',
                 text:'新增',
@@ -87,7 +87,7 @@
                 }
             },
     </#resource>
-        <#resource method="post" url="goodsManagement/index.html#update">
+        <#resource method="post" code="goodsManagement/index.html#update">
             {
                 iconCls:'icon-edit',
                 text:'修改',
@@ -96,7 +96,7 @@
                 }
             },
     </#resource>
-        <#resource method="post" url="goodsManagement/index.html#enabled">
+        <#resource method="post" code="goodsManagement/index.html#enabled">
             {
                 iconCls:'icon-play',
                 text:'启用',
@@ -106,7 +106,7 @@
                 }
             },
     </#resource>
-        <#resource method="post" url="goodsManagement/index.html#disabled">
+        <#resource method="post" code="goodsManagement/index.html#disabled">
             {
                 iconCls:'icon-stop',
                 text:'禁用',

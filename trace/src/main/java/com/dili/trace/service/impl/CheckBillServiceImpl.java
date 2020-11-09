@@ -55,11 +55,6 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
         return new EasyuiPageOutput((int) total, results);
     }
 
-    @Override
-    public CheckOrderDto selectAllInfoById(Long id) {
-        return getActualDao().selectAllInfoById(id);
-    }
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -99,13 +94,7 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
         imageCertService.updateSelective(imageCert);
     }
 
-    @Override
-    public void saveExcelData(CheckExcelDto checkExcelDto) {
-        this.getActualDao().saveExcelData(checkExcelDto);
-    }
 
-    @Override
-    public Integer insertOneToCheckOrder(CheckOrderDto checkOrder) {
-        return getActualDao().insertOneToCheckOrder(checkOrder);
-    }
+
+
 }

@@ -92,7 +92,8 @@ public class CheckOrderDisposeController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(CheckOrderDisposeDto checkOrderDispose) throws Exception {
-        checkOrderDispose.setMarketId(MarketUtil.returnMarket());
+        //checkOrderDispose.setMarketId(MarketUtil.returnMarket());
+        checkOrderDispose.setMarketId(1L);
         EasyuiPageOutput out = this.checkOrderDisposeService.selectForEasyuiPage(checkOrderDispose, true);
         return out.toString();
     }

@@ -34,8 +34,7 @@ public class CheckOrder extends BaseDomain {
     private String checkType;
     @Column(name = "`checker`")
     private String checker;
-    @Column(name = "`checker_id`")
-    private Long checkerId;
+
 
     @Column(name = "`goods_name`")
     private String goodsName;
@@ -102,14 +101,6 @@ public class CheckOrder extends BaseDomain {
 
     public void setTallyAreaNos(String tallyAreaNos) {
         this.tallyAreaNos = tallyAreaNos;
-    }
-
-    public Long getCheckerId() {
-        return checkerId;
-    }
-
-    public void setCheckerId(Long checkerId) {
-        this.checkerId = checkerId;
     }
 
     public Date getCheckTime() {

@@ -122,7 +122,7 @@
     function initCheckOrderDisposeGrid() {
         var pager = _checkOrderDisposeGrid.datagrid('getPager');
         var toolbar=[
-            <#resource method="post" url="checkOrderDispose/index.html#add">
+            <#resource method="post" code="checkOrderDispose/index.html#add">
             {
                 iconCls:'icon-add',
                 text:'新增',
@@ -131,7 +131,7 @@
                 }
             },
     </#resource>
-        <#resource method="post" url="checkOrderDispose/index.html#update">
+        <#resource method="post" code="checkOrderDispose/index.html#update">
             {
                 iconCls:'icon-edit',
                 text:'修改',
@@ -140,7 +140,7 @@
                 }
             },
     </#resource>
-    <#resource method="post" url="checkOrderDispose/index.html#export">
+    <#resource method="post" code="checkOrderDispose/index.html#export">
             {
                 iconCls:'icon-export',
                 text:'导出',
