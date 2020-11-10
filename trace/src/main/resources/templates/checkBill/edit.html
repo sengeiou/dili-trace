@@ -25,7 +25,7 @@
                         <td style="padding:5px;width:33%">
                             <input class="easyui-textbox" name="thirdPartyCode" id="thirdPartyCode" style="width:100%"
                                    value="${checkOrder.thirdPartyCode}"
-                                   data-options="label:'经营户编号*:', validType:'length[1,30]',required:true"/>
+                                   data-options="label:'经营户卡号*:', validType:'length[1,30]',required:true,prompt:'输入后回车'"/>
                         </td>
                         <td style="padding:5px;width:34%">
                             <input class="easyui-textbox" name="userName" id="userName" style="width:100%"
@@ -37,7 +37,7 @@
                         <td style="padding:5px;width:33%">
                             <input class="easyui-textbox" name="goodsCode" id="goodsCode" style="width:100%"
                                    value="${checkOrder.goodsCode}"
-                                   data-options="label:'产品编号*:', required:true"/>
+                                   data-options="label:'产品编号*:', required:true,prompt:'输入后回车'"/>
                         </td>
                         <td style="padding:5px;width:33%">
                             <input class="easyui-textbox" name="goodsName" id="goodsName" style="width:100%"
@@ -59,7 +59,7 @@
                         <td style="padding:5px;width:33%">
                             <input class="easyui-textbox" name="value" id="value" style="width:100%"
                                    value="${checkOrder.value}"
-                                   data-options="label:'实测值:'"/>
+                                   data-options="label:'实测值*:',required:true"/>
                         </td>
                         <td style="padding:5px;width:34%">
                             <input class="easyui-textbox" name="checker" id="checker" style="width:100%"

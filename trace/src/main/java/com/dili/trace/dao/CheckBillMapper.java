@@ -21,22 +21,4 @@ public interface CheckBillMapper extends MyMapper<CheckOrder> {
      * @return
      */
     List<CheckOrder> selectForPage(CheckOrderDto checkOrder);
-
-    /**
-     * 根据id查询数据信息
-     *
-     * @param id
-     * @return
-     */
-    CheckOrderDto selectAllInfoById(Long id);
-
-    Integer insertOneToCheckOrder(CheckOrderDto checkOrder);
-
-    /**
-     * 保存Excel导入的数据
-     *
-     * @param checkExcelDto
-     * @return
-     */
-    void saveExcelData(CheckExcelDto checkExcelDto);
 }

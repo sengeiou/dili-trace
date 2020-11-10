@@ -21,7 +21,7 @@
                 and d.check_no = #{checkNo}
             </if>
             <if test="disposer != null and disposer != ''">
-                and d.disposer = #{disposer}
+                and d.disposer LIKE CONCAT('%',#{disposer},'%')
             </if>
             <if test="disposeDateStart != null">
                 and d.dispose_date <![CDATA[   >=  ]]> #{disposeDateStart}

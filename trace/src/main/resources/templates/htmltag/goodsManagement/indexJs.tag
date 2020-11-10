@@ -172,6 +172,9 @@
 
     //打开新增窗口
     function openInsert(){
+        if(currentNodeId == null){
+            return ;
+        }
         var index = layer.open({
             type : 2,
             title : '商品新增',

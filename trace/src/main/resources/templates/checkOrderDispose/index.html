@@ -54,29 +54,33 @@
                data-options="onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
             <thead>
             <tr>
-                <th width="16%"
+                <th width="15%"
                     data-options="field:'checkNo', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                     检验批号
                 </th>
-                <th width="16%"
+                <th width="15%"
                     data-options="field:'disposeType',_provider:'checkDisposeTypeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                     处置方式
                 </th>
-                <th width="17%"
+                <th width="15%"
                     data-options="field:'disposeDate', _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                     处置时间
                 </th>
-                <th width="17%"
+                <th width="15%"
                     data-options="field:'disposer', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                     处置人
                 </th>
-                <th width="16%"
+                <th width="15%"
                     data-options="field:'disposeNum', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                     处置数量
                 </th>
-                <th width="18%"
+                <th width="15%"
                     data-options="field:'disposeDesc', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
                     处置描述
+                </th>
+                <th width="10%"
+                    data-options="field:'reportFlag', _provider:'checkReportProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    是否上报
                 </th>
             </tr>
             </thead>

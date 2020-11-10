@@ -72,7 +72,12 @@ public class GoodsManagementController {
     public String listGoods() throws Exception {
         Category category = new Category();
         category.setMarketId(MarketUtil.returnMarket());
-        return this.categoryService.listEasyuiPage(category,true).toString();
+        EasyuiPageOutput easyuiPageOutput = categoryService.listEasyuiPage(category, true);
+        /*List<Category> rows = easyuiPageOutput.getRows();
+        rows.removeIf(e -> e.getLevel()!=1 && e.getParentId()==null);
+        easyuiPageOutput.setRows(rows);
+        easyuiPageOutput.setTotal(rows.size());*/
+        return easyuiPageOutput.toString();
     }
 
     /**
@@ -126,7 +131,7 @@ public class GoodsManagementController {
             category.setSpecification(null);
         }
         category.setMarketId(MarketUtil.returnMarket());
-        EasyuiPageOutput easyuiPageOutput = this.categoryService.listEasyuiPage(category, true);
+        EasyuiPageOutput easyuiPageOutput = this.categoryService.selectForEasyuiPage(category, true);
         return easyuiPageOutput.toString();
     }
 
