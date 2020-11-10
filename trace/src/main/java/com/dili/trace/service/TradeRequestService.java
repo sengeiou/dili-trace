@@ -16,6 +16,7 @@ import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.dto.thirdparty.report.ReportOrderDetailDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
@@ -783,4 +784,13 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return getActualDao().selectBuyerIdWithouTradeRequest(user);
     }
 
+    /**
+     * 查询近7天有买商品的用户
+     *
+     * @param ids
+     * @return
+     */
+    public List<ReportOrderDetailDto> selectOrderDetailReport(List<String> ids) {
+        return getActualDao().selectOrderDetailReport(ids);
+    }
 }

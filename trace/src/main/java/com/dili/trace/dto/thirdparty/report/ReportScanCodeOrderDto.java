@@ -1,5 +1,6 @@
 package com.dili.trace.dto.thirdparty.report;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +13,16 @@ public class ReportScanCodeOrderDto {
     private String thirdOrderId;// 交易表id
     private String thirdQrCode;// 食安码
     private String thirdSellId;// 卖家id
+    private BigDecimal price;
     private List<ReportOrderDetailDto> tradeList;// 明细集合
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
 
     public Integer getFlag() {
         return flag;

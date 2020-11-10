@@ -1,15 +1,14 @@
 package com.dili.trace.dto;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Transient;
-
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.RegisterBill;
-
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.persistence.Column;
+import javax.persistence.Transient;
+import java.util.Date;
+import java.util.List;
 
 
 public class RegisterBillDto extends RegisterBill {
@@ -109,6 +108,28 @@ public class RegisterBillDto extends RegisterBill {
 
 	@Transient
 	private Long billId;
+
+	@Transient
+	private Date checkInDateStart;
+
+	@Transient
+	private Date checkInDateEnd;
+
+	public Date getCheckInDateStart() {
+		return checkInDateStart;
+	}
+
+	public void setCheckInDateStart(Date checkInDateStart) {
+		this.checkInDateStart = checkInDateStart;
+	}
+
+	public Date getCheckInDateEnd() {
+		return checkInDateEnd;
+	}
+
+	public void setCheckInDateEnd(Date checkInDateEnd) {
+		this.checkInDateEnd = checkInDateEnd;
+	}
 
 	public List<Integer> getVerifyStatusList() {
 		return verifyStatusList;

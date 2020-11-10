@@ -324,7 +324,7 @@
 
     <select id="getHangGuoScanOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto"
             resultType="com.dili.trace.dto.thirdparty.report.ReportScanCodeOrderDto">
-        SELECT r.`created` orderTime, r.`buyer_id` thirdBuyId, r.`id` thirdOrderId, r.`seller_id` thirdSellId
+        SELECT r.`created` orderTime, r.`buyer_id` thirdBuyId, r.`id` thirdOrderId, r.`seller_id` thirdSellId,r.price
         FROM trade_request r
         JOIN trade_order o ON (r.trade_order_Id = o.id AND o.order_status = 10)
         JOIN `user` u ON (r.`buyer_id` = u.`id` AND u.`source` = 20)

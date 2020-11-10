@@ -54,6 +54,8 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     private HangGuoDataService hangGuoDataService;
     @Autowired
     private ImageCertService imageCertService;
+    @Autowired
+    TradeRequestService tradeRequestService;
 
     @Value("${current.baseWebPath}")
     private String baseWebPath;
@@ -171,12 +173,24 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         if (startdTime != null) {
             queryDto.setModifiedStart(DateUtil.format(startdTime, "yyyy-MM-dd HH:mm:ss"));
         }
+        List<String> requestIdList = new ArrayList<>();
         List<ReportScanCodeOrderDto> scanCodeOrderDtoList = StreamEx.of(hangGuoDataService.getHangGuoScanOrderReport(queryDto)).
                 nonNull().map(order -> {
             order.setMarketId(String.valueOf(platformMarketId));
             order.setThirdQrCode(this.baseWebPath + "/user?userId=" + order.getThirdBuyId());
+            requestIdList.add(order.getThirdOrderId());
             return order;
         }).collect(Collectors.toList());
+        if(CollectionUtils.isNotEmpty(scanCodeOrderDtoList)){
+            // 设置 detail
+            Map<String, List<ReportOrderDetailDto>> detailMap = tradeRequestService.selectOrderDetailReport(requestIdList)
+                    .stream().collect(Collectors.groupingBy(ReportOrderDetailDto::getRequestId));
+            scanCodeOrderDtoList.forEach(order -> {
+                List<ReportOrderDetailDto> dtos = detailMap.get(order.getThirdOrderId());
+                dtos.forEach(d->d.setPrice(order.getPrice()));
+                order.setTradeList(dtos);
+            });
+        }
         return scanCodeOrderDtoList;
     }
 
