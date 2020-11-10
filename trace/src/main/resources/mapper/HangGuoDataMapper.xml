@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.trace.dao.HangGuoDataMapper">
-
     <insert id="bachInsertCommodityList" parameterType="java.util.List" useGeneratedKeys="true">
         insert into
         category(name,full_name,level,created,modified,market_id,type,specification,code,parent_code,is_show)
@@ -12,13 +11,15 @@
     </insert>
 
     <update id="updateHangGuoCommodityParent" parameterType="com.dili.trace.domain.Category">
-       UPDATE category c,category c2
-        SET c2.parent_id=c.id
-        WHERE c.code=c2.parent_code
-        AND c2.parent_code IS NOT NULL
-        AND c.market_id=#{marketId}
-        AND c2.market_id=#{marketId}
-        AND DATE(c2.created) = DATE(#{created})
+
+               UPDATE category c,category c2
+                SET c2.parent_id=c.id
+                WHERE c.code=c2.parent_code
+                AND c2.parent_code IS NOT NULL
+                AND c.market_id=#{marketId}
+                AND c2.market_id=#{marketId}
+                AND DATE(c2.created) = DATE(#{created})
+
     </update>
 
     <select id="getUserListByThirdPartyCode" parameterType="java.util.List"
@@ -35,7 +36,7 @@
         </foreach>
     </select>
 
-    <update id="batchUpdateUserByThirdCode"  parameterType="java.util.List">
+    <update id="batchUpdateUserByThirdCode" parameterType="java.util.List">
         UPDATE user
         SET credential_url =
         <foreach collection="list" item="user" index="index"
@@ -160,21 +161,25 @@
     </select>
 
     <update id="updateTradeReportListByBeyondAmount">
-        update third_hangguo_trade_data
-        set report_flag=3
-        where amount >= #{maxAmount}
-        and handle_flag=1
+
+                update third_hangguo_trade_data
+                set report_flag=3
+                where amount >= #{maxAmount}
+                and handle_flag=1
+
     </update>
 
     <select id="selectTradeReportListByHandleFlag" parameterType="com.dili.trace.domain.hangguo.HangGuoTrade"
             resultType="com.dili.trace.domain.hangguo.HangGuoTrade">
-        select
-        id,order_date,supplier_no,supplier_name,batch_no,item_number,item_name,unit,origin_no,
-        origin_name,position_no,position_name,price,package_number,number,amount,weight,
-        trade_no,pos_no,pay_way,member_no,member_name,total_amount,operator,payer,
-        pay_no,register_no,handle_flag,report_flag,handle_remark
-        from third_hangguo_trade_data
-        where handle_flag=#{handleFlag}
+
+                select
+                id,order_date,supplier_no,supplier_name,batch_no,item_number,item_name,unit,origin_no,
+                origin_name,position_no,position_name,price,package_number,number,amount,weight,
+                trade_no,pos_no,pay_way,member_no,member_name,total_amount,operator,payer,
+                pay_no,register_no,handle_flag,report_flag,handle_remark
+                from third_hangguo_trade_data
+                where handle_flag=#{handleFlag}
+
     </select>
 
     <update id="batchUpdateCacheTrade">
@@ -268,22 +273,24 @@
     </select>
     <select id="getReportCheckOrderDisposeList" parameterType="com.dili.trace.domain.CheckOrderDispose"
             resultType="com.dili.trace.domain.CheckOrderDispose">
-        select
-        id,
-        check_no,
-        market_id,
-        dispose_date,
-        dispose_desc,
-        dispose_num,
-        dispose_result,
-        dispose_type,
-        disposer,
-        disposer_id,
-        report_flag
-        from
-        check_order_dispose
-        where
-          report_flag = #{reportFlag}
+
+                select
+                id,
+                check_no,
+                market_id,
+                dispose_date,
+                dispose_desc,
+                dispose_num,
+                dispose_result,
+                dispose_type,
+                disposer,
+                disposer_id,
+                report_flag
+                from
+                check_order_dispose
+                where
+                  report_flag = #{reportFlag}
+
     </select>
 
     <select id="getThirdPartySourceData" parameterType="com.dili.trace.domain.ThirdPartySourceData"
@@ -314,12 +321,13 @@
     </select>
 
     <insert id="insertThirdPartySourceData" parameterType="com.dili.trace.domain.ThirdPartySourceData">
-        insert into third_party_source_data
-        (name,type,operator_id,operator_name,
-            data,created, modified,market_id,report_flag)
-        values (
-        #{name},#{type},#{operatorId},#{operatorName},#{data},#{created},#{modified},#{marketId},#{reportFlag}
-        )
+
+                insert into third_party_source_data
+                (name,type,operator_id,operator_name,
+                    data,created, modified,market_id)
+                values (
+                #{name},#{type},#{operatorId},#{operatorName},#{data},#{created},#{modified},#{marketId})
+
     </insert>
 
     <select id="getHangGuoScanOrderReport" parameterType="com.dili.trace.dto.PushDataQueryDto"
@@ -359,4 +367,21 @@
             #{t.id}
         </foreach>
     </update>
+
+    <select id="getCategoryFaultList" parameterType="com.dili.trace.domain.Category"
+            resultType="com.dili.trace.domain.Category">
+                SELECT
+                    c.id,c.parent_id,c.name,c.full_name,c.level,c.created,c.modified,c.market_id,c.code,c.is_show,c.type,c.parent_code
+                 FROM category c
+                 WHERE c.parent_id is null
+                 <![CDATA[ and c.level <> 1 ]]>
+                 and c.market_id=#{marketId}
+
+    </select>
+    <select id="getCategoryByThirdCode" resultType="com.dili.trace.domain.Category">
+        SELECT
+            c.id,c.parent_id,c.name,c.full_name,c.level,c.created,c.modified,c.market_id,c.code,c.is_show,c.type,c.parent_code
+         FROM category c
+         WHERE c.code  = #{code}
+    </select>
 </mapper>

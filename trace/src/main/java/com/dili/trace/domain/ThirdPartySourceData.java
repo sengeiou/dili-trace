@@ -47,17 +47,6 @@ public class ThirdPartySourceData extends BaseDomain {
     @Column(name = "market_id")
     private Long marketId;
 
-    @Column(name = "report_flag")
-    private Integer reportFlag;
-
-    public Integer getReportFlag() {
-        return reportFlag;
-    }
-
-    public void setReportFlag(Integer reportFlag) {
-        this.reportFlag = reportFlag;
-    }
-
     /**
      * @return Long return the id
      */

@@ -181,13 +181,13 @@ public class HangGuoPushDataJob implements CommandLineRunner {
             requestIdList.add(order.getThirdOrderId());
             return order;
         }).collect(Collectors.toList());
-        if(CollectionUtils.isNotEmpty(scanCodeOrderDtoList)){
+        if (CollectionUtils.isNotEmpty(scanCodeOrderDtoList)) {
             // 设置 detail
             Map<String, List<ReportOrderDetailDto>> detailMap = tradeRequestService.selectOrderDetailReport(requestIdList)
                     .stream().collect(Collectors.groupingBy(ReportOrderDetailDto::getRequestId));
             scanCodeOrderDtoList.forEach(order -> {
                 List<ReportOrderDetailDto> dtos = detailMap.get(order.getThirdOrderId());
-                dtos.forEach(d->d.setPrice(order.getPrice()));
+                dtos.forEach(d -> d.setPrice(order.getPrice()));
                 order.setTradeList(dtos);
             });
         }
@@ -477,7 +477,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
         String addQue = " phone <> '' and phone <> '''''' ";
         if (!newPushFlag) {
-            addQue+=" and  modified >= '" + DateUtils.format(updateTime) + "' ";
+            addQue += " and  modified >= '" + DateUtils.format(updateTime) + "' ";
         }
         user.mset(IDTO.AND_CONDITION_EXPR, addQue);
         List<User> userList = userService.listByExample(user);

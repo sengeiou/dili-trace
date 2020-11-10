@@ -174,4 +174,18 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      * @param disposalDtos
      */
     void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos);
+
+    /**
+     * 获取不符合规范的断层商品列表
+     * @param category
+     * @return
+     */
+    List<Category> getCategoryFaultList(Category category);
+
+    /**
+     * 获取商品详情
+     * @param parentCode
+     * @return
+     */
+    Category getCategoryByThirdCode(String parentCode);
 }

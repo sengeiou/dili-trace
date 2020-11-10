@@ -222,6 +222,12 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 hangGuoDataUtil.createCommodity(categoryList, endTime);
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             }
+        }else{
+            List<HangGuoCommodity> categoryList = this.getGoodsCategory(pushData.getPushTime(), isFirst);
+            if (!CollectionUtils.isEmpty(categoryList)) {
+                hangGuoDataUtil.createCommodity(categoryList, endTime);
+                this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
+            }
         }
     }
 
@@ -255,7 +261,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? tradeStr.length() : (i + 1) * batchSize;
                 String partBills = tradeStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.TRADE.getCode(), ThirdSourceTypeEnum.TRADE.getDesc(),
-                        endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
+                        endTime, MarketIdEnum.FRUIT_TYPE.getCode());
             }
             tradeList = JSON.parseArray(tradeStr, HangGuoTrade.class);
             logger.info("-----===>获取交易数量总数为：" + tradeList.size());
@@ -265,7 +271,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 tradeStr = JSON.toJSONString(result1);
             }
             addSource(tradeStr, ThirdSourceTypeEnum.TRADE.getCode(), ThirdSourceTypeEnum.TRADE.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode());
         }
         logger.info("====>end getTradeList time:" + (DateUtils.getCurrentDate().getTime() - endTime.getTime()));
         return tradeList;
@@ -290,7 +296,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? userStr.length() : (i + 1) * batchSize;
                 String partBills = userStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.MEMBER.getCode(), ThirdSourceTypeEnum.MEMBER.getDesc(),
-                        endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
+                        endTime, MarketIdEnum.FRUIT_TYPE.getCode());
             }
             hangGuoUserList = JSON.parseArray(userStr, HangGuoUser.class);
             logger.info("-----===>getMemberList:" + hangGuoUserList.size());
@@ -300,7 +306,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 userStr = JSON.toJSONString(result1);
             }
             addSource(userStr, ThirdSourceTypeEnum.MEMBER.getCode(), ThirdSourceTypeEnum.MEMBER.getDesc(),
-                    startdate, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
+                    startdate, MarketIdEnum.FRUIT_TYPE.getCode());
         }
         logger.info("====>end getMemberList time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         return hangGuoUserList;
@@ -324,7 +330,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? userStr.length() : (i + 1) * batchSize;
                 String partBills = userStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.SUPPLIER.getCode(), ThirdSourceTypeEnum.SUPPLIER.getDesc(),
-                        endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
+                        endTime, MarketIdEnum.FRUIT_TYPE.getCode());
             }
             hangGuoUserList = JSON.parseArray(userStr, HangGuoUser.class);
             logger.info("-----===>getSupplierList:" + hangGuoUserList.size());
@@ -334,7 +340,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 userStr = JSON.toJSONString(result);
             }
             addSource(userStr, ThirdSourceTypeEnum.SUPPLIER.getCode(), ThirdSourceTypeEnum.SUPPLIER.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode());
         }
         logger.info("====>end getMemberList time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         return hangGuoUserList;
@@ -358,7 +364,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? resultStr.length() : (i + 1) * batchSize;
                 String partBills = resultStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.CATEGORY.getCode(), ThirdSourceTypeEnum.CATEGORY.getDesc(),
-                        endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.UNTREATED.getCode());
+                        endTime, MarketIdEnum.FRUIT_TYPE.getCode());
             }
             commodityList = JSON.parseArray(resultStr, HangGuoCommodity.class);
         } else {
@@ -366,7 +372,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 resultStr = JSON.toJSONString(result);
             }
             addSource(resultStr, ThirdSourceTypeEnum.CATEGORY.getCode(), ThirdSourceTypeEnum.CATEGORY.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode(), CheckOrderReportFlagEnum.SOURCE_ERROR.getCode());
+                    endTime, MarketIdEnum.FRUIT_TYPE.getCode());
         }
         logger.info("====>end getGoodsCategory time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         return commodityList;
@@ -529,7 +535,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * @param startdate
      * @param marketId
      */
-    private void addSource(String dataStr, Integer code, String desc, Date startdate, Integer marketId, Integer reportFlag) {
+    private void addSource(String dataStr, Integer code, String desc, Date startdate, Integer marketId) {
         OperatorUser optUser = new OperatorUser(-1L, "auto");
         ThirdPartySourceData sourceData = new ThirdPartySourceData();
         sourceData.setType(code);
@@ -540,7 +546,6 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         sourceData.setMarketId(marketId == null ? null : Long.valueOf(marketId));
         sourceData.setOperatorId(optUser.getId());
         sourceData.setOperatorName(optUser.getName());
-        sourceData.setReportFlag(reportFlag);
         hangGuoDataService.insertThirdPartySourceData(sourceData);
     }
 

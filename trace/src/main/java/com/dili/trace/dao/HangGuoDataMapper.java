@@ -170,4 +170,18 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
      * @param disposalDtos
      */
     void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos);
+
+    /**
+     * 获取商品断层列表
+     * @param category
+     * @return
+     */
+    List<Category> getCategoryFaultList(Category category);
+
+    /**
+     * 获取商品按code
+     * @param parentCode
+     * @return
+     */
+    Category getCategoryByThirdCode(@Param("code") String parentCode);
 }

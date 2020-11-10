@@ -647,7 +647,60 @@ public class HangGuoDataUtil {
         Category category = new Category();
         category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
         category.setCreated(createTime);
+        category.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
         hangGuoDataService.updateHangGuoCommodityParent(category);
+
+        hangGuoCategoryLevelFaultTolerant();
+    }
+
+    /**
+     * 杭果商品容错处理,由于其上级品种编码与预定规则不符时,作一次特殊处理patch
+     */
+    private void hangGuoCategoryLevelFaultTolerant() {
+        Category category=new Category();
+        category.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
+        List<Category> categoryFaultList=hangGuoDataService.getCategoryFaultList(category);
+        StreamEx.of(categoryFaultList).nonNull().forEach(c->{
+            if(StringUtils.isNotBlank(c.getParentCode())){
+                String parentCode=c.getParentCode();
+                if(StringUtils.isNotBlank(parentCode)){
+                    recursionCategoty(c,c.getParentCode(),3);
+                }
+            }
+        });
+        if(CollectionUtils.isNotEmpty(categoryFaultList)){
+            logger.info("商品断层处理,处理数据量:"+categoryFaultList.size());
+            categoryService.batchUpdate(categoryFaultList);
+        }
+    }
+
+    /**
+     * 递归处理
+     * @param c
+     * @param count
+     */
+    private void recursionCategoty(Category c,String parentCode, int count) {
+        if(count<=0){
+            logger.info("递归结束");
+            return;
+        }
+        logger.info("递归处理商品父节点,parentCode:"+parentCode+" |count:"+count);
+        parentCode=turnSubStr(parentCode);
+        Category parentCategory= hangGuoDataService.getCategoryByThirdCode(parentCode);
+        if(null!=parentCategory){
+            c.setParentCode(parentCategory.getCode());
+            c.setParentId(parentCategory.getId());
+        }else{
+            count--;
+            recursionCategoty(c,parentCode,count);
+        }
+    }
+
+    private String turnSubStr(String parentCode) {
+        if(StringUtils.isNotBlank(parentCode)){
+            return parentCode.substring(0, parentCode.length() - 1);
+        }
+        return null;
     }
 
     /**
@@ -701,10 +754,10 @@ public class HangGuoDataUtil {
         CopyOnWriteArraySet<String> varietySet = new CopyOnWriteArraySet<>();
         StreamEx.of(commodityList).nonNull().forEach(c -> {
             Category category = new Category();
-            category.setFullName(c.getItemName());
-            category.setName(c.getItemName());
-            category.setSpecification(c.getItemUnitName());
-            category.setCode(c.getItemNumber());
+            category.setFullName(c.getItemName().trim());
+            category.setName(c.getItemName().trim());
+            category.setSpecification(c.getItemUnitName().trim());
+            category.setCode(c.getItemNumber().trim());
             category.setCreated(createTime);
             category.setModified(createTime);
             category.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
@@ -718,7 +771,7 @@ public class HangGuoDataUtil {
         StreamEx.of(categoryList).nonNull().forEach(category -> {
             Integer categoryLevel = category.getLevel();
             if (categoryLevel.equals(HangGuoGoodsLevelEnum.GOODS_FIVE.getCode())) {
-                String goodsCode = category.getCode();
+                String goodsCode = category.getCode().trim();
                 String parentGoodsCode = goodsCode.substring(0, goodsCode.length() - 1);
                 //商品码删除最后一位后与品种码一致时为第四层级
                 if (varietySet.contains(parentGoodsCode)) {

@@ -140,4 +140,14 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
         hangGuoDataMapper.updateCheckOrderDisposeReportFlag(disposalDtos);
     }
 
+    @Override
+    public List<Category> getCategoryFaultList(Category category) {
+        return hangGuoDataMapper.getCategoryFaultList(category);
+    }
+
+    @Override
+    public Category getCategoryByThirdCode(String parentCode) {
+        return hangGuoDataMapper.getCategoryByThirdCode(parentCode);
+    }
+
 }
