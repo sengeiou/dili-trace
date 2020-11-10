@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile({ "dev", "test" })
+@Profile({ "dev", "test","graytest" })
 public class SMSServiceDefaultImpl extends SMSService {
     private static final Logger logger = LoggerFactory.getLogger(SMSServiceDefaultImpl.class);
     @Autowired
