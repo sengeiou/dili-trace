@@ -71,7 +71,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     /**
      * 每五分钟提交一次数据
      */
-    //@Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
@@ -99,7 +99,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         }
     }
 
-    //@Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void pushHangGuoTradeData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {

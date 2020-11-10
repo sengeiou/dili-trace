@@ -754,10 +754,10 @@ public class HangGuoDataUtil {
         CopyOnWriteArraySet<String> varietySet = new CopyOnWriteArraySet<>();
         StreamEx.of(commodityList).nonNull().forEach(c -> {
             Category category = new Category();
-            category.setFullName(c.getItemName().trim());
-            category.setName(c.getItemName().trim());
-            category.setSpecification(c.getItemUnitName().trim());
-            category.setCode(c.getItemNumber().trim());
+            category.setFullName(c.getItemName()==null?null:c.getItemName().trim());
+            category.setName(c.getItemName()==null?null:c.getItemName().trim());
+            category.setSpecification(c.getItemUnitName()==null?null:c.getItemUnitName().trim());
+            category.setCode(c.getItemNumber()==null?null:c.getItemNumber().trim());
             category.setCreated(createTime);
             category.setModified(createTime);
             category.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
