@@ -53,6 +53,16 @@ public class CheckOrder extends BaseDomain {
     private String tallyAreaNos;
     @Column(name = "`inbound_no`")
     private String inboundNo;
+    @Column(name = "`third_party_code`")
+    private String thirdPartyCode;
+
+    public String getThirdPartyCode() {
+        return thirdPartyCode;
+    }
+
+    public void setThirdPartyCode(String thirdPartyCode) {
+        this.thirdPartyCode = thirdPartyCode;
+    }
 
     private CheckOrderData checkOrderData;
 

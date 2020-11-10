@@ -120,7 +120,6 @@ public class CheckBillController {
     public @ResponseBody
     String listPage(CheckOrderDto checkOrder) throws Exception {
         checkOrder.setMarketId(MarketUtil.returnMarket());
-        //checkOrder.setMarketId(1L);
         EasyuiPageOutput out = this.checkBillService.selectForEasyuiPage(checkOrder, true);
         return out.toString();
     }
@@ -133,7 +132,6 @@ public class CheckBillController {
         try {
             checkOrder.setMarketId(MarketUtil.returnMarket());
             checkBillService.insertSelective(checkOrder);
-
             checkBillService.insertOtherTable(checkOrder, checkOrder.getId());
             return BaseOutput.success("新增检测单成功").setData(checkOrder.getId());
         } catch (TraceBusinessException e) {
@@ -204,14 +202,16 @@ public class CheckBillController {
                     } else if (CheckResultTypeEnum.NO_PASS.getName().equals(checkExcelDto.getCheckResult())) {
                         checkExcelDto.setCheckResult(String.valueOf(CheckResultTypeEnum.NO_PASS.getCode()));
                     }
-                    User userFromCard = this.getUserFromCard(checkExcelDto.getIdCard());
+                    User userFromThird = this.getUserFromThird(checkExcelDto.getThirdPartyCode());
                     CheckOrder checkOrder = new CheckOrder();
                     BeanUtils.copyProperties(checkExcelDto,checkOrder);
                     checkOrder.setMarketId(MarketUtil.returnMarket());
-                    checkOrder.setUserId(String.valueOf(userFromCard.getId()));
-                    checkOrder.setTallyAreaNos(userFromCard.getTallyAreaNos());
+                    checkOrder.setIdCard(userFromThird.getCardNo());
+                    checkOrder.setUserId(String.valueOf(userFromThird.getId()));
+                    checkOrder.setTallyAreaNos(userFromThird.getTallyAreaNos());
                     checkBillService.insertSelective(checkOrder);
                     CheckOrderData checkOrderData = new CheckOrderData();
+                    checkOrderData.setResult(checkExcelDto.getCheckResult());
                     checkOrderData.setProject(checkExcelDto.getProject());
                     checkOrderData.setNormalValue(checkExcelDto.getNormalValue());
                     checkOrderData.setValue(checkExcelDto.getValue());
@@ -233,11 +233,11 @@ public class CheckBillController {
 
 
     @RequestMapping(value = "/getUserName.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput getUserNameByCard(@RequestParam String idCard) {
+    public @ResponseBody BaseOutput getUserNameByCard(@RequestParam String thirdCode) {
         try {
-            User userFromCard = this.getUserFromCard(idCard);
-            if(Objects.nonNull(userFromCard)){
-                return BaseOutput.successData(userFromCard);
+            User userFromThird = this.getUserFromThird(thirdCode);
+            if(Objects.nonNull(userFromThird)){
+                return BaseOutput.successData(userFromThird);
             }
             return BaseOutput.failure("查询用户名失败");
         }catch (TraceBusinessException e){
@@ -254,7 +254,6 @@ public class CheckBillController {
         try {
             Category category = categoryService.get(goodsCode);
             category.setMarketId(MarketUtil.returnMarket());
-            //category.setMarketId(1L);
             if(Objects.nonNull(category)){
                 return BaseOutput.successData(category.getName());
             }
@@ -268,11 +267,10 @@ public class CheckBillController {
         }
     }
 
-    private User getUserFromCard(String idCard){
+    private User getUserFromThird(String thirdCode){
         User user = DTOUtils.newDTO(User.class);
-        user.setCardNo(idCard);
+        user.setThirdPartyCode(thirdCode);
         user.setMarketId(MarketUtil.returnMarket());
-        //user.setMarketId(1L);
         List<User> users = userService.listByExample(user);
         if(CollectionUtils.isNotEmpty(users) && users.size() ==1) {
             return users.get(0);

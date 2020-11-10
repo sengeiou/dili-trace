@@ -23,8 +23,8 @@
                                    data-options="label:'检测批号*:', validType:'length[2,30]',required:true"/>
                         </td>
                         <td style="padding:5px;width:33%">
-                            <input class="easyui-textbox" name="idCard" id="idCard" style="width:100%"
-                                   value="${checkOrder.idCard}"
+                            <input class="easyui-textbox" name="thirdPartyCode" id="thirdPartyCode" style="width:100%"
+                                   value="${checkOrder.thirdPartyCode}"
                                    data-options="label:'经营户编号*:', validType:'length[1,30]',required:true"/>
                         </td>
                         <td style="padding:5px;width:34%">
@@ -122,8 +122,8 @@
                     </tr>
                 </table>
                 <input type="hidden" id="userId" name="userId" style="display: none;" value="${checkOrder.userId}">
-                <input type="hidden" id="tallyAreaNos" name="tallyAreaNos" style="display: none;"
-                       value="${checkOrder.userId}">
+                <input type="hidden" id="tallyAreaNos" name="tallyAreaNos" style="display: none;" value="${checkOrder.tallyAreaNos}">
+                <input type="hidden" id="idCard" name="idCard" style="display: none;" value="${checkOrder.idCard}">
                 <input type="button" id="submitFormBtn" style="display: none;">
             </form>
         </div>
@@ -283,27 +283,30 @@
     });
 
     function userChanged() {
-        $('#idCard').textbox({
+        $('#thirdPartyCode').textbox({
             onChange: function (value) {
                 $.ajax({
                     type: "GET",
-                    url: "${contextPath}/checkBill/getUserName.action?idCard=" + $('#idCard').val(),
+                    url: "${contextPath}/checkBill/getUserName.action?thirdCode=" + $('#thirdPartyCode').val(),
                     success: function (data) {
                         if (data.code == 200) {
                             console.info(data)
                             $('#userName').textbox('setValue', data.data.name);
                             $('#userId').val(data.data.id);
                             $('#tallyAreaNos').val(data.data.tallyAreaNos);
+                            $('#idCard').val(data.data.cardNo);
                         } else {
                             $('#userName').textbox('setValue', null);
                             $('#userId').val(null);
                             $('#tallyAreaNos').val(null);
+                            $('#idCard').val(null);
                         }
                     },
                     error: function (err) {
                         $('#userName').textbox('setValue', null);
                         $('#userId').val(null);
                         $('#tallyAreaNos').val(null);
+                        $('#idCard').val(null);
                     }
                 });
             }

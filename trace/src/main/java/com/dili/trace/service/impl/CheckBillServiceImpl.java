@@ -17,6 +17,7 @@ import com.dili.trace.service.CheckOrderDataService;
 import com.dili.trace.service.ImageCertService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,9 +90,11 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
         imageCert.setBillId(checkOrder.getId());
         imageCert.setBillType(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode());
         List<ImageCert> imageCerts = imageCertService.listByExample(imageCert);
-        imageCert=imageCerts.get(0);
-        imageCert.setUrl(checkOrder.getUrl());
-        imageCertService.updateSelective(imageCert);
+        if(CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size() == 1) {
+            imageCert = imageCerts.get(0);
+            imageCert.setUrl(checkOrder.getUrl());
+            imageCertService.updateSelective(imageCert);
+        }
     }
 
 

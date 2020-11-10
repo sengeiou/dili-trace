@@ -15,7 +15,7 @@ public class CheckExcelDto extends BaseRowModel {
     @ExcelProperty(value = "检验批号", index = 0)
     private String checkNo;
     @ExcelProperty(value = "经营户编号", index = 1)
-    private String idCard;
+    private String thirdPartyCode;
     @ExcelProperty(value = "经营户名称", index = 2)
     private String userName;
     @ExcelProperty(value = "产品编号", index = 3)
@@ -43,6 +43,7 @@ public class CheckExcelDto extends BaseRowModel {
 
 
 
+
     public String getCheckNo() {
         return checkNo;
     }
@@ -51,12 +52,12 @@ public class CheckExcelDto extends BaseRowModel {
         this.checkNo = checkNo;
     }
 
-    public String getIdCard() {
-        return idCard;
+    public String getThirdPartyCode() {
+        return thirdPartyCode;
     }
 
-    public void setIdCard(String idCard) {
-        this.idCard = idCard;
+    public void setThirdPartyCode(String thirdPartyCode) {
+        this.thirdPartyCode = thirdPartyCode;
     }
 
     public String getUserName() {

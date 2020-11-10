@@ -20,8 +20,8 @@
             <if test="checkNo != null and checkNo != ''">
                 and co.check_no = #{checkNo}
             </if>
-            <if test="userId != null and userId != ''">
-                and co.user_id = #{userId}
+            <if test="thirdPartyCode != null and thirdPartyCode != ''">
+                and co.third_party_code = #{thirdPartyCode}
             </if>
             <if test="userName != null and userName != ''">
                 and co.user_name = #{userName}

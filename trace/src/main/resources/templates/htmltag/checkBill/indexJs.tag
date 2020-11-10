@@ -145,7 +145,7 @@
                 if(json.success){
                     $.messager.alert('温馨提示',json.message);
                     $('#importDialog').dialog('close');
-                    $('#result_grid').datagrid('load',{});
+                    queryCheckBillGrid()
                 }else{
                     $.messager.alert('温馨提示',json.message);
                 }
@@ -153,7 +153,6 @@
             error: function(XmlHttpRequest, textStatus, errorThrown){
                 $.messager.alert('导入失败',"导入失败，请检查Excel文件格式");
                 $('#importDialog').dialog('close');
-                $('#result_grid').datagrid('load',{});
             }
         });
     }

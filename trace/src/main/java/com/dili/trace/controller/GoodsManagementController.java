@@ -72,7 +72,6 @@ public class GoodsManagementController {
     public String listGoods() throws Exception {
         Category category = new Category();
         category.setMarketId(MarketUtil.returnMarket());
-        //category.setMarketId(1L);
         return this.categoryService.listEasyuiPage(category,true).toString();
     }
 
@@ -98,7 +97,6 @@ public class GoodsManagementController {
         category.setId(null);
         category.setParentId(id);
         category.setMarketId(MarketUtil.returnMarket());
-        //category.setMarketId(1L);
         EasyuiPageOutput easyuiPageOutput = this.categoryService.listEasyuiPage(category, true);
         List rows = easyuiPageOutput.getRows();
         List rowsBase= easyuiPageOutputBase.getRows();
@@ -128,7 +126,6 @@ public class GoodsManagementController {
             category.setSpecification(null);
         }
         category.setMarketId(MarketUtil.returnMarket());
-        //category.setMarketId(1L);
         EasyuiPageOutput easyuiPageOutput = this.categoryService.listEasyuiPage(category, true);
         return easyuiPageOutput.toString();
     }
