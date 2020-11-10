@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.CheckBillMapper">
+    <!--- 联合查询分页信息 -->
+    <select id="selectForPage" parameterType="com.dili.trace.dto.CheckOrderDto" resultType="com.dili.trace.dto.CheckOrderDto">
+        select co.*,cd.check_id as check_id,cd.project as project,cd.normal_value as normal_value,cd.result as result,cd.value as value
+        FROM check_order co JOIN check_data cd on co.id=cd.check_id
+        <include refid="QUERY_WHERE_CLAUSE" />
+        GROUP BY co.id
+        order by ${sort} ${order}
+    </select>
+
+    <!-- 全部条件(更多功能可以通过queryData扩展实现) -->
+    <sql id="QUERY_WHERE_CLAUSE">
+        <where>
+            1 = 1
+            <if test="marketId != null and marketId != ''">
+                and co.market_id = #{marketId}
+            </if>
+            <if test="checkNo != null and checkNo != ''">
+                and co.check_no = #{checkNo}
+            </if>
+            <if test="thirdPartyCode != null and thirdPartyCode != ''">
+                and co.third_party_code = #{thirdPartyCode}
+            </if>
+            <if test="userName != null and userName != ''">
+                and co.user_name = #{userName}
+            </if>
+            <if test="goodsCode != null and goodsCode != ''">
+                and co.goods_code = #{goodsCode}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                and co.goods_name = #{goodsName}
+            </if>
+            <if test="checker != null and checker != ''">
+                and co.checker = #{checker}
+            </if>
+            <if test="checkTimeStart != null">
+                and co.check_time <![CDATA[   >=  ]]> #{checkTimeStart}
+            </if>
+            <if test="checkTimeEnd != null">
+                and co.check_time <![CDATA[   <=  ]]> #{checkTimeEnd}
+            </if>
+        </where>
+    </sql>
+</mapper>

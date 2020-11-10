@@ -343,7 +343,6 @@
         c.check_time,
         c.check_type,
         c.checker,
-        c.checker_id,
         c.goods_name,
         c.goods_code,
         c.market_id,

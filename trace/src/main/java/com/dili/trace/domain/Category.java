@@ -47,17 +47,21 @@ public class Category extends BaseDomain {
 	@Column(name = "`market_id`")
 	private Long marketId;
 
-    @ApiModelProperty(value = "商品类型")
-    @Column(name = "`type`")
-    private Integer type;
+	@ApiModelProperty(value = "商品类型")
+	@Column(name = "`type`")
+	private Integer type;
 
-    @ApiModelProperty(value = "商品规格名")
-    @Column(name = "`specification`")
-    private String specification;
+	@ApiModelProperty(value = "商品规格名")
+	@Column(name = "`specification`")
+	private String specification;
 
 	@ApiModelProperty(value = "父级第三方编码")
 	@Column(name = "`parent_code`")
 	private String parentCode;
+
+	@ApiModelProperty(value = "是否启用")
+	@Column(name = "`state`")
+	private Integer state;
 
 	public String getParentCode() {
 		return parentCode;
@@ -68,28 +72,28 @@ public class Category extends BaseDomain {
 	}
 
 	public String getCode() {
-        return code;
-    }
+		return code;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    public Integer getType() {
-        return type;
-    }
+	public Integer getType() {
+		return type;
+	}
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
-    public String getSpecification() {
-        return specification;
-    }
+	public String getSpecification() {
+		return specification;
+	}
 
-    public void setSpecification(String specification) {
-        this.specification = specification;
-    }
+	public void setSpecification(String specification) {
+		this.specification = specification;
+	}
 
 	public Integer getIsShow() {
 		return isShow;
@@ -168,6 +172,14 @@ public class Category extends BaseDomain {
 	 */
 	public void setLevel(Integer level) {
 		this.level = level;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 }
