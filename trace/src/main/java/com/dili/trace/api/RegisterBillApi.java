@@ -8,10 +8,12 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.input.RegisterBillQueryInputDto;
+import com.dili.trace.domain.Category;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.YnEnum;
+import com.dili.trace.service.CategoryService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
@@ -47,7 +49,8 @@ public class RegisterBillApi {
     private LoginSessionContext sessionContext;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private CategoryService categoryService;
 
     /**
      * 通过登记单ID获取登记单详细信息
@@ -102,19 +105,27 @@ public class RegisterBillApi {
             user.setThirdPartyCode(inputDto.getSupplierId());
             user.setYn(YnEnum.YES.getCode());
             List<User> userList = userService.listByExample(user);
-            if(CollectionUtils.isEmpty(userList)){
-                return  BaseOutput.failure("supplierId没有匹配的经营户");
+            if (CollectionUtils.isEmpty(userList)) {
+                return BaseOutput.failure("supplierId没有匹配的经营户");
             }
             Long userId = null;
             Integer row = 10;
             Integer noDelete = 0;
             String billNo = inputDto.getBillId();
+            String goodsCode = inputDto.getGoodsCode();
+            Long productId = null;
             if (CollectionUtils.isNotEmpty(userList)) {
                 userId = userList.get(0).getId();
+            }
+            if (StringUtils.isNotBlank(goodsCode)) {
+                productId = getCategoryByGoodsCode(goodsCode);
             }
             RegisterBill query = new RegisterBill();
             query.setUserId(userId);
             query.setIsDeleted(noDelete);
+            if (null != productId) {
+                query.setProductId(productId);
+            }
             if (StringUtils.isNotBlank(billNo)) {
                 query.setMetadata(IDTO.AND_CONDITION_EXPR, " code like '%" + billNo + "%'");
             } else {
@@ -138,6 +149,37 @@ public class RegisterBillApi {
             return BaseOutput.failure("查询数据出错");
         }
 
+    }
+
+    /**
+     * 返回商品码对应的第三级品种
+     *
+     * @param goodsCode
+     * @return
+     */
+    private Long getCategoryByGoodsCode(String goodsCode) {
+        Category queCate = new Category();
+        queCate.setCode(goodsCode);
+        List<Category> categories = categoryService.listByExample(queCate);
+        if (CollectionUtils.isNotEmpty(categories)) {
+            Category resCategory = categories.get(0);
+            return recursionReturnGoodsId(resCategory);
+        }
+        return null;
+    }
+
+    private Long recursionReturnGoodsId(Category resCategory) {
+        if (null == resCategory) {
+            return null;
+        }
+        int resultLevel = 3;
+        if (resCategory.getLevel().intValue() > resultLevel) {
+            Long parentId = resCategory.getParentId();
+            Category category = categoryService.get(parentId);
+            return recursionReturnGoodsId(category);
+        } else {
+            return resCategory.getId();
+        }
     }
 
 

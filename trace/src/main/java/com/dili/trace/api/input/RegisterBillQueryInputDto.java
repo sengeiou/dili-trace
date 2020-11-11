@@ -7,6 +7,15 @@ public class RegisterBillQueryInputDto {
 	private String billId;
 	private String supplierId;
     private String supplierName;
+    private String goodsCode;
+
+    public String getGoodsCode() {
+        return goodsCode;
+    }
+
+    public void setGoodsCode(String goodsCode) {
+        this.goodsCode = goodsCode;
+    }
 
     public String getSupplierId() {
         return supplierId;
