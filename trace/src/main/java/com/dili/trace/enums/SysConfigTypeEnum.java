@@ -19,9 +19,11 @@ public enum SysConfigTypeEnum {
     /**
      * 展示大屏用户基数设定
      */
-    STATISTIC_BASE_USER("statisticBaseUser", "展示大屏用户基数设定"),
+    STATISTIC_BASE_USER("statisticBaseUser", "展示大屏用户基数设定大类"),
     CATEGORY_TRADE("trade","交易单"),
     CATEGORY_BILL("bill","报备"),
+    CALL_DATA_SWITCH("call_data_switch","远程调用数据开关大类"),
+    CALL_DATA_HANG_GUO("source_hang_guo","远程调用数据开关_杭果"),
     ;
 
     private String name;

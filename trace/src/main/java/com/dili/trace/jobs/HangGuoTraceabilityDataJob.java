@@ -5,21 +5,19 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.SysConfig;
 import com.dili.trace.domain.ThirdPartyPushData;
 import com.dili.trace.domain.ThirdPartySourceData;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.hangguo.*;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.CheckOrderReportFlagEnum;
 import com.dili.trace.enums.MarketIdEnum;
 import com.dili.trace.enums.ReportInterfaceEnum;
+import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.enums.ThirdSourceTypeEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.service.HangGuoDataService;
-import com.dili.trace.service.HangGuoDataUtil;
-import com.dili.trace.service.ThirdPartyPushDataService;
-import com.dili.trace.service.UserService;
+import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +54,9 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     ThirdPartyPushDataService thirdPartyPushDataService;
     @Autowired
     UserService userService;
+    @Autowired
+    SysConfigService sysConfigService;
+
     @Value("${thrid.insert.batch.size}")
     private Integer insertBatchSize;
     @Value("${thrid.datasource.hangguo.service.url}")
@@ -77,6 +78,17 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         getBaseData();
     }
 
+    private SysConfig getCallDataSwitch() {
+        SysConfig sysConfig = new SysConfig();
+        sysConfig.setOptType(SysConfigTypeEnum.CALL_DATA_SWITCH.getCode());
+        sysConfig.setOptCategory(SysConfigTypeEnum.CALL_DATA_HANG_GUO.getCode());
+        List<SysConfig> list = sysConfigService.listByExample(sysConfig);
+        if (!CollectionUtils.isEmpty(list)) {
+            return list.get(0);
+        }
+        return null;
+    }
+
     /**
      * 商品信息、供应商信息、会员信息每六小时调用一次
      */
@@ -84,6 +96,15 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     @Scheduled(cron = "0 0 */6 * * ?")
     public void getBaseData() {
         try {
+            SysConfig dataSwitch = getCallDataSwitch();
+            if (null != dataSwitch) {
+                String optValue = dataSwitch.getOptValue();
+                String allow = "Y";
+                if (null != optValue && !allow.equals(optValue)) {
+                    logger.info("远程调用数据已关闭");
+                    return;
+                }
+            }
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品信息
             getThirdGoodsData(endTime);
@@ -108,6 +129,16 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     @Scheduled(cron = "0 0 */1 * * ?")
     public void getTradeData() {
         try {
+            SysConfig dataSwitch = getCallDataSwitch();
+            if (null != dataSwitch) {
+                String optValue = dataSwitch.getOptValue();
+                String allow = "Y";
+                if (null != optValue && !allow.equals(optValue)) {
+                    logger.info("远程调用数据已关闭");
+                    return;
+                }
+            }
+
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品信息
             List<HangGuoTrade> tradeList = this.getTradeList(endTime);
@@ -222,7 +253,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 hangGuoDataUtil.createCommodity(categoryList, endTime);
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             }
-        }else{
+        } else {
             List<HangGuoCommodity> categoryList = this.getGoodsCategory(pushData.getPushTime(), isFirst);
             if (!CollectionUtils.isEmpty(categoryList)) {
                 hangGuoDataUtil.createCommodity(categoryList, endTime);

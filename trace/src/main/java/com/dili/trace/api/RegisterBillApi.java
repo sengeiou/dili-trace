@@ -94,14 +94,11 @@ public class RegisterBillApi {
     @RequestMapping(value = "/queryBillNo", method = RequestMethod.POST)
     @InterceptConfiguration(loginRequired = false, signRequired = true, signValue = "cGFzczk4NzYyMDIw")
     public BaseOutput<RegisterBillOutputDto> queryBillNo(@RequestBody RegisterBillQueryInputDto inputDto, HttpServletRequest request) {
-        boolean isValidate = inputDto == null || inputDto.getSupplierId() == null || inputDto.getCategoryCode() == null;
+        boolean isValidate = inputDto == null || inputDto.getSupplierId() == null;
         if (isValidate) {
             String result = "参数错误";
             if (null == inputDto.getSupplierId()) {
                 result = "参数：supplierId不能为空";
-            }
-            if (null == inputDto.getCategoryCode()) {
-                result = "参数：categoryCode不能为空";
             }
             return BaseOutput.failure(result);
         }
