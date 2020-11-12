@@ -1,0 +1,366 @@
+<#body head_title="进门登记管理">
+<style>
+    .textbox-text[readonly] {
+        background: #ebebe4;
+    }
+</style>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+        </div>
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item long-item">
+                        <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%"
+                               labelAlign="right" data-options="label:'登记时间:'" value=""/>
+                        <span style="width: 2%;">-</span>
+                        <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;"
+                               value=""/>
+                    </div>
+                    <div class="search-item long-item">
+                        <input class="easyui-datetimebox" name="checkInDateStart" id="checkInDateStart" style="width:58%"
+                               labelAlign="right" data-options="label:'进门时间:'" value=""/>
+                        <span style="width: 2%;">-</span>
+                        <input class="easyui-datetimebox" name="checkInDateEnd" id="checkInDateEnd" style="width:39%;"
+                               value=""/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="state" id="state" style="width:100%" labelAlign="right"
+                               data-options="label:'审核状态:' "
+                               panelWidth="auto" panelHeight="auto"/>
+                        <#comboProvider _id="state" _provider='billDeleteStatusProvider'
+                        _queryParams='{emptyText:"--全部--"}'/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="thirdPartyCode" id="thirdPartyCode" style="width:100%"
+                               labelAlign="right" data-options="label:'经营户卡号:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="plate" id="plate" style="width:100%"
+                               labelAlign="right" data-options="label:'车牌号:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="productName" id="productName" style="width:100%"
+                               labelAlign="right" data-options="label:'商品名称:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="specName" id="specName" style="width:100%" labelAlign="right"
+                               data-options="label:'商品规格:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="originName" id="originName" style="width:100%"
+                               labelAlign="right" data-options="label:'产地:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="code" id="code" style="width:100%"
+                               labelAlign="right" data-options="label:'编号:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="registerHeadCode" id="registerHeadCode" style="width:100%"
+                               labelAlign="right" data-options="label:'主台账编号:'"/>
+                    </div>
+                    <div class="search-item">
+                        <input name="isDelete" id="isDelete" style="width:100%" labelAlign="right"
+                               data-options="label:'是否作废:' "
+                               panelWidth="auto" panelHeight="auto"/>
+                        <#comboProvider _id="isDelete" _provider='billDeleteStatusProvider'
+                        _queryParams='{emptyText:"--全部--"}'/>
+                    </div>
+                    <div class="search-item">
+                        <input class="easyui-textbox" name="colorCode" id="colorCode" style="width:100%"
+                               labelAlign="right" data-options="label:'码色:'"/>
+                        <#comboProvider _id="colorCode" _provider='colorEnumProvider'
+                        _queryParams='{emptyText:"--全部--"}'/>
+                    </div>
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryTradeRequestReport()">查询</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
+                           onclick="clearQueryForm()">清除</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto" id="tradeRecordDiv">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="进门登记管理" id="checkInRegisterGrid" fitColumns="true" noheader="true"
+               pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
+               loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="created"
+               sortOrder="desc"
+               align="center" fit="true" idField="id"
+               data-options="loader: queryTradeRequestReport"
+        >
+            <thead>
+            <tr>
+                <th width="9%"
+                    data-options="field:'created', _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    登记时间
+                </th>
+                <th width="9%"
+                    data-options="field:'code', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    编号
+                </th>
+                <th width="5%"
+                    data-options="field:'orderType',  _provider:'billOrderTypeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    单据类型
+                </th>
+                <th width="8%"
+                    data-options="field:'registerHeadCode', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    主台账编号
+                </th>
+                <th width="9%"
+                    data-options="field:'name', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    业户姓名
+                </th>
+                <th width="6%"
+                    data-options="field:'truckTypeName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    是否拼车
+                </th>
+                <th width="10%"
+                    data-options="field:'plate', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    车牌号
+                </th>
+                <th width="10%"
+                    data-options="field:'thirdPartyCode', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    经营户卡号
+                </th>
+                <th width="8%"
+                    data-options="field:'phone', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    手机号
+                </th>
+                <th width="12%"
+                    data-options="field:'upstreamName',  align:'center', resizable:'true', fixed:'false'">
+                    上游
+                </th>
+                <th width="10%"
+                    data-options="field:'productName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    商品名称
+                </th>
+                <th width="8%"
+                    data-options="field:'specName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    商品规格
+                </th>
+                <th width="10%"
+                    data-options="field:'originName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    产地
+                </th>
+                <th width="6%"
+                    data-options="field:'brandName', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    品牌
+                </th>
+                <th width="6%"
+                    data-options="field:'area', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    区位
+                </th>
+                <th width="6%"
+                    data-options="field:'measureType',_provider:'billMeasureTypeEnumProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    计量类型
+                </th>
+                <th width="10%"
+                    data-options="field:'pieceNum', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    件数
+                </th>
+                <th width="6%"
+                    data-options="field:'pieceWeight', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    件重
+                </th>
+                <th width="10%"
+                    data-options="field:'weight', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    重量
+                </th>
+                <th width="10%"
+                    data-options="field:'weightUnit', _provider:'weightUnitEnumProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    单位
+                </th>
+                <th width="10%"
+                    data-options="field:'packaging', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    包装
+                </th>
+                <th width="10%"
+                    data-options="field:'isDeleted', _provider:'billDeleteStatusProvider',sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    是否删除
+                </th>
+                <th width="10%"
+                    data-options="field:'verifyStatus',_provider:'billVerifyStatusEnumProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    审核状态
+                </th>
+                <th width="10%"
+                    data-options="field:'state',_provider:'registerBillStateProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    进门状态
+                </th>
+                <th width="10%"
+                    data-options="field:'operationTime', _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    进门时间
+                </th>
+                <th width="10%"
+                    data-options="field:'codeColor',_provider:'colorEnumProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    码色
+                </th>
+                <th width="10%"
+                    data-options="field:'isDeleted',_provider:'billDeleteStatusProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                    是否作废
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script>
+    window._registerBillGrid = $('#checkInRegisterGrid');
+$(function(){
+    initCheckInRegisterGrid();
+})
+    /**
+     * 初始化用户列表组件
+     */
+    function initCheckInRegisterGrid() {
+        var pager = _registerBillGrid.datagrid('getPager');
+        var toolbar=[
+                    {
+                        iconCls:'icon-add',
+                        text:'新增',
+                        handler:function(){
+                            openInsert();
+                        }
+                    },
+                    {
+                        iconCls:'icon-edit',
+                        text:'修改',
+                        handler:function(){
+                            openUpdate();
+                        }
+                    },
+                    {
+                        iconCls:'icon-detail',
+                            id:'detail-btn',
+                        text:'查看',
+                        handler:function(){
+                            doDetail();
+                        }
+                    },
+                    {
+                        iconCls:'icon-detail',
+                        id:'update-btn',
+                        text:'作废',
+                        handler:function(){
+                            doDetail();
+                        }
+                    },
+                    {
+                        iconCls:'icon-detail',
+                        id:'upload-btn',
+                        text:'导出',
+                        handler:function(){
+                            doDetail();
+                        }
+                    },
+                    {
+                        iconCls:'icon-detail',
+                        id:'detail-btn',
+                        text:'通过',
+                        handler:function(){
+                            doDetail();
+                        }
+                    },
+                    {
+                        iconCls:'icon-detail',
+                        id:'detail-btn',
+                        text:'不通过',
+                        handler:function(){
+                            doDetail();
+                        }
+                    },
+                    {
+                        iconCls:'icon-undo',
+                        id:'detail-btn',
+                        text:'退回',
+                        handler:function(){
+                            doDetail();
+                        }
+                    },
+
+        ];
+        _registerBillGrid.datagrid({
+            toolbar:toolbar
+        });
+        pager.pagination({
+            <#controls_paginationOpts/>,
+
+        });
+    }
+
+    //表格查询
+    function queryTradeRequestReport(param,success,error){
+        $.extend(_registerBillGrid.datagrid("options").queryParams,buildGridQueryData());
+        var data=[];
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/checkInRegister/listPage.action",
+            processData:true,
+            dataType: "json",
+            data:buildGridQueryData(),
+            async : false,
+            success: function (ret) {
+                if(ret&&ret.rows){
+                    data=ret;
+                }
+            },
+            error: function(){
+                data=[]
+            }
+        });
+        success(data);
+    }
+
+    function buildGridQueryData(){
+        var formdata=bindGridMeta2Form("checkInRegisterGrid", "queryForm");
+        delete  formdata['productCombobox'];
+        var rows=_registerBillGrid.datagrid("getRows");
+        var options=_registerBillGrid.datagrid("options");
+        //debugger
+        formdata['rows']=options.pageSize;
+        formdata['page']=options.pageNumber;
+        formdata['sort']=options.sortName;
+        formdata['order']=options.sortOrder;
+        return formdata;
+    }
+
+    //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+    }
+
+    //打开新增窗口
+    function openInsert(){
+        openWin('${contextPath}/checkInRegister/add');
+    }
+    function openWin(url){
+        $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
+    }
+    function closeWin(id){
+        $('#'+id).remove();
+        //$('#createRecordForm').submit();
+    }
+</script>
+</#body>

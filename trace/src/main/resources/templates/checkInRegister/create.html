@@ -1,0 +1,353 @@
+
+<#bodyOrigin>
+    <style>
+        .form-inline .table-showlist table .input-sm {
+             width: 200px;
+        }
+
+    /*a  upload */
+    .a-upload {
+        padding: 4px 28px;
+        position: relative;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+        color: #fff !important;
+        background-color: #3370ff;
+    }
+
+    .a-upload  input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        cursor: pointer
+    }
+
+    .a-upload:hover {
+        color: #444;
+        background: #eee;
+        border-color: #ccc;
+        text-decoration: none
+    }
+    .es-list { max-height: 220px !important; }
+</style>
+<div class="main-container">
+    <div class="topicTop">
+        <div class="toppic-title">
+            <span class="topic-title-text maincolor">进门登记</span>
+        </div>
+    </div>
+    <div class="form-box border">
+
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+                <h4 class="form-item-title">基础信息</h4>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>单据类型</label>
+                    <select  class="form-control input-sm" id = "orderType" name="orderType" required>
+                        <%for(orderType in orderTypes) {%>
+                        <option value="${orderType.value}">${orderType.key}</option>
+                        <%}%>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>经营户卡号</label>
+                    <input type="text" class="form-control input-sm" name="thirdPartyCode" id="thirdPartyCode" tabindex="-1" required />
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>手机</label>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1" required />
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>经营户姓名</label>
+                    <textarea name="name" id="name" class="form-control"  rows="1" maxlength="50" tabindex="-1"  style="width: 200px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>是否拼车</label>
+                    <select  class="form-control input-sm" id = "truckType" name="truckType"required>
+                        <%for(truckType in truckTypes) {%>
+                        <option value="${truckType.value}">${truckType.key}</option>
+                        <%}%>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌号</label>
+                        <input name="plate" id="plate" type="text" class="form-control input-sm" tabindex="-1" required />
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>进门主台账</label>
+                        <input class="easyui-textbox" name="registerHeadCode" id="registerHeadCode" style="width:100%"
+                           labelAlign="right" data-options="label:'主台账编号:'"/>
+                </div>
+            </div>
+            <div id="goodsDiv">
+            </div>
+            <div id="goodsTemplete" class="goodsInfo" style="border: 2px solid #dedede;margin: 5px 0px;display: none">
+                <div class="form-item-group" id="templeteGoods">
+                    <h4 class="form-item-title">商品信息
+                        <span class="deleteGoodsBtn" onclick="deleteCategory(this)">删除</span>
+                    </h4>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>商品名称</label>
+                        <input name="productName" id="productName" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            商品规格</label>
+                        <input name="specName" id="specName" type="text" class="form-control input-sm" tabindex="-1"  />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            主单剩余重量</label>
+                        <input name="remainWeight" id="remainWeight" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>计量类型</label>
+                        <select  class="form-control input-sm" id = "measureType" name="measureType"required>
+                            <%for(m in measureTypes) {%>
+                            <option value="${m.value}">${m.key}</option>
+                            <%}%>
+                        </select>
+
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>件数</label>
+                        <input name="pieceNum" id="pieceNum" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>件重</label>
+                        <input name="pieceWeight" id="pieceWeight" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>商品重量</label>
+                        <input name="weight" id="weight" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>单位</label>
+                        <input name="weightUnit" id="weightUnit" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            区位</label>
+                        <input name="area" id="area" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>上游企业</label>
+                        <input name="upstreamId" id="upstreamId" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            包装</label>
+                        <input name="packaging" id="packaging" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            品牌</label>
+                        <input name="brandName" id="brandName" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            产地</label>
+                        <input name="originId" id="originId" type="text" class="form-control input-sm" tabindex="-1" required />
+                    </div>
+                </div>
+                <div class="form-item-group">
+                    <h4 class="form-item-title">检测报告</h4>
+                    <div class="fileimg-box" style="margin-left: 50px;">
+                        <span class="fileimg-plus-icon">+</span>
+                        <span class="fileimg-des">点击上传</span>
+                        <input id="detectReportUrlFile" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                        <input type="hidden" name="detectReportUrl" id="detectReportUrl">
+                        <img class="magnifying">
+                        <div class="fileimg-cover" style="display: none;"></div>
+                        <div class="fileimg-edit" style="display: none;">
+                            <span class="fileimg-view">查看</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30">
+        <button style="width:auto" class="btn-main2 btn-sm" onclick="addGoods()">+新增更多商品</button>&nbsp;&nbsp;
+        <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+    </div>
+</div>
+</#bodyOrigin>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+
+<script type="text/javascript">
+function create(){
+
+}
+    function deleteCategory(obj) {
+        $(obj).closest(".goodsInfo").remove();
+        if(1 == $(".goodsInfo:visible").length){
+            $(".deleteGoodsBtn").hide();
+        }else{
+            $(".deleteGoodsBtn").show();
+        }
+    }
+
+function addGoods() {
+        let goods=$("#goodsTemplete").clone();
+        let num = Number(Math.random()*100);
+        goods.attr("id",goods.attr("id")+num);
+        goods.show();
+        $("#goodsDiv").append(goods);
+        $(".deleteGoodsBtn").show();
+}
+$(function(){
+    let  goodsLength=$("#goodsDiv").find(".goodsInfo").length;
+    if(goodsLength==0){
+        let goods=$("#goodsTemplete").clone();
+        let num = Math.random()*100;
+        goods.attr("id",goods.attr("id")+num);
+        goods.show();
+        $("#goodsDiv").append(goods);
+
+        $(".deleteGoodsBtn").hide();
+    }
+})
+//初始化控件
+   var ed= $('.editableSelect').editableSelect({
+        filter: false ,
+    });
+  // appendCachedPlate([],'#plate');
+        $('#queryUpstream').keydown(function (e){
+    	    if(e.keyCode == 13){
+    	    }
+    	});
+    	$('#queryUpstream').data('oldvalue','');
+        $('#queryUpstream').on('change',function () {
+        	var oldvalue=$('#queryUpstream').data('oldvalue');
+        	var val=$(this).val();
+        	if(oldvalue!=val){
+                $(this).siblings('input').val('');
+                $('#userId').val('');
+                $('#name').val('');
+                $('#idCardNo').val('');
+                $('#addr').val('');
+                $('#phone').val('');
+        	}
+        });
+        // 产地联系输入
+        $('#queryUpstream').devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl:"${contextPath}/upStream/listByKeyWord.action",  // 数据地址
+            // lookup: countries, 本地测试模拟数据使用结合上面的var countries
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            transformResult: function(response, originalQuery) {
+                var data=response.data;
+                var suggestions=data.map(function(v,i){
+                    return {id:v.id,value:v.name,item:v};
+                });
+                
+                return {"suggestions":suggestions}
+            },
+            formatResult: function (suggestion, currentValue) {
+                var user=suggestion.item;
+                return user.name+"|"+user.phone+"|"+user.tallyAreaNos;
+            },
+            onSelect: function (suggestion) {
+                var self = this;
+                var idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value.trim());
+
+                var user=suggestion.item;
+                $('#userId').val(user.id);
+                $('#name').val(user.name);
+                $('#idCardNo').val(user.cardNo);
+                $('#addr').val(user.addr);
+                $('#phone').val(user.phone);
+                $('#queryUpstream').data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
+        });
+    
+    	$('#queryUser').data('oldvalue','');
+        $('#queryUser').on('change',function () {
+        	var oldvalue=$('#queryUser').data('oldvalue');
+        	var val=$(this).val();
+        	if(oldvalue!=val){
+                $(this).siblings('input').val('');
+                $('#userId').val('');
+                $('#name').val('');
+                $('#idCardNo').val('');
+                $('#addr').val('');
+                $('#phone').val('');
+        	}
+        });
+        // 产地联系输入
+        $('#queryUser').devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl:"${contextPath}/user/listByKeyword.action",  // 数据地址
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            transformResult: function(response, originalQuery) {
+                var data=response.data;
+                var suggestions=data.map(function(v,i){
+                    return {id:v.id,value:v.name,item:v};
+                });
+                
+                return {"suggestions":suggestions}
+            },
+            formatResult: function (suggestion, currentValue) {
+                var user=suggestion.item;
+                return user.name+"|"+user.phone+"|"+user.tallyAreaNos;
+            },
+            onSelect: function (suggestion) {
+                var self = this;
+                var idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value.trim());
+                var user=suggestion.item;
+                $('#userId').val(user.id);
+                $('#name').val(user.name);
+                $('#idCardNo').val(user.cardNo);
+                $('#addr').val(user.addr);
+                $('#phone').val(user.phone);
+                $('#queryUser').data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
+        });
+    
+</script>
