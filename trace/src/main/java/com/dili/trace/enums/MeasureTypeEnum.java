@@ -1,5 +1,9 @@
 package com.dili.trace.enums;
 
+import one.util.streamex.StreamEx;
+
+import java.util.Optional;
+
 /**
  * @author Guzman
  * @version 1.0
@@ -19,6 +23,10 @@ public enum  MeasureTypeEnum {
     MeasureTypeEnum(Integer code, String name) {
         this.code = code;
         this.name = name;
+    }
+
+    public static Optional<MeasureTypeEnum> fromCode(Integer code) {
+        return StreamEx.of(MeasureTypeEnum.values()).filterBy(MeasureTypeEnum::getCode, code).findFirst();
     }
 
     public String getName() {

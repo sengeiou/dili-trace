@@ -26,6 +26,11 @@
         ,u.legal_person
         ,checkinout_record.created AS 'checkin_created'
         ,checkinout_record.status AS checkin_status
+        ,register_bill.third_party_code
+        ,register_bill.measure_type
+        ,register_bill.piece_num
+        ,register_bill.piece_weight
+        ,register_bill.packaging
         from register_bill left join trade_detail on register_bill.id=trade_detail.bill_id
         left join checkinout_record on checkinout_record.id=trade_detail.checkin_record_id
         left join `user` u on register_bill.user_id=u.id

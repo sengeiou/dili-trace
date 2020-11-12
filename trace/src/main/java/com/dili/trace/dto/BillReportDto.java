@@ -5,10 +5,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.CheckinStatusEnum;
-import com.dili.trace.enums.PreserveTypeEnum;
-import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 
 public class BillReportDto extends BaseDomain{
@@ -31,6 +28,12 @@ public class BillReportDto extends BaseDomain{
     private BigDecimal weight;
     private Integer weightUnit;
     private Integer isDeleted;
+    private String thirdPartyCode;
+    private String area;
+    private Integer measureType;
+    private BigDecimal pieceNum;
+    private String pieceWeight;
+    private String remark;
 
     public String getIsDeletedName() {
         if( TFEnum.TRUE.equalsCode(this.getIsDeleted())){
@@ -52,6 +55,9 @@ public class BillReportDto extends BaseDomain{
     }
     public String getWeightUnitName(){
         return WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
+    }
+    public String getMeasureTypeName(){
+        return MeasureTypeEnum.fromCode(this.getMeasureType()).map(MeasureTypeEnum::getName).orElse("");
     }
 
     /**
@@ -329,4 +335,51 @@ public class BillReportDto extends BaseDomain{
         return billType;
     }
 
+    public String getThirdPartyCode() {
+        return thirdPartyCode;
+    }
+
+    public void setThirdPartyCode(String thirdPartyCode) {
+        this.thirdPartyCode = thirdPartyCode;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public Integer getMeasureType() {
+        return measureType;
+    }
+
+    public void setMeasureType(Integer measureType) {
+        this.measureType = measureType;
+    }
+
+    public BigDecimal getPieceNum() {
+        return pieceNum;
+    }
+
+    public void setPieceNum(BigDecimal pieceNum) {
+        this.pieceNum = pieceNum;
+    }
+
+    public String getPieceWeight() {
+        return pieceWeight;
+    }
+
+    public void setPieceWeight(String pieceWeight) {
+        this.pieceWeight = pieceWeight;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 }
