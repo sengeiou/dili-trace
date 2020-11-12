@@ -64,7 +64,11 @@
             swal('警告','请选中一条数据', 'warning');
             return;
         }
-
+        console.info(selected.reportFlag)
+        if ("已上报"== selected.reportFlag) {
+            swal('警告','已上报数据不可编辑', 'warning');
+            return;
+        }
         var index = layer.open({
             type : 2,
             title : '修改检测登记单',

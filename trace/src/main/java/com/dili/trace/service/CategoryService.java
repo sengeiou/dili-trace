@@ -3,10 +3,15 @@ package com.dili.trace.service;
 import java.util.List;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.POJOUtils;
 import com.dili.trace.dao.CategoryMapper;
 import com.dili.trace.domain.Category;
 import com.dili.trace.enums.CategoryIsShowEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,5 +73,22 @@ public class CategoryService extends BaseServiceImpl<Category, Long> {
 			this.updateSelective(category);
 		}
 		return BaseOutput.success("操作成功");
+	}
+
+	public CategoryMapper getActualDao() {
+		return (CategoryMapper) getDao();
+	}
+
+	public EasyuiPageOutput selectForEasyuiPage(Category domain, boolean useProvider) throws Exception {
+		if (domain.getRows() != null && domain.getRows() >= 1) {
+			PageHelper.startPage(domain.getPage(), domain.getRows());
+		}
+		if (StringUtils.isNotBlank(domain.getSort())) {
+			domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
+		}
+		List<Category> categorie = getActualDao().selectForPage(domain);
+		long total = categorie instanceof Page ? ((Page) categorie).getTotal() : (long) categorie.size();
+		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, categorie) : categorie;
+		return new EasyuiPageOutput((int) total, results);
 	}
 }

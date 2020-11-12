@@ -23,8 +23,8 @@
             <if test="thirdPartyCode != null and thirdPartyCode != ''">
                 and co.third_party_code = #{thirdPartyCode}
             </if>
-            <if test="userName != null and userName != ''">
-                and co.user_name = #{userName}
+            <if test="likeName != null and likeName != ''">
+                and co.user_name LIKE CONCAT('%',#{likeName},'%')
             </if>
             <if test="goodsCode != null and goodsCode != ''">
                 and co.goods_code = #{goodsCode}

@@ -1,5 +1,6 @@
 package com.dili.trace.dto;
 
+import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.CheckOrder;
 
@@ -22,6 +23,10 @@ public class CheckOrderDto extends CheckOrder {
     @Operator(Operator.LITTLE_EQUAL_THAN)
     private Date checkTimeEnd;
 
+    @Column(name = "user_name")
+    @Like
+    private String likeName;
+
     private String url;
     private Long billId;
     private Long checkId;
@@ -30,6 +35,13 @@ public class CheckOrderDto extends CheckOrder {
     private String result;
     private String value;
 
+    public String getLikeName() {
+        return likeName;
+    }
+
+    public void setLikeName(String likeName) {
+        this.likeName = likeName;
+    }
     public String getUrl() {
         return url;
     }

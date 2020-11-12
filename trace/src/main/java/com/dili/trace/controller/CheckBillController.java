@@ -132,6 +132,7 @@ public class CheckBillController {
         try {
             checkOrder.setMarketId(MarketUtil.returnMarket());
             checkBillService.insertSelective(checkOrder);
+            checkBillService.noPassInsert(checkOrder);
             checkBillService.insertOtherTable(checkOrder, checkOrder.getId());
             return BaseOutput.success("新增检测单成功").setData(checkOrder.getId());
         } catch (TraceBusinessException e) {

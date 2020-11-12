@@ -41,4 +41,10 @@ public interface CheckBillService extends BaseService<CheckOrder, Long> {
      */
     void updateOtherTable(CheckOrderDto checkOrder);
 
+    /**
+     * 不合格检测单更新到不合格处置登记表
+     * @param checkOrder
+     */
+    void noPassInsert(CheckOrderDto checkOrder);
+
 }

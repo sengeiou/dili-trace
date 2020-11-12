@@ -7,14 +7,18 @@ import com.dili.ss.util.POJOUtils;
 import com.dili.trace.dao.CheckBillMapper;
 import com.dili.trace.domain.CheckOrder;
 import com.dili.trace.domain.CheckOrderData;
+import com.dili.trace.domain.CheckOrderDispose;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.CheckExcelDto;
 import com.dili.trace.dto.CheckOrderDto;
+import com.dili.trace.enums.CheckResultTypeEnum;
 import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.service.CheckBillService;
 import com.dili.trace.service.CheckOrderDataService;
+import com.dili.trace.service.CheckOrderDisposeService;
 import com.dili.trace.service.ImageCertService;
+import com.dili.trace.util.MarketUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,6 +42,9 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
 
     @Autowired
     private CheckOrderDataService checkOrderDataService;
+
+    @Autowired
+    private CheckOrderDisposeService checkOrderDisposeService;
 
     public CheckBillMapper getActualDao() {
         return (CheckBillMapper) getDao();
@@ -97,7 +104,14 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
         }
     }
 
-
-
-
+    @Override
+    public void noPassInsert(CheckOrderDto checkOrder) {
+        if(CheckResultTypeEnum.NO_PASS.getCode()==Integer.parseInt(checkOrder.getCheckResult())){
+            CheckOrderDispose checkOrderDispose=new CheckOrderDispose();
+            checkOrderDispose.setMarketId(MarketUtil.returnMarket());
+            checkOrderDispose.setCheckNo(checkOrder.getCheckNo());
+            checkOrderDispose.setDisposeDate(checkOrder.getCheckTime());
+            checkOrderDisposeService.insertSelective(checkOrderDispose);
+        }
+    }
 }
