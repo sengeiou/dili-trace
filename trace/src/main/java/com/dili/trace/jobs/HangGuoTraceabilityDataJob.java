@@ -93,7 +93,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * 商品信息、供应商信息、会员信息每六小时调用一次
      */
     //@Scheduled(cron = "0 */15 * * * ?")
-    @Scheduled(cron = "0 0 */6 * * ?")
+    @Scheduled(cron = "0 10 */6 * * ?")
     public void getBaseData() {
         try {
             SysConfig dataSwitch = getCallDataSwitch();
@@ -126,7 +126,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * 交易数据每小时调用一次
      */
     //@Scheduled(cron = "0 */10 * * * ?")
-    @Scheduled(cron = "0 0 */1 * * ?")
+    @Scheduled(cron = "0 10 */1 * * ?")
     public void getTradeData() {
         try {
             SysConfig dataSwitch = getCallDataSwitch();
@@ -588,9 +588,34 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             String notice = restTemplate.getForObject(hangGuoServiceUrl + "/" + url, String.class);
             if (StringUtils.isNotBlank(notice)) {
                 result = JSON.parseObject(notice, HangGuoResult.class);
+
+                //异常重调最多两次
+                if (null == result || StringUtils.isNotBlank(result.getRecode())) {
+                    Integer retryCount = 2;
+                    result=retryHangGuoServiceUrlResult(url,retryCount);
+                }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        }
+        return result;
+    }
+
+
+    private HangGuoResult retryHangGuoServiceUrlResult(String url,Integer count) {
+        HangGuoResult result = new HangGuoResult();
+        if(count<=0){
+            return result;
+        }
+        count--;
+        RestTemplate restTemplate = new RestTemplate();
+        logger.info("===========>>>>getHangGuoServiceUrlResult Url:" + hangGuoServiceUrl + "/" + url);
+        String notice = restTemplate.getForObject(hangGuoServiceUrl + "/" + url, String.class);
+        if(StringUtils.isNotBlank(notice)){
+            result = JSON.parseObject(notice, HangGuoResult.class);
+            if (null == result || StringUtils.isNotBlank(result.getRecode())) {
+               return retryHangGuoServiceUrlResult(url,count);
+            }
         }
         return result;
     }
