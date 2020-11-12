@@ -9,6 +9,7 @@ import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.MarketIdEnum;
 import com.dili.trace.enums.SysConfigTypeEnum;
+import com.dili.trace.util.MarketUtil;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -37,11 +39,12 @@ public class TraceReportService {
         query.setYellowBillVerifyStatus(
                 Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode(), BillVerifyStatusEnum.RETURNED.getCode()));
         query.setNoneVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode()));
-        query.setMarketId(1L);
+        query.setMarketId(MarketUtil.returnMarket());
+//        query.setMarketId(1L);
         // settingUserActive(query);
         List<TraceReportDto> list =  this.billMapper.selectBillReportData(query);
 
-        Map<String, TraceReportDto> areaReportDtoMap = StreamEx.of(list).map(item -> {
+        Map<String, TraceReportDto> areaReportDtoMap = StreamEx.of(list).filter(Objects::nonNull).map(item -> {
             item.sum(new TraceReportDto());
             return item;
         }).toMap(TraceReportDto::getGroupKey, Function.identity());
@@ -75,7 +78,7 @@ public class TraceReportService {
         //             .setNoVerifyedBillCount(item.getNoVerifyedBillCount());
         // });
 
-        TraceReportDto total = StreamEx.of(list).map(item -> {
+        TraceReportDto total = StreamEx.of(list).filter(Objects::nonNull).map(item -> {
             item.calculatePercentage();
             return item;
         }).reduce(this.defaultReportDTO(),(t, v) -> {

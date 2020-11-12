@@ -86,6 +86,15 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>cloud</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>cloud</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
 			<id>prod</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>

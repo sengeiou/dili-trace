@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile({ "prod" })
+@Profile({ "prod","cloud" })
 public class SMSServiceProdImpl extends SMSService {
     private static final Logger logger = LoggerFactory.getLogger(SMSServiceDefaultImpl.class);
 

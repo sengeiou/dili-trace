@@ -40,7 +40,7 @@ public class BillReportService {
     private static final Logger logger = LoggerFactory.getLogger(BillReportService.class);
 
     public EasyuiPageOutput listEasyuiPage(BillReportQueryDto query) throws Exception {
-        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
+        // query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         BasePage<BillReportDto> listPageBillReport = this.listPageBillReport(query);
         long total = listPageBillReport.getTotalItem();
         List results = ValueProviderUtils.buildDataByProvider(query, listPageBillReport.getDatas());
