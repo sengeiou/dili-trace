@@ -91,6 +91,9 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "原因")
 	private String reason;
 
+	@ApiModelProperty(value = "单据类型")
+	private Integer orderType;
+
 	/**
 	 * 图片证明列表
 	 */
@@ -132,6 +135,7 @@ public class CreateRegisterBillInputDto {
 		registerBill.setRemark(this.getRemark());
 		registerBill.setVerifyStatus(this.getVerifyStatus());
 		registerBill.setReason(this.getReason());
+		registerBill.setOrderType(this.getOrderType());
 		return registerBill;
 	}
 
@@ -409,5 +413,13 @@ public class CreateRegisterBillInputDto {
 
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+
+	public Integer getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(Integer orderType) {
+		this.orderType = orderType;
 	}
 }

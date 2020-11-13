@@ -223,11 +223,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 throw new TraceBusinessException("车牌不能为空");
             }
         }
-        if (!OrderTypeEnum.REGISTER_FORM_BILL.getCode().equals(registerBill.getOrderType())) {
-            if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
-                throw new TraceBusinessException("商品类型错误");
-            }
-        }
+//        if (!OrderTypeEnum.REGISTER_FORM_BILL.getCode().equals(registerBill.getOrderType())) {
+//            if (!PreserveTypeEnum.fromCode(registerBill.getPreserveType()).isPresent()) {
+//                throw new TraceBusinessException("商品类型错误");
+//            }
+//        }
         if (StringUtils.isBlank(registerBill.getName())) {
             logger.error("业户姓名不能为空");
             throw new TraceBusinessException("业户姓名不能为空");
