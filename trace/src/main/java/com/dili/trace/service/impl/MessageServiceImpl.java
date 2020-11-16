@@ -47,6 +47,9 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
     @Autowired
     private WxAppletsMessageNotityService wxService;
 
+    @Autowired
+    ExecutionConstants executionConstants;
+
     @Override
     public void addMessage(MessageInputDto messageInputDto) {
         logger.info("insert message, param:{}", JSON.toJSONString(messageInputDto));
@@ -100,7 +103,7 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
             for (Long recevierId : receiverIdArray) {
                 User receiverUser = userService.get(recevierId);
                 JSONObject params = new JSONObject();
-                params.put("marketCode", ExecutionConstants.MARKET_CODE);
+                params.put("marketCode", executionConstants.getMarketCode());
                 params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
                 params.put("sceneCode", messageConfig.getSmsSceneCode());
                 params.put("cellphone", receiverUser.getPhone());

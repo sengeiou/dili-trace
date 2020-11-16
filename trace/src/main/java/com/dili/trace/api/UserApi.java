@@ -68,6 +68,8 @@ public class UserApi {
     UserPlateService userPlateService;
     @Autowired
     SMSService smsService;
+    @Autowired
+    ExecutionConstants executionConstants;
 
     /**
      * 注册
@@ -142,7 +144,7 @@ public class UserApi {
         String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
         // 发送短信验证码
         JSONObject params = new JSONObject();
-        params.put("marketCode", ExecutionConstants.MARKET_CODE);
+        params.put("marketCode", executionConstants.getMarketCode());
         params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
         params.put("sceneCode", "registerAuthCode");
         params.put("cellphone", phone);
@@ -261,7 +263,7 @@ public class UserApi {
             String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
             // 发送短信验证码
             JSONObject params = new JSONObject();
-            params.put("marketCode", ExecutionConstants.MARKET_CODE);
+            params.put("marketCode", executionConstants.getMarketCode());
             params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
             params.put("sceneCode", "resetAuthcode");
             params.put("cellphone", userItem.getPhone());
