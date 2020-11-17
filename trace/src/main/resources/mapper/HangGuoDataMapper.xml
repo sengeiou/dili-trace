@@ -384,4 +384,17 @@
          FROM category c
          WHERE c.code  = #{code}
     </select>
+
+    <update id="batchUpdateCategoryByThirdCode" parameterType="java.util.List">
+        UPDATE category
+        SET name =
+        <foreach collection="list" item="cate" index="index"
+                 separator=" " open="case code" close="end">
+            when #{cate.code} then #{cate.name}
+        </foreach>
+        WHERE code
+        <foreach collection="list" open=" IN (" close=")" item="u" separator=",">
+            #{u.code}
+        </foreach>
+    </update>
 </mapper>

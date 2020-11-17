@@ -619,16 +619,8 @@ public class HangGuoDataUtil {
      */
     private void updateCateGoryByThirdCode(List<HangGuoCommodity> updateHangGuoCommodityList, Date createTime) {
         List<Category> categoryList = conversionCommodityList(updateHangGuoCommodityList, createTime);
-        //删除杭果需要更新商品
-        hangGuoDataService.deleteHangGuoCommodityByThirdCode(categoryList);
-        //新增
-        hangGuoDataService.bachInsertCommodityList(categoryList);
-        //patch
-        Category category = new Category();
-        category.setType(CategoryTypeEnum.SUPPLEMENT.getCode());
-        category.setCreated(createTime);
-        category.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
-        hangGuoDataService.updateHangGuoCommodityParent(category);
+        //更新商品信息
+        hangGuoDataService.batchUpdateCategoryByThirdCode(categoryList);
     }
 
     /**

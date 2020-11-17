@@ -78,6 +78,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         getBaseData();
     }
 
+
     private SysConfig getCallDataSwitch() {
         SysConfig sysConfig = new SysConfig();
         sysConfig.setOptType(SysConfigTypeEnum.CALL_DATA_SWITCH.getCode());

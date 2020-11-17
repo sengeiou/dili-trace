@@ -184,4 +184,10 @@ public interface HangGuoDataMapper extends MyMapper<HangGuoUser> {
      * @return
      */
     Category getCategoryByThirdCode(@Param("code") String parentCode);
+
+    /**
+     * 更新商品信息
+     * @param categoryList
+     */
+    void batchUpdateCategoryByThirdCode(@Param("list") List<Category> categoryList);
 }

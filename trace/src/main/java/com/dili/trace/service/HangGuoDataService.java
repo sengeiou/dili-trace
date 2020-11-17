@@ -188,4 +188,10 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      * @return
      */
     Category getCategoryByThirdCode(String parentCode);
+
+    /**
+     * 更新商品信息
+     * @param categoryList
+     */
+    void batchUpdateCategoryByThirdCode(List<Category> categoryList);
 }

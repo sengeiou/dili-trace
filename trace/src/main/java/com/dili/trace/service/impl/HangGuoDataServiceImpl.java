@@ -150,4 +150,9 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
         return hangGuoDataMapper.getCategoryByThirdCode(parentCode);
     }
 
+    @Override
+    public void batchUpdateCategoryByThirdCode(List<Category> categoryList) {
+        hangGuoDataMapper.batchUpdateCategoryByThirdCode(categoryList);
+    }
+
 }
