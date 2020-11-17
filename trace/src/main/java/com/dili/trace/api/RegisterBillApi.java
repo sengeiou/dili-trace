@@ -169,7 +169,7 @@ public class RegisterBillApi {
             Category resCategory = categories.get(0);
             return recursionReturnGoodsId(resCategory);
         }
-        return null;
+        return -1L;
     }
 
     private Long recursionReturnGoodsId(Category resCategory) {
