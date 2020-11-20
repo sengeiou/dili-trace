@@ -4,9 +4,21 @@ package com.dili.trace.api.input;
  * @author asa.lee
  */
 public class RegisterBillQueryInputDto {
+    /**
+     * 报备单 code
+     */
 	private String billId;
+    /**
+     * 经营户卡号
+     */
 	private String supplierId;
+    /**
+     * 经营户名称
+     */
     private String supplierName;
+    /**
+     * 商品码
+     */
     private String categoryCode;
 
     public String getCategoryCode() {

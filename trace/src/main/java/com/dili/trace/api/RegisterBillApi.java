@@ -94,6 +94,7 @@ public class RegisterBillApi {
     @RequestMapping(value = "/queryBillNo", method = RequestMethod.POST)
     @InterceptConfiguration(loginRequired = false, signRequired = true, signValue = "cGFzczk4NzYyMDIw")
     public BaseOutput<RegisterBillOutputDto> queryBillNo(@RequestBody RegisterBillQueryInputDto inputDto, HttpServletRequest request) {
+        // 校验经营户卡号为必填参数
         boolean isValidate = inputDto == null || inputDto.getSupplierId() == null;
         if (isValidate) {
             String result = "参数错误";
@@ -105,6 +106,7 @@ public class RegisterBillApi {
 
         logger.info("获取报备单列表->billId:{},SupplierId:{}", inputDto.getBillId(), inputDto.getSupplierId());
         try {
+            // 根据经营户卡号查询经营户
             User user = DTOUtils.newDTO(User.class);
             user.setThirdPartyCode(inputDto.getSupplierId());
             user.setYn(YnEnum.YES.getCode());
@@ -124,6 +126,8 @@ public class RegisterBillApi {
             if (StringUtils.isNotBlank(goodsCode)) {
                 productId = getCategoryByGoodsCode(goodsCode);
             }
+
+            // 根据经营户和商品id查询报备单
             RegisterBill query = new RegisterBill();
             query.setUserId(userId);
             query.setIsDeleted(noDelete);
@@ -138,9 +142,16 @@ public class RegisterBillApi {
                 query.setRows(row);
             }
             List<RegisterBill> billList = registerBillService.listByExample(query);
+
+            // 返回报备单编号列表
             List<RegisterBillQueryInputDto> billNos = StreamEx.of(billList).nonNull().map(b -> {
                 RegisterBillQueryInputDto inp = new RegisterBillQueryInputDto();
-                inp.setBillId(b.getCode());
+                StringBuffer sb = new StringBuffer(b.getCode());
+                sb.append(",").append(b.getProductName());
+                if (StringUtils.isNotBlank(b.getOriginName())) {
+                    sb.append(",").append(b.getOriginName().split(",")[0]);
+                }
+                inp.setBillId(sb.toString());
                 return inp;
             }).collect(Collectors.toList());
 
@@ -156,9 +167,9 @@ public class RegisterBillApi {
     }
 
     /**
-     * 返回商品码对应的第三级品种
+     * 返回商品码对应的第三级品种ID
      *
-     * @param goodsCode
+     * @param goodsCode 商品码
      * @return
      */
     private Long getCategoryByGoodsCode(String goodsCode) {
@@ -167,24 +178,54 @@ public class RegisterBillApi {
         List<Category> categories = categoryService.listByExample(queCate);
         if (CollectionUtils.isNotEmpty(categories)) {
             Category resCategory = categories.get(0);
-            return recursionReturnGoodsId(resCategory);
+            return getParentCategoryId(resCategory);
+        } else {
+            throw new TraceBusinessException("商品码[" + goodsCode + "]不存在，请联系管理员检查商品主数据！");
         }
-        return -1L;
     }
 
-    private Long recursionReturnGoodsId(Category resCategory) {
+    /**
+     * 查询目标商品的三级商品
+     * @param resCategory
+     * @return
+     */
+    private Long getParentCategoryId(Category resCategory) {
         if (null == resCategory) {
             return null;
         }
-        int resultLevel = 3;
-        if (resCategory.getLevel().intValue() > resultLevel) {
-            Long parentId = resCategory.getParentId();
-            Category category = categoryService.get(parentId);
-            return recursionReturnGoodsId(category);
-        } else {
+        final int targetLevel = 3;
+        // 商品本身小于等于三级，直接返回
+        if (resCategory.getLevel() <= targetLevel) {
             return resCategory.getId();
         }
-    }
 
+        String recursionCode = resCategory.getCode();
+        while (recursionCode.length() > 1) {
+            // 无锡斯坦有些商品主数据级别不完整，直接根据商品码截取形式查询上级
+            String parentCode = recursionCode.substring(0, recursionCode.length() - 1);
+            Category condition = new Category();
+            condition.setCode(parentCode);
+            List<Category> parentCategories = categoryService.list(condition);
+            if (CollectionUtils.isEmpty(parentCategories)) {
+                // 没有找到父级商品，继续截取。处理级别中断问题。
+                recursionCode = parentCode;
+                continue;
+            }
+            if (parentCategories.size() > 1) {
+                logger.error("商品码["+ parentCode +"]重复!!!");
+            }
+            Category parentCategory = parentCategories.get(0);
+            if (parentCategory.getLevel() > targetLevel) {
+                // 级别大于3，继续找父级
+                recursionCode = parentCode;
+                continue;
+            } else if (parentCategory.getLevel() == targetLevel) {
+                // 找到三级商品，循环结束
+                return parentCategory.getId();
+            }
+            recursionCode = parentCode;
+        }
+        throw new TraceBusinessException("商品码[" + resCategory.getCode() + "]的三级商品不存在，请联系管理员检查商品主数据！");
+    }
 
 }
