@@ -147,9 +147,9 @@ public class RegisterBillApi {
             List<RegisterBillQueryInputDto> billNos = StreamEx.of(billList).nonNull().map(b -> {
                 RegisterBillQueryInputDto inp = new RegisterBillQueryInputDto();
                 StringBuffer sb = new StringBuffer(b.getCode());
-                sb.append(",").append(b.getProductName());
+                sb.append(";").append(b.getProductName());
                 if (StringUtils.isNotBlank(b.getOriginName())) {
-                    sb.append(",").append(b.getOriginName().split(",")[0]);
+                    sb.append(";").append(b.getOriginName().split(",")[0]);
                 }
                 inp.setBillId(sb.toString());
                 return inp;
