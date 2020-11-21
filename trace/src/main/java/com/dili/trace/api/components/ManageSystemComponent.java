@@ -31,6 +31,9 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+/**
+ * 权限系统访问接口
+ */
 @Component
 public class ManageSystemComponent {
     private static final Logger logger = LoggerFactory.getLogger(ManageSystemComponent.class);
@@ -40,13 +43,16 @@ public class ManageSystemComponent {
     private String publicKey;
     @Autowired
     private SystemPermissionCheckService systemPermissionCheckService;
-    @Autowired
+    @Autowired(required = false)
     private UserRpc userRpc;
     @Autowired
     private MarketService marketService;
 
     private String hz_admin_authUrl = "user/index.html#list";
 
+    /**
+     * 初始化参数
+     */
     @PostConstruct
     public void init() {
         if (StringUtils.isBlank(this.manageDomainPath)) {
@@ -175,10 +181,21 @@ public class ManageSystemComponent {
 
     }
 
+    /**
+     * 查询管理员信息
+     * @param marketId
+     * @return
+     */
     public List<User> getAdminUser(Long marketId) {
         return findUserByUserResource(hz_admin_authUrl, marketId);
     }
 
+    /**
+     * 判断是否是管理员
+     * @param userId
+     * @param marketId
+     * @return
+     */
     public boolean isAdminUser(Long userId, Long marketId) {
         Map<Long, User> managerMap = new HashMap<>();
         List<User> managers = findUserByUserResource(hz_admin_authUrl, marketId);
@@ -187,11 +204,13 @@ public class ManageSystemComponent {
         });
         return managerMap.containsKey(userId);
     }
+/*
 
     public static void main(String[] args) throws Exception {
         ManageSystemComponent c = new ManageSystemComponent();
         c.manageDomainPath = "http://10.28.10.167";
         c.findUserByUserResource("http://127.0.0.1/menu/preSave.do", 2L);
     }
+*/
 
 }

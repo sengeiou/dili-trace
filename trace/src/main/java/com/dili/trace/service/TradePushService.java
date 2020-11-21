@@ -4,6 +4,9 @@ import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.TradePushLog;
 import com.dili.trace.dto.TradePushInputDto;
 
+/**
+ * 上下架
+ */
 public interface TradePushService extends BaseService<TradePushLog,Long> {
     /**
      * 上下架

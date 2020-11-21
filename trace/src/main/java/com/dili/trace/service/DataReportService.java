@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
 import com.jayway.jsonpath.*;
 import one.util.streamex.StreamEx;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,13 +56,13 @@ public class DataReportService {
     RegisterBillService registerBillService;
     @Autowired
     ThirdPartyReportDataService thirdPartyReportDataService;
-    @Value("${thirdparty.report.contextUrl}")
+    @Value("${thirdparty.report.contextUrl:}")
     protected String reportContextUrl;
 
-    @Value("${thirdparty.report.appId}")
+    @Value("${thirdparty.report.appId:}")
     protected String appId;
 
-    @Value("${thirdparty.report.appSecret}")
+    @Value("${thirdparty.report.appSecret:}")
     protected String appSecret;
 
     protected Long marketId;
@@ -76,8 +77,7 @@ public class DataReportService {
         logger.info("上报:市场经营户数据统计");
         setMarketInfo(market);
         String path = "/nfwlApi/marketCount";
-        String url = this.reportContextUrl + path;
-        return this.postJson(url, marketCountDto, optUser);
+        return this.postJson(this.reportContextUrl,path, marketCountDto, optUser);
     }
 
     /**
@@ -97,10 +97,18 @@ public class DataReportService {
         logger.info("上报:报备检测数据统计");
         setMarketInfo(market);
         String path = "/nfwlApi/reportCount";
-        String url = this.reportContextUrl + path;
-        return this.postJson(url, reportCountDto, optUser);
+        return this.postJson(this.reportContextUrl,path, reportCountDto, optUser);
     }
 
+    /**
+     * 报备检测数据统计
+     * @param optUser
+     * @param startDateTime
+     * @param endDateTime
+     * @param checkBatch
+     * @param market
+     * @return
+     */
     public BaseOutput reportCount(Optional<OperatorUser> optUser, LocalDateTime startDateTime, LocalDateTime endDateTime, int checkBatch, Market market) {
         logger.info("上报:报备检测数据统计");
 
@@ -165,8 +173,7 @@ public class DataReportService {
         logger.info("上报:品种产地排名统计数据");
         setMarketInfo(market);
         String path = "/nfwlApi/regionCount";
-        String url = this.reportContextUrl + path;
-        return this.postJson(url, regionCountDto, optUser);
+        return this.postJson(this.reportContextUrl,path, regionCountDto, optUser);
     }
 
     /**
@@ -179,8 +186,7 @@ public class DataReportService {
         logger.info("上报:三色码状态数据统计");
         setMarketInfo(market);
         String path = "/nfwlApi/codeCount";
-        String url = this.reportContextUrl + path;
-        return this.postJson(url, codeCountDto, optUser);
+        return this.postJson(this.reportContextUrl,path, codeCountDto, optUser);
     }
 
     /**
@@ -256,6 +262,12 @@ public class DataReportService {
         return "TRACE_THIRDPARTY_REPORT_TOKEN";
     }
 
+    /**
+     * 查询和更新token
+     * @param url
+     * @param reportDto
+     * @return
+     */
     protected BaseOutput postJsonGetApostJsonccessToken(String url, AccessTokenDto reportDto) {
         String data = null;
         try {
@@ -278,6 +290,29 @@ public class DataReportService {
         });
     }
 
+    /**
+     * http 请求
+     * @param ctx
+     * @param path
+     * @param reportDto
+     * @param optUser
+     * @return
+     */
+    protected BaseOutput postJson(String ctx,String path, ReportDto reportDto, Optional<OperatorUser> optUser){
+        if(StringUtils.isBlank(ctx)){
+            return BaseOutput.failure();
+        }
+        String url=ctx+path;
+        return this.postJson(url,reportDto,  optUser);
+    }
+
+    /**
+     * http 请求
+     * @param url
+     * @param reportDto
+     * @param optUser
+     * @return
+     */
     protected BaseOutput postJson(String url, ReportDto reportDto, Optional<OperatorUser> optUser) {
 
         ThirdPartyReportData thirdPartyReportData = new ThirdPartyReportData();
@@ -317,6 +352,14 @@ public class DataReportService {
         return out;
     }
 
+    /**
+     * http 请求
+     * @param url
+     * @param headeMap
+     * @param jsonBody
+     * @param parseFun
+     * @return
+     */
     private BaseOutput postJson(String url, Map<String, String> headeMap, String jsonBody,
                                 Function<DocumentContext, BaseOutput> parseFun) {
 
@@ -337,6 +380,14 @@ public class DataReportService {
         }
     }
 
+    /**
+     * http 请求
+     * @param url
+     * @param reportDto
+     * @param optUser
+     * @param reportType
+     * @return
+     */
     protected BaseOutput postJson(String url, Object reportDto, Optional<OperatorUser> optUser, ReportDtoTypeEnum reportType) {
 
         ThirdPartyReportData thirdPartyReportData = new ThirdPartyReportData();
@@ -654,6 +705,10 @@ public class DataReportService {
         return this.postJson(url, inspectionDtos, optUser, ReportDtoTypeEnum.HangGuoUnqualifiedInspection);
     }
 
+    /**
+     * 设置市场信息
+     * @param market
+     */
     public void setMarketInfo(Market market) {
         this.marketId = market.getId();
         this.reportContextUrl = market.getContextUrl();
