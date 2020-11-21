@@ -216,9 +216,10 @@ public class DataReportService {
         String redisKey = this.accessTokeyRedisKey();
         String existedAccessToken = this.getAccessToken().orElse(null);
         if (forceRefresh || existedAccessToken == null) {
-            String accessToken = this.getLatestToken();
-            this.redisUtil.set(redisKey, accessToken, 2L, TimeUnit.HOURS);// 两小时有效时间
-            return accessToken;
+            return this.getLatestToken().map(accessToken->{
+                this.redisUtil.set(redisKey, accessToken, 2L, TimeUnit.HOURS);// 两小时有效时间
+                return accessToken;
+            }).orElse(existedAccessToken);
         }
         return existedAccessToken;
     }
@@ -242,14 +243,23 @@ public class DataReportService {
      *
      * @return
      */
-    protected String getLatestToken() {
+    protected Optional<String> getLatestToken() {
+        if(StringUtils.isBlank(this.reportContextUrl)){
+            return Optional.empty();
+        }
         String url = this.reportContextUrl + "/nfwlApi/getAccessToken";
         AccessTokenDto accessTokenDto = new AccessTokenDto();
         accessTokenDto.setAppId(this.appId);
         accessTokenDto.setAppSecret(this.appSecret);
         BaseOutput baseout = this.postJsonGetApostJsonccessToken(url, accessTokenDto);
         if (baseout.isSuccess()) {
-            return String.valueOf(baseout.getData());
+            if(baseout.getData()!=null){
+                String token=String.valueOf(baseout.getData());
+                return Optional.ofNullable(StringUtils.trimToNull(token));
+            }else{
+                return Optional.empty();
+            }
+
         } else {
             throw new TraceBusinessException(baseout.getMessage());
         }
