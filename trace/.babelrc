@@ -1,6 +1,7 @@
 //babel   --watch  ./src/main/resources/static/tsc --out-dir  ./src/main/resources/static/resources/js --extensions ".ts"
+//  "presets": ["@babel/preset-typescript","minify"],
 {
-  "presets": ["@babel/preset-typescript","minify"],
+  "presets": ["@babel/preset-typescript"],
   "plugins": [
 
   ],

@@ -1,10 +1,13 @@
+//# tsc -w
 {
   "compilerOptions": {
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
     "baseUrl": ".",
     "declaration": false,
-    "emitDecoratorMetadata": false,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "module": "ES2015",
+    "module": "commonjs",
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,
@@ -14,15 +17,13 @@
     "target": "ES5",
     "outDir":"./src/main/resources/static/resources/js",
     "lib": ["DOM","ES6"],
-    "rootDirs": ["src/main/resources/tsc/**"],
+    "rootDirs": ["./src/main/resources/static/tsc"],
     "allowSyntheticDefaultImports": true,
     "listFiles": true,
-    "charset": "utf8"
+    "charset": "utf8",
+    "esModuleInterop": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude":["./bin/**"],
+  "include": ["./src/main/resources/static/tsc"],
   "compileOnSave": true,
   "buildOnSave": true
 }

@@ -2,6 +2,7 @@ package com.dili;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -33,7 +34,9 @@ import tk.mybatis.spring.annotation.MapperScan;
 public class TraceWebApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        SpringApplication.run(TraceWebApplication.class, args);
+        SpringApplication sa = new SpringApplication(TraceWebApplication.class);
+        sa.addListeners(new ApplicationPidFileWriter());
+        sa.run(args);
     }
 
 
