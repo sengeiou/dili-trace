@@ -60,6 +60,11 @@ public class ClientRegisterFormBillApi {
 	@Autowired
 	RegisterHeadService registerHeadService;
 
+	/**
+	 * 获取进门登记单列表
+	 * @param input
+	 * @return
+	 */
 	@ApiOperation(value = "获取进门登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
@@ -82,6 +87,11 @@ public class ClientRegisterFormBillApi {
 
 	}
 
+	/**
+	 * 保存多个进门登记单
+	 * @param createListBillParam
+	 * @return
+	 */
 	@ApiOperation("保存多个进门登记单")
 	@RequestMapping(value = "/createRegisterFormBillList.api", method = RequestMethod.POST)
 	public BaseOutput<List<Long>> createRegisterFormBillList(@RequestBody CreateListBillParam createListBillParam) {
@@ -109,7 +119,12 @@ public class ClientRegisterFormBillApi {
 		}
 	}
 
-	@ApiOperation("修改进门登记单")
+	/**
+	 * 单修改进门登记
+	 * @param dto
+	 * @return
+	 */
+	@ApiOperation("单修改进门登记")
 	@RequestMapping(value = "/doEditRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput doEditRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
 		logger.info("修改进门登记单:{}", JSON.toJSONString(dto));
@@ -134,6 +149,11 @@ public class ClientRegisterFormBillApi {
 		return BaseOutput.success();
 	}
 
+	/**
+	 * 作废进门登记单
+	 * @param dto
+	 * @return
+	 */
 	@ApiOperation("作废进门登记单")
 	@RequestMapping(value = "/doDeleteRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput doDeleteRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
@@ -157,6 +177,11 @@ public class ClientRegisterFormBillApi {
 		return BaseOutput.success();
 	}
 
+	/**
+	 * 进门登记单审核(通过/进门/不通过/退回/进门待检)
+	 * @param inputDto
+	 * @return
+	 */
 	@ApiOperation(value = "进门登记单审核(通过/进门/不通过/退回/进门待检)")
 	@RequestMapping(value = "/doVerify.api", method = RequestMethod.POST)
 	public BaseOutput<Long> doVerify(@RequestBody VerifyBillInputDto inputDto) {
@@ -183,6 +208,11 @@ public class ClientRegisterFormBillApi {
 		}
 	}
 
+	/**
+	 * 查看进门登记单
+	 * @param baseDomain
+	 * @return
+	 */
 	@ApiOperation("查看进门登记单")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})

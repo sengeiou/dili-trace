@@ -111,8 +111,6 @@ public class UserUploadController {
         if (StringUtils.isBlank(categoryName)) {
             return Optional.empty();
         }
-        Category query = new Category();
-        query.setName(categoryName.trim());
-        return StreamEx.of(this.categoryService.listByExample(query)).findFirst();
+        return StreamEx.of(this.categoryService.listCategoryByCondition(categoryName.trim())).findFirst();
     }
 }

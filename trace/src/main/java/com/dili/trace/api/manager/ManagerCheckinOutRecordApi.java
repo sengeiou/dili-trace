@@ -35,6 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import one.util.streamex.StreamEx;
 
+/**
+ * 管理员进门接口
+ */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/manager/managerCheckinRecordApi")
 @RestController

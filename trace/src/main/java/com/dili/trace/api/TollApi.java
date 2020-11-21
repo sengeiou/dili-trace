@@ -1,29 +1,5 @@
 package com.dili.trace.api;
 
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Category;
-import com.dili.trace.domain.City;
-import com.dili.trace.dto.CategoryListInput;
-import com.dili.trace.dto.CityListInput;
-import com.dili.trace.rpc.BaseInfoRpc;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import io.swagger.annotations.Api;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by laikui on 2019/7/26.
  */

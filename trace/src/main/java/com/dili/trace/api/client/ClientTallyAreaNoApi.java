@@ -39,6 +39,11 @@ public class ClientTallyAreaNoApi {
 	@Autowired
 	TallyAreaNoService tallyAreaNoService;
 
+	/**
+	 * 获取区位列表
+	 * @param inputDto
+	 * @return
+	 */
 	@ApiOperation(value = "获取区位列表")
 	@ApiImplicitParam(paramType = "body", name = "TallyAreaNo", dataType = "TallyAreaNo", value = "获取区位列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)

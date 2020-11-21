@@ -35,6 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 
+/**
+ * 登记单接口
+ */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientBillTraceApi")
 @RestController

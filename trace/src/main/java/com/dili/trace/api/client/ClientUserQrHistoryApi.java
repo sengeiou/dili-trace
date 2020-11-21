@@ -25,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 查询用户二维码历史信息
+ */
 @RestController
 @InterceptConfiguration
 @RequestMapping(value = "/api/client/clientUserQrHistoryApi")

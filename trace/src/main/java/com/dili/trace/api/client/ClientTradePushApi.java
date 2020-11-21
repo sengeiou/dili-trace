@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 客户商品上下架接口
+ */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradePush")
 @RestController
@@ -110,6 +113,11 @@ public class ClientTradePushApi {
     }
 
 
+    /**
+     * 查询上架商品列表
+     * @param tradeDetail
+     * @return
+     */
     @ApiOperation(value = "查询上架商品列表", notes = "查询上架商品列表")
     @RequestMapping(value = "/shelvesProduct.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -130,6 +138,11 @@ public class ClientTradePushApi {
         }
     }
 
+    /**
+     * 查询下架商品列表
+     * @param tradeDetail
+     * @return
+     */
     @ApiOperation(value = "查询下架商品列表", notes = "查询下架商品列表")
     @RequestMapping(value = "/unavailableProduct.api", method = RequestMethod.POST)
     @InterceptConfiguration

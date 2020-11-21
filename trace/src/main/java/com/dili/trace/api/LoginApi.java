@@ -27,76 +27,98 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api/loginApi")
 public class LoginApi {
-	private static final Logger logger = LoggerFactory.getLogger(LoginApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoginApi.class);
 
-	@Autowired
-	LoginSessionContext loginSessionContext;
-	@Autowired
-	private LoginComponent loginComponent;
+    @Autowired
+    LoginSessionContext loginSessionContext;
+    @Autowired
+    private LoginComponent loginComponent;
 
-	@ApiOperation(value = "登录", notes = "登录")
-	@RequestMapping(value = "/login.api", method = RequestMethod.POST)
-	public BaseOutput<SessionData> login(@RequestBody LoginInputDto loginInput) {
-		try {
-			SessionData data = this.loginComponent.login(loginInput);
-			return BaseOutput.success().setData(data);
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure();
-		}
-	}
+    /**
+     * 小程序登录接口
+     *
+     * @param loginInput
+     * @return
+     */
+    @ApiOperation(value = "登录", notes = "登录")
+    @RequestMapping(value = "/login.api", method = RequestMethod.POST)
+    public BaseOutput<SessionData> login(@RequestBody LoginInputDto loginInput) {
+        try {
+            SessionData data = this.loginComponent.login(loginInput);
+            return BaseOutput.success().setData(data);
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure();
+        }
+    }
 
-    @ApiOperation(value ="验证是否登录【接口已通】", notes = "验证是否登录")
+    /**
+     * 验证是否登录【接口已通】
+     *
+     * @return
+     */
+    @ApiOperation(value = "验证是否登录【接口已通】", notes = "验证是否登录")
     @RequestMapping(value = "/isLogin.api", method = RequestMethod.POST)
     @InterceptConfiguration
-    public BaseOutput<String> isLogin(){
-        try{
-        	if(this.loginSessionContext.getAccountId()==null) {
-        	    return BaseOutput.success().setData(false);
-        	}
-        	 return BaseOutput.success().setData(true);
-        }catch (Exception e){
-        	logger.error("isLogin",e);
+    public BaseOutput<String> isLogin() {
+        try {
+            if (this.loginSessionContext.getAccountId() == null) {
+                return BaseOutput.success().setData(false);
+            }
+            return BaseOutput.success().setData(true);
+        } catch (Exception e) {
+            logger.error("isLogin", e);
             return BaseOutput.failure();
         }
     }
 
-    @ApiOperation(value ="退出【接口已通】", notes = "退出")
+    /**
+     * 退出【接口已通】
+     *
+     * @return
+     */
+    @ApiOperation(value = "退出【接口已通】", notes = "退出")
     @RequestMapping(value = "/quit.api", method = RequestMethod.POST)
     @InterceptConfiguration
-    public BaseOutput<String> quit(){
-        try{
-        	loginSessionContext.setInvalidate(true);
+    public BaseOutput<String> quit() {
+        try {
+            loginSessionContext.setInvalidate(true);
             return BaseOutput.success();
-        }catch (TraceBusinessException e){
+        } catch (TraceBusinessException e) {
             return BaseOutput.failure(e.getMessage());
-        }catch (Exception e){
-        	logger.error("quit",e);
+        } catch (Exception e) {
+            logger.error("quit", e);
             return BaseOutput.failure();
         }
     }
 
-	@ApiOperation(value = "wx授权登录", notes = "wx授权登录")
-	@RequestMapping(value = "/wxLogin.api", method = RequestMethod.POST)
-	public BaseOutput<SessionData> wxLogin(@RequestBody Map<String, String> wxInfo) {
-		try {
-			String openid = wxInfo.get("openid");
-			String id = wxInfo.get("identityType");
-			if(StringUtils.isBlank(openid)){
-				return BaseOutput.failure("openid 为空");
-			}
-			if(StringUtils.isBlank(id)){
-				return BaseOutput.failure("用户identityType 为空");
-			}
-			SessionData data = this.loginComponent.wxLogin(openid,Integer.valueOf(id));
-			return BaseOutput.success().setData(data);
-		} catch (TraceBusinessException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure();
-		}
-	}
+    /**
+     * 退出【接口已通】
+     *
+     * @param wxInfo
+     * @return
+     */
+    @ApiOperation(value = "wx授权登录", notes = "wx授权登录")
+    @RequestMapping(value = "/wxLogin.api", method = RequestMethod.POST)
+    public BaseOutput<SessionData> wxLogin(@RequestBody Map<String, String> wxInfo) {
+        try {
+            String openid = wxInfo.get("openid");
+            String id = wxInfo.get("identityType");
+            if (StringUtils.isBlank(openid)) {
+                return BaseOutput.failure("openid 为空");
+            }
+            if (StringUtils.isBlank(id)) {
+                return BaseOutput.failure("用户identityType 为空");
+            }
+            SessionData data = this.loginComponent.wxLogin(openid, Integer.valueOf(id));
+            return BaseOutput.success().setData(data);
+        } catch (TraceBusinessException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure();
+        }
+    }
 }

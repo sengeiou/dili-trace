@@ -55,6 +55,11 @@ public class ClientRegisterBillApi {
 	@Autowired
 	TradeRequestService tradeRequestService;
 
+	/**
+	 * 保存多个登记单
+	 * @param createListBillParam
+	 * @return
+	 */
 	@ApiOperation("保存多个登记单")
 	@RequestMapping(value = "/createRegisterBillList.api", method = RequestMethod.POST)
 	public BaseOutput<List<Long>> createRegisterBillList(@RequestBody CreateListBillParam createListBillParam) {
@@ -82,6 +87,11 @@ public class ClientRegisterBillApi {
 		}
 	}
 
+	/**
+	 * 修改报备单信息
+	 * @param dto
+	 * @return
+	 */
 	@ApiOperation("修改报备单")
 	@RequestMapping(value = "/doEditRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput doEditRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
@@ -109,6 +119,11 @@ public class ClientRegisterBillApi {
 		return BaseOutput.success();
 	}
 
+	/**
+	 * 删除报备单
+	 * @param dto
+	 * @return
+	 */
 	@ApiOperation("删除报备单")
 	@RequestMapping(value = "/doDeleteRegisterBill.api", method = RequestMethod.POST)
 	public BaseOutput doDeleteRegisterBill(@RequestBody CreateRegisterBillInputDto dto) {
@@ -134,6 +149,11 @@ public class ClientRegisterBillApi {
 		return BaseOutput.success();
 	}
 
+	/**
+	 * 获取登记单列表
+	 * @param input
+	 * @return
+	 */
 	@ApiOperation(value = "获取登记单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)

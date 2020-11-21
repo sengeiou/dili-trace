@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import one.util.streamex.StreamEx;
 
-
+/**
+ * 枚举变量接口
+ */
 @RestController
 @RequestMapping(value = "/api/enums")
 public class EnumsApi {

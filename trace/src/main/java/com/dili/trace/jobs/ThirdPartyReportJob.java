@@ -139,9 +139,10 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         Integer userCount = this.userService.countUser(query);
 
         Category category = new Category();
-        category.setMarketId(marketId);
-        Integer categoryCount = this.categoryService.count(category);
-
+        //TODO
+/*        category.setMarketId(marketId);
+        Integer categoryCount = this.categoryService.count(category);*/
+        Integer categoryCount=null;
         MarketCountDto marketCountDto = new MarketCountDto();
         marketCountDto.setPdtCount(userCount == null ? 0 : userCount);
         marketCountDto.setSubjectCount(categoryCount == null ? 0 : categoryCount);

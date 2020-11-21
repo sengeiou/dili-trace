@@ -31,6 +31,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Example;
 
+/**
+ * 用户交易请求接口
+ */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeRequestApi")
 @RestController
@@ -136,6 +139,11 @@ public class ClientTradeRequestApi {
 
 	}
 
+	/**
+	 * 创建购买请求
+	 * @param inputDto
+	 * @return
+	 */
 	@ApiOperation(value = "创建购买请求")
 	@RequestMapping(value = "/createBuyProductRequest.api", method = RequestMethod.POST)
 	public BaseOutput<?> createBuyProductRequest(@RequestBody List<ProductStockInput> inputDto) {
@@ -155,6 +163,11 @@ public class ClientTradeRequestApi {
 
 	}
 
+	/**
+	 * 创建销售请求
+	 * @param inputDto
+	 * @return
+	 */
 	@ApiOperation(value = "创建销售请求")
 	@RequestMapping(value = "/createSellProductRequest.api", method = RequestMethod.POST)
 	public BaseOutput<?> createSellProductRequest(@RequestBody TradeRequestListInput inputDto) {
@@ -178,6 +191,11 @@ public class ClientTradeRequestApi {
 
 	}
 
+	/**
+	 * 通过订单ID查询交易请求详情
+	 * @param inputDto
+	 * @return
+	 */
 	@ApiOperation(value = "通过订单ID查询交易请求详情")
 	@RequestMapping(value = "/listPageTradeRequestByTraderOrderId.api", method = RequestMethod.POST)
 	public BaseOutput<?> listPageTradeRequestByTraderOrderId(@RequestBody TradeRequestInputDto inputDto) {
@@ -243,6 +261,11 @@ public class ClientTradeRequestApi {
 
 	}
 
+	/**
+	 * 处理购买请求
+	 * @param inputDto
+	 * @return
+	 */
 	@RequestMapping(value = "/handleBuyerRquest.api", method = { RequestMethod.POST })
 	public BaseOutput handleBuyRequest(@RequestBody TradeRequestHandleDto inputDto) {
 		try{
@@ -256,6 +279,11 @@ public class ClientTradeRequestApi {
 		}
 	}
 
+	/**
+	 * 查询购买历史信息
+	 * @param buyerId
+	 * @return
+	 */
 	@RequestMapping(value = "/listBuyHistory.api", method = { RequestMethod.GET })
 	public BaseOutput<List<UserOutput>> listBuyHistory(@RequestParam Long buyerId) {
 		try {
@@ -269,6 +297,12 @@ public class ClientTradeRequestApi {
 		}
 	}
 
+	/**
+	 * 查询卖家信息
+	 * @param queryCondition
+	 * @param marketId
+	 * @return
+	 */
 	@RequestMapping(value = "/listSeller.api", method = { RequestMethod.GET })
 	public BaseOutput<List<UserOutput>> listSeller(@RequestParam String queryCondition, @RequestParam Long marketId) {
 		try {
@@ -283,6 +317,11 @@ public class ClientTradeRequestApi {
 		}
 	}
 
+	/**
+	 * 查询可销售商品列表
+	 * @param userId
+	 * @return
+	 */
 	@RequestMapping(value = "/listSaleableProduct.api", method = { RequestMethod.GET })
 	public BaseOutput<List<ProductStock>> listSaleableProduct(@RequestParam Long userId) {
 		try {

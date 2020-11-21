@@ -31,6 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 
+/**
+ * 客户可售商品接口
+ */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientProductStockApi")
 @RestController

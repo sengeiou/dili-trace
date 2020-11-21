@@ -49,7 +49,10 @@ public class GoodsManagementController {
     public String edit(ModelMap modelMap, Long id, Long currentNodeId) {
         modelMap.put("goods", new Category());
         if (id != null) {
-            Category goods = this.categoryService.get(id);
+
+            //TODO
+//            Category goods = this.categoryService.get(id);
+            Category goods = null;
             modelMap.put("goods", goods);
         }
         modelMap.put("currentNodeId", currentNodeId);
@@ -67,12 +70,14 @@ public class GoodsManagementController {
      *
      * @return
      */
-    @RequestMapping(value = "/listGoods.action", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/listGoods.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String listGoods() throws Exception {
         Category category = new Category();
-        category.setMarketId(MarketUtil.returnMarket());
-        EasyuiPageOutput easyuiPageOutput = categoryService.listEasyuiPage(category, true);
+        //TODO
+/*        category.setMarketId(MarketUtil.returnMarket());
+        EasyuiPageOutput easyuiPageOutput = categoryService.listEasyuiPage(category, true);*/
+        EasyuiPageOutput easyuiPageOutput =new EasyuiPageOutput();
         /*List<Category> rows = easyuiPageOutput.getRows();
         rows.removeIf(e -> e.getLevel()!=1 && e.getParentId()==null);
         easyuiPageOutput.setRows(rows);
@@ -86,31 +91,34 @@ public class GoodsManagementController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/list.action", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody String listByTreeNode(@RequestParam Long id, @RequestParam Boolean leaf,Category category) throws Exception {
-        category.setName(null);
+    @RequestMapping(value = "/list.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    String listByTreeNode(@RequestParam Long id, @RequestParam Boolean leaf, Category category) throws Exception {
+        //TODO
+ /*       category.setName(null);
         category.setCode(null);
         category.setSpecification(null);
         category.setIsShow(null);
         category.setState(null);
         category.setType(null);
-        if(leaf){
+        if (leaf) {
             category.setId(id);
-            return this.categoryService.listEasyuiPage(category,true).toString();
+            return this.categoryService.listEasyuiPage(category, true).toString();
         }
-        EasyuiPageOutput easyuiPageOutputBase = this.categoryService.listEasyuiPage(category,true);
+        EasyuiPageOutput easyuiPageOutputBase = this.categoryService.listEasyuiPage(category, true);
         category.setId(null);
         category.setParentId(id);
         category.setMarketId(MarketUtil.returnMarket());
         EasyuiPageOutput easyuiPageOutput = this.categoryService.listEasyuiPage(category, true);
         List rows = easyuiPageOutput.getRows();
-        List rowsBase= easyuiPageOutputBase.getRows();
+        List rowsBase = easyuiPageOutputBase.getRows();
         rows.forEach(row -> {
             rowsBase.add(row);
         });
         easyuiPageOutputBase.setRows(rowsBase);
-        easyuiPageOutputBase.setTotal(1+easyuiPageOutput.getRows().size());
-        return easyuiPageOutputBase.toString();
+        easyuiPageOutputBase.setTotal(1 + easyuiPageOutput.getRows().size());
+        return easyuiPageOutputBase.toString();*/
+        return "";
     }
 
     /**
@@ -119,34 +127,39 @@ public class GoodsManagementController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/listByQueryParams.action", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody String listByQueryParams(Category category) throws Exception {
-        if("".equals(category.getName())){
+    @RequestMapping(value = "/listByQueryParams.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    String listByQueryParams(Category category) throws Exception {
+        if ("".equals(category.getName())) {
             category.setName(null);
         }
-        if("".equals(category.getCode())){
+        if ("".equals(category.getCode())) {
             category.setCode(null);
         }
-        if("".equals(category.getSpecification())){
+        //TODO
+/*        if ("".equals(category.getSpecification())) {
             category.setSpecification(null);
         }
         category.setMarketId(MarketUtil.returnMarket());
         EasyuiPageOutput easyuiPageOutput = this.categoryService.selectForEasyuiPage(category, true);
-        return easyuiPageOutput.toString();
+        return easyuiPageOutput.toString();*/
+        return "";
     }
 
 
     @ApiOperation("新增商品")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Goods", paramType = "form", value = "Goods的form信息", required = true, dataType = "string") })
-    @RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody BaseOutput<Long> insert(@RequestBody Category category, String currentNodeId) {
-        try {
+            @ApiImplicitParam(name = "Goods", paramType = "form", value = "Goods的form信息", required = true, dataType = "string")})
+    @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput<Long> insert(@RequestBody Category category, String currentNodeId) {
+        //TODO
+       /* try {
             Category categoryById = categoryService.get(Long.parseLong(currentNodeId));
             if (Objects.nonNull(categoryById)) {
                 category.setParentId(categoryById.getId());
-                category.setLevel(categoryById.getLevel()+1);
-                category.setFullName(categoryById.getFullName()+","+category.getName());
+                category.setLevel(categoryById.getLevel() + 1);
+                category.setFullName(categoryById.getFullName() + "," + category.getName());
                 category.setParentCode(categoryById.getCode());
             }
             category.setMarketId(MarketUtil.returnMarket());
@@ -158,15 +171,18 @@ public class GoodsManagementController {
         } catch (Exception e) {
             LOGGER.error("新增商品失败", e);
             return BaseOutput.failure();
-        }
+        }*/
+        return BaseOutput.failure();
     }
 
     @ApiOperation("修改商品")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Goods", paramType = "form", value = "Goods的form信息", required = true, dataType = "string") })
-    @RequestMapping(value = "/update.action", method = { RequestMethod.GET, RequestMethod.POST })
-    public @ResponseBody BaseOutput update(@RequestBody Category category) {
-        try {
+            @ApiImplicitParam(name = "Goods", paramType = "form", value = "Goods的form信息", required = true, dataType = "string")})
+    @RequestMapping(value = "/update.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    BaseOutput update(@RequestBody Category category) {
+        //TODO
+        /*try {
             categoryService.updateSelective(category);
             return BaseOutput.success("修改成功");
         } catch (TraceBusinessException e) {
@@ -175,20 +191,21 @@ public class GoodsManagementController {
         } catch (Exception e) {
             LOGGER.error("修改用户失败", e);
             return BaseOutput.failure(e.getMessage());
-        }
+        }*/
+        return BaseOutput.failure();
 
     }
 
     /**
-     *
      * @param id
      * @param enable 是否启用
      * @return
      */
-    @RequestMapping(value = "/doEnable.action", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/doEnable.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput doEnable(Long id, Boolean enable) {
-        try {
+        //TODO
+        /*try {
             categoryService.updateEnable(id, enable);
             return BaseOutput.success("修改商品状态成功");
         } catch (TraceBusinessException e) {
@@ -197,7 +214,8 @@ public class GoodsManagementController {
         } catch (Exception e) {
             LOGGER.error("修改用商品状态", e);
             return BaseOutput.failure();
-        }
+        }*/
+        return BaseOutput.failure();
 
     }
 }

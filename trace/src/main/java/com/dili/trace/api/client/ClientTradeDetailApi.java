@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 
+/**
+ * 批次详情接口
+ */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeDetail")
 @RestController

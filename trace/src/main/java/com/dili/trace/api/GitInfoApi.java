@@ -25,6 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/imageApi")
 public class GitInfoApi {
+    /**
+     * 获得git信息
+     * @return
+     */
     @RequestMapping(value = "/listGitInfo.api")
     public List<String> listGitInfo(){
     	List<String>list=new ArrayList<String>();

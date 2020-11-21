@@ -16,6 +16,7 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.service.*;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -210,9 +211,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Integer fruitsBigCategory = 1;
         if (thirdPartyPushData == null) {
             Category category = new Category();
-            category.setLevel(fruitsBigCategory);
-            category.setMarketId(marketId);
-            List<Category> categories = categoryService.list(category);
+            //        TODO
+/*            category.setLevel(fruitsBigCategory);
+            category.setMarketId(marketId);*/
+            List<Category> categories = new ArrayList<>();//TODO categoryService.list(category);
 
             List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
                 CategoryDto categoryDto = new CategoryDto();
@@ -246,9 +248,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Category category = new Category();
-        category.setLevel(level);
+        //        TODO
+      /*  category.setLevel(level);
         category.setMarketId(marketId);
-        List<Category> categories = categoryService.list(category);
+        List<Category> categories = categoryService.list(category);*/
+        List<Category> categories = Lists.newArrayList();
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -260,8 +264,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
             for (PreserveTypeEnum type : preserveTypeEnums) {
                 for (Category td : categories) {
-                    boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                            && td.getModified().compareTo(endTime) <= 0);
+
+                    //TODO
+       /*            boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                            && td.getModified().compareTo(endTime) <= 0);*/
+                    boolean needPush = true;
                     if (needPush) {
                         CategorySecondDto categoryDto = new CategorySecondDto();
                         categoryDto.setThirdSmallClassId(td.getId().toString());
@@ -284,13 +291,16 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         } else if (categoryGoods.equals(tableName)) {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
-                boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                        && td.getModified().compareTo(endTime) <= 0);
+                //TODO
+    /*            boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                        && td.getModified().compareTo(endTime) <= 0);*/
+                boolean needPush = true;
                 if (needPush) {
                     GoodsDto categoryDto = new GoodsDto();
                     categoryDto.setGoodsName(td.getName());
                     categoryDto.setThirdGoodsId(td.getId().toString());
-                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
+//TODO
+                    //                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
                     categoryDtos.add(categoryDto);
                 }
             });

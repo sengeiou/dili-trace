@@ -48,6 +48,11 @@ public class EventMessageApi {
     @Autowired
     TradeRequestService tradeRequestService;
 
+    /**
+     * 已读/未读
+     * @param eventMessage
+     * @return
+     */
     @ApiOperation(value = "已读/未读", notes = "已读/未读")
     @RequestMapping(value = "/read.api", method = RequestMethod.POST)
     public BaseOutput signRead(@RequestBody EventMessage eventMessage) {
@@ -67,6 +72,11 @@ public class EventMessageApi {
     }
 
 
+    /**
+     * 查询消息列表
+     * @param eventMessage
+     * @return
+     */
     @Deprecated
     @ApiOperation(value = "查询消息列表", notes = "消息列表")
     @RequestMapping(value = "/pageMssage.api", method = RequestMethod.POST)
@@ -94,6 +104,11 @@ public class EventMessageApi {
         }
     }
 
+    /**
+     * 查询消息列表（新）
+     * @param eventMessage
+     * @return
+     */
     @ApiOperation(value = "查询消息列表（新）", notes = "消息列表")
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -159,6 +174,11 @@ public class EventMessageApi {
         }
     }
 
+    /**
+     * 已读全部
+     * @param eventMessage
+     * @return
+     */
     @ApiOperation(value = "已读全部", notes = "已读全部")
     @RequestMapping(value = "/doReadAll.api", method = RequestMethod.POST)
     public BaseOutput doReadAll(@RequestBody EventMessage eventMessage) {

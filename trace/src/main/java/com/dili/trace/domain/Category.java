@@ -1,146 +1,61 @@
 package com.dili.trace.domain;
 
+import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.ss.domain.BaseDomain;
-import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.*;
-import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Table(name = "`category`")
-public class Category extends BaseDomain {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "`id`")
+public class Category {
+
 	private Long id;
-	@ApiModelProperty(value = "名称")
-	@Column(name = "`name`")
+	/**
+	 * 名称
+	 */
+
 	private String name;
-	@ApiModelProperty(value = "全名")
-	@Column(name = "`full_name`")
-	private String fullName;
 
-	@ApiModelProperty(value = "上一级ID")
-	@Column(name = "`parent_id`")
-	private Long parentId;
+	/**
+	 * 拼音全写
+	 */
+	private String pingying;
 
-	@ApiModelProperty(value = "层级")
-	@Column(name = "`level`")
-	private Integer level;
+	/**
+	 * 拼音简写
+	 */
+	private String pyInitials;
 
-	@ApiModelProperty(value = "创建时间")
-	@Column(name = "`created`")
-	private Date created;
-
-	@ApiModelProperty(value = "修改时间")
-	@Column(name = "`modified`")
-	private Date modified;
-
-	@ApiModelProperty(value = "商品编码")
-	@Column(name = "`code`")
+	/**
+	 * 状态
+	 */
+	private Integer state;
+	/**
+	 * 父品类
+	 */
+	private Long parent;
+	/**
+	 * 品类路径
+	 */
+	private String path;
+	//品类代码
 	private String code;
 
-	@ApiModelProperty(value = "登记显示")
-	@Column(name = "`is_show`")
-	private Integer isShow;
+	public static Category convert(CusCategoryDTO dto) {
+		Category category = new Category();
+		category.setId(dto.getId());
+		category.setCode(dto.getKeycode());
+		category.setName(dto.getName());
+		category.setParent(dto.getParent());
+		category.setPath(dto.getPath());
+		category.setPingying(dto.getPingying());
+		category.setPyInitials(dto.getPyInitials());
+		category.setState(dto.getState());
+		return category;
 
-	@ApiModelProperty(value = "市场id")
-	@Column(name = "`market_id`")
-	private Long marketId;
 
-	@ApiModelProperty(value = "商品类型")
-	@Column(name = "`type`")
-	private Integer type;
-
-	@ApiModelProperty(value = "商品规格名")
-	@Column(name = "`specification`")
-	private String specification;
-
-	@ApiModelProperty(value = "父级第三方编码")
-	@Column(name = "`parent_code`")
-	private String parentCode;
-
-	@ApiModelProperty(value = "是否启用")
-	@Column(name = "`state`")
-	private Integer state;
-
-	public String getParentCode() {
-		return parentCode;
-	}
-
-	public void setParentCode(String parentCode) {
-		this.parentCode = parentCode;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
-	}
-
-	public String getSpecification() {
-		return specification;
-	}
-
-	public void setSpecification(String specification) {
-		this.specification = specification;
-	}
-
-	public Integer getIsShow() {
-		return isShow;
-	}
-
-	public void setIsShow(Integer isShow) {
-		this.isShow = isShow;
-	}
-
-	public Long getMarketId() {
-		return marketId;
-	}
-
-	public void setMarketId(Long marketId) {
-		this.marketId = marketId;
-	}
-
-	public Date getCreated() {
-		return created;
-	}
-
-	public void setCreated(Date created) {
-		this.created = created;
-	}
-
-	public Date getModified() {
-		return modified;
-	}
-
-	public void setModified(Date modified) {
-		this.modified = modified;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getParentId() {
-		return parentId;
-	}
-
-	public void setParentId(Long parentId) {
-		this.parentId = parentId;
 	}
 
 	public void setName(String name) {
@@ -151,27 +66,53 @@ public class Category extends BaseDomain {
 		return this.name;
 	}
 
-	public String getFullName() {
-		return fullName;
+	public void setPingying(String pingying) {
+		this.pingying = pingying;
 	}
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public String getPingying() {
+		return this.pingying;
+	}
+
+	public void setPyInitials(String pyInitials) {
+		this.pyInitials = pyInitials;
+	}
+
+	public String getPyInitials() {
+		return this.pyInitials;
 	}
 
 
-	/**
-	 * @return Integer return the level
-	 */
-	public Integer getLevel() {
-		return level;
+	public void setParent(Long parent) {
+		this.parent = parent;
 	}
 
-	/**
-	 * @param level the level to set
-	 */
-	public void setLevel(Integer level) {
-		this.level = level;
+	public Long getParent() {
+		return this.parent;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getPath() {
+		return this.path;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Integer getState() {
@@ -182,4 +123,25 @@ public class Category extends BaseDomain {
 		this.state = state;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Category [");
+		sb.append("id = ");
+		sb.append(id);
+		sb.append(", name = ");
+		sb.append(name);
+
+		sb.append(", pingying = ");
+		sb.append(pingying);
+		sb.append(", pyInitials = ");
+		sb.append(pyInitials);
+		sb.append(", state = ");
+		sb.append(state);
+		sb.append(", parent = ");
+		sb.append(parent);
+		sb.append(", path = ");
+		sb.append(path);
+		sb.append("]");
+		return sb.toString();
+	}
 }

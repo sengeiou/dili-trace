@@ -64,6 +64,11 @@ public class ClientRegisterHeadApi {
 	@Autowired
 	UpStreamService upStreamService;
 
+	/**
+	 * 获取进门主台账单列表
+	 * @param input
+	 * @return
+	 */
 	@ApiOperation(value = "获取进门主台账单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterHead", dataType = "RegisterHead", value = "获取进门主台账单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
@@ -125,6 +130,11 @@ public class ClientRegisterHeadApi {
 		}
 	}
 
+	/**
+	 * 保存多个进门主台账单
+	 * @param createListRegisterHeadParam
+	 * @return
+	 */
 	@ApiOperation("保存多个进门主台账单")
 	@RequestMapping(value = "/createRegisterHeadList.api", method = RequestMethod.POST)
 	public BaseOutput<List<Long>> createRegisterHeadList(@RequestBody CreateListRegisterHeadParam createListRegisterHeadParam) {
@@ -152,6 +162,11 @@ public class ClientRegisterHeadApi {
 		}
 	}
 
+	/**
+	 * 修改进门主台账单
+	 * @param dto
+	 * @return
+	 */
 	@ApiOperation("修改进门主台账单")
 	@RequestMapping(value = "/doEditRegisterHead.api", method = RequestMethod.POST)
 	public BaseOutput doEditRegisterBill(@RequestBody CreateRegisterHeadInputDto dto) {
@@ -178,6 +193,11 @@ public class ClientRegisterHeadApi {
 		return BaseOutput.success();
 	}
 
+	/**
+	 * 作废进门主台账单
+	 * @param dto
+	 * @return
+	 */
 	@ApiOperation("作废进门主台账单")
 	@RequestMapping(value = "/doDeleteRegisterHead.api", method = RequestMethod.POST)
 	public BaseOutput doDeleteRegisterHead(@RequestBody CreateRegisterHeadInputDto dto) {
@@ -202,6 +222,11 @@ public class ClientRegisterHeadApi {
 		return BaseOutput.success();
 	}
 
+	/**
+	 * 启用/关闭进门主台账单
+	 * @param dto
+	 * @return
+	 */
 	@ApiOperation("启用/关闭进门主台账单")
 	@RequestMapping(value = "/doUpdateActiveRegisterHead.api", method = RequestMethod.POST)
 	public BaseOutput doUpdateActiveRegisterHead(@RequestBody CreateRegisterHeadInputDto dto) {
@@ -225,6 +250,11 @@ public class ClientRegisterHeadApi {
 		return BaseOutput.success();
 	}
 
+	/**
+	 * 查看进门主台账单
+	 * @param baseDomain
+	 * @return
+	 */
 	@ApiOperation("查看进门主台账单")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewRegisterHead.api", method = {RequestMethod.POST})
@@ -251,6 +281,11 @@ public class ClientRegisterHeadApi {
 		}
 	}
 
+	/**
+	 * 分批详情
+	 * @param code
+	 * @return
+	 */
 	@ApiOperation("分批详情")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewPartialRegisterHead.api", method = {RequestMethod.GET})

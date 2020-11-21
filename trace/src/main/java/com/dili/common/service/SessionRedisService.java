@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * session与redis同步接口
+ */
 @Service
 public class SessionRedisService {
     private static final Logger logger = LoggerFactory.getLogger(SessionRedisService.class);
@@ -27,12 +30,23 @@ public class SessionRedisService {
     private static final String SESSION_PREFIX = "HZ_TRACE_SESSION_";
     private static final String USERID_PREFIX = "HZ_TRACE_USERID_";
 
+    /**
+     * 创建redis Key
+     * @param sessionId
+     * @return
+     */
     private String getSessionRedisKey(String sessionId) {
         StringBuilder key = new StringBuilder();
         key.append(SESSION_PREFIX);
         key.append(sessionId);
         return key.toString();
     }
+
+    /**
+     * 构造account数据
+     * @param sessionData
+     * @return
+     */
 
     private String getAccountRedisKey(SessionData sessionData) {
         StringBuilder key = new StringBuilder();
@@ -43,6 +57,11 @@ public class SessionRedisService {
         return key.toString();
     }
 
+    /**
+     * 从redis加载数据
+     * @param sessionId
+     * @return
+     */
     public Optional<SessionData> loadFromRedis(String sessionId) {
         logger.info("loadFromRedis:sessionId={}", sessionId);
         if (StringUtils.isBlank(sessionId)) {
@@ -77,6 +96,11 @@ public class SessionRedisService {
 
         return Optional.of(sessionData);
     }
+
+    /**
+     * 移除用户相关信息
+     * @param user
+     */
     public void removeUser(User user){
         SessionData sessionData=  SessionData.fromUser(user, LoginIdentityTypeEnum.USER.getCode());
         logger.info("removeUser:sessionData={}", sessionData.toMap());
@@ -89,6 +113,11 @@ public class SessionRedisService {
         }
        
     }
+
+    /**
+     * 更新用户信息
+     * @param user
+     */
     public void updateUser(User user) {
         SessionData sessionData=  SessionData.fromUser(user, LoginIdentityTypeEnum.USER.getCode());
         logger.info("updateUser:sessionData={}", sessionData.toMap());
@@ -105,6 +134,11 @@ public class SessionRedisService {
         }
 
     }
+
+    /**
+     * 从redis删除session数据
+     * @param sessionId
+     */
     public void deleteFromRedis(String sessionId) {
         logger.info("deleteFromRedis:sessionId={}", sessionId);
         if (StringUtils.isBlank(sessionId)) {
@@ -122,6 +156,10 @@ public class SessionRedisService {
 
     }
 
+    /**
+     * 刷新redis数据
+     * @param sessionData
+     */
     public void refresh(SessionData sessionData) {
         if(sessionData==null){
             return;
@@ -137,6 +175,11 @@ public class SessionRedisService {
        
     }
 
+    /**
+     * 保存数据到redis
+     * @param sessionData
+     * @return
+     */
     public SessionData saveToRedis(SessionData sessionData) {
         if (sessionData == null) {
             return sessionData;
@@ -145,6 +188,12 @@ public class SessionRedisService {
         return sessionData;
     }
 
+    /**
+     * 保存数据到redis
+     * @param sessionData
+     * @param expire
+     * @return
+     */
     private SessionData saveToRedis(SessionData sessionData,long expire) {
         if (sessionData == null) {
             return sessionData;

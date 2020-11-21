@@ -22,6 +22,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * 交易订单接口
+ */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeOrderApi")
 @RestController
@@ -36,6 +39,11 @@ public class ClientTradeOrderApi {
     TradeOrderService tradeOrderService;
 
 
+    /**
+     * 获取订单列表
+     * @param inputDto
+     * @return
+     */
     @ApiOperation(value = "获取订单列表")
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
@@ -58,7 +66,12 @@ public class ClientTradeOrderApi {
         }
 
     }
-    
+
+    /**
+     * 获取订单列表
+     * @param inputDto
+     * @return
+     */
     @ApiOperation(value = "获取订单列表")
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
     @RequestMapping(value = "/viewTradeOrder.api", method = RequestMethod.POST)

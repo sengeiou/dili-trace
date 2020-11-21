@@ -43,6 +43,11 @@ public class ClientBrandApi {
 	@Autowired
 	BrandService brandService;
 
+	/**
+	 * 获取品牌列表
+	 * @param inputDto
+	 * @return
+	 */
 	@ApiOperation(value = "获取品牌列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
@@ -68,6 +73,13 @@ public class ClientBrandApi {
 		}
 
 	}
+
+	/**
+	 * 创建品牌列表
+	 * @param inputDto
+	 * @return
+	 */
+
 	@ApiOperation(value = "创建品牌列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
 	@RequestMapping(value = "/createBrand.api", method = RequestMethod.POST)

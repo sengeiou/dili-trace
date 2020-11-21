@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 
+/**
+ * 客户车牌接口
+ */
 @Api(value = "/api/client/clientUserPlateApi")
 @RestController
 @InterceptConfiguration

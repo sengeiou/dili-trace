@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 
+/**
+ * 管理登记单接口
+ */
 @RestController
 @RequestMapping(value = "/api/manager/managerRegisterBill")
 @Api(value = "/api/manager/managerRegisterBill", description = "登记单相关接口")

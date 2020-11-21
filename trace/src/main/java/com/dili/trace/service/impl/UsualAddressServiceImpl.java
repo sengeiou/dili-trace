@@ -3,14 +3,15 @@ package com.dili.trace.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.dili.assets.sdk.dto.CityDto;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.UsualAddressMapper;
-import com.dili.trace.domain.City;
 import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.service.CityService;
 import com.dili.trace.service.UsualAddressService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long> implements UsualAddressService {
     @Autowired
-    BaseInfoRpcService baseInfoRpcService;
+	CityService cityService;
     @Autowired
     UsualAddressMapper usualAddressMapper;
 	@Override
@@ -34,7 +35,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 			throw new AppException("城市已经存在");
 		}
 		
-		City city=this.findCityOrException(input.getAddressId());
+		CityDto city=this.findCityOrException(input.getAddressId());
 		input.setAddressId(city.getId());
 		input.setAddress(city.getName());
 		input.setMergedAddress(city.getMergerName());
@@ -66,7 +67,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 			}
 		}
 		
-		City city=this.findCityOrException(input.getAddressId());
+		CityDto city=this.findCityOrException(input.getAddressId());
 		input.setAddressId(city.getId());
 		input.setAddress(city.getName());
 		input.setMergedAddress(city.getMergerName());
@@ -90,8 +91,8 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		return 0;
 	}
 
-	private City findCityOrException(Long addressId) {
-		return this.baseInfoRpcService.findCityById(addressId).orElseThrow(()->new AppException("城市查询失败"));
+	private CityDto findCityOrException(Long addressId) {
+		return this.cityService.findCityById(addressId).orElseThrow(()->new AppException("城市查询失败"));
 	}
 
 	@Override

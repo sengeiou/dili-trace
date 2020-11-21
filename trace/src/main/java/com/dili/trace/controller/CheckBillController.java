@@ -253,8 +253,10 @@ public class CheckBillController {
     @RequestMapping(value = "/getGoodsName.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody BaseOutput getGoodsNameByCode(@RequestParam Long goodsCode,ModelMap modelMap) {
         try {
-            Category category = categoryService.get(goodsCode);
-            category.setMarketId(MarketUtil.returnMarket());
+            //TODO
+       /*     Category category = categoryService.get(goodsCode);
+            category.setMarketId(MarketUtil.returnMarket());*/
+            Category category=null;
             if(Objects.nonNull(category)){
                 return BaseOutput.successData(category.getName());
             }

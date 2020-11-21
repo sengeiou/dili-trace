@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * 图片上传接口
+ */
 @RestController
 @RequestMapping(value = "/api/imageApi")
 public class ImageApi {
@@ -23,6 +26,13 @@ public class ImageApi {
     @Autowired
     private ImageService imageService;
 
+    /**
+     * 上传图片
+     * @param file
+     * @param type
+     * @param compress
+     * @return
+     */
     @RequestMapping(value = "/upload",method = RequestMethod.POST)
     public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam Integer type, @RequestParam(required = false) Boolean compress){
         try{

@@ -31,6 +31,10 @@ public class ClientMarketApi {
 	@Autowired
 	MarketService marketService;
 
+	/**
+	 * 查询市场列表
+	 * @return
+	 */
 	@ApiOperation("查询市场列表")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/list.api", method = {RequestMethod.GET, RequestMethod.POST})

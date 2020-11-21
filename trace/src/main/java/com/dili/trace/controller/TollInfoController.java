@@ -3,6 +3,8 @@ package com.dili.trace.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.dili.assets.sdk.dto.CityDto;
+import com.dili.trace.service.CityService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.trace.domain.Category;
-import com.dili.trace.domain.City;
 import com.dili.trace.service.CategoryService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -25,10 +26,10 @@ import com.google.common.collect.Maps;
 @RestController
 @RequestMapping(value = "/toll")
 public class TollInfoController {
-    private static final Logger logger= LoggerFactory.getLogger(TollInfoController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TollInfoController.class);
 
     @Autowired
-    BaseInfoRpcService baseInfoRpcService;
+    CityService cityService;
 
     @Autowired
     CategoryService categoryService;
@@ -36,7 +37,7 @@ public class TollInfoController {
     @RequestMapping("/category")
     @ResponseBody
     public Map<String, ?> listByName(String name, boolean allFlag) {
-        List<Category> categorys = this.categoryService.listCategoryByKeyword(name,null,null, null);
+        List<Category> categorys = this.categoryService.listCategoryByCondition(name);
 
         List<Map<String, Object>> list = Lists.newArrayList();
         if (categorys != null && !categorys.isEmpty()) {
@@ -52,22 +53,22 @@ public class TollInfoController {
         map.put("suggestions", list);
         return map;
     }
-    
-   
-    @RequestMapping(value="/city",method=RequestMethod.GET)
+
+
+    @RequestMapping(value = "/city", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, ?> queryCity(String name) {
         List<Map<String, Object>> list = Lists.newArrayList();
-        if(StringUtils.isNotBlank(name)){
-            try{
-                List<City> citys =queryCitys(name);
-                for (City city : citys) {
+        if (StringUtils.isNotBlank(name)) {
+            try {
+                List<CityDto> citys = queryCitys(name);
+                for (CityDto city : citys) {
                     Map<String, Object> obj = Maps.newHashMap();
                     obj.put("id", city.getId());
                     obj.put("data", name);
                     obj.put("name", city.getName());
                     obj.put("value", city.getMergerName());
-                    obj.put("customCode", city.getCustomCode());
+//                    obj.put("customCode", city.getCustomCode());
                     list.add(obj);
                 }
             } catch (Exception e) {
@@ -81,7 +82,7 @@ public class TollInfoController {
         return map;
     }
 
-    private List<City> queryCitys(String name) {
-    	return this.baseInfoRpcService.listCityByCondition(name);
+    private List<CityDto> queryCitys(String name) {
+        return this.cityService.listCityByCondition(name);
     }
 }
