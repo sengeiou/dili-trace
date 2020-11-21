@@ -38,7 +38,8 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
 
     @Override
     public void updateHangGuoCommodityParent(Category category) {
-        category.setCreated(DateUtils.getCurrentDate());
+        //TODO
+//        category.setCreated(DateUtils.getCurrentDate());
         hangGuoDataMapper.updateHangGuoCommodityParent(category);
     }
 

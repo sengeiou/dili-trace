@@ -15,40 +15,52 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * 图片上传
+ */
 @RestController
 @RequestMapping(value = "/action/imageApi")
 public class ImageController {
-    private static final Logger LOGGER= LoggerFactory.getLogger(ImageController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
     @Autowired
     private ImageService imageService;
 
-    @RequestMapping(value = "/upload",method = RequestMethod.POST)
-    public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam Integer type, @RequestParam(required = false) Boolean compress){
-        try{
-            if(file==null || file.isEmpty()){
+    /**
+     * 上传图片
+     *
+     * @param file
+     * @param type
+     * @param compress
+     * @return
+     */
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam Integer type, @RequestParam(required = false) Boolean compress) {
+        try {
+            if (file == null || file.isEmpty()) {
                 return BaseOutput.failure("图片文件为空");
             }
-            if(!checkExtend(file.getOriginalFilename())){
+            if (!checkExtend(file.getOriginalFilename())) {
                 return BaseOutput.failure("图片格式错误");
             }
-            String uri=imageService.save(file,type,compress);
+            String uri = imageService.save(file, type, compress);
             return BaseOutput.success().setData(uri);
-        }catch (Exception e){
-            LOGGER.error("upload",e);
+        } catch (Exception e) {
+            LOGGER.error("upload", e);
             return BaseOutput.failure();
         }
     }
 
     /**
      * 验证文件是否符合标准
+     *
      * @param fileName
      * @return
      */
-    public static boolean checkExtend(String fileName){
-        String regex=".*\\.(jpg|png|jpeg|bmp)$";
-        Pattern pattern=Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
-        Matcher matcher=pattern.matcher(fileName);
+    public static boolean checkExtend(String fileName) {
+        String regex = ".*\\.(jpg|png|jpeg|bmp)$";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(fileName);
         return matcher.matches();
     }
 }

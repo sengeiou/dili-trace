@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
-/**
+/**常用地址管理
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
  */
 @Api("/usualAddress")
@@ -50,7 +50,12 @@ public class UsualAddressController {
 	@Autowired
 	BaseInfoRpcService baseInfoRpcService;
 
-	@ApiOperation("跳转到User页面")
+	/**
+	 * 跳转到UserAddress页面
+	 * @param modelMap
+	 * @return
+	 */
+	@ApiOperation("跳转到UserAddress页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		Date now = new Date();
@@ -59,6 +64,12 @@ public class UsualAddressController {
 		return "usualAddress/index";
 	}
 
+	/**
+	 * 分页查询
+	 * @param usualAddress
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "分页查询UsualAddress", notes = "分页查询UsualAddress，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "UsualAddress", paramType = "form", value = "UsualAddress的form信息", required = false, dataType = "string") })
@@ -69,6 +80,11 @@ public class UsualAddressController {
 		return out.toString();
 	}
 
+	/**
+	 * 新增
+	 * @param usualAddress
+	 * @return
+	 */
 	@ApiOperation("新增UsualAddress")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "UsualAddress", paramType = "form", value = "UsualAddress的form信息", required = true, dataType = "string") })
@@ -93,6 +109,11 @@ public class UsualAddressController {
 		}
 	}
 
+	/**
+	 * 新增
+	 * @param usualAddress
+	 * @return
+	 */
 	@ApiOperation("修改UsualAddress")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "UsualAddress", paramType = "form", value = "UsualAddress的form信息", required = true, dataType = "string") })
@@ -119,6 +140,11 @@ public class UsualAddressController {
 
 	}
 
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
 	@ApiOperation("删除UsualAddress")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "UsualAddress的主键", required = true, dataType = "long") })
@@ -127,7 +153,12 @@ public class UsualAddressController {
 		this.usualAddressService.deleteUsualAddress(id);
 		return BaseOutput.success("删除成功");
 	}
-	
+
+	/**
+	 * 查询UsualAddress
+	 * @param input
+	 * @return
+	 */
 	@ApiOperation("查询UsualAddress")
 	@RequestMapping(value = "/listUsualAddress.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput listUsualAddress(UsualAddress input) {

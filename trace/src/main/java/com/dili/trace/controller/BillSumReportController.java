@@ -19,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
+ * 登记单数据统计
+ *
  * @author asa.lee
  */
 @Api("/billSumReport")
@@ -31,6 +33,12 @@ public class BillSumReportController {
     @Autowired
     TradeStatisticReportService tradeStatisticReportService;
 
+    /**
+     * 跳转到页面
+     *
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -40,8 +48,14 @@ public class BillSumReportController {
         return "billSumReport/index";
     }
 
+    /**
+     * 查询
+     *
+     * @param query
+     * @return
+     */
     @ApiOperation("查询")
-    @RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     List<BillSumReportDto> list(BillSumReportDto query) {
         query.setMarketId(MarketUtil.returnMarket());

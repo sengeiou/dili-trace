@@ -53,6 +53,11 @@ public class RegisterHeadController {
 	@Autowired
 	UserService userService;
 
+	/**
+	 * 跳转到RegisterHead页面
+	 * @param modelMap
+	 * @return
+	 */
 	@ApiOperation("跳转到RegisterHead页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
@@ -66,6 +71,11 @@ public class RegisterHeadController {
 		return "registerHead/index";
 	}
 
+	/**
+	 * 查询RegisterHead
+	 * @param registerHead
+	 * @return
+	 */
 	@ApiOperation(value = "查询RegisterHead", notes = "查询RegisterHead，返回列表信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "RegisterHead", paramType = "form", value = "RegisterHead的form信息", required = false, dataType = "string") })
@@ -74,16 +84,26 @@ public class RegisterHeadController {
 		return registerHeadService.list(registerHead);
 	}
 
+    /**
+     * 分页查询RegisterHead
+     * @param query
+     * @return
+     * @throws Exception
+     */
 	@ApiOperation(value = "分页查询RegisterHead", notes = "分页查询RegisterHead，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "RegisterHead", paramType = "form", value = "RegisterHead的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	
+
 	public @ResponseBody String listPage(RegisterHeadDto query) throws Exception {
 		return registerHeadService.listEasyuiPageByExample(query, true).toString();
 	}
-	
 
+    /**
+     * 新增RegisterHead
+     * @param registerHeads
+     * @return
+     */
 	@ApiOperation("新增RegisterHead")
 	@RequestMapping(value = "/insert.action", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput insert(@RequestBody List<RegisterHead> registerHeads) {
@@ -115,6 +135,11 @@ public class RegisterHeadController {
 		return BaseOutput.success("新增成功").setData(registerHeads);
 	}
 
+    /**
+     * 修改RegisterHead
+     * @param registerHead
+     * @return
+     */
 	@ApiOperation("修改RegisterHead")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "RegisterHead", paramType = "form", value = "RegisterHead的form信息", required = true, dataType = "string") })

@@ -34,6 +34,11 @@ public class WxAppTokenApi {
     @Autowired
     private IWxAppService wxAppService;
 
+    /**
+     * 初始化小程序access_token
+     * @param wxInfo
+     * @return
+     */
     @ApiOperation(value = "初始化小程序access_token", notes = "初始化小程序access_token")
     @PostMapping(value = "/initAccessToken", produces = "application/json;charset=utf-8")
     public BaseOutput initAccessToken(@RequestBody Map<String, String> wxInfo) {
@@ -71,6 +76,11 @@ public class WxAppTokenApi {
 
     }
 
+    /**
+     * 获取小程序access_token
+     * @param wxInfo
+     * @return
+     */
     @ApiOperation(value = "获取小程序access_token", notes = "获取小程序access_token")
     @PostMapping(value = "/getAccessToken.api", produces = "application/json;charset=utf-8")
     public BaseOutput getAccessToken(@RequestBody Map<String, String> wxInfo) {
@@ -90,6 +100,11 @@ public class WxAppTokenApi {
         }
     }
 
+    /**
+     * 获取授权信息
+     * @param wxInfo
+     * @return
+     */
     @ApiOperation(value = "获取授权信息", notes = "获取授权信息")
     @PostMapping(value = "/getWxOpenidUnionId.api", produces = "application/json;charset=utf-8")
     public BaseOutput getWxOpenidUnionId(@RequestBody Map<String, String> wxInfo) {
@@ -114,6 +129,11 @@ public class WxAppTokenApi {
         }
     }
 
+    /**
+     * 获取用户信息
+     * @param wxInfo
+     * @return
+     */
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
     @PostMapping(value = "/getUserInfo", produces = "application/json;charset=utf-8")
     public BaseOutput getUserInfo(@RequestBody Map<String, String> wxInfo) {
@@ -141,6 +161,11 @@ public class WxAppTokenApi {
         }
     }
 
+    /**
+     * 解密手机号信息
+     * @param wxInfo
+     * @return
+     */
     @ApiOperation(value = "解密手机号信息", notes = "解密手机号信息")
     @PostMapping(value = "/decodePhone.api")
     public BaseOutput decodePhone(@RequestBody Map<String, String> wxInfo) {

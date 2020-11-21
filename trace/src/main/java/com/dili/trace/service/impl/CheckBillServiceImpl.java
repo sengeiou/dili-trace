@@ -60,7 +60,7 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
         List<CheckOrder> checkOrder = getActualDao().selectForPage(domain);
         long total = checkOrder instanceof Page ? ((Page) checkOrder).getTotal() : (long) checkOrder.size();
         List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, checkOrder) : checkOrder;
-        return new EasyuiPageOutput((int) total, results);
+        return new EasyuiPageOutput(total, results);
     }
 
 

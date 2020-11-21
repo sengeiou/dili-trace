@@ -31,6 +31,12 @@ public class CommodityWeightReportController {
     @Autowired
     TradeStatisticReportService tradeStatisticReportService;
 
+    /**
+     * 跳转到页面
+     * @param modelMap
+     * @param query
+     * @return
+     */
     @ApiOperation("跳转到页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap, CommodityWeightReportDto query) {
@@ -40,6 +46,11 @@ public class CommodityWeightReportController {
         return "commodityWeightReport/index";
     }
 
+    /**
+     * 查询
+     * @param query
+     * @return
+     */
     @ApiOperation("查询")
     @RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody

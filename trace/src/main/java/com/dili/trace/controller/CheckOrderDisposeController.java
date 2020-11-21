@@ -53,6 +53,11 @@ public class CheckOrderDisposeController {
     @Autowired
     private ImageCertService imageCertService;
 
+    /**
+     * 跳转到不合格处置登记页面
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到不合格处置登记页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -62,6 +67,12 @@ public class CheckOrderDisposeController {
         return "checkOrderDispose/index";
     }
 
+    /**
+     * 跳转到edit页面
+     * @param modelMap
+     * @param id
+     * @return
+     */
     @ApiOperation("跳转到edit页面")
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(ModelMap modelMap, Long id) {
@@ -86,6 +97,12 @@ public class CheckOrderDisposeController {
         return "checkOrderDispose/edit";
     }
 
+    /**
+     * 分页查询不合格检测单
+     * @param checkOrderDispose
+     * @return
+     * @throws Exception
+     */
     @ApiOperation(value = "分页查询不合格检测单", notes = "分页查询不合格检测单，返回easyui分页信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "CheckOrderDispose", paramType = "form", value = "CheckOrderDispose的form信息", required = false, dataType = "string")})
@@ -97,6 +114,11 @@ public class CheckOrderDisposeController {
         return out.toString();
     }
 
+    /**
+     * 新增不合格处置单
+     * @param checkOrderDispose
+     * @return
+     */
     @ApiOperation("新增不合格处置单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "CheckOrderDispose", paramType = "form", value = "CheckOrderDispose的form信息", required = true, dataType = "string") })
@@ -124,6 +146,11 @@ public class CheckOrderDisposeController {
         }
     }
 
+    /**
+     * 修改不合格处置单
+     * @param checkOrderDispose
+     * @return
+     */
     @ApiOperation("修改不合格处置单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "CheckOrderDispose", paramType = "form", value = "CheckOrderDispose的form信息", required = true, dataType = "string") })

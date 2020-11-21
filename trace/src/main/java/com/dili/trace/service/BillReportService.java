@@ -44,7 +44,7 @@ public class BillReportService {
         BasePage<BillReportDto> listPageBillReport = this.listPageBillReport(query);
         long total = listPageBillReport.getTotalItem();
         List results = ValueProviderUtils.buildDataByProvider(query, listPageBillReport.getDatas());
-        return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
+        return new EasyuiPageOutput(total, results);
 
 
     }
@@ -98,7 +98,7 @@ public class BillReportService {
         result.setDatas(list);
         result.setPage(page.getPageNum());
         result.setRows(page.getPageSize());
-        result.setTotalItem(Integer.parseInt(String.valueOf(page.getTotal())));
+        result.setTotalItem(page.getTotal());
         result.setTotalPage(page.getPages());
         result.setStartIndex(page.getStartRow());
         return result;

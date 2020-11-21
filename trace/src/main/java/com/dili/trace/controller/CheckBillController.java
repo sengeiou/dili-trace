@@ -69,6 +69,12 @@ public class CheckBillController {
     private CategoryService categoryService;
 
 
+    /**
+     * 跳转到检测登记页面
+     *
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到检测登记页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -78,6 +84,13 @@ public class CheckBillController {
         return "checkBill/index";
     }
 
+    /**
+     * 跳转到edit页面
+     *
+     * @param modelMap
+     * @param id
+     * @return
+     */
     @ApiOperation("跳转到edit页面")
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(ModelMap modelMap, Long id) {
@@ -112,7 +125,13 @@ public class CheckBillController {
         return "checkBill/edit";
     }
 
-
+    /**
+     * 分页查询检测单
+     *
+     * @param checkOrder
+     * @return
+     * @throws Exception
+     */
     @ApiOperation(value = "分页查询检测单", notes = "分页查询检测单，返回easyui分页信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "CheckOrder", paramType = "form", value = "CheckOrder的form信息", required = false, dataType = "string")})
@@ -124,11 +143,18 @@ public class CheckBillController {
         return out.toString();
     }
 
+    /**
+     * 新增检测单
+     *
+     * @param checkOrder
+     * @return
+     */
     @ApiOperation("新增检测单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "CheckOrder", paramType = "form", value = "CheckOrder的form信息", required = true, dataType = "string")})
     @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput<Long> insert(@RequestBody CheckOrderDto checkOrder) {
+    public @ResponseBody
+    BaseOutput<Long> insert(@RequestBody CheckOrderDto checkOrder) {
         try {
             checkOrder.setMarketId(MarketUtil.returnMarket());
             checkBillService.insertSelective(checkOrder);
@@ -144,11 +170,18 @@ public class CheckBillController {
         }
     }
 
+    /**
+     * 修改检测单
+     *
+     * @param checkOrder
+     * @return
+     */
     @ApiOperation("修改检测单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "CheckOrder", paramType = "form", value = "CheckOrder的form信息", required = true, dataType = "string")})
     @RequestMapping(value = "/update.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput update(@RequestBody CheckOrderDto checkOrder) {
+    public @ResponseBody
+    BaseOutput update(@RequestBody CheckOrderDto checkOrder) {
         try {
             checkBillService.updateSelective(checkOrder);
             checkBillService.updateOtherTable(checkOrder);
@@ -171,7 +204,8 @@ public class CheckBillController {
      * @throws Exception
      */
     @RequestMapping(value = "/upload.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput excelImport(MultipartFile file) throws Exception {
+    public @ResponseBody
+    BaseOutput excelImport(MultipartFile file) throws Exception {
         String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         ExcelTypeEnum excelType = null;
         if ("xlsx".equals(fileType)) {
@@ -188,7 +222,7 @@ public class CheckBillController {
         excelReader.read(new Sheet(1, 1, CheckExcelDto.class));
         //获取数据
         List<Object> list = listener.getDatas();
-        if(CollectionUtils.isNotEmpty(list)) {
+        if (CollectionUtils.isNotEmpty(list)) {
             //转换数据类型,并插入到数据库
             try {
                 for (int i = 0; i < list.size(); i++) {
@@ -205,7 +239,7 @@ public class CheckBillController {
                     }
                     User userFromThird = this.getUserFromThird(checkExcelDto.getThirdPartyCode());
                     CheckOrder checkOrder = new CheckOrder();
-                    BeanUtils.copyProperties(checkExcelDto,checkOrder);
+                    BeanUtils.copyProperties(checkExcelDto, checkOrder);
                     checkOrder.setMarketId(MarketUtil.returnMarket());
                     checkOrder.setIdCard(userFromThird.getCardNo());
                     checkOrder.setUserId(String.valueOf(userFromThird.getId()));
@@ -227,55 +261,74 @@ public class CheckBillController {
                 LOGGER.error("导入检测单失败", e);
                 return BaseOutput.failure(e.getMessage());
             }
-        }else {
+        } else {
             return BaseOutput.failure("导入检测单失败");
         }
     }
 
-
+    /**
+     * 查询用户信息
+     *
+     * @param thirdCode
+     * @return
+     */
     @RequestMapping(value = "/getUserName.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput getUserNameByCard(@RequestParam String thirdCode) {
+    public @ResponseBody
+    BaseOutput getUserNameByCard(@RequestParam String thirdCode) {
         try {
             User userFromThird = this.getUserFromThird(thirdCode);
-            if(Objects.nonNull(userFromThird)){
+            if (Objects.nonNull(userFromThird)) {
                 return BaseOutput.successData(userFromThird);
             }
             return BaseOutput.failure("查询用户名失败");
-        }catch (TraceBusinessException e){
+        } catch (TraceBusinessException e) {
             LOGGER.error("查询用户名失败", e);
             return BaseOutput.failure(e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("查询用户名失败", e);
             return BaseOutput.failure(e.getMessage());
         }
     }
 
+    /**
+     * 查询商品名称
+     *
+     * @param goodsCode
+     * @param modelMap
+     * @return
+     */
     @RequestMapping(value = "/getGoodsName.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody BaseOutput getGoodsNameByCode(@RequestParam Long goodsCode,ModelMap modelMap) {
+    public @ResponseBody
+    BaseOutput getGoodsNameByCode(@RequestParam Long goodsCode, ModelMap modelMap) {
         try {
             //TODO
        /*     Category category = categoryService.get(goodsCode);
             category.setMarketId(MarketUtil.returnMarket());*/
-            Category category=null;
-            if(Objects.nonNull(category)){
+            Category category = null;
+            if (Objects.nonNull(category)) {
                 return BaseOutput.successData(category.getName());
             }
             return BaseOutput.success("查询产品名称失败");
-        }catch (TraceBusinessException e){
+        } catch (TraceBusinessException e) {
             LOGGER.error("查询产品名称失败", e);
             return BaseOutput.failure(e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("查询产品名称失败", e);
             return BaseOutput.failure(e.getMessage());
         }
     }
 
-    private User getUserFromThird(String thirdCode){
+    /**
+     * 查询用户信息
+     * @param thirdCode
+     * @return
+     */
+    private User getUserFromThird(String thirdCode) {
         User user = DTOUtils.newDTO(User.class);
         user.setThirdPartyCode(thirdCode);
         user.setMarketId(MarketUtil.returnMarket());
         List<User> users = userService.listByExample(user);
-        if(CollectionUtils.isNotEmpty(users) && users.size() ==1) {
+        if (CollectionUtils.isNotEmpty(users) && users.size() == 1) {
             return users.get(0);
         }
         return user;

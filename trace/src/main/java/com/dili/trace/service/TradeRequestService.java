@@ -628,7 +628,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         result.setDatas(list);
         result.setPage(page.getPageNum());
         result.setRows(page.getPageSize());
-        result.setTotalItem(Integer.parseInt(String.valueOf(page.getTotal())));
+        result.setTotalItem(page.getTotal());
         result.setTotalPage(page.getPages());
         result.setStartIndex(page.getStartRow());
         return result;

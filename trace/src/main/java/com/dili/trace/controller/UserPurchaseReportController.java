@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 客户交易报表
+ */
 @Api("/userPurchaseReport")
 @Controller
 @RequestMapping("/userPurchaseReport")
@@ -30,6 +33,11 @@ public class UserPurchaseReportController {
     @Autowired
     private ReportService reportService;
 
+    /**
+     * 跳转到UserPurchaseReport
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到UserPurchaseReport页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -42,6 +50,11 @@ public class UserPurchaseReportController {
         return "userPurchaseReport/index";
     }
 
+    /**
+     * 查询UserPurchaseReport
+     * @param goodsReport
+     * @return
+     */
     @ApiOperation(value = "查询UserPurchaseReport", notes = "查询UserPurchaseReport，返回列表信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "UserPurchaseReport", paramType = "form", value = "UserPurchaseReport的form信息", required = false, dataType = "string") })

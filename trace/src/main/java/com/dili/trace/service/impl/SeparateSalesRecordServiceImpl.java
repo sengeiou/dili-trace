@@ -94,7 +94,7 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 		List<SeparateSalesApiListOutput> list = this.getActualDao().listSeparateSalesOutput(queryInput);
 
 		List results = ValueProviderUtils.buildDataByProvider(queryInput, list);
-		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
+		return new EasyuiPageOutput(total, results);
 	}
 
 	

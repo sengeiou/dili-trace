@@ -38,12 +38,23 @@ public class GoodsManagementController {
     @Autowired
     private CategoryService categoryService;
 
+    /**
+     * 跳转到goodsManagement页面
+     * @return
+     */
     @ApiOperation("跳转到goodsManagement页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index() {
         return "goodsManagement/index";
     }
 
+    /**
+     * 跳转到edit页面
+     * @param modelMap
+     * @param id
+     * @param currentNodeId
+     * @return
+     */
     @ApiOperation("跳转到edit页面")
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(ModelMap modelMap, Long id, Long currentNodeId) {
@@ -147,6 +158,12 @@ public class GoodsManagementController {
     }
 
 
+    /**
+     * 新增商品
+     * @param category
+     * @param currentNodeId
+     * @return
+     */
     @ApiOperation("新增商品")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Goods", paramType = "form", value = "Goods的form信息", required = true, dataType = "string")})
@@ -175,6 +192,11 @@ public class GoodsManagementController {
         return BaseOutput.failure();
     }
 
+    /**
+     * 修改商品
+     * @param category
+     * @return
+     */
     @ApiOperation("修改商品")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Goods", paramType = "form", value = "Goods的form信息", required = true, dataType = "string")})

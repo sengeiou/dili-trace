@@ -34,6 +34,13 @@ public class TollInfoController {
     @Autowired
     CategoryService categoryService;
 
+    /**
+     * 根据名字查询品类信息
+     *
+     * @param name
+     * @param allFlag
+     * @return
+     */
     @RequestMapping("/category")
     @ResponseBody
     public Map<String, ?> listByName(String name, boolean allFlag) {
@@ -55,6 +62,12 @@ public class TollInfoController {
     }
 
 
+    /**
+     * 查询城市信息
+     *
+     * @param name
+     * @return
+     */
     @RequestMapping(value = "/city", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, ?> queryCity(String name) {
@@ -82,6 +95,12 @@ public class TollInfoController {
         return map;
     }
 
+    /**
+     * 查询 城市信息
+     *
+     * @param name
+     * @return
+     */
     private List<CityDto> queryCitys(String name) {
         return this.cityService.listCityByCondition(name);
     }

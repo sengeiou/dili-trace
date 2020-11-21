@@ -49,6 +49,12 @@ public class UpStreamController {
 	@Autowired
 	private RUserUpStreamService rUserUpStreamService;
 
+	/**
+	 * 跳转到index页面
+	 * @param modelMap
+	 * @return
+	 */
+
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 		Date now = new Date();
@@ -77,6 +83,12 @@ public class UpStreamController {
 		return "upStream/edit";
 	}
 
+	/**
+	 * 查询数据
+	 * @param upStreamDto
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody String listPage(UpStreamDto upStreamDto) throws Exception {
 		// 业户名称查询
@@ -86,7 +98,7 @@ public class UpStreamController {
 			List<Long> userIds = userService.listByExample(userListDto).stream().map(o -> o.getId())
 					.collect(Collectors.toList());
 			if (CollectionUtils.isEmpty(userIds)) {
-				return new EasyuiPageOutput(0, Collections.emptyList()).toString();
+				return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
 			}
 
 			RUserUpstreamDto rUserUpstream = new RUserUpstreamDto();
@@ -95,7 +107,7 @@ public class UpStreamController {
 					.map(o -> o.getUpstreamId()).collect(Collectors.toSet());
 			upStreamDto.setIds(new ArrayList<>(upstreamIds));
 			if (CollectionUtils.isEmpty(upStreamDto.getIds())) {
-				return new EasyuiPageOutput(0, Collections.emptyList()).toString();
+				return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
 			}
 		}
 
@@ -119,11 +131,11 @@ public class UpStreamController {
 				upStreamDtos.add(usd);
 			});
 		} else {
-			return new EasyuiPageOutput(0, Collections.emptyList()).toString();
+			return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
 		}
 		List results = ValueProviderUtils.buildDataByProvider(upStreamDto, upStreamDtos);
 		long total = results instanceof Page ? ((Page) results).getTotal() : results.size();
-		return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results).toString();
+		return new EasyuiPageOutput(total, results).toString();
 
 	}
 
@@ -153,6 +165,11 @@ public class UpStreamController {
 		return BaseOutput.success().setData(new ArrayList<>());
 	}
 
+	/**
+	 * 保存数据
+	 * @param upStreamDto
+	 * @return
+	 */
 	@RequestMapping(value = "/save.action", method = { RequestMethod.POST })
 	public @ResponseBody BaseOutput save(@RequestBody UpStreamDto upStreamDto) {
 		try {
@@ -165,13 +182,19 @@ public class UpStreamController {
 					: upStreamService.updateUpstream(upStreamDto, operatorUser);
 		} catch (BusinessException e) {
 			LOGGER.info("上游用户信息及业务绑定保存异常！", e);
-			return BaseOutput.failure(e.getErrorMsg());
+			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			LOGGER.error("上游用户信息及业务绑定保存异常！", e);
 			return BaseOutput.failure(e.getMessage());
 		}
 	}
 
+	/**
+	 * 根据关键字查询
+	 * @param userId
+	 * @param keyword
+	 * @return
+	 */
 	@RequestMapping(value = "/listByKeyWord.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput queryUpStream(@RequestParam(required = true,name = "userId")Long userId,@RequestParam(required = true,name = "query")String keyword) {

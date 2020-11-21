@@ -26,18 +26,34 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 
+/**
+ * 上传客户信息
+ */
 @Controller
 @RequestMapping("/userUpload")
 public class UserUploadController {
     @Autowired
     CategoryService categoryService;
 
+    /**
+     * 跳转到updateUser页面
+     *
+     * @param modelMap
+     * @param id
+     * @return
+     */
     @ApiOperation("跳转到updateUser页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String updateUser(ModelMap modelMap, Long id) {
         return "userUpload/index";
     }
 
+    /**
+     * 检查数据
+     *
+     * @param input
+     * @return
+     */
     @RequestMapping(value = "/checkData.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput checkData(@RequestBody ExcelUserData input) {
@@ -71,6 +87,12 @@ public class UserUploadController {
     //     }).toList();
     // }
 
+    /**
+     * 数据转换
+     *
+     * @param eu
+     * @return
+     */
     private ExcelUserData feedData(ExcelUserData eu) {
 
         this.findByName(eu.getCategoryName()).ifPresent(category -> {
@@ -82,15 +104,21 @@ public class UserUploadController {
         this.findVocationTypeByName(eu.getVocationTypeName()).ifPresent(vt -> {
             eu.setVocationType(vt.getCode());
         });
-        String tallyAreaNo=StringUtils.trimToEmpty(eu.getTallyAreaNo());
-        tallyAreaNo=ChineseStringUtil.cToe(tallyAreaNo);
-        tallyAreaNo=ChineseStringUtil.full2Half(tallyAreaNo);
+        String tallyAreaNo = StringUtils.trimToEmpty(eu.getTallyAreaNo());
+        tallyAreaNo = ChineseStringUtil.cToe(tallyAreaNo);
+        tallyAreaNo = ChineseStringUtil.full2Half(tallyAreaNo);
 
         eu.setTallyAreaNo(tallyAreaNo);
         return eu;
 
     }
 
+    /**
+     * 查找存储类型
+     *
+     * @param preserveTypeName
+     * @return
+     */
     private Optional<PreserveTypeEnum> findPreserveTypeByName(String preserveTypeName) {
         if (StringUtils.isBlank(preserveTypeName)) {
             return Optional.empty();
@@ -99,6 +127,12 @@ public class UserUploadController {
                 .findFirst();
     }
 
+    /**
+     * 查询服务行业类型
+     *
+     * @param vocationTypeName
+     * @return
+     */
     private Optional<VocationTypeEnum> findVocationTypeByName(String vocationTypeName) {
         if (StringUtils.isBlank(vocationTypeName)) {
             return Optional.empty();
@@ -107,6 +141,12 @@ public class UserUploadController {
                 .findFirst();
     }
 
+    /**
+     * 查询品类
+     *
+     * @param categoryName
+     * @return
+     */
     private Optional<Category> findByName(String categoryName) {
         if (StringUtils.isBlank(categoryName)) {
             return Optional.empty();

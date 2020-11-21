@@ -57,6 +57,11 @@ public class UserController {
 	@Autowired
 	UsualAddressService usualAddressService;
 
+	/**
+	 * 跳转到User页面
+	 * @param modelMap
+	 * @return
+	 */
 	@ApiOperation("跳转到User页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
@@ -75,6 +80,12 @@ public class UserController {
 		return "user/index";
 	}
 
+	/**
+	 * 分页查询User
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "分页查询User", notes = "分页查询User，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = false, dataType = "string") })
@@ -86,6 +97,11 @@ public class UserController {
 		return out.toString();
 	}
 
+	/**
+	 * 新增User
+	 * @param user
+	 * @return
+	 */
 	@ApiOperation("新增User")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
@@ -105,6 +121,11 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * 修改User
+	 * @param user
+	 * @return
+	 */
 	@ApiOperation("修改User")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
@@ -123,6 +144,11 @@ public class UserController {
 
 	}
 
+	/**
+	 * 删除User
+	 * @param id
+	 * @return
+	 */
 	@ApiOperation("删除User")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
@@ -145,7 +171,7 @@ public class UserController {
 	/**
 	 * 业户keyword查询
 	 * 
-	 * @param userListDto
+	 * @param keyword
 	 * @return
 	 */
 	@RequestMapping(value = "/listByKeyword.action", method = { RequestMethod.GET, RequestMethod.POST })
@@ -175,6 +201,11 @@ public class UserController {
 
 	}
 
+	/**
+	 * 找回密码【接口已通】
+	 * @param id
+	 * @return
+	 */
 	@ApiOperation(value = "找回密码【接口已通】", notes = "找回密码")
 	@RequestMapping(value = "/resetPassword.action", method = RequestMethod.POST)
 	@ResponseBody
@@ -186,6 +217,11 @@ public class UserController {
 		return BaseOutput.success().setData(true);
 	}
 
+	/**
+	 * 查询车牌
+	 * @param userId
+	 * @return
+	 */
 	@RequestMapping(value = "/findPlates.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput findPlates(Long userId) {
@@ -201,6 +237,12 @@ public class UserController {
 
 	}
 
+	/**
+	 * 查看详情
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
 	@ApiOperation("跳转到User页面")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap, @PathVariable Long id) {
@@ -222,7 +264,12 @@ public class UserController {
 	}
 
 
-
+	/**
+	 * 跳转到edit页面
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
 	@ApiOperation("跳转到edit页面")
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap, Long id) {
@@ -246,6 +293,12 @@ public class UserController {
 	@Autowired
 	UpdateUserQrStatusJob job;
 
+	/**
+	 * 出发定时任务
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/triggerJob.html", method = RequestMethod.GET)
 	@ResponseBody
 	public BaseOutput triggerJob(ModelMap modelMap, Long id) {
@@ -253,6 +306,11 @@ public class UserController {
 		return BaseOutput.success();
 	}
 
+	/**
+	 * 获得用户二维码信息
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/getUserQrCode.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput getUserQrCode(Long id) {
@@ -267,6 +325,12 @@ public class UserController {
 
 	}
 
+	/**
+	 * 激活用户
+	 * @param id
+	 * @param is_active
+	 * @return
+	 */
 	@RequestMapping(value = "/activeUser.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput activeUser(Long id,Integer is_active) {

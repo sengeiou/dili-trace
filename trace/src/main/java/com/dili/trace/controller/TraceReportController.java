@@ -16,12 +16,21 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * 溯源报表
+ */
 @Controller
 @RequestMapping("/traceReport")
 public class TraceReportController {
     @Autowired
     TraceReportService traceReportService;
 
+    /**
+     * 跳转到index
+     * @param modelMap
+     * @param query
+     * @return
+     */
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap,TraceReportQueryDto query) {
 
@@ -64,6 +73,11 @@ public class TraceReportController {
         return "traceReport/index";
     }
 
+    /**
+     * 查询数据
+     * @param modelMap
+     * @return
+     */
     @RequestMapping(value = "/getBillReport.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput getBillReport(ModelMap modelMap) {

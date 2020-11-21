@@ -27,9 +27,9 @@ public class BasePageUtil {
 		result.setDatas(Lists.newArrayList());
 		result.setPage(page);
 		result.setRows(rows);
-		result.setTotalItem(0);
+		result.setTotalItem(0L);
 		result.setTotalPage(0);
-		result.setStartIndex(0);
+		result.setStartIndex(0L);
 		return result;
 
 	}

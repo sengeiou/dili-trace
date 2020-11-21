@@ -49,6 +49,11 @@ public class RegisterBillApi {
     private UserService userService;
 
 
+    /**
+     * 通过登记单ID获取登记单详细信息
+     * @param inputDto
+     * @return
+     */
     @ApiOperation(value = "通过登记单ID获取登记单详细信息")
     @RequestMapping(value = "/viewTradeDetailBill.api", method = RequestMethod.POST)
     public BaseOutput<RegisterBillOutputDto> viewTradeDetailBill(@RequestBody RegisterBillApiInputDto inputDto) {
@@ -76,6 +81,12 @@ public class RegisterBillApi {
 
     }
 
+    /**
+     *获取报备单列表
+     * @param inputDto
+     * @param request
+     * @return
+     */
     @ApiOperation(value = "获取报备单列表")
     @RequestMapping(value = "/queryBillNo", method = RequestMethod.POST)
     @InterceptConfiguration(loginRequired = false, signRequired = true, signValue = "cGFzczk4NzYyMDIw")

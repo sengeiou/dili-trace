@@ -38,6 +38,6 @@ public class CheckOrderDisposeServiceImpl extends BaseServiceImpl<CheckOrderDisp
         List<CheckOrderDispose> checkOrderDispose = getActualDao().selectForPage(domain);
         long total = checkOrderDispose instanceof Page ? ((Page) checkOrderDispose).getTotal() : (long) checkOrderDispose.size();
         List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, checkOrderDispose) : checkOrderDispose;
-        return new EasyuiPageOutput((int) total, results);
+        return new EasyuiPageOutput(total, results);
     }
 }

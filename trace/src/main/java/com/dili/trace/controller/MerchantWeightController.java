@@ -31,6 +31,11 @@ public class MerchantWeightController {
     @Autowired
     TradeStatisticReportService tradeStatisticReportService;
 
+    /**
+     * 跳转到页面
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -40,6 +45,11 @@ public class MerchantWeightController {
         return "merchantWeightReport/index";
     }
 
+    /**
+     * 查询
+     * @param query
+     * @return
+     */
     @ApiOperation("查询")
     @RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
     public @ResponseBody

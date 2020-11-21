@@ -36,12 +36,22 @@ public class SysParamConfigController {
     SysConfigService sysConfigService;
 
 
+    /**
+     *  跳转到页面
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "sysParamConfig/index";
     }
 
+    /**
+     * 跳转到内嵌页面
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到内嵌页面")
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String viewTraceReport(ModelMap modelMap) {
@@ -57,6 +67,11 @@ public class SysParamConfigController {
         return "sysParamConfig/view";
     }
 
+    /**
+     * 查询
+     * @param query
+     * @return
+     */
     @ApiOperation("查询")
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
@@ -85,6 +100,11 @@ public class SysParamConfigController {
         }
     }
 
+    /**
+     * 修改
+     * @param query
+     * @return
+     */
     @ApiOperation("修改")
     @RequestMapping(value = "/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
@@ -105,6 +125,11 @@ public class SysParamConfigController {
         }
     }
 
+    /**
+     * 修改运营报表天数
+     * @param query
+     * @return
+     */
     @ApiOperation("修改运营报表天数")
     @RequestMapping(value = "/updateTraceReportLimitDay.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody

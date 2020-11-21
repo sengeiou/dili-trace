@@ -40,17 +40,29 @@ public class TraceRecordController {
 
     private static final Logger logger = LoggerFactory.getLogger(TraceRecordController.class);
 
+    /**
+     * 进入溯源记录页面
+     * @param modelMap
+     * @return
+     */
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "tradeRecord/index";
     }
 
+    /**
+     * 查询数据
+     * @param modelMap
+     * @param tradeRequest
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/listPage.action", method = RequestMethod.POST)
     @ResponseBody
     public String listPage(ModelMap modelMap, TradeRequest tradeRequest)  throws Exception{
         if (null == tradeRequest) {
             logger.error("查询参数异常");
-            return new EasyuiPageOutput(0, Collections.emptyList()).toString();
+            return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
         }
         //由于只判断了null值,页面传参为空字符串时需要特殊处理
         String queStr = "";
@@ -103,7 +115,7 @@ public class TraceRecordController {
         });
         List results = ValueProviderUtils.buildDataByProvider(tradeRequest, requestList);
         long total = results instanceof Page ? ((Page) results).getTotal() : results.size();
-        return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results).toString();
+        return new EasyuiPageOutput(total, results).toString();
     }
 
 }

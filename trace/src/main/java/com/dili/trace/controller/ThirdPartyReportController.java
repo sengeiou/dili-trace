@@ -35,6 +35,9 @@ import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 数据上报接口
+ */
 @Controller
 @RequestMapping("/thirdPartyReport")
 public class ThirdPartyReportController {
@@ -53,12 +56,25 @@ public class ThirdPartyReportController {
     @Autowired
     private MarketService marketService;
 
+    /**
+     * 页面跳转
+     * @param modelMap
+     * @param query
+     * @return
+     */
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap, TraceReportQueryDto query) {
 
         return "thirdPartyReport/index";
     }
 
+    /**
+     * 查询 数据
+     * @param modelMap
+     * @param input
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/listPage.action", method = RequestMethod.POST)
     @ResponseBody
     public String listPage(ModelMap modelMap, ThirdPartyReportDataQueryDto input) throws Exception {
@@ -67,6 +83,10 @@ public class ThirdPartyReportController {
         return thirdPartyReportDataService.listEasyuiPageByExample(input, true).toString();
     }
 
+    /**
+     * 查询当前登录用户
+     * @return
+     */
     private Optional<OperatorUser> fromSessionContext() {
         if (SessionContext.getSessionContext() != null) {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -77,6 +97,12 @@ public class ThirdPartyReportController {
         return Optional.empty();
     }
 
+    /**
+     * 统计所有
+     * @param modelMap
+     * @param input
+     * @return
+     */
     @RequestMapping(value = "/countAll.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput countAll(ModelMap modelMap, @RequestBody ReportCountDto input) {
@@ -100,6 +126,12 @@ public class ThirdPartyReportController {
         return BaseOutput.success();
     }
 
+    /**
+     * 再次上报
+     * @param modelMap
+     * @param input
+     * @return
+     */
     @RequestMapping(value = "/reportAgain.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput reportAgain(ModelMap modelMap, @RequestBody ThirdPartyReportData input) {
@@ -201,6 +233,12 @@ public class ThirdPartyReportController {
         }
     }
 
+    /**
+     * 当天数据上报
+     * @param modelMap
+     * @param input
+     * @return
+     */
     @RequestMapping(value = "/dailyReport.action", method = RequestMethod.POST)
     @ResponseBody
     public BaseOutput dailyReport(ModelMap modelMap, @RequestBody ThirdPartyReportDataQueryDto input) {
@@ -268,6 +306,12 @@ public class ThirdPartyReportController {
 
     }
 
+    /**
+     * 查看详情
+     * @param modelMap
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @PathVariable Long id) {
         return "thirdPartyReport/view";

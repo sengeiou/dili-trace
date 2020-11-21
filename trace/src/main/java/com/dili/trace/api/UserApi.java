@@ -69,6 +69,12 @@ public class UserApi {
     @Autowired
     SMSService smsService;
 
+    /**
+     * 注册
+     *
+     * @param user
+     * @return
+     */
     @ApiOperation(value = "注册", notes = "注册")
     @RequestMapping(value = "/register.api", method = RequestMethod.POST)
     public BaseOutput<Long> register(@RequestBody User user) {
@@ -85,6 +91,12 @@ public class UserApi {
         }
     }
 
+    /**
+     * 请求实名认证
+     *
+     * @param user
+     * @return
+     */
     @ApiOperation(value = "请求实名认证", notes = "请求实名认证")
     @RequestMapping(value = "/realNameCertificationReq.api", method = RequestMethod.POST)
     public BaseOutput<Long> realNameCertificationReq(@RequestBody User user) {
@@ -140,7 +152,11 @@ public class UserApi {
         return this.smsService.sendVerificationCodeMsg(params, phone, verificationCode);
     }
 
-
+    /**
+     * 用户获取个人信息【接口已通】
+     *
+     * @return
+     */
     @ApiOperation(value = "用户获取个人信息【接口已通】", notes = "用户获取个人信息")
     @RequestMapping(value = "/get.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -161,6 +177,11 @@ public class UserApi {
         }
     }
 
+    /**
+     * 查询车牌信息
+     *
+     * @return
+     */
     @ApiOperation(value = "查询车牌信息", notes = "用户获取个人信息")
     @RequestMapping(value = "/getUserPlate.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -178,6 +199,12 @@ public class UserApi {
         }
     }
 
+    /**
+     * 修改密码【接口已通】
+     *
+     * @param user
+     * @return
+     */
     @ApiOperation(value = "修改密码【接口已通】", notes = "修改密码")
     @RequestMapping(value = "/changePassword.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -209,6 +236,12 @@ public class UserApi {
     }
 
 
+    /**
+     * 发送重置密码验证码【接口已通】
+     *
+     * @param user
+     * @return
+     */
     @ApiOperation(value = "发送重置密码验证码【接口已通】", notes = "发送重置密码验证码")
     @RequestMapping(value = "/sendSmsCodeForRenewPassword.api", method = RequestMethod.POST)
     @InterceptConfiguration(loginRequired = false)
@@ -245,6 +278,12 @@ public class UserApi {
     }
 
 
+    /**
+     * 重置密码【接口已通】
+     *
+     * @param user
+     * @return
+     */
     @ApiOperation(value = "重置密码【接口已通】", notes = "重置密码")
     @RequestMapping(value = "/renewPassword.api", method = RequestMethod.POST)
     @InterceptConfiguration(loginRequired = false)
@@ -270,6 +309,11 @@ public class UserApi {
     }
 
 
+    /**
+     * 退出【接口已通】
+     *
+     * @return
+     */
     @ApiOperation(value = "退出【接口已通】", notes = "退出")
     @RequestMapping(value = "/quit.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -285,6 +329,11 @@ public class UserApi {
         }
     }
 
+    /**
+     * 验证是否登录【接口已通】
+     *
+     * @return
+     */
     @ApiOperation(value = "验证是否登录【接口已通】", notes = "验证是否登录")
     @RequestMapping(value = "/isLogin.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -297,6 +346,11 @@ public class UserApi {
         }
     }
 
+    /**
+     * 检查注册输入信息
+     *
+     * @param user
+     */
     private void checkRegisterParams(User user) {
         if (StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20) {
             throw new TraceBusinessException("姓名为空或格式错误");
@@ -313,6 +367,11 @@ public class UserApi {
 
     }
 
+    /**
+     * 检查身份证信息
+     *
+     * @param user
+     */
     private void checkRealNameCertificationParams(User user) {
         if (UserTypeEnum.USER.getCode() == user.getUserType()) {// 个人
             if (StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO, user.getCardNo())) {
@@ -350,6 +409,12 @@ public class UserApi {
 
     }
 
+    /**
+     * 通过姓名关键字查询用户信息
+     *
+     * @param input
+     * @return
+     */
     @ApiOperation(value = "通过姓名关键字查询用户信息", notes = "通过姓关键字查询用户信息")
     @RequestMapping(value = "/findUserByLikeName.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<User>> findUserByLikeName(UserListDto input) {
@@ -375,6 +440,12 @@ public class UserApi {
 
     }
 
+    /**
+     * 通过姓名/手机号/经营户卡号关键字查询用户信息
+     *
+     * @param input
+     * @return
+     */
     @ApiOperation(value = "通过姓名/手机号/经营户卡号关键字查询用户信息", notes = "通过姓名/手机号/经营户卡号关键字查询用户信息")
     @RequestMapping(value = "/findUserByKeyword.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<User>> findUserByKeyword(UserListDto input) {
@@ -401,6 +472,12 @@ public class UserApi {
 
     }
 
+    /**
+     * 通过姓名关键字查询用户信息
+     *
+     * @param input
+     * @return
+     */
     @ApiOperation(value = "通过姓名关键字查询用户信息", notes = "通过姓名关键字查询用户信息")
     @RequestMapping(value = "/getUserQrCode.api", method = RequestMethod.POST)
     @InterceptConfiguration
@@ -422,6 +499,12 @@ public class UserApi {
 
     }
 
+    /**
+     * wx授权一键注册
+     *
+     * @param userInfo
+     * @return
+     */
     @ApiOperation(value = "wx授权一键注册", notes = "wx授权一键注册")
     @RequestMapping(value = "/wxRegister.api", method = RequestMethod.POST)
     public BaseOutput<Long> wxRegister(@RequestBody Map<String, String> userInfo) {
@@ -460,6 +543,12 @@ public class UserApi {
         }
     }
 
+    /**
+     * wx用户绑定
+     *
+     * @param wxInfo
+     * @return
+     */
     @ApiOperation(value = "wx用户绑定", notes = "微信用户绑定")
     @RequestMapping(value = "/userBindWeChat.api", method = RequestMethod.POST)
     public BaseOutput userBindWeChat(@RequestBody Map<String, String> wxInfo) {
@@ -483,6 +572,12 @@ public class UserApi {
         }
     }
 
+    /**
+     * wx用户绑定弹窗查询
+     *
+     * @param user_id
+     * @return
+     */
     @ApiOperation(value = "wx用户绑定弹窗查询", notes = "微信用户绑定")
     @GetMapping(value = "/getUserBindWeChat.api")
     public BaseOutput getUserBindWeChat(@RequestParam String user_id) {
@@ -500,6 +595,12 @@ public class UserApi {
         return BaseOutput.failure("error");
     }
 
+    /**
+     * wx查询微信是否绑定用户
+     *
+     * @param open_id
+     * @return
+     */
     @ApiOperation(value = "wx查询微信是否绑定用户", notes = "微信绑定用户")
     @GetMapping(value = "/validateWeChatBindUser.api")
     public BaseOutput validateWeChatBindUser(@RequestParam String open_id) {
@@ -523,6 +624,12 @@ public class UserApi {
         return BaseOutput.failure("error");
     }
 
+    /**
+     * /confirmBindWeChatTip.api
+     *
+     * @param user_id
+     * @return
+     */
     @ApiOperation(value = "wx用户绑定确认提示", notes = "wx用户绑定确认提示")
     @GetMapping(value = "/confirmBindWeChatTip.api")
     public BaseOutput confirmBindWeChatTip(@RequestParam String user_id) {
@@ -562,6 +669,12 @@ public class UserApi {
         return false;
     }
 
+    /**
+     * 用户获取个人信息【接口已通】
+     *
+     * @param userId
+     * @return
+     */
     @ApiOperation(value = "用户获取个人信息【接口已通】", notes = "用户获取个人信息")
     @RequestMapping(value = "/getUserInfo.api", method = RequestMethod.GET)
     @InterceptConfiguration

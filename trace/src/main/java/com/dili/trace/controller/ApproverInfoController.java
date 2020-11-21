@@ -43,6 +43,11 @@ public class ApproverInfoController {
 	@Autowired
 	Base64SignatureService base64SignatureService;
 
+	/**
+	 * 跳转到ApproverInfo页面
+	 * @param modelMap
+	 * @return
+	 */
 	@ApiOperation("跳转到ApproverInfo页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
@@ -50,6 +55,12 @@ public class ApproverInfoController {
 		return "approverInfo/index";
 	}
 
+	/**
+	 * 分页查询ApproverInfo
+	 * @param approverInfo
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "分页查询ApproverInfo", notes = "分页查询ApproverInfo，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = false, dataType = "string") })
@@ -59,6 +70,11 @@ public class ApproverInfoController {
 		return out.toString();
 	}
 
+	/**
+	 * 查询ApproverInfo签名
+	 * @param input
+	 * @return
+	 */
 	@ApiOperation("查询ApproverInfo签名")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "ApproverInfo的主键", required = true, dataType = "long") })
@@ -67,7 +83,12 @@ public class ApproverInfoController {
 		 String base64Image=this.base64SignatureService.findBase64SignatureByApproverInfoId(input.getId());
 		 return BaseOutput.success().setData(base64Image);
 	}
-	
+
+	/**
+	 * 新增ApproverInfo
+	 * @param approverInfo
+	 * @return
+	 */
 	@ApiOperation("新增ApproverInfo")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = true, dataType = "string") })
@@ -86,6 +107,11 @@ public class ApproverInfoController {
 		}
 	}
 
+	/**
+	 * 修改ApproverInfo
+	 * @param approverInfo
+	 * @return
+	 */
 	@ApiOperation("修改ApproverInfo")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = true, dataType = "string") })
@@ -104,6 +130,11 @@ public class ApproverInfoController {
 
 	}
 
+	/**
+	 * 删除ApproverInfo
+	 * @param id
+	 * @return
+	 */
 	@ApiOperation("删除ApproverInfo")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "ApproverInfo的主键", required = true, dataType = "long") })
@@ -113,6 +144,12 @@ public class ApproverInfoController {
 		 return BaseOutput.success("修改成功");
 	}
 
+	/**
+	 * 跳转到ApproverInfo页面
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
 	@ApiOperation("跳转到ApproverInfo页面")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap,@PathVariable Long id) {

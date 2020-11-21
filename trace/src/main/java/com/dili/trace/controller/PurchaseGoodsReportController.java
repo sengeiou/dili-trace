@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 交易商品报表
+ */
 @Api("/purchaseGoodsReport")
 @Controller
 @RequestMapping("/purchaseGoodsReport")
@@ -30,11 +33,17 @@ public class PurchaseGoodsReportController {
     @Autowired
     private ReportService reportService;
 
+    /**
+     * 跳转到OrigionReport页面
+     *
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到OrigionReport页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
 
-        OrigionReportQueryDto query=new OrigionReportQueryDto();
+        OrigionReportQueryDto query = new OrigionReportQueryDto();
         Date now = new Date();
         query.setEndDate(DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
         query.setStartDate(DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
@@ -42,16 +51,21 @@ public class PurchaseGoodsReportController {
         return "purchaseGoodsReport/index";
     }
 
+    /**
+     * 查询PurchaseGoodsReport
+     *
+     * @param goodsReport
+     * @return
+     */
     @ApiOperation(value = "查询PurchaseGoodsReport", notes = "查询PurchaseGoodsReport，返回列表信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "PurchaseGoodsReport", paramType = "form", value = "PurchaseGoodsReport的form信息", required = false, dataType = "string") })
-    @RequestMapping(value = "/list.action", method = { RequestMethod.GET, RequestMethod.POST })
+            @ApiImplicitParam(name = "PurchaseGoodsReport", paramType = "form", value = "PurchaseGoodsReport的form信息", required = false, dataType = "string")})
+    @RequestMapping(value = "/list.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     List<PurchaseGoodsReportDto> list(PurchaseGoodsReportQueryDto goodsReport) {
         String productName = goodsReport.getProductName();
-        if(StringUtils.isNotBlank(productName))
-        {
-            goodsReport.setProductName("%"+productName+"%");
+        if (StringUtils.isNotBlank(productName)) {
+            goodsReport.setProductName("%" + productName + "%");
         }
         goodsReport.setMarketId(MarketUtil.returnMarket());
         return reportService.purchaseGoodsReportList(goodsReport);

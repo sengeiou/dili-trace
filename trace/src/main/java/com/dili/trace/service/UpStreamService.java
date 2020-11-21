@@ -59,9 +59,9 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 			result.setPage(1);
 			result.setRows(0);
-			result.setTotalItem(0);
+			result.setTotalItem(0L);
 			result.setTotalPage(1);
-			result.setStartIndex(1);
+			result.setStartIndex(1L);
 			return result;
 		}
 

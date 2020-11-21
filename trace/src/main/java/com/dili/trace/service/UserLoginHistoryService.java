@@ -43,12 +43,12 @@ public class UserLoginHistoryService extends BaseServiceImpl<UserLoginHistory, L
         result.setDatas(list);
         result.setPage(page.getPageNum());
         result.setRows(page.getPageSize());
-        result.setTotalItem(Integer.parseInt(String.valueOf(page.getTotal())));
+        result.setTotalItem(page.getTotal());
         result.setTotalPage(page.getPages());
         result.setStartIndex(page.getStartRow());
 
         long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
         List results = ValueProviderUtils.buildDataByProvider(domain, list);
-        return new EasyuiPageOutput(Integer.parseInt(String.valueOf(total)), results);
+        return new EasyuiPageOutput(total, results);
     }
 }

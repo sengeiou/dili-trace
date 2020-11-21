@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 报表
+ */
 @Api("/origionReport")
 @Controller
 @RequestMapping("/origionReport")
@@ -31,6 +34,11 @@ public class OrigionReportController {
     @Autowired
     private ReportService reportService;
 
+    /**
+     * 跳转到OrigionReport页面
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到OrigionReport页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
@@ -43,6 +51,11 @@ public class OrigionReportController {
         return "origionReport/index";
     }
 
+    /**
+     * 查询OrigionReport
+     * @param origionReport
+     * @return
+     */
     @ApiOperation(value = "查询OrigionReport", notes = "查询ROrigionReport，返回列表信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "OrigionReport", paramType = "form", value = "OrigionReport的form信息", required = false, dataType = "string") })

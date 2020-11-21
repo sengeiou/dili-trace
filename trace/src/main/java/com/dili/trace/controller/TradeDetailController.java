@@ -45,14 +45,25 @@ public class TradeDetailController {
 	@Autowired
 	Base64SignatureService base64SignatureService;
 
-	@ApiOperation("跳转到ApproverInfo页面")
+	/**
+	 *跳转到index页面
+	 * @param modelMap
+	 * @return
+	 */
+	@ApiOperation("跳转到index页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
 
 		return "tradeDetail/index";
 	}
 
-	@ApiOperation(value = "分页查询ApproverInfo", notes = "分页查询ApproverInfo，返回easyui分页信息")
+	/**
+	 * 分页查询
+	 * @param input
+	 * @return
+	 * @throws Exception
+	 */
+	@ApiOperation(value = "分页查询", notes = "分页查询ApproverInfo，返回easyui分页信息")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
@@ -61,7 +72,12 @@ public class TradeDetailController {
 		return out.toString();
 	}
 
-	@ApiOperation("新增ApproverInfo")
+	/**
+	 * 新增
+	 * @param input
+	 * @return
+	 */
+	@ApiOperation("新增")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
@@ -78,7 +94,12 @@ public class TradeDetailController {
 		}
 	}
 
-	@ApiOperation("修改ApproverInfo")
+	/**
+	 * 修改
+	 * @param input
+	 * @return
+	 */
+	@ApiOperation("修改")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "ApproverInfo", paramType = "form", value = "ApproverInfo的form信息", required = true, dataType = "string") })
 	@RequestMapping(value = "/update.action", method = { RequestMethod.GET, RequestMethod.POST })
@@ -96,7 +117,12 @@ public class TradeDetailController {
 
 	}
 
-	@ApiOperation("删除ApproverInfo")
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	@ApiOperation("删除")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "id", paramType = "form", value = "ApproverInfo的主键", required = true, dataType = "long") })
 	@RequestMapping(value = "/delete.action", method = { RequestMethod.GET, RequestMethod.POST })
@@ -105,7 +131,13 @@ public class TradeDetailController {
 		return BaseOutput.success("修改成功");
 	}
 
-	@ApiOperation("跳转到ApproverInfo页面")
+	/**
+	 * 详情
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+	@ApiOperation("详情")
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap, @PathVariable Long id) {
 		TradeDetail item = this.tradeDetailService.get(id);

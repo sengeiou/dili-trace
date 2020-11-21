@@ -26,12 +26,22 @@ public class SeparateSalesRecordController {
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
 
+    /**
+     * 跳转到SeparateSalesRecord页面
+     * @param modelMap
+     * @return
+     */
     @ApiOperation("跳转到SeparateSalesRecord页面")
     @RequestMapping(value="/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "separateSalesRecord/index";
     }
 
+    /**
+     * 查询SeparateSalesRecord
+     * @param separateSalesRecord
+     * @return
+     */
     @ApiOperation(value="查询SeparateSalesRecord", notes = "查询SeparateSalesRecord，返回列表信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="SeparateSalesRecord", paramType="form", value = "SeparateSalesRecord的form信息", required = false, dataType = "string")
@@ -41,6 +51,12 @@ public class SeparateSalesRecordController {
         return separateSalesRecordService.list(separateSalesRecord);
     }
 
+    /**
+     * 分页查询SeparateSalesRecord
+     * @param separateSalesRecord
+     * @return
+     * @throws Exception
+     */
     @ApiOperation(value="分页查询SeparateSalesRecord", notes = "分页查询SeparateSalesRecord，返回easyui分页信息")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="SeparateSalesRecord", paramType="form", value = "SeparateSalesRecord的form信息", required = false, dataType = "string")
@@ -50,6 +66,11 @@ public class SeparateSalesRecordController {
         return separateSalesRecordService.listEasyuiPageByExample(separateSalesRecord, true).toString();
     }
 
+    /**
+     * 新增SeparateSalesRecord
+     * @param separateSalesRecord
+     * @return
+     */
     @ApiOperation("新增SeparateSalesRecord")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="SeparateSalesRecord", paramType="form", value = "SeparateSalesRecord的form信息", required = true, dataType = "string")
@@ -60,6 +81,11 @@ public class SeparateSalesRecordController {
         return BaseOutput.success("新增成功");
     }
 
+    /**
+     * 修改SeparateSalesRecord
+     * @param separateSalesRecord
+     * @return
+     */
     @ApiOperation("修改SeparateSalesRecord")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="SeparateSalesRecord", paramType="form", value = "SeparateSalesRecord的form信息", required = true, dataType = "string")
@@ -70,6 +96,11 @@ public class SeparateSalesRecordController {
         return BaseOutput.success("修改成功");
     }
 
+    /**
+     * 删除SeparateSalesRecord
+     * @param id
+     * @return
+     */
     @ApiOperation("删除SeparateSalesRecord")
     @ApiImplicitParams({
 		@ApiImplicitParam(name="id", paramType="form", value = "SeparateSalesRecord的主键", required = true, dataType = "long")

@@ -30,6 +30,11 @@ public class TransactionReportApi {
     @Autowired
     BillReportService billReportService;
 
+    /**
+     * 报备单统计
+     * @param daySize
+     * @return
+     */
     @ApiOperation(value = "报备单统计", notes = "报备单统计")
     @RequestMapping(value = "/userBillReport.api", method = RequestMethod.GET)
     public BaseOutput userBillReport(@RequestParam String daySize) {
@@ -48,6 +53,11 @@ public class TransactionReportApi {
         }
     }
 
+    /**
+     * 交易单统计
+     * @param daySize
+     * @return
+     */
     @ApiOperation(value = "交易单统计", notes = "交易单统计")
     @RequestMapping(value = "/userTradeReport.api", method = RequestMethod.GET)
     public BaseOutput userTradeReport(@RequestParam String daySize) {
