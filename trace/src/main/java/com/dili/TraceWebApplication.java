@@ -19,9 +19,9 @@ import tk.mybatis.spring.annotation.MapperScan;
 @SpringBootApplication
 //处理事务支持
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.trace.etrade.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
-@ComponentScan(basePackages = {"com.dili.ss", "com.dili.trace", "com.dili.trace.etrade", "com.diligrp", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
-@RestfulScan({"com.dili.trace.rpc", "com.dili.uap.sdk.rpc"})
+@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
+@ComponentScan(basePackages = {"com.dili.ss", "com.dili.trace", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
+@RestfulScan({"com.dili.trace.rpc", "com.dili.uap.sdk.rpc","com.dili.bpmc.sdk.rpc"})
 //@DTOScan({"com.dili.trace","com.dili.ss"})
 //@Import(DynamicRoutingDataSourceRegister.class)
 @EnableScheduling

@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.dili.bpmc.sdk.rpc.EventRpc;
 import com.dili.common.exception.TraceBusinessException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
@@ -16,6 +17,7 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
@@ -64,6 +66,10 @@ public class RegisterBillController {
     ImageCertService imageCertService;
     @Autowired
     BillReportService billReportService;
+    @Autowired(required = false)
+    EventRpc eventRpc;
+    @Autowired
+    WebCtxService webCtxService;
 
     /**
      * 跳转到RegisterBill页面
@@ -83,7 +89,14 @@ public class RegisterBillController {
         UserTicket user = SessionContext.getSessionContext().getUserTicket();
         modelMap.put("user", user);
 
-        return "registerBill/index";
+        String view=this.webCtxService.getCurrentFirm().map(Firm::getCode).map(String::toLowerCase).map(code->{
+            if(!"sg".equalsIgnoreCase(code)){
+                return "";
+            }
+            return "-"+code;
+        }).map(suffix->"index"+suffix).orElse("index");
+        return "registerBill/"+view;
+
     }
 
     /**
@@ -230,7 +243,14 @@ public class RegisterBillController {
                 .mapToEntry(PreserveTypeEnum::getName, PreserveTypeEnum::getCode).toList());
         String str = String.valueOf(System.currentTimeMillis());
         modelMap.put("plate", "川A" + str.substring(str.length() - 5));
-        return "registerBill/create";
+
+        String view="create-"+this.webCtxService.getCurrentFirm().map(Firm::getCode).map(String::toLowerCase).map(code->{
+            if(!"sg".equalsIgnoreCase(code)){
+                return "";
+            }
+           return "-"+code;
+        }).map(suffix->"create"+suffix).orElse("create");
+        return "registerBill/"+view;
     }
 
     /**
@@ -486,7 +506,6 @@ public class RegisterBillController {
     /**
      * 所有状态列表
      *
-     * @param input
      * @return
      */
     @RequestMapping(value = "/listState.action", method = {RequestMethod.GET, RequestMethod.POST})
@@ -538,4 +557,19 @@ public class RegisterBillController {
         return dto.mask(!SessionContext.hasAccess("post", "registerBill/create.html#user"));
     }
 
+    /**
+     * 分页查询RegisterBill
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string") })
+    @RequestMapping(value = "/findHighLightBill.action", method = { RequestMethod.GET, RequestMethod.POST })
+    public @ResponseBody Object findHighLightBill(RegisterBillDto dto) throws Exception {
+
+        RegisterBill registerBill= registerBillService.findHighLightBill(dto);
+        return BaseOutput.success().setData(registerBill);
+    }
 }

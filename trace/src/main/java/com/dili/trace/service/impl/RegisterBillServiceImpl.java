@@ -1126,4 +1126,17 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 + BillVerifyStatusEnum.RETURNED.getCode() +" ))");
         return StreamEx.of(sqlList).joining(" AND ");
     }
+
+
+    @Override
+    public RegisterBill findHighLightBill(RegisterBillDto input) throws Exception {
+        RegisterBillDto dto = new RegisterBillDto();
+        UserTicket userTicket = getOptUser();
+        dto.setOperatorId(userTicket.getId());
+        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+        dto.setRows(1);
+        dto.setSort("code");
+        dto.setOrder("desc");
+        return this.listByExample(dto).stream().findFirst().orElse(new RegisterBill());
+    }
 }
