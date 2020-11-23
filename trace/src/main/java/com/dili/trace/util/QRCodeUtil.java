@@ -44,6 +44,14 @@ public class QRCodeUtil
     @Autowired
     private static UserService userService;
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * 创建二维码图片
+     * @Date 2020/11/23 10:31
+     * @return
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static BufferedImage createImage(String content, String imgPath,
             boolean needCompress,String extText) throws Exception
@@ -103,6 +111,13 @@ public class QRCodeUtil
         return image;
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description 
+     * @Date 2020/11/23 10:32
+     * @Param 插入图片
+     */
     private static void insertImage(BufferedImage source, String imgPath,
             boolean needCompress) throws Exception
     {
@@ -146,6 +161,14 @@ public class QRCodeUtil
         graph.dispose();
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:32
+     * 生成图片的二进制码
+     * @return
+     */
     public static byte[] encode(String content, String imgPath,
                                 boolean needCompress,String extText) throws Exception
     {
@@ -154,7 +177,13 @@ public class QRCodeUtil
         ImageIO.write(image, FORMAT_NAME, os);
         return os.toByteArray();
     }
-
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * 产生base64位码
+     * @Date 2020/11/23 10:33
+     */
     public static String base64Image(byte[] bytes) {
         String base64 = Base64.getEncoder().encodeToString(bytes).trim();
         base64 = "data:image/"+FORMAT_NAME+";base64," + base64;
@@ -162,6 +191,14 @@ public class QRCodeUtil
 
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:32
+     * 生成图片的二进制码
+     * @return
+     */
     public static void encode(String content, String imgPath,
             OutputStream output, boolean needCompress) throws Exception
     {
@@ -169,12 +206,28 @@ public class QRCodeUtil
         ImageIO.write(image, FORMAT_NAME, output);
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:32
+     * 生成图片的二进制码
+     * @return
+     */
     public static void encode(String content, OutputStream output)
             throws Exception
     {
         encode(content, null, output, false);
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:32
+     * 生成图片的二进制码
+     * @return
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static String decode(File file) throws Exception
     {
@@ -192,11 +245,25 @@ public class QRCodeUtil
         return result.getText();
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:32
+     * 生成图片的二进制码
+     * @return
+     */
     public static String decode(String path) throws Exception
     {
         return decode(new File(path));
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:34
+     */
     public static String getDefaultFileName()
     {
         Random random = new Random();
@@ -204,33 +271,65 @@ public class QRCodeUtil
         return num + ".jpg";
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * 获取大小
+     * @Date 2020/11/23 10:34
+     * @return
+     */
     public static int getSize()
     {
         return  DEFAULT_QRCODE_SIZE;
     }
 
+    /**
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:34
+     * @return
+     */
     public static int getImgWidth()
     {
         return  DEAUFLT_IMG_WIDTH;
     }
 
+    /**
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:34
+     * @return
+     */
     public static int getImgHeight()
     {
         return DEFAULT_IMG_HEIGHT;
     }
-    
+
+    /**
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:34
+     * @return
+     */
     public static String getDestPath(){
         return "";
     }
-    
+
+    /**
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:34
+     * @return
+     */
     public static String getImgPath(){
         return "";
     }
 
 
-    public static void main(String[] args) throws Exception
-    {
-        String text = "http://liuwuhen.iteye.com/";
-        encode(text, userService.getUserQrCode(445L).getBase64QRImg(),false,"ReportNo: NHTSY18080007");
-    }
+//    public static void main(String[] args) throws Exception
+//    {
+//        String text = "http://liuwuhen.iteye.com/";
+//        encode(text, userService.getUserQrCode(445L).getBase64QRImg(),false,"ReportNo: NHTSY18080007");
+//    }
 }
