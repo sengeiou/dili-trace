@@ -1,7 +1,7 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
+import com.dili.sg.trace.domain.ApproverInfo;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.ApproverInfo;
 
 public interface ApproverInfoMapper extends MyMapper<ApproverInfo> {
 }

@@ -1,13 +1,13 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
+import com.dili.sg.trace.domain.User;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
-import com.dili.trace.domain.User;
 
 /**
  * 由MyBatis Generator工具自动生成

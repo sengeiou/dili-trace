@@ -1,14 +1,14 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
 import java.util.List;
 
+import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.GroupByProductReportDto;
-import com.dili.trace.dto.MatchDetectParam;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillReportQueryDto;
-import com.dili.trace.dto.RegisterBillStaticsDto;
+import com.dili.sg.trace.dto.GroupByProductReportDto;
+import com.dili.sg.trace.dto.MatchDetectParam;
+import com.dili.sg.trace.dto.RegisterBillDto;
+import com.dili.sg.trace.dto.RegisterBillReportQueryDto;
+import com.dili.sg.trace.dto.RegisterBillStaticsDto;
 
 import org.apache.ibatis.annotations.Param;
 

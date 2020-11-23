@@ -1,9 +1,9 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
 import java.util.List;
 
+import com.dili.sg.trace.domain.CodeGenerate;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.CodeGenerate;
 
 public interface CodeGenerateMapper extends MyMapper<CodeGenerate> {
 	List<CodeGenerate> selectByTypeForUpdate(String type);

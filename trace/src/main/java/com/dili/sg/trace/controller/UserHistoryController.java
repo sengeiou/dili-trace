@@ -1,12 +1,12 @@
-package com.dili.trace.controller;
+package com.dili.sg.trace.controller;
 
 import java.util.Date;
 
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.dto.UserHistoryListDto;
-import com.dili.trace.dto.UserHistoryStaticsDto;
-import com.dili.trace.service.UserHistoryService;
+import com.dili.sg.trace.dto.UserHistoryListDto;
+import com.dili.sg.trace.dto.UserHistoryStaticsDto;
+import com.dili.sg.trace.service.UserHistoryService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

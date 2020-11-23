@@ -1,10 +1,10 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import java.util.List;
 
+import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.UsualAddress;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.sg.trace.domain.UsualAddress;
 
 public interface UsualAddressService extends BaseService<UsualAddress, Long> {
 	/**

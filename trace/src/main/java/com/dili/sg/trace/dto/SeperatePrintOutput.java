@@ -1,13 +1,8 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeperatePrintReport;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 
-import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.function.Function;
 

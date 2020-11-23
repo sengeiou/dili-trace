@@ -1,13 +1,6 @@
-package com.dili.trace.domain;
+package com.dili.sg.trace.domain;
 
 import com.dili.assets.sdk.dto.CusCategoryDTO;
-import com.dili.ss.domain.BaseDomain;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 public class Category {
 

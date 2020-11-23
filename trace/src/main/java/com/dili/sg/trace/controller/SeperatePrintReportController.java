@@ -1,9 +1,10 @@
-package com.dili.trace.controller;
+package com.dili.sg.trace.controller;
 
 import java.util.List;
 import java.util.function.Function;
 
-import com.dili.trace.dto.SeperatePrintOutput;
+import com.dili.sg.trace.dto.SeperatePrintOutput;
+import com.dili.sg.trace.exception.TraceBizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.ApproverInfo;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeperatePrintReport;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.SeperatePrintReportInputDto;
-import com.dili.trace.dto.SeperatePrintReportOutputDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.service.ApproverInfoService;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.SeperatePrintReportService;
+import com.dili.sg.trace.domain.SeperatePrintReport;
+import com.dili.sg.trace.dto.OperatorUser;
+import com.dili.sg.trace.dto.SeperatePrintReportInputDto;
+import com.dili.sg.trace.dto.SeperatePrintReportOutputDto;
+import com.dili.sg.trace.service.ApproverInfoService;
+import com.dili.sg.trace.service.BillService;
+import com.dili.sg.trace.service.SeperatePrintReportService;
 import com.diligrp.manage.sdk.session.SessionContext;
 
 import one.util.streamex.StreamEx;

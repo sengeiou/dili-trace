@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import com.dili.trace.service.CityService;
+import com.dili.sg.common.config.DefaultConfiguration;
+import com.dili.sg.common.util.MD5Util;
+import com.dili.sg.trace.exception.TraceBizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +21,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.util.MD5Util;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.dto.UserListDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.service.UsualAddressService;
-import com.dili.trace.util.BeanMapUtil;
-import com.dili.trace.util.MaskUserInfo;
+import com.dili.sg.trace.domain.User;
+import com.dili.sg.trace.domain.UserPlate;
+import com.dili.sg.trace.dto.UserListDto;
+import com.dili.sg.trace.glossary.UserTypeEnum;
+import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
+import com.dili.sg.trace.service.UserPlateService;
+import com.dili.sg.trace.service.UserService;
+import com.dili.sg.trace.service.UsualAddressService;
+import com.dili.sg.trace.util.BeanMapUtil;
+import com.dili.sg.trace.util.MaskUserInfo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

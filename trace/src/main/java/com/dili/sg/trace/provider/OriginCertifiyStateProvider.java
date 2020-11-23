@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.dili.trace.provider;
+package com.dili.sg.trace.provider;
 
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;

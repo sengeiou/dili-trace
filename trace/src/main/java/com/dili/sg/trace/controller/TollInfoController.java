@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.dili.assets.sdk.dto.CityDto;
-import com.dili.trace.domain.Category;
-import com.dili.trace.domain.City;
-import com.dili.trace.service.CategoryService;
-import com.dili.trace.service.CityService;
+import com.dili.sg.trace.domain.Category;
+import com.dili.sg.trace.service.CategoryService;
+import com.dili.sg.trace.service.CityService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

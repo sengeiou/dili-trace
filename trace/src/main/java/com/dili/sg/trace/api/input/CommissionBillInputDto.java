@@ -1,4 +1,4 @@
-package com.dili.trace.api.input;
+package com.dili.sg.trace.api.input;
 
 public class CommissionBillInputDto {
 	private Long billId;

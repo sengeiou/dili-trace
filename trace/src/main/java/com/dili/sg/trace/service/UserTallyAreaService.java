@@ -1,7 +1,7 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.UserTallyArea;
+import com.dili.sg.trace.domain.UserTallyArea;
 
 /**
  * 由MyBatis Generator工具自动生成

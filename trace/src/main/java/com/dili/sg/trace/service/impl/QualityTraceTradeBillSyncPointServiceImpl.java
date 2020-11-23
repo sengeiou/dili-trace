@@ -1,11 +1,8 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 
-import com.dili.trace.glossary.OrderVersionEnum;
-import one.util.streamex.StreamEx;
+import com.dili.sg.trace.glossary.OrderVersionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -14,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.dao.QualityTraceTradeBillSyncPointMapper;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
-import com.dili.trace.dto.QualityTraceTradeBillSyncPointDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.service.QualityTraceTradeBillService;
-import com.dili.trace.service.QualityTraceTradeBillSyncPointService;
+import com.dili.sg.trace.dao.QualityTraceTradeBillSyncPointMapper;
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.domain.QualityTraceTradeBillSyncPoint;
+import com.dili.sg.trace.dto.QualityTraceTradeBillSyncPointDto;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.service.QualityTraceTradeBillService;
+import com.dili.sg.trace.service.QualityTraceTradeBillSyncPointService;
 
 @EnableAsync
 @Service

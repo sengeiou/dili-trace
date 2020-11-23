@@ -1,4 +1,4 @@
-package com.dili.trace.domain;
+package com.dili.sg.trace.domain;
 
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;

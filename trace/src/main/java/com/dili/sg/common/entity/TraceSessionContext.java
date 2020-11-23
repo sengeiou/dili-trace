@@ -1,13 +1,10 @@
-package com.dili.common.entity;
+package com.dili.sg.common.entity;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.exception.TraceBizException;
+import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.sg.trace.dto.OperatorUser;
+import com.dili.sg.trace.exception.TraceBizException;
 
 public class TraceSessionContext implements Serializable {
 	private static final long serialVersionUID = -12145451L;

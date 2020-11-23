@@ -1,7 +1,7 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
+import com.dili.sg.trace.domain.SeparateSalesRecord;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.SeparateSalesRecord;
 import org.apache.ibatis.annotations.Param;
 
 public interface SeparateSalesRecordMapper extends MyMapper<SeparateSalesRecord> {

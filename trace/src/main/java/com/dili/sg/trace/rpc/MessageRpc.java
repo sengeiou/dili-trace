@@ -1,4 +1,4 @@
-package com.dili.trace.rpc;
+package com.dili.sg.trace.rpc;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.domain.BaseOutput;

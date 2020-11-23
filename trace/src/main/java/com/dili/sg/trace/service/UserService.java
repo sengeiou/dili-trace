@@ -1,14 +1,14 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import java.util.List;
 
+import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.UserListDto;
-import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.sg.trace.domain.User;
+import com.dili.sg.trace.dto.UserListDto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -20,7 +20,7 @@ public interface UserService extends BaseService<User, Long> {
  * @param user 用户信息
  * @param originalPassword 原始密码
  */
-	void register(User user,UserTypeEnum userType,String originalPassword);
+	void register(User user, UserTypeEnum userType, String originalPassword);
 
 	/**
 	 * 修改用户信息

@@ -1,4 +1,4 @@
-package com.dili.trace.jobs;
+package com.dili.sg.trace.jobs;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -10,6 +10,11 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
+import com.dili.sg.trace.service.QualityTraceTradeBillService;
+import com.dili.sg.trace.service.RegisterBillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +22,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.stereotype.Component;
 
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.MatchDetectParam;
-import com.dili.trace.dto.QualityTraceTradeBillDto;
-import com.dili.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
-import com.dili.trace.service.QualityTraceTradeBillService;
-import com.dili.trace.service.RegisterBillService;
+import com.dili.sg.trace.dao.RegisterBillMapper;
+import com.dili.sg.trace.dto.MatchDetectParam;
+import com.dili.sg.trace.dto.QualityTraceTradeBillDto;
 
 /**
  * 自动匹配登记单与订单信息

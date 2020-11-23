@@ -1,7 +1,7 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
+import com.dili.sg.trace.domain.Base64Signature;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.Base64Signature;
 
 public interface Base64SignatureMapper extends MyMapper<Base64Signature> {
 }

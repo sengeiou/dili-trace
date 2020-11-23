@@ -1,7 +1,7 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
+import com.dili.sg.trace.domain.SeperatePrintReport;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.SeperatePrintReport;
 
 public interface SeperatePrintReportMapper extends MyMapper<SeperatePrintReport> {
 

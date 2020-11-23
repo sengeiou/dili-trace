@@ -1,10 +1,11 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
+import com.dili.sg.trace.exception.TraceBizException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,20 +17,18 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.dto.ECommerceBillPrintOutput;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.BillTypeEnum;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.SeparateSalesRecord;
+import com.dili.sg.trace.dto.ECommerceBillPrintOutput;
+import com.dili.sg.trace.dto.OperatorUser;
+import com.dili.sg.trace.dto.RegisterBillDto;
+import com.dili.sg.trace.dto.RegisterBillOutputDto;
+import com.dili.sg.trace.glossary.BillDetectStateEnum;
+import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.sg.trace.glossary.RegisterBillStateEnum;
+import com.dili.sg.trace.glossary.RegisterSourceEnum;
 
 import one.util.streamex.StreamEx;
 

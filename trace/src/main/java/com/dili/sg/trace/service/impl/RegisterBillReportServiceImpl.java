@@ -1,4 +1,4 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,19 +7,17 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.dto.GroupByProductReportDto;
-import com.dili.trace.dto.RegisterBillReportQueryDto;
-import com.dili.trace.glossary.BillTypeEnum;
-import com.dili.trace.service.RegisterBillReportService;
-import org.springframework.context.annotation.Primary;
+import com.dili.sg.trace.dao.RegisterBillMapper;
+import com.dili.sg.trace.dto.GroupByProductReportDto;
+import com.dili.sg.trace.dto.RegisterBillReportQueryDto;
+import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.sg.trace.service.RegisterBillReportService;
 
 
 @Service

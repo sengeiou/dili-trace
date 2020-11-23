@@ -1,4 +1,4 @@
-package com.dili.trace.glossary;
+package com.dili.sg.trace.glossary;
 
 public enum QualityTraceTradeBillMatchStatusEnum {
 	   INITED(1, "初始"),

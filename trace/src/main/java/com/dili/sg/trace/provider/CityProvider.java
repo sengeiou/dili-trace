@@ -1,4 +1,4 @@
-package com.dili.trace.provider;
+package com.dili.sg.trace.provider;
 
 /**
  * <B>Description</B>
@@ -14,7 +14,7 @@ import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.service.CityService;
+import com.dili.sg.trace.service.CityService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;

@@ -1,7 +1,8 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
+import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.ss.domain.BaseDomain;
-import com.dili.trace.domain.RegisterBill;
+
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;

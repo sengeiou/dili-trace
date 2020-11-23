@@ -1,7 +1,7 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.ApproverInfo;
+import com.dili.sg.trace.domain.ApproverInfo;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.

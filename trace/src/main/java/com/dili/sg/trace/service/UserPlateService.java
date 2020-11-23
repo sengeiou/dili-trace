@@ -1,11 +1,10 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import java.util.List;
 import java.util.Map;
 
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
+import com.dili.sg.trace.domain.UserPlate;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-10-11 10:05:11.

@@ -1,12 +1,11 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
 import java.util.List;
 
+import com.dili.sg.trace.domain.UserHistory;
+import com.dili.sg.trace.dto.UserHistoryListDto;
+import com.dili.sg.trace.dto.UserHistoryStaticsDto;
 import com.dili.ss.base.MyMapper;
-import com.dili.ss.domain.BasePage;
-import com.dili.trace.domain.UserHistory;
-import com.dili.trace.dto.UserHistoryListDto;
-import com.dili.trace.dto.UserHistoryStaticsDto;
 
 public interface UserHistoryMapper extends MyMapper<UserHistory> {
 	public UserHistoryStaticsDto queryUserHistoryStatics(UserHistoryListDto dto);

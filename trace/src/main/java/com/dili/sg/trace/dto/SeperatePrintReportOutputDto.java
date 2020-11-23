@@ -1,17 +1,11 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
 
-import javax.persistence.Column;
-
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeperatePrintReport;
-
-import io.swagger.annotations.ApiModelProperty;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.SeperatePrintReport;
 
 public class SeperatePrintReportOutputDto {
 
@@ -52,7 +46,7 @@ public class SeperatePrintReportOutputDto {
     
     private String detectOperatorName;
     
-	public static SeperatePrintReportOutputDto build(SeperatePrintReport seperatePrintReport,RegisterBill bill,String approverBase64Sign,String base64Qrcode) {
+	public static SeperatePrintReportOutputDto build(SeperatePrintReport seperatePrintReport, RegisterBill bill, String approverBase64Sign, String base64Qrcode) {
 		SeperatePrintReportOutputDto dto = new SeperatePrintReportOutputDto();
 		dto.setProductName(bill.getProductName());
 		dto.setUserName(bill.getName());

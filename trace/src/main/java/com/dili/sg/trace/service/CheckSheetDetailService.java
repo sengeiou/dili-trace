@@ -1,4 +1,4 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import java.util.Collections;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.domain.CheckSheetDetail;
+import com.dili.sg.trace.domain.CheckSheetDetail;
 
 @Service
 public class CheckSheetDetailService extends BaseServiceImpl<CheckSheetDetail, Long> {

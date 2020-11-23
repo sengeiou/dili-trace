@@ -1,8 +1,7 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.ApproverInfo;
-import com.dili.trace.domain.Base64Signature;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.service.ApproverInfoService;
-import com.dili.trace.service.Base64SignatureService;
+import com.dili.sg.trace.domain.ApproverInfo;
+import com.dili.sg.trace.domain.Base64Signature;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.service.ApproverInfoService;
+import com.dili.sg.trace.service.Base64SignatureService;
 
 @Service
 public class ApproverInfoServiceImpl extends BaseServiceImpl<ApproverInfo, Long> implements ApproverInfoService {

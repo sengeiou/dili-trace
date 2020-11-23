@@ -1,14 +1,14 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import javax.persistence.Column;
 
+import com.dili.sg.trace.domain.ApproverInfo;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
-import com.dili.trace.domain.ApproverInfo;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public interface ApproverInfoQueryDto extends ApproverInfo{
+public interface ApproverInfoQueryDto extends ApproverInfo {
     @Column(name = "`user_name`")
     @Like(Like.RIGHT)
     public String getLikeUserName();

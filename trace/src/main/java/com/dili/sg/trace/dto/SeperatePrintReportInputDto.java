@@ -1,8 +1,8 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.util.List;
 
-import com.dili.trace.domain.SeperatePrintReport;
+import com.dili.sg.trace.domain.SeperatePrintReport;
 
 public class SeperatePrintReportInputDto {
 	private Long approverInfoId;

@@ -1,4 +1,4 @@
-package com.dili.trace.provider;
+package com.dili.sg.trace.provider;
 
 /**
  * <B>Description</B>
@@ -12,7 +12,7 @@ package com.dili.trace.provider;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.service.ApproverInfoService;
+import com.dili.sg.trace.service.ApproverInfoService;
 
 import org.springframework.stereotype.Component;
 

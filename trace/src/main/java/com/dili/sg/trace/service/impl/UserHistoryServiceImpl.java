@@ -1,4 +1,4 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,18 +15,18 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.trace.dao.UserHistoryMapper;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserHistory;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserTallyArea;
-import com.dili.trace.dto.UserHistoryListDto;
-import com.dili.trace.dto.UserHistoryStaticsDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.service.UserHistoryService;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.service.UserTallyAreaService;
+import com.dili.sg.trace.dao.UserHistoryMapper;
+import com.dili.sg.trace.domain.User;
+import com.dili.sg.trace.domain.UserHistory;
+import com.dili.sg.trace.domain.UserPlate;
+import com.dili.sg.trace.domain.UserTallyArea;
+import com.dili.sg.trace.dto.UserHistoryListDto;
+import com.dili.sg.trace.dto.UserHistoryStaticsDto;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.service.UserHistoryService;
+import com.dili.sg.trace.service.UserPlateService;
+import com.dili.sg.trace.service.UserService;
+import com.dili.sg.trace.service.UserTallyAreaService;
 
 @Transactional
 @Service

@@ -1,11 +1,10 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import com.dili.assets.sdk.dto.TradeTypeDto;
 import com.dili.assets.sdk.dto.TradeTypeQuery;
 import com.dili.assets.sdk.rpc.TradeTypeRpc;
 import com.dili.commons.bstable.TableResult;
-import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.TradeType;
+import com.dili.sg.trace.domain.TradeType;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;

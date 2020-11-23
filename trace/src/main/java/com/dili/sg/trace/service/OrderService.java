@@ -1,18 +1,13 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
-import cn.hutool.core.map.MapUtil;
-import com.dili.assets.sdk.dto.TradeTypeDto;
-import com.dili.assets.sdk.dto.TradeTypeQuery;
-import com.dili.assets.sdk.rpc.TradeTypeRpc;
 import com.dili.orders.dto.WeighingBillClientListDto;
 import com.dili.orders.rpc.OrderServiceRpc;
+import com.dili.sg.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.TradeType;
-import com.dili.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.domain.TradeType;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

@@ -1,10 +1,6 @@
-package com.dili.trace.domain;
+package com.dili.sg.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;

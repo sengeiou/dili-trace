@@ -1,4 +1,4 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import com.dili.assets.sdk.dto.CityDto;
 import com.dili.assets.sdk.rpc.CityRpc;

@@ -1,4 +1,4 @@
-package com.dili.trace.controller;
+package com.dili.sg.trace.controller;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -9,7 +9,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.dili.trace.service.*;
+import com.dili.sg.trace.service.*;
+import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.UserService;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
+import com.dili.sg.trace.exception.TraceBizException;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -26,18 +31,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.UsualAddress;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.glossary.BillTypeEnum;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
+import com.dili.sg.trace.domain.DetectRecord;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.UsualAddress;
+import com.dili.sg.trace.dto.OperatorUser;
+import com.dili.sg.trace.dto.RegisterBillDto;
+import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.sg.trace.glossary.RegisterBillStateEnum;
+import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

@@ -1,4 +1,4 @@
-package com.dili.trace.glossary;
+package com.dili.sg.trace.glossary;
 
 public enum YnEnum {
     YES(1,"正常"),

@@ -1,7 +1,7 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
+import com.dili.sg.trace.domain.CheckSheetDetail;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.CheckSheetDetail;
 
 public interface CheckSheetDetailMapper extends MyMapper<CheckSheetDetail> {
 }

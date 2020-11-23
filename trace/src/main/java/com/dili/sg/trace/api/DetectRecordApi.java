@@ -1,4 +1,4 @@
-package com.dili.trace.api;
+package com.dili.sg.trace.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,27 +6,24 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.config.DefaultConfiguration;
+import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.sg.common.config.DefaultConfiguration;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.dto.DetectRecordParam;
+import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
+import com.dili.sg.trace.dto.TaskGetParam;
+import com.dili.sg.trace.glossary.RegisterBillStateEnum;
+import com.dili.sg.trace.glossary.RegisterSourceEnum;
+import com.dili.sg.trace.service.BillService;
+import com.dili.sg.trace.service.DetectRecordService;
+import com.dili.sg.trace.service.DetectTaskService;
+import com.dili.sg.trace.service.RegisterBillService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.DetectRecordParam;
-import com.dili.trace.dto.DetectTaskApiOutputDto;
-import com.dili.trace.dto.TaskGetParam;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.DetectTaskService;
-import com.dili.trace.service.RegisterBillService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

@@ -1,6 +1,6 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
-import com.dili.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.RegisterBill;
 
 import java.io.Serializable;
 import java.util.List;

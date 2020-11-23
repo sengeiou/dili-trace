@@ -1,20 +1,20 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.service.impl.CodeGenerateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeperatePrintReport;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.SeperatePrintReportOutputDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.service.impl.CodeGenerateServiceImpl;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.SeperatePrintReport;
+import com.dili.sg.trace.dto.OperatorUser;
+import com.dili.sg.trace.dto.SeperatePrintReportOutputDto;
 import com.google.common.collect.Lists;
 
 import one.util.streamex.StreamEx;

@@ -1,10 +1,9 @@
 package com.dili.sg.trace.dao;
 
-import java.util.Date;
 import java.util.List;
 
+import com.dili.sg.trace.domain.UsualAddress;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.UsualAddress;
 
 public interface UsualAddressMapper extends MyMapper<UsualAddress> {
 	/**

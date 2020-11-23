@@ -1,7 +1,7 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
+import com.dili.sg.trace.domain.User;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.domain.User;
 
 public interface UserMapper extends MyMapper<User> {
 }

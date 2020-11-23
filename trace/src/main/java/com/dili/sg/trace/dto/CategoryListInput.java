@@ -1,8 +1,8 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
+import com.dili.sg.trace.domain.Category;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
-import com.dili.trace.domain.Category;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;

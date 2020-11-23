@@ -1,9 +1,9 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.dao.UserTallyAreaMapper;
-import com.dili.trace.domain.UserTallyArea;
-import com.dili.trace.service.UserTallyAreaService;
+import com.dili.sg.trace.dao.UserTallyAreaMapper;
+import com.dili.sg.trace.domain.UserTallyArea;
+import com.dili.sg.trace.service.UserTallyAreaService;
 import org.springframework.stereotype.Service;
 
 /**

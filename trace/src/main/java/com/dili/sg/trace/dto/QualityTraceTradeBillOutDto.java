@@ -1,11 +1,11 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.util.List;
 
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.SeparateSalesRecord;
 import com.dili.ss.dto.IBaseDomain;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
 
 public interface QualityTraceTradeBillOutDto extends IBaseDomain {
 

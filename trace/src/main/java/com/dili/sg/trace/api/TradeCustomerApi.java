@@ -1,11 +1,10 @@
-package com.dili.trace.api;
+package com.dili.sg.trace.api;
 
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.sg.trace.domain.User;
+import com.dili.sg.trace.service.CustomerService;
+import com.dili.sg.trace.service.UserService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Customer;
-import com.dili.trace.domain.User;
-import com.dili.trace.service.CustomerService;
-import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -66,7 +65,7 @@ public class TradeCustomerApi {
      */
     @ApiOperation("根据理货区号获取客户获取")
     @RequestMapping(value = "/tallyAreaNo/{tallyAreaNo}",method = {RequestMethod.GET, RequestMethod.POST})
-    public BaseOutput<User> findTallyAreaNo( @PathVariable String tallyAreaNo){
+    public BaseOutput<User> findTallyAreaNo(@PathVariable String tallyAreaNo){
         User customer = userService.findByTallyAreaNo(tallyAreaNo);
         if(customer!=null){
             return BaseOutput.success().setData(customer);

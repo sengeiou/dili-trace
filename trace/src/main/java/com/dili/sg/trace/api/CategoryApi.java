@@ -1,9 +1,9 @@
 package com.dili.sg.trace.api;
 
+import com.dili.sg.trace.domain.Category;
+import com.dili.sg.trace.dto.CategoryListInput;
+import com.dili.sg.trace.service.CategoryService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Category;
-import com.dili.trace.dto.CategoryListInput;
-import com.dili.trace.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

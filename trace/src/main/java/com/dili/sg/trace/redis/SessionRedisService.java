@@ -1,19 +1,19 @@
-package com.dili.trace.redis;
+package com.dili.sg.trace.redis;
 
 import java.util.Map;
 import java.util.Optional;
 
+import com.dili.sg.common.config.DefaultConfiguration;
+import com.dili.sg.common.entity.SessionData;
+import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.sg.trace.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.entity.SessionData;
 import com.dili.ss.redis.service.RedisUtil;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.domain.User;
 
 @Component
 public class SessionRedisService {

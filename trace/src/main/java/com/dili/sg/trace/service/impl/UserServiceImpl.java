@@ -1,4 +1,4 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +12,18 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.dili.sg.common.util.MD5Util;
+import com.dili.sg.trace.dao.UserMapper;
+import com.dili.sg.trace.domain.User;
+import com.dili.sg.trace.domain.UserPlate;
+import com.dili.sg.trace.domain.UserTallyArea;
+import com.dili.sg.trace.dto.UserListDto;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.glossary.EnabledStateEnum;
+import com.dili.sg.trace.glossary.UserTypeEnum;
+import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
+import com.dili.sg.trace.glossary.YnEnum;
+import com.dili.sg.trace.redis.SessionRedisService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,29 +31,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserTallyArea;
-import com.dili.trace.dto.UserListDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.redis.SessionRedisService;
-import com.dili.trace.service.UserHistoryService;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.service.UserTallyAreaService;
-import com.dili.trace.service.UsualAddressService;
+import com.dili.sg.trace.service.UserHistoryService;
+import com.dili.sg.trace.service.UserPlateService;
+import com.dili.sg.trace.service.UserService;
+import com.dili.sg.trace.service.UserTallyAreaService;
+import com.dili.sg.trace.service.UsualAddressService;
 
 import cn.hutool.core.collection.CollUtil;
 import one.util.streamex.StreamEx;
@@ -57,15 +57,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	}
 
 	@Autowired
-	SessionRedisService sessionRedisService;
+    SessionRedisService sessionRedisService;
 	@Resource
 	private UserTallyAreaService userTallyAreaService;
 	@Resource
-	UserPlateService userPlateService;
+    UserPlateService userPlateService;
 	@Resource
-	UserHistoryService userHistoryService;
+    UserHistoryService userHistoryService;
 	@Resource
-	UsualAddressService usualAddressService;
+    UsualAddressService usualAddressService;
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override

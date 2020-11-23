@@ -1,12 +1,8 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
+import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
-import com.dili.ss.dto.IMybatisForceParams;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.trace.domain.RegisterBill;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;

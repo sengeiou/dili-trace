@@ -1,4 +1,4 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.stream.Collectors;
 
@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.Base64Signature;
-import com.dili.trace.service.Base64SignatureService;
+import com.dili.sg.trace.domain.Base64Signature;
+import com.dili.sg.trace.service.Base64SignatureService;
 
 @Service
 public class Base64SignatureServiceImpl extends BaseServiceImpl<Base64Signature, Long>

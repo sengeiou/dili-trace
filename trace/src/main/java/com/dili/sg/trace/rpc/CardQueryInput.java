@@ -1,4 +1,4 @@
-package com.dili.trace.rpc;
+package com.dili.sg.trace.rpc;
 
 import java.util.List;
 

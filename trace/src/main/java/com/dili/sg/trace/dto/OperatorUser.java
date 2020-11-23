@@ -1,9 +1,8 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
-import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.exception.TraceBizException;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 
 public class OperatorUser {
 	private Long id;
@@ -37,7 +36,7 @@ public class OperatorUser {
 	}
 	public static OperatorUser build(SessionContext sessionContext) {
 		if(sessionContext==null) {
-			throw new TraceBizException("请先登录");	
+			throw new TraceBizException("请先登录");
 		}
 		try {
 			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();

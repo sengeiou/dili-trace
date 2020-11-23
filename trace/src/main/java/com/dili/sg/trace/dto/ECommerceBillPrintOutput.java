@@ -1,12 +1,11 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import com.dili.sg.trace.domain.RegisterBill;
 import org.apache.commons.lang3.StringUtils;
-
-import com.dili.trace.domain.RegisterBill;
 
 public class ECommerceBillPrintOutput {
 
@@ -25,7 +24,7 @@ public class ECommerceBillPrintOutput {
 	//客服电话
 	private String customerServiceTel;
 
-	public static ECommerceBillPrintOutput build(RegisterBill bill,String base64Qrcode) {
+	public static ECommerceBillPrintOutput build(RegisterBill bill, String base64Qrcode) {
 
 		ECommerceBillPrintOutput out = new ECommerceBillPrintOutput();
 		out.setCode(bill.getCode());

@@ -1,11 +1,12 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import com.dili.trace.glossary.*;
-import com.diligrp.manage.sdk.domain.UserTicket;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.sg.trace.glossary.*;
+import com.dili.sg.trace.glossary.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.exception.TraceBizException;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.dto.OperatorUser;
+import com.dili.sg.trace.dto.RegisterBillDto;
 
 import one.util.streamex.StreamEx;
 

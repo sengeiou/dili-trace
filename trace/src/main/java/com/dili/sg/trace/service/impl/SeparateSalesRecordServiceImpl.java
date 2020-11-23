@@ -1,10 +1,9 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.dao.SeparateSalesRecordMapper;
-import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.sg.trace.dao.SeparateSalesRecordMapper;
+import com.dili.sg.trace.domain.SeparateSalesRecord;
+import com.dili.sg.trace.service.SeparateSalesRecordService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

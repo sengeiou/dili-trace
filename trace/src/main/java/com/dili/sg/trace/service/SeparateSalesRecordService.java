@@ -1,8 +1,7 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.SeparateSalesRecord;
-import org.apache.ibatis.annotations.Param;
+import com.dili.sg.trace.domain.SeparateSalesRecord;
 
 import java.util.List;
 

@@ -1,18 +1,16 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import cn.hutool.http.HttpUtil;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
 import com.dili.customer.sdk.rpc.CustomerRpc;
-import com.dili.trace.rpc.CardResultDto;
+import com.dili.sg.trace.rpc.CardResultDto;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Customer;
-import com.dili.trace.rpc.CardQueryInput;
+import com.dili.sg.trace.domain.Customer;
+import com.dili.sg.trace.rpc.CardQueryInput;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.ReferenceType;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
@@ -23,9 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 

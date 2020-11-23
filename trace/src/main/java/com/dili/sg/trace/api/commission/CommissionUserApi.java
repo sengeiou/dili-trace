@@ -1,5 +1,6 @@
-package com.dili.trace.api.commission;
+package com.dili.sg.trace.api.commission;
 
+import com.dili.sg.trace.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.User;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.service.SMSService;
-import com.dili.trace.service.impl.UserServiceImpl;
+import com.dili.sg.trace.domain.User;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.service.SMSService;
 
 /**
  * 委托单接口

@@ -1,11 +1,11 @@
-package com.dili.trace.dao;
+package com.dili.sg.trace.dao;
 
 import java.util.List;
 
+import com.dili.sg.trace.api.output.QualityTraceTradeBillOutput;
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.dto.QualityTraceTradeBillRepeatDto;
 import com.dili.ss.base.MyMapper;
-import com.dili.trace.api.output.QualityTraceTradeBillOutput;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
 import org.apache.ibatis.annotations.Param;
 
 public interface QualityTraceTradeBillMapper extends MyMapper<QualityTraceTradeBill> {

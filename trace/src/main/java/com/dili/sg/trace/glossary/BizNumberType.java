@@ -1,4 +1,4 @@
-package com.dili.trace.glossary;
+package com.dili.sg.trace.glossary;
 
 /**
  * 业务编号类型及生成规则配置

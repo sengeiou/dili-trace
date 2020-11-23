@@ -1,4 +1,4 @@
-package com.dili.trace.domain;
+package com.dili.sg.trace.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;

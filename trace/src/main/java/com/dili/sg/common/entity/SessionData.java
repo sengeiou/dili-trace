@@ -4,10 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dili.trace.domain.User;
-import com.dili.trace.dto.OperatorUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.dili.sg.trace.domain.User;
+import com.dili.sg.trace.dto.OperatorUser;
 import com.google.common.base.Objects;
 
 import org.apache.commons.beanutils.BeanMap;

@@ -1,9 +1,9 @@
-package com.dili.trace.util;
+package com.dili.sg.trace.util;
 
+import com.dili.sg.trace.domain.Customer;
+import com.dili.sg.trace.domain.User;
 import org.apache.commons.lang3.StringUtils;
 
-import com.dili.trace.domain.Customer;
-import com.dili.trace.domain.User;
 import com.diligrp.manage.sdk.session.SessionContext;
 
 public class MaskUserInfo {

@@ -1,4 +1,4 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -8,9 +8,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.dili.trace.domain.CheckSheet;
-import com.dili.trace.domain.CheckSheetDetail;
-import com.dili.trace.glossary.BillDetectStateEnum;
+import com.dili.sg.trace.domain.CheckSheet;
+import com.dili.sg.trace.domain.CheckSheetDetail;
+import com.dili.sg.trace.glossary.BillDetectStateEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -40,7 +40,7 @@ public class CheckSheetPrintOutput {
     private List<CheckSheetDetailPrintOutput> checkSheetDetailList;
 
     public static CheckSheetPrintOutput build(String detailUrl, CheckSheet checkSheet, String approverSign,
-            List<CheckSheetDetail> checkSheetDetailList, Function<String, String> base64Generator) {
+                                              List<CheckSheetDetail> checkSheetDetailList, Function<String, String> base64Generator) {
 
 
         CheckSheetPrintOutput checkSheetPrintOutput = new CheckSheetPrintOutput();

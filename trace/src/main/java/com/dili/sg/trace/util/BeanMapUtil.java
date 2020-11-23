@@ -1,4 +1,4 @@
-package com.dili.trace.util;
+package com.dili.sg.trace.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -8,7 +8,6 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.cglib.beans.BeanMap;
 
 /**

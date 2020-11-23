@@ -1,11 +1,24 @@
-package com.dili.trace.api;
+package com.dili.sg.trace.api;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.beanutils.BeanUtils;
+import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.sg.common.entity.TraceSessionContext;
+import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.SeparateSalesRecord;
+import com.dili.sg.trace.dto.ECommerceBillInputDto;
+import com.dili.sg.trace.dto.OperatorUser;
+import com.dili.sg.trace.dto.RegisterBillDto;
+import com.dili.sg.trace.dto.RegisterBillOutputDto;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.sg.trace.service.BillService;
+import com.dili.sg.trace.service.ECommerceBillService;
+import com.dili.sg.trace.service.SeparateSalesRecordService;
+import com.dili.sg.trace.service.UserService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,24 +30,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.TraceSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTO;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.dto.ECommerceBillInputDto;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.ECommerceBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
-import com.dili.trace.service.UserService;
 
 import io.swagger.annotations.ApiOperation;
 

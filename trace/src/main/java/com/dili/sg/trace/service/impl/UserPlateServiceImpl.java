@@ -1,4 +1,4 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,11 +14,10 @@ import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.trace.domain.UserTallyArea;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UserTallyAreaService;
+import com.dili.sg.trace.domain.UserPlate;
+import com.dili.sg.trace.domain.UserTallyArea;
+import com.dili.sg.trace.service.UserPlateService;
+import com.dili.sg.trace.service.UserTallyAreaService;
 
 import tk.mybatis.mapper.entity.Example;
 

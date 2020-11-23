@@ -1,4 +1,4 @@
-package com.dili.trace.glossary;
+package com.dili.sg.trace.glossary;
 
 import org.apache.commons.lang3.StringUtils;
 

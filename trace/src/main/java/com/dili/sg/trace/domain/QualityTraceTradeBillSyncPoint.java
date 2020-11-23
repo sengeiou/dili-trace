@@ -1,4 +1,4 @@
-package com.dili.trace.domain;
+package com.dili.sg.trace.domain;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;

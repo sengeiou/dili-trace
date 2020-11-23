@@ -1,6 +1,6 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
-import com.dili.trace.domain.CheckSheetDetail;
+import com.dili.sg.trace.domain.CheckSheetDetail;
 
 public class CheckSheetDetailPrintOutput {
 
@@ -20,7 +20,7 @@ public class CheckSheetDetailPrintOutput {
 
     private String detectStateView;
 
-    public static CheckSheetDetailPrintOutput build(CheckSheetDetail checkSheetDetai,String detectStateView) {
+    public static CheckSheetDetailPrintOutput build(CheckSheetDetail checkSheetDetai, String detectStateView) {
         CheckSheetDetailPrintOutput detailOutprint = new CheckSheetDetailPrintOutput();
         detailOutprint.setProductName(checkSheetDetai.getProductName());
         detailOutprint.setOriginName(checkSheetDetai.getOriginName());

@@ -1,16 +1,6 @@
-package com.dili.trace.domain;
+package com.dili.sg.trace.domain;
 
 import com.dili.assets.sdk.dto.TradeTypeDto;
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
-
-import javax.persistence.*;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 /**
  * 由MyBatis Generator工具自动生成

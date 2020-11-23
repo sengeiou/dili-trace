@@ -1,11 +1,11 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
 import java.util.List;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.dto.DetectRecordParam;
-import com.dili.trace.dto.DetectTaskApiOutputDto;
-import com.dili.trace.dto.TaskGetParam;
+import com.dili.sg.trace.dto.DetectRecordParam;
+import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
+import com.dili.sg.trace.dto.TaskGetParam;
 
 public interface DetectTaskService  {
 

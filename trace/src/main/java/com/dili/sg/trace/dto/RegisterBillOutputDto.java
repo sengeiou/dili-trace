@@ -1,11 +1,11 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.util.List;
 
-import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.sg.trace.domain.DetectRecord;
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.SeparateSalesRecord;
 
 /**
  * Created by laikui on 2019/7/30.

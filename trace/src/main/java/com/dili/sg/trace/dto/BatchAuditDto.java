@@ -1,4 +1,4 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.util.List;
 

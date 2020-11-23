@@ -1,4 +1,4 @@
-package com.dili.trace.domain;
+package com.dili.sg.trace.domain;
 
 import java.util.Date;
 
@@ -9,8 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.ss.domain.BaseDomain;
-import com.dili.trace.glossary.UserTypeEnum;
 
 import io.swagger.annotations.ApiModelProperty;
 

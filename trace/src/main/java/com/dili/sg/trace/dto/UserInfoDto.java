@@ -1,6 +1,6 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
-import com.dili.trace.util.MaskUserInfo;
+import com.dili.sg.trace.util.MaskUserInfo;
 
 public class UserInfoDto {
 	private String userId;

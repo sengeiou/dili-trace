@@ -1,4 +1,4 @@
-package com.dili.trace.provider;
+package com.dili.sg.trace.provider;
 
 /**
  * <B>Description</B>
@@ -13,8 +13,8 @@ import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.domain.TradeType;
-import com.dili.trace.service.TradeTypeService;
+import com.dili.sg.trace.domain.TradeType;
+import com.dili.sg.trace.service.TradeTypeService;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;

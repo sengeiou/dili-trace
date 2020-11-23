@@ -1,18 +1,7 @@
-package com.dili.trace.domain;
+package com.dili.sg.trace.domain;
 
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
-import com.dili.ss.dto.IBaseDomain;
-import com.dili.ss.metadata.FieldEditor;
-import com.dili.ss.metadata.annotation.EditMode;
-import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.trace.util.MaskUserInfo;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.persistence.*;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 /**
  * 由MyBatis Generator工具自动生成

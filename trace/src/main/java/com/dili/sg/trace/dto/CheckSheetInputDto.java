@@ -1,10 +1,10 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import java.util.List;
 
 import javax.persistence.Transient;
 
-import com.dili.trace.domain.CheckSheet;
+import com.dili.sg.trace.domain.CheckSheet;
 
 public class CheckSheetInputDto extends CheckSheet {
 

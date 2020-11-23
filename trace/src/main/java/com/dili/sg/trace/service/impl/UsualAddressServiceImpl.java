@@ -1,4 +1,4 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -6,23 +6,22 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.dili.assets.sdk.dto.CityDto;
-import com.dili.trace.service.CityService;
+import com.dili.sg.trace.service.CityService;
+import com.dili.sg.trace.dao.UsualAddressMapper;
+import com.dili.sg.trace.domain.UsualAddress;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
+import com.dili.sg.trace.service.UsualAddressService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.dao.UsualAddressMapper;
-import com.dili.trace.domain.City;
-import com.dili.trace.domain.UsualAddress;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.UsualAddressService;
 
 @Service
 public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long> implements UsualAddressService {
     @Resource
-	CityService cityService;
+    CityService cityService;
     @Resource
     UsualAddressMapper usualAddressMapper;
 	@Override

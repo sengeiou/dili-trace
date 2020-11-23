@@ -1,12 +1,11 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
+import com.dili.sg.trace.domain.DetectRecord;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-import com.dili.trace.domain.DetectRecord;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.Column;
 import javax.persistence.Transient;
 
 /**

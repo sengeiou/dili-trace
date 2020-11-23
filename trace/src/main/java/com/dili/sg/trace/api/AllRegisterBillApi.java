@@ -2,6 +2,14 @@ package com.dili.sg.trace.api;
 
 import java.util.List;
 
+import com.dili.sg.trace.domain.DetectRecord;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.dto.RegisterBillDto;
+import com.dili.sg.trace.dto.RegisterBillOutputDto;
+import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.sg.trace.service.BillService;
+import com.dili.sg.trace.service.DetectRecordService;
+import com.dili.sg.trace.service.RegisterBillService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.DetectRecord;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.glossary.BillTypeEnum;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.impl.RegisterBillServiceImpl;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

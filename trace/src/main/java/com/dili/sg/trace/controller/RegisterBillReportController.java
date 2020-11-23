@@ -1,4 +1,4 @@
-package com.dili.trace.controller;
+package com.dili.sg.trace.controller;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.dili.trace.service.*;
+import com.dili.sg.trace.service.*;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.dto.GroupByProductReportDto;
-import com.dili.trace.dto.RegisterBillReportQueryDto;
-import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.sg.trace.dto.GroupByProductReportDto;
+import com.dili.sg.trace.dto.RegisterBillReportQueryDto;
+import com.dili.sg.trace.glossary.RegisterSourceEnum;
 import com.diligrp.manage.sdk.domain.UserTicket;
 import com.diligrp.manage.sdk.session.SessionContext;
 
@@ -59,7 +59,7 @@ public class RegisterBillReportController {
 	@Autowired
 	DetectRecordService detectRecordService;
 	@Autowired
-	TradeTypeService tradeTypeService;
+    TradeTypeService tradeTypeService;
 	@Autowired
 	UserService userService;
 	@Autowired
@@ -67,7 +67,7 @@ public class RegisterBillReportController {
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
 	@Autowired
-	CityService cityService;
+    CityService cityService;
 	@Autowired
 	UsualAddressService usualAddressService;
 

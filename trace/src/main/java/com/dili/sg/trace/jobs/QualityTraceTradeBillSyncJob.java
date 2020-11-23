@@ -1,7 +1,13 @@
-package com.dili.trace.jobs;
+package com.dili.sg.trace.jobs;
 
 import java.util.List;
 
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.domain.QualityTraceTradeBillSyncPoint;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.service.OrderService;
+import com.dili.sg.trace.service.QualityTraceTradeBillService;
+import com.dili.sg.trace.service.QualityTraceTradeBillSyncPointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.service.QualityTraceTradeBillService;
-import com.dili.trace.service.QualityTraceTradeBillSyncPointService;
 
 /**
  * 同步订单数据定时任务
@@ -33,7 +34,7 @@ public class QualityTraceTradeBillSyncJob {
     private boolean scheduleEnable;
 
     @Autowired
-    com.dili.trace.service.OrderService orderService;
+    OrderService orderService;
 
     /**
      * 间隔两分钟同步数据

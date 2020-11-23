@@ -1,4 +1,4 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -12,15 +12,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.dao.CodeGenerateMapper;
-import com.dili.trace.domain.CodeGenerate;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.glossary.BillTypeEnum;
-import com.dili.trace.glossary.CodeGenerateEnum;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.CodeGenerateService;
+import com.dili.sg.trace.dao.CodeGenerateMapper;
+import com.dili.sg.trace.domain.CodeGenerate;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.sg.trace.glossary.CodeGenerateEnum;
+import com.dili.sg.trace.service.BillService;
+import com.dili.sg.trace.service.CodeGenerateService;
 
 @Service
 public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long> implements CodeGenerateService {

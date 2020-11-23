@@ -1,9 +1,9 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import javax.persistence.Column;
 
+import com.dili.sg.trace.domain.QualityTraceTradeBillSyncPoint;
 import com.dili.ss.domain.annotation.Operator;
-import com.dili.trace.domain.QualityTraceTradeBillSyncPoint;
 
 public interface QualityTraceTradeBillSyncPointDto extends QualityTraceTradeBillSyncPoint {
 	@Column(name = "`bill_id`")

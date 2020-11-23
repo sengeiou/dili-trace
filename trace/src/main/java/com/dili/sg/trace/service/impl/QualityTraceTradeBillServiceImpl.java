@@ -1,11 +1,11 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.api.output.QualityTraceTradeBillOutput;
-import com.dili.trace.dao.QualityTraceTradeBillMapper;
-import com.dili.trace.domain.QualityTraceTradeBill;
-import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
-import com.dili.trace.service.QualityTraceTradeBillService;
+import com.dili.sg.trace.api.output.QualityTraceTradeBillOutput;
+import com.dili.sg.trace.dao.QualityTraceTradeBillMapper;
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.dto.QualityTraceTradeBillRepeatDto;
+import com.dili.sg.trace.service.QualityTraceTradeBillService;
 
 import java.util.List;
 

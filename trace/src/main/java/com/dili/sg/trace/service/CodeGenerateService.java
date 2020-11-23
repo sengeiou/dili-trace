@@ -1,8 +1,8 @@
-package com.dili.trace.service;
+package com.dili.sg.trace.service;
 
+import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.CodeGenerate;
-import com.dili.trace.glossary.BillTypeEnum;
+import com.dili.sg.trace.domain.CodeGenerate;
 
 public interface CodeGenerateService extends BaseService<CodeGenerate, Long> {
 	public void init();

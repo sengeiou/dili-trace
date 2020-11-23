@@ -1,9 +1,10 @@
-package com.dili.trace.jobs;
+package com.dili.sg.trace.jobs;
 
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import com.dili.sg.trace.domain.UsualAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.dili.ss.dto.DTOUtils;
-import com.dili.trace.dao.UsualAddressMapper;
-import com.dili.trace.domain.UsualAddress;
+import com.dili.sg.trace.dao.UsualAddressMapper;
 
 @EnableAsync
 @Component

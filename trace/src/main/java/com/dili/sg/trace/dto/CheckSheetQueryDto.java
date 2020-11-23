@@ -1,11 +1,11 @@
-package com.dili.trace.dto;
+package com.dili.sg.trace.dto;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
+import com.dili.sg.trace.domain.CheckSheet;
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
-import com.dili.trace.domain.CheckSheet;
 
 import io.swagger.annotations.ApiModelProperty;
 

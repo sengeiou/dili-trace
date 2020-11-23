@@ -1,4 +1,4 @@
-package com.dili.trace.service.impl;
+package com.dili.sg.trace.service.impl;
 
 import java.util.List;
 
@@ -10,17 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.DetectRecordParam;
-import com.dili.trace.dto.DetectTaskApiOutputDto;
-import com.dili.trace.dto.TaskGetParam;
-import com.dili.trace.exception.TraceBizException;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.DetectTaskService;
+import com.dili.sg.trace.dao.RegisterBillMapper;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.dto.DetectRecordParam;
+import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
+import com.dili.sg.trace.dto.TaskGetParam;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.sg.trace.glossary.RegisterBillStateEnum;
+import com.dili.sg.trace.service.BillService;
+import com.dili.sg.trace.service.DetectRecordService;
+import com.dili.sg.trace.service.DetectTaskService;
 
 @Service
 public class DetectTaskServiceImpl implements DetectTaskService {
