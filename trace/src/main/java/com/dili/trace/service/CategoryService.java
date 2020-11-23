@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.assets.sdk.rpc.AssetsRpc;
+import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Category;
 import com.dili.trace.dto.CategoryListInput;
@@ -20,7 +21,7 @@ import java.util.function.Function;
  * @author admin
  */
 @Service
-public class CategoryService {
+public class CategoryService extends BaseServiceImpl<Category, Long> {
 	@Autowired(required = false)
 	AssetsRpc assetsRpc;
 	@Autowired
