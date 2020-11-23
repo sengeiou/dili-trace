@@ -280,6 +280,20 @@
 <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/registerbill.index.js"></script>
+<script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
+<script>
+
+/*    (async ()=>{
+        try {
+            let resp=await jq.ajax({url:'http://trace.diligrp.com/registerBill/index.html?systemCode=TRACE',method:'get'});
+            console.info(resp);
+        }catch (e) {
+            console.error(e);
+        }
+
+    })();*/
+
+</script>
 <script type="text/javascript">
     var RegisterBillStateEnum={};
     <%for (ss in @com.dili.trace.glossary.RegisterBillStateEnum.values()){%>

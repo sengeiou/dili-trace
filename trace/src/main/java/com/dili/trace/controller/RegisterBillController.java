@@ -244,7 +244,7 @@ public class RegisterBillController {
         String str = String.valueOf(System.currentTimeMillis());
         modelMap.put("plate", "川A" + str.substring(str.length() - 5));
 
-        String view="create-"+this.webCtxService.getCurrentFirm().map(Firm::getCode).map(String::toLowerCase).map(code->{
+        String view=this.webCtxService.getCurrentFirm().map(Firm::getCode).map(String::toLowerCase).map(code->{
             if(!"sg".equalsIgnoreCase(code)){
                 return "";
             }

@@ -22,7 +22,7 @@
     <logger name="springfox.documentation.spring.web.readers.operation" level="warn"/>
     <logger name="tk.mybatis.mapper.autoconfigure.MapperCacheDisabler" level="warn"/>
     <logger name="com.dili.common.service.SessionRedisService" level="error"/>
-    
+    <logger name="com.dili.ss.retrofitful.aop.service.impl.RestfulServiceImpl" level="error"/>
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="appender"/>
