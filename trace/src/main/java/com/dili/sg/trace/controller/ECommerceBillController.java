@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +45,6 @@ import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.SeperatePrintReportService;
 import com.dili.trace.service.TradeTypeService;
 import com.dili.trace.service.UsualAddressService;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 
 import io.swagger.annotations.Api;
@@ -216,7 +216,7 @@ public class ECommerceBillController {
 	/**
 	 * 审核
 	 *
-	 * @param id
+	 * @param inputBill
 	 * @return
 	 */
 	@RequestMapping(value = "/doAudit.action", method = RequestMethod.POST)
@@ -240,7 +240,7 @@ public class ECommerceBillController {
 	/**
 	 * 审核
 	 *
-	 * @param id
+	 * @param inputBill
 	 * @return
 	 */
 	@RequestMapping(value = "/doDelete.action", method = RequestMethod.POST)
