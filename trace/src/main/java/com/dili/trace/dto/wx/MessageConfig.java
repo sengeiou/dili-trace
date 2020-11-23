@@ -2,6 +2,7 @@ package com.dili.trace.dto.wx;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
@@ -9,11 +10,19 @@ import java.util.Collections;
 import java.util.Map;
 
 
-
+/**
+ *
+ * @Author guzman.liu
+ * @Description
+ * 发送微信消息配置类
+ * @Date 2020/11/23 10:20
+ * @return
+ */
 @Component
 @EnableConfigurationProperties
 @PropertySource(value= "classpath:wx-message-template.properties",encoding="UTF-8")
 @ConfigurationProperties(prefix="config.wx.message")
+@Configuration
 public class MessageConfig
 {
     /**公众号appid*/
@@ -144,43 +153,95 @@ public class MessageConfig
     }
     
     
-
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:20
+     * @return
+     */
     public String getOfficeAppId()
     {
         return officeAppId;
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description 
+     * @Date 2020/11/23 10:21
+     * @return
+     */
     public void setOfficeAppId(String officeAppId)
     {
         this.officeAppId = officeAppId;
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:22
+     * @return
+     */
     public String getAppletsAppId()
     {
         return appletsAppId;
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:22
+     * @return
+     */
     public void setAppletsAppId(String appletsAppId)
     {
         this.appletsAppId = appletsAppId;
     }
 
-
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:22
+     * @return
+     */
     public Map<String, OfficeMessageConfig> getOffice()
     {
         return office;
     }
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:22
+     * @return
+     */
     public void setOffice(Map<String, OfficeMessageConfig> office)
     {
         this.office = office;
     }
-
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:22
+     * @return
+     */
     public Map<String, AppletsMessageConfig> getApplets()
     {
         return applets;
     }
-
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * @Date 2020/11/23 10:22
+     * @return
+     */
     public void setApplets(Map<String, AppletsMessageConfig> applets)
     {
         this.applets = applets;
