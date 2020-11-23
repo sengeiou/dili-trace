@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,viewport-fit=cover,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="screen-orientation" content="portrait">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="screen-orientation" content="portrait">
+    <title>进场货物检测结果</title>
+    <script src="/resources/assets/etrade/js/flexible.js" charset="utf-8"></script>
+    <script src="/resources/assets/dep/jquery/jquery-2.2.4.min.js" charset="utf-8"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        header {
+            width: 100%;
+            height: 1.6563rem;
+            background: #d2f9ca;
+            text-align: center;
+            line-height: 1.6563rem;
+            font-size: 0.5625rem;
+        }
+
+        section {
+            padding: 0.625rem 1rem;
+            font-size: 0.4375rem;
+        }
+        .group {
+            border-bottom: 1px solid #ddd;
+        }
+        .qrcode-wrap {
+            margin: 0.625rem auto 0;
+            text-align: center;
+        }
+        .qrcode-wrap img {
+            width: 6.25rem;
+            height: 6.25rem;
+        }
+
+    </style>
+    <style type="text/css">
+    
+    
+    .img-rotate-box {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      /* filter: alpha(Opacity=80);
+      -moz-opacity: 0.5;
+      opacity: 0.5; */
+    }
+    #img {
+      flex: 1;
+      justify-content: space-around;
+      align-items: center;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      overflow: hidden;
+    }
+    /*#img img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: pink;
+    }*/
+
+    #rotateImg {
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+    .button-box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 50px;
+      background: #fff;
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    </style>
+</head>
+
+<body>
+<header>进场货物检测结果</header>
+<section class="info">
+    <div class="group">
+        <p>登记编号：<span>${item.code!}</span></p>
+        <p>业户姓名：<span>${item.name!}</span></p>
+        <p>企业名称：<span>${item.corporateName!}</span></p>
+        <p>进场登记时间：
+            <span>
+                <%if(null!= item.created){%>
+                    ${item.created,dateFormat='yyyy-MM-dd HH:mm:ss'}
+                <%}else{%>
+                    -
+                <%}%>
+            </span>
+        </p>
+        <p>商品名称：<span>${item.productName!}</span></p>
+        <p>总重量：<span>${item.weight!}KG</span></p>
+        <p>产地：<span>${item.originName!}</span></p>
+        <p>状态：<span>${item.stateName}</span></p>
+    </div>
+    <div class="group">
+        <p>检测时间：<span>${item.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}</span></p>
+        <p>检测结果：<span>${item.detectStateName!}</span></p>
+        <p>检测指数：<span>${item.latestPdResult!}</span></p>
+         <% if(isEmpty(item.detectState) ){%>
+        <p>检测机构：<span></span></p>
+        <% } else{ %>
+        <p>检测机构：<span>山东格林检测</span></p>
+        <% } %>
+        <p>检测员：<span>${item.latestDetectOperator!}</span></p>
+    </div>
+    
+</section>
+<div class="img-rotate-box" style="z-index: 1000;height: 100%;display: none;">
+      <div id="img">
+        <div id="rotateImg" data-deg="0" data-index="0" data-urls="" style="background-image: url();"></div>
+      </div>
+      <div class="button-box">
+        <span id="prev">上一张</span>
+        <span id="left">逆时针旋转90°</span>
+        <span id="right">顺时针旋转90°</span>
+        <span id="next">下一张</span>
+      </div>
+    </div>
+          <div align="center">
+          
+          
+           <%if(isNotEmpty(item.originCertifiyUrl)){%>
+              <a href="javascript:void(0);" onclick="initImageBox('${item.originCertifiyUrl}')" title="查看产地证明" style="font-size: medium;">产地证明</a>
+           <%}%>
+             
+          <%if(isNotEmpty(item.detectReportUrl)){%>
+           <span style="width: 10%;display:inline-block"></span>
+          <a href="javascript:void(0);" onclick="initImageBox('${item.detectReportUrl}')" title="查看检测报告" style="font-size: medium;">检测报告</a>
+          <%}%>
+             
+	           
+  </div>
+</body>
+<script type="text/javascript">
+
+/*const url =
+    'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573105614637&di=fa3542c9402fab7c075ec13575a1b8c3&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201806%2F18%2F20180618112547_jv2xs.thumb.700_0.jpeg'
+   */ 		
+     var imgBox = document.querySelector('.img-rotate-box');
+     var img = document.querySelector('#rotateImg');
+     var imgCover = document.querySelector('#img');
+  window.onload = function() {
+
+
+   /* document.querySelector('#openImg').addEventListener('click', function() {
+      imgBox.style.display = 'flex'
+      img.style.backgroundImage = 'url(' + url + ')'
+    })*/
+    imgCover.addEventListener('click', function() {
+      imgBox.style.display = 'none'
+    })
+    
+    
+     document.querySelector('#prev').onclick = function() {
+    	  if( openImage(parseInt(img.dataset['index'])-1)){
+    	    	 rotate(0) 
+    	     }
+    }
+    document.querySelector('#next').onclick = function() {
+      
+     if( openImage(parseInt(img.dataset['index'])+1)){
+    	 rotate(0) 
+     }
+    }
+    
+    document.querySelector('#left').onclick = function() {
+      var deg = (img.dataset['deg'] % 360) - 90
+      rotate(deg)
+    }
+    document.querySelector('#right').onclick = function() {
+      var deg = (img.dataset['deg'] % 360) + 90
+      rotate(deg)
+    }
+  }
+  function rotate(deg) {
+    var width = document.body.clientWidth,
+      height = document.body.clientHeight - 50
+    var img = document.querySelector('#rotateImg')
+
+    var scale = deg % 180 ? width / height : 1
+    img.style.transform = 'scale(' + scale + ') rotate(' + deg + 'deg) '
+
+    img.dataset['deg'] = deg
+  }
+  function openImage(i){
+	  var index=img.dataset['index'];
+	   var urls=img.dataset['urls'] ;
+	   var imageUrls=$.makeArray(urls.split(','));
+	   if(i>=0&&i<imageUrls.length){
+		   img.style.backgroundImage = 'url(' + imageUrls[i] + ')'
+		   img.dataset['index']=i;
+		   return true;
+	   }
+	   return false;
+  }
+  function initImageBox(urls){
+	  //url='/image/DETECT_REPORT/201911/0ec988688d4942e7ac7e161be957118a.jpg';
+	  //url= 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573105614637&di=fa3542c9402fab7c075ec13575a1b8c3&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201806%2F18%2F20180618112547_jv2xs.thumb.700_0.jpeg'
+	   imgBox.style.display = 'flex';
+	
+	   img.dataset['index'] = -1;
+	   img.dataset['urls'] = urls;
+	   openImage(0);
+	}
+</script>
+</html>

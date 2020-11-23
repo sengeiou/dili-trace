@@ -1,0 +1,305 @@
+<#bodyOrigin>
+    <style>
+        .form-inline .table-showlist table .input-sm {
+            width: 200px;
+        }
+        /*a  upload */
+        
+        .a-upload {
+            padding: 4px 28px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            display: inline-block;
+            color: #fff !important;
+            background-color: #3370ff;
+        }
+        
+        .a-upload input {
+            position: absolute;
+            font-size: 100px;
+            right: 0;
+            top: 0;
+            opacity: 0;
+            filter: alpha(opacity=0);
+            cursor: pointer
+        }
+        
+        .a-upload:hover {
+            color: #444;
+            background: #eee;
+            border-color: #ccc;
+            text-decoration: none
+        }
+        
+        .es-list {
+            max-height: 220px !important;
+        }
+    </style>
+    <div class="main-container">
+        <div class="topicTop">
+            <div class="toppic-title">
+                <span class="topic-title-text maincolor">打印分销记录</span>
+                <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+            </div>
+        </div>
+        <div class="form-box border">
+
+            <form id="createRecordForm" class="form-inline" role="form">
+            	<input type="hidden" name="billId" value="${item.id!}"/>
+                <div class="form-item-group"  style="width: 1200px">
+                    <h4 class="form-item-title">基础信息</h4>
+                      <div class="form-group">
+                        <label class="label-title text-right">企业名称</label>
+                        <input  type="text" class="form-control input-sm" value="${item.corporateName!}" tabindex="-1" maxlength="100"  readonly="readonly"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">送检人</label>
+                        <input type="text" class="form-control input-sm"   tabindex="-1"  maxlength="50" value="${item.name!}"  readonly="readonly"/>
+                    </div>
+                     <div class="form-group">
+                        <label class="label-title text-right">品名</label>
+                        <input type="text" class="form-control input-sm"   tabindex="-1"  maxlength="50" value="${item.productName!}"  readonly="readonly"/>
+                    </div>
+                     <div class="form-group">
+                        <label class="label-title text-right">产地</label>
+                        <input type="text" class="form-control input-sm"   tabindex="-1"  maxlength="50" value="${item.originName!}"  readonly="readonly"/>
+                    </div>
+                     <div class="form-group">
+                        <label class="label-title text-right">抑制率</label>
+                        <input type="text" class="form-control input-sm"   tabindex="-1"  maxlength="50" value="${item.latestPdResult!}"  readonly="readonly"/>
+                    </div>
+                   <div class="form-group">
+                        <label class="label-title text-right">结果</label>
+                        <input type="text" class="form-control input-sm"   tabindex="-1"  maxlength="50" value="${item.detectStateName!}"  readonly="readonly"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">有效期</label>
+                        <input type="text" class="form-control input-sm isNaturalNum"   tabindex="-1"    min="1" max="365"  required="required" name="validPeriod"  />
+                    </div>
+                    <div class="form-group">
+                             <label class="label-title text-right"><span class="red">&lowast;</span>审核人</label>
+                               <select name="approverInfoId"  class="form-control input-sm"   required="required">
+                               		<option value="">请选择</option>
+			            <%for(approverInfo in approverInfoList){%>
+                             			<option value="${approverInfo.id}">${approverInfo.userName}</option>
+                          				<%}%>
+						</select>
+
+                	</div>
+                   
+                </div>
+                <div class="form-item-group">
+                <h4 class="form-item-title">分销信息</h4>
+                <div class="table-showlist" style="width: 1000px">
+                    <table class="table table-bordered" id="seperateTable">
+                        <thead>
+                        <tr>
+                        	<th></th>
+                            <th>理货区号</th>
+                            <th>业户姓名</th>
+                            <th>别名</th>
+                            <th>车牌号</th>
+                            <th>分销重量/KG</th>
+                            <th>有效期</th>
+                            <th>审核人</th>
+                            <th>状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                       
+                        <% for(salesRecord in separateSalesRecordList){%>
+                            <tr>
+                            	<td>
+                            		<input type="checkbox" name="seperatePrintReportList[${salesRecordLP.index-1}][seperateRecocrdId]" data-print-state="${salesRecord.printState}" value="${salesRecord.seperateRecocrdId!}"/>
+                            	</td>
+		                        <td><input type="text" name="seperatePrintReportList[${salesRecordLP.index-1}][tallyAreaNo]" value="${salesRecord.tallyAreaNo!}" readonly="readonly"/></td>
+		                        <td>
+		                        <input type="text" name="seperatePrintReportList[${salesRecordLP.index-1}][salesUserName]" value="${salesRecord.salesUserName!}" readonly="readonly"/>
+		                        </td>
+                            	<td><input type="text" style="width: 120px;border:1px solid #ddd;" name="seperatePrintReportList[${salesRecordLP.index-1}][productAliasName]"   value="${salesRecord.productAliasName!}"  maxlength="20"  <%if(salesRecord.printState=='已打印'){ %> readonly="readonly"<%}%> /></td>
+                            	<td><input type="text" style="width: 120px;border:1px solid #ddd;" name="seperatePrintReportList[${salesRecordLP.index-1}][salesPlate]"  value="${salesRecord.salesPlate!}"  <%if(salesRecord.printState=='已打印'){    %> readonly="readonly"<%}%> maxlength="20"/></td>
+                            	<td><input type="text" style="width: 120px;border:1px solid #ddd;" name="seperatePrintReportList[${salesRecordLP.index-1}][salesWeight]"  value="${salesRecord.salesWeight!}"   <%if(salesRecord.printState=='已打印'){    %> readonly="readonly"<%}%> maxlength="20" /></td>
+                          		<td>${salesRecord.validPeriod}</td>
+                          		<td>${salesRecord.approverUserName}</td>
+                            	<td>${salesRecord.printState}</td>
+                        	</tr>
+                        <%}%>
+                        </tbody>
+                    </table>
+                    <!-- 表格后的统计 end -->
+                </div>
+            </div>
+            </form>
+
+        </div>
+        <div class="text-center mt30">
+            <button class="btn-main2 btn-sm" onclick="previewPrintableData()">打印</button>&nbsp;&nbsp;
+            <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+        </div>
+    </div>
+</#bodyOrigin>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script src="${contextPath!}/resources/js/jquery-serializeForm.min.js"></script>
+
+<script type="text/javascript">
+function changeInputAttrs(needInput){
+	
+	if(needInput==true){
+		$('input[name="validPeriod"]').removeAttr('readonly');
+		$('select[name="approverInfoId"]').removeAttr('readonly');
+		
+		$('input[name="validPeriod"]').removeAttr('disabled');
+		$('select[name="approverInfoId"]').removeAttr('disabled');
+		
+	}else{
+		$('input[name="validPeriod"]').attr('readonly','readonly')
+		$('select[name="approverInfoId"]').attr('readonly','readonly')
+		
+		$('input[name="validPeriod"]').attr('disabled','disabled')
+		$('select[name="approverInfoId"]').attr("disabled", "disabled");
+		
+	}
+	
+}
+$('#seperateTable input[type="checkbox"]').on('change',function(n,o){
+	var checkedList=getCheckList().filter(function(i,v){
+		return $(v).data('print-state')=='未打印'
+	});
+	changeInputAttrs(checkedList.length>0);
+	
+});
+	function getCheckList(){
+		var checkedList=$('#seperateTable input[type="checkbox"]').filter(function(i,v){
+			return $(v).is(":checked")
+		});
+		return checkedList;
+	}
+	function buildFormData(){
+		var checkedList=getCheckList().map(function(i,v){
+			return $(v).val();
+		});
+		var formData=$('#createRecordForm').serializeForm();
+		var seperatePrintReportList=formData.seperatePrintReportList.filter(function(v,i){
+			return $.inArray(v.seperateRecocrdId, checkedList ) >-1
+		})
+		formData.seperatePrintReportList=seperatePrintReportList;
+		return formData;
+	}
+  
+    function previewPrintableData(){
+    	 if(getCheckList().length==0){
+          swal({
+              title: '警告',
+              text: '请选择要打印的数据',
+              type: 'warning',
+              width: 300
+          });
+   		  return;
+   	  	}
+    	if($('#createRecordForm').validate().form()==false){
+			return;
+		}
+		var formData=buildFormData();
+		
+         $.ajax({
+             type: "POST",
+             url: "${contextPath}/seperatePrintReport/previewPrintableData.action",
+             data :  JSON.stringify(formData),
+             dataType: "json",
+             async : true,
+             contentType: "application/json; charset=utf-8",
+             success: function (ret) {
+            	 console.info(ret)
+                 if(ret.success){
+     	        	//console.info(ret);
+    	        	//debugger
+    	        	if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
+    	        		$('.btn-main2').hide();
+    	        		callbackObj.printDirect(JSON.stringify(ret),"EcommerceSeperateReportDocument");
+    	        	}else{
+    	        		 swal(
+    	                         '错误',
+    	                         '请升级客户端或者在客户端环境运行当前程序',
+    	                         'error'
+    	                 );
+    	        	}
+                 }else{
+                     swal(
+                             '错误',
+                             ret.result,
+                             'error'
+                     );
+                 }
+             },
+             error: function(){
+                 swal(
+                         '错误',
+                         '远程访问失败',
+                         'error'
+                 );
+             }
+         });
+    	
+    }
+  //客户端提交数据并同步获得提交后的数据
+    function submitPrintableData(){
+    		if($('#createRecordForm').validate().form()==false){
+    			return;
+    		}
+    		var formData=buildFormData();
+    		
+    		var result={};
+    		$.ajax({
+    		    type: "POST",
+    		    url: '${contextPath!}/seperatePrintReport/submitPrintableData.action',
+    		    data: JSON.stringify(formData),
+    		    processData:true,
+    		    dataType: "json",
+    		    async : false,
+    		    contentType: "application/json; charset=utf-8",
+    		    success: function (ret) {
+    		    	result=ret;
+    		    },
+    		    error: function(){
+    		    	result={"code":"5000",result:"远程访问失败"}
+
+    		    }
+    		});
+    		//debugger
+    		//console.info(result);
+    		return JSON.stringify(result)
+    }
+
+  //客户端错误回调方法
+  function handleError(ret){
+      layer.alert(ret.result,{
+  			title:'错误',
+  	       	end :function(){
+  	       		window.location.reload()
+  	       	}
+        },
+   	 function () {
+   	 		 window.location.reload()
+           }
+   	);
+  }
+  //取消打印结束后调用
+  function cancelPrint(){
+  	console.info('cancelPrint')
+  	$('.btn-main2').show();
+  }
+  
+//打印结束后调用
+  function printFinish(){
+  	console.info('printFinish')
+  	parent.closeWin('view_win');
+  }
+</script>

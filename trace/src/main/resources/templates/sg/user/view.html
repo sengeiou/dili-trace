@@ -1,0 +1,116 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="topicTop">
+        <div class="toppic-title">
+            <span class="topic-title-text maincolor">用户信息详情</span>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+        </div>
+    </div>
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>姓名</label>
+                    <input class="form-control input-sm" value="${userItem.name}" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>手机号</label>
+                    <input type="text" class="form-control input-sm"  value="${userItem.phone}"  readonly/>
+                </div>
+                 <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>身份证号</label>
+                    <input type="text" class="form-control input-sm"  value="${userItem.cardNo}"  readonly/>
+                </div>
+
+                <br/>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>理货区号</label>
+                    <input type="text" class="form-control input-sm" value="${userItem.tallyAreaNos}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>销地城市</label>
+                    <input type="text" class="form-control input-sm" value="${userItem.salesCityName}" required readonly/>
+                </div>
+
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>状态</label>
+                    <input type="text" class="form-control input-sm"  value="${userItem.state==1?'启用':'禁用'}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>注册时间</label>
+                    <input type="text" class="form-control input-sm" value="${userItem.created,'yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                </div>
+                <br>
+               <div class="form-group" style="width: 100%">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌</label>
+                    <input type="text" class="form-control"   style="width: 55%" value="${userPlates}" required readonly/>
+                </div>
+            </div>
+            
+	<table width="430px">
+            <tr>
+                <td style="padding:5px;">
+                    <div class="fileimg-box" style="margin: 0 auto;">
+                        <span class="fileimg-plus-icon">+</span>
+                        <span class="fileimg-des">身份证正面照</span>
+                        <img class="magnifying" src="${contextPath!}${userItem.cardNoFrontUrl}">
+                        <div class="fileimg-cover" style="display:  block;"></div>
+                        <div class="fileimg-edit" style="display: block;">
+                            <span class="fileimg-view">查看</span>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:5px;">
+                    <div class="fileimg-box" style="margin: 0 auto;">
+                        <span class="fileimg-plus-icon">+</span>
+                        <span class="fileimg-des">身份证反面照</span>
+                        <img class="magnifying" src="${contextPath!}${userItem.cardNoBackUrl}">
+                        <div class="fileimg-cover" style="display:  block;"></div>
+                        <div class="fileimg-edit" style="display:  block;">
+                            <span class="fileimg-view">查看</span>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:5px;">
+                    <div class="fileimg-box" style="margin: 0 auto;">
+                        <span class="fileimg-plus-icon">+</span>
+                        <span class="fileimg-des">营业执照</span>
+                        <img class="magnifying" src="${contextPath!}${userItem.businessLicenseUrl}">
+                        <div class="fileimg-cover" style="display:  block;"></div>
+                        <div class="fileimg-edit" style="display:  block;">
+                            <span class="fileimg-view">查看</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        </form>
+        
+    </div>
+
+</div>
+</#bodyOrigin>
+<<script type="text/javascript">
+<!--
+$('.fileimg-view').on('click', function () {
+    var url = $(this).parent().siblings(".magnifying").attr('src');
+    if(url){
+        layer.open({
+            title:'图片',
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+        });
+    }
+});
+//-->
+</script>
+

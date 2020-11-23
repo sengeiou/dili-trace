@@ -1,0 +1,462 @@
+<#echartJs></#echartJs>
+ <#body>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+	            <!-- =========================================================表单========================================================= -->
+	            <div class="easyui-panel" style="width:100%;" align="right">
+	                <div class="topicTop" style="width:100%">
+				        <div class="toppic-title">
+				            <span class="topic-title-text maincolor fl">车牌报表</span>
+				            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+				        </div>
+				    </div>
+				  </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="90%">
+            <!-- =========================================================表格========================================================= -->
+            <div id="tt" class="easyui-tabs" style="width:100%;height:100%;padding-top:45px" data-options="onSelect:onSelectTab">
+    <div title="运输重量图表" style="padding:5px;" id="totalWeight">
+		<div id="totalWeightPie" style="width:98%; height:50%;" data-legend="label" data-series="totalWeight"></div>
+		<div id="totalWeightBar" style="width:98%; height:50%;"  data-axis="label" data-series="totalWeight"></div>
+    </div>
+    <div title="商品进场图表" data-options="closable:false" style="overflow:auto;padding:5px;" id="cnt">
+		<div id="cntPie" style="width:98%; height:50%;" data-legend="label" data-series="cnt"></div>
+		<div id="cntBar" style="width:98%; height:50%;" data-axis="label" data-series="cnt"></div>
+    </div>
+    <div title="商品采样图表" data-options="closable:false" style="padding:5px;" id="totalCheckingOrRechecking">
+		<div id="totalCheckingOrRecheckingPie" style="width:98%; height:50%;" data-legend="label" data-series="totalCheckingOrRechecking"></div>
+		<div id="totalCheckingOrRecheckingBar" style="width:98%; height:50%;"  data-axis="label" data-series="totalCheckingOrRechecking"></div>
+    </div>
+    <div title="检测数量图表" data-options="closable:false" style="padding:5px;" id="totalCheckedOrRechecked">
+		<div id="totalCheckedOrRecheckedPie" style="width:98%; height:50%;" data-legend="label" data-series="totalCheckedOrRechecked"></div>
+		<div id="totalCheckedOrRecheckedBar" style="width:98%; height:50%;"  data-axis="label" data-series="totalCheckedOrRechecked"></div>
+    </div>
+    <div title="复检数量图表" data-options="closable:false" style="padding:5px;" id="totalRechecked">
+		<div id="totalRecheckedPie" style="width:98%; height:50%;" data-legend="label" data-series="totalRechecked"></div>
+		<div id="totalRecheckedBar" style="width:98%; height:50%;"   data-axis="label" data-series="totalRechecked"></div>
+    </div>
+    <div title="初检合格图表" data-options="closable:false" style="padding:5px;" id="totalSuccessfulInitalChecked">
+		<div id="totalSuccessfulInitalCheckedPie" style="width:98%; height:50%;" data-legend="label" data-series="totalSuccessfulInitalChecked"></div>
+		<div id="totalSuccessfulInitalCheckedBar" style="width:98%; height:50%;"   data-axis="label" data-series="totalSuccessfulInitalChecked"></div>
+    </div>
+    <div title="复检合格图表" data-options="closable:false" style="padding:5px;" id="totalSuccessfulRechecked">
+				<div id="totalSuccessfulRecheckedPie" style="width:98%; height:50%;" data-legend="label" data-series="totalSuccessfulRechecked"></div>
+		<div id="totalSuccessfulRecheckedBar" style="width:98%; height:50%;"   data-axis="label" data-series="totalSuccessfulRechecked"></div>
+    </div>
+    <div title="产地证明图表" data-options="closable:false" style="padding:5px;" id="totalHascertifiy">
+						<div id="totalHascertifiyPie" style="width:98%; height:50%;" data-legend="label" data-series="totalHascertifiy"></div>
+		<div id="totalHascertifiyBar" style="width:98%; height:50%;"   data-axis="label" data-series="totalHascertifiy"></div>
+    </div>
+    <div title="检测报告图表" data-options="closable:false" style="padding:5px;" id="totalHasdetectreport">
+							<div id="totalHasdetectreportPie" style="width:98%; height:50%;" data-legend="label" data-series="totalHasdetectreport"></div>
+		<div id="totalHasdetectreportBar" style="width:98%; height:50%;"   data-axis="label" data-series="totalHasdetectreport"></div>
+    </div>
+</div>
+        </div>
+    </div>
+      <!-- 隐藏编辑框 -->
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/assets/css/widget/tmsBaseCommon.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script type="text/javascript">
+     var params=${params};
+     
+
+     (function(){//扩展easyui中tabs的部分方法，实现根据唯一标识id的进行相应操作；技巧：使用一个自执行的函数，激发作用域，避免这里定义的变量与系统全局变量冲突
+     	var _methods = $.fn.tabs.methods;
+     	var _exists = _methods.exists;//保存原方法
+     	var _getTab = _methods.getTab;//<span style="font-family: Arial, Helvetica, sans-serif;">//保存原方法</span>
+     	$.extend($.fn.tabs.methods, {
+     		getTab : function(jq, which) {//重写getTab方法，增加根据id获取tab（注意：这里我们可以定义任意的获取方式，不必一定使用id）
+     			if(!which) return null;
+     			var tabs = jq.data('tabs').tabs;
+     			for (var i = 0; i < tabs.length; i++) {
+     				var tab = tabs[i];
+     				if (tab.panel("options").id==which) {
+     					return tab;
+     				}
+     			}
+     			return _getTab(jq, which);//如果根据id无法获取，则通过easyui默认的getTab进行获取
+     		},
+     		exists : function(jq, which) {//重写exists方法，增加id判断
+     			return this.getTab(jq,which)!=null;//调用重写后的getTab方法
+     		},
+     	});
+     })()
+
+     $(function(){
+    	 var tabIndex=getTabIndex();
+    	 delete params.chartId;
+		$('#tt').tabs('select', tabIndex);
+     });
+
+    
+     function getTabIndex(){
+    	 var index=0;
+		if(params.chartId&&params.chartId!='') {
+			 index =	 $('.tabs-panels .panel-htop').children('div').index ($ ( '#'+params.chartId ));
+    	 }
+		return index;    	 
+     }
+      
+     function onSelectTab(title,index){
+    	 var tabIndex=getTabIndex();
+    	 if(tabIndex>0){
+    		 return;
+    	 }
+    	 var tab = $('#tt').tabs('getSelected');
+    	 var id=tab.attr('id');
+    	 var pieChartId=id+"Pie";
+    	 var barChartId=id+"Bar";
+         $("#"+pieChartId).css('width',$(".tabs-panels").width()*0.95);
+         $("#"+pieChartId).css('height',$(".tabs-panels").height()*0.70/2);
+         $("#"+barChartId).css('width',$(".tabs-panels").width()*0.95);
+         $("#"+barChartId).css('height',$(".tabs-panels").height()*0.95/2);
+    
+    	  PieChart(id,title);
+    	  BarChart(id,title);
+     }
+     function queryData(url,params){
+    	 var result=[];
+         $.ajax({
+             type: "POST",
+             url: url,
+             data: JSON.stringify(params),
+             processData:true,
+             dataType: "json",
+             async : false,
+             contentType: "application/json; charset=utf-8",
+             success: function (data) {
+                 if(data.code=="200"){
+                 	result=data.data;
+                 }
+             },
+             error: function(){
+             }
+         });
+    	return result;
+   }
+  function buildPieChartData(opts,url,data){
+	  var result=queryData(url,data);
+      var legendData = [];
+      var seriesData = [];
+      var selected = {};
+	  $.each(result,function(i,v){
+		  var legend=v[opts.data('legend')];
+		  var series=v[opts.data('series')];
+	
+		  legendData.push(legend);
+		  seriesData.push({name:legend,value:series});
+		  selected[legend]=true;
+	  });
+	  return {
+	      legendData:legendData,
+	      seriesData:seriesData,
+	      selected:selected ,
+	      raw:result
+	  }
+  }
+  
+  function buildBarChartData(opts,url,data){
+	  var result=queryData(url,data);
+ 	 var axisData = [];
+	 var seriesData = [];
+
+	  $.each(result,function(i,v){
+		  var legend=v[opts.data('axis')];
+		  var series=v[opts.data('series')];
+		  axisData.push(legend);
+		  seriesData.push(series);
+	  }); 
+	 // debugger;
+	  return {
+		  axisData:axisData,
+		  seriesData:seriesData,
+		  raw:result
+	  }
+  }
+     
+    
+     function PieChart(id,title){
+    	 var divid=id+'Pie';
+    	 var pieChartDiv=$('#'+divid);
+//    	 console.info(pieChartDiv)
+   // 	 debugger
+    	 var data=buildPieChartData(pieChartDiv,'/registerBillReport/getPlateChartsJson.action',$.extend(params,{'sort':id,'order':'desc','sumOthers':true,'sumAsOthersMoreThan':20}));
+    	 var seriesData=data.seriesData;
+
+    	 //debugger
+    	 //var data = genData(21);
+         var chartObj = echarts.init(document.getElementById(divid));
+         option = {
+             title: {
+                 text:title,
+                // subtext: '纯属虚构',
+                 left: 'center'
+             },
+             tooltip: {
+                 trigger: 'item',
+                // formatter: '{a} <br/>{b} : {c} ({d}%)'
+                 formatter: '{b} : {c} ({d}%)'
+             },
+             label:{
+            	 
+            	 normal: {
+                    /* formatter:function(param){
+                    	 var rowIndex=param.data.name;
+                    	 var row=data.raw[rowIndex];
+                    	 var labelText=row.name+" "+row.plate;
+                 	    return labelText ;
+                     }*/
+            	 }
+             },
+             legend: {
+                 type: 'scroll',
+                 orient: 'vertical',
+                 left: 'left',
+                 right: 10,
+                 top: 10,
+                 bottom: 10,
+                 data: data.legendData,
+                 selected: data.selected/*,
+                 formatter: function (rowIndex) {
+	                	 var row=data.raw[rowIndex];
+	                	 var legend=row.name+" "+row.plate;
+                	    return legend ;
+                	}*/
+             },
+             series: [
+                 {
+                    // name: '姓名',
+                     type: 'pie',
+                     radius: '50%',
+                     center: ['40%', '72%'],
+                     data: seriesData,
+                     emphasis: {
+                         itemStyle: {
+                             shadowBlur: 5,
+                             shadowOffsetX: 0,
+                             shadowColor: 'rgba(0, 0, 0, 0.5)'
+                         }
+                     }
+                 }
+             ]
+         };
+         chartObj.setOption(option);
+     }
+          
+     function BarChart(id,title){
+    	 var axisConfig=[
+    		 {
+    			 key:'label',
+    			legend:'客户-车牌',
+    			xAxis:true
+    		 }
+    		 ,{
+    			 key:'totalWeight',
+    			legend:'进场重量',
+    			type: 'bar'
+    		 }
+    		 ,{
+    			 key:'cnt',
+    	    	legend:'进场次数'
+    	    }
+    		,{
+    			key:'totalCheckingOrRechecking',
+ 	    		legend:'采样客户数量'
+ 	    	}
+    		,{
+  	    		key:'totalCheckedOrRechecked',
+  	    	    legend:'检测数量'
+  	    	}
+    		,{
+  	 	    key:'totalRechecked',
+  	 	 	legend:'复检数量'
+  	 	 	 }
+    		/*,{
+	 	  	  key:'totalSuccessfulInitalChecked',
+	 	  	  legend:'初检合格数量'
+  	 	  	 }
+			,{
+  	 	  	 key:'totalSuccessfulRechecked',
+  	 	  	 legend:'复检合格数量'
+  	 	  	 }*/
+			,{
+  	  	 	key:'totalHascertifiy',
+  	    	legend:'产地证明数量'
+  	    	 }
+  	 	  	 ,{
+	  	 	 key:'totalHasdetectreport',
+	    	 legend:'检测报告数量'
+	    	 }
+    	 ];
+    	 var legendData=axisConfig.map(function(v,i){return v.legend});
+    	 
+    	 var yAxisIndex=0;
+    	 var series=axisConfig.map(function(v,i){
+    		 var item={name:v.legend};
+    		 if(v.type){
+    			 item.type=v.type;
+    			 item.yAxisIndex=0;
+    		 }else{
+    			 item.type='line';
+    			 item.yAxisIndex=1;
+    		 }
+    		 item.xAxis=v.xAxis
+    		 item.data=[];
+    		 item.itemKey=v.key;
+    		 return item;
+    	 });
+    	
+    	 var divid=id+'Bar';
+    	 var barChartDiv=$('#'+divid);
+    	 
+    	 var chartObj = echarts.init(document.getElementById(divid));
+    	 var result=queryData('/registerBillReport/getPlateChartsJson.action',$.extend(params,{'sort':'totalWeight','order':'desc','sumOthers':true,'sumAsOthersMoreThan':30}));
+    	 
+    	  var yMax=[];
+    	  $.each(result,function(i,v){
+    		  $.each(series,function(j,s){
+    			  var itemKey=s.itemKey;
+    			  var value=v[itemKey];
+					s.data.push(value)  
+					if(!yMax[s.yAxisIndex]){
+						yMax[s.yAxisIndex]=0;
+					}
+				
+	    			if(value>yMax[s.yAxisIndex]){
+	    				yMax[s.yAxisIndex]=value;
+	    			}
+					
+    		  })
+    	  }); 
+    		//console.info(yMax)
+    	  var xAxisData=series.slice(0,1)[0].data; 
+    	  var seriesOpt=series.slice(1,series.length) 
+     	 var xAxisOpt=[
+     		 {
+     	            type: 'category',
+     	            data: xAxisData,
+     	            axisPointer: {
+     	                type: 'shadow'
+     	            },axisLabel: {  
+     	               interval:0,  
+     	              rotate:40/* ,
+                      formatter:function(rowIndex){
+                     	 var row=result[rowIndex];
+                     	 var labelText=row.name+" "+row.plate;
+                  	    return labelText ;
+                      }*/
+     	           }  
+     	        }
+     		 
+     	 ];
+
+    	var  yAxisOpt=[
+	        {
+	            type: 'value',
+	            name: '重量(KG)',
+	            min: 0,
+	            max: yMax[0],
+	            interval: 100000,
+	            axisLabel: {
+	                formatter: '{value}'
+	            }
+	        },
+	        {
+	            type: 'value',
+	            name: '数量',
+	            min: 0,
+	            max: yMax[1],
+	            interval: 10000,
+	            axisLabel: {
+	                formatter: '{value}'
+	            }
+	        }
+	    ];
+		var legendOpt=  {
+			 orient: 'vertical',
+		     left: 'left',
+		     cursor: "pointer",
+		     itemclick: function (e) {
+				         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+				             e.dataSeries.visible = false;
+				         } else {
+				             e.dataSeries.visible = true;
+				         }
+				
+				         e.chart.render();
+				     },
+				// data:  xAxis[0].data,
+				data: legendData
+				//selected:  xAxis[0].data.map(function(v,i){return {v:true}})
+				 };
+	/*console.info(legendOpt)
+	console.info(xAxisOpt)
+	console.info(yAxisOpt)
+	console.info(seriesOpt)*/
+    	 var option = {
+    			 grid: { // 控制图的大小，调整下面这些值就可以，
+    				               x: 150,
+    				               x2: 10,
+    				               y2: 150// y2可以控制 X轴跟Zoom控件之间的间隔，避免以为倾斜后造成 label重叠到zoom上
+    				      },
+    				
+    	     title: {
+    	     //    text: '特性示例：渐变色 阴影 点击缩放',
+    	      //   subtext: 'Feature Sample: Gradient Color, Shadow, Click Zoom'
+    	     },
+    	     tooltip: {
+    	         trigger: 'axis',
+    	         axisPointer: {
+    	             type: 'cross',
+    	             crossStyle: {
+    	                 color: '#999'
+    	             }
+    	         }
+    	     },
+    	     toolbox: {
+    	         feature: {
+    	             dataView: {show: true, readOnly: false},
+    	             magicType: {show: true, type: ['line', 'bar']},
+    	             restore: {show: true},
+    	             saveAsImage: {show: true}
+    	         }
+    	     },
+    	     legend:legendOpt,
+    	     xAxis:xAxisOpt,
+    	     yAxis:yAxisOpt,
+    	     series:seriesOpt 
+    	 };
+    	 chartObj.setOption(option);
+    	chartObj.resize({height:$(".tabs-panels").height()*0.9/2}); 
+    	 // Enable data zoom when user click bar.
+    /*	 var zoomSize = 6;
+    	 chartObj.on('click', function (params) {
+    	     //console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
+    	     chartObj.dispatchAction({
+    	         type: 'dataZoom',
+    	         startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
+    	         endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
+    	     });
+    	 });*/
+     }
+     </script>
+     
+
+ </#body>

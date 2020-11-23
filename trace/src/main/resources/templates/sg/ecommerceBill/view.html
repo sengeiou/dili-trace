@@ -1,0 +1,277 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="topicTop">
+        <div class="toppic-title">
+            <span class="topic-title-text maincolor">登记单信息详情</span>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+        </div>
+    </div>
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group"  style="width: 1200px">
+                <h4 class="form-item-title">基础信息</h4>
+
+                <div class="form-group">
+                    <label class="label-title text-right">登记时间</label>
+
+                    <input class="form-control input-sm" value="<%if(null!= item.created){%>${item.created,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">登记编号</label>
+                    <input type="text" class="form-control input-sm"  value="${item.code!}"  readonly/>
+                </div>
+                 <div class="form-group">
+                    <label class="label-title text-right">采样编号</label>
+                    <input type="text" class="form-control input-sm"  value="${item.sampleCode!}"  readonly/>
+                </div>
+
+             
+                <div class="form-group">
+                    <label class="label-title text-right">业户姓名</label>
+                    <input type="text" class="form-control input-sm" value="${item.name!}" required readonly/>
+                </div>
+           
+                <div class="form-group">
+                    <label class="label-title text-right">企业名称</label>
+                    <input type="text" class="form-control input-sm" value="${item.corporateName!}" required readonly/>
+                </div>
+
+                 <div class="form-group">
+                        <label class="label-title text-right">身份证号</label>
+                        <input type="text" class="form-control input-sm" value="${item.idCardNo!}"  required readonly />
+                  </div>
+                  <div class="form-group">
+                      <label class="label-title text-right">地址</label>
+                      <input type="text" class="form-control input-sm"  value="${item.addr!}"  required readonly/>
+                  </div>
+                 <div class="form-group">
+                      <label class="label-title text-right">手机号</label>
+                      <input type="text" class="form-control input-sm"  value="${item.phone!}"  required readonly/>
+                  </div>
+                
+                  <div class="form-group">
+                      <label class="label-title text-right">车牌号</label>
+                      <input type="text" class="form-control input-sm"  value="${item.plate!}"  required readonly/>
+                  </div>
+      
+                <div class="form-group">
+                    <label class="label-title text-right">商品名称</label>
+                    <input type="text" class="form-control input-sm"  value="${item.productName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">产地</label>
+                    <input type="text" class="form-control input-sm" value="${item.originName}" required readonly/>
+                </div>
+                
+                 <div class="form-group">
+                    <label class="label-title text-right">重量/KG</label>
+                    <input type="text" class="form-control input-sm"  value="${item.weight}" required readonly/>
+                </div>
+               <div class="form-group">
+                    <label class="label-title text-right">理货区号</label>
+                    <input type="text" class="form-control input-sm"  value="${item.tallyAreaNo!}" required readonly/>
+                </div>
+          
+                <div class="form-group">
+                    <label class="label-title text-right">状态</label>
+                    <input type="text" class="form-control input-sm"value="${item.stateName!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">操作人</label>
+                    <input type="text" class="form-control input-sm"  value="${item.operatorName!}"  readonly/>
+                </div>
+               
+            </div>
+
+            <div class="form-item-group">
+                <h4 class="form-item-title">检测信息</h4>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered">
+                        <thead>
+                            <th>检测时间</th>
+                            <th>检测结果</th>
+                            <th>检测数值</th>
+ 							<th>检测人员</th>
+                        </thead>
+                       <% for(detectRecord in detectRecordList){%>
+                        <tr>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="${detectRecord.detectTime,'yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required readonly />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control" value="${detectRecord.pdResult}" required readonly/>
+                                </div>
+                            </td>
+
+                             <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control input-sm" value="${detectRecord.detectOperator}" required readonly/>
+                                </div>
+                            </td>
+                        </tr>
+                        <%}%>
+                    </table>
+                    <!-- 表格后的统计 end -->
+                </div>
+            </div>
+            
+             <%
+            if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
+            <div class="form-item-group">
+                <h4 class="form-item-title">分销信息</h4>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>分销客户</th>
+                            <th>理货区号</th>
+                            <th>分销重量/KG</th>
+                            <th>车牌号</th>
+                            <th>溯源二维码</th>
+                        </tr>
+                        </thead>
+                        <%for(record in separateSalesRecords){
+                        %>
+                        <tr>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-sm" value="${record.salesUserName!}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text"  class="form-control input-sm" value="${record.tallyAreaNo!}" required readonly />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control input-sm" value="${record.salesWeight}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="salesPlate" class="form-control input-sm" value="${record.salesPlate}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="imageUploadWrap">
+                                    <div class="form-group">
+                                        <div class="imageUpload rectangle">
+                                            <img id="separateSalesRecordQR${recordLP.index}" alt="" class="show-image">
+                                            <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/ecommerceBill/separateSalesQRDetail.html?id=${record.id!}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </table>
+                    <!-- 表格后的统计 end -->
+                </div>
+            </div>
+            <%}%>
+
+
+            <div class="form-item-group">
+            		<h4 class="form-item-title">产地证明</h4>
+                          <%if(isNotEmpty(item.originCertifiyUrl)){
+                        	for(originCertifiy in strutil.split (item.originCertifiyUrl,",")){
+                        	%>
+                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
+                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${originCertifiy!}" >
+							</div>
+                        <%	}
+                        }%>
+            </div>
+            <div class="form-item-group">
+            		<h4 class="form-item-title">检测报告</h4>
+                          <%if(isNotEmpty(item.detectReportUrl)){
+                        	for(detectReport in strutil.split (item.detectReportUrl,",")){
+                        	%>
+                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
+                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${detectReport!}" >
+							</div>
+                        <%	}
+                        }%>
+            </div>
+            
+        </form>
+    </div>
+
+</div>
+</#bodyOrigin>
+<style>
+.layui-layer-btn0{
+border:1px solid #dedede!important;
+background-color:#f1f1f1!important;
+color:#333!important;
+}
+
+</style>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
+<script>
+	function showCheckSheet(checkSheetId){
+		var url="${contextPath}/checkSheet/view/"+checkSheetId;
+		$(window.parent.document.body).append('<iframe id="checksheet_view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0;z-index:99999"></iframe>');
+	}
+	function rotateImg(angle){
+		$('#showedImg').rotate($('#showedImg').getRotateAngle()[0]+angle);
+	}
+    $('.show-image').on('click', function () {
+    	debugger;
+        var url = $(this).attr('src');
+       // url='http://gss0.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/241f95cad1c8a786d814d6eb6709c93d70cf501c.jpg'
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+               // closeBtn: 2,
+                btn:["顺时针旋转","逆时针旋转"],
+                btnAlign: 'c',
+                area: ['90%', '90%'], //宽高
+                content: '<div id="cropContainer" style="text-align:center"><img id="showedImg"   src="' + url + '" alt="" class="show-image-zoom"></div>'
+            ,btn1:function(){
+            	rotateImg(90);
+            	return false;
+            },btn2:function(){
+            	rotateImg(-90);
+            	return false;
+            }});
+        }
+    });
+    /*$('.imageUpload,.show-img').on('click', function () {
+        var url = $(this).find("img").attr('src');
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });*/
+
+    $('.ssr-view').on('click', function () {
+        let tradeId = $(this).attr('data-trade-id');
+        layer.open({
+            type: 2,
+            area: ['820px', '450px'],
+            title: '分销记录',
+            scrollbar: true,
+            content: ['/registerBill/tradeBillSsRecord/'+tradeId], //iframe的url
+            yes: function (index, layero) {
+            }
+        });
+    });
+</script>

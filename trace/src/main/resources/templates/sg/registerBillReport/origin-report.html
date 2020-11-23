@@ -1,0 +1,482 @@
+ <#body>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <!--<div id="nav" class="top-pos-box">
+                <span><img class="nav-pos-icon" src="${contextPath}/resources/images/pos-icon.png">当前位置:</span>
+                <span>登记单管理&nbsp&gt;</span>
+                <span><a class="link-text" href="">登记单列表</a></span>
+            </div>-->
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="queryForm" class="easyui-form" method="post" fit="true">
+                    <div class="search-wrap">
+
+                        <div class="search-item long-item">
+                            <input class="easyui-datebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'" value="${createdStart!}"  required="required"/>
+                            <span style="width: 2%;">-</span>
+                            <input class="easyui-datebox" name="createdEnd" id="createdEnd" style="width:39%;" value="${createdEnd!}"  required="required"/>
+                        </div>
+                        <div class="search-item">
+                            <input  name="registerSource" id="registerSource" style="width:100%" labelAlign="right" data-options="label:'登记来源'"  panelWidth="auto" panelHeight="auto" value="${registerSource}"/>
+                            <#comboProvider _id="registerSource" _provider='registerSourceProvider' _queryParams='{emptyText:"全部"}' />
+                        </div>
+
+                        <div class="search-item">
+								<input class="easyui-combotree" name="productIdList" id="productIdList" style="width: 100%" 
+								data-options="
+								label:'商品:',
+								labelAlign:'right',
+								loadFilter:treeLoadFilter,
+								_idField:'id', 
+								_textField:'value', 
+								multiple: true,
+								_parentIdField:'parentId',
+								editable:true,panelHeight:'auto',panelMaxHeight:400, onChange:function(newValue, oldValue){
+									if(newValue.length==0){
+									$('#productIdList').combotree('readonly', false);
+									}else{
+									$('#productIdList').combotree('readonly', true);
+									}
+										
+								}" />
+						 </div>
+						 
+                         <div class="search-item">
+                            <input class="easyui-textbox" name="plate" id="plate" style="width:100%" labelAlign="right" data-options="label:'车牌号'" />
+                        </div>
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                               onclick="queryPlateReportGrid()">查询</a>&nbsp;&nbsp;
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
+                        </div>
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" 
+                               onclick="showorhidecolumns()">列表字段配置</a>&nbsp;&nbsp;
+                        </div>
+                        
+                        <div class="search-wrap-btn">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-sum" 
+                               onclick="showcharts()">查看图表</a>&nbsp;&nbsp;
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        <div region="center" style="width:100%;" height="auto">
+            <!-- =========================================================表格========================================================= -->
+            <table class="easyui-datagrid" title="登记单列表" id="reportGrid" fitColumns="true"  fit="true" noheader="true"
+                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
+                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="totalWeight" sortOrder="desc"
+                   align="center" fit="true" idField="originName" selectOnCheck="true" data-options="">
+                       
+                <thead>
+                    <tr>
+                        <th  data-options="field:'originName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                            产地
+                        </th>
+                        <th  data-options="field:'totalWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
+                            重量/KG
+                        </th>
+                        <th  data-options="field:'momWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            环比
+                        </th>
+                        <th  data-options="field:'yoyWeight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            同比
+                        </th>
+                        
+                        <th  data-options="field:'cnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',chartable:true">
+                            进场次数
+                        </th>
+                        <th  data-options="field:'momCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            环比
+                        </th>
+                        <th  data-options="field:'yoyCnt',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            同比
+                        </th>
+                        <th  data-options="field:'totalCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
+                            采样客户数量
+                        </th>
+                        <th  data-options="field:'momCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            环比
+                        </th>
+                        <th  data-options="field:'yoyCheckingOrRechecking',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            同比
+                        </th>
+                        <th  data-options="field:'totalCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
+                            检测数量
+                        </th>
+                        <th  data-options="field:'momCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            环比
+                        </th>
+                        <th  data-options="field:'yoyCheckedOrRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            同比
+                        </th>
+                        <th  data-options="field:'totalRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false' ,chartable:true">
+                            复检数量
+                        </th>
+                        <th  data-options="field:'momRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            环比
+                        </th>
+                        <th  data-options="field:'yoyRechecked',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            同比
+                        </th>
+                        <th  data-options="field:'successfulInitalCheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            初检合格率
+                        </th>
+                          <th  data-options="field:'successfulRecheckedRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            复检合格率
+                        </th>
+					     <th  data-options="field:'totalHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
+	                           产地证明
+	                       </th>
+					     <th  data-options="field:'hascertifiyRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+					           产地占进场占比
+                        </th>
+                        <th  data-options="field:'momHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            环比
+                        </th>
+                        <th  data-options="field:'yoyHascertifiy',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            同比
+                        </th>
+
+	     				<th  data-options="field:'totalHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'  ,chartable:true">
+                           检测报告
+                        </th>
+     					<th  data-options="field:'hasdetectreportRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            检测报告占进场占比 
+                        </th>
+                        <th  data-options="field:'momHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            环比
+                        </th>
+                        <th  data-options="field:'yoyHasdetectreport',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                            同比
+                        </th>
+                        
+                        <th  data-options="field:'checkingOrRecheckingRate',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false',  _provider:'nullValueInReportProvider'">
+                           检测占进场占比
+                        </th>
+                   </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+      <!-- 隐藏编辑框 -->
+    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="列配置" style="padding:20px" modal="true" border="thin" closed="true"
+         data-options="">
+    <form id="_form" class="easyui-form" method="post" fit="true">
+        <input name="_id" id="_id" type="hidden">
+        <table width="400px">
+            <tr>
+                <td style="padding:5px;">
+                <input class="easyui-checkbox" type="checkbox" id="productName" value="productName" checked="checked" readonly="readonly" disabled="disabled"></input>商品名称
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalWeight" value="totalWeight" checked="checked" ></input>运输重量
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momWeight" value="momWeight"  checked="checked" ></input>环比
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyWeight" value="yoyWeight"  checked="checked" ></input>同比
+                </td>
+            </tr>
+             <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="cnt" value="cnt"  checked="checked" ></input>进场次数
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momCnt" value="momCnt"  checked="checked" ></input>环比
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyCnt" value="yoyCnt"  checked="checked" ></input>同比
+                </td>
+            </tr>
+             <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalCheckingOrRechecking" value="totalCheckingOrRechecking"  checked="checked" ></input>采样客户数量
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momCheckingOrRechecking" value="momCheckingOrRechecking"  checked="checked" ></input>环比
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyCheckingOrRechecking" value="yoyCheckingOrRechecking"  checked="checked" ></input>同比
+                </td>
+            </tr>
+             <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalCheckedOrRechecked" value="totalCheckedOrRechecked"  checked="checked" ></input>检测数量
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momCheckedOrRechecked" value="momCheckedOrRechecked"  checked="checked" ></input>环比
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyCheckedOrRechecked" value="yoyCheckedOrRechecked"  checked="checked" ></input>同比
+                </td>
+            </tr>
+             <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalRechecked" value="totalRechecked"  checked="checked" ></input>复检数量
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="momRechecked" value="momRechecked"  checked="checked" ></input>环比
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="yoyRechecked" value="yoyRechecked"  checked="checked" ></input>同比
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="successfulInitalCheckedRate" value="successfulInitalCheckedRate"  checked="checked" ></input>初检合格率
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="successfulRecheckedRate" value="successfulRecheckedRate"  checked="checked" ></input>复检合格率
+                </td>
+            </tr>
+               <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalHascertifiy" value="totalHascertifiy"  checked="checked" ></input>产地证明
+					<input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="hascertifiyRate" value="hascertifiyRate"  checked="checked" ></input>产地占进场占比
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="totalHasdetectreport" value="totalHasdetectreport"  checked="checked" ></input>检测报告 
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="hasdetectreportRate" value="hasdetectreportRate"  checked="checked" ></input>检测报告占进场占比
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    <input class="easyui-checkbox" data-options="onChange:onChangeCk" type="checkbox" id="checkingOrRecheckingRate" value="checkingOrRecheckingRate"  checked="checked" ></input>检测占进场占比
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:5px;">
+                    
+                    <input class="easyui-checkbox" data-options="onChange:selectAll" type="checkbox" id="selectAll"" value="all"  checked="checked"  disabled="disabled"></input>全选
+                    <input class="easyui-checkbox" data-options="onChange:unselectAll" type="checkbox" id="unselectAll" value="all"   ></input>全取消
+                </td>
+            </tr>
+                    </table>
+    </form>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+     <script type="text/javascript">
+     var productInfoList=[];
+     function queryProductSearchDlg(){
+    	   var likeProductName=$('#productIdList').combotree('getText');
+    		$.ajax({
+    			url:'${contextPath!}/toll/category?name='+likeProductName,
+    			async:false,
+    			success:function(resp){
+    				productInfoList=resp.suggestions.map(function(v,i){v['parentId']='';return v});
+    				//data.unshift({id:'',value:'全部'});
+    				$('#productIdList').combotree({data:productInfoList});
+    				//$('#productIdList').combotree('showPanel');
+    				//$('#productIdList').combotree('setText',likeProductName);
+    			}
+    		});
+    	     var productInput=$('#'+$('#productIdList').siblings('label').attr('for'));
+    	        productInput.on('input',function(){
+
+    	        });
+    	        productInput.focus(function(){
+    	        	$('#productIdList').combotree('showPanel');
+    	        });
+    	 
+     }
+    //表格查询
+
+    function queryPlateReportGrid() {
+        var opts = _reportGrid.datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = "${contextPath}/registerBillReport/listPageGroupByOrigin.action";
+        }
+
+        if(!$('#queryForm').form("validate")){
+            return false;
+        }
+        
+        var productIdList=$('#productIdList').combotree('getValues');
+        var likeProductName=$('#'+$('#productIdList').siblings('label').attr('for')).val();
+        
+        var formdata=bindGridMeta2Form("reportGrid", "queryForm");
+        if(productIdList.length>0){
+        	formdata['productIdList']=$.makeArray(productIdList).filter(function(v,i){return v!=''}).join(',');	
+        }else{
+        	formdata['likeProductName']=likeProductName;	
+        }
+        _reportGrid.datagrid("load", formdata);
+
+    }
+        //清空表单
+    function clearQueryForm() {
+        $('#queryForm').form('clear');
+        $('#plate').combobox('loadData',[])
+    }
+
+    //表格表头右键菜单
+    function headerContextMenu(e, field){
+        e.preventDefault();
+        if (!cmenu){
+            createColumnMenu("reportGrid");
+        }
+        cmenu.menu('show', {
+            left:e.pageX,
+            top:e.pageY
+        });
+    }
+
+    /**
+     * 绑定页面回车事件，以及初始化页面时的光标定位
+     * @formId
+     *          表单ID
+     * @elementName
+     *          光标定位在指点表单元素的name属性的值
+     * @submitFun
+     *          表单提交需执行的任务
+     */
+    $(function () {
+        window._reportGrid = $('#reportGrid');
+        bindFormEvent("queryForm", "registerSource", queryPlateReportGrid);
+        queryProductSearchDlg();
+        queryPlateReportGrid();
+    })
+
+
+    /**
+     * 初始化用户列表组件
+     */
+    function initRegisterBillGrid() {
+        var pager = _reportGrid.datagrid('getPager');
+        var toolbar=[
+            <#resource method="post" url="registerBillReport/origin-report.html#export">
+                {
+                    iconCls:'icon-export',
+                    text:'导出',
+                    handler:function(){
+                   	 layer.confirm('确认导出数据?', {
+                         type: 0,
+                         title: '提示',
+                         btn: ['确定','取消'],
+                         yes:function(){
+                        	 layer.closeAll();
+                        	 doExport('reportGrid');
+                         }
+                     });
+                       
+                    }
+                }
+            </#resource>
+            ]
+        _reportGrid.datagrid({
+            toolbar:toolbar
+        });
+        pager.pagination({
+            <#controls_paginationOpts/>,
+            //buttons:toolbar
+
+        });
+    }
+    function showorhidecolumns(){
+        $('#dlg').dialog("setTitle","列表字段配置");
+        $('#dlg').dialog('open');
+        $('#dlg').dialog('center');
+      
+    }
+    function onChangeCk(v){
+    	var cthis=$(this);
+    	var colName=cthis.attr('value');
+
+    	var columns=_reportGrid.datagrid('getColumnFields', false);
+		var checkedData={checked:[],unchecked:[]};
+		var unselAll=false;
+    	if(v==false){
+       		_reportGrid.datagrid('hideColumn',colName);	
+       	}else{
+       		_reportGrid.datagrid('showColumn', colName);
+       	}
+    	
+    	$.each(columns,function(i,v){
+    		var cbox=$('#'+v);
+    	
+    		if(cbox.length>0){
+    			var ck=cbox.checkbox('options').checked;
+    			//console.info('checked:' +ck)
+    			if(ck==true){
+       				checkedData.checked.push(v)
+       			}else{
+       				checkedData.unchecked.push(v)
+       			}		
+    		}
+   		
+   			
+   		});
+    	
+    	if(checkedData.checked.length==0){
+    		$('#selectAll').checkbox('uncheck').checkbox('enable');
+    		$('#unselectAll').checkbox('check').checkbox('disable');
+    	}else if(checkedData.unchecked.length==0){
+    		$('#selectAll').checkbox('check').checkbox('disable');
+    		$('#unselectAll').checkbox('uncheck').checkbox('enable');
+    	}else{
+    		$('#selectAll').checkbox('uncheck').checkbox('enable');
+    		$('#unselectAll').checkbox('uncheck').checkbox('enable');
+    	}
+    }
+    function selectAll(v){
+    	var cthis=$(this);
+    	if(v==true){
+    		var columns=_reportGrid.datagrid('getColumnFields', false);
+        	$.each(columns,function(i,v){
+        		_reportGrid.datagrid('showColumn', v);
+        		$('#'+v).checkbox('check');
+        	});
+        	$('#unselectAll').checkbox('uncheck').checkbox('enable');
+    	}
+    }
+    function unselectAll(v){
+    	var cthis=$(this);
+    	if(v==true){
+    		var columns=_reportGrid.datagrid('getColumnFields', false);
+        	$.each(columns,function(i,v){
+        		_reportGrid.datagrid('hideColumn', v);
+        		$('#'+v).checkbox('uncheck');
+        	});
+        	$('#selectAll').checkbox('uncheck').checkbox('enable');
+    	}
+    	
+    	
+    }
+    
+function showcharts(){
+
+    if(!$('#queryForm').form("validate")){
+        return false;
+    }
+	var data=$('#queryForm').serializeObject();
+	var columns=_reportGrid.datagrid('getColumnFields', false);
+	var chartId='';
+	$.each(columns,function(i,v){
+		var col=_reportGrid.datagrid('getColumnOption', v);
+		if(col.chartable&&col.chartable==true){
+			var td=$('td[field="'+v+'"]');
+			var visible=td.is(':visible');
+			if(visible==true){
+				chartId=v;
+				return false;
+			}
+		}
+	});
+	$.extend(data,{'chartId':chartId});
+	
+	 openWin('/registerBillReport/origin-charts.html?params='+encodeURIComponent(JSON.stringify(data) ));
+}
+
+
+function closeWin(id){
+    $('#'+id).remove();
+    $('#reportGrid').datagrid('reload');
+}
+function openWin(url){
+    $('body').append('<iframe id="view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
+}
+    </script>
+
+ </#body>

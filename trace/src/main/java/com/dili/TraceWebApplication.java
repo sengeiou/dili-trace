@@ -25,6 +25,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 //@DTOScan({"com.dili.trace","com.dili.ss"})
 //@Import(DynamicRoutingDataSourceRegister.class)
 @EnableScheduling
+
 @EnableAsync
 /**
  * 除了内嵌容器的部署模式，Spring Boot也支持将应用部署至已有的Tomcat容器, 或JBoss, WebLogic等传统Java EE应用服务器。

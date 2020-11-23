@@ -5,22 +5,17 @@
 /.project
 /.settings
 /.classpath
+/app.pid
 
 **/.project
 **/.settings
 **/.classpath
+**/app.pid
 **/rebel.xml
 */.idea/
 */target/
 */*.iml
 */*.log
-
-*/nb-configuration.xml
 .vscode/launch.json
-/trace/nbproject/
-**/*/node_modules
-**/*.js.map
-**/*/app.pid
-app.pid
-application.pid
-**/package-lock.json
+trace/nb-configuration.xml
+**/node_modules

@@ -1,0 +1,234 @@
+<#bodyOrigin>
+    <style>
+        .form-inline .table-showlist table .input-sm {
+            width: 200px;
+        }
+        /*a  upload */
+        
+        .a-upload {
+            padding: 4px 28px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            display: inline-block;
+            color: #fff !important;
+            background-color: #3370ff;
+        }
+        
+        .a-upload input {
+            position: absolute;
+            font-size: 100px;
+            right: 0;
+            top: 0;
+            opacity: 0;
+            filter: alpha(opacity=0);
+            cursor: pointer
+        }
+        
+        .a-upload:hover {
+            color: #444;
+            background: #eee;
+            border-color: #ccc;
+            text-decoration: none
+        }
+        
+        .es-list {
+            max-height: 220px !important;
+        }
+    </style>
+    <div class="main-container">
+        <div class="topicTop">
+            <div class="toppic-title">
+                <span class="topic-title-text maincolor">创建登记单</span>
+                <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+            </div>
+        </div>
+        <div class="form-box border">
+
+            <form id="createRecordForm" class="form-inline" role="form">
+                <div class="form-item-group"  style="width: 1200px">
+                    <h4 class="form-item-title">基础信息</h4>
+                    <div class="form-group">
+                        <label class="label-title text-right">业户姓名</label>
+                        <input type="text" class="form-control input-sm" name="bill[name]" id="name" tabindex="-1"  maxlength="50" />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">企业名称</label>
+                        <input name="bill[corporateName]" id="corporateName" type="text" class="form-control input-sm" value="寿光地利农产品物流园" tabindex="-1" maxlength="100" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="label-title text-right">身份证号</label>
+                        <input name="bill[idCardNo]" id="idCardNo" type="text" class="form-control input-sm isIdCard" value="" tabindex="-1" />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">地址</label>
+                        <input name="bill[addr]" id="addr" type="text" class="form-control input-sm" value="" tabindex="-1"  maxlength="50" />
+                    </div>
+                   <div class="form-group">
+                        <label class="label-title text-right">手机号</label>
+                        <input name="bill[phone]" id="phone" type="text" class="form-control input-sm isMobile" value="" tabindex="-1" />
+                    </div>
+                    <div class="form-group">
+                        <label class="label-title text-right">车牌号</label>
+                        <input name="bill[plate]" id="plate" type="text" class="form-control input-sm isPlate" value="" tabindex="-1" />
+                    </div>
+
+
+         			<div class="form-group">
+                        <label class="label-title text-right">理货区号</label>
+                        <input name="bill[tallyAreaNo]" id="tallyAreaNo" type="text" class="form-control input-sm"tabindex="-1" maxlength="3" />
+                    </div>
+                    
+                    <div class="table-showlist" style="width: 1200px">
+                     <h4 class="form-item-title">货品信息</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th><span class="red">&lowast;</span>商品名称</th>
+                                    <th>产地</th>
+                                    <th><span class="red">&lowast;</span>商品总重量/KG</th>
+                                    <th>产地证明</th>
+                                    <th>检测报告</th>
+                                </tr>
+                                 <tr>
+							        <td>
+							            <div class="form-group">
+							                <input type="text" class="form-control input-sm isSelected" name="bill[productName]" id="productName" required />
+							                <input type="text" name="bill[productId]" hidden value="" />
+							            </div>
+							        </td>
+							        <td>
+							            <div class="form-group">
+							                <input type="text" name="bill[originName]" class="form-control input-sm isSelected" id="originName" />
+							                <input type="text" name="bill[originId]" hidden value="" />
+							            </div>
+							        </td>
+							        <td>
+							            <div class="form-group">
+							                <input type="text" class="form-control input-sm isInt" name="bill[weight]" maxlength="9" range="0 99999999"  min="1" required/>
+							            </div>
+							        </td>
+							        <td>
+							            <div class="upload-div">
+							                <a href="javascript:;" class="a-upload" tabindex="-1">
+							                    <input type="file" id="originCertifiyUrl"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
+							                    <span>上传</span>
+							                    <input type="hidden" name="bill[originCertifiyUrl]">
+							                </a>
+							            </div>
+							            <div class="view-div" style="display: none;">
+							                <span>已上传</span>
+							                <a href="javascript:;" data-index="0" class="img-view-a">查看图片</a>
+							                <a href="javascript:$('#originCertifiyUrl').trigger('click')">重新上传</a>
+							                <a href="javascript:;" class="img-del-btn">删除</a>
+							            </div>
+							        </td>
+							        
+							        <td>
+							            <div class="upload-div">
+							                <a href="javascript:;" class="a-upload" tabindex="-1">
+							                    <input type="file" id="detectReportUrl"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
+							                    <span>上传</span>
+							                    <input type="hidden" name="bill[detectReportUrl]">
+							                </a>
+							            </div>
+							            <div class="view-div" style="display: none;">
+							                <span>已上传</span>
+							                <a href="javascript:;" data-index="0" class="img-view-a">查看图片</a>
+							                <a href="javascript:$('#detectReportUrl').trigger('click')">重新上传</a>
+							                <a href="javascript:;" class="img-del-btn">删除</a>
+							            </div>
+							        </td>
+							        
+							    </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <!-- 表格后的统计 end -->
+                        <div style="width: 1200px">
+                                                                                      常用产地:<% for(city in citys){%>
+                            <a href="javascript:void(0)" onclick="selectCity(this,'${city.addressId}','${city.mergedAddress}')" title="${city.mergedAddress}">${city.address}</a>
+                            <%}%>
+                    </div>
+                    </div>
+                    
+                    
+
+                </div>
+                <div class="form-item-group">
+                <h4 class="form-item-title">分销信息</h4>
+                <button type="button" class="btn-main2 btn-sm" id="addSeperateItemBtn" style="width: 120px;">添加分销信息</button>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered" id="seperateTable">
+                        <thead>
+                        <tr>
+                            <th>理货区号</th>
+                            <th>业户姓名</th>
+                            <th>车牌号</th>
+                            <th>分销重量/KG</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <!-- 表格后的统计 end -->
+                </div>
+            </div>
+            </form>
+
+        </div>
+        <div class="text-center mt30">
+            <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
+            <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+        </div>
+    </div>
+</#bodyOrigin>
+<#ecommerceBill_createJs />
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script src="${contextPath!}/resources/js/jquery-serializeForm.min.js"></script>
+
+<script type="text/javascript">
+    //初始化控件
+    var ed = $('.editableSelect').editableSelect({
+        filter: false,
+    });
+    appendCachedPlate([], '#plate');
+  
+    
+</script>
+
+<script id="seperateItem" type="text/html">
+    <tr>
+        <td>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm  tallyAreaNoSearch" name="separateSalesRecordList[{{index}}][tallyAreaNo]" id="tallyAreaNo_{{index}}" />
+                <input type="text" name="separateSalesRecordList[{{index}}][tallyAreaNo]" hidden value="" />
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <input type="text" name="separateSalesRecordList[{{index}}][salesUserName]" class="form-control input-sm isRealName" id="salesUserName_{{index}}" />
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm isPlate" name="separateSalesRecordList[{{index}}][salesPlate]"/>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm isInt" name="separateSalesRecordList[{{index}}][salesWeight]" maxlength="6" range="0 999999" value="0" />
+            </div>
+        </td>
+  		<td><a href="javascript:;" class="split-minus-btn">删除</a></td>
+    </tr>
+
+</script>

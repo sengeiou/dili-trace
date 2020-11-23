@@ -1,0 +1,559 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="topicTop">
+        <div class="toppic-title">
+            <span class="topic-title-text maincolor">上传检测报告</span>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+        </div>
+    </div>
+    <div class="form-box border">
+        <form id="modifyRegisterBillForm" class="form-inline" role="form">
+         <input type="hidden" name="id" value="${registerBill.id}"/>
+            <div class="form-item-group">
+                <h4 class="form-item-title">基础信息</h4>
+
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记时间</label>
+
+                    <input class="form-control input-sm" value="<%if(null!= registerBill.created){%>${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.code!}"  readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>操作人</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.operatorName!}"  readonly/>
+                </div>
+                <br>
+                <% if(registerBill.registerSource == 1){ %>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>理货区号</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo!}" required readonly/>
+                    </div>
+                <% }else if(registerBill.registerSource == 2){ %>
+                    <div class="form-group">
+                        <label class="label-title text-right">
+                            <span class="red">&lowast;</span>交易区号</label>
+                        <input type="text" class="form-control input-sm"  value="${registerBill.tradeTypeId!}" required readonly/>
+                    </div>
+                <% } %>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>业户姓名</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.name!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>身份证号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.idCardNo}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>身份证地址</label>
+                    <textarea name="addr" id="addr" class="form-control" cols="82" rows="1" required readonly>${registerBill.addr!}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>车牌号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.plate}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>商品名称</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.productName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>产地</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.originName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>重量/KG</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.weight}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.stateName}" required readonly/>
+                </div>
+                <% if(registerBill.registerSource == 2){ %>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>交易账号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.tradeAccount!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>印刷卡号</label>
+                    <input type="text" class="form-control input-sm" value="${registerBill.tradePrintingCard!}" required readonly/>
+                </div>
+                <% } %>
+            </div>
+            <div class="form-item-group">
+                <h4 class="form-item-title">检测信息</h4>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
+                    <input class="form-control input-sm" value="${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.detectStateName}" required readonly/>
+                </div>
+                <div class="form-group" >
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测数值</label>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.latestPdResult!}" readonly/>
+                </div>
+                <br>
+                <div class="form-group" >
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测人员</label>
+                    <input type="text" class="form-control input-sm"   value="${registerBill.latestDetectOperator!}" readonly/>
+                </div>
+            </div>
+
+            <%
+            if(registerBill.registerSource == 1){
+                if( registerBill.salesType == 2 && !isEmpty(registerBill.detectState) && (registerBill.detectState == 1 || registerBill.detectState == 3)){
+            %>
+            <div class="form-item-group">
+                <h4 class="form-item-title">溯源二维码</h4>
+                <div class="imageUploadWrap">
+                    <div class="form-group">
+                        <div class="imageUpload rectangle">
+                            <img id="registerBillQRCode" alt="" class="show-image">
+                            <#imgQR selector="registerBillQRCode" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/registerBillQRCode.html?id=${registerBill.id!}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+            <%
+                if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
+            <div class="form-item-group">
+                <h4 class="form-item-title">分销信息</h4>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th><span class="red">&lowast;</span>分销客户</th>
+                            <th><span class="red">&lowast;</span>分销地</th>
+                            <th><span class="red">&lowast;</span>分销重量/KG</th>
+                            <th><span class="red">&lowast;</span>车牌号</th>
+                            <th>溯源二维码</th>
+                        </tr>
+                        </thead>
+                        <%for(record in separateSalesRecords){
+                        %>
+                        <tr>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-sm" value="${record.salesUserName!}"
+                                           required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-sm" value="${record.salesCityName!}"
+                                           required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="weight" class="form-control input-sm"
+                                           value="${record.salesWeight}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="salesPlate" class="form-control input-sm" value="${record.salesPlate}" required readonly/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="imageUploadWrap">
+                                    <div class="form-group">
+                                        <div class="imageUpload rectangle">
+                                            <img id="separateSalesRecordQR${recordLP.index}" alt="" class="show-image">
+                                            <#imgQR selector="separateSalesRecordQR${recordLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/separateSalesRecordQRCode.html?id=${record.id!}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </table>
+                    <!-- 表格后的统计 end -->
+                </div>
+            </div>
+            <%}
+            }else{ %>
+
+            <%
+            if(isNotEmpty(qualityTraceTradeBills) && qualityTraceTradeBills.~size>0){
+            %>
+            <div class="form-item-group">
+                <h4 class="form-item-title">交易单</h4>
+                <div class="table-showlist" style="width: 1200px">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>交易单号</th>
+                            <th>结算时间</th>
+                            <th>重量/KG</th>
+                            <th>卖家</th>
+                            <th>买家</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <%
+                        for(qttb in qualityTraceTradeBills){
+                        %>
+                        <tr>
+                            <td>${qttb.orderId!}</td>
+                            <td>${qttb.orderPayDate,dateFormat='yyyy-MM-dd HH:mm:ss'}</td>
+                            <td>${qttb.netWeight!}</td>
+                            <td>${qttb.sellerName!}</td>
+                            <td>${qttb.buyerName!}</td>
+                            <td>
+                                <% if(!isEmpty(qttb.salesType)) {
+                                if(qttb.salesType == 1){
+                                %>
+                                <a href="javascript:void(0)" data-trade-id="${qttb.id!}" class="ssr-view">分销记录</a></td>
+                            <% }else{ %>
+                            <a href="javascript:void(0)" class="show-img"><img id="tradeBillQR${qttbLP.index}" alt=""
+                                                                               width="30px" height="30px"
+                                                                               class="show-image"></a>
+                            <#imgQR selector="tradeBillQR${qttbLP.index}" width="300" height="300" qrUrl="http://trace.nong12.com/registerBill/tradeBillQRCcode.html?id=${qttb.id!}"/>
+                            <% } } %>
+                        </tr>
+                        <% } %>
+                    </table>
+                </div>
+            </div>
+            <%} } %>
+
+           <div class="form-item-group" id="originCertifiyUrlDiv">
+                <h4 class="form-item-title">产地证明</h4>
+                <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
+                    <span class="fileimg-plus-icon">+</span>
+                    <span class="fileimg-des">点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                    <input type="hidden" name="originCertifiy" id="originCertifiy">
+                    <img class="magnifying" >
+                    <div class="fileimg-cover" style="display: none;"></div>
+                    <div class="fileimg-edit"  style="display: none;">
+                        <span class="fileimg-view">查看</span>
+                        <span class="fileimg-delete">删除</span>
+                    </div>
+                </div>
+            </div>
+            
+             <div class="form-item-group" id="detectReportUrlDiv">
+                <h4 class="form-item-title">检测报告</h4>
+                <div class="fileimg-box"   style="display:inline-block;margin: 5px;padding: 10px;">
+                    <span class="fileimg-plus-icon">+</span>
+                    <span class="fileimg-des">点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                    <input type="hidden" name="detectReport" id="detectReport">
+                    <img class="magnifying" >
+                    <div class="fileimg-cover" style="display: none;"></div>
+                    <div class="fileimg-edit"  style="display: none;">
+                        <span class="fileimg-view">查看</span>
+                        <span class="fileimg-delete">删除</span>
+                    </div>
+                </div>
+            </div>
+            
+            
+ 		<%if(registerBill.detectState == 4&&isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
+                <div class="form-item-group">
+					<div class="imageUploadWrap">
+	                    <div class="form-group">
+	                        <label class="label-title text-right"><span class="red">&lowast;</span>处理结果图片</label>
+	                        <div class="imageUpload rectangle">
+	                            <img <% if(isNotEmpty(registerBill.handleResultUrl)){ %>src="${contextPath!}${registerBill.handleResultUrl!}"<% } %> alt="产地证明" class="show-image">
+	                        </div>
+	                    </div>
+	                    
+		                 <div class="form-group">
+		                    <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
+		                    <input type="text" class="form-control input-sm"  value="${registerBill.handleResult}" required readonly/>
+	                	 </div>
+	                </div>
+                </div>
+               
+            <%}%>
+        </form>
+    </div>
+<!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30" style="width: 50%">
+        <button class="btn-main2 btn-sm" onclick="doModifyRegisterBill()">提交</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+    </div>
+</div>
+</#bodyOrigin>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+
+<script>
+var currentUser={"depId":"${user.depId!}"
+	,"id":"${user.id!}"
+	,"realName":"${user.realName!}"
+	,"userName":"${user.userName!}"
+	,"departmentName":"${department.name!}"};
+	function doModifyRegisterBill(){
+		if($('#modifyRegisterBillForm').validate().form() != true){
+            return;
+        }
+		var   formData=$('#modifyRegisterBillForm').serializeObject();
+	    var  originCertifiyUrl=$.makeArray(formData.originCertifiy).filter(function(v,i){
+	        	return v!='';
+	        }).join(',');
+	   var  detectReportUrl=$.makeArray(formData.detectReport).filter(function(v,i){
+	        	return v!='';
+	        }).join(',');
+	       
+	   delete formData.originCertifiy
+	   delete formData.detectReport
+	   formData.originCertifiyUrl=originCertifiyUrl;
+	   formData.detectReportUrl=detectReportUrl;
+
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/registerBill/doUploadDetectReport.action",
+            data : JSON.stringify(formData),
+            dataType: "json",
+            async : true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if(ret.success){
+                    //TLOG.component.operateLog(TLOG.operates.add, "登记单管理", ret.data, ret.data);
+                    //location.href = '/registerBill/index.html';
+                    //var paramStr = JSON.stringify(ret.data);
+                    parent.closeWin('view_win')
+                }else{
+                    swal(
+                            '错误',
+                            ret.result,
+                            'error'
+                    );
+                }
+            },
+            error: function(){
+                swal(
+                        '错误',
+                        '远程访问失败',
+                        'error'
+                );
+            }
+        });
+		
+		
+	}
+    $('.imageUpload,.show-img').on('click', function () {
+        var url = $(this).find("img").attr('src');
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['50%', '50%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+
+    $('.ssr-view').on('click', function () {
+        let tradeId = $(this).attr('data-trade-id');
+        layer.open({
+            type: 2,
+            area: ['820px', '450px'],
+            title: '分销记录',
+            scrollbar: true,
+            content: ['/registerBill/tradeBillSsRecord/'+tradeId], //iframe的url
+            yes: function (index, layero) {
+            }
+        });
+    });
+    /*$('.main-container').on('click', '.imageUploadWrap .edit-zoom', function () {
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim',
+            closeBtn: 2,
+            area: ['90%', '90%'], //宽高
+            content: '<p style="text-align:center"><img src="' + $(this).siblings('.show-image').attr('src') + '" alt="" class="show-image-zoom"></p>'
+        });
+    })*/
+    function returnBack(){
+        history.go(-1);
+    }
+    
+    $( document ).on( "click", ".fileimg-view",function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+
+    $( document ).on( "click", ".img-view-a",function () {
+        var url = $('#originCertifiyUrl_'+$(this).attr('data-index')).siblings("input:hidden").val();
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+    //文件上传组件初始化
+    function initFileUpload(selecter) {
+        $(selecter).fileupload({
+            dataType: 'json',
+            formData: {type: 4, compress: true},
+            done: function (e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    $(this).siblings('.magnifying').attr('src', url).show();
+                    $(this).siblings("input:hidden").val(url);
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                }
+            },
+            add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".") + 1;
+                var fileType = name.substring(index, name.length);
+                if (!acceptFileTypes.test(fileType)) {
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if (size > (1024 * 10 * 1024)) {
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return;
+                }
+                data.submit();
+            }
+        });
+    }
+    
+    
+    
+    function afterUpload(url,fileInputObj){
+    	var imgBox=fileInputObj.parent();
+    	var parent= imgBox.parent('div');
+    	 var newImgBox=imgBox.clone(true);
+    	 
+        imgBox.find(".magnifying").attr('src', url).show();
+        imgBox.find("input[type='hidden']").val(url);
+        imgBox.find('.fileimg-cover,.fileimg-edit').show();
+        console.info(url)
+        debugger
+        if(parent.find('.fileimg-box').length<10){
+        	newImgBox.find('input[type="file"]').remove();
+        	$('<input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))
+        	newImgBox.appendTo(parent);
+        	initFileInput(newImgBox.find('input[type="file"]'))
+        }
+    }
+    
+    function initFileInput(jqueryObj){
+    	jqueryObj.fileupload({
+            dataType : 'json',
+            formData: {type:5,compress:true},
+            done : function(e, res) {
+                if (res.result.code == 200) {
+                	var url = res.result.data;
+                	var fileInputObj=$(e.target);
+                	afterUpload(url,fileInputObj);
+                }
+            },
+            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".")+1;
+                var fileType = name.substring(index,name.length);
+                if(!acceptFileTypes.test(fileType)){
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return ;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if(size > (1024*10*1024)){
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return ;
+                }
+                data.submit();
+            }
+        });
+ 	
+ 	
+ }
+    
+    $.makeArray('${registerBill.originCertifiyUrl}'.split(",")).filter(function(v,i){
+      	return v!='';
+      }).forEach (function(url,i){
+    	 var fileInputObj=$('#originCertifiyUrlDiv .fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
+    	  afterUpload(url,fileInputObj);
+      });
+    
+    $.makeArray('${registerBill.detectReportUrl}'.split(",")).filter(function(v,i){
+      	return v!='';
+      }).forEach (function(url,i){
+    	 var fileInputObj=$('#detectReportUrlDiv .fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
+    	  afterUpload(url,fileInputObj);
+      });
+    
+    
+    $(function () {
+    	initFileInput($('input[type="file"]'));
+    	//initFileInput($('#detectReportUrlFile'));
+    	
+    	//删除图片
+        $('.fileimg-delete').on('click', function () {
+        	
+        	var imgBox=$(this).parents('.fileimg-box:first');
+        	var parent= imgBox.parent('div');
+        	var imgBoxArr=parent.find('.fileimg-box');
+        	if(imgBoxArr.length==10){
+        		var lastImgBox=$(imgBoxArr[imgBoxArr.length-1]);
+        		if(lastImgBox.find("input:hidden").val()!=''){
+
+                	imgBox.find(".magnifying").attr('src', '').hide();
+                	imgBox.find("input:hidden").val('');
+                	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+                	
+                	imgBox.appendTo(parent);
+        		}else{
+        			imgBox.remove();
+        		}
+        	}else if(imgBoxArr.length>1){
+        		imgBox.remove();
+        	}else{
+            	imgBox.find(".magnifying").attr('src', '').hide();
+            	imgBox.find("input:hidden").val('');
+            	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+        	}
+
+        });
+    });
+
+</script>

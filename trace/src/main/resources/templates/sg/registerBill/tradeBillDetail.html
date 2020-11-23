@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <title>地利集团农产品流通安全追溯</title>
+    <link rel="stylesheet" href="/resources/assets/etrade/common/main.css">
+    <link rel="stylesheet" href="/resources/assets/etrade/common/scan.css">
+    <script src="/resources/assets/dep/jquery/jquery-2.2.4.min.js" charset="utf-8"></script>
+    <style type="text/css">
+    
+    
+    .img-rotate-box {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      /* filter: alpha(Opacity=80);
+      -moz-opacity: 0.5;
+      opacity: 0.5; */
+    }
+    #img {
+      flex: 1;
+      justify-content: space-around;
+      align-items: center;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      overflow: hidden;
+    }
+    /*#img img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: pink;
+    }*/
+
+    #rotateImg {
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+    .button-box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 50px;
+      background: #fff;
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    .rotate0 {
+      transform: rotate(0deg);
+    }
+    </style>
+    
+</head>
+<body>
+<div class="scan-top">
+</div>
+<div class="scan-bottom">
+    <%if(isNotEmpty(qualityTraceTradeBill)){%>
+        <div class="order-num">订单号：${qualityTraceTradeBill.orderId!}</div>
+        <div class="scan-detail">
+            <div class="buyer-seller">
+                <div class="seller">
+                    <div>批发市场：寿光地利</div>
+                    <div>卖方：${isEmpty(qualityTraceTradeBill.sellerName)?'':strutil.subStringTo(qualityTraceTradeBill.sellerName,0,1)}**
+                        (${isEmpty(qualityTraceTradeBill.sellerAccount)?'':reg.replace(qualityTraceTradeBill.sellerAccount,'^0+','')})
+                    </div>
+                </div>
+                <div class="buyer">
+                    <div>货品去向</div>
+                    <div>买方：${isEmpty(qualityTraceTradeBill.buyerName)?'':strutil.subStringTo(qualityTraceTradeBill.buyerName,0,1)}**
+                        (${isEmpty(qualityTraceTradeBill.buyerAccount)?'':reg.replace(qualityTraceTradeBill.buyerAccount,'^0+','')})
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scan-list-container">
+            <div class="table-container">
+                <div class="list-title">
+                    <span class="pull-left">交易日期：
+                        <%if(null!= qualityTraceTradeBill.orderPayDate){%>
+                            ${qualityTraceTradeBill.orderPayDate,dateFormat='yyyy-MM-dd'}
+                            <%}else{%>
+                                -
+                            <%}%>
+                    </span>
+                </div>
+                <div class="list-detail">
+                    <table>
+                        <tbody><tr>
+                            <th class="name">商品</th>
+                            <th class="count">数量</th>
+                            <th class="type">检测值(%)</th>
+                        </tr>
+                        <tr>
+                            <td>${qualityTraceTradeBill.productName!}</td>
+                            <td>
+                                <%if(qualityTraceTradeBill.saleUnit == 1){%>
+                                    ${qualityTraceTradeBill.netWeight}KG
+                                <%}else if(qualityTraceTradeBill.saleUnit == 2){%>
+                                    ${qualityTraceTradeBill.pieceQuantity!}件
+                                <%}%>
+                            </td>
+                            <td>
+                                <%if( isEmpty(registerBill) ){%>
+                                    0.0(待检测)
+                                <%}else if( registerBill.detectState == 1 || registerBill.detectState == 3 ){%>
+                                    ${registerBill.detectRecord.pdResult!}(合格)
+                                <%}%>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="btm-tips">
+                说明：根据国标GB/T5009.199-2003，凡酶抑制率&lt;50% 合格，≥50% 不合格
+            </div>
+        </div>
+        <div class="img-rotate-box" style="z-index: 1000;height: 100%;display: none;">
+      <div id="img">
+        <div id="rotateImg" data-deg="0" style="background-image: url();"></div>
+      </div>
+      <div class="button-box">
+         <span id="prev">上一张</span>
+        <span id="left">逆时针旋转90°</span>
+        <span id="right">顺时针旋转90°</span>
+        <span id="next">下一张</span>
+      </div>
+    </div>
+          <div align="center">
+          
+          
+           <%if(isNotEmpty(registerBill.originCertifiyUrl)){%>
+              <a href="javascript:void(0);" onclick="initImageBox('${registerBill.originCertifiyUrl}')" title="查看产地证明" style="font-size: medium;">产地证明</a>
+           <%}%>
+             
+          <%if(isNotEmpty(registerBill.detectReportUrl)){%>
+           <span style="width: 10%;display:inline-block"></span>
+          <a href="javascript:void(0);" onclick="initImageBox('${registerBill.detectReportUrl}')" title="查看检测报告" style="font-size: medium;">检测报告</a>
+          <%}%>
+             
+	           
+  </div>
+    <%}else{%>
+        <div class="no-message">查无数据</div>
+    <%}%>
+</div>
+</body>
+
+</html>
+<script src="/resources/assets/etrade/js/mui.min.js" charset="utf-8"></script>
+<script src="/resources/assets/etrade/js/rem.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+/*const url =
+    'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573105614637&di=fa3542c9402fab7c075ec13575a1b8c3&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201806%2F18%2F20180618112547_jv2xs.thumb.700_0.jpeg'
+   */ 		
+     var imgBox = document.querySelector('.img-rotate-box');
+     var img = document.querySelector('#rotateImg');
+     var imgCover = document.querySelector('#img');
+  window.onload = function() {
+
+
+   /* document.querySelector('#openImg').addEventListener('click', function() {
+      imgBox.style.display = 'flex'
+      img.style.backgroundImage = 'url(' + url + ')'
+    })*/
+    imgCover.addEventListener('click', function() {
+      imgBox.style.display = 'none'
+    })
+    
+    
+         document.querySelector('#prev').onclick = function() {
+    	  if( openImage(parseInt(img.dataset['index'])-1)){
+    	    	 rotate(0) 
+    	     }
+    }
+    document.querySelector('#next').onclick = function() {
+      
+     if( openImage(parseInt(img.dataset['index'])+1)){
+    	 rotate(0) 
+     }
+    }
+    
+    
+    document.querySelector('#left').onclick = function() {
+      var deg = (img.dataset['deg'] % 360) - 90
+      rotate(deg)
+    }
+    document.querySelector('#right').onclick = function() {
+      var deg = (img.dataset['deg'] % 360) + 90
+      rotate(deg)
+    }
+  }
+  function rotate(deg) {
+    var width = document.body.clientWidth,
+      height = document.body.clientHeight - 50
+    var img = document.querySelector('#rotateImg')
+
+    var scale = deg % 180 ? width / height : 1
+    img.style.transform = 'scale(' + scale + ') rotate(' + deg + 'deg) '
+
+    img.dataset['deg'] = deg
+  }
+  
+  function openImage(i){
+	  var index=img.dataset['index'];
+	   var urls=img.dataset['urls'] ;
+	   var imageUrls=$.makeArray(urls.split(','));
+	   if(i>=0&&i<imageUrls.length){
+		   img.style.backgroundImage = 'url(' + imageUrls[i] + ')'
+		   img.dataset['index']=i;
+		   return true;
+	   }
+	   return false;
+  }
+  function initImageBox(urls){
+	  //url='/image/DETECT_REPORT/201911/0ec988688d4942e7ac7e161be957118a.jpg';
+	  //url= 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573105614637&di=fa3542c9402fab7c075ec13575a1b8c3&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201806%2F18%2F20180618112547_jv2xs.thumb.700_0.jpeg'
+	   imgBox.style.display = 'flex';
+	
+	   img.dataset['index'] = -1;
+	   img.dataset['urls'] = urls;
+	   openImage(0);
+	}
+</script>

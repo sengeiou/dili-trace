@@ -1,0 +1,192 @@
+<#body>
+<div class="easyui-layout" fit="true">
+    <!-- ====================================================================================================================== -->
+    <!-- 上方布局 -->
+    <!-- ====================================================================================================================== -->
+    <div region="north" height="auto" align="center">
+        <!--<div id="nav" class="top-pos-box">
+            <span><img class="nav-pos-icon" src="${contextPath}/resources/images/pos-icon.png">当前位置:</span>
+            <span>登记单管理&nbsp&gt;</span>
+            <span><a class="link-text" href="">登记单列表</a></span>
+        </div>-->
+        <!-- =========================================================表单========================================================= -->
+        <div class="easyui-panel" style="width:100%;" align="left">
+            <form id="queryForm" class="easyui-form" method="post" fit="true">
+                <div class="search-wrap">
+                    <div class="search-item">
+                        <input  name="state" id="state" style="width:100%" labelAlign="right" data-options="label:'状态' "  panelWidth="auto" panelHeight="auto"  value="${state!}"/>
+                        <#comboProvider _id="state" _provider='registerBillStateProvider' _queryParams='{emptyText:"全部",excludes:[2,7]}' />
+                    </div>
+                    <div class="search-item">
+                        <div class="search-item">
+                            <input type="hidden" name="likeProductName"  id="likeProductName">
+                            <input type="hidden" name="productId"  id="productId">
+                            <select class="easyui-combobox" name="productCombobox" id="productCombobox" style="width:100%;" labelAlign="right"
+                                    data-options="onChange:function(n,o){
+                                        var text=$('#productCombobox').combotree('getText');
+                                            if(text!=$('#likeProductName').val()){
+                                            $('#likeProductName').val(text);
+                                            $('#productId').val('');
+                                            }
+                                            return true;
+                                        },label:'商品',loader:queryProduct,mode: 'remote',valueField:'id' ,textField:'value',prompt:'请输入', panelMinWidth:'55', panelHeight:'auto',panelMaxHeight:'300', 
+                                        editable:true,required:false,onSelect:function(record){
+                                        console.info('select')
+                                    $('#likeProductName').val(record.value);
+                                    $('#productId').val(record.id);
+                                }">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-item">
+                        <input type="hidden" name="_salesCityName" id="_salesCityName">
+                        <select class="easyui-combobox" name="originId" id="_salesCityId" style="width:100%;" labelAlign="right"
+                                data-options="label:'产地',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,required:false,validType:'comboBoxEditvalid[\'_salesCityId\']',onSelect:function(record){
+                            $('#_salesCityName').val(record.text);
+                        }"></select>
+                    </div>
+                    <div class="search-item">
+                        <input  name="detectState" id="detectState" style="width:100%" labelAlign="right" data-options="label:'检测结果'"  panelWidth="auto" panelHeight="auto"/>
+                        <#comboProvider _id="detectState" _provider='billDetectStateProvider' _queryParams='{emptyText:"全部",excludes:[3,4]}' />
+                    </div>
+
+                    <div class="search-item long-item">
+                        <input class="easyui-datetimebox" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" style="width:58%" labelAlign="right" data-options="label:'检测时间'"/>
+                        <span style="width: 2%;">-</span>
+                        <input class="easyui-datetimebox" name="latestDetectTimeTimeEnd" id="latestDetectTimeTimeEnd" style="width:39%;"/>
+                    </div>
+                    <div class="search-item long-item">
+                        <input class="easyui-datetimebox" name="createdStart" id="createdStart" style="width:58%" labelAlign="right" data-options="label:'登记时间'" value="${createdStart!}"/>
+                        <span style="width: 2%;">-</span>
+                        <input class="easyui-datetimebox" name="createdEnd" id="createdEnd" style="width:39%;" value="${createdEnd!}"/>
+                    </div>
+                    <div class="search-item long-item">
+                        <select class="easyui-combobox" name="attr" id="attr" style="width:50%;" editable="false" panelWidth="auto" panelHeight="auto" data-options="label:'关键字'"  labelAlign="right">
+                            <option value="code">登记编号</option>
+                            <!--option value="plate">车牌号</option-->
+                            <!--option value="tallyAreaNo" selected="selected">理货区号</option-->
+                            
+                        </select>
+                        <input class="easyui-textbox" id="attrValue" name="attrValue" data-options="iconCls:'icon-search', validType:'length[0,25]'" style="width:40%;">
+                    </div>
+                    <div class="search-wrap-btn">
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
+                           onclick="queryCommissionBillGrid()">查询</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====================================================================================================================== -->
+    <!-- 中央布局 -->
+    <!-- ====================================================================================================================== -->
+    <!-- 表格 -->
+    <div region="center" style="width:100%;" height="auto">
+        <!-- =========================================================表格========================================================= -->
+        <table class="easyui-datagrid" title="电商登记单列表" id="ecommerceBillGrid" fitColumns="true" noheader="true"
+               pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false" 
+               loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false"  sortName="created" sortOrder="desc"
+               align="center" fit="true" idField="id" selectOnCheck="true" data-options="onBeforeLoad:onBeforeLoad,loader: loadCommissionBillGridData,rowStyler:coloredRowRender, onClickRow:onClickRow,onSelect:onClickRow,onUnselect:onUnselect,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked,onSelectAll:onSelectAll,onUnselectAll:onUnselectAll ">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true" data-options="field:'ck' "> </th>
+                    <th width="10%" data-options="field:'created',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        登记时间
+                    </th>
+                    <th width="10%" data-options="field:'code',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        编号
+                    </th>
+                    <th width="10%" data-options="field:'sampleCode',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        采样编号
+                    </th>
+                    <th width="5%" data-options="field:'name',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        业户姓名
+                    </th>
+                    <th width="9%" data-options="field:'corporateName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        企业名称
+                    </th>
+                    <th width="5%" data-options="field:'productName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        商品名称
+                    </th>
+                    <th width="5%" data-options="field:'weight',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        重量/KG
+                    </th>
+                    <th width="5%" data-options="field:'latestPdResult', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                      检测数值
+                    </th>
+                    <th width="10%" data-options="field:'originName',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        产地
+                    </th>
+                    <th width="5%" data-options="field:'state',  _provider:'registerBillStateProvider',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        状态
+                    </th>
+                    <th width="10%" data-options="field:'latestDetectTime',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        检测时间
+                    </th>
+                    <th width="5%" data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                       检测结果
+                    </th>
+                    <th width="5%" data-options="field:'latestDetectOperator',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                        检测员
+                    </th>
+
+               </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<!-- ====================================================================================================================== -->
+<!-- style & script 分隔线 -->
+<!-- ====================================================================================================================== -->
+ <script src="http://base.nong12.com/static/log/log.build.js"></script>
+ <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+ <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+ <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+ <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+ <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+ <#ecommerceBill_indexJs />
+ <script>
+ function multipleSelectOnChange(n,o){
+     
+    $('input[name="hasDetectReport"]').val('')
+      $('input[name="hasCheckSheet"]').val('')
+         
+    if(n=='hasDetectReport=true'){
+         $('input[name="hasDetectReport"]').val('true')
+     }else if(n=='hasDetectReport=false'){
+         $('input[name="hasDetectReport"]').val('false')
+     }else if(n=='hasCheckSheet=true'){
+         $('input[name="hasCheckSheet"]').val('true')
+     }else if(n=='hasCheckSheet=false'){
+         $('input[name="hasCheckSheet"]').val('false')
+     }else{
+         $('input[name="hasDetectReport"]').val('')
+         $('input[name="hasCheckSheet"]').val('')
+     }
+ }
+ 
+ function queryProduct(param,success,error){
+     var productName=$('#productCombobox').combotree('getText');
+     var data=[];
+      $.ajax({
+          url:'${contextPath!}/toll/category?name='+productName,
+          success:function(resp){
+              data=resp.suggestions.map(function(v,i){v['parentId']='';return v});
+              //console.info(data)
+                 success(data);
+              //data.unshift({id:'',value:'全部'});
+              //$('#productName').combobox({data:data});
+          //	$('#productName').combobox('showPanel');
+              //$('#productName').combotree('setText',productName);
+          //	$('#productIdList').focus();
+              //$('#productIdList').next().find('input').focus()
+          }
+      })
+  
+      
+  // return data;
+}
+
+ </script>
+</#body>
