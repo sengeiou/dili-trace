@@ -12,11 +12,23 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ *
+ * @Author guzman.liu
+ * @Description
+ * @Date 2020/11/23 13:58
+ */
 @Service
 public class RegisterBillHistoryService extends BaseServiceImpl<RegisterBillHistory, Long> {
 	@Autowired
 	RegisterBillService registerBillService;
 
+	/**
+	 *
+	 * @Author guzman.liu
+	 * @Description
+	 * @Date 2020/11/23 13:58
+	 */
     public RegisterBillHistory createHistory(Long billId) {
     	RegisterBill billItem=this.registerBillService.get(billId);
         RegisterBillHistory historyBill = new RegisterBillHistory();
