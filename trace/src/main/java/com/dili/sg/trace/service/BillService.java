@@ -1,32 +1,30 @@
 package com.dili.sg.trace.service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import cn.hutool.core.bean.BeanUtil;
+import com.dili.sg.trace.dao.RegisterBillMapper;
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.dto.RegisterBillDto;
+import com.dili.sg.trace.dto.RegisterBillOutputDto;
 import com.dili.sg.trace.exception.TraceBizException;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.sg.trace.dao.RegisterBillMapper;
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
-import com.dili.sg.trace.domain.RegisterBill;
-import com.dili.sg.trace.dto.RegisterBillDto;
-import com.dili.sg.trace.dto.RegisterBillOutputDto;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
-import com.google.common.collect.Lists;
-
-import cn.hutool.core.bean.BeanUtil;
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.

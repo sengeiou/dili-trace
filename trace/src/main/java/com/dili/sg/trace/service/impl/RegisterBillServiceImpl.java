@@ -1,8 +1,21 @@
 package com.dili.sg.trace.service.impl;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
+import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
+import com.dili.sg.trace.dao.RegisterBillMapper;
+import com.dili.sg.trace.domain.QualityTraceTradeBill;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.domain.SeparateSalesRecord;
+import com.dili.sg.trace.domain.UserPlate;
+import com.dili.sg.trace.dto.*;
+import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.sg.trace.glossary.*;
+import com.dili.sg.trace.service.*;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,44 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.alibaba.fastjson.JSON;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
-import com.dili.sg.trace.dao.RegisterBillMapper;
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
-import com.dili.sg.trace.domain.RegisterBill;
-import com.dili.sg.trace.domain.SeparateSalesRecord;
-import com.dili.sg.trace.domain.UserPlate;
-import com.dili.sg.trace.dto.BatchAuditDto;
-import com.dili.sg.trace.dto.BatchResultDto;
-import com.dili.sg.trace.dto.QualityTraceTradeBillOutDto;
-import com.dili.sg.trace.dto.RegisterBillDto;
-import com.dili.sg.trace.dto.RegisterBillOutputDto;
-import com.dili.sg.trace.dto.RegisterBillStaticsDto;
-import com.dili.sg.trace.exception.TraceBizException;
-import com.dili.sg.trace.glossary.BillDetectStateEnum;
-import com.dili.sg.trace.glossary.BillTypeEnum;
-import com.dili.sg.trace.glossary.RegisterBillStateEnum;
-import com.dili.sg.trace.glossary.RegisterSourceEnum;
-import com.dili.sg.trace.glossary.SalesTypeEnum;
-import com.dili.sg.trace.glossary.SampleSourceEnum;
-import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
-import com.dili.sg.trace.service.BillService;
-import com.dili.sg.trace.service.CodeGenerateService;
-import com.dili.sg.trace.service.DetectRecordService;
-import com.dili.sg.trace.service.DetectTaskService;
-import com.dili.sg.trace.service.QualityTraceTradeBillService;
-import com.dili.sg.trace.service.RegisterBillService;
-import com.dili.sg.trace.service.SeparateSalesRecordService;
-import com.dili.sg.trace.service.UserPlateService;
-import com.dili.sg.trace.service.UsualAddressService;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
-
-import cn.hutool.core.bean.BeanUtil;
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -308,8 +287,8 @@ public class RegisterBillServiceImpl implements RegisterBillService {
             if (RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(registerBill.getState())
                     || RegisterBillStateEnum.WAIT_SAMPLE.equalsToCode(registerBill.getState())) {
                 UserTicket userTicket = getOptUser();
-                LOGGER.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
-                        + JSON.toJSON(registerBill).toString());
+//                LOGGER.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
+//                        + JSON.toJSON(registerBill).toString());
                 return this.billService.delete(id);
                 // return update(registerBill);
             } else {

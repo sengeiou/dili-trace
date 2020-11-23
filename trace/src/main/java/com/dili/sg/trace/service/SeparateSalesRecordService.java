@@ -10,8 +10,24 @@ import java.util.List;
  * This file was generated on 2019-07-26 09:20:35.
  */
 public interface SeparateSalesRecordService extends BaseService<SeparateSalesRecord, Long> {
+    /**
+     *
+     * @param registerBillCode
+     * @return
+     */
     List<SeparateSalesRecord> findByRegisterBillCode(String registerBillCode);
+
+    /**
+     *
+     * @param registerBillCode
+     * @return
+     */
     Integer alreadySeparateSalesWeight(String registerBillCode);
-    
+
+    /**
+     *
+     * @param tradeNo
+     * @return
+     */
     Integer getAlreadySeparateSalesWeightByTradeNo(String tradeNo);
 }
