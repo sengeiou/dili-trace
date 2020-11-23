@@ -17,8 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+/**
+ * 发送短信默认实现
+ */
 @Service
-@Profile({ "dev", "test","graytest" })
+@Profile({ "dev", "test" })
 public class SMSServiceDefaultImpl extends SMSService {
     private static final Logger logger = LoggerFactory.getLogger(SMSServiceDefaultImpl.class);
     @Autowired
