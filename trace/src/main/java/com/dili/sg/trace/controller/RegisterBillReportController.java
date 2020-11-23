@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.dili.sg.trace.service.*;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -34,8 +36,6 @@ import com.dili.ss.util.DateUtils;
 import com.dili.sg.trace.dto.GroupByProductReportDto;
 import com.dili.sg.trace.dto.RegisterBillReportQueryDto;
 import com.dili.sg.trace.glossary.RegisterSourceEnum;
-import com.diligrp.manage.sdk.domain.UserTicket;
-import com.diligrp.manage.sdk.session.SessionContext;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

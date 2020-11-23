@@ -16,7 +16,6 @@ import com.dili.sg.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.sg.trace.dto.RegisterBillOutputDto;
 import com.dili.sg.trace.dto.SeparateSalesRecordDTO;
-import com.dili.sg.sg.trace.glossary.*;
 import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.sg.trace.glossary.RegisterSourceEnum;

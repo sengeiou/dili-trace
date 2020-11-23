@@ -8,8 +8,8 @@ import com.dili.sg.trace.service.CustomerService;
 import com.dili.sg.trace.service.UserPlateService;
 import com.dili.sg.trace.service.UserService;
 import com.dili.sg.trace.util.MaskUserInfo;
-import com.diligrp.manage.sdk.session.SessionContext;
 
+import com.dili.uap.sdk.session.SessionContext;
 import io.swagger.annotations.ApiOperation;
 
 import org.slf4j.Logger;

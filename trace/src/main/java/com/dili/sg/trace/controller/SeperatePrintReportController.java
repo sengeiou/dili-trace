@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import com.dili.sg.trace.dto.SeperatePrintOutput;
 import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.uap.sdk.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import com.dili.sg.trace.dto.SeperatePrintReportOutputDto;
 import com.dili.sg.trace.service.ApproverInfoService;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.SeperatePrintReportService;
-import com.diligrp.manage.sdk.session.SessionContext;
 
 import one.util.streamex.StreamEx;
 

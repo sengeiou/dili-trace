@@ -2,9 +2,9 @@ package com.dili.sg.trace.util;
 
 import com.dili.sg.trace.domain.Customer;
 import com.dili.sg.trace.domain.User;
+import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
 
-import com.diligrp.manage.sdk.session.SessionContext;
 
 public class MaskUserInfo {
 	public static String maskIdNo(String idNo) {
