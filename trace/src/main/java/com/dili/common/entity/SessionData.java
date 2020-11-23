@@ -1,8 +1,8 @@
 package com.dili.common.entity;
 
-import com.dili.trace.domain.Market;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.uap.sdk.domain.Firm;
 import com.google.common.base.Objects;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.BeanUtils;
@@ -85,13 +85,13 @@ public class SessionData {
         return data;
     }
 
-    public static SessionData fromUser(OperatorUser user, Integer identityType, Market market, Set<String> userWeChatMenus) {
+    public static SessionData fromUser(OperatorUser user, Integer identityType, Firm firm, Set<String> userWeChatMenus) {
         SessionData data = new SessionData();
         data.identityType = identityType;
         data.userId = user.getId();
         data.userName = user.getName();
-        data.marketId = market.getId();
-        data.marketName = market.getName();
+        data.marketId = firm.getId();
+        data.marketName = firm.getName();
         data.userWeChatMenus = userWeChatMenus;
 
         data.mapData = data.convertThisToMap();

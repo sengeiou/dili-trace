@@ -12,10 +12,11 @@ import com.dili.ss.util.RSAUtils;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.Market;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.service.FirmRpcService;
 import com.dili.trace.service.MarketService;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.User;
 import com.dili.uap.sdk.rpc.UserRpc;
-import com.dili.uap.sdk.session.SessionContext;
 import com.jayway.jsonpath.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.codec.binary.Base64;
@@ -47,6 +48,8 @@ public class ManageSystemComponent {
     private UserRpc userRpc;
     @Autowired
     private MarketService marketService;
+    @Autowired
+    FirmRpcService firmRpcService;
 
     private String hz_admin_authUrl = "user/index.html#list";
 
@@ -128,19 +131,13 @@ public class ManageSystemComponent {
             String realName = (String) uapUserInfo.get("realName");
             //市场编码
             String marketCode = (String) uapUserInfo.get("firmCode");
+            Firm firm = this.firmRpcService.getFirmByCode(marketCode)
+                    .orElseThrow(() -> new TraceBusinessException("当前登录用户所属市场不存在"));
 
-            // 查询用户小程序权限
+            // 查询管理员用户小程序权限
             Set<String> userWeChatMenus = systemPermissionCheckService.getWeChatUserMenus(userId);
             if (!CollectionUtils.isEmpty(userWeChatMenus)) {
-                // 根据市场code查询市场id
-                Market query = new Market();
-                query.setCode(marketCode);
-                List<Market> markets = marketService.list(query);
-                if (CollectionUtils.isEmpty(markets)) {
-                    throw new TraceBusinessException("市场【"+marketCode+"】不存在");
-                }
-
-                return SessionData.fromUser(new OperatorUser(userId, realName), identityTypeEnum.getCode(), markets.get(0), userWeChatMenus);
+                return SessionData.fromUser(new OperatorUser(userId, realName), identityTypeEnum.getCode(), firm, userWeChatMenus);
             } else {
                 throw new TraceBusinessException("权限不足");
             }
