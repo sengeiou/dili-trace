@@ -22,6 +22,14 @@ import java.util.Base64;
 import java.util.Hashtable;
 import java.util.Random;
 
+/**
+ *
+ * @Author guzman.liu
+ * @Description
+ * 二维码生成工具类
+ * @Date 2020/11/23 10:19
+ * @return
+ */
 @Component
 public class QRCodeUtil
 {

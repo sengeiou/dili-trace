@@ -8,6 +8,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ *
+ * @Author guzman.liu
+ * @Description
+ * 单号生成
+ * @Date 2020/11/23 10:23
+ * @return
+ */
 @Component
 public class BizNumberFunction {
     @Autowired

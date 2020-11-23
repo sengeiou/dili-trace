@@ -11,6 +11,13 @@ import com.dili.trace.domain.Department;
 
 import org.springframework.stereotype.Component;
 
+/**
+ *
+ * @Author guzman.liu
+ * @Description
+ * @Date 2020/11/23 10:22
+ * @return
+ */
 @Component
 public class BaseInfoRpcService {
 
