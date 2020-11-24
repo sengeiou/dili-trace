@@ -1,13 +1,12 @@
 package com.dili.trace.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.dili.trace.domain.UserTallyArea;
+import com.dili.trace.service.UserTallyAreaService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
@@ -19,7 +18,8 @@ import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> implements UserPlateService {
-
+	@Autowired
+	UserTallyAreaService userTallyAreaService;
 	@Override
 	public List<UserPlate> findUserPlateByUserId(Long userId) {
 		if (userId == null) {
@@ -47,7 +47,7 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 		example.setUserId(userId);
 		this.deleteByExample(example);
 
-		List<UserPlate> list = plateList.stream().map(p -> {
+		List<UserPlate> list =plateList.stream().map(p->{
 
 			UserPlate item = DTOUtils.newDTO(UserPlate.class);
 			item.setPlate(p.toUpperCase());
@@ -86,6 +86,21 @@ public class UserPlateServiceImpl extends BaseServiceImpl<UserPlate, Long> imple
 			}
 		}
 		return 0;
+	}
+
+	@Override
+	public List<UserPlate> findUserPlateByTallyAreaNo(String tallyAreaNo) {
+		UserTallyArea domain=DTOUtils.newDTO(UserTallyArea.class);
+		domain.setTallyAreaNo(tallyAreaNo);
+		Set<Long> userIdSet=userTallyAreaService.listByExample(domain).stream().map(UserTallyArea::getUserId).collect(Collectors.toSet());
+		if(!userIdSet.isEmpty()) {
+			Example example = new Example(UserPlate.class);
+			example.and().andIn("userId", userIdSet);
+			List<UserPlate>userPlateList= this.getDao().selectByExampleExpand(example);
+			return userPlateList;
+		}
+
+		return new ArrayList<UserPlate>();
 	}
 
 }

@@ -37,17 +37,19 @@ public interface UserPlateService extends BaseService<UserPlate, Long> {
 		/**
 	 * 根据userId删除所有UserPlate,并插入plateList
 	 * @param userId
-	 * @param plateList
 	 * @return
 	 */
 	public int checkAndInsertUserPlate(Long userId,String plate);
 	
 	/**
 	 * 根据user集合查询Map<userid,List<UserPlate>>
-	 * @param userList
 	 * @return
 	 */
 	public Map<Long,List<UserPlate>> findUserPlateByUserIdList(List<Long>userIdList);
 	
-
+	/**
+	 * 根据tallyAreaNo查询UserPlate集合
+	 * @return
+	 */
+	public List<UserPlate> findUserPlateByTallyAreaNo(String tallyAreaNo);
 }
