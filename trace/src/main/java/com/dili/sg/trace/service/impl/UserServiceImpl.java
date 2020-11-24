@@ -37,7 +37,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
-import com.dili.sg.trace.service.UserHistoryService;
+import com.dili.trace.service.UserHistoryService;
 import com.dili.sg.trace.service.UserPlateService;
 import com.dili.sg.trace.service.UserService;
 import com.dili.sg.trace.service.UserTallyAreaService;
