@@ -43,7 +43,7 @@ import com.dili.trace.service.ApproverInfoService;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.CheckSheetDetailService;
 import com.dili.sg.trace.service.CheckSheetService;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -64,7 +64,7 @@ public class CheckSheetController {
 	@Autowired
 	BillService billService;
 	@Autowired
-	RegisterBillService registerBillService;
+    SgRegisterBillService registerBillService;
 	@Autowired
 	ApproverInfoService approverInfoService;
 	@Autowired

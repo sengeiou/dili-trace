@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import com.dili.sg.trace.service.*;
 import com.dili.sg.trace.service.CityService;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.sg.trace.service.TradeTypeService;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
@@ -81,7 +81,7 @@ public class CommissionBillController {
     BillService billService;
 
     @Autowired
-    RegisterBillService registerBillService;
+    SgRegisterBillService registerBillService;
 
     /**
      * 跳转到CommissionBill页面

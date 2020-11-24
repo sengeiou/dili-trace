@@ -37,7 +37,7 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.ApproverInfoService;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.ECommerceBillService;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.sg.trace.service.SeperatePrintReportService;
 import com.dili.sg.trace.service.TradeTypeService;
 import com.dili.trace.service.UsualAddressService;
@@ -76,7 +76,7 @@ public class ECommerceBillController {
 	ApproverInfoService approverInfoService;
 
 	@Autowired
-	RegisterBillService registerBillService;
+    SgRegisterBillService registerBillService;
 
 	@Autowired
 	SeperatePrintReportService seperatePrintReportService;

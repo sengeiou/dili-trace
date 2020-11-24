@@ -11,7 +11,7 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 
 import com.dili.sg.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
@@ -39,7 +39,7 @@ public class QualityTraceTradeBillAutoMatchJob {
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
 	@Autowired
-	RegisterBillService registerBillService;
+    SgRegisterBillService registerBillService;
 	@Autowired
 	RegisterBillMapper registerBillMapper;
 	@Autowired

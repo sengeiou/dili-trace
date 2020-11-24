@@ -3,7 +3,7 @@ package com.dili.sg.trace.controller;
 import com.dili.sg.trace.glossary.RegisterSourceEnum;
 import com.dili.sg.trace.service.CityService;
 import com.dili.sg.trace.service.RegisterBillReportService;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.sg.trace.service.TradeTypeService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
@@ -53,7 +53,7 @@ import java.util.stream.Stream;
 public class RegisterBillReportController {
 	private static final Logger logger = LoggerFactory.getLogger(RegisterBillReportController.class);
 	@Autowired
-	RegisterBillService registerBillService;
+    SgRegisterBillService registerBillService;
 	@Autowired
 	RegisterBillReportService registerBillReportService;
 	@Autowired

@@ -6,7 +6,7 @@ import com.dili.sg.common.entity.TraceSessionContext;
 import com.dili.sg.trace.dto.CreateListBillParam;
 import com.dili.sg.trace.glossary.*;
 import com.dili.sg.trace.service.BillService;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.RegisterBill;
@@ -44,7 +44,7 @@ public class RegisterBillApi {
 	private BillService billService;
 	
 	@Autowired
-	private RegisterBillService registerBillService;
+	private SgRegisterBillService registerBillService;
 	@Autowired
 	private SeparateSalesRecordService separateSalesRecordService;
 	@Autowired

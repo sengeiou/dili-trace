@@ -11,7 +11,7 @@ import com.dili.sg.trace.glossary.RegisterSourceEnum;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.sg.trace.service.CityService;
 import com.dili.sg.trace.service.CustomerService;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.sg.trace.service.TradeTypeService;
 import com.dili.sg.trace.service.*;
 import com.dili.sg.trace.util.MaskUserInfo;
@@ -53,7 +53,7 @@ import java.util.stream.Stream;
 public class RegisterBillController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillController.class);
 	@Autowired
-	RegisterBillService registerBillService;
+	SgRegisterBillService registerBillService;
 	@Autowired
 	BillService billService;
 	@Autowired

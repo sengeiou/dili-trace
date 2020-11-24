@@ -1,6 +1,6 @@
 package com.dili.trace.service.impl;
 
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.DetectRecordMapper;
@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long> implements DetectRecordService {
     @Autowired
-    private RegisterBillService registerBillService;
+    private SgRegisterBillService registerBillService;
 
     public DetectRecordMapper getActualDao() {
         return (DetectRecordMapper)getDao();

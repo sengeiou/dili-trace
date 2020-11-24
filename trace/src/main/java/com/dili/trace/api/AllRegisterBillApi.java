@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.sg.trace.service.BillService;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.RegisterBillDto;
@@ -38,7 +38,7 @@ public class AllRegisterBillApi {
 	private BillService billService;
 	
 	@Autowired
-	private RegisterBillService registerBillService;
+	private SgRegisterBillService registerBillService;
 	@Autowired
 	private DetectRecordService detectRecordService;
 

@@ -1,18 +1,28 @@
 package com.dili.sg.trace.api.commission;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-
+import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.exception.TraceBizException;
+import com.dili.sg.common.entity.TraceSessionContext;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.api.input.CommissionBillInputDto;
+import com.dili.sg.trace.dto.CreateListBillParam;
+import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.sg.trace.glossary.UserTypeEnum;
+import com.dili.sg.trace.service.BillService;
+import com.dili.sg.trace.service.CommissionBillService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.UserService;
+import com.dili.trace.util.BeanMapUtil;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,22 +33,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
-import com.dili.sg.common.entity.TraceSessionContext;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.sg.trace.dto.CreateListBillParam;
-import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.glossary.BillTypeEnum;
-import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.sg.trace.glossary.UserTypeEnum;
-import com.dili.sg.trace.service.BillService;
-import com.dili.sg.trace.service.CommissionBillService;
-import com.dili.sg.trace.util.BeanMapUtil;
-
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * 委托单查询接口
@@ -104,7 +102,7 @@ public class CommissionBillApi {
 		
 		try {
 
-			RegisterBillDto registerBill=BeanMapUtil.trimBean(input);
+			RegisterBillDto registerBill= BeanMapUtil.trimBean(input);
 			logger.info("获取登记单列表:{}", JSON.toJSON(registerBill).toString());
 			
 			Long userId=sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();

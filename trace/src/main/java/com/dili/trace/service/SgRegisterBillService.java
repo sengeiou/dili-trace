@@ -1,4 +1,4 @@
-package com.dili.sg.trace.service;
+package com.dili.trace.service;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
-public interface RegisterBillService {
+public interface SgRegisterBillService {
 
     /**
      * 查询第一条需要被高亮显示的登记单

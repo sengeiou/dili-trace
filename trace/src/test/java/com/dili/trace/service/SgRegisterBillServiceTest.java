@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import one.util.streamex.StreamEx;
 
-public class RegisterBillServiceTest extends AutoWiredBaseTest {
+public class SgRegisterBillServiceTest extends AutoWiredBaseTest {
     @Autowired
     RegisterBillService registerBillService;
     @Autowired

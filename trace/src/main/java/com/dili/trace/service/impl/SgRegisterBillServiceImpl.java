@@ -1,4 +1,4 @@
-package com.dili.sg.trace.service.impl;
+package com.dili.trace.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
@@ -9,7 +9,7 @@ import com.dili.sg.trace.dto.*;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
 import com.dili.sg.trace.service.*;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
 @Service
-public class RegisterBillServiceImpl implements RegisterBillService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
+public class SgRegisterBillServiceImpl implements SgRegisterBillService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillServiceImpl.class);
 
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
@@ -950,7 +950,9 @@ public class RegisterBillServiceImpl implements RegisterBillService {
 
     @Override
     public RegisterBill selectByIdForUpdate(Long id) {
-        return this.billMapper.selectByIdForUpdate(id);
+        return this.billMapper.selectByIdForUpdate(id).orElseThrow(() -> {
+            return new TraceBizException("操作登记单失败");
+        });
     }
 
 }

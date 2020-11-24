@@ -8,7 +8,7 @@ import com.dili.sg.trace.dto.TaskGetParam;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.sg.trace.glossary.RegisterSourceEnum;
 import com.dili.sg.trace.service.BillService;
-import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.service.SgRegisterBillService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRecordParam;
@@ -36,7 +36,7 @@ import java.util.List;
 public class DetectRecordApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectRecordApi.class);
     @Autowired
-    private RegisterBillService registerBillService;
+    private SgRegisterBillService registerBillService;
     @Autowired
     private BillService billService;
     @Autowired
