@@ -2,6 +2,7 @@ package com.dili.sg.common.entity;
 
 import java.io.Serializable;
 
+import com.dili.common.entity.SessionData;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.common.exception.TraceBizException;

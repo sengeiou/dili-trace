@@ -3,7 +3,7 @@ package com.dili.sg.trace.service;
 
 import java.util.concurrent.TimeUnit;
 
-import com.dili.sg.common.config.DefaultConfiguration;
+import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

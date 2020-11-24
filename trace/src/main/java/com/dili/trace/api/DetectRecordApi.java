@@ -2,7 +2,7 @@ package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.sg.common.config.DefaultConfiguration;
+import com.dili.common.config.DefaultConfiguration;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
 import com.dili.sg.trace.dto.TaskGetParam;

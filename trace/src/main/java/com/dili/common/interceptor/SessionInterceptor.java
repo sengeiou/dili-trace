@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.service.SessionRedisService;
 
+import com.dili.trace.api.components.SessionRedisService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

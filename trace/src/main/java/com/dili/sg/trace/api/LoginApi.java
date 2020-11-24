@@ -1,6 +1,6 @@
 package com.dili.sg.trace.api;
 
-import com.dili.sg.common.entity.SessionData;
+import com.dili.common.entity.SessionData;
 import com.dili.sg.trace.api.components.LoginComponent;
 import com.dili.sg.trace.api.input.LoginInputDto;
 import com.dili.common.exception.TraceBizException;

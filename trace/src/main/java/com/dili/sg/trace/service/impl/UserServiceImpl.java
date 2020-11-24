@@ -23,7 +23,7 @@ import com.dili.sg.trace.glossary.EnabledStateEnum;
 import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
 import com.dili.sg.trace.glossary.YnEnum;
-import com.dili.sg.trace.redis.SessionRedisService;
+import com.dili.trace.api.components.SessionRedisService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 	}
 
 	@Autowired
-    SessionRedisService sessionRedisService;
+	SessionRedisService sessionRedisService;
 	@Resource
 	private UserTallyAreaService userTallyAreaService;
 	@Resource

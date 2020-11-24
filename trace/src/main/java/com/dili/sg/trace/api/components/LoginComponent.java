@@ -6,10 +6,12 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
+import com.dili.common.entity.SessionData;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.UUIDUtil;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.api.input.LoginInputDto;
+import com.dili.trace.api.components.SessionRedisService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dili.sg.common.entity.SessionData;
 import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.redis.SessionRedisService;
 import com.dili.sg.trace.service.UserService;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;

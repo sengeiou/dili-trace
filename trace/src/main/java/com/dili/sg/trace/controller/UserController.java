@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.util.MD5Util;
-import com.dili.sg.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

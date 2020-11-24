@@ -2,8 +2,8 @@ package com.dili.sg.common.interceptor;
 
 import cn.hutool.core.util.StrUtil;
 import com.dili.sg.common.entity.TraceSessionContext;
-import com.dili.sg.trace.redis.SessionRedisService;
 
+import com.dili.trace.api.components.SessionRedisService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;

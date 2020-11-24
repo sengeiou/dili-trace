@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
-import com.dili.common.service.SessionRedisService;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.UUIDUtil;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;

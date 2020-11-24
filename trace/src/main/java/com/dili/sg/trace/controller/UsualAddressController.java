@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.dili.sg.common.config.DefaultConfiguration;
+import com.dili.common.config.DefaultConfiguration;
 import com.dili.sg.trace.service.CityService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
