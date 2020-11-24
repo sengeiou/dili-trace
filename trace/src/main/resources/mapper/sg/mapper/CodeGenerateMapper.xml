@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.CodeGenerateMapper">
+  <resultMap id="BaseResultMap" type="com.dili.sg.trace.domain.CodeGenerate">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="segment" jdbcType="VARCHAR" property="segment" />
+    <result column="seq" jdbcType="BIGINT" property="seq" />
+    <result column="prefix" jdbcType="VARCHAR" property="prefix" />
+    <result column="pattern" jdbcType="VARCHAR" property="pattern" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, type, segment,seq, prefix,pattern, created, modified
+  </sql>
+  <select id="selectBy" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from code_generate
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <update id="updateBy" parameterType="com.dili.sg.trace.domain.CodeGenerate">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update code_generate
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="segment != null">
+        segment = #{segment,jdbcType=VARCHAR},
+      </if>
+       <if test="seq != null">
+        seq = #{code,jdbcType=BIGINT},
+      </if>
+      <if test="prefix != null">
+        prefix = #{prefix,jdbcType=VARCHAR},
+      </if>
+      <if test="pattern != null">
+        pattern = #{pattern,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null">
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modified != null">
+        modified = #{modified,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByTypeForUpdate" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from code_generate
+    where type = #{type,jdbcType=VARCHAR}
+    for update
+  </select>
+</mapper>
