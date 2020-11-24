@@ -23,7 +23,7 @@
     <result column="product_id" jdbcType="BIGINT" property="productId" />
     <result column="origin_id" jdbcType="BIGINT" property="originId" />
     <result column="origin_name" jdbcType="VARCHAR" property="originName" />
-    <result column="weight" jdbcType="INTEGER" property="weight" />
+    <result column="weight" jdbcType="DECIMAL" property="weight" />
     <result column="detect_state" jdbcType="TINYINT" property="detectState" />
     <result column="latest_detect_record_id" jdbcType="BIGINT" property="latestDetectRecordId" />
     <result column="latest_detect_time" jdbcType="TIMESTAMP" property="latestDetectTime" />

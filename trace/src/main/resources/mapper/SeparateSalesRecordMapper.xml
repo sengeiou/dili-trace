@@ -9,7 +9,7 @@
     <result column="sales_customer_name" jdbcType="VARCHAR" property="salesCustomerName" />
     <result column="sales_city_id" jdbcType="BIGINT" property="salesCityId" />
     <result column="sales_city_name" jdbcType="VARCHAR" property="salesCityName" />
-    <result column="sales_weight" jdbcType="INTEGER" property="salesWeight" />
+    <result column="sales_weight" jdbcType="DECIMAL" property="salesWeight" />
     <result column="register_bill_code" jdbcType="BIGINT" property="registerBillCode" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
