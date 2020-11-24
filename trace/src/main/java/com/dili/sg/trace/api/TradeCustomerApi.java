@@ -1,6 +1,6 @@
 package com.dili.sg.trace.api;
 
-import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.service.CustomerService;
 import com.dili.sg.trace.service.UserService;

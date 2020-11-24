@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
+import com.dili.common.util.MD5Util;
+import com.dili.common.util.UUIDUtil;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.api.input.LoginInputDto;
 import org.apache.commons.lang3.StringUtils;
@@ -16,8 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dili.sg.common.entity.SessionData;
-import com.dili.sg.common.util.MD5Util;
-import com.dili.sg.common.util.UUIDUtil;
 import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.common.exception.TraceBizException;
