@@ -15,9 +15,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.dili.sg.trace.service.*;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.QualityTraceTradeBillService;
-import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.sg.trace.service.CityService;
+import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.sg.trace.service.TradeTypeService;
+import com.dili.sg.trace.service.UserService;
+import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.beanutils.PropertyUtils;

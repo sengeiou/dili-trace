@@ -3,7 +3,7 @@ package com.dili.sg.trace.controller;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.service.CityService;
-import com.dili.sg.trace.service.UserPlateService;
+import com.dili.trace.service.UserPlateService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.util.DateUtils;

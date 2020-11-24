@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import cn.hutool.http.HttpUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,8 @@ public class DfsRpcServiceTest {
         File file = new File("e:/abc.txt");
         String fileId = this.dfsRpcService.fileUpload(file).orElse(null);
         System.out.println(fileId);
+        String url="http://gateway.diligrp.com:8285/dili-dfs/file/view/"+fileId;
+        String content=HttpUtil.get(url);
 
     }
 }

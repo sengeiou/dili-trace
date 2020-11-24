@@ -3,12 +3,13 @@ package com.dili.sg.trace.controller;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sg.trace.domain.Customer;
 import com.dili.sg.trace.domain.User;
-import com.dili.sg.trace.domain.UserPlate;
+import com.dili.trace.domain.UserPlate;
 import com.dili.sg.trace.service.CustomerService;
-import com.dili.sg.trace.service.UserPlateService;
+import com.dili.trace.service.UserPlateService;
 import com.dili.sg.trace.service.UserService;
 import com.dili.sg.trace.util.MaskUserInfo;
 
+import com.dili.trace.service.UserPlateService;
 import com.dili.uap.sdk.session.SessionContext;
 import io.swagger.annotations.ApiOperation;
 
