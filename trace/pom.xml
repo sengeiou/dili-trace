@@ -81,8 +81,8 @@
                 <version>3.7.0</version>
                 <!-- 编译JDK版本 -->
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>13</source>
+                    <target>13</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
