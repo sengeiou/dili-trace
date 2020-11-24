@@ -1,7 +1,7 @@
-package com.dili.sg.trace.dao;
+package com.dili.trace.dao;
 
-import com.dili.sg.trace.domain.QualityTraceTradeBillSyncPoint;
 import com.dili.ss.base.MyMapper;
+import com.dili.trace.domain.sg.QualityTraceTradeBillSyncPoint;
 
 public interface QualityTraceTradeBillSyncPointMapper extends MyMapper<QualityTraceTradeBillSyncPoint> {
 	public QualityTraceTradeBillSyncPoint selectByIdForUpdate(Long id);

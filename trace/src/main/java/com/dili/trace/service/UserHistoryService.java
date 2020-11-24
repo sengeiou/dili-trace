@@ -1,10 +1,10 @@
-package com.dili.sg.trace.service;
+package com.dili.trace.service;
 
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.sg.trace.domain.UserHistory;
-import com.dili.sg.trace.dto.UserHistoryListDto;
-import com.dili.sg.trace.dto.UserHistoryStaticsDto;
+import com.dili.trace.domain.UserHistory;
+import com.dili.trace.dto.UserHistoryListDto;
+import com.dili.trace.dto.UserHistoryStaticsDto;
 
 public interface UserHistoryService extends BaseService<UserHistory, Long> {
 
