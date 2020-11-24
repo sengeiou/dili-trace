@@ -16,6 +16,7 @@ class RegisterBillGrid {
         return window['registerBillGrid'] as RegisterBillGrid;
     }
     public static queryProduct(param,success,error){
+        // @ts-ignore
         var productName=$('#productCombobox').combotree('getText');
         var data=[];
         var url=RegisterBillGrid.getInstance().ctx+'/toll/category?name='+productName;
@@ -82,6 +83,7 @@ class RegisterBillGrid {
      */
     public async doBatchUndo() {
         if(!this.isBatchUndo()){
+            // @ts-ignore
             swal({
                 title: '警告',
                 text: '没有数据可以进行批量撤销',
@@ -93,6 +95,7 @@ class RegisterBillGrid {
         var arr=this.filterByProp("$_state",this.billStateEnums.WAIT_AUDIT);
 
         let promise = new Promise((resolve, reject) => {
+            // @ts-ignore
             layer.confirm('请确认是否撤销选中数据？<br/>'+arr.map(e=>e.code).join("<br\>"), {btn:['确定','取消'], title: "警告！！！",
                 btn1:function(){
                     resolve(true);
@@ -107,7 +110,7 @@ class RegisterBillGrid {
         });
         let result = await promise; // wait until the promise resolves (*)
         if(result){
-            var _url = ctx+"/registerBill/batchUndo.action";
+            var _url = RegisterBillGrid.getInstance().ctx+"/registerBill/batchUndo.action";
             var idlist=arr.map(e=>e.id);
             $.ajax({
                 type: "POST",
@@ -119,32 +122,43 @@ class RegisterBillGrid {
                 async : true,
                 success: function (data) {
                     if(data.code=="200"){
+                        // @ts-ignore
                         TLOG.component.operateLog('登记单管理',"批量撤销",'【IDS】:'+JSON.stringify(idlist));
+                        // @ts-ignore
                         layer.alert('操作成功',{
                                 title:'操作',
                                 time : 600,
                                 end :function(){
+                                    // @ts-ignore
                                     layer.closeAll();
+                                    // @ts-ignore
                                     queryRegisterBillGrid();
                                 }
                             },
                             function () {
+                                // @ts-ignore
                                 layer.closeAll();
+                                // @ts-ignore
                                 queryRegisterBillGrid();
                             }
                         );
 
                     }else{
+                        // @ts-ignore
                         layer.closeAll();
+                        // @ts-ignore
                         swal('错误',data.result, 'error');
                     }
                 },
                 error: function(){
+                    // @ts-ignore
                     layer.closeAll();
+                    // @ts-ignore
                     swal('错误', '远程访问失败', 'error');
                 }
             });
         }
+        // @ts-ignore
         layer.closeAll();
     }
 

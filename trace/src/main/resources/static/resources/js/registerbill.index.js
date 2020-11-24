@@ -119,7 +119,7 @@ var RegisterBillGrid = (function () {
                     case 1:
                         result = _a.sent();
                         if (result) {
-                            _url = ctx + "/registerBill/batchUndo.action";
+                            _url = RegisterBillGrid.getInstance().ctx + "/registerBill/batchUndo.action";
                             idlist = arr.map(function (e) { return e.id; });
                             $.ajax({
                                 type: "POST",
