@@ -1,6 +1,6 @@
 package com.dili.sg.trace.provider;
 
-import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;

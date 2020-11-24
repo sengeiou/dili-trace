@@ -3,13 +3,10 @@ package com.dili.trace.dto;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.domain.*;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.domain.ImageCert;
-import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeDetail;
 
 public class RegisterBillOutputDto extends RegisterBill {
 	/**
@@ -19,6 +16,15 @@ public class RegisterBillOutputDto extends RegisterBill {
 	private List<TradeDetail> tradeDetailList;
 	private List<ImageCert> imageCertList;
 	private String upStreamName;
+	private List<SeparateSalesRecord>separateSalesRecords;
+
+	public List<SeparateSalesRecord> getSeparateSalesRecords() {
+		return separateSalesRecords;
+	}
+
+	public void setSeparateSalesRecords(List<SeparateSalesRecord> separateSalesRecords) {
+		this.separateSalesRecords = separateSalesRecords;
+	}
 
 	public List<TradeDetail> getTradeDetailList() {
 		return tradeDetailList;
