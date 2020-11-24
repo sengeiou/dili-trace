@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 
 import com.dili.ss.redis.service.RedisUtil;
 
+/**
+ * redis service
+ */
 @Component
 public class SessionRedisService {
     private static final Logger logger = LoggerFactory.getLogger(SessionRedisService.class);

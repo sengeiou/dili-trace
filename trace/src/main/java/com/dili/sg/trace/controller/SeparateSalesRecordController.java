@@ -1,8 +1,8 @@
 package com.dili.sg.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.sg.trace.domain.SeparateSalesRecord;
-import com.dili.sg.trace.service.SeparateSalesRecordService;
+import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.service.SeparateSalesRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

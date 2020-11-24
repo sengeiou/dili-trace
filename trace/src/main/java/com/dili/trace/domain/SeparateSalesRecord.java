@@ -86,7 +86,9 @@ public class SeparateSalesRecord extends BaseDomain {
 	@Column(name = "`checkout_record_id`")
 	private Long checkoutRecordId;
 
-
+	@ApiModelProperty(value = "理货区号")
+	@Column(name = "`tally_area_no`")
+	private String tallyAreaNo;
 
 	public Long getId() {
 		return id;
@@ -224,4 +226,11 @@ public class SeparateSalesRecord extends BaseDomain {
 		this.checkoutRecordId = checkoutRecordId;
 	}
 
+	public String getTallyAreaNo() {
+		return tallyAreaNo;
+	}
+
+	public void setTallyAreaNo(String tallyAreaNo) {
+		this.tallyAreaNo = tallyAreaNo;
+	}
 }
