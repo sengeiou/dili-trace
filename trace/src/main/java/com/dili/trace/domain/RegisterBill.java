@@ -262,6 +262,63 @@ public class RegisterBill extends BaseDomain {
     @Transient
     private String truckTypeName;
 
+    /**
+     * 以下字段为市场合并字段
+     */
+    @ApiModelProperty(value = "1.理货区 2.交易区")
+    @Column(name = "`register_source`")
+    private Integer registerSource;
+
+    @ApiModelProperty(value = "交易账号")
+    @Column(name = "`trade_account`")
+    private String tradeAccount;
+
+    @ApiModelProperty(value = "印刷卡号")
+    @Column(name = "`trade_printing_card`")
+    private String tradePrintingCard;
+
+    @Column(name = "`trade_type_id`")
+    String tradeTypeId;
+
+    @Column(name = "`trade_type_name`")
+    private String tradeTypeName;
+
+    @ApiModelProperty(value = "检测报告url")
+    @Column(name = "`detect_report_url`")
+    private String detectReportUrl;
+
+    @ApiModelProperty(value = "产地证明图片")
+    @Column(name = "`origin_certifiy_url`")
+    private String originCertifiyUrl;
+
+    @ApiModelProperty(value = "仪器编号")
+    @Column(name = "`exe_machine_no`")
+    String exeMachineNo;
+
+    @ApiModelProperty(value = "处理结果图片URL")
+    @Column(name = "`handle_result_url`")
+    private String handleResultUrl;
+
+    @ApiModelProperty(value = "处理结果备注")
+    @Column(name = "`handle_result`")
+    private String handleResult;
+
+    @ApiModelProperty(value = "数据创建来源")
+    @Column(name = "`creation_source`")
+    Integer creationSource;
+
+    @ApiModelProperty(value = "检测报告单ID")
+    @Column(name = "`check_sheet_id`")
+    private Long checkSheetId;
+
+    @ApiModelProperty(value = "企业名称")
+    @Column(name = "`corporate_name`")
+    private String corporateName;
+
+    @ApiModelProperty(value = "商品别名")
+    @Column(name = "`product_alias_name`")
+    private String productAliasName;
+
     public String getTruckTypeName() {
         return truckTypeName;
     }
@@ -902,5 +959,117 @@ public class RegisterBill extends BaseDomain {
 
     public void setRemainWeight(BigDecimal remainWeight) {
         this.remainWeight = remainWeight;
+    }
+
+    public Integer getRegisterSource() {
+        return registerSource;
+    }
+
+    public void setRegisterSource(Integer registerSource) {
+        this.registerSource = registerSource;
+    }
+
+    public String getTradeAccount() {
+        return tradeAccount;
+    }
+
+    public void setTradeAccount(String tradeAccount) {
+        this.tradeAccount = tradeAccount;
+    }
+
+    public String getTradePrintingCard() {
+        return tradePrintingCard;
+    }
+
+    public void setTradePrintingCard(String tradePrintingCard) {
+        this.tradePrintingCard = tradePrintingCard;
+    }
+
+    public String getTradeTypeId() {
+        return tradeTypeId;
+    }
+
+    public void setTradeTypeId(String tradeTypeId) {
+        this.tradeTypeId = tradeTypeId;
+    }
+
+    public String getTradeTypeName() {
+        return tradeTypeName;
+    }
+
+    public void setTradeTypeName(String tradeTypeName) {
+        this.tradeTypeName = tradeTypeName;
+    }
+
+    public String getDetectReportUrl() {
+        return detectReportUrl;
+    }
+
+    public void setDetectReportUrl(String detectReportUrl) {
+        this.detectReportUrl = detectReportUrl;
+    }
+
+    public String getOriginCertifiyUrl() {
+        return originCertifiyUrl;
+    }
+
+    public void setOriginCertifiyUrl(String originCertifiyUrl) {
+        this.originCertifiyUrl = originCertifiyUrl;
+    }
+
+    public String getExeMachineNo() {
+        return exeMachineNo;
+    }
+
+    public void setExeMachineNo(String exeMachineNo) {
+        this.exeMachineNo = exeMachineNo;
+    }
+
+    public String getHandleResultUrl() {
+        return handleResultUrl;
+    }
+
+    public void setHandleResultUrl(String handleResultUrl) {
+        this.handleResultUrl = handleResultUrl;
+    }
+
+    public String getHandleResult() {
+        return handleResult;
+    }
+
+    public void setHandleResult(String handleResult) {
+        this.handleResult = handleResult;
+    }
+
+    public Integer getCreationSource() {
+        return creationSource;
+    }
+
+    public void setCreationSource(Integer creationSource) {
+        this.creationSource = creationSource;
+    }
+
+    public Long getCheckSheetId() {
+        return checkSheetId;
+    }
+
+    public void setCheckSheetId(Long checkSheetId) {
+        this.checkSheetId = checkSheetId;
+    }
+
+    public String getCorporateName() {
+        return corporateName;
+    }
+
+    public void setCorporateName(String corporateName) {
+        this.corporateName = corporateName;
+    }
+
+    public String getProductAliasName() {
+        return productAliasName;
+    }
+
+    public void setProductAliasName(String productAliasName) {
+        this.productAliasName = productAliasName;
     }
 }
