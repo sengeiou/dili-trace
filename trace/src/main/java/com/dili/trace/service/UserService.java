@@ -4,6 +4,7 @@ import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTO;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
@@ -86,7 +87,7 @@ public interface UserService extends BaseService<User, Long> {
     /**
      * 删除用户信息
      *
-     * @param user
+     * @param id
      */
     BaseOutput deleteUser(Long id);
 
@@ -174,4 +175,18 @@ public interface UserService extends BaseService<User, Long> {
      * @param input
      */
     public BasePage<User> findUserByKeyword(UserListDto input);
+
+    /**
+     * 查询用户
+     * @param tallyAreaNo
+     * @return
+     */
+    User findByTallyAreaNo(String tallyAreaNo);
+
+    /**
+     * 通过理货区号查询用户及车牌信息
+     * @param likeTallyAreaNo
+     * @return
+     */
+    public List<DTO> queryByTallyAreaNo(String likeTallyAreaNo);
 }
