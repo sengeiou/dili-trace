@@ -1,23 +1,22 @@
-package com.dili.sg.trace.service.impl;
+package com.dili.trace.service.impl;
 
-import java.util.List;
-
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.OrderVersionEnum;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.dao.QualityTraceTradeBillSyncPointMapper;
+import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.sg.QualityTraceTradeBillSyncPoint;
+import com.dili.trace.dto.QualityTraceTradeBillSyncPointDto;
+import com.dili.trace.service.QualityTraceTradeBillService;
+import com.dili.trace.service.QualityTraceTradeBillSyncPointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.sg.trace.dao.QualityTraceTradeBillSyncPointMapper;
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
-import com.dili.sg.trace.domain.QualityTraceTradeBillSyncPoint;
-import com.dili.sg.trace.dto.QualityTraceTradeBillSyncPointDto;
-import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.service.QualityTraceTradeBillService;
-import com.dili.sg.trace.service.QualityTraceTradeBillSyncPointService;
+import java.util.List;
 
 @EnableAsync
 @Service
@@ -34,7 +33,7 @@ public class QualityTraceTradeBillSyncPointServiceImpl extends BaseServiceImpl<Q
 	@Transactional
 	@Override
 	public List<QualityTraceTradeBill> syncData(QualityTraceTradeBillSyncPoint pointItem,
-			List<QualityTraceTradeBill> billList) {
+												List<QualityTraceTradeBill> billList) {
 		if (pointItem == null || pointItem.getId() == null || billList.isEmpty()) {
 			throw new TraceBizException("参数为空");
 

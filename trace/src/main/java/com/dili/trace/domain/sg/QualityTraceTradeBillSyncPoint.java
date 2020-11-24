@@ -1,17 +1,12 @@
-package com.dili.sg.trace.domain;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+package com.dili.trace.domain.sg;
 
 import com.dili.ss.dto.IBaseDomain;
 import com.dili.ss.metadata.FieldEditor;
 import com.dili.ss.metadata.annotation.EditMode;
 import com.dili.ss.metadata.annotation.FieldDef;
-
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.persistence.*;
 
 /**
  * 由MyBatis Generator工具自动生成
