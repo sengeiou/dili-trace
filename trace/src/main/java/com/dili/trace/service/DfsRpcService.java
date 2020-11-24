@@ -14,6 +14,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 文件上传接口
@@ -24,7 +26,35 @@ public class DfsRpcService {
     String accessToken;
     @Autowired(required = false)
     DfsRpc dfsRpc;
+    /**
+     * 上传图片
+     * @param multipartFile
+     * @return
+     * @throws IOException
+     */
+    public BaseOutput<String> uploadImage(MultipartFile multipartFile) throws IOException {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            return BaseOutput.failure("图片文件为空");
+        }
+        if (!checkExtend(multipartFile.getOriginalFilename())) {
+            return BaseOutput.failure("图片格式错误");
+        }
+        return this.fileUpload(multipartFile).map(uri -> {
+            return BaseOutput.success().setData(uri);
+        }).orElse(BaseOutput.failure());
+    }
 
+    /**
+     * 检查图片格式
+     * @param fileName
+     * @return
+     */
+    private  boolean checkExtend(String fileName) {
+        String regex = ".*\\.(jpg|png|jpeg|bmp)$";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(fileName);
+        return matcher.matches();
+    }
     /**
      * 上传文件
      * @param file
@@ -74,7 +104,7 @@ public class DfsRpcService {
     private Optional<String> uploadAndCheckOutput(MultipartFile multipartFile) {
         BaseOutput<String> out = this.dfsRpc.fileUpload(multipartFile, accessToken);
         if (out != null && out.isSuccess()) {
-            return Optional.ofNullable(out.getData()).map(StringUtils.trimToNull());
+            return Optional.ofNullable(out.getData()).map(StringUtils::trimToNull);
         }
         return Optional.empty();
 
