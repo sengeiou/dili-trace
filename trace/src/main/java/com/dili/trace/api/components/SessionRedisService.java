@@ -32,6 +32,11 @@ public class SessionRedisService {
     // WAITING_DISABLED KEY 等待被禁用的用户
     private static final String WAITING_DISABLED_USER_PREFIX = "SG_TRACE_WAITING_DISABLED_USERS";
 
+    /**
+     *
+     * @param sessionId
+     * @return
+     */
     private String getSessionRedisKey(String sessionId) {
         StringBuilder key = new StringBuilder();
         key.append(SESSION_PREFIX);

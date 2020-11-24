@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -19,6 +20,13 @@ import java.util.List;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
  */
 public interface UserService extends BaseService<User, Long> {
+
+    /**注册（新增）用户
+     *
+     * @param user 用户信息
+     * @param originalPassword 原始密码
+     */
+    void register(User user, UserTypeEnum userType, String originalPassword);
 
     /**
      * 注册 flag 是否有验证码

@@ -1,12 +1,34 @@
 package com.dili.trace.service;
 
-import com.dili.ss.base.BaseService;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.Base64Signature;
+import com.dili.trace.service.Base64SignatureService;
 
 /**
- * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
+ * base64签名信息查询
  */
-public interface Base64SignatureService extends BaseService<Base64Signature, Long> {
-	public String findBase64SignatureByApproverInfoId(Long approverId);
+@Service
+public class Base64SignatureService extends BaseServiceImpl<Base64Signature, Long> {
+    /**
+     * 通过签名人id查询 签名
+     *
+     * @param approverInfoId
+     * @return
+     */
+    public String findBase64SignatureByApproverInfoId(Long approverInfoId) {
+        if (approverInfoId == null) {
+            return "";
+        }
+        Base64Signature condition = DTOUtils.newDTO(Base64Signature.class);
+        condition.setApproverInfoId(approverInfoId);
+        condition.setSort("order_num");
+        condition.setOrder("asc");
+        return this.listByExample(condition).stream().map(Base64Signature::getBase64).collect(Collectors.joining());
+    }
 
 }

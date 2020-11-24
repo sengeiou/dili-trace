@@ -44,6 +44,7 @@ import tk.mybatis.mapper.entity.Example;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -99,6 +100,53 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Resource
     private UserTallyAreaService userTallyAreaService;
+
+    @Resource
+    UserHistoryService userHistoryService;
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void register(User user, com.dili.sg.trace.glossary.UserTypeEnum userType, String originalPassword) {
+        user.setState(com.dili.sg.trace.glossary.EnabledStateEnum.ENABLED.getCode());
+        user.setPassword(MD5Util.md5(originalPassword));
+        user.setIsDelete(0L);
+        user.setYn(com.dili.sg.trace.glossary.YnEnum.YES.getCode());
+        user.setUserType(userType.getCode());
+
+//		// 验证验证码是否正确
+//		if (flag) {
+//			checkVerificationCode(user.getPhone(), user.getCheckCode());
+//		}
+
+        // 验证理货区号是否已注册
+        if (StringUtils.isNotBlank(user.getTallyAreaNos())) {
+            existsTallyAreaNo(null, Arrays.asList(user.getTallyAreaNos().split(",")));
+        }
+        // 验证手机号是否已注册
+        if (existsAccount(user.getPhone())) {
+            throw new TraceBizException("手机号已注册");
+        }
+        // 验证身份证号是否已注册
+        if (StringUtils.isNotBlank(user.getCardNo()) && existsCardNo(user.getCardNo())) {
+            throw new TraceBizException("身份证号已注册");
+        }
+        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
+        insertSelective(user);
+        // 更新用户理货区
+        updateUserTallyArea(user.getId(), Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")));
+        // 增加车牌信息
+//        LOGGER.info("输入车牌:{}",user.getPlates());
+        List<String> plateList = this.parsePlate(user.getPlates());
+//        LOGGER.info("解析车牌:{}",plateList.toString());
+        if (!plateList.isEmpty()) {
+            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
+            if (up != null) {
+                throw new TraceBizException("车牌[" + up.getPlate() + "]已被其他用户使用");
+            }
+            this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
+        }
+        this.userHistoryService.insertUserHistoryForNewUser(user.getId());
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -951,4 +999,80 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     }
 
+    /**
+     * 创建场外委托用户
+     *
+     * @param user
+     * @return
+     */
+    @Transactional
+    public User createCommissionUser(User user) {
+        if (user == null || StringUtils.isAnyBlank(user.getPhone(), user.getPassword(), user.getAckPassword())) {
+            throw new TraceBizException("参数错误");
+        }
+        if (!user.getPassword().equals(user.getAckPassword())) {
+            throw new TraceBizException("两次输入密码不一致");
+        }
+//		user.setPlates(null);
+//		user.setTallyAreaNos(null);
+        this.register(user, UserTypeEnum.COMMISSION_USER, user.getPassword());
+        return user;
+    }
+
+    /**
+     * 检测理货区号是否已注册
+     *
+     * @param userId
+     * @param tallyAreaNos
+     */
+    public void existsTallyAreaNo(Long userId, List<String> tallyAreaNos) {
+        tallyAreaNos.forEach(tallyAreaNo -> {
+            UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+            query.setTallyAreaNo(tallyAreaNo);
+            UserTallyArea userTallyArea = userTallyAreaService.listByExample(query).stream().findFirst().orElse(null);
+            if (null != userTallyArea && !userTallyArea.getUserId().equals(userId)) {
+                throw new TraceBizException("理货区号【" + tallyAreaNo + "】已被注册");
+            }
+        });
+    }
+
+    /**
+     * 检测身份证号是否存在
+     *
+     * @param cardNo
+     * @return true 存在 false 不存在
+     */
+    public boolean existsCardNo(String cardNo) {
+        User query = DTOUtils.newDTO(User.class);
+        query.setCardNo(cardNo);
+        query.setYn(com.dili.sg.trace.glossary.YnEnum.YES.getCode());
+        return !CollUtil.isEmpty(listByExample(query));
+    }
+
+    /**
+     * 更新用户理货区
+     *
+     * @param userId
+     * @param tallyAreaNos
+     */
+    private void updateUserTallyArea(Long userId, List<String> tallyAreaNos) {
+        if (null != userId) {
+            UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+            query.setUserId(userId);
+            userTallyAreaService.deleteByExample(query);
+
+            List<UserTallyArea> userTallyAreas = StreamEx.ofNullable(tallyAreaNos).nonNull()
+                    .flatCollection(Function.identity()).filter(StringUtils::isNotBlank).map(tallyAreaNo -> {
+                        UserTallyArea userTallyArea = DTOUtils.newDTO(UserTallyArea.class);
+                        userTallyArea.setUserId(userId);
+                        userTallyArea.setTallyAreaNo(tallyAreaNo);
+                        return userTallyArea;
+                    }).toList();
+
+            if (!userTallyAreas.isEmpty()) {
+                userTallyAreaService.batchInsert(userTallyAreas);
+            }
+        }
+
+    }
 }
