@@ -1,45 +1,38 @@
 package com.dili.sg.trace.controller;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
 import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.util.MD5Util;
 import com.dili.common.exception.TraceBizException;
+import com.dili.common.util.MD5Util;
+import com.dili.sg.trace.glossary.UserTypeEnum;
+import com.dili.sg.trace.util.BeanMapUtil;
+import com.dili.sg.trace.util.MaskUserInfo;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTO;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
+import com.dili.trace.dto.UserListDto;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
+import com.dili.trace.service.UserService;
+import com.dili.trace.service.UsualAddressService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.DTO;
-import com.dili.sg.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
-import com.dili.sg.trace.dto.UserListDto;
-import com.dili.sg.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.UserPlateService;
-import com.dili.sg.trace.service.UserService;
-import com.dili.trace.service.UsualAddressService;
-import com.dili.sg.trace.util.BeanMapUtil;
-import com.dili.sg.trace.util.MaskUserInfo;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
@@ -184,7 +177,7 @@ public class UserController {
 	@RequestMapping(value = "/resetPassword.action", method = RequestMethod.POST)
 	@ResponseBody
 	public BaseOutput<Boolean> resetPassword(Long id) {
-		User user = new User();
+		User user = DTOUtils.newDTO(User.class);
 		user.setId(id);
 		user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
 		userService.updateSelective(user);

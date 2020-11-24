@@ -1,27 +1,21 @@
 package com.dili.sg.trace.controller;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.dili.sg.trace.service.*;
+import com.dili.sg.trace.glossary.RegisterSourceEnum;
 import com.dili.sg.trace.service.CityService;
+import com.dili.sg.trace.service.RegisterBillReportService;
 import com.dili.sg.trace.service.RegisterBillService;
 import com.dili.sg.trace.service.TradeTypeService;
-import com.dili.sg.trace.service.UserService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.util.DateUtils;
+import com.dili.trace.dto.GroupByProductReportDto;
+import com.dili.trace.dto.RegisterBillReportQueryDto;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -36,16 +30,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.util.DateUtils;
-import com.dili.sg.trace.dto.GroupByProductReportDto;
-import com.dili.sg.trace.dto.RegisterBillReportQueryDto;
-import com.dili.sg.trace.glossary.RegisterSourceEnum;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.

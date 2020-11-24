@@ -1,5 +1,7 @@
 package com.dili.sg.trace.api.commission;
 
+import com.dili.trace.domain.User;
+import com.dili.trace.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

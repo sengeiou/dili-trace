@@ -1,4 +1,4 @@
-package com.dili.sg.trace.dto;
+package com.dili.trace.dto;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by laikui on 2019/7/26.
  */
-public class MatchDetectParam implements Serializable {
+    public class MatchDetectParam implements Serializable {
     private String tradeNo;
     private String tradeTypeId;
     private String tradeTypeName;

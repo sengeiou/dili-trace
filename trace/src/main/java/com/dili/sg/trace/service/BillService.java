@@ -2,12 +2,12 @@ package com.dili.sg.trace.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.dao.RegisterBillMapper;
-import com.dili.sg.trace.domain.RegisterBill;
-import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;

@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.dili.trace.dto.GroupByProductReportDto;
+import com.dili.trace.dto.MatchDetectParam;
+import com.dili.trace.dto.RegisterBillReportQueryDto;
+import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
@@ -12,6 +16,7 @@ import com.dili.trace.dto.thirdparty.report.RegionCountInfo;
 import com.dili.trace.dto.thirdparty.report.ReportCountDto;
 
 import com.dili.trace.dto.thirdparty.report.ReportRegisterBillDto;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 public interface RegisterBillMapper extends MyMapper<RegisterBill> {
@@ -26,7 +31,7 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
     /**
      * 根据报备单数量更新用户状态到黑码
      * 
-     * @param dto
+     * @param user
      * @return
      */
     public List<Long> selectUserIdWithouBill(UserListDto user);
@@ -36,6 +41,8 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
      */
     @Select("select * from register_bill where id = #{id} for update")
     public Optional<RegisterBill> selectByIdForUpdate(Long id);
+
+    //    RegisterBill selectByIdForUpdate(Long id);
 
     public List<TraceReportDto> selectBillReportData(TraceReportQueryDto query);
 
@@ -62,17 +69,33 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
      */
     public Date selectCurrentTime();
 
-    /*
+    /**
      * 产地进场重量分布统计
      * @param queryDto
      * @return
      */
     public List<OrigionReportDto> queryOrigionReport(OrigionReportQueryDto queryDto);
 
-    /*
+    /**
      * 进场商品产地分布统计
      * @param queryDto
      * @return
      */
     public List<ProductOrigionReportDto> queryProductOrigionReport(OrigionReportQueryDto queryDto);
+
+
+    List<RegisterBill> findUnMatchedRegisterBill(MatchDetectParam matchDetectParam);
+
+    int taskByExeMachineNo2(@Param("exeMachineNo") String exeMachineNo, @Param("taskCount") int taskCount);
+
+    RegisterBillStaticsDto groupByState(RegisterBillDto dto);
+
+    int doRemoveReportAndCertifiy(RegisterBill registerBill);
+
+    List<GroupByProductReportDto> listPageGroupByProduct(RegisterBillReportQueryDto dto);
+
+    GroupByProductReportDto summaryGroup(RegisterBillReportQueryDto dto);
+
+    Long listPageGroupByProductCount(RegisterBillReportQueryDto dto);
+
 }

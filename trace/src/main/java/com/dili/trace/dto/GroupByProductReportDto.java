@@ -1,4 +1,4 @@
-package com.dili.sg.trace.dto;
+package com.dili.trace.dto;
 
 import java.math.BigDecimal;
 

@@ -1,8 +1,6 @@
 package com.dili.trace.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.sg.trace.dao.RegisterBillMapper;
-import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
 import com.dili.sg.trace.dto.TaskGetParam;
 import com.dili.common.exception.TraceBizException;
@@ -10,6 +8,8 @@ import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.sg.trace.service.BillService;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectTaskService;

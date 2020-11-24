@@ -6,25 +6,25 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.entity.ExecutionConstants;
+import com.dili.common.entity.PatternConstants;
 import com.dili.common.entity.SessionData;
+import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.VerificationCodeUtil;
-import com.dili.sg.common.entity.ExecutionConstants;
-import com.dili.sg.common.entity.PatternConstants;
 import com.dili.sg.common.entity.TraceSessionContext;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.sg.trace.domain.UserPlate;
-import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.sg.trace.rpc.MessageRpc;
 import com.dili.sg.trace.service.SMSService;
-import com.dili.sg.trace.service.UserPlateService;
 import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.api.components.LoginComponent;
 import com.dili.trace.api.input.LoginInputDto;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserPlate;
+import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,7 +60,7 @@ public class UserApi {
 	@Resource
 	private RedisUtil redisUtil;
 	@Resource
-	UserPlateService userPlateService;
+    UserPlateService userPlateService;
 
 	@Autowired
 	private LoginComponent loginComponent;

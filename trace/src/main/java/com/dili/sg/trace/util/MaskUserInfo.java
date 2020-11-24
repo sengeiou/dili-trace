@@ -1,6 +1,7 @@
 package com.dili.sg.trace.util;
 
 import com.dili.sg.trace.domain.Customer;
+import com.dili.trace.domain.User;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
 
