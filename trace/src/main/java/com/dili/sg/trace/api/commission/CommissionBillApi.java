@@ -8,6 +8,7 @@ import java.util.function.Function;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.api.input.CommissionBillInputDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,7 +27,6 @@ import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.dto.CreateListBillParam;
 import com.dili.sg.trace.dto.RegisterBillDto;
-import com.dili.sg.trace.dto.RegisterBillOutputDto;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
@@ -60,7 +60,7 @@ public class CommissionBillApi {
 	/**
 	 * 通过小程序接口，用户创建委托单
 	 * 
-	 * @param input
+	 * @param createListBillParam
 	 * @return
 	 */
 	@RequestMapping(value = "/createCommissionBill.api", method = RequestMethod.POST)

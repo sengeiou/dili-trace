@@ -5,10 +5,10 @@ import java.util.List;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.BatchAuditDto;
-import com.dili.sg.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.sg.trace.dto.RegisterBillDto;
-import com.dili.sg.trace.dto.RegisterBillOutputDto;
 import com.dili.sg.trace.dto.RegisterBillStaticsDto;
+import com.dili.trace.dto.QualityTraceTradeBillOutDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.

@@ -13,6 +13,7 @@ import com.dili.sg.trace.service.*;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UserService;
 import com.dili.uap.sdk.domain.UserTicket;

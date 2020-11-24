@@ -11,7 +11,7 @@ import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.SeparateSalesRecord;
 import com.dili.sg.trace.dto.ECommerceBillInputDto;
 import com.dili.sg.trace.dto.RegisterBillDto;
-import com.dili.sg.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.service.BillService;

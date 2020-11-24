@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import com.dili.sg.trace.service.*;
 import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.beanutils.PropertyUtils;

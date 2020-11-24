@@ -6,13 +6,13 @@ import java.util.function.Function;
 
 import com.dili.sg.trace.api.input.QualityTraceTradeBillInputDto;
 import com.dili.sg.trace.api.output.QualityTraceTradeBillOutput;
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.QrCodeService;
-import com.dili.sg.trace.service.QualityTraceTradeBillService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.service.QualityTraceTradeBillService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

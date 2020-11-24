@@ -3,6 +3,7 @@ package com.dili.trace.dto;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import com.dili.trace.domain.DetectRecord;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.dili.common.exception.TraceBizException;
@@ -38,6 +39,14 @@ public class RegisterBillOutputDto extends RegisterBill {
 		dest.setTradeDetailList(tradeDetailList);
 		return dest;
 
+	}
+	private DetectRecord detectRecord;
+	public DetectRecord getDetectRecord() {
+		return  detectRecord;
+	}
+
+	public void setDetectRecord(DetectRecord detectRecord) {
+		this.detectRecord = detectRecord;
 	}
 
 	/**
