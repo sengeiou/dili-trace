@@ -246,7 +246,9 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 	 */
 
 	public RegisterBill selectByIdForUpdate(Long id) {
-		return this.getActualDao().selectByIdForUpdate(id);
+		return this.getActualDao().selectByIdForUpdate(id).orElseThrow(() -> {
+			return new TraceBizException("操作登记单失败");
+		});
 	}
 
 }

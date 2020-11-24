@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.DetectTaskService;
 import com.dili.uap.sdk.session.SessionContext;
