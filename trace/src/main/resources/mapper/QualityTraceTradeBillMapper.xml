@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.sg.trace.dao.QualityTraceTradeBillMapper">
-  <resultMap id="BaseResultMap" type="com.dili.sg.trace.domain.QualityTraceTradeBill">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.sg.QualityTraceTradeBill">
     <!--
       WARNING - @mbg.generated
     -->
@@ -51,11 +51,11 @@
     where id = #{id,jdbcType=BIGINT}
   </select>
   
-  <select id="selectRepeatedOrderId" resultType="com.dili.sg.trace.dto.QualityTraceTradeBillRepeatDto">
+  <select id="selectRepeatedOrderId" resultType="com.dili.trace.dto.QualityTraceTradeBillRepeatDto">
 select count(1) as ct,order_id from quality_trace_trade_bill group by order_id having count(1)>1
   </select>
   
-  <update id="updateBy" parameterType="com.dili.sg.trace.domain.QualityTraceTradeBill">
+  <update id="updateBy" parameterType="com.dili.trace.domain.sg.QualityTraceTradeBill">
     <!--
       WARNING - @mbg.generated
     -->

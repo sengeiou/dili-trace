@@ -1,15 +1,14 @@
-package com.dili.sg.trace.service.impl;
+package com.dili.trace.service.impl;
 
-import com.dili.ss.base.BaseServiceImpl;
 import com.dili.sg.trace.api.output.QualityTraceTradeBillOutput;
-import com.dili.sg.trace.dao.QualityTraceTradeBillMapper;
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
-import com.dili.sg.trace.dto.QualityTraceTradeBillRepeatDto;
-import com.dili.sg.trace.service.QualityTraceTradeBillService;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.dao.QualityTraceTradeBillMapper;
+import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.dto.QualityTraceTradeBillRepeatDto;
+import com.dili.trace.service.QualityTraceTradeBillService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
