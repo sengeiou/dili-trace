@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.api.input.CommissionBillInputDto;
 import org.apache.commons.beanutils.BeanUtils;

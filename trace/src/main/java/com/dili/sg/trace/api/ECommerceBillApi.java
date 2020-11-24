@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.sg.common.entity.TraceSessionContext;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.domain.RegisterBill;

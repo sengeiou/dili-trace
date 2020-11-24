@@ -1,7 +1,7 @@
 package com.dili.sg.common.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;

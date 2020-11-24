@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import com.dili.sg.common.util.MD5Util;
+import com.dili.common.util.MD5Util;
 import com.dili.sg.trace.dao.UserMapper;
 import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.domain.UserPlate;

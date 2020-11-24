@@ -1,7 +1,7 @@
 package com.dili.sg.common.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.sg.common.entity.ExecutionConstants;
 import com.dili.sg.common.entity.TraceSessionContext;
 import com.dili.ss.domain.BaseOutput;

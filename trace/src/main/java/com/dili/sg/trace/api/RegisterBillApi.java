@@ -1,7 +1,7 @@
 package com.dili.sg.trace.api;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.sg.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.sg.common.entity.TraceSessionContext;
 import com.dili.sg.trace.domain.QualityTraceTradeBill;
 import com.dili.sg.trace.domain.RegisterBill;

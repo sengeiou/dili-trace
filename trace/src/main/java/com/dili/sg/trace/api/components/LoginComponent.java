@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
+import com.dili.common.util.MD5Util;
+import com.dili.common.util.UUIDUtil;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.api.input.LoginInputDto;
 import org.apache.commons.lang3.StringUtils;
@@ -16,8 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dili.sg.common.entity.SessionData;
-import com.dili.sg.common.util.MD5Util;
-import com.dili.sg.common.util.UUIDUtil;
 import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.common.exception.TraceBizException;
@@ -33,6 +33,9 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import one.util.streamex.StreamEx;
 
+/**
+ * 登录服务
+ */
 @Component
 public class LoginComponent {
 	private static final Logger logger = LoggerFactory.getLogger(LoginComponent.class);
@@ -42,8 +45,10 @@ public class LoginComponent {
 	private String manageDomainPath;
 	@Autowired
 	SessionRedisService sessionRedisService;
-	
 
+	/**
+	 * 初始化提示
+	 */
 	@PostConstruct
 	public void init() {
 		if (StringUtils.isBlank(this.manageDomainPath)) {
@@ -58,6 +63,11 @@ public class LoginComponent {
 				});
 	}
 
+	/**
+	 * 登陆方法
+	 * @param loginInput
+	 * @return
+	 */
 	public SessionData login(LoginInputDto loginInput) {
 
 		if (loginInput == null) {
@@ -96,6 +106,11 @@ public class LoginComponent {
 		
 	}
 
+	/**
+	 * 构造返回数据
+	 * @param operatorUser
+	 * @return
+	 */
 	private Map<String, Object> responseData(OperatorUser operatorUser) {
 		Map<String, Object> result = new HashMap<>();
 
@@ -105,11 +120,25 @@ public class LoginComponent {
 
 	}
 
+	/**
+	 * 客户登录
+	 * @param phone
+	 * @param password
+	 * @param identityTypeEnum
+	 * @return
+	 */
 	private SessionData  userLogin(String phone, String password, LoginIdentityTypeEnum identityTypeEnum) {
 		User po = userService.login(phone, MD5Util.md5(password));
 		return SessionData.fromUser(po, identityTypeEnum.getCode());
 	}
 
+	/**
+	 * 政府管理员登录
+	 * @param username
+	 * @param password
+	 * @param identityTypeEnum
+	 * @return
+	 */
 	private SessionData govAdminLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
 		String loginUrl = (this.manageDomainPath.trim() + "/loginControl/doLoginAPP.do");
 		String checkAuthUrl = (this.manageDomainPath.trim() + "/api/user/checkUserResource.do");
@@ -171,10 +200,10 @@ public class LoginComponent {
 		}
 
 	}
-
+/*
 	public static void main(String[] args) {
 		LoginComponent loginapi = new LoginComponent();
 		loginapi.manageDomainPath = "http://mg.nong12.com/";
 		loginapi.govAdminLogin("admin", "admin_123456", LoginIdentityTypeEnum.GOV_ADMIN);
-	}
+	}*/
 }
