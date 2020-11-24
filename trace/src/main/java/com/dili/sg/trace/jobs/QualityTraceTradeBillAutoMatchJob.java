@@ -10,11 +10,12 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.glossary.QualityTraceTradeBillMatchStatusEnum;
-import com.dili.sg.trace.service.QualityTraceTradeBillService;
 import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.sg.QualityTraceTradeBillDto;
+import com.dili.trace.service.QualityTraceTradeBillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,6 @@ import org.springframework.stereotype.Component;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sg.trace.dao.RegisterBillMapper;
 import com.dili.sg.trace.dto.MatchDetectParam;
-import com.dili.sg.trace.dto.QualityTraceTradeBillDto;
 
 /**
  * 自动匹配登记单与订单信息

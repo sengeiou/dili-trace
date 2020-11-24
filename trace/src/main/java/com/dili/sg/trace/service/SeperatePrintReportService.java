@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.service.impl.CodeGenerateServiceImpl;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.Base64SignatureService;
+import com.dili.trace.service.impl.CodeGenerateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

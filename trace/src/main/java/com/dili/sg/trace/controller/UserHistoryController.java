@@ -4,8 +4,8 @@ import java.util.Date;
 
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.util.DateUtils;
-import com.dili.sg.trace.dto.UserHistoryListDto;
-import com.dili.sg.trace.dto.UserHistoryStaticsDto;
+import com.dili.trace.dto.UserHistoryListDto;
+import com.dili.trace.dto.UserHistoryStaticsDto;
 import com.dili.trace.service.UserHistoryService;
 
 import org.slf4j.Logger;

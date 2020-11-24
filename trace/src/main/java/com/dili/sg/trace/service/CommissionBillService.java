@@ -7,6 +7,7 @@ import com.dili.sg.trace.glossary.*;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.service.CodeGenerateService;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

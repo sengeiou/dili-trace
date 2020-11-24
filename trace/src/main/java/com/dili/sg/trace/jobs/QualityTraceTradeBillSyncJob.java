@@ -1,13 +1,12 @@
 package com.dili.sg.trace.jobs;
 
-import java.util.List;
-
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
-import com.dili.sg.trace.domain.QualityTraceTradeBillSyncPoint;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.service.OrderService;
-import com.dili.sg.trace.service.QualityTraceTradeBillService;
-import com.dili.sg.trace.service.QualityTraceTradeBillSyncPointService;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.domain.sg.QualityTraceTradeBillSyncPoint;
+import com.dili.trace.service.QualityTraceTradeBillService;
+import com.dili.trace.service.QualityTraceTradeBillSyncPointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.dili.ss.dto.DTOUtils;
+import java.util.List;
 
 /**
  * 同步订单数据定时任务
