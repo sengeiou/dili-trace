@@ -1,11 +1,9 @@
-package com.dili.sg.trace.dto;
+package com.dili.trace.domain.sg;
 
-import java.util.List;
+import com.dili.ss.domain.annotation.Operator;
 
 import javax.persistence.Column;
-
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
-import com.dili.ss.domain.annotation.Operator;
+import java.util.List;
 
 public interface QualityTraceTradeBillDto extends QualityTraceTradeBill {
 	@Column(name = "`match_status`")
