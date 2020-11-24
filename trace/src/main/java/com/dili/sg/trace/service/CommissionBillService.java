@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -151,7 +152,7 @@ public class CommissionBillService {
      */
     @Transactional
     public BaseOutput createCommissionBillByManager(RegisterBill bill, OperatorUser operatorUser) {
-        if (bill.getWeight() == null || bill.getWeight() <= 0) {
+            if (bill.getWeight() == null || bill.getWeight() .compareTo(BigDecimal.ZERO)<= 0) {
             throw new TraceBizException("重量不能小于零");
         }
         if (StringUtils.isAllBlank(bill.getName(), bill.getCorporateName())) {
@@ -183,7 +184,7 @@ public class CommissionBillService {
      */
     @Transactional
     public RegisterBill createCommissionBillByUser(RegisterBill bill) {
-        if (bill.getWeight() == null || bill.getWeight() <= 0) {
+        if (bill.getWeight() == null || bill.getWeight() .compareTo(BigDecimal.ZERO)<= 0) {
             throw new TraceBizException("重量不能小于零");
         }
         if (StringUtils.isAllBlank(bill.getName(), bill.getCorporateName())) {

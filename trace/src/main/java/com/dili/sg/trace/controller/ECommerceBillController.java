@@ -359,7 +359,7 @@ public class ECommerceBillController {
 							obj.setSalesUserName(r.getSalesUserName());
 							obj.setSalesPlate(r.getSalesPlate());
 							if (r.getSalesWeight() != null) {
-								obj.setSalesWeight(new BigDecimal(r.getSalesWeight()));
+								obj.setSalesWeight(r.getSalesWeight());
 							}
 
 							obj.setPrintState("未打印");

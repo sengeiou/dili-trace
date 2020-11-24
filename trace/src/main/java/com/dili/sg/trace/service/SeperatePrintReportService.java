@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.Base64SignatureService;
 import com.dili.trace.service.impl.CodeGenerateServiceImpl;

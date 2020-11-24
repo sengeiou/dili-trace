@@ -47,7 +47,7 @@ public class SeparateSalesRecord extends BaseDomain {
 
 	@ApiModelProperty(value = "分销重量KG")
 	@Column(name = "`sales_weight`")
-	private Integer salesWeight;
+	private BigDecimal salesWeight;
 
 	@ApiModelProperty(value = "车牌号")
 	@Column(name = "`sales_plate`")
@@ -138,11 +138,11 @@ public class SeparateSalesRecord extends BaseDomain {
 		this.salesCityName = salesCityName;
 	}
 
-	public Integer getSalesWeight() {
+	public BigDecimal getSalesWeight() {
 		return salesWeight;
 	}
 
-	public void setSalesWeight(Integer salesWeight) {
+	public void setSalesWeight(BigDecimal salesWeight) {
 		this.salesWeight = salesWeight;
 	}
 

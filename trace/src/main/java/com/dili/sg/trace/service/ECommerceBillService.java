@@ -2,6 +2,7 @@ package com.dili.sg.trace.service;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -228,15 +229,15 @@ public class ECommerceBillService {
 			throw new TraceBizException("参数错误");
 		}
 		Long billId = this.createBill(registerBill, operatorUser);
-		int totalSalesWeight = StreamEx.of(CollectionUtils.emptyIfNull(separateInputList)).nonNull().filter(r->{
+		BigDecimal totalSalesWeight = StreamEx.of(CollectionUtils.emptyIfNull(separateInputList)).nonNull().filter(r->{
 			return !StringUtils.isAllBlank(r.getTallyAreaNo(),r.getSalesUserName(),r.getSalesPlate());
 		}).map(r -> {
-			if (r.getSalesWeight() == null || r.getSalesWeight() < 0) {
+			if (r.getSalesWeight() == null || r.getSalesWeight().compareTo(BigDecimal.ZERO) < 0) {
 				throw new TraceBizException("分销重量不能小于零");
 			}
 			return r;
-		}).mapToInt(SeparateSalesRecord::getSalesWeight).sum();
-		if (totalSalesWeight > registerBill.getWeight()) {
+		}).map(SeparateSalesRecord::getSalesWeight).reduce(BigDecimal.ZERO,BigDecimal::add);
+		if (totalSalesWeight.compareTo(registerBill.getWeight()) >0) {
 			throw new TraceBizException("分销重量不能超过总重量");
 		}
 		this.createSeparateSalesRecord(registerBill.getCode(), separateInputList);
@@ -308,7 +309,7 @@ public class ECommerceBillService {
 
 	// 创建电商登记单
 	private Long createBill(RegisterBill bill, OperatorUser operatorUser) {
-		if (bill.getWeight() == null || bill.getWeight() <= 0) {
+		if (bill.getWeight() == null || bill.getWeight().compareTo(BigDecimal.ZERO) <= 0) {
 			throw new TraceBizException("总重量不能小于零");
 		}
 

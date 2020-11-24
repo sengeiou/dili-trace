@@ -13,6 +13,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.CodeGenerateMapper;
 import com.dili.trace.domain.CodeGenerate;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.CodeGenerateService;
 
 import org.apache.commons.lang3.StringUtils;
