@@ -7,8 +7,6 @@ import com.beust.jcommander.internal.Lists;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
-import com.dili.sg.trace.domain.UserTallyArea;
-import com.dili.sg.trace.service.UserTallyAreaService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -934,7 +932,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         Map<Long, String> userIdNameMap = StreamEx.of(userItemList).toMap(User::getId, User::getName);
 
         List<Long> userIdList = StreamEx.ofKeys(userIdMap).toList();
-        Map<Long, List<com.dili.sg.trace.domain.UserPlate>> userIdPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
+        Map<Long, List<UserPlate>> userIdPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
 
         List<DTO> data = StreamEx.ofValues(userIdPlateMap).flatMap(List::stream).flatMap(up -> {
 
