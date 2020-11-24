@@ -7,6 +7,8 @@ import com.beust.jcommander.internal.Lists;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
+import com.dili.sg.trace.domain.UserTallyArea;
+import com.dili.sg.trace.service.UserTallyAreaService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -41,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -95,6 +98,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Autowired
     SysConfigService sysConfigService;
+
+    @Resource
+    private UserTallyAreaService userTallyAreaService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -897,6 +903,54 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         result.setTotalPage(page.getPages());
         result.setStartIndex(page.getStartRow());
         return result;
+    }
+
+    @Override
+    public User findByTallyAreaNo(String tallyAreaNo) {
+        UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
+        query.setTallyAreaNo(tallyAreaNo);
+        UserTallyArea userTallyArea = userTallyAreaService.list(query).stream().findFirst().orElse(null);
+        if (null == userTallyArea) {
+            return null;
+        }
+
+        User userQuery = DTOUtils.newDTO(User.class);
+        userQuery.setId(userTallyArea.getUserId());
+        userQuery.setState(com.dili.sg.trace.glossary.EnabledStateEnum.ENABLED.getCode());
+        return list(userQuery).stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public List<DTO> queryByTallyAreaNo(String likeTallyAreaNo) {
+
+        UserListDto userListDto = DTOUtils.newDTO(UserListDto.class);
+        userListDto.setLikeTallyAreaNos(likeTallyAreaNo);
+
+        List<User> userItemList = this.listByExample(userListDto);
+        Map<Long, List<String>> userIdMap = StreamEx.of(userItemList).toMap(User::getId, u -> {
+            return Arrays.asList(StringUtils.trimToEmpty(u.getTallyAreaNos()).split(","));
+        });
+
+        Map<Long, String> userIdNameMap = StreamEx.of(userItemList).toMap(User::getId, User::getName);
+
+        List<Long> userIdList = StreamEx.ofKeys(userIdMap).toList();
+        Map<Long, List<com.dili.sg.trace.domain.UserPlate>> userIdPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
+
+        List<DTO> data = StreamEx.ofValues(userIdPlateMap).flatMap(List::stream).flatMap(up -> {
+
+            return userIdMap.getOrDefault(up.getUserId(), Collections.emptyList()).stream().map(tno -> {
+
+                DTO dto = new DTO();
+                dto.put("userName", userIdNameMap.getOrDefault(up.getUserId(), ""));
+                dto.put("plate", up.getPlate());
+                dto.put("tallyAreaNo", tno);
+                return dto;
+
+            });
+        }).toList();
+
+        return data;
+
     }
 
 }

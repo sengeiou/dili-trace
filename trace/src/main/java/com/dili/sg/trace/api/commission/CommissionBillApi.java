@@ -24,7 +24,6 @@ import com.dili.sg.common.entity.TraceSessionContext;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.sg.trace.domain.RegisterBill;
-import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.dto.CreateListBillParam;
 import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.common.exception.TraceBizException;
@@ -33,7 +32,6 @@ import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.CommissionBillService;
-import com.dili.sg.trace.service.UserService;
 import com.dili.sg.trace.util.BeanMapUtil;
 
 import io.swagger.annotations.ApiImplicitParam;
