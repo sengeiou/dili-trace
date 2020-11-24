@@ -1,18 +1,19 @@
 package com.dili.sg.trace.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import com.dili.common.exception.TraceBizException;
+import com.dili.sg.trace.domain.CheckSheet;
+import com.dili.sg.trace.domain.CheckSheetDetail;
+import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.sg.trace.dto.CheckSheetAliasInputDto;
+import com.dili.sg.trace.dto.CheckSheetInputDto;
+import com.dili.sg.trace.dto.CheckSheetPrintOutput;
+import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.glossary.BillDetectStateEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.domain.ApproverInfo;
+import com.dili.trace.service.ApproverInfoService;
+import com.dili.trace.service.Base64SignatureService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutableTriple;
@@ -22,15 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.sg.trace.domain.ApproverInfo;
-import com.dili.sg.trace.domain.CheckSheet;
-import com.dili.sg.trace.domain.CheckSheetDetail;
-import com.dili.sg.trace.domain.RegisterBill;
-import com.dili.sg.trace.dto.CheckSheetAliasInputDto;
-import com.dili.sg.trace.dto.CheckSheetInputDto;
-import com.dili.sg.trace.dto.CheckSheetPrintOutput;
-import com.dili.sg.trace.dto.OperatorUser;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {

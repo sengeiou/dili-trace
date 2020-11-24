@@ -20,7 +20,7 @@ import com.dili.sg.trace.domain.SeperatePrintReport;
 import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.dto.SeperatePrintReportInputDto;
 import com.dili.sg.trace.dto.SeperatePrintReportOutputDto;
-import com.dili.sg.trace.service.ApproverInfoService;
+import com.dili.trace.service.ApproverInfoService;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.SeperatePrintReportService;
 
