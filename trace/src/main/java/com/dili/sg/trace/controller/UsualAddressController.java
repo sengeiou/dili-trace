@@ -1,12 +1,19 @@
 package com.dili.sg.trace.controller;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import com.dili.common.config.DefaultConfiguration;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.service.CityService;
+import com.dili.sg.trace.service.UserPlateService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.util.DateUtils;
+import com.dili.trace.domain.UsualAddress;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.service.UsualAddressService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,19 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.util.DateUtils;
-import com.dili.sg.trace.domain.UsualAddress;
-import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
-import com.dili.sg.trace.service.UserPlateService;
-import com.dili.sg.trace.service.UsualAddressService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.

@@ -2,15 +2,14 @@ package com.dili.sg.trace.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.dili.sg.trace.dao.RegisterBillMapper;
-import com.dili.sg.trace.domain.QualityTraceTradeBill;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.RegisterBillDto;
-import com.dili.sg.trace.dto.RegisterBillOutputDto;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.DetectTaskService;
+import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
@@ -36,7 +35,7 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BillService.class);
 
 	@Autowired
-	QualityTraceTradeBillService qualityTraceTradeBillService;
+    QualityTraceTradeBillService qualityTraceTradeBillService;
 	@Autowired
 	SeparateSalesRecordService separateSalesRecordService;
 	@Autowired
@@ -44,9 +43,9 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 	@Autowired
 	UserPlateService userPlateService;
 	@Autowired
-	CodeGenerateService codeGenerateService;
+    CodeGenerateService codeGenerateService;
 	@Autowired
-	UsualAddressService usualAddressService;
+    UsualAddressService usualAddressService;
 	@Autowired
 	DetectTaskService detectTaskService;
 
