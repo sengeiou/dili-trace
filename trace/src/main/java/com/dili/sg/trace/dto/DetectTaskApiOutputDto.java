@@ -1,6 +1,5 @@
 package com.dili.sg.trace.dto;
 
-import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.ss.domain.BaseDomain;
 
 import java.time.ZoneId;
@@ -8,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dili.trace.domain.RegisterBill;
 import org.apache.commons.lang3.StringUtils;
 
 public class DetectTaskApiOutputDto extends BaseDomain {

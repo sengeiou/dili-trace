@@ -2,14 +2,16 @@ package com.dili.sg.trace.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
-import com.dili.sg.trace.dao.RegisterBillMapper;
-import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UserPlate;
 import com.dili.sg.trace.dto.*;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
 import com.dili.sg.trace.service.*;
 import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UsualAddressService;

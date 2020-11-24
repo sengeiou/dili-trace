@@ -46,10 +46,32 @@ public class RegisterBillDto extends RegisterBill {
 	@Like(value = "RIGHT")
 	private String likeProductName;
 
+	@ApiModelProperty(value = "企业名称")
+	@Column(name = "`corporate_name`")
+	@Like(value="BOTH")
+	private String likeCorporateName;
+
+	@ApiModelProperty(value = "业户姓名")
+	@Column(name = "`name`")
+	@Like(value="BOTH")
+	private String likeName;
+
 	@Transient
 	private String attr;
 	@Transient
 	private String attrValue;
+
+	@Transient
+	Boolean hasDetectReport;
+
+	@Transient
+	Boolean hasHandleResult;
+
+	@Transient
+	Boolean hasOriginCertifiy;
+
+	@Transient
+	Boolean hasCheckSheet;
 
 	@Column(name = "`state`")
 	@Operator(Operator.IN)
@@ -336,5 +358,53 @@ public class RegisterBillDto extends RegisterBill {
 
 	public void setModifiedEnd(String modifiedEnd) {
 		this.modifiedEnd = modifiedEnd;
+	}
+
+	public String getLikeCorporateName() {
+		return likeCorporateName;
+	}
+
+	public void setLikeCorporateName(String likeCorporateName) {
+		this.likeCorporateName = likeCorporateName;
+	}
+
+	public String getLikeName() {
+		return likeName;
+	}
+
+	public void setLikeName(String likeName) {
+		this.likeName = likeName;
+	}
+
+	public Boolean getHasDetectReport() {
+		return hasDetectReport;
+	}
+
+	public void setHasDetectReport(Boolean hasDetectReport) {
+		this.hasDetectReport = hasDetectReport;
+	}
+
+	public Boolean getHasHandleResult() {
+		return hasHandleResult;
+	}
+
+	public void setHasHandleResult(Boolean hasHandleResult) {
+		this.hasHandleResult = hasHandleResult;
+	}
+
+	public Boolean getHasOriginCertifiy() {
+		return hasOriginCertifiy;
+	}
+
+	public void setHasOriginCertifiy(Boolean hasOriginCertifiy) {
+		this.hasOriginCertifiy = hasOriginCertifiy;
+	}
+
+	public Boolean getHasCheckSheet() {
+		return hasCheckSheet;
+	}
+
+	public void setHasCheckSheet(Boolean hasCheckSheet) {
+		this.hasCheckSheet = hasCheckSheet;
 	}
 }

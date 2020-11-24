@@ -7,22 +7,23 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.dili.trace.dao.RegisterBillMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.sg.trace.dao.RegisterBillMapper;
-import com.dili.sg.trace.dto.GroupByProductReportDto;
-import com.dili.sg.trace.dto.RegisterBillReportQueryDto;
+import com.dili.trace.dto.GroupByProductReportDto;
+import com.dili.trace.dto.RegisterBillReportQueryDto;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.sg.trace.service.RegisterBillReportService;
 
 
 @Service
 public class RegisterBillReportServiceImpl implements RegisterBillReportService{
-	@Autowired RegisterBillMapper mapper;
+	@Autowired
+	RegisterBillMapper mapper;
 	public EasyuiPageOutput listPageGroupByProduct(RegisterBillReportQueryDto dto) throws Exception {
 		dto=this.checkAndSetPageParams(dto);
 		dto.setGroupByColumns(String.join(",",Arrays.asList("product_id,product_name")));

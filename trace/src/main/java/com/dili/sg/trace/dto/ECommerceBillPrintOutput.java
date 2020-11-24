@@ -4,7 +4,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import com.dili.sg.trace.domain.RegisterBill;
+import com.dili.trace.domain.RegisterBill;
 import org.apache.commons.lang3.StringUtils;
 
 public class ECommerceBillPrintOutput {

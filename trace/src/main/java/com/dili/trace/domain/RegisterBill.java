@@ -1072,4 +1072,5 @@ public class RegisterBill extends BaseDomain {
     public void setProductAliasName(String productAliasName) {
         this.productAliasName = productAliasName;
     }
+
 }

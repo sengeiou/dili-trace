@@ -34,7 +34,6 @@ import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.ApproverInfo;
 import com.dili.sg.trace.domain.CheckSheet;
 import com.dili.sg.trace.domain.CheckSheetDetail;
-import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.CheckSheetInputDto;
 import com.dili.sg.trace.dto.CheckSheetPrintOutput;
 import com.dili.sg.trace.dto.CheckSheetQueryDto;

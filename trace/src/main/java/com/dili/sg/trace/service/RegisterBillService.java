@@ -3,10 +3,10 @@ package com.dili.sg.trace.service;
 import java.util.List;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.BatchAuditDto;
-import com.dili.sg.trace.dto.RegisterBillDto;
-import com.dili.sg.trace.dto.RegisterBillStaticsDto;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 

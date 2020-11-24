@@ -3,8 +3,8 @@ package com.dili.sg.trace.service;
 import java.util.List;
 
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.sg.trace.dto.GroupByProductReportDto;
-import com.dili.sg.trace.dto.RegisterBillReportQueryDto;
+import com.dili.trace.dto.GroupByProductReportDto;
+import com.dili.trace.dto.RegisterBillReportQueryDto;
 
 public interface RegisterBillReportService {
 

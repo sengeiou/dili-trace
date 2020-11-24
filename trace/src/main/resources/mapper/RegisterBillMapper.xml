@@ -7,13 +7,18 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="register_source" jdbcType="TINYINT" property="registerSource" />
+    <result column="tally_area_no" jdbcType="VARCHAR" property="tallyAreaNo" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="id_card_no" jdbcType="VARCHAR" property="idCardNo" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="trade_account" jdbcType="VARCHAR" property="tradeAccount" />
+    <result column="trade_printing_card" jdbcType="VARCHAR" property="tradePrintingCard" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="plate" jdbcType="VARCHAR" property="plate" />
     <result column="state" jdbcType="TINYINT" property="state" />
+    <result column="sales_type" jdbcType="TINYINT" property="salesType" />
     <result column="product_name" jdbcType="VARCHAR" property="productName" />
     <result column="product_id" jdbcType="BIGINT" property="productId" />
     <result column="origin_id" jdbcType="BIGINT" property="originId" />
@@ -22,6 +27,7 @@
     <result column="detect_state" jdbcType="TINYINT" property="detectState" />
     <result column="latest_detect_record_id" jdbcType="BIGINT" property="latestDetectRecordId" />
     <result column="latest_detect_time" jdbcType="TIMESTAMP" property="latestDetectTime" />
+    <result column="exe_machine_no" jdbcType="VARCHAR" property="exeMachineNo" />
     <result column="version" jdbcType="TINYINT" property="version" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="modified" jdbcType="TIMESTAMP" property="modified" />
@@ -712,4 +718,597 @@
 
   </select>
 
+  <!-- 从寿光合并过来，杭州直接在java中写的sql -->
+  <select id="selectByIdForUpdate" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from register_bill
+    where id = #{id,jdbcType=BIGINT} for update
+  </select>
+
+  <select id="findUnMatchedRegisterBill" parameterType="com.dili.trace.dto.MatchDetectParam" resultType="com.dili.trace.domain.RegisterBill">
+    SELECT   <include refid="Base_Column_List" />  from register_bill
+    where `product_name` = #{productName} and `id_card_no` = #{idCardNo}
+    and `latest_detect_time` BETWEEN #{start} AND #{end}
+    AND register_source = 2
+    AND detect_state in(1,3)
+    ORDER BY id DESC limit 1
+  </select>
+
+  <update id="taskByExeMachineNo2">
+      UPDATE register_bill  set `exe_machine_no` = #{exeMachineNo},state = 5,modified =NOW()
+      WHERE id IN  (select id from(
+      	select * from register_bill where
+		(state = 5  and exe_machine_no = #{exeMachineNo})
+		or
+		(state = 4 and (exe_machine_no is null or exe_machine_no=''))
+		order by state desc,bill_type desc,id asc
+		limit #{taskCount}
+      )as t where  (t.exe_machine_no is null or t.exe_machine_no='') )
+  </update>
+
+  <select id="groupByState" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.RegisterBillStaticsDto">
+    select sum( case when detect_state=1 then 1  when detect_state=3 then 1  else 0 end)as 'passNum',
+    sum( case when detect_state=2 then 1  when detect_state=4 then 1  else 0 end)as 'nopassNum',
+    sum( case when (sample_source=2 and detect_state  in (1,2,3,4) )then 1 else 0 end)as 'checkNum',
+    sum( case when detect_state=3 then 1  when detect_state=4 then 1  else 0 end)as 'recheckNum',
+    sum( case when origin_certifiy_url is not null AND origin_certifiy_url &lt;&gt; '' then 1 else 0 end) as 'hasOriginCertifiyNum',
+    sum( case when detect_report_url is not null AND detect_report_url &lt;&gt; '' then 1 else 0 end) as 'hasDetectReportNum',
+    sum( case when sample_source=1 then 1 else 0 end)as 'sampleCheckNum',
+    sum( case when sample_source=2 then 1 else 0 end)as 'autoCheckNum',
+    sum( case when check_sheet_id is not null then 1 else 0 end)as 'hasCheckSheetNum',
+    count( distinct check_sheet_id)as 'diffCheckSheetNum'
+    from register_bill
+    where 1=1
+    <if test="registerSource != null">
+      and register_source = #{registerSource,jdbcType=TINYINT}
+    </if>
+    <if test="state != null">
+      and state = #{state,jdbcType=BIT}
+    </if>
+    <if test="billType !=  null">
+      and bill_type = #{billType}
+    </if>
+    <if test="createdStart != null  and createdStart!=''">
+      and created>=  #{createdStart}
+    </if>
+    <if test="createdEnd != null  and createdEnd!=''">
+      and #{createdEnd}>= created
+    </if>
+    <if test="latestDetectTimeTimeStart != null and latestDetectTimeTimeStart!=''">
+      and latest_detect_time>=  #{latestDetectTimeTimeStart}
+    </if>
+    <if test="latestDetectTimeTimeEnd != null  and latestDetectTimeTimeEnd!=''">
+      and #{latestDetectTimeTimeEnd}>= latest_detect_time
+    </if>
+
+    <if test="attr != null  and attrValue !=''">
+      <if test="attr =='name'">
+        and name=#{attrValue}
+      </if>
+      <if test="attr == 'tallyAreaNo'">
+        and  tally_area_no like '%${attrValue}%'
+      </if>
+      <if test="attr == 'productName'">
+        and  product_name like '${attrValue}%'
+      </if>
+      <if test="attr == 'likeSampleCode'">
+        and  sample_code like '%${attrValue}%'
+      </if>
+    </if>
+
+    <if test="tradeTypeId != null and tallyAreaNo!='' ">
+      and trade_type_id=#{tradeTypeId}
+    </if>
+
+    <if test="stateList != null">
+      AND state IN
+      <foreach collection="stateList" open="(" separator=","
+               close=")" item="state">
+        #{state}
+      </foreach>
+    </if>
+
+    <if test="hasDetectReport != null">
+      <if test="hasDetectReport == true">
+        AND (detect_report_url is not null AND detect_report_url &lt;&gt; '')
+      </if>
+      <if test="hasDetectReport == false">
+        AND (detect_report_url is  null or detect_report_url='')
+      </if>
+    </if>
+    <if test="hasOriginCertifiy != null">
+      <if test="hasOriginCertifiy ==true">
+        AND (origin_certifiy_url is not null AND origin_certifiy_url &lt;&gt; '')
+      </if>
+      <if test="hasOriginCertifiy ==false">
+        AND (origin_certifiy_url is  null or origin_certifiy_url='')
+      </if>
+    </if>
+    <if test="hasCheckSheet != null">
+      <if test="hasCheckSheet ==true">
+        AND (check_sheet_id is not null)
+      </if>
+      <if test="hasCheckSheet ==false">
+        AND (check_sheet_id is  null)
+      </if>
+    </if>
+  </select>
+
+  <update id="doRemoveReportAndCertifiy" parameterType="com.dili.trace.domain.RegisterBill">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    update register_bill
+    <set>
+      <if test="originCertifiyUrl == null">
+        origin_certifiy_url = null,
+      </if>
+      <if test="detectReportUrl == null">
+        detect_report_url = null,
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="listPageGroupByProductCount" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto" resultType="java.lang.Long">
+    select
+    count(1) as cnt
+    from (<include refid="sumGroupByProduct" />) summedData
+  </select>
+
+  <select id="listPageGroupByProduct" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto" resultType="com.dili.trace.dto.GroupByProductReportDto">
+    select
+    ${groupByColumns},/*商品名称*/
+
+    total_weight as totalWeight, /*运输重量*/
+    case when mom_total_weight=0.0 then null else (total_weight-mom_total_weight)*100/mom_total_weight end momWeight,
+    case when yoy_total_weight=0.0 then null else (total_weight-yoy_total_weight)*100/yoy_total_weight end yoyWeight,
+
+    cnt,/*进场次数*/
+    case when mom_cnt=0 then null else (cnt-mom_cnt)*100/mom_cnt end momCnt,
+    case when yoy_cnt=0 then null else (cnt-yoy_cnt)*100/yoy_cnt end yoyCnt,
+
+    total_wait_audit as totalWaitAudit,/*待审核*/
+    total_already_audit as totalAlreadyAudit,/*已审核*/
+    total_checking_or_rechecking as totalCheckingOrRechecking,/*采样客户数量*/
+    case when mom_total_checking_or_rechecking=0 then null else (total_checking_or_rechecking-mom_total_checking_or_rechecking)*100/mom_total_checking_or_rechecking end momCheckingOrRechecking,
+    case when yoy_total_checking_or_rechecking=0 then null else (total_checking_or_rechecking-yoy_total_checking_or_rechecking)*100/yoy_total_checking_or_rechecking end yoyCheckingOrRechecking,
+
+
+
+    total_inital_checking totalInitalChecking,/*初检中数量*/
+    total_rechecking as totalRechecking,/*复检中数量*/
+    total_checked_or_rechecked as totalCheckedOrRechecked,/*已经检测数量*/
+    case when mom_total_checked_or_rechecked=0 then null else (total_checked_or_rechecked-mom_total_checked_or_rechecked)*100/mom_total_checked_or_rechecked end momCheckedOrRechecked,
+    case when yoy_total_checked_or_rechecked=0 then null else (total_checked_or_rechecked-yoy_total_checked_or_rechecked)*100/yoy_total_checked_or_rechecked end yoyCheckedOrRechecked,
+
+
+
+
+    total_inital_checked as totalInitalChecked,/*已经初检结束的数量 */
+    total_rechecked as totalRechecked,/*已经复检结束的数量 */
+    case when mom_total_rechecked=0 then null else (total_rechecked-mom_total_rechecked)*100/mom_total_rechecked end momRechecked,
+    case when yoy_total_rechecked=0 then null else (total_rechecked-yoy_total_rechecked)*100/yoy_total_rechecked end yoyRechecked,
+
+
+    total_successful_checked as totalSuccessfulChecked,/*已经检测成功(初检成功,复检成功)数量 */
+    total_successful_inital_checked as totalSuccessfulInitalChecked,/*已经初检成功数量 */
+
+    case when total_successful_inital_checked_and_rechecking=0 then null else total_successful_inital_checked*100/total_successful_inital_checked_and_rechecking end  successful_inital_checked_rate,
+
+
+
+    total_successful_rechecked as totalSuccessfulRechecked,/*已经复检成功数量 */
+    case when total_successful_rechecked_and_rechecking=0 then null else total_successful_rechecked*100/total_successful_rechecked_and_rechecking end   successful_rechecked_rate,
+    total_hascertifiy as totalHascertifiy,/*有产地证明数量*/
+    case when cnt=0 then null else total_hascertifiy*100/cnt end  hascertifiy_rate,
+
+    case when mom_total_hascertifiy=0 then null else (total_hascertifiy-mom_total_hascertifiy)*100/mom_total_hascertifiy end momHascertifiy,
+    case when yoy_total_hascertifiy=0 then null else (total_hascertifiy-yoy_total_hascertifiy)*100/yoy_total_hascertifiy end yoyHascertifiy,
+
+    total_hasdetectreport as totalHasdetectreport,/*有检测报告数量*/
+    case when cnt=0 then null else total_hasdetectreport*100/cnt end  hasdetectreport_rate,
+    case when mom_total_hasdetectreport=0 then null else (total_hasdetectreport-mom_total_hasdetectreport)*100/mom_total_hasdetectreport end momHasdetectreport,
+    case when yoy_total_hasdetectreport=0 then null else (total_hasdetectreport-yoy_total_hasdetectreport)*100/yoy_total_hasdetectreport end yoyHasdetectreport,
+
+    case when cnt=0 then null else total_checking_or_rechecking*100/cnt end checking_or_rechecking_rate,
+
+    0
+    from (<include refid="sumGroupByProduct" />) summedData
+
+    <if test="sort != null">
+      ORDER BY ${sort}
+      <choose>
+        <when test="order != null">
+          ${order}
+        </when>
+        <otherwise>
+          desc
+        </otherwise>
+      </choose>
+    </if>
+    <if test="offSet!= null and rows!=null">
+
+      limit ${offSet},${rows}
+    </if>
+  </select>
+
+  <select id="summaryGroup" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto" resultType="com.dili.trace.dto.GroupByProductReportDto">
+    select
+    sum(total_weight) as totalWeight, /*运输重量*/
+
+    sum(cnt) as cnt,/*进场次数*/
+
+    sum(total_wait_audit) as totalWaitAudit,/*待审核*/
+    sum(total_already_audit) as totalAlreadyAudit,/*已审核*/
+    sum(total_checking_or_rechecking) as totalCheckingOrRechecking,/*采样客户数量*/
+
+
+
+    sum(total_inital_checking) totalInitalChecking,/*初检中数量*/
+    sum(total_rechecking) as totalRechecking,/*复检中数量*/
+    sum(total_checked_or_rechecked) as totalCheckedOrRechecked,/*已经检测数量*/
+
+
+    sum(total_inital_checked) as totalInitalChecked,/*已经初检结束的数量 */
+    sum(total_rechecked) as totalRechecked,/*已经复检结束的数量 */
+
+    sum(total_successful_checked) as totalSuccessfulChecked,/*已经检测成功(初检成功,复检成功)数量 */
+    sum(total_successful_inital_checked) as totalSuccessfulInitalChecked,/*已经初检成功数量 */
+
+    sum(total_successful_rechecked) as totalSuccessfulRechecked,/*已经复检成功数量 */
+    sum(total_hascertifiy) as totalHascertifiy,/*有产地证明数量*/
+
+    sum(total_hasdetectreport) as totalHasdetectreport,/*有检测报告数量*/
+
+    0
+    from (<include refid="sumGroupByProduct" />) summedData
+  </select>
+
+  <sql id="sumGroupByProduct">
+
+    select
+    ${groupByColumns},
+    sum(cnt)  cnt,
+    sum(total_weight)  total_weight,
+
+    sum(total_wait_audit)  total_wait_audit,
+    sum(total_already_audit)  total_already_audit,
+    sum(total_checking_or_rechecking)  total_checking_or_rechecking,
+
+    sum(total_inital_checking)  total_inital_checking,
+    sum(total_rechecking)  total_rechecking,
+    sum(total_checked_or_rechecked)  total_checked_or_rechecked,
+    sum(total_checked_and_rechecking) total_checked_and_rechecking,
+    sum(total_inital_checked)  total_inital_checked,
+    sum(total_rechecked)  total_rechecked,
+    sum(total_successful_checked)  total_successful_checked,
+    sum(total_successful_inital_checked)  total_successful_inital_checked,
+    sum(total_successful_rechecked)  total_successful_rechecked,
+    sum(total_hascertifiy)  total_hascertifiy,
+    sum(total_hasdetectreport)  total_hasdetectreport,
+
+    sum(total_successful_inital_checked_and_rechecking) total_successful_inital_checked_and_rechecking,
+    sum(total_successful_rechecked_and_rechecking) total_successful_rechecked_and_rechecking,
+
+
+    sum(mom_cnt)  mom_cnt,
+    sum(mom_total_weight)  mom_total_weight,
+    sum(mom_total_wait_audit)  mom_total_wait_audit,
+    sum(mom_total_already_audit)  mom_total_already_audit,
+    sum(mom_total_checking_or_rechecking)  mom_total_checking_or_rechecking,
+    sum(mom_total_inital_checking)  mom_total_inital_checking,
+    sum(mom_total_rechecking)  mom_total_rechecking,
+    sum(mom_total_checked_or_rechecked)  mom_total_checked_or_rechecked,
+    sum(mom_total_inital_checked)  mom_total_inital_checked,
+    sum(mom_total_rechecked)  mom_total_rechecked,
+    sum(mom_total_successful_checked)  mom_total_successful_checked,
+    sum(mom_total_successful_inital_checked)  mom_total_successful_inital_checked,
+    sum(mom_total_successful_rechecked)  mom_total_successful_rechecked,
+    sum(mom_total_hascertifiy)  mom_total_hascertifiy,
+    sum(mom_total_hasdetectreport)  mom_total_hasdetectreport,
+
+    sum(yoy_cnt)  yoy_cnt,
+    sum(yoy_total_weight)  yoy_total_weight,
+    sum(yoy_total_wait_audit)  yoy_total_wait_audit,
+    sum(yoy_total_already_audit)  yoy_total_already_audit,
+    sum(yoy_total_checking_or_rechecking)  yoy_total_checking_or_rechecking,
+    sum(yoy_total_inital_checking)  yoy_total_inital_checking,
+    sum(yoy_total_rechecking)  yoy_total_rechecking,
+    sum(yoy_total_checked_or_rechecked)  yoy_total_checked_or_rechecked,
+    sum(yoy_total_inital_checked)  yoy_total_inital_checked,
+    sum(yoy_total_rechecked)  yoy_total_rechecked,
+    sum(yoy_total_successful_checked)  yoy_total_successful_checked,
+    sum(yoy_total_successful_inital_checked)  yoy_total_successful_inital_checked,
+    sum(yoy_total_successful_rechecked)  yoy_total_successful_rechecked,
+    sum(yoy_total_hascertifiy)  yoy_total_hascertifiy,
+    sum(yoy_total_hasdetectreport)  yoy_total_hasdetectreport
+
+    from (<include refid="groupByProduct" />)t
+    group by
+    ${groupByColumns}
+  </sql>
+
+  <sql id="groupByProduct">
+    select
+    ${groupByColumns},
+    0 cnt,
+    0.0 total_weight,
+
+    0 total_wait_audit,
+    0 total_already_audit,
+    0 total_checking_or_rechecking,
+
+    0 total_inital_checking,
+    0 total_rechecking,
+    0 total_checked_or_rechecked,
+    0 total_checked_and_rechecking,
+
+    0 total_inital_checked,
+    0 total_rechecked,
+    0 total_successful_checked,
+    0 total_successful_inital_checked,
+    0 total_successful_rechecked,
+    0 total_hascertifiy,
+    0 total_hasdetectreport,
+    0 total_successful_inital_checked_and_rechecking,
+    0 total_successful_rechecked_and_rechecking,
+
+    0 mom_cnt,
+    0.00 mom_total_weight ,
+    0 mom_total_wait_audit,
+    0 mom_total_already_audit,
+    0 mom_total_checking_or_rechecking,
+    0 mom_total_inital_checking,
+    0 mom_total_rechecking,
+    0 mom_total_checked_or_rechecked,
+    0 mom_total_inital_checked,
+    0 mom_total_rechecked,
+    0 mom_total_successful_checked,
+    0 mom_total_successful_inital_checked,
+    0 mom_total_successful_rechecked,
+    0 mom_total_hascertifiy,
+    0 mom_total_hasdetectreport,
+
+    0 yoy_cnt,
+    0.00 yoy_total_weight ,
+    0 yoy_total_wait_audit,
+    0 yoy_total_already_audit,
+    0 yoy_total_checking_or_rechecking,
+    0 yoy_total_inital_checking,
+    0 yoy_total_rechecking,
+    0 yoy_total_checked_or_rechecked,
+    0 yoy_total_inital_checked,
+    0 yoy_total_rechecked,
+    0 yoy_total_successful_checked,
+    0 yoy_total_successful_inital_checked,
+    0 yoy_total_successful_rechecked,
+    0 yoy_total_hascertifiy,
+    0 yoy_total_hasdetectreport
+
+    from
+    register_bill
+    where 0=1
+    union all
+    select
+    ${groupByColumns},
+    count(1) ,
+    sum(IFNULL(weight, 0)) ,
+
+    sum(case when state in(1) then 1 else 0 end) ,
+    sum(case when state in(7) then 1 else 0 end) ,
+    sum(case when state in(4, 5, 6) then 1 else 0 end)  as total_checking_or_rechecking,
+
+    sum(case when detect_state is null and state in(2, 4, 5) then 1 else 0 end) ,
+    sum(case when detect_state in(1, 2) and state in(2, 4, 5) then 1 else 0 end) ,
+    sum(case when detect_state IN (1,2,3,4) then 1 else 0 end) ,
+    sum(case when (detect_state IN (3,4))   or (detect_state in (2) and state in (4,5)) then 1 else 0 end) as total_checked_and_rechecking,
+
+    sum(case when detect_state in(1, 2) then 1 else 0 end) ,
+    sum(case when detect_state in(3, 4) then 1 else 0 end) ,
+    sum(case when detect_state in(1, 3) then 1 else 0 end) ,
+    sum(case when detect_state in(1) and state in (6) then 1 else 0 end) ,
+    sum(case when detect_state in(3) then 1 else 0 end) ,
+    sum(case when origin_certifiy_url is not null and origin_certifiy_url &lt;&gt; '' then 1 else 0 end) ,
+    sum(case when detect_report_url is not null and detect_report_url &lt;&gt; '' then 1 else 0 end) ,
+    sum(case when detect_state in(1) or ( detect_state in(2) and  state in(4, 5,6)  )then 1 else 0 end) as total_successful_inital_checked_and_rechecking,
+    sum(case when detect_state in(3) or ( detect_state in(4) and  state in(4, 5,6)  )then 1 else 0 end) as total_successful_rechecked_and_rechecking,
+
+    0 mom_cnt,
+    0.00  ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+
+    0 yoy_cnt,
+    0.00  ,
+
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0
+
+    from
+    register_bill
+    where
+    <include refid="groupByProductCondition" />
+    <if test="createdStart!=null">
+      AND #{createdStart}&lt;=DATE_FORMAT(created,'%Y-%m-%d')
+    </if>
+    <if test="createdEnd!=null">
+      AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{createdEnd}
+    </if>
+    group by
+    ${groupByColumns}
+    union all
+
+    select
+    ${groupByColumns},
+    0 cnt,
+    0.00  ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 as total_checked_and_rechecking,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+
+
+    count(1) mom_cnt ,
+    sum(IFNULL(weight, 0)) ,
+
+    sum(case when state in(1) then 1 else 0 end) ,
+    sum(case when state in(7) then 1 else 0 end) ,
+    sum(case when state in(4, 5, 6) then 1 else 0 end) ,
+
+    sum(case when detect_state is null and state in(2, 4, 5) then 1 else 0 end) ,
+    sum(case when detect_state in(1, 2) and state in(2, 4, 5) then 1 else 0 end) ,
+    sum(case when detect_state IN (1,2,3,4) then 1 else 0 end) ,
+
+    sum(case when detect_state in(1, 2) then 1 else 0 end) ,
+    sum(case when detect_state in(3, 4) then 1 else 0 end) ,
+    sum(case when detect_state in(1, 3) then 1 else 0 end) ,
+    sum(case when detect_state in(1) and state in (6) then 1 else 0 end) ,
+    sum(case when detect_state in(3) then 1 else 0 end) ,
+    sum(case when origin_certifiy_url is not null and origin_certifiy_url &lt;&gt; '' then 1 else 0 end) ,
+    sum(case when detect_report_url is not null and detect_report_url &lt;&gt; '' then 1 else 0 end) ,
+
+
+    0 yoy_cnt,
+    0.00  ,
+
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0
+
+
+
+    from
+    register_bill
+    where
+    <include refid="groupByProductCondition" />
+    <if test="momStart!=null and momEnd!=null">
+      AND #{momStart}&lt;=DATE_FORMAT(created,'%Y-%m-%d')
+      AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{momEnd}
+    </if>
+    <if test="momStart==null  or momEnd==null">
+      AND 0>id
+    </if>
+    group by
+    ${groupByColumns}
+    union all
+    select
+    ${groupByColumns},
+    0 cnt,
+    0.00  ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 as total_checked_and_rechecking,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+
+    0 mom_cnt ,
+    0.00  ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+    0 ,
+
+
+
+    count(1) yoy_cnt ,
+    sum(IFNULL(weight, 0)) ,
+
+    sum(case when state in(1) then 1 else 0 end) ,
+    sum(case when state in(7) then 1 else 0 end) ,
+    sum(case when state in(4, 5, 6) then 1 else 0 end) ,
+
+    sum(case when detect_state is null and state in(2, 4, 5) then 1 else 0 end) ,
+    sum(case when detect_state in(1, 2) and state in(2, 4, 5) then 1 else 0 end) ,
+    sum(case when detect_state IN (1,2,3,4) then 1 else 0 end) ,
+
+    sum(case when detect_state in(1, 2)  then 1 else 0 end) ,
+    sum(case when detect_state in(3, 4)  then 1 else 0 end) ,
+    sum(case when detect_state in(1, 3) then 1 else 0 end) ,
+    sum(case when detect_state in(1) and state in (6)  then 1 else 0 end) ,
+    sum(case when detect_state in(3) then 1 else 0 end) ,
+    sum(case when origin_certifiy_url is not null and origin_certifiy_url  &lt;&gt; '' then 1 else 0 end) ,
+    sum(case when detect_report_url is not null and detect_report_url &lt;&gt; '' then 1 else 0 end)
+
+
+
+    from
+    register_bill
+    where
+    <include refid="groupByProductCondition" />
+    <if test="yoyStart!=null  and yoyEnd!=null">
+      AND #{yoyStart}&lt;=DATE_FORMAT(created,'%Y-%m-%d')
+      AND  DATE_FORMAT(created,'%Y-%m-%d') &lt;=#{yoyEnd}
+    </if>
+    <if test="yoyStart==null  or yoyEnd==null">
+      AND 0>id
+    </if>
+    group by
+    ${groupByColumns}
+  </sql>
 </mapper>

@@ -6,7 +6,6 @@ import java.util.function.Function;
 
 import com.dili.sg.trace.api.input.QualityTraceTradeBillInputDto;
 import com.dili.sg.trace.api.output.QualityTraceTradeBillOutput;
-import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.QrCodeService;
 import com.dili.ss.domain.BaseOutput;

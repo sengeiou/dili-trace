@@ -6,8 +6,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.service.CodeGenerateService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import org.apache.commons.beanutils.BeanUtils;
@@ -22,9 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.dto.IDTO;
-import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.ECommerceBillPrintOutput;
-import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.sg.trace.glossary.BillDetectStateEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.SeperatePrintReport;
 import com.dili.sg.trace.dto.SeperatePrintReportOutputDto;
 import com.google.common.collect.Lists;
