@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sg.trace.domain.UserPlate;
-import com.dili.sg.trace.domain.UserTallyArea;
+import com.dili.trace.domain.UserTallyArea;
 import com.dili.sg.trace.service.UserPlateService;
-import com.dili.sg.trace.service.UserTallyAreaService;
+import com.dili.trace.service.UserTallyAreaService;
 
 import tk.mybatis.mapper.entity.Example;
 

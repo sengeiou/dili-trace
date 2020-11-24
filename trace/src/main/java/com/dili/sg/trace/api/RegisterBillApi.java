@@ -24,6 +24,7 @@ import com.dili.trace.dto.SeparateSalesRecordDTO;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.UserTallyAreaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -64,7 +65,7 @@ public class RegisterBillApi {
 	@Autowired
 	UserService userService;
 	@Autowired
-	UserTallyAreaService userTallyAreaService;
+    UserTallyAreaService userTallyAreaService;
 
 	/**
 	 * 保存多个登记单
