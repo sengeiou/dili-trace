@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.dili.sg.trace.service.*;
+import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UserService;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -31,7 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
-import com.dili.sg.trace.domain.DetectRecord;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.UsualAddress;
 import com.dili.sg.trace.dto.OperatorUser;

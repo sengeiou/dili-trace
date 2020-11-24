@@ -22,6 +22,7 @@ import com.dili.sg.trace.glossary.RegisterSourceEnum;
 import com.dili.sg.trace.service.RegisterBillService;
 import com.dili.sg.trace.service.SeparateSalesRecordService;
 import com.dili.sg.trace.service.UserService;
+import com.dili.trace.service.DetectRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;

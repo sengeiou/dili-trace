@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.trace.service.DetectTaskService;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,7 +44,6 @@ import com.dili.sg.trace.service.ApproverInfoService;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.CheckSheetDetailService;
 import com.dili.sg.trace.service.CheckSheetService;
-import com.dili.sg.trace.service.DetectTaskService;
 import com.dili.sg.trace.service.RegisterBillService;
 
 import io.swagger.annotations.Api;

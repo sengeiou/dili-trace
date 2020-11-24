@@ -1,37 +1,30 @@
-package com.dili.sg.trace.api;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.sg.common.annotation.InterceptConfiguration;
 import com.dili.sg.common.config.DefaultConfiguration;
 import com.dili.sg.trace.domain.RegisterBill;
-import com.dili.sg.trace.dto.DetectRecordParam;
 import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
 import com.dili.sg.trace.dto.TaskGetParam;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.sg.trace.glossary.RegisterSourceEnum;
 import com.dili.sg.trace.service.BillService;
-import com.dili.sg.trace.service.DetectRecordService;
-import com.dili.sg.trace.service.DetectTaskService;
 import com.dili.sg.trace.service.RegisterBillService;
 import com.dili.ss.domain.BaseOutput;
-
+import com.dili.trace.dto.DetectRecordParam;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.DetectTaskService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by laikui on 2019/7/26.
