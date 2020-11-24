@@ -1,9 +1,9 @@
-package com.dili.sg.trace.dto;
+package com.dili.trace.dto;
+
+import com.dili.trace.domain.SeparateSalesRecord;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import com.dili.sg.trace.domain.SeparateSalesRecord;
 
 /**
  * 由MyBatis Generator工具自动生成
