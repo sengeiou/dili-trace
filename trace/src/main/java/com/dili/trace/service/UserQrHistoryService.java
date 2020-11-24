@@ -1,19 +1,15 @@
 package com.dili.trace.service;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
-import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserQrHistory;
 import com.dili.trace.enums.BillVerifyStatusEnum;
@@ -112,7 +108,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 				userQrStatus = UserQrStatusEnum.YELLOW;
 				break;
 			default:
-				throw new TraceBusinessException("错误");
+				throw new TraceBizException("错误");
 		}
 		Integer qrStatus = userQrStatus.getCode();
 		User userItem = this.userService.get(userId);

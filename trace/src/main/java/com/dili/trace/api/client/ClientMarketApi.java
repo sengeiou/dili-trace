@@ -1,7 +1,7 @@
 package com.dili.trace.api.client;
 
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Market;
 import com.dili.trace.service.MarketService;
@@ -42,7 +42,7 @@ public class ClientMarketApi {
 		try {
 			List<Market> marketList = marketService.list(new Market());
 			return BaseOutput.success().setData(marketList);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error("查询市场列表出错", e);

@@ -5,7 +5,7 @@ import cn.hutool.http.Method;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.entity.SessionData;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.SystemPermissionCheckService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.RSAUtils;
@@ -91,7 +91,7 @@ public class ManageSystemComponent {
                 encryptByPublic = RSAUtils.encryptByPublicKey(JSON.toJSONString(loginMap).getBytes(), publicKeyBytes);
             } catch (Exception e) {
                 logger.error("uap登录接口参数加密错误!}");
-                throw new TraceBusinessException("登录失败：服务错误");
+                throw new TraceBizException("登录失败：服务错误");
             }
 
             //调用uap登录接口
@@ -113,12 +113,12 @@ public class ManageSystemComponent {
 
             Boolean success = loginDocumentContext.read("$.success");
             if (success == null) {
-                throw new TraceBusinessException("登录失败");
+                throw new TraceBizException("登录失败");
             }
 
             String msg = loginDocumentContext.read("$.message");
             if (!success) {
-                throw new TraceBusinessException(msg);
+                throw new TraceBizException(msg);
             }
 
             //获取返回数据中的data
@@ -132,19 +132,19 @@ public class ManageSystemComponent {
             //市场编码
             String marketCode = (String) uapUserInfo.get("firmCode");
             Firm firm = this.firmRpcService.getFirmByCode(marketCode)
-                    .orElseThrow(() -> new TraceBusinessException("当前登录用户所属市场不存在"));
+                    .orElseThrow(() -> new TraceBizException("当前登录用户所属市场不存在"));
 
             // 查询管理员用户小程序权限
             Set<String> userWeChatMenus = systemPermissionCheckService.getWeChatUserMenus(userId);
             if (!CollectionUtils.isEmpty(userWeChatMenus)) {
                 return SessionData.fromUser(new OperatorUser(userId, realName), identityTypeEnum.getCode(), firm, userWeChatMenus);
             } else {
-                throw new TraceBusinessException("权限不足");
+                throw new TraceBizException("权限不足");
             }
         } catch (Exception e) {
-            if (!(e instanceof TraceBusinessException)) {
+            if (!(e instanceof TraceBizException)) {
                 logger.error(e.getMessage(), e);
-                throw new TraceBusinessException("登录失败:网络错误");
+                throw new TraceBizException("登录失败:网络错误");
             } else {
                 throw e;
             }
@@ -173,7 +173,7 @@ public class ManageSystemComponent {
 
             return usersByResourceCodeList.getData();
         } catch (Exception e) {
-            throw (TraceBusinessException) e;
+            throw (TraceBizException) e;
         }
 
     }

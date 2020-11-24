@@ -1,7 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
@@ -1147,7 +1147,7 @@ public class HangGuoDataUtil {
             codeGenerate = codeGenerateList.get(0);
         }
         if (codeGenerate == null) {
-            throw new TraceBusinessException("生成编号错误");
+            throw new TraceBizException("生成编号错误");
         }
         String nextSegment = now.format(DateTimeFormatter.ofPattern(codeGenerate.getPattern()));
         if (!nextSegment.equals(codeGenerate.getSegment())) {

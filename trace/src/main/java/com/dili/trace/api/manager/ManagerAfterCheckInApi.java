@@ -3,10 +3,8 @@ package com.dili.trace.api.manager;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Resource;
-
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -16,7 +14,6 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
@@ -66,7 +63,7 @@ public class ManagerAfterCheckInApi {
                         return dto;
                     });
             return BaseOutput.success().setData(data);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -85,7 +82,7 @@ public class ManagerAfterCheckInApi {
             List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseAfterCheckin(query);
             return BaseOutput.success().setData(list);
 
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -115,7 +112,7 @@ public class ManagerAfterCheckInApi {
             input.setReason(inputDto.getReason());
             Long id = this.registerBillService.doVerifyAfterCheckIn(input.getBillId(), input.getVerifyStatus(), input.getReason(), Optional.ofNullable(operatorUser));
             return BaseOutput.success().setData(id);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

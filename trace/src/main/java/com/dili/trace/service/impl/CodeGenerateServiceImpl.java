@@ -5,18 +5,14 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.CodeGenerateMapper;
 import com.dili.trace.domain.CodeGenerate;
-import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.service.CodeGenerateService;
-import com.dili.trace.service.RegisterBillService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -62,7 +58,7 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(TRADE_REQUEST_CODE_TYPE).stream().findFirst()
 				.orElse(null);
 		if (codeGenerate == null) {
-			throw new TraceBusinessException("生成编号错误");
+			throw new TraceBizException("生成编号错误");
 		}
 
 		// 时间比较

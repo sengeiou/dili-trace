@@ -5,11 +5,10 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.UpStream;
 
 public class RegisterBillOutputDto extends RegisterBill {
 	/**
@@ -34,7 +33,7 @@ public class RegisterBillOutputDto extends RegisterBill {
 		try {
 			BeanUtils.copyProperties(dest, registerBill);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new TraceBusinessException("数据结构转换出错");
+			throw new TraceBizException("数据结构转换出错");
 		}
 		dest.setTradeDetailList(tradeDetailList);
 		return dest;

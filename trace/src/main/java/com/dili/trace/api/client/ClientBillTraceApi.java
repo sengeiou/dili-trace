@@ -2,11 +2,9 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -84,7 +82,7 @@ public class ClientBillTraceApi {
 //			BasePage<TradeRequest> page = this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(query,userId);
 			BasePage<TradeRequest> page = this.tradeRequestService.listPageForStatusOrder(query,userId);
 			return BaseOutput.success().setData(page);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -108,7 +106,7 @@ public class ClientBillTraceApi {
 					.viewBillTrace(inputDto.getTradeRequestId(), userId);
 			return BaseOutput.success().setData(traceDetailOutputDto);
 
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -131,7 +129,7 @@ public class ClientBillTraceApi {
 			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
 			List<TradeDetail> list = this.billTraceService.viewTradeDetailList(inputDto.getTradeRequestId(), userId);
 			return BaseOutput.success().setData(list);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

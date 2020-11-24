@@ -1,16 +1,13 @@
 package com.dili.trace.api.client;
 
-import javax.annotation.Resource;
-
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.TradeDetailQueryDto;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.SeparateSalesRecordService;
@@ -72,7 +69,7 @@ public class ClientTradeDetailApi {
 			BasePage<TradeDetail> page = this.tradeDetailService.listPageByExample(query);
 	
 			return BaseOutput.success().setData(page);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

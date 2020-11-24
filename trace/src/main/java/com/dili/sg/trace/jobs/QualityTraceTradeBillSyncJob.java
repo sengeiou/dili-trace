@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dili.sg.trace.domain.QualityTraceTradeBill;
 import com.dili.sg.trace.domain.QualityTraceTradeBillSyncPoint;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.service.OrderService;
 import com.dili.sg.trace.service.QualityTraceTradeBillService;
 import com.dili.sg.trace.service.QualityTraceTradeBillSyncPointService;

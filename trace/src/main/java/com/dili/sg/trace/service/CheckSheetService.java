@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.BillDetectStateEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import org.apache.commons.collections4.CollectionUtils;

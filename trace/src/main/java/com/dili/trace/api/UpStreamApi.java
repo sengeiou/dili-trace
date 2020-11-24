@@ -2,11 +2,9 @@ package com.dili.trace.api;
 
 import java.util.Arrays;
 
-import javax.annotation.Resource;
-
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.domain.UpStream;
@@ -61,7 +59,7 @@ public class UpStreamApi {
         try {
             BasePage<UpStream> data = this.upStreamService.listPageUpStream(user.getId(),query);
             return BaseOutput.success().setData(data);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -81,7 +79,7 @@ public class UpStreamApi {
         try {
             this.upStreamService.deleteUpstream(user.getId(), input.getId());
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -109,7 +107,7 @@ public class UpStreamApi {
             input.setUserIds(Arrays.asList(user.getId()));
             input.setSourceUserId(user.getId());
             return this.upStreamService.addUpstream(input,new OperatorUser(user.getId(),user.getName()),true);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -129,7 +127,7 @@ public class UpStreamApi {
         try {
             input.setUserIds(Arrays.asList(user.getId()));
             return this.upStreamService.updateUpstream(input,new OperatorUser(user.getId(),user.getName()));
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

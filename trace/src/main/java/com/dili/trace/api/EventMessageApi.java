@@ -2,7 +2,7 @@ package com.dili.trace.api;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -62,7 +62,7 @@ public class EventMessageApi {
         try {
             eventMessageService.readMessage(eventMessage, MessageStateEnum.READ);
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             LOGGER.error(e.getMessage(), e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class EventMessageApi {
             }
             BasePage<EventMessage> out = eventMessageService.listPageByExample(eventMessage);
             return BaseOutput.success().setData(out);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("quit", e);
@@ -135,7 +135,7 @@ public class EventMessageApi {
             map.put("list", out);
             map.put("pendReadCount", pendReadCount);
             return BaseOutput.success().setData(map);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("quit", e);
@@ -191,7 +191,7 @@ public class EventMessageApi {
             upSource.setReadFlag(MessageStateEnum.READ.getCode());
             eventMessageService.updateExactByExample(upSource, eventMessage);
             return BaseOutput.success().setData(new HashMap<>().put("isRead", 1));
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             LOGGER.error(e.getMessage(), e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

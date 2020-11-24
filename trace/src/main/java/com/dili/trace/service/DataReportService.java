@@ -4,7 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.trace.dao.RegisterBillMapper;
@@ -200,7 +200,7 @@ public class DataReportService {
             accessToken = this.refreshToken(true);
         }
         if (accessToken == null) {
-            throw new TraceBusinessException("请求上报数据出错:tocken为空");
+            throw new TraceBizException("请求上报数据出错:tocken为空");
         }
         Map<String, String> headeMap = Maps.newHashMap();
         headeMap.put("token", accessToken);
@@ -261,7 +261,7 @@ public class DataReportService {
             }
 
         } else {
-            throw new TraceBusinessException(baseout.getMessage());
+            throw new TraceBizException(baseout.getMessage());
         }
     }
 
@@ -283,7 +283,7 @@ public class DataReportService {
         try {
             data = reportDto.toJson();
         } catch (JsonProcessingException e) {
-            throw new TraceBusinessException("请求上报数据参数转换错误");
+            throw new TraceBizException("请求上报数据参数转换错误");
         }
 
         return this.postJson(url, Maps.newHashMap(), data, doc -> {
@@ -334,7 +334,7 @@ public class DataReportService {
             String data = reportDto.toJson();
             thirdPartyReportData.setData(data);
         } catch (JsonProcessingException e) {
-            throw new TraceBusinessException("请求上报数据参数转换错误");
+            throw new TraceBizException("请求上报数据参数转换错误");
         }
         String jsonBody = thirdPartyReportData.getData();
 
@@ -386,7 +386,7 @@ public class DataReportService {
             return parseFun.apply(loginDocumentContext);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new TraceBusinessException("请求上报数据接口出错");
+            throw new TraceBizException("请求上报数据接口出错");
         }
     }
 

@@ -17,7 +17,7 @@ import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.api.input.LoginInputDto;
 import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.domain.UserPlate;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.sg.trace.rpc.MessageRpc;
 import com.dili.sg.trace.service.SMSService;

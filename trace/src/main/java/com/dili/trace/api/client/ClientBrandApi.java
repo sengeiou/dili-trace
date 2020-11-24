@@ -2,11 +2,9 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.BrandInputDto;
@@ -65,7 +63,7 @@ public class ClientBrandApi {
 			}
 			List<BrandOutputDto>list=StreamEx.of(brandService.listByExample(inputDto)).map(BrandOutputDto::build).toList();
 			return BaseOutput.success().setData(list);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -106,7 +104,7 @@ public class ClientBrandApi {
 			}
 			this.brandService.createOrUpdateBrand(StringUtils.trimToNull(inputDto.getBrandName()), userId, query.getMarketId());
 			return BaseOutput.success();
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

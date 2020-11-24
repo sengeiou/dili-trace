@@ -1,7 +1,7 @@
 package com.dili.trace.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.SysConfig;
@@ -91,7 +91,7 @@ public class SysParamConfigController {
             queSysConfig.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
             List<SysConfig> list = sysConfigService.listByExample(queSysConfig);
             return list;
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             logger.error(e.getMessage());
             return null;
         } catch (Exception e) {
@@ -116,7 +116,7 @@ public class SysParamConfigController {
             }
             sysConfigService.updateSelective(query);
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             logger.error(e.getMessage());
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -141,7 +141,7 @@ public class SysParamConfigController {
             }
             sysConfigService.updateTraceReportLimitDay(query);
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             logger.error(e.getMessage());
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

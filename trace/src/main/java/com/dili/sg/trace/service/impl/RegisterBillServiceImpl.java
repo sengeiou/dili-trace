@@ -8,7 +8,7 @@ import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.SeparateSalesRecord;
 import com.dili.sg.trace.domain.UserPlate;
 import com.dili.sg.trace.dto.*;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
 import com.dili.sg.trace.service.*;
 import com.dili.ss.domain.BaseOutput;

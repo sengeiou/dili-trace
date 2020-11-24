@@ -27,7 +27,7 @@ import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.dto.CreateListBillParam;
 import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.sg.trace.dto.RegisterBillOutputDto;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.UserTypeEnum;

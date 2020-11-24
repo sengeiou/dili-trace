@@ -3,7 +3,7 @@ package com.dili.sg.trace.service;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.dto.RegisterBillDto;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;

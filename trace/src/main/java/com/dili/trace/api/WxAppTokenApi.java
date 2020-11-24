@@ -2,7 +2,7 @@ package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.AppletPhone;
 import com.dili.trace.domain.WxApp;
@@ -66,7 +66,7 @@ public class WxAppTokenApi {
             upconApp.setAppId(appId);
             wxAppService.updateByExample(upwxApp, upconApp);
             return BaseOutput.success().setData("初始化成功");
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             log.error("初始化小程序access_token失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class WxAppTokenApi {
             }
             WxApp wxapp = getWxAppByAppId(appId);
             return BaseOutput.success("查询成功").setData(wxapp.getAccessToken());
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             log.error("获取小程序access_token失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class WxAppTokenApi {
             }
             String session = wxAppService.getSessionKey(jsCode, appId);
             return BaseOutput.success("查询成功").setData(JSON.parse(session));
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             log.error("获取授权信息失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -152,7 +152,7 @@ public class WxAppTokenApi {
             String userinfo = wxAppService.getUserinfo(appId, openId, accessToken);
             ObjectMapper objectMapper = new ObjectMapper();
             return BaseOutput.success("查询成功").setData(objectMapper.readTree(userinfo));
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             log.error("获取用户信息", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -197,7 +197,7 @@ public class WxAppTokenApi {
             AppletPhone phone = JSON.parseObject(decryStr, new TypeReference<AppletPhone>() {
             });
             return BaseOutput.success().setData(phone);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             log.error("解密手机号码错误", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

@@ -1,21 +1,14 @@
 package com.dili.trace.service.impl;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Market;
-import com.dili.trace.service.FirmRpcService;
 import com.dili.trace.service.MarketService;
 import com.dili.trace.service.WebCtxService;
 import com.dili.uap.sdk.domain.Firm;
-import com.dili.uap.sdk.rpc.FirmRpc;
-import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 
 /**
@@ -30,7 +23,7 @@ public class MarketServiceImpl extends BaseServiceImpl<Market, Long> implements 
     @Override
     public Long getCurrentLoginMarketId() {
         return this.webCtxService.getCurrentFirm().map(Firm::getId).orElseThrow(() -> {
-            return new TraceBusinessException("当前登录用户所属市场不存在");
+            return new TraceBizException("当前登录用户所属市场不存在");
         });
 //        System.out.println(out);
 //        // 根据市场code查询市场id

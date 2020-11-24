@@ -5,8 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import com.alibaba.fastjson.JSON;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.output.TradeDetailBillOutput;
@@ -116,7 +115,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	public TradeDetail createTradeDetail(Long tradeRequestId, TradeDetail tradeDetailItem, BigDecimal tradeWeight,
 			Long sellerId, User buyer, TradeOrderTypeEnum tradeOrderTypeEnum) {
 		if (tradeDetailItem == null) {
-			throw new TraceBusinessException("数据不存在");
+			throw new TraceBizException("数据不存在");
 		}
 		RegisterBill billItem = this.registerBillService.get(tradeDetailItem.getBillId());
 
@@ -124,13 +123,13 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 				tradeDetailItem.getId(), tradeDetailItem.getStockWeight(), tradeWeight);
 
 		if (!tradeDetailItem.getBuyerId().equals(sellerId)) {
-			throw new TraceBusinessException("没有权限销售");
+			throw new TraceBizException("没有权限销售");
 		}
 		if (!SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetailItem.getSaleStatus())) {
-			throw new TraceBusinessException("当前状态不能销售");
+			throw new TraceBizException("当前状态不能销售");
 		}
 		if (tradeDetailItem.getStockWeight().compareTo(tradeWeight) < 0) {
-			throw new TraceBusinessException("库存不足不能销售");
+			throw new TraceBizException("库存不足不能销售");
 		}
 
 		// BigDecimal stockWeight =
@@ -181,7 +180,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 		BigDecimal stockWeight = tradeDetailItem.getStockWeight().subtract(tradeWeight);
 		Long batchStockId = this.batchStockService.findOrCreateBatchStock(sellerId, billItem).getId();
 		ProductStock sellerBatchStockItem = this.batchStockService.selectByIdForUpdate(batchStockId).orElseThrow(() -> {
-			return new TraceBusinessException("操作库存失败");
+			return new TraceBizException("操作库存失败");
 		});
 		TradeDetail sellerTradeDetail = new TradeDetail();
 
@@ -216,7 +215,7 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 			User buyer, Long tradeRequestId, TradeOrderTypeEnum tradeOrderTypeEnum) {
 		Long buyerBatchStockId = this.batchStockService.findOrCreateBatchStock(buyer.getId(), billItem).getId();
 		ProductStock buyerBatchStockItem = this.batchStockService.selectByIdForUpdate(buyerBatchStockId).orElseThrow(() -> {
-			return new TraceBusinessException("操作库存失败");
+			return new TraceBizException("操作库存失败");
 		});
 
 		Long buyerTradeDetailId = this.createTradeDetailByTrade(tradeDetailItem, buyer);

@@ -3,7 +3,7 @@ package com.dili.trace.api.client;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -89,7 +88,7 @@ public class ClientRegisterHeadApi {
 			}
 
 			return BaseOutput.success().setData(registerHeadBasePage);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -122,7 +121,7 @@ public class ClientRegisterHeadApi {
 			list.add(new VerifyStatusCountOutputDto(RegisgterHeadStatusEnum.DELETED.getCode(),deleteCount));
 			return BaseOutput.success().setData(list);
 
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -154,7 +153,7 @@ public class ClientRegisterHeadApi {
 			List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads,
 					userService.get(createListRegisterHeadParam.getUserId()), Optional.of(operatorUser), createListRegisterHeadParam.getMarketId());
 			return BaseOutput.success().setData(idList);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -184,7 +183,7 @@ public class ClientRegisterHeadApi {
 			RegisterHead registerHead = dto.build(user);
 			logger.info("修改进门主台账单:{}", JSON.toJSONString(registerHead));
 			this.registerHeadService.doEdit(registerHead, dto.getImageCertList(), Optional.ofNullable(operatorUser));
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -213,7 +212,7 @@ public class ClientRegisterHeadApi {
 			}
 			logger.info("作废进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
 			this.registerHeadService.doDelete(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -241,7 +240,7 @@ public class ClientRegisterHeadApi {
 			}
 			logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
 			this.registerHeadService.doUpdateActive(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -273,7 +272,7 @@ public class ClientRegisterHeadApi {
             List<RegisterBill> registerBills = registerBillService.listByExample(registerBill);
             registerHead.setRegisterBills(registerBills);
 			return BaseOutput.success().setData(registerHead);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error("查询进门主台账单数据出错", e);
@@ -323,7 +322,7 @@ public class ClientRegisterHeadApi {
 			}
 			registerHead.setRegisterBills(registerBills);
 			return BaseOutput.success().setData(registerHead);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error("查询分批详情出错", e);

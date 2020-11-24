@@ -3,7 +3,7 @@ package com.dili.trace.api.client;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -79,7 +79,7 @@ public class ClientRegisterBillApi {
 			List<Long> idList = this.registerBillService.createBillList(registerBills,
 					userService.get(operatorUser.getId()), Optional.empty());
 			return BaseOutput.success().setData(idList);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -110,7 +110,7 @@ public class ClientRegisterBillApi {
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存登记单:{}", JSON.toJSONString(registerBill));
 			this.registerBillService.doEdit(registerBill, dto.getImageCertList(), Optional.empty());
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -140,7 +140,7 @@ public class ClientRegisterBillApi {
 			}
 			logger.info("删除报备单:billId:{},userId:{}", dto.getBillId(), user.getId());
 			this.registerBillService.doDelete(dto.getBillId(), user.getId(), Optional.empty());
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -166,7 +166,7 @@ public class ClientRegisterBillApi {
 			input.setUserId(userId);
 			BasePage basePage = this.tradeDetailService.selectTradeDetailAndBill(input);
 			return BaseOutput.success().setData(basePage);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

@@ -1,6 +1,6 @@
 package com.dili.trace.api;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.input.TradeReportDto;
 import com.dili.trace.service.BillReportService;
@@ -45,7 +45,7 @@ public class TransactionReportApi {
             int limitDay = Integer.valueOf(daySize);
             List<TradeReportDto> resultList= billReportService.getUserBillReport(limitDay);
             return BaseOutput.success().setData(resultList);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -68,7 +68,7 @@ public class TransactionReportApi {
             int limitDay = Integer.valueOf(daySize);
             List<TradeReportDto> resultList= billReportService.getUserTradeReport(limitDay);
             return BaseOutput.success().setData(resultList);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

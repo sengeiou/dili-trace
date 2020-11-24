@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.UserPlateQueryDto;
@@ -51,7 +51,7 @@ public class ClientUserPlateApi {
             List<UserPlate> data = this.userPlateService.listByExample(condition);
 
             return BaseOutput.success().setData(data);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

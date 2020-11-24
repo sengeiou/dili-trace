@@ -4,7 +4,7 @@ package com.dili.trace.controller;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -161,7 +161,7 @@ public class CheckBillController {
             checkBillService.noPassInsert(checkOrder);
             checkBillService.insertOtherTable(checkOrder, checkOrder.getId());
             return BaseOutput.success("新增检测单成功").setData(checkOrder.getId());
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             LOGGER.error("新增检测单失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -186,7 +186,7 @@ public class CheckBillController {
             checkBillService.updateSelective(checkOrder);
             checkBillService.updateOtherTable(checkOrder);
             return BaseOutput.success("修改检测单成功");
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             LOGGER.error("修改检测单失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -254,7 +254,7 @@ public class CheckBillController {
                     checkOrderDataService.insertSelective(checkOrderData);
                 }
                 return BaseOutput.success("导入检测单成功");
-            } catch (TraceBusinessException e) {
+            } catch (TraceBizException e) {
                 LOGGER.error("导入检测单失败", e);
                 return BaseOutput.failure(e.getMessage());
             } catch (Exception e) {
@@ -281,7 +281,7 @@ public class CheckBillController {
                 return BaseOutput.successData(userFromThird);
             }
             return BaseOutput.failure("查询用户名失败");
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             LOGGER.error("查询用户名失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -309,7 +309,7 @@ public class CheckBillController {
                 return BaseOutput.successData(category.getName());
             }
             return BaseOutput.success("查询产品名称失败");
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             LOGGER.error("查询产品名称失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

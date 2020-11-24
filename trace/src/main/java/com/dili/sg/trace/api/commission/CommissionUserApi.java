@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sg.trace.domain.User;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.service.SMSService;
 
 /**

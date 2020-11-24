@@ -9,7 +9,7 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.PatternConstants;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.VerificationCodeUtil;
 import com.dili.ss.constant.ResultCode;
@@ -85,7 +85,7 @@ public class UserApi {
             user.setState(EnabledStateEnum.ENABLED.getCode());
             userService.register(user, true);
             return BaseOutput.success().setData(user.getId());
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("register", e);
@@ -117,7 +117,7 @@ public class UserApi {
             user.setValidateState(ValidateStateEnum.UNCERT.getCode());
             userService.updateUser(user);
             return BaseOutput.success().setData(user.getId());
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             // LOGGER.error("realNameCertificationReq",e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -222,14 +222,14 @@ public class UserApi {
                 return BaseOutput.failure("确认密码为空");
             }
             if (!user.getPassword().equals(user.getAckPassword())) {
-                throw new TraceBusinessException("密码与确认密码不同");
+                throw new TraceBizException("密码与确认密码不同");
             }
             user.setPassword(MD5Util.md5(user.getPassword()));
             user.setOldPassword(MD5Util.md5(user.getOldPassword()));
             user.setId(sessionContext.getAccountId());
             userService.changePassword(user);
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("changePassword", e);
@@ -256,7 +256,7 @@ public class UserApi {
             query.setPhone(user.getPhone());
             query.setYn(YnEnum.YES.getCode());
             User userItem = StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(() -> {
-                return new TraceBusinessException("手机号码不存在");
+                return new TraceBizException("手机号码不存在");
             });
 
 
@@ -271,7 +271,7 @@ public class UserApi {
             content.put("code", verificationCode);
             params.put("parameters", content);
             return this.smsService.sendRenewPasswordSMSCodeMsg(params, userItem.getPhone(), verificationCode);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("sendSmsCodeForResetPassword", e);
@@ -302,7 +302,7 @@ public class UserApi {
             }
             this.userService.renewPassword(user, user.getCheckCode());
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("changePassword", e);
@@ -323,7 +323,7 @@ public class UserApi {
         try {
             sessionContext.setInvalidate(true);
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("quit", e);
@@ -355,16 +355,16 @@ public class UserApi {
      */
     private void checkRegisterParams(User user) {
         if (StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 20) {
-            throw new TraceBusinessException("姓名为空或格式错误");
+            throw new TraceBizException("姓名为空或格式错误");
         }
         if (StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE, user.getPhone())) {
-            throw new TraceBusinessException("手机号为空或格式错误");
+            throw new TraceBizException("手机号为空或格式错误");
         }
         if (StrUtil.isBlank(user.getCheckCode())) {
-            throw new TraceBusinessException("验证码为空");
+            throw new TraceBizException("验证码为空");
         }
         if (StrUtil.isBlank(user.getPassword())) {
-            throw new TraceBusinessException("密码为空");
+            throw new TraceBizException("密码为空");
         }
 
     }
@@ -377,25 +377,25 @@ public class UserApi {
     private void checkRealNameCertificationParams(User user) {
         if (UserTypeEnum.USER.getCode() == user.getUserType()) {// 个人
             if (StrUtil.isBlank(user.getCardNo()) || !ReUtil.isMatch(PatternConstants.CARD_NO, user.getCardNo())) {
-                throw new TraceBusinessException("身份证为空或格式错误");
+                throw new TraceBizException("身份证为空或格式错误");
             }
             if (StrUtil.isBlank(user.getCardNoFrontUrl())) {
-                throw new TraceBusinessException("身份证正面照片未上传");
+                throw new TraceBizException("身份证正面照片未上传");
             }
             if (StrUtil.isBlank(user.getCardNoBackUrl())) {
-                throw new TraceBusinessException("身份证背面照片未上传");
+                throw new TraceBizException("身份证背面照片未上传");
             }
         } else {
             if (StrUtil.isBlank(user.getBusinessLicenseUrl())) {
-                throw new TraceBusinessException("营业执照照片未上传");
+                throw new TraceBizException("营业执照照片未上传");
             }
             if (StrUtil.isBlank(user.getLicense())) {
-                throw new TraceBusinessException("统一信用编码不能为空");
+                throw new TraceBizException("统一信用编码不能为空");
             }
         }
 
         if (StrUtil.isBlank(user.getPhone()) || !ReUtil.isMatch(PatternConstants.PHONE, user.getPhone())) {
-            throw new TraceBusinessException("手机号为空或格式错误");
+            throw new TraceBizException("手机号为空或格式错误");
         }
 
         // if(StrUtil.isBlank(user.getTallyAreaNos()) ||
@@ -403,10 +403,10 @@ public class UserApi {
         // throw new TraceBusinessException("理货区号为空或格式错误");
         // }
         if (Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")).size() > 15) {
-            throw new TraceBusinessException("用户最多添加15个摊位号");
+            throw new TraceBizException("用户最多添加15个摊位号");
         }
         if (StrUtil.isBlank(user.getName()) || user.getName().length() < 2 || user.getName().length() > 30) {
-            throw new TraceBusinessException("姓名为空或格式错误");
+            throw new TraceBizException("姓名为空或格式错误");
         }
 
     }
@@ -493,7 +493,7 @@ public class UserApi {
             Long userId = input.getUserId();
             UserQrOutput qrOutput = this.userService.getUserQrCode(userId);
             return BaseOutput.success().setData(qrOutput);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -538,7 +538,7 @@ public class UserApi {
             String defaultPassword = userService.wxRegister(user);
             userInfo.put("password", defaultPassword);
             return BaseOutput.success().setData(userInfo);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("register", e);
@@ -560,14 +560,14 @@ public class UserApi {
             String openid = wxInfo.get("openid");
             String user_id = wxInfo.get("user_id");
             if (StrUtil.isBlank(openid)) {
-                throw new TraceBusinessException("微信用户绑定未获取到openid");
+                throw new TraceBizException("微信用户绑定未获取到openid");
             }
             if (StrUtil.isBlank(user_id)) {
-                throw new TraceBusinessException("微信用户绑定未获取到用户id");
+                throw new TraceBizException("微信用户绑定未获取到用户id");
             }
             userService.userBindWeChat(openid, Long.valueOf(user_id));
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("微信用户绑定失败", e);
@@ -589,7 +589,7 @@ public class UserApi {
             User user = userService.get(Long.valueOf(user_id));
             Boolean needTip = checkNeedTip(user);
             return BaseOutput.success().setData(needTip);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("微信用户绑定查询失败", e);
@@ -618,7 +618,7 @@ public class UserApi {
                 isBind = true;
             }
             return BaseOutput.success().setData(isBind);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("微信用户绑定查询失败", e);
@@ -640,7 +640,7 @@ public class UserApi {
         try {
             userService.confirmBindWeChatTip(user_id);
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("wx用户绑定确认提示", e);

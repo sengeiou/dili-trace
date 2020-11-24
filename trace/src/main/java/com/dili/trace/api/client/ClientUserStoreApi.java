@@ -2,7 +2,7 @@ package com.dili.trace.api.client;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.UserStore;
 import com.dili.trace.service.UserService;
@@ -56,7 +56,7 @@ public class ClientUserStoreApi {
             }
             store=storeList.get(0);
             return BaseOutput.success("success").setData(store);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -103,7 +103,7 @@ public class ClientUserStoreApi {
                 }
             }
             return BaseOutput.success("success");
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

@@ -1,6 +1,6 @@
 package com.dili.trace.service.impl;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.util.SpringUtil;
 import com.dili.trace.dao.WxAppMapper;
@@ -33,14 +33,14 @@ public class IWxServiceImpl extends BaseServiceImpl<WxApp, Long> implements IWxA
         wxApp.setAppId(appId);
         wxApp = getActualDao().selectOne(wxApp);
         if (wxApp == null) {
-            throw new TraceBusinessException("appId在表中不存在");
+            throw new TraceBizException("appId在表中不存在");
         }
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + wxApp.getAppId()
                 + "&secret=" + wxApp.getAppSecret() + "&js_code=" + jsCode + "&grant_type=authorization_code";
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.getForObject(url, String.class);
         if (response == null) {
-            throw new TraceBusinessException("获取session key失败，未接收到响应结果");
+            throw new TraceBizException("获取session key失败，未接收到响应结果");
         }
         return response;
     }
@@ -52,7 +52,7 @@ public class IWxServiceImpl extends BaseServiceImpl<WxApp, Long> implements IWxA
         RestTemplate restTemplate = SpringUtil.getApplicationContext().getBean(RestTemplate.class);
         String response = restTemplate.getForObject(url, String.class);
         if (response == null) {
-            throw new TraceBusinessException("获取失败，未接收到响应结果");
+            throw new TraceBizException("获取失败，未接收到响应结果");
         }
         logger.info("user info response:{}", response);
         return response;

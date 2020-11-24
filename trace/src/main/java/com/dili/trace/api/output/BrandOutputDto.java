@@ -2,7 +2,7 @@ package com.dili.trace.api.output;
 
 import java.lang.reflect.InvocationTargetException;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.trace.domain.Brand;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -19,7 +19,7 @@ public class BrandOutputDto extends Brand {
         try {
             BeanUtils.copyProperties(dto, brand);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new TraceBusinessException("数据转换出错");
+            throw new TraceBizException("数据转换出错");
         }
 
         

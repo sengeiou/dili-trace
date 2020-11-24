@@ -1,43 +1,23 @@
 package com.dili.trace.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.domain.BasePage;
-import com.dili.ss.dto.DTO;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.CheckOutApiInput;
-import com.dili.trace.api.output.CheckInApiDetailOutput;
-import com.dili.trace.api.output.CheckInApiListOutput;
-import com.dili.trace.api.output.CheckoutApiDetailOutput;
-import com.dili.trace.api.output.CheckoutApiListQuery;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.enums.TradeTypeEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.util.BasePageUtil;
-import com.dili.trace.util.BeanMapUtil;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,23 +45,23 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	public List<CheckinOutRecord> doCheckout(OperatorUser operateUser, CheckOutApiInput checkOutApiInput) {
 		if (checkOutApiInput == null || checkOutApiInput.getTradeDetailIdList() == null
 				|| checkOutApiInput.getCheckoutStatus() == null) {
-			throw new TraceBusinessException("参数错误");
+			throw new TraceBizException("参数错误");
 		}
 		CheckoutStatusEnum checkoutStatusEnum = CheckoutStatusEnum.fromCode(checkOutApiInput.getCheckoutStatus());
 
 		if (checkoutStatusEnum == null) {
-			throw new TraceBusinessException("参数错误");
+			throw new TraceBizException("参数错误");
 		}
 		return StreamEx.of(checkOutApiInput.getTradeDetailIdList()).nonNull().map(id -> {
 			TradeDetail tradeDetailItem = this.tradeDetailService.get(id);
 			if (tradeDetailItem == null) {
-				throw new TraceBusinessException("请求出门的数据不存在");
+				throw new TraceBizException("请求出门的数据不存在");
 			}
 			if (SaleStatusEnum.FOR_SALE.equalsToCode(tradeDetailItem.getSaleStatus())
 					&& CheckoutStatusEnum.NONE.equalsToCode(tradeDetailItem.getCheckoutStatus())) {
 
 			} else {
-				throw new TraceBusinessException("请求出门的数据状态错误");
+				throw new TraceBizException("请求出门的数据状态错误");
 			}
 			return tradeDetailItem;
 
@@ -93,7 +73,7 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			TradeDetail tradeDetailItem = e.getKey();
 			RegisterBill registerBillItem = e.getValue();
 			User user = this.getUser(registerBillItem.getUserId())
-					.orElseThrow(() -> new TraceBusinessException("用户信息不存在"));
+					.orElseThrow(() -> new TraceBizException("用户信息不存在"));
 			CheckinOutRecord checkoutRecord = new CheckinOutRecord();
 			checkoutRecord.setStatus(checkoutStatusEnum.getCode());
 			checkoutRecord.setInout(CheckinOutTypeEnum.OUT.getCode());
@@ -139,11 +119,11 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	public List<CheckinOutRecord> doCheckin(Optional<OperatorUser> operateUser, List<Long> billIdList,
 			CheckinStatusEnum checkinStatusEnum) {
 		if (billIdList == null) {
-			throw new TraceBusinessException("参数错误");
+			throw new TraceBizException("参数错误");
 		}
 
 		if (checkinStatusEnum == null) {
-			throw new TraceBusinessException("参数错误");
+			throw new TraceBizException("参数错误");
 		}
 		return StreamEx.of(billIdList).nonNull().map(billId -> {
 			return this.registerBillService.get(billId);
@@ -163,10 +143,10 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 	 */
 	private CheckinOutRecord checkin(Long billId, CheckinStatusEnum checkinStatusEnum,
 			Optional<OperatorUser> operateUser) {
-		RegisterBill billItem =registerBillService.getAndCheckById(billId).orElseThrow(()->new TraceBusinessException("数据不存在"));
+		RegisterBill billItem =registerBillService.getAndCheckById(billId).orElseThrow(()->new TraceBizException("数据不存在"));
 
 		if (CheckinStatusEnum.NONE == checkinStatusEnum) {
-			throw new TraceBusinessException("参数错误");
+			throw new TraceBizException("参数错误");
 		}
 		if (CheckinStatusEnum.NOTALLOWED == checkinStatusEnum) {
 			return null;

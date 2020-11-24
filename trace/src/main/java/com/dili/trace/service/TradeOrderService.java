@@ -1,6 +1,6 @@
 package com.dili.trace.service;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.TradeOrder;
 import com.dili.trace.domain.User;
@@ -22,10 +22,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         User seller = this.userService.get(sellerId);
         User buyer = this.userService.get(buyerId);
         if(seller==null){
-            throw new TraceBusinessException("卖家不存在");
+            throw new TraceBizException("卖家不存在");
         }
         if(buyer==null){
-            throw new TraceBusinessException("买家不存在");
+            throw new TraceBizException("买家不存在");
         }
         return this.createTradeOrder(seller, buyer,orderType,TradeOrderStatusEnum.NONE);
 
@@ -34,10 +34,10 @@ public class TradeOrderService extends BaseServiceImpl<TradeOrder, Long> {
         User seller = this.userService.get(sellerId);
         User buyer = this.userService.get(buyerId);
         if(seller==null){
-            throw new TraceBusinessException("卖家不存在");
+            throw new TraceBizException("卖家不存在");
         }
         if(buyer==null){
-            throw new TraceBusinessException("买家不存在");
+            throw new TraceBizException("买家不存在");
         }
         return this.createTradeOrder(seller, buyer,orderType,tradeOrderStatusEnum);
 

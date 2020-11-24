@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CheckInApiInput;
@@ -79,14 +79,14 @@ public class ManagerCheckinOutRecordApi {
 			StreamEx.of(this.registerBillService.listByExample(query)).forEach(billItem -> {
 				if (!BillVerifyStatusEnum.PASSED.equalsToCode(billItem.getVerifyStatus())
 						&& !BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
-					throw new TraceBusinessException("当前状态不能进行进门操作");
+					throw new TraceBizException("当前状态不能进行进门操作");
 				}
 			});
 
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckin(Optional.ofNullable(operatorUser), billIdList, CheckinStatusEnum.ALLOWED);
 			return BaseOutput.success();
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -105,7 +105,7 @@ public class ManagerCheckinOutRecordApi {
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckout(new OperatorUser(sessionContext.getAccountId(), ""), input);
 			return BaseOutput.success();
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -126,7 +126,7 @@ public class ManagerCheckinOutRecordApi {
 			Long operatorUserId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
 			Map<Integer, Map<String,List<RegisterBill>>> resultMap = this.registerBillService.listPageCheckInData(query);
 			return BaseOutput.success().setData(resultMap);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

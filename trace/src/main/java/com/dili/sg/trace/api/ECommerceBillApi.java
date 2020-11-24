@@ -13,7 +13,7 @@ import com.dili.sg.trace.dto.ECommerceBillInputDto;
 import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.sg.trace.dto.RegisterBillOutputDto;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.ECommerceBillService;

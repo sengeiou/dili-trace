@@ -13,7 +13,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.sg.trace.domain.ApproverInfo;
 import com.dili.sg.trace.domain.Base64Signature;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.service.ApproverInfoService;
 import com.dili.sg.trace.service.Base64SignatureService;
 

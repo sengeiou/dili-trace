@@ -1,6 +1,6 @@
 package com.dili.trace.controller;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.CheckOrderDispose;
@@ -137,7 +137,7 @@ public class CheckOrderDisposeController {
                 imageCertService.insertSelective(imageCert);
             }
             return BaseOutput.success("新增不合格处置单成功").setData(checkOrderDispose.getId());
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             LOGGER.error("新增不合格处置单失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -166,7 +166,7 @@ public class CheckOrderDisposeController {
                 }
             }
             return BaseOutput.success("修改检测单成功");
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             LOGGER.error("修改检测单失败", e);
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {

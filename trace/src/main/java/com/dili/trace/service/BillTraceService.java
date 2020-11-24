@@ -3,9 +3,7 @@ package com.dili.trace.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.output.TraceDataDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
 import com.dili.trace.domain.ProductStock;
@@ -47,7 +45,7 @@ public class BillTraceService {
     public TraceDetailOutputDto viewBillTrace(Long tradeRequestid, Long userId) {
         TradeRequest tradeRequestItem = this.tradeRequestService.get(tradeRequestid);
         if (tradeRequestItem == null) {
-            throw new TraceBusinessException("没有查找到详情");
+            throw new TraceBizException("没有查找到详情");
         }
 
         TraceDetailOutputDto traceDetailOutputDto = new TraceDetailOutputDto();
@@ -137,7 +135,7 @@ public class BillTraceService {
             traceDetailOutputDto.setUpTraceList(upTraceList);
             traceDetailOutputDto.setDownTraceList(downTraceList);
         } else {
-            throw new TraceBusinessException("没有查询到数据");
+            throw new TraceBizException("没有查询到数据");
         }
         ProductStock batchStockItem = this.batchStockService.get(tradeRequestItem.getProductStockId());
         traceDetailOutputDto.setBrandName(batchStockItem.getBrandName());
@@ -158,7 +156,7 @@ public class BillTraceService {
 
         TradeRequest tradeRequestItem = this.tradeRequestService.get(tradeRequestId);
         if (tradeRequestItem == null) {
-            throw new TraceBusinessException("没有查找到详情");
+            throw new TraceBizException("没有查找到详情");
         }
         List<TradeDetail> list =Lists.newArrayList();
         if (tradeRequestItem.getBuyerId().equals(userId)) {
@@ -184,7 +182,7 @@ public class BillTraceService {
             list.addAll(buyerTradeDetailList); ;
            
         } else {
-            throw new TraceBusinessException("没有查询到数据");
+            throw new TraceBizException("没有查询到数据");
         }
         
         TradeDetail tradeDetail = new TradeDetail();

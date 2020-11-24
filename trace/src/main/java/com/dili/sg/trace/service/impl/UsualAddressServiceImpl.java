@@ -9,7 +9,7 @@ import com.dili.assets.sdk.dto.CityDto;
 import com.dili.sg.trace.service.CityService;
 import com.dili.sg.trace.dao.UsualAddressMapper;
 import com.dili.sg.trace.domain.UsualAddress;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
 import com.dili.sg.trace.service.UsualAddressService;
 import org.springframework.stereotype.Service;

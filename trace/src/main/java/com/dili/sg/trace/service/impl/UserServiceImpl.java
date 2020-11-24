@@ -18,7 +18,7 @@ import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.domain.UserPlate;
 import com.dili.sg.trace.domain.UserTallyArea;
 import com.dili.sg.trace.dto.UserListDto;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.EnabledStateEnum;
 import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.sg.trace.glossary.UsualAddressTypeEnum;

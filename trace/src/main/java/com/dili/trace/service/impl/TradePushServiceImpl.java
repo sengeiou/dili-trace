@@ -1,10 +1,9 @@
 package com.dili.trace.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.*;
-import com.dili.trace.dto.TradePushInputDto;
 import com.dili.trace.enums.PushTypeEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
@@ -44,16 +43,16 @@ public class TradePushServiceImpl extends BaseServiceImpl<TradePushLog, Long> im
         TradeDetail tradeDetail = tradeDetailService.get(tradePushLog.getTradeDetailId());
         ProductStock productStock = productStockService.selectByIdForUpdate(tradeDetail.getProductStockId())
                 .orElseThrow(() -> {
-                    return new TraceBusinessException("操作库存失败");
+                    return new TraceBizException("操作库存失败");
                 });;
         // 下架
         if(tradePushLog.getLogType().equals(PushTypeEnum.DOWN.getCode())) {
             if(pushAwayWeight.compareTo(BigDecimal.ZERO) <= 0)
             {
-                throw new TraceBusinessException("下架数量必须大于0");
+                throw new TraceBizException("下架数量必须大于0");
             }
             if (pushAwayWeight.compareTo(tradeDetail.getStockWeight()) > 0) {
-                throw new TraceBusinessException("下架数量不能大于在售数量");
+                throw new TraceBizException("下架数量不能大于在售数量");
             }
         }
 
@@ -62,11 +61,11 @@ public class TradePushServiceImpl extends BaseServiceImpl<TradePushLog, Long> im
         {
             if(pushAwayWeight.compareTo(BigDecimal.ZERO) <= 0)
             {
-                throw new TraceBusinessException("上架数量必须大于0");
+                throw new TraceBizException("上架数量必须大于0");
             }
             if(pushAwayWeight.compareTo(tradeDetail.getPushawayWeight()) > 0)
             {
-                throw new TraceBusinessException("上架数量不能大于已下架数量");
+                throw new TraceBizException("上架数量不能大于已下架数量");
             }
             pushAwayWeight = pushAwayWeight.negate();
         }

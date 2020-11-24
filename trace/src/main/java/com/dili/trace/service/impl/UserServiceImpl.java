@@ -5,7 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.beust.jcommander.internal.Lists;
 import com.dili.common.config.DefaultConfiguration;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.SessionRedisService;
 import com.dili.common.util.MD5Util;
 import com.dili.ss.base.BaseServiceImpl;
@@ -28,7 +28,6 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.*;
 import com.dili.trace.service.*;
-import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.QRCodeUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.pagehelper.Page;
@@ -110,7 +109,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         // 验证手机号是否已注册
         if (existsAccount(user.getPhone())) {
-            throw new TraceBusinessException("手机号已注册");
+            throw new TraceBizException("手机号已注册");
             // return;
         }
 
@@ -195,7 +194,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             if (CollectionUtils.isNotEmpty(users)) {
                 users.forEach(o -> {
                     if (!o.getId().equals(user.getId()) && o.getPhone().equals(user.getPhone())) {
-                        throw new TraceBusinessException("手机号已注册");
+                        throw new TraceBizException("手机号已注册");
                     }
                 });
             }
@@ -210,7 +209,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             if (CollectionUtils.isNotEmpty(users)) {
                 users.forEach(o -> {
                     if (!o.getId().equals(user.getId()) && o.getCardNo().equals(user.getCardNo())) {
-                        throw new TraceBusinessException("身份证号已注册");
+                        throw new TraceBizException("身份证号已注册");
                     }
                 });
             }
@@ -218,7 +217,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         User userPO = get(user.getId());
         if (!YnEnum.YES.getCode().equals(userPO.getYn())) {
-            throw new TraceBusinessException("数据已被删除");
+            throw new TraceBizException("数据已被删除");
         }
 
         // LOGGER.info("输入车牌:{}",user.getPlates());
@@ -229,7 +228,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 return !p.getUserId().equals(userPO.getId());
             }).findFirst().orElse(null);
             if (up != null) {
-                throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
+                throw new TraceBizException("车牌[" + up.getPlate() + "]已被其他用户使用");
             }
         }
         if (StringUtils.isBlank(user.getMarketName())) {
@@ -312,13 +311,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setYn(YnEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
-            throw new TraceBusinessException("手机号未注册");
+            throw new TraceBizException("手机号未注册");
         }
         if (EnabledStateEnum.DISABLED.getCode().equals(po.getState())) {
-            throw new TraceBusinessException("手机号已禁用");
+            throw new TraceBizException("手机号已禁用");
         }
         if (!po.getPassword().equals(encryptedPassword)) {
-            throw new TraceBusinessException("密码错误");
+            throw new TraceBizException("密码错误");
         }
         return po;
     }
@@ -331,7 +330,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setYn(YnEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
-            throw new TraceBusinessException("用户不存在");
+            throw new TraceBizException("用户不存在");
         }
         User condition = DTOUtils.newDTO(User.class);
         condition.setId(po.getId());
@@ -340,7 +339,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         po.setVersion(po.getVersion() + 1);
         int i = updateSelectiveByExample(po, condition);
         if (i != 1) {
-            throw new TraceBusinessException("数据已变更,请稍后重试");
+            throw new TraceBizException("数据已变更,请稍后重试");
         }
     }
 
@@ -353,7 +352,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setYn(YnEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
-            throw new TraceBusinessException("用户不存在");
+            throw new TraceBizException("用户不存在");
         }
         User condition = DTOUtils.newDTO(User.class);
         condition.setId(po.getId());
@@ -362,7 +361,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         po.setVersion(po.getVersion() + 1);
         int i = updateSelectiveByExample(po, condition);
         if (i != 1) {
-            throw new TraceBusinessException("数据已变更,请稍后重试");
+            throw new TraceBizException("数据已变更,请稍后重试");
         }
     }
 
@@ -371,10 +370,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public void changePassword(User user) {
         User po = get(user.getId());
         if (po == null) {
-            throw new TraceBusinessException("用户不存在");
+            throw new TraceBizException("用户不存在");
         }
         if (!po.getPassword().equals(user.getOldPassword())) {
-            throw new TraceBusinessException("原密码错误");
+            throw new TraceBizException("原密码错误");
         }
         User condition = DTOUtils.newDTO(User.class);
         condition.setId(po.getId());
@@ -383,7 +382,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         po.setVersion(po.getVersion() + 1);
         int i = updateSelectiveByExample(po, condition);
         if (i != 1) {
-            throw new TraceBusinessException("数据已变更,请稍后重试");
+            throw new TraceBizException("数据已变更,请稍后重试");
         }
     }
 
@@ -614,7 +613,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public UserQrOutput getUserQrCode(Long userId) throws Exception {
         User userItem = this.get(userId);
         if (userItem == null) {
-            throw new TraceBusinessException("数据不存在");
+            throw new TraceBizException("数据不存在");
         }
         String content = this.baseWebPath + "/user?userId=" + userId;
 
@@ -648,10 +647,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         query.setYn(YnEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
-            throw new TraceBusinessException("用户未注册");
+            throw new TraceBizException("用户未注册");
         }
         if (EnabledStateEnum.DISABLED.getCode().equals(po.getState())) {
-            throw new TraceBusinessException("手机号已禁用");
+            throw new TraceBizException("手机号已禁用");
         }
         return po;
     }
@@ -661,11 +660,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public String wxRegister(User user) throws JsonProcessingException {
         // 验证手机号是否已注册
         if (existsAccount(user.getPhone())) {
-            throw new TraceBusinessException("手机号已注册");
+            throw new TraceBizException("手机号已注册");
         }
         //验证openid是否已注册
         if (existsOpenId(user.getOpenId())) {
-            throw new TraceBusinessException("微信已绑定用户");
+            throw new TraceBizException("微信已绑定用户");
         }
         user.setPassword(MD5Util.md5(this.defaultConfiguration.getPassword()));
         user.setCardNo("");
@@ -690,11 +689,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         User query = DTOUtils.newDTO(User.class);
         query.setOpenId(openid);
         if (null != getActualDao().selectOne(query)) {
-            throw new TraceBusinessException("微信已绑定用户");
+            throw new TraceBizException("微信已绑定用户");
         }
         User user = get(user_id);
         if (null != user && StringUtils.isNotBlank(user.getOpenId())) {
-            throw new TraceBusinessException("用户已绑定微信");
+            throw new TraceBizException("用户已绑定微信");
         }
         user.setOpenId(openid);
         update(user);
@@ -720,7 +719,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     private boolean existsOpenId(String openid) {
         if (StringUtils.isBlank(openid)) {
-            throw new TraceBusinessException("注册用户openid为空");
+            throw new TraceBizException("注册用户openid为空");
         }
         User openuser = DTOUtils.newDTO(User.class);
         openuser.setOpenId(openid);

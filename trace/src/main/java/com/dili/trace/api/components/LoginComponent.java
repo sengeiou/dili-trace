@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dili.common.entity.SessionData;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.SessionRedisService;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.UUIDUtil;
@@ -57,13 +57,13 @@ public class LoginComponent {
 	public SessionData login(LoginInputDto loginInput) {
 
 		if (loginInput == null || loginInput.getLoginIdentityType() == null) {
-			throw new TraceBusinessException("参数错误");
+			throw new TraceBizException("参数错误");
 		}
 		if (StrUtil.isAllBlank(loginInput.getUsername())) {
-			throw new TraceBusinessException("帐号/手机号不能为空");
+			throw new TraceBizException("帐号/手机号不能为空");
 		}
 		if (StrUtil.isBlank(loginInput.getPassword())) {
-			throw new TraceBusinessException("密码不能为空");
+			throw new TraceBizException("密码不能为空");
 		}
 		SessionData sessionData = LoginIdentityTypeEnum.fromCode(loginInput.getLoginIdentityType())
 				.map(identityType -> {
@@ -85,7 +85,7 @@ public class LoginComponent {
 					}
 				}).filter(Objects::nonNull).orElse(null);
 		if (sessionData == null) {
-			throw new TraceBusinessException("登录参数出错");
+			throw new TraceBizException("登录参数出错");
 		}
 		sessionData.setSessionId(UUIDUtil.get());
 		logger.info("sessionid:{}",sessionData.getSessionId());
@@ -208,12 +208,12 @@ public class LoginComponent {
 
 			Boolean success = loginDocumentContext.read("$.success");
 			if (success == null) {
-				throw new TraceBusinessException("登录失败");
+				throw new TraceBizException("登录失败");
 			}
 
 			String msg = loginDocumentContext.read("$.msg");
 			if (!success) {
-				throw new TraceBusinessException(msg);
+				throw new TraceBizException(msg);
 			}
 
 			Long depId = loginDocumentContext.read("$.depId", Long.class);
@@ -237,13 +237,13 @@ public class LoginComponent {
 			if ("200".equals(code)) {
 				return new OperatorUser(userId, realName);
 			} else {
-				throw new TraceBusinessException("权限不足");
+				throw new TraceBizException("权限不足");
 			}
 
 		} catch (Exception e) {
-			if (!(e instanceof TraceBusinessException)) {
+			if (!(e instanceof TraceBizException)) {
 				logger.error(e.getMessage(), e);
-				throw new TraceBusinessException("登录失败:网络错误");
+				throw new TraceBizException("登录失败:网络错误");
 			} else {
 				throw e;
 			}

@@ -1,7 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.bpmc.sdk.rpc.EventRpc;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.AppException;
@@ -181,7 +181,7 @@ public class RegisterBillController {
                 Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
                         Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
 
-            } catch (TraceBusinessException e) {
+            } catch (TraceBizException e) {
                 return BaseOutput.failure(e.getMessage());
 
             } catch (Exception e) {

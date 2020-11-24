@@ -1,4 +1,4 @@
-package com.dili.sg.trace.exception;
+package com.dili.common.exception;
 
 public class TraceBizException extends RuntimeException{
 

@@ -3,7 +3,7 @@ package com.dili.trace.api.client;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -80,7 +80,7 @@ public class ClientRegisterFormBillApi {
 			input.setOrder("desc");
 			BasePage<RegisterBill> basePage = this.registerBillService.listPageApi(input);
 			return BaseOutput.success().setData(basePage);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -114,7 +114,7 @@ public class ClientRegisterFormBillApi {
 					userService.get(createListBillParam.getUserId()), Optional.of(operatorUser), createListBillParam.getMarketId());
 			List<String> codeList = StreamEx.of(billList).nonNull().map(RegisterBill::getCode).toList();
 			return BaseOutput.success().setData(codeList);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -143,7 +143,7 @@ public class ClientRegisterFormBillApi {
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存进门登记单:{}", JSON.toJSONString(registerBill));
 			this.registerBillService.doEditFormBill(registerBill, dto.getImageCertList(), Optional.ofNullable(operatorUser));
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -171,7 +171,7 @@ public class ClientRegisterFormBillApi {
 			}
 			logger.info("作废进门登记单:billId:{},userId:{}", dto.getBillId(), operatorUser.getId());
 			this.registerBillService.doDelete(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -203,7 +203,7 @@ public class ClientRegisterFormBillApi {
 			input.setReason(inputDto.getReason());
 			Long id = this.registerBillService.doVerifyFormCheckIn(input,Optional.ofNullable(operatorUser));
 			return BaseOutput.success().setData(id);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -243,7 +243,7 @@ public class ClientRegisterFormBillApi {
 				registerBill.setRemainWeight(registerHead.getRemainWeight());
 			}
 			return BaseOutput.success().setData(registerBill);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error("查询进门主台账单数据出错", e);
@@ -264,7 +264,7 @@ public class ClientRegisterFormBillApi {
 			}
 			List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseFormBill(query);
 			return BaseOutput.success().setData(list);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

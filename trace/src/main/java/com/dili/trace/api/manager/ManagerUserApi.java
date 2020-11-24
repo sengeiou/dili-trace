@@ -1,7 +1,7 @@
 package com.dili.trace.api.manager;
 
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -48,7 +47,7 @@ public class ManagerUserApi {
         try {
             sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
             return userService.countGroupByValidateState(user);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -69,7 +68,7 @@ public class ManagerUserApi {
             sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
             BasePage<UserOutput> data = userService.pageUserByQuery(user);
             return BaseOutput.success().setData(data);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -94,7 +93,7 @@ public class ManagerUserApi {
             data.setPassword(null);
             return BaseOutput.success().setData(data);
 
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -113,7 +112,7 @@ public class ManagerUserApi {
         try {
             OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
             return userService.verifyUserCert(input, operatorUser);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

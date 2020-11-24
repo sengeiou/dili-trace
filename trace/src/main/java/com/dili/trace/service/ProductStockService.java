@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.ProductStockMapper;
 import com.dili.trace.domain.ProductStock;
@@ -72,7 +72,7 @@ public class ProductStockService extends BaseServiceImpl<ProductStock, Long> {
                 this.insertSelective(batchStock);
                 return batchStock;
             }).orElseThrow(() -> {
-                return new TraceBusinessException("创建库存失败");
+                return new TraceBizException("创建库存失败");
             });
 
         });

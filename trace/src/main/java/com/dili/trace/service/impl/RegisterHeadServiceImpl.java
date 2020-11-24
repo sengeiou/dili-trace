@@ -1,7 +1,7 @@
 package com.dili.trace.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BizNumberFunction;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
@@ -64,7 +64,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, User user,
                                              Optional<OperatorUser> operatorUser, Long marketId) {
         if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
-            throw new TraceBusinessException("用户未审核通过不能创建报备单");
+            throw new TraceBizException("用户未审核通过不能创建报备单");
         }
 
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
@@ -111,7 +111,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         int result = super.saveOrUpdate(registerHead);
         if (result == 0) {
             logger.error("新增进门主台账单数据库执行失败" + JSON.toJSONString(registerHead));
-            throw new TraceBusinessException("创建失败");
+            throw new TraceBizException("创建失败");
         }
 
         // 保存图片
@@ -140,46 +140,46 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
      */
     private BaseOutput checkRegisterHead(RegisterHead registerHead) {
         if (!BillTypeEnum.fromCode(registerHead.getBillType()).isPresent()) {
-            throw new TraceBusinessException("单据类型错误");
+            throw new TraceBizException("单据类型错误");
         }
         if (registerHead.getUpStreamId() == null) {
-            throw new TraceBusinessException("上游企业不能为空");
+            throw new TraceBizException("上游企业不能为空");
         }
         if (StringUtils.isBlank(registerHead.getName())) {
             logger.error("业户姓名不能为空");
-            throw new TraceBusinessException("业户姓名不能为空");
+            throw new TraceBizException("业户姓名不能为空");
         }
         if (registerHead.getUserId() == null) {
             logger.error("业户ID不能为空");
-            throw new TraceBusinessException("业户ID不能为空");
+            throw new TraceBizException("业户ID不能为空");
         }
 
         if (StringUtils.isBlank(registerHead.getProductName()) || registerHead.getProductId() == null) {
             logger.error("商品名称不能为空");
-            throw new TraceBusinessException("商品名称不能为空");
+            throw new TraceBizException("商品名称不能为空");
         }
         if (StringUtils.isBlank(registerHead.getOriginName()) || registerHead.getOriginId() == null) {
             logger.error("商品产地不能为空");
-            throw new TraceBusinessException("商品产地不能为空");
+            throw new TraceBizException("商品产地不能为空");
         }
         if (registerHead.getPieceWeight() == null && registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode()) ) {
             logger.error("商品件重不能为空");
-            throw new TraceBusinessException("商品件重不能为空");
+            throw new TraceBizException("商品件重不能为空");
         }
         if (registerHead.getPieceNum() == null && registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode())) {
             logger.error("商品件数不能为空");
-            throw new TraceBusinessException("商品件数不能为空");
+            throw new TraceBizException("商品件数不能为空");
         }
         if (registerHead.getPieceNum() == null &&
                 registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode()) &&
                 BigDecimal.ZERO.compareTo(registerHead.getPieceWeight()) >= 0) {
 
             logger.error("商品件重不能小于0");
-            throw new TraceBusinessException("商品件重不能小于0");
+            throw new TraceBizException("商品件重不能小于0");
         }
         if (registerHead.getWeightUnit() == null) {
             logger.error("重量单位不能为空");
-            throw new TraceBusinessException("重量单位不能为空");
+            throw new TraceBizException("重量单位不能为空");
         }
          return BaseOutput.success();
     }
@@ -188,10 +188,10 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     @Override
     public Long doEdit(RegisterHead input, List<ImageCert> imageCertList, Optional<OperatorUser> operatorUser) {
         if (input == null || input.getId() == null) {
-            throw new TraceBusinessException("参数错误");
+            throw new TraceBizException("参数错误");
         }
         RegisterHead headItem = this.getAndCheckById(input.getId())
-                .orElseThrow(() -> new TraceBusinessException("数据不存在"));
+                .orElseThrow(() -> new TraceBizException("数据不存在"));
         // 车牌转大写
         String plate = StreamEx.ofNullable(input.getPlate()).filter(StringUtils::isNotBlank).map(p -> p.toUpperCase())
                 .findFirst().orElse(null);
@@ -230,7 +230,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             return Optional.empty();
         }
         if (TFEnum.TRUE.equalsCode(headItem.getIsDeleted())) {
-            throw new TraceBusinessException("进门主台账单已经被删除");
+            throw new TraceBizException("进门主台账单已经被删除");
         }
         return Optional.of(headItem);
     }
@@ -239,9 +239,9 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     @Override
     public Long doDelete(CreateRegisterHeadInputDto dto, Long userId, Optional<OperatorUser> operatorUser) {
         if (dto == null || userId == null) {
-            throw new TraceBusinessException("参数错误");
+            throw new TraceBizException("参数错误");
         }
-        RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+        RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBizException("数据不存在"));
         RegisterHead registerHead = new RegisterHead();
         registerHead.setId(headItem.getId());
         registerHead.setIsDeleted(dto.getIsDeleted());
@@ -258,9 +258,9 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     @Override
     public Long doUpdateActive(CreateRegisterHeadInputDto dto, Long userId, Optional<OperatorUser> operatorUser) {
         if (dto.getId() == null || userId == null) {
-            throw new TraceBusinessException("参数错误");
+            throw new TraceBizException("参数错误");
         }
-        RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBusinessException("数据不存在"));
+        RegisterHead headItem = this.getAndCheckById(dto.getId()).orElseThrow(() -> new TraceBizException("数据不存在"));
         RegisterHead registerHead = new RegisterHead();
         registerHead.setId(headItem.getId());
         registerHead.setActive(dto.getActive());

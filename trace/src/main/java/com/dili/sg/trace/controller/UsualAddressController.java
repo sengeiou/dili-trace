@@ -22,7 +22,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.sg.trace.domain.UsualAddress;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.UsualAddressTypeEnum;
 import com.dili.sg.trace.service.UserPlateService;
 import com.dili.sg.trace.service.UsualAddressService;

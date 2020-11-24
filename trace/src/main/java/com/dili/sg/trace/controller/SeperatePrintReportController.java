@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.dili.sg.trace.dto.SeperatePrintOutput;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.uap.sdk.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

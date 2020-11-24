@@ -2,7 +2,7 @@ package com.dili.trace.api;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -75,7 +75,7 @@ public class RegisterBillApi {
 
             return BaseOutput.success().setData(outputdto);
 
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -157,7 +157,7 @@ public class RegisterBillApi {
 
             return BaseOutput.success().setData(billNos);
 
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -180,7 +180,7 @@ public class RegisterBillApi {
             Category resCategory = categories.get(0);
             return getParentCategoryId(resCategory);
         } else {
-            throw new TraceBusinessException("商品码[" + goodsCode + "]不存在，请联系管理员检查商品主数据！");
+            throw new TraceBizException("商品码[" + goodsCode + "]不存在，请联系管理员检查商品主数据！");
         }
     }
 
@@ -225,7 +225,7 @@ public class RegisterBillApi {
             }
             recursionCode = parentCode;
         }
-        throw new TraceBusinessException("商品码[" + resCategory.getCode() + "]的三级商品不存在，请联系管理员检查商品主数据！");
+        throw new TraceBizException("商品码[" + resCategory.getCode() + "]的三级商品不存在，请联系管理员检查商品主数据！");
     }
 
 }

@@ -2,11 +2,9 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -70,7 +68,7 @@ public class ClientProductStockApi {
 			condition.setMinTradeDetailNum(1);
 			BasePage<ProductStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -95,7 +93,7 @@ public class ClientProductStockApi {
 			condition.setMinTradeDetailNum(1);
 			BasePage<ProductStock> page = this.batchStockService.listPageByExample(condition);
 			return BaseOutput.success().setData(page);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -126,7 +124,7 @@ public class ClientProductStockApi {
 			tradeDetailQuery.setProductStockId(inputDto.getProductStockId());
 			List<TradeDetail> tradeDetailList = this.tradeDetailService.listByExample(tradeDetailQuery);
 			return BaseOutput.success().setData(tradeDetailList);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

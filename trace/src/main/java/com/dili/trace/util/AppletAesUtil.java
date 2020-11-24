@@ -1,6 +1,6 @@
 package com.dili.trace.util;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class AppletAesUtil {
             }
         } catch (Exception e) {
             logger.error("decrypt error", e);
-            throw new TraceBusinessException("解密手机号码错误", e);
+            throw new TraceBizException("解密手机号码错误", e);
         }
         return decryStr;
     }

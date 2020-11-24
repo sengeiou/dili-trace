@@ -1,7 +1,7 @@
 package com.dili.trace.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
 
@@ -35,14 +35,14 @@ public abstract class SMSService {
 
         Object value = redisUtil.get(key);
         if (value == null) {
-            throw new TraceBusinessException("验证码已过期");
+            throw new TraceBizException("验证码已过期");
         }
         String verificationCodeTemp = String.valueOf(value);
         if (verificationCodeTemp.equals(verCode)) {
             redisUtil.remove(key);
             return true;
         } else {
-            throw new TraceBusinessException("验证码不正确");
+            throw new TraceBizException("验证码不正确");
         }
 
     }

@@ -3,7 +3,7 @@ package com.dili.trace.api;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.components.LoginComponent;
 import com.dili.trace.api.input.LoginInputDto;
@@ -46,7 +46,7 @@ public class LoginApi {
         try {
             SessionData data = this.loginComponent.login(loginInput);
             return BaseOutput.success().setData(data);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -86,7 +86,7 @@ public class LoginApi {
         try {
             loginSessionContext.setInvalidate(true);
             return BaseOutput.success();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error("quit", e);
@@ -114,7 +114,7 @@ public class LoginApi {
             }
             SessionData data = this.loginComponent.wxLogin(openid, Integer.valueOf(id));
             return BaseOutput.success().setData(data);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

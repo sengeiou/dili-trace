@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -18,7 +18,6 @@ import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.UserFlagEnum;
-import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -81,7 +80,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	public int deleteUpstream(Long userId, Long upstreamId) {
 
 		if (userId == null || upstreamId == null) {
-			throw new TraceBusinessException("参数错误");
+			throw new TraceBizException("参数错误");
 		}
 		RUserUpstream rUserUpstream = new RUserUpstream();
 		rUserUpstream.setUserId(userId);
@@ -123,7 +122,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			addUpstreamUsers(upStreamDto, operatorUser);
 		} catch (DuplicateKeyException e) {
 			if (noticeException != null && noticeException[0]){
-				throw new TraceBusinessException("已存在手机号:" + upStreamDto.getTelphone() + "的企业/个人");
+				throw new TraceBizException("已存在手机号:" + upStreamDto.getTelphone() + "的企业/个人");
 			}
 		}
 

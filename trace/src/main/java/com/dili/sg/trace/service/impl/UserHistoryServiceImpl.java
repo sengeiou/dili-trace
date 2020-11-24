@@ -22,7 +22,7 @@ import com.dili.sg.trace.domain.UserPlate;
 import com.dili.sg.trace.domain.UserTallyArea;
 import com.dili.sg.trace.dto.UserHistoryListDto;
 import com.dili.sg.trace.dto.UserHistoryStaticsDto;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.service.UserHistoryService;
 import com.dili.sg.trace.service.UserPlateService;
 import com.dili.sg.trace.service.UserService;

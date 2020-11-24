@@ -1,9 +1,8 @@
 package com.dili.trace.service;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterBillHistory;
@@ -39,7 +38,7 @@ public class RegisterBillHistoryService extends BaseServiceImpl<RegisterBillHist
             // historyBill.setModified(new Date());
             this.insertSelective(historyBill);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new TraceBusinessException("创建历史数据出错");
+            throw new TraceBizException("创建历史数据出错");
         }
         return historyBill;
     }

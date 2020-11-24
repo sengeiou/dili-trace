@@ -2,7 +2,7 @@ package com.dili.common.entity;
 
 import java.io.Serializable;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.dto.OperatorUser;
 
@@ -32,7 +32,7 @@ public class LoginSessionContext implements Serializable {
 				&& this.getSessionData().getUserId() != null) {
 			return new OperatorUser(this.getSessionData().getUserId(), this.getSessionData().getUserName());
 		}
-		throw new TraceBusinessException("你还未登录");
+		throw new TraceBizException("你还未登录");
 
 	}
 

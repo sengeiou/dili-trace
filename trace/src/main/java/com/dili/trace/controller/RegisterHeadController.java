@@ -1,30 +1,17 @@
 package com.dili.trace.controller;
 
-import com.dili.common.exception.TraceBusinessException;
-import com.dili.common.service.BaseInfoRpcService;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.PreserveTypeEnum;
-import com.dili.trace.enums.TruckTypeEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.UpStreamTypeEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
-import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
-import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import one.util.streamex.StreamEx;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +20,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 进门主台账单实现类
@@ -123,7 +108,7 @@ public class RegisterHeadController {
 				Long billId = registerHeadService.createRegisterHead(registerHead, new ArrayList<ImageCert>(),
 						Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
 
-			} catch (TraceBusinessException e) {
+			} catch (TraceBizException e) {
 				return BaseOutput.failure(e.getMessage());
 
 			} catch (Exception e) {

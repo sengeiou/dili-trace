@@ -1,6 +1,5 @@
 package com.dili.trace.controller;
 
-import com.dili.common.exception.TraceBusinessException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.Category;
@@ -8,11 +7,9 @@ import com.dili.trace.enums.CategoryIsShowEnum;
 import com.dili.trace.enums.CategoryTypeEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.service.CategoryService;
-import com.dili.trace.util.MarketUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

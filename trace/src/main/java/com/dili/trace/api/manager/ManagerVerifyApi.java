@@ -3,10 +3,8 @@ package com.dili.trace.api.manager;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Resource;
-
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -68,7 +66,7 @@ public class ManagerVerifyApi {
                         return dto;
                     });
             return BaseOutput.success().setData(data);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -88,7 +86,7 @@ public class ManagerVerifyApi {
             List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
             return BaseOutput.success().setData(list);
 
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -119,7 +117,7 @@ public class ManagerVerifyApi {
             input.setReason(inputDto.getReason());
             Long id = this.registerBillService.doVerifyBeforeCheckIn(input, Optional.ofNullable(operatorUser));
             return BaseOutput.success().setData(id);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

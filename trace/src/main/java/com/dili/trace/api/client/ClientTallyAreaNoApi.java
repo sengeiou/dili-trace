@@ -2,10 +2,9 @@ package com.dili.trace.api.client;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.trace.api.output.BrandOutputDto;
 import com.dili.trace.domain.TallyAreaNo;
 import com.dili.trace.service.TallyAreaNoService;
 import io.swagger.annotations.Api;
@@ -58,7 +57,7 @@ public class ClientTallyAreaNoApi {
 			List<TallyAreaNo> list = tallyAreaNoService.listByExample(inputDto);
 			List<TallyAreaNo> distinctTallyAreaNos = StreamEx.of(list).nonNull().distinct(TallyAreaNo::getArea).toList();
 			return BaseOutput.success().setData(distinctTallyAreaNos);
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

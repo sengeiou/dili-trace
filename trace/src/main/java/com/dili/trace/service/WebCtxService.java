@@ -1,6 +1,6 @@
 package com.dili.trace.service;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -14,7 +14,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * web请求上下文环境变量接口
@@ -38,7 +37,7 @@ public class WebCtxService {
             HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
             HttpServletResponse response = ((ServletRequestAttributes) requestAttributes).getResponse();
         } catch (Exception e) {
-            throw new TraceBusinessException("当前运行环境不是web请求环境");
+            throw new TraceBizException("当前运行环境不是web请求环境");
         }
         UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
         return Optional.ofNullable(userTicket);

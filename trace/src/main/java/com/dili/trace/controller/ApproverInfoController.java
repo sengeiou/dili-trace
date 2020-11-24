@@ -1,28 +1,22 @@
 package com.dili.trace.controller;
 
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.domain.ApproverInfo;
-import com.dili.trace.domain.User;
-import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.ApproverInfoQueryDto;
 import com.dili.trace.service.ApproverInfoService;
 import com.dili.trace.service.Base64SignatureService;
-import com.dili.trace.util.MaskUserInfo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -98,7 +92,7 @@ public class ApproverInfoController {
 			approverInfo.setUserId(0L);
 			this.approverInfoService.insertApproverInfo(approverInfo);
 			return BaseOutput.success("新增成功").setData(approverInfo.getId());
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			LOGGER.error("register", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {
@@ -120,7 +114,7 @@ public class ApproverInfoController {
 		try {
 			this.approverInfoService.updateApproverInfo(approverInfo);
 			return BaseOutput.success("修改成功").setData(approverInfo.getId());
-		} catch (TraceBusinessException e) {
+		} catch (TraceBizException e) {
 			LOGGER.error("修改用户", e);
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

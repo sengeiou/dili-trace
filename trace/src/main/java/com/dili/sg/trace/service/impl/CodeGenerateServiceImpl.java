@@ -15,7 +15,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.sg.trace.dao.CodeGenerateMapper;
 import com.dili.sg.trace.domain.CodeGenerate;
 import com.dili.sg.trace.domain.RegisterBill;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.sg.trace.glossary.CodeGenerateEnum;
 import com.dili.sg.trace.service.BillService;

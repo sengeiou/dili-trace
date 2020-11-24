@@ -1,11 +1,10 @@
 package com.dili.trace.api;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.RUserCategory;
@@ -25,8 +24,6 @@ import com.dili.trace.dto.CategoryListInput;
 import com.dili.trace.service.CategoryService;
 
 import io.swagger.annotations.ApiOperation;
-
-import javax.annotation.Resource;
 
 /**
  * 品类查询接口
@@ -73,7 +70,7 @@ public class CategoryApi {
         try {
             Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
             return rUserCategoryService.dealBatchAdd(input, id);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -90,7 +87,7 @@ public class CategoryApi {
             this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
             int rows = rUserCategoryService.delete(input);
             return rows > 0 ? BaseOutput.success() : BaseOutput.failure();
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -120,7 +117,7 @@ public class CategoryApi {
             rUserCategory.setOrder("desc");
             BasePage<RUserCategory> out = rUserCategoryService.listPageByExample(rUserCategory);
             return BaseOutput.success().setData(out);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             LOGGER.error("quit", e);

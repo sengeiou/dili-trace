@@ -1,6 +1,6 @@
 package com.dili.trace.util;
 
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,12 +27,12 @@ public class WxUserUtil {
         RestTemplate restTemplate = SpringbootUtil.getBean(RestTemplate.class);
         String response = restTemplate.getForObject(url, String.class);
         if (response == null) {
-            throw new TraceBusinessException("获取失败，未接收到响应结果。appId:[" + appId + "],code:[" + code + "]");
+            throw new TraceBizException("获取失败，未接收到响应结果。appId:[" + appId + "],code:[" + code + "]");
         }
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode resData = objectMapper.readTree(response);
         if (resData.has(ERRCODE)) {
-            throw new TraceBusinessException(resData.get("errmsg").asText() + "。 appId:[" + appId + "],code:[" + code + "]");
+            throw new TraceBizException(resData.get("errmsg").asText() + "。 appId:[" + appId + "],code:[" + code + "]");
         }
         Map<String, Object> map = new HashMap<>();
         map.put("access_token", resData.get("access_token").asText());
@@ -50,12 +50,12 @@ public class WxUserUtil {
         RestTemplate restTemplate = SpringbootUtil.getBean(RestTemplate.class);
         String response = restTemplate.getForObject(url, String.class);
         if (response == null) {
-            throw new TraceBusinessException("获取失败，未接收到响应结果");
+            throw new TraceBizException("获取失败，未接收到响应结果");
         }
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode resData = objectMapper.readTree(response);
         if (resData.has(ERRCODE)) {
-            throw new TraceBusinessException(resData.get("errmsg").asText());
+            throw new TraceBizException(resData.get("errmsg").asText());
         }
         return response;
     }
@@ -67,12 +67,12 @@ public class WxUserUtil {
         RestTemplate restTemplate = SpringbootUtil.getBean(RestTemplate.class);
         String response = restTemplate.getForObject(url, String.class);
         if (response == null) {
-            throw new TraceBusinessException("获取失败，未接收到响应结果");
+            throw new TraceBizException("获取失败，未接收到响应结果");
         }
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode resData = objectMapper.readTree(response);
         if (resData.has(ERRCODE)) {
-            throw new TraceBusinessException(resData.get("errmsg").asText());
+            throw new TraceBizException(resData.get("errmsg").asText());
         }
         return response;
     }

@@ -20,7 +20,7 @@ import com.dili.sg.common.util.MD5Util;
 import com.dili.sg.common.util.UUIDUtil;
 import com.dili.sg.trace.domain.User;
 import com.dili.sg.trace.dto.OperatorUser;
-import com.dili.sg.trace.exception.TraceBizException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.redis.SessionRedisService;
 import com.dili.sg.trace.service.UserService;
 import com.jayway.jsonpath.Configuration;

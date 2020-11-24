@@ -2,7 +2,7 @@ package com.dili.trace.api.client;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.exception.TraceBusinessException;
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -60,7 +60,7 @@ public class ClientRegisterBillHistoryApi {
             inputDto.setMetadata(IDTO.AND_CONDITION_EXPR, "verify_status <>" + BillVerifyStatusEnum.NONE.getCode());
             List<RegisterBillHistory> page = this.billHistoryService.listByExample(inputDto);
             return BaseOutput.success().setData(page);
-        } catch (TraceBusinessException e) {
+        } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
