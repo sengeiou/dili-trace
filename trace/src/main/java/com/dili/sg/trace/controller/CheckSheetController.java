@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.DetectTaskService;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,6 @@ import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.CheckSheetInputDto;
 import com.dili.sg.trace.dto.CheckSheetPrintOutput;
 import com.dili.sg.trace.dto.CheckSheetQueryDto;
-import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.glossary.BillDetectStateEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.trace.service.ApproverInfoService;
@@ -182,7 +182,7 @@ public class CheckSheetController {
 	public @ResponseBody BaseOutput<CheckSheetPrintOutput> insert(@RequestBody CheckSheetInputDto input) {
 		
 		try {
-			OperatorUser operatorUser=OperatorUser.build(SessionContext.getSessionContext());
+			OperatorUser operatorUser= OperatorUser.build(SessionContext.getSessionContext());
 			CheckSheetPrintOutput resultMapDto = this.checkSheetService.createCheckSheet(input,operatorUser);
 			return BaseOutput.success("新增成功").setData(resultMapDto);
 		} catch (TraceBizException e) {

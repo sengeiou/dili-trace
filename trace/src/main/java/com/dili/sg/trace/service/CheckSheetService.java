@@ -7,11 +7,11 @@ import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.CheckSheetAliasInputDto;
 import com.dili.sg.trace.dto.CheckSheetInputDto;
 import com.dili.sg.trace.dto.CheckSheetPrintOutput;
-import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.glossary.BillDetectStateEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.domain.ApproverInfo;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.ApproverInfoService;
 import com.dili.trace.service.Base64SignatureService;
 import com.dili.trace.service.DetectTaskService;
@@ -56,7 +56,7 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 	 * @return
 	 */
 	@Transactional
-	public CheckSheetPrintOutput createCheckSheet(CheckSheetInputDto input,OperatorUser operatorUser) {
+	public CheckSheetPrintOutput createCheckSheet(CheckSheetInputDto input, OperatorUser operatorUser) {
 
 		Triple<CheckSheet, List<CheckSheetDetail>, BillTypeEnum> triple = this.buildCheckSheet(input,operatorUser);
 		CheckSheet checkSheet = triple.getLeft();

@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.dili.common.entity.SessionData;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.dto.OperatorUser;
 
 public class TraceSessionContext implements Serializable {
 	private static final long serialVersionUID = -12145451L;

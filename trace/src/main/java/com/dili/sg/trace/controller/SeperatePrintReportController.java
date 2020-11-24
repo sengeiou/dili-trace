@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import com.dili.sg.trace.dto.SeperatePrintOutput;
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.uap.sdk.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.sg.trace.domain.SeperatePrintReport;
-import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.dto.SeperatePrintReportInputDto;
 import com.dili.sg.trace.dto.SeperatePrintReportOutputDto;
 import com.dili.trace.service.ApproverInfoService;

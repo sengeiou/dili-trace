@@ -1,9 +1,9 @@
 package com.dili.sg.trace.api;
 
 import com.dili.common.entity.SessionData;
-import com.dili.sg.trace.api.components.LoginComponent;
-import com.dili.sg.trace.api.input.LoginInputDto;
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.api.components.LoginComponent;
+import com.dili.trace.api.input.LoginInputDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

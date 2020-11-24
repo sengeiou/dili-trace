@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.dto.OperatorUser;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,6 @@ import com.dili.ss.dto.IDTO;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.SeparateSalesRecord;
 import com.dili.sg.trace.dto.ECommerceBillPrintOutput;
-import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.sg.trace.dto.RegisterBillOutputDto;
 import com.dili.sg.trace.glossary.BillDetectStateEnum;

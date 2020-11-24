@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -33,7 +34,6 @@ import com.dili.sg.trace.domain.SeperatePrintReport;
 import com.dili.sg.trace.domain.UsualAddress;
 import com.dili.sg.trace.dto.ECommerceBillInputDto;
 import com.dili.sg.trace.dto.ECommerceBillPrintOutput;
-import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.UsualAddressTypeEnum;

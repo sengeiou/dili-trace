@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import com.dili.sg.trace.service.*;
 import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.SeparateSalesRecordService;
 import com.dili.trace.service.UserService;
@@ -35,7 +36,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.UsualAddress;
-import com.dili.sg.trace.dto.OperatorUser;
 import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;

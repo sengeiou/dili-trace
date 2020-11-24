@@ -1,5 +1,9 @@
 package com.dili.trace.dto;
 
+import com.dili.common.exception.TraceBizException;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
+
 public class OperatorUser {
 	private Long id;
 	private String name;
@@ -7,6 +11,21 @@ public class OperatorUser {
 	public OperatorUser(Long id, String name) {
 		this.id = id;
 		this.name = name;
+	}
+	public static OperatorUser build(SessionContext sessionContext) {
+		if(sessionContext==null) {
+			throw new TraceBizException("请先登录");
+		}
+		try {
+			UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+			if (userTicket == null || userTicket.getId() == null) {
+				throw new TraceBizException("请先登录");
+			}
+		} catch (Exception e) {
+			throw new TraceBizException("请先登录");
+		}
+		UserTicket userTicket=sessionContext.getUserTicket();
+		return new OperatorUser(userTicket.getId(),userTicket.getRealName());
 	}
 
 	/**
