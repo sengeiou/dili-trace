@@ -10,6 +10,7 @@ import com.dili.sg.trace.service.BillService;
 import com.dili.sg.trace.service.QrCodeService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.service.QualityTraceTradeBillService;
 import org.apache.commons.collections4.CollectionUtils;

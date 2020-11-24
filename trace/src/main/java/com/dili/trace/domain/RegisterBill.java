@@ -241,6 +241,10 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`order_type`")
     private Integer orderType;
 
+    @ApiModelProperty(value = "1.分销 2.全销")
+    @Column(name = "`sales_type`")
+    private Integer salesType;
+
     @Transient
     private List<ImageCert> imageCerts;
 
@@ -261,6 +265,14 @@ public class RegisterBill extends BaseDomain {
 
     @Transient
     private String truckTypeName;
+
+    public Integer getSalesType() {
+        return salesType;
+    }
+
+    public void setSalesType(Integer salesType) {
+        this.salesType = salesType;
+    }
 
     /**
      * 以下字段为市场合并字段
