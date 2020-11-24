@@ -21,6 +21,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class BaseInfoRpcService {
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Optional<Department> queryDepartmentById(Long id) {
         if (id == null) {
             return Optional.empty();
@@ -30,6 +35,11 @@ public class BaseInfoRpcService {
 
     }
 
+    /**
+     *
+     * @param idList
+     * @return
+     */
     private List<Department> queryDepartmentByIdList(List<Long> idList) {
         //TODO
 /*

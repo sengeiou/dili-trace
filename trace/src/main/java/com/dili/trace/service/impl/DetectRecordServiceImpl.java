@@ -1,17 +1,16 @@
-package com.dili.sg.trace.service.impl;
+package com.dili.trace.service.impl;
 
-import java.util.List;
-
+import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.dao.DetectRecordMapper;
+import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.service.DetectRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.sg.trace.dao.DetectRecordMapper;
-import com.dili.sg.trace.domain.DetectRecord;
-import com.dili.sg.trace.service.DetectRecordService;
-import com.dili.sg.trace.service.RegisterBillService;
+import java.util.List;
 
 /**
  * 由MyBatis Generator工具自动生成

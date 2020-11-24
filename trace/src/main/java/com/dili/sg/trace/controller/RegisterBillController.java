@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.service.*;
+import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.service.DetectRecordService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,7 +32,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.sg.trace.domain.Customer;
-import com.dili.sg.trace.domain.DetectRecord;
 import com.dili.sg.trace.domain.QualityTraceTradeBill;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.SeparateSalesRecord;

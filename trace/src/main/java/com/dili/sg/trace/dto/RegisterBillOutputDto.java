@@ -2,10 +2,10 @@ package com.dili.sg.trace.dto;
 
 import java.util.List;
 
-import com.dili.sg.trace.domain.DetectRecord;
 import com.dili.sg.trace.domain.QualityTraceTradeBill;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.DetectRecord;
 
 /**
  * Created by laikui on 2019/7/30.

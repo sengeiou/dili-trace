@@ -1,26 +1,25 @@
-package com.dili.sg.trace.service.impl;
-
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+package com.dili.trace.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.sg.trace.dao.RegisterBillMapper;
 import com.dili.sg.trace.domain.RegisterBill;
-import com.dili.sg.trace.dto.DetectRecordParam;
 import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
 import com.dili.sg.trace.dto.TaskGetParam;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.sg.trace.service.BillService;
-import com.dili.sg.trace.service.DetectRecordService;
-import com.dili.sg.trace.service.DetectTaskService;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.dto.DetectRecordParam;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.DetectTaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class DetectTaskServiceImpl implements DetectTaskService {

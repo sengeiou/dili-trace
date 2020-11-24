@@ -1,13 +1,13 @@
-package com.dili.sg.trace.service;
+package com.dili.trace.service;
+
+import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
+import com.dili.sg.trace.dto.TaskGetParam;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.dto.DetectRecordParam;
 
 import java.util.List;
 
-import com.dili.ss.domain.BaseOutput;
-import com.dili.sg.trace.dto.DetectRecordParam;
-import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
-import com.dili.sg.trace.dto.TaskGetParam;
-
-public interface DetectTaskService  {
+public interface DetectTaskService {
 
     /**
      * 查询检测任务
@@ -18,7 +18,7 @@ public interface DetectTaskService  {
     /**
      * 更新检测状态
      * 
-     * @param detectTask
+     * @param detectRecord
      * @return
      */
     public BaseOutput<Boolean> updateDetectTask(DetectRecordParam detectRecord);

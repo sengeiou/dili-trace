@@ -1,15 +1,15 @@
-package com.dili.sg.trace.api;
+package com.dili.trace.api;
 
 import java.util.List;
 
-import com.dili.sg.trace.domain.DetectRecord;
 import com.dili.sg.trace.domain.RegisterBill;
 import com.dili.sg.trace.dto.RegisterBillDto;
 import com.dili.sg.trace.dto.RegisterBillOutputDto;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.sg.trace.service.BillService;
-import com.dili.sg.trace.service.DetectRecordService;
 import com.dili.sg.trace.service.RegisterBillService;
+import com.dili.trace.domain.DetectRecord;
+import com.dili.trace.service.DetectRecordService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +98,7 @@ public class AllRegisterBillApi {
 	
 	 /**
      * 保存检查单
-     * @param detectRecord
+     * @param registerBill
      * @return
      */
     @ApiOperation("查询部分检测记录")
