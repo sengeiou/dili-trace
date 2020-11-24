@@ -1,13 +1,108 @@
 package com.dili.trace.service;
 
-import com.dili.ss.base.BaseService;
-import com.dili.trace.domain.ApproverInfo;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-/**
- * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:35.
- */
-public interface ApproverInfoService extends BaseService<ApproverInfo, Long> {
-	public int insertApproverInfo(ApproverInfo approverInfo);
-	public int updateApproverInfo(ApproverInfo approverInfo);
+import com.dili.common.exception.TraceBizException;
+import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.ApproverInfo;
+import com.dili.trace.domain.Base64Signature;
+import com.dili.trace.service.ApproverInfoService;
+import com.dili.trace.service.Base64SignatureService;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class ApproverInfoService extends BaseServiceImpl<ApproverInfo, Long> {
+	private static final int MAX_LENGTH = 1000;
+
+	@Autowired
+	Base64SignatureService base64SignatureService;
+
+	@Transactional
+	public int insertApproverInfo(ApproverInfo input) {
+
+		String signBase64 = input.getSignBase64();
+		if (StringUtils.isBlank(signBase64)) {
+			throw new TraceBizException("签名不能为空");
+		}
+		if (StringUtils.isBlank(input.getUserName())) {
+			throw new TraceBizException("用户名不能为空");
+		}
+		boolean existSameUserName=this.findByUserName(input.getUserName()).map((item)->{return true;}).orElse(false);
+		if(existSameUserName) {
+			throw new TraceBizException("用户名已存在");
+		}
+		this.insertSelective(input);
+
+		List<Base64Signature> base64SignatureList = this.buildBase64SignatureList(signBase64, input.getId());
+
+		this.base64SignatureService.batchInsert(base64SignatureList);
+		return 1;
+	}
+
+	@Transactional
+	public int updateApproverInfo(ApproverInfo input) {
+
+		String signBase64 = input.getSignBase64();
+		if (StringUtils.isBlank(signBase64)) {
+			throw new TraceBizException("签名不能为空");
+		}
+		if (StringUtils.isBlank(input.getUserName())) {
+			throw new TraceBizException("用户名不能为空");
+		}
+		ApproverInfo approverInfo = this.get(input.getId());
+		boolean existSameUserName=this.findByUserName(input.getUserName()).map((item)->{return (item.getUserName().equals(input.getUserName())&&!item.getId().equals(input.getId()));}).orElse(false);
+		if(existSameUserName) {
+			throw new TraceBizException("用户名已存在");
+		}
+		
+		approverInfo.setUserName(input.getUserName());
+		approverInfo.setUserId(input.getUserId());
+		approverInfo.setPhone(input.getPhone());
+
+		this.updateSelective(approverInfo);
+		String oldSignBase64 = this.base64SignatureService.findBase64SignatureByApproverInfoId(approverInfo.getId());
+
+		if (!signBase64.equals(oldSignBase64)) {
+			Base64Signature condition = DTOUtils.newDTO(Base64Signature.class);
+			condition.setApproverInfoId(approverInfo.getId());
+			this.base64SignatureService.deleteByExample(condition);
+
+			List<Base64Signature> base64SignatureList = this.buildBase64SignatureList(signBase64, approverInfo.getId());
+
+			this.base64SignatureService.batchInsert(base64SignatureList);
+		}
+
+		return 1;
+	}
+
+	private Optional<ApproverInfo> findByUserName(String userName) {
+		ApproverInfo approverInfo = DTOUtils.newDTO(ApproverInfo.class);
+		approverInfo.setUserName(userName);
+		return this.listByExample(approverInfo).stream().findFirst();
+
+	}
+
+	private List<Base64Signature> buildBase64SignatureList(String signBase64, Long approverInfoId) {
+
+		List<Base64Signature> base64SignatureList = new ArrayList<>();
+
+		for (int start = 0; start < signBase64.length(); start += MAX_LENGTH) {
+			String base64 = signBase64.substring(start, Math.min(signBase64.length(), start + MAX_LENGTH));
+			Base64Signature base64Signature = DTOUtils.newDTO(Base64Signature.class);
+			base64Signature.setBase64(base64);
+			base64Signature.setApproverInfoId(approverInfoId);
+			base64Signature.setOrderNum(base64SignatureList.size());
+			base64SignatureList.add(base64Signature);
+		}
+		return base64SignatureList;
+
+	}
 
 }
