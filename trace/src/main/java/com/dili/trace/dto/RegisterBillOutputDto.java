@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import com.dili.trace.domain.*;
+import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.dili.common.exception.TraceBizException;
@@ -17,6 +18,15 @@ public class RegisterBillOutputDto extends RegisterBill {
 	private List<ImageCert> imageCertList;
 	private String upStreamName;
 	private List<SeparateSalesRecord>separateSalesRecords;
+	List<QualityTraceTradeBill> qualityTraceTradeBillList;
+
+	public List<QualityTraceTradeBill> getQualityTraceTradeBillList() {
+		return qualityTraceTradeBillList;
+	}
+
+	public void setQualityTraceTradeBillList(List<QualityTraceTradeBill> qualityTraceTradeBillList) {
+		this.qualityTraceTradeBillList = qualityTraceTradeBillList;
+	}
 
 	public List<SeparateSalesRecord> getSeparateSalesRecords() {
 		return separateSalesRecords;
