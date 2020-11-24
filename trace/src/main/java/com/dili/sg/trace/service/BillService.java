@@ -9,6 +9,8 @@ import com.dili.sg.trace.dto.RegisterBillOutputDto;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.DetectTaskService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;

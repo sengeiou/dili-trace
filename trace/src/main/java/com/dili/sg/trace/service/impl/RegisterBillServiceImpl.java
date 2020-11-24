@@ -14,6 +14,8 @@ import com.dili.sg.trace.service.*;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.service.DetectRecordService;
+import com.dili.trace.service.DetectTaskService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import one.util.streamex.StreamEx;
