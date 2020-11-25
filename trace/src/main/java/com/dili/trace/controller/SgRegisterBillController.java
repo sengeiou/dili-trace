@@ -89,7 +89,7 @@ public class SgRegisterBillController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
 		
-		return "registerBill/index";
+		return "sg/registerBill/index";
 	}
 
 	/**
@@ -242,7 +242,7 @@ public class SgRegisterBillController {
 		}
 		modelMap.put("citys", this.queryCitys());
 
-		return "registerBill/create";
+		return "sg/registerBill/create";
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class SgRegisterBillController {
 		modelMap.put("detectRecordList", detectRecordList);
 		modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 		modelMap.put("displayWeight", displayWeight);
-		return "registerBill/view";
+		return "sg/registerBill/view";
 	}
 
 	/**
@@ -308,7 +308,7 @@ public class SgRegisterBillController {
 		condition.setTradeNo(qualityTraceTradeBill.getOrderId());
 		List<SeparateSalesRecord> separateSalesRecords = separateSalesRecordService.listByExample(condition);
 		modelMap.put("separateSalesRecords", separateSalesRecords);
-		return "registerBill/tradeBillSsRecord";
+		return "sg/registerBill/tradeBillSsRecord";
 	}
 
 	/**
@@ -342,7 +342,7 @@ public class SgRegisterBillController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
 		
-		return "registerBill/upload-detectReport";
+		return "sg/registerBill/upload-detectReport";
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class SgRegisterBillController {
 		UserTicket user = SessionContext.getSessionContext().getUserTicket();
 		modelMap.put("user", user);
 		
-		return "registerBill/upload-origincertifiy";
+		return "sg/registerBill/upload-origincertifiy";
 	}
 
 	/**
@@ -389,7 +389,7 @@ public class SgRegisterBillController {
 	@RequestMapping(value = "/audit/{id}", method = RequestMethod.GET)
 	public String audit(ModelMap modelMap, @PathVariable Long id) {
 		modelMap.put("registerBill", billService.get(id));
-		return "registerBill/audit";
+		return "sg/registerBill/audit";
 	}
 
 	/**
@@ -557,7 +557,7 @@ public class SgRegisterBillController {
 		Date now = new Date();
 		modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-		return "registerBill/statics";
+		return "sg/registerBill/statics";
 	}
 
 	/**
@@ -609,7 +609,7 @@ public class SgRegisterBillController {
 		}
 		modelMap.put("registerBill", registerBill);
 		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
-		return "registerBill/tradeBillDetail";
+		return "sg/registerBill/tradeBillDetail";
 	}
 
 	/**
@@ -623,7 +623,7 @@ public class SgRegisterBillController {
 	public String registerBillQRCcode(Long id, ModelMap modelMap) {
 		RegisterBill bill = billService.get(id);
 		modelMap.put("registerBill", bill);
-		return "registerBill/registerBillQRCode";
+		return "sg/registerBill/registerBillQRCode";
 	}
 
 	/**
@@ -639,7 +639,7 @@ public class SgRegisterBillController {
 		RegisterBill bill = billService.findByCode(separateSalesRecord.getRegisterBillCode());
 		modelMap.put("registerBill", bill);
 		modelMap.put("separateSalesRecord", separateSalesRecord);
-		return "registerBill/registerBillQRCode";
+		return "sg/registerBill/registerBillQRCode";
 	}
 
 	/**
@@ -655,7 +655,7 @@ public class SgRegisterBillController {
 		RegisterBill bill = this.billService.findByCode(qualityTraceTradeBill.getRegisterBillCode());
 		modelMap.put("registerBill", bill);
 		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
-		return "registerBill/tradeBillQRCode";
+		return "sg/registerBill/tradeBillQRCode";
 	}
 
 	/**
@@ -674,7 +674,7 @@ public class SgRegisterBillController {
 		modelMap.put("registerBill", bill);
 		modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
 		modelMap.put("separateSalesRecord", separateSalesRecord);
-		return "registerBill/tradeBillQRCode";
+		return "sg/registerBill/tradeBillQRCode";
 	}
 
 	/**
@@ -705,7 +705,7 @@ public class SgRegisterBillController {
 			modelMap.put("userPlateList", new ArrayList<>(0));
 		}
 	
-		return "registerBill/copy";
+		return "sg/registerBill/copy";
 	}
 
 	/**
@@ -883,7 +883,7 @@ public class SgRegisterBillController {
 		}else {
 			modelMap.put("userPlateList", new ArrayList<>(0));
 		}
-		return "registerBill/edit";
+		return "sg/registerBill/edit";
 	}
 
 	/**
