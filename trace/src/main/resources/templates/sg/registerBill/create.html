@@ -59,7 +59,7 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
                     <div class="input-group">
                         <input type="hidden" name="tallyAreaNo" id="tallyAreaNo"/>
-                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;"/>
+                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" data-value-type="skip"   id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">客户Code</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="tradeAccountInput" id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"/>
+                        <input type="text" class="form-control input-sm" name="tradeAccountInput"  data-value-type="skip"   id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"/>
                         <input type="hidden" name="tradeAccount" id="tradeAccount"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
                     </div>
@@ -95,7 +95,7 @@
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">园区卡号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="b2" value="888880" id="printingCardInput" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"/>
+                        <input type="text" class="form-control input-sm" name="b2" value="888880" data-value-type="skip"   id="printingCardInput"  onkeyup="onKeyUpEnter2(event)" style="width: 147px;"/>
                         <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="cardNo()">检索</span> </span>
                     </div>
@@ -644,11 +644,13 @@
 
         var registerSource = $("#registerSource").val();
         var registerBills = buildTableData(registerSource);
-
+        var data=$('#createRecordForm').serializeJSON();
+        console.info(data);
+        debugger
         $.ajax({
             type: "POST",
             url: "${contextPath}/sg/registerBill/insert2.action",
-            data :  JSON.stringify(registerBills),
+            data :  JSON.stringify(data),
             dataType: "json",
             async : true,
             contentType: "application/json; charset=utf-8",
@@ -859,15 +861,15 @@
         <td>
             <div class="upload-div">
                 <a href="javascript:;" class="a-upload" tabindex="-1">
-                    <input type="file" id="originCertifiyUrl_{{index}}"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
+                    <input type="file" id="registerBills[{{index}}].originCertifiyUrl"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
                     <span>上传</span>
-                    <input type="hidden" name="originCertifiyUrl_{{index}}">
+                    <input type="hidden" name="registerBills[{{index}}].originCertifiyUrl">
                 </a>
             </div>
             <div class="view-div" style="display: none;">
                 <span>已上传</span>
                 <a href="javascript:;" data-index="{{index}}" class="img-view-a">查看图片</a>
-                <a href="javascript:$('#originCertifiyUrl_{{index}}').trigger('click')">重新上传</a>
+                <a href="javascript:$('#registerBills[{{index}}].originCertifiyUrl').trigger('click')">重新上传</a>
             </div>
         </td>
         <td><a href="javascript:;" class="split-minus-btn">删除</a></td>

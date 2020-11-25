@@ -148,18 +148,7 @@ public class RegisterBillController {
     }
     //public @ResponseBody String listPage(RegisterBillDto registerBill) throws Exception {
 
-    /**
-     * 新增RegisterBill
-     *
-     * @param input
-     * @return
-     */
-    @ApiOperation("新增RegisterBill")
-    @RequestMapping(value = "/insert2.action", method = RequestMethod.POST)
-    public @ResponseBody
-    BaseOutput insert2(@RequestBody CreateListBillParam input) {
-        return BaseOutput.success();
-    }
+
 
     /**
      * 新增RegisterBill

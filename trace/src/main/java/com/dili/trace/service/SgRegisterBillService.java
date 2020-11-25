@@ -62,7 +62,7 @@ public interface SgRegisterBillService {
      * @param registerBill
      * @return
      */
-    BaseOutput createRegisterBill(RegisterBill registerBill);
+    int createRegisterBill(RegisterBill registerBill);
 
     /**
      * 审核登记单
@@ -231,4 +231,14 @@ public interface SgRegisterBillService {
      * 通过ID查询并锁定registerbill
      */
     RegisterBill selectByIdForUpdate(Long id);
+
+
+
+    /**
+     * 创建登记单
+     *
+     * @param registerBillList
+     * @return
+     */
+    int createRegisterBillList(List<RegisterBill> registerBillList);
 }

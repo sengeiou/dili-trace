@@ -3,6 +3,7 @@ package com.dili.trace.api;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.sg.trace.glossary.*;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,6 +82,7 @@ public class SgRegisterBillApi {
 			return BaseOutput.failure("没有登记单");
 		}
 		LOGGER.info("保存多个登记单 操作用户:" + JSON.toJSONString(user));
+		List<RegisterBill>billList=new ArrayList<>();
 		for(CreateRegisterBillInputDto inputDto:registerBills){
 			LOGGER.info("循环保存登记单:" + JSON.toJSONString(inputDto));
 			RegisterBill registerBill=new RegisterBill();
@@ -97,11 +100,17 @@ public class SgRegisterBillApi {
 				registerBill.setTallyAreaNo(user.getTallyAreaNos());
 			}
 			registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
-			BaseOutput result = registerBillService.createRegisterBill(registerBill);
-			if (!result.isSuccess()) {
-				return result;
-			}
+			billList.add(registerBill);
 
+
+		}
+		try {
+			this.registerBillService.createRegisterBillList(billList);
+			return BaseOutput.success("新增成功").setData(billList);
+		} catch (TraceBizException e) {
+			return BaseOutput.failure(e.getMessage());
+		} catch (Exception e) {
+			return BaseOutput.failure("服务器出错,请重试");
 		}
 		/*for (RegisterBill registerBill : registerBills) {
 			LOGGER.info("循环保存登记单:" + JSON.toJSONString(registerBill));
@@ -124,7 +133,7 @@ public class SgRegisterBillApi {
 				return result;
 			}
 		}*/
-		return BaseOutput.success();
+//		return BaseOutput.success();
 	}
 
 	/**
