@@ -50,8 +50,8 @@ public class HangGuoDataUtil {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoDataUtil.class);
     @Autowired
     private UserService userService;
-//    @Autowired
-//    private UserExtService userExtService;
+    @Autowired
+    private UserExtService userExtService;
     @Autowired
     private HangGuoDataService hangGuoDataService;
     @Autowired
@@ -623,7 +623,7 @@ public class HangGuoDataUtil {
                 userExt.setUserId(u.getId());
                 return userExt;
             }).toList();
-           // userExtService.batchInsert(userExts);
+            userExtService.batchInsert(userExts);
         }
     }
 
