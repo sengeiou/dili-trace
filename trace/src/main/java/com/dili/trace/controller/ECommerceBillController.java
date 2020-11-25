@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
-import com.dili.sg.trace.domain.SeperatePrintReport;
+import com.dili.trace.domain.SeperatePrintReport;
 import com.dili.trace.dto.ECommerceBillInputDto;
 import com.dili.trace.dto.ECommerceBillPrintOutput;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;

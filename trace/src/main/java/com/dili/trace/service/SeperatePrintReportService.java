@@ -5,18 +5,15 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.service.QrCodeService;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.service.Base64SignatureService;
-import com.dili.trace.service.BillService;
 import com.dili.trace.service.impl.CodeGenerateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.sg.trace.domain.SeperatePrintReport;
+import com.dili.trace.domain.SeperatePrintReport;
 import com.dili.trace.dto.SeperatePrintReportOutputDto;
 import com.google.common.collect.Lists;
 

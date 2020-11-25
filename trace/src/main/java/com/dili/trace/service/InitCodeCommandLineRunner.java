@@ -1,4 +1,4 @@
-package com.dili.sg.trace.service;
+package com.dili.trace.service;
 
 import com.dili.trace.service.CodeGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;

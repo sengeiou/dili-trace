@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.sg.trace.domain.SeperatePrintReport;
+import com.dili.trace.domain.SeperatePrintReport;
 import com.dili.trace.dto.SeperatePrintReportInputDto;
 import com.dili.trace.dto.SeperatePrintReportOutputDto;
 import com.dili.trace.service.ApproverInfoService;

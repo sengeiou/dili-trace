@@ -2,7 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.trace.domain.Customer;
 import com.dili.trace.service.CustomerService;
-import com.dili.sg.trace.util.MaskUserInfo;
+import com.dili.trace.util.MaskUserInfo;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;

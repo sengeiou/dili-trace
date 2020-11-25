@@ -2,7 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.CityService;
-import com.dili.sg.trace.service.RegisterBillReportService;
+import com.dili.trace.service.RegisterBillReportService;
 import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.service.TradeTypeService;
 import com.dili.ss.domain.BaseOutput;

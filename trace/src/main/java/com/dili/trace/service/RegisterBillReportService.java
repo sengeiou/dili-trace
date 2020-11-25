@@ -1,4 +1,4 @@
-package com.dili.sg.trace.service;
+package com.dili.trace.service;
 
 import java.util.List;
 

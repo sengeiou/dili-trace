@@ -3,7 +3,7 @@ package com.dili.sg.trace.controller;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
-import com.dili.sg.trace.util.MaskUserInfo;
+import com.dili.trace.util.MaskUserInfo;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTO;

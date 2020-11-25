@@ -1,4 +1,4 @@
-package com.dili.sg.trace.service;
+package com.dili.trace.service;
 
 import com.dili.orders.dto.WeighingBillClientListDto;
 import com.dili.orders.rpc.OrderServiceRpc;
@@ -7,7 +7,6 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.TradeType;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
-import com.dili.trace.service.TradeTypeService;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;

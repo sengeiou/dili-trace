@@ -1,7 +1,7 @@
 package com.dili.sg.trace.jobs;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.service.OrderService;
+import com.dili.trace.service.OrderService;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.domain.sg.QualityTraceTradeBillSyncPoint;

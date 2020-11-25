@@ -1,4 +1,4 @@
-package com.dili.sg.trace.service.impl;
+package com.dili.trace.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.RegisterBillReportQueryDto;
 import com.dili.sg.trace.glossary.BillTypeEnum;
-import com.dili.sg.trace.service.RegisterBillReportService;
+import com.dili.trace.service.RegisterBillReportService;
 
 
 @Service

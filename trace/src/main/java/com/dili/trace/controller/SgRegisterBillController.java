@@ -13,7 +13,7 @@ import com.dili.trace.service.CityService;
 import com.dili.trace.service.CustomerService;
 import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.service.TradeTypeService;
-import com.dili.sg.trace.util.MaskUserInfo;
+import com.dili.trace.util.MaskUserInfo;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;

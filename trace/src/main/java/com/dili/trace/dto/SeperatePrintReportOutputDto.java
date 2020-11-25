@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-import com.dili.sg.trace.domain.SeperatePrintReport;
+import com.dili.trace.domain.SeperatePrintReport;
 import com.dili.trace.domain.RegisterBill;
 
 public class SeperatePrintReportOutputDto {
