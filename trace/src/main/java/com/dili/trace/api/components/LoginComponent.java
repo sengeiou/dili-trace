@@ -30,6 +30,9 @@ import com.jayway.jsonpath.ParseContext;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 
+/**
+ * @author Alvin.Li
+ */
 @Component
 public class LoginComponent {
 	private static final Logger logger = LoggerFactory.getLogger(LoginComponent.class);
@@ -51,8 +54,12 @@ public class LoginComponent {
 	@Value("${manage.domain}")
 	private String manageDomainPath;
 
-	
 
+	/**
+	 *
+	 * @param loginInput
+	 * @return
+	 */
 	public SessionData login(LoginInputDto loginInput) {
 
 		if (loginInput == null || loginInput.getLoginIdentityType() == null) {
@@ -99,7 +106,12 @@ public class LoginComponent {
 	// }
 
 
-	//
+	/**
+	 *
+	 * @param phone
+	 * @param password
+	 * @return
+	 */
 	private User userLogin(String phone, String password) {
 		// logger.info("original password={}",password);
 		// logger.info("md5 password={}",MD5Util.md5(password));
@@ -189,6 +201,14 @@ public class LoginComponent {
 //
 //		
 //	}
+
+	/**
+	 *
+	 * @param username
+	 * @param password
+	 * @param identityTypeEnum
+	 * @return
+	 */
 	private OperatorUser sysManagerLogin(String username, String password, LoginIdentityTypeEnum identityTypeEnum) {
 		String loginUrl = (this.manageDomainPath.trim() + "/loginControl/doLoginAPP.do");
 		String checkAuthUrl = (this.manageDomainPath.trim() + "/api/user/checkUserResource.do");
@@ -265,6 +285,12 @@ public class LoginComponent {
 		return this.sessionRedisService.saveToRedis(sessionData);
 	}
 
+	/**
+	 *
+	 * @param openid
+	 * @param type
+	 * @return
+	 */
 	private User userWxLogin(String openid, Integer type) {
 		User user=userService.wxLogin(openid);
 		userLoginHistoryService.createLoginHistory(user);

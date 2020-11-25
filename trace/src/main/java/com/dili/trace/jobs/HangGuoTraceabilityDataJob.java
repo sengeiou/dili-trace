@@ -5,10 +5,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.SysConfig;
-import com.dili.trace.domain.ThirdPartyPushData;
-import com.dili.trace.domain.ThirdPartySourceData;
-import com.dili.trace.domain.User;
+import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.*;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.MarketIdEnum;
@@ -108,7 +105,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             }
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品信息
-            getThirdGoodsData(endTime);
+           // getThirdGoodsData(endTime);
             //供应商
             getThirdSupplierData(endTime);
             //会员
@@ -155,8 +152,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         User user = DTOUtils.newInstance(User.class);
         user.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
         user.setYn(YnEnum.YES.getCode());
-        user.mset(IDTO.AND_CONDITION_EXPR, " credential_url IS NULL AND supplier_type IS NOT NULL");
-        List<User> userList = userService.listByExample(user);
+        List<User> userList = userService.getUserByCredentialUrl(user);
+
         if (!CollectionUtils.isEmpty(userList)) {
             String supType = "S";
             List<User> updateList = new ArrayList<>();
@@ -164,7 +161,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 String picContent = getSupplierPic(u.getThirdPartyCode(), endTime);
                 String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), supType, picContent);
                 if (StringUtils.isNotBlank(picUrl)) {
-                    u.setCredentialUrl(picUrl);
+                    u.setCardNoFrontUrl(picUrl);
+                    u.setCardNoBackUrl(picUrl);
                     updateList.add(u);
                 }
             });
@@ -178,8 +176,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         User user = DTOUtils.newInstance(User.class);
         user.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
         user.setYn(YnEnum.YES.getCode());
-        user.mset(IDTO.AND_CONDITION_EXPR, " credential_url IS NULL AND supplier_type IS NULL");
-        List<User> userList = userService.listByExample(user);
+        List<User> userList = userService.getUserByCredentialUrl(user);
         if (!CollectionUtils.isEmpty(userList)) {
             String memType = "M";
             List<User> updateList = new ArrayList<>();
@@ -187,7 +184,9 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 String picContent = getMemberPic(u.getThirdPartyCode(), endTime);
                 String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), memType, picContent);
                 if (StringUtils.isNotBlank(picUrl)) {
-                    u.setCredentialUrl(picUrl);
+//                    u.setCredentialUrl(picUrl);
+                    u.setCardNoBackUrl(picUrl);
+                    u.setCardNoFrontUrl(picUrl);
                     updateList.add(u);
                 }
             });

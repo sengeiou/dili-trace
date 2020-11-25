@@ -38,10 +38,15 @@
 
     <update id="batchUpdateUserByThirdCode" parameterType="java.util.List">
         UPDATE user
-        SET credential_url =
+        SET card_no_front_url =
         <foreach collection="list" item="user" index="index"
                  separator=" " open="case third_party_code" close="end">
-            when #{user.thirdPartyCode} then #{user.credentialUrl}
+            when #{user.thirdPartyCode} then #{user.cardNoFrontUrl}
+        </foreach>,
+        card_no_back_url =
+        <foreach collection="list" item="user" index="index"
+                 separator=" " open="case third_party_code" close="end">
+            when #{user.thirdPartyCode} then #{user.cardNoBackUrl}
         </foreach>
         WHERE third_party_code
         <foreach collection="list" open=" IN (" close=")" item="u" separator=",">

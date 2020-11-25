@@ -73,4 +73,10 @@ public interface UserMapper extends MyMapper<User> {
      * @param idList
      */
     void updateUserUnActiveFlag(@Param("idList") List<Long> idList);
+
+    /**
+     * 获取无照片的经营户
+     * @return
+     */
+    List<User> getUserByCredentialUrl(User user);
 }
