@@ -4,8 +4,8 @@ import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
-import com.dili.sg.trace.dto.CategoryListInput;
-import com.dili.sg.trace.service.CategoryService;
+import com.dili.trace.dto.CategoryListInput;
+import com.dili.trace.service.CategoryService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

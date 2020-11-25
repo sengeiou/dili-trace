@@ -1,6 +1,6 @@
 package com.dili.trace.service.impl;
 
-import com.dili.sg.trace.api.output.QualityTraceTradeBillOutput;
+import com.dili.trace.api.output.QualityTraceTradeBillOutput;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.QualityTraceTradeBillMapper;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;

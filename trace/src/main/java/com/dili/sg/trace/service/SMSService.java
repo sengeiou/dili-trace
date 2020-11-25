@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.service.MessageRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.redis.service.RedisUtil;
-import com.dili.sg.trace.rpc.MessageRpc;
 
 /**
  * 短信接口
@@ -23,7 +23,7 @@ import com.dili.sg.trace.rpc.MessageRpc;
 public class SMSService {
     private static final Logger logger = LoggerFactory.getLogger(SMSService.class);
     @Autowired(required = false)
-    MessageRpc messageRpc;
+    MessageRpcService messageRpcService;
     @Autowired
     private DefaultConfiguration defaultConfiguration;
     @Autowired
@@ -84,7 +84,7 @@ public class SMSService {
                 - redisUtil.getRedisTemplate().getExpire(REDIS_SYSTEM_VERCODE_PREIX) < 60) {
             return BaseOutput.success();// 发送间隔60秒
         }
-        BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
+        BaseOutput msgOutput = messageRpcService.sendVerificationCodeMsg(params);
         if (msgOutput.isSuccess()) {
             redisUtil.set(REDIS_SYSTEM_VERCODE_PREIX + phone, verificationCode,
                     defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);

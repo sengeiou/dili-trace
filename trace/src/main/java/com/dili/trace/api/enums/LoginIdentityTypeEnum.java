@@ -9,16 +9,29 @@ import java.util.Optional;
  * @createTime 2020/06/03 15:43
  */
 public enum LoginIdentityTypeEnum {
-	
+
 	/**
 	 * 市场普通用户
 	 */
 	USER(1, "市场普通用户", null),
 	/**
+	 * 政府监管人员
+	 */
+	GOV_ADMIN(2, "政府监管人员", "registerBill/index.html#weichat-view"),
+	/**
+	 * 委托单用户
+	 */
+	COMMISSION_USER(3, "委托单用户", null),
+	/**
+	 * 电商用户
+	 */
+	E_COMMERCE_USER(4, "电商用户", "ECommerceBill/index.html#weichat-auth"),
+
+	/**
 	 * 系统管理
 	 */
-	SYS_MANAGER(2, "系统管理", "registerBill/index.html#weichat-view"),;
-	
+	SYS_MANAGER(5, "系统管理", "registerBill/index.html#weichat-view"),;
+
 	private String name;
 	private Integer code;
 	private String authUrl;

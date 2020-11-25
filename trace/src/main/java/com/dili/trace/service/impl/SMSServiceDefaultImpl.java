@@ -2,13 +2,10 @@ package com.dili.trace.service.impl;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
-
 import com.alibaba.fastjson.JSONObject;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.redis.service.RedisUtil;
-import com.dili.trace.rpc.MessageRpc;
+import com.dili.trace.service.MessageRpcService;
 import com.dili.trace.service.SMSService;
 
 import org.slf4j.Logger;
@@ -25,7 +22,7 @@ import org.springframework.stereotype.Service;
 public class SMSServiceDefaultImpl extends SMSService {
     private static final Logger logger = LoggerFactory.getLogger(SMSServiceDefaultImpl.class);
     @Autowired
-    MessageRpc messageRpc;
+    MessageRpcService messageRpcService;
     @Autowired
     private DefaultConfiguration defaultConfiguration;
 
@@ -36,7 +33,7 @@ public class SMSServiceDefaultImpl extends SMSService {
                 - super.redisUtil.getRedisTemplate().getExpire(REDIS_SYSTEM_VERCODE_PREIX) < 60) {
             return BaseOutput.success();// 发送间隔60秒
         }
-        BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
+        BaseOutput msgOutput = messageRpcService.sendVerificationCodeMsg(params);
         if (msgOutput.isSuccess()) {
             redisUtil.set(REDIS_SYSTEM_VERCODE_PREIX + phone, verificationCode,
                     defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);
@@ -61,7 +58,7 @@ public class SMSServiceDefaultImpl extends SMSService {
         - super.redisUtil.getRedisTemplate().getExpire(REDIS_SYSTEM_VERCODE_PREIX) < 60) {
             return BaseOutput.success();// 发送间隔60秒
         }
-        BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
+        BaseOutput msgOutput = messageRpcService.sendVerificationCodeMsg(params);
         if (msgOutput.isSuccess()) {
             super.redisUtil.set(REDIS_SYSTEM_RENEW_PASSWORD_PREIX + phone, verificationCode,
                     defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);

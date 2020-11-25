@@ -5,6 +5,8 @@ import java.util.List;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.domain.Category;
+import com.dili.trace.dto.CategoryListInput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.RUserCategory;
@@ -19,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Category;
-import com.dili.trace.dto.CategoryListInput;
 import com.dili.trace.service.CategoryService;
 
 import io.swagger.annotations.ApiOperation;
@@ -41,24 +41,23 @@ public class CategoryApi {
     @Autowired
     private LoginSessionContext sessionContext;
 
+
     /**
-     * 查询品类
+     * 品类接口查询
      *
      * @param category
      * @return
      */
     @ApiOperation(value = "品类接口查询【接口已通】", notes = "品类接口查询")
     @RequestMapping(value = "/listCategoryByCondition", method = RequestMethod.POST)
-    public BaseOutput<List<Category>> listCategoryByCondition(@RequestBody CategoryListInput category) {
-        //TODO
-/*		try {
-			List<Category> list = this.categoryService.listCategoryByKeyword(category.getKeyword(), category.getLevel(), category.getParentId(), category.getMarketId());
-			return BaseOutput.success().setData(list);
-		} catch (Exception e) {
-			LOGGER.error("listCityByCondition", e);
-			return BaseOutput.failure(e.getMessage());
-		}*/
-        return BaseOutput.success();
+    public BaseOutput<List<com.dili.trace.domain.Category>> listCategoryByCondition(@RequestBody CategoryListInput category) {
+        try {
+            List<Category> list = this.categoryService.listCategoryByCondition(category);
+            return BaseOutput.success().setData(list);
+        } catch (Exception e) {
+            LOGGER.error("listCityByCondition", e);
+            return BaseOutput.failure(e.getMessage());
+        }
     }
 
 

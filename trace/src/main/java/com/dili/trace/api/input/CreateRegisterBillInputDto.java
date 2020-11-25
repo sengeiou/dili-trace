@@ -94,6 +94,17 @@ public class CreateRegisterBillInputDto {
 	@ApiModelProperty(value = "单据类型")
 	private Integer orderType;
 
+	@ApiModelProperty(value = "创建来源")
+	private Integer creationSource;
+
+	public Integer getCreationSource() {
+		return creationSource;
+	}
+
+	public void setCreationSource(Integer creationSource) {
+		this.creationSource = creationSource;
+	}
+
 	/**
 	 * 图片证明列表
 	 */

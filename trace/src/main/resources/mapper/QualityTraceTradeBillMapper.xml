@@ -138,7 +138,7 @@ select count(1) as ct,order_id from quality_trace_trade_bill group by order_id h
   </select>
   
   
-    <select id="findQualityTraceTradeBillByTradeBillIdList"   resultType="com.dili.sg.trace.api.output.QualityTraceTradeBillOutput">
+    <select id="findQualityTraceTradeBillByTradeBillIdList"   resultType="com.dili.trace.api.output.QualityTraceTradeBillOutput">
     SELECT
     quality_trace_trade_bill.bill_id,
     register_bill.latest_detect_time,

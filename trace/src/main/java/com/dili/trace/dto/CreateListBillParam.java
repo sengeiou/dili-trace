@@ -8,6 +8,7 @@ public class CreateListBillParam {
 	private Long userId;
 	private Long marketId;
 
+
 	public Long getUserId() {
 		return userId;
 	}

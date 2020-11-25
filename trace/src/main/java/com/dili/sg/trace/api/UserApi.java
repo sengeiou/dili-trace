@@ -12,9 +12,8 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.VerificationCodeUtil;
-import com.dili.sg.common.entity.TraceSessionContext;
-import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.sg.trace.rpc.MessageRpc;
+import com.dili.common.entity.LoginSessionContext;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.sg.trace.service.SMSService;
 import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
@@ -24,6 +23,7 @@ import com.dili.trace.api.input.LoginInputDto;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.glossary.UserTypeEnum;
+import com.dili.trace.service.MessageRpcService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
@@ -52,11 +52,14 @@ public class UserApi {
 	@Resource
 	private UserService userService;
 	@Resource
-	private TraceSessionContext sessionContext;
+	private LoginSessionContext sessionContext;
 	@Resource
 	private DefaultConfiguration defaultConfiguration;
-	@Resource
-	private MessageRpc messageRpc;
+
+
+	@Autowired
+	MessageRpcService messageRpcService;
+
 	@Resource
 	private RedisUtil redisUtil;
 	@Resource
@@ -123,7 +126,7 @@ public class UserApi {
 		content.put("code", verificationCode);
 		params.put("parameters", content);
 
-		BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
+		BaseOutput msgOutput = messageRpcService.sendVerificationCodeMsg(params);
 		if (msgOutput.isSuccess()) {
 			redisUtil.set(ExecutionConstants.REDIS_SYSTEM_VERCODE_PREIX + phone, verificationCode,
 					defaultConfiguration.getCheckCodeExpire(), TimeUnit.SECONDS);

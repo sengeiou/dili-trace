@@ -3,14 +3,11 @@ package com.dili.trace.api;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.config.DefaultConfiguration;
-import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
-import com.dili.sg.trace.dto.TaskGetParam;
-import com.dili.sg.trace.glossary.RegisterBillStateEnum;
-import com.dili.sg.trace.glossary.RegisterSourceEnum;
-import com.dili.sg.trace.service.BillService;
+import com.dili.trace.dto.DetectTaskApiOutputDto;
+import com.dili.trace.dto.TaskGetParam;
+import com.dili.trace.service.BillService;
 import com.dili.trace.service.SgRegisterBillService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRecordParam;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectTaskService;
@@ -23,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

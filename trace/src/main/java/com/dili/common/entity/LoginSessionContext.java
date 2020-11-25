@@ -2,12 +2,12 @@ package com.dili.common.entity;
 
 import java.io.Serializable;
 
-import com.dili.common.exception.TraceBizException;
+import com.dili.common.entity.SessionData;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.common.exception.TraceBizException;
 import com.dili.trace.dto.OperatorUser;
 
 public class LoginSessionContext implements Serializable {
-
 	private static final long serialVersionUID = -12145451L;
 	private SessionData sessionData;
 
@@ -49,5 +49,4 @@ public class LoginSessionContext implements Serializable {
 	public void setSessionData(SessionData sessionData) {
 		this.sessionData = sessionData;
 	}
-
 }

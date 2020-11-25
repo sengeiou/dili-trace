@@ -1,5 +1,9 @@
 package com.dili.trace.glossary;
 
+import one.util.streamex.StreamEx;
+
+import java.util.Optional;
+
 public enum RegisterBilCreationSourceEnum {
     PC(10,"电脑"),
     WX(20,"微信");
@@ -11,7 +15,10 @@ public enum RegisterBilCreationSourceEnum {
         this.code=code;
         this.desc=desc;
     }
+    public static Optional<RegisterBilCreationSourceEnum>fromCode(Integer code){
+        return StreamEx.of(RegisterBilCreationSourceEnum.values()).filterBy(RegisterBilCreationSourceEnum::getCode,code).findFirst();
 
+    }
     public Integer getCode() {
         return code;
     }

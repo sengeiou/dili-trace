@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.SessionData;
-import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
+import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

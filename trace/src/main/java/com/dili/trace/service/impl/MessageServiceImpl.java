@@ -13,11 +13,7 @@ import com.dili.trace.domain.SmsMessage;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.enums.MessageReceiverEnum;
-import com.dili.trace.rpc.MessageRpc;
-import com.dili.trace.service.EventMessageService;
-import com.dili.trace.service.MessageService;
-import com.dili.trace.service.UserService;
-import com.dili.trace.service.WxAppletsMessageNotityService;
+import com.dili.trace.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +35,7 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
     private UserService userService;
 
     @Autowired
-    private MessageRpc messageRpc;
+    private MessageRpcService messageRpcService;
 
     @Autowired
     private SmsMessageMapper smsMessageMapper;
@@ -110,7 +106,7 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
                 // 根据不同messageType，传不同的参数（在各个消息节点中传递过来）
                 params.put("parameters", messageInputDto.getSmsContentParam());
                 logger.info("send sms RPC:" + params.toJSONString());
-                BaseOutput msgOutput = messageRpc.sendVerificationCodeMsg(params);
+                BaseOutput msgOutput = messageRpcService.sendVerificationCodeMsg(params);
 
                 //插入日志
                 SmsMessage smsMessage = new SmsMessage();

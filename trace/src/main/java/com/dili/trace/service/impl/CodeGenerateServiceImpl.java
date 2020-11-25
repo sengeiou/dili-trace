@@ -8,7 +8,7 @@ import java.util.Date;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.sg.trace.glossary.CodeGenerateEnum;
-import com.dili.sg.trace.service.BillService;
+import com.dili.trace.service.BillService;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.CodeGenerateMapper;

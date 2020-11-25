@@ -28,7 +28,7 @@ import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.rpc.MessageRpc;
+import com.dili.trace.service.MessageRpcService;
 import com.dili.trace.service.SMSService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
@@ -61,7 +61,7 @@ public class UserApi {
 
 
     @Autowired
-    private MessageRpc messageRpc;
+    private MessageRpcService messageRpcService;
     @Autowired
     private RedisUtil redisUtil;
     @Autowired

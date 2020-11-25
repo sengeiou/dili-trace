@@ -1,7 +1,7 @@
 package com.dili.trace.service;
 
-import com.dili.sg.trace.dto.DetectTaskApiOutputDto;
-import com.dili.sg.trace.dto.TaskGetParam;
+import com.dili.trace.dto.DetectTaskApiOutputDto;
+import com.dili.trace.dto.TaskGetParam;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.dto.DetectRecordParam;
 
