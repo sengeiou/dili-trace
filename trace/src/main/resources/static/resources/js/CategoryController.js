@@ -34,55 +34,49 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var jq = (function () {
-    function jq() {
+var CategoryController = (function () {
+    function CategoryController() {
     }
-    jq.ajax = function (settings) {
-        return __awaiter(this, void 0, void 0, function () {
-            var p;
-            return __generator(this, function (_a) {
-                p = new Promise(function (resolve, reject) {
-                    $.ajax(settings).done(function (result) {
-                        resolve(result);
-                    }).fail(function (e) {
-                        reject(e);
-                    });
-                });
-                return [2, p];
-            });
-        });
-    };
-    jq.postJson = function (settings) {
+    CategoryController.listCategories = function (cusCategoryQuery) {
         return __awaiter(this, void 0, void 0, function () {
             var resp;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        _.extend(settings, { method: 'post', contentType: 'application/json', data: JSON.stringify(settings.data) });
-                        return [4, jq.ajax(settings)];
+                    case 0: return [4, jq.postJson2('../../category/listCategories.action', cusCategoryQuery)];
                     case 1:
                         resp = _a.sent();
-                        return [2, resp];
+                        if (resp.code == '200') {
+                            return [2, resp.data];
+                        }
+                        else {
+                            throw new Error(resp.message);
+                        }
+                        return [2];
                 }
             });
         });
     };
-    jq.postJson2 = function (url, data, settings) {
-        if (settings === void 0) { settings = {}; }
+    CategoryController.listSuggestionsCategories = function (cusCategoryQuery) {
         return __awaiter(this, void 0, void 0, function () {
             var resp;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        _.extend(settings, { method: 'post', contentType: 'application/json', data: JSON.stringify(data), url: url });
-                        return [4, jq.ajax(settings)];
+                    case 0: return [4, jq.postJson2('../../category/listCategories.action', cusCategoryQuery)];
                     case 1:
                         resp = _a.sent();
-                        return [2, resp];
+                        if (resp.code == '200') {
+                            return [2, _.chain(resp.data).map(function (item) {
+                                    return { "id": item.id, "value": item.name };
+                                }).value()];
+                        }
+                        else {
+                            throw new Error(resp.message);
+                        }
+                        return [2];
                 }
             });
         });
     };
-    return jq;
+    return CategoryController;
 }());
-//# sourceMappingURL=jqueryWrapper.js.map
+//# sourceMappingURL=CategoryController.js.map

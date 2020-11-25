@@ -19,3 +19,6 @@
 .vscode/launch.json
 trace/nb-configuration.xml
 **/node_modules
+**/*.js.map
+**/application.pid
+**/package-lock.json
