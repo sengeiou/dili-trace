@@ -14,7 +14,6 @@ import com.dili.common.util.MD5Util;
 import com.dili.common.util.VerificationCodeUtil;
 import com.dili.sg.common.entity.TraceSessionContext;
 import com.dili.sg.trace.api.enums.LoginIdentityTypeEnum;
-import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.sg.trace.rpc.MessageRpc;
 import com.dili.sg.trace.service.SMSService;
 import com.dili.ss.constant.ResultCode;
@@ -24,6 +23,7 @@ import com.dili.trace.api.components.LoginComponent;
 import com.dili.trace.api.input.LoginInputDto;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
+import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
@@ -66,6 +66,8 @@ public class UserApi {
 	private LoginComponent loginComponent;
 	@Autowired
 	SMSService smsService;
+	@Autowired
+	ExecutionConstants executionConstants;
 
 	/**
 	 * 注册【接口已通】
@@ -113,7 +115,7 @@ public class UserApi {
 		String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
 		// 发送短信验证码
 		JSONObject params = new JSONObject();
-		params.put("marketCode", ExecutionConstants.MARKET_CODE);
+		params.put("marketCode", executionConstants.getMarketCode());
 		params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
 		params.put("sceneCode", "registerAuthCode");
 		params.put("cellphone", phone);

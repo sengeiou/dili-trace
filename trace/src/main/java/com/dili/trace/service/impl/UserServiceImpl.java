@@ -106,7 +106,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void register(User user, com.dili.sg.trace.glossary.UserTypeEnum userType, String originalPassword) {
+    public void register(User user, UserTypeEnum userType, String originalPassword) {
         user.setState(com.dili.sg.trace.glossary.EnabledStateEnum.ENABLED.getCode());
         user.setPassword(MD5Util.md5(originalPassword));
         user.setIsDelete(0L);

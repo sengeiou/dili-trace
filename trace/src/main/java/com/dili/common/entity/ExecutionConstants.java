@@ -19,6 +19,9 @@ public class ExecutionConstants {
     //系统code
     public final static String SYSTEM_CODE = "trace";
 
+    // TODO:值待定
+    public static final String REDIS_SYSTEM_VERCODE_PREIX="";
+
     public String getMarketCode() {
         return marketCode;
     }

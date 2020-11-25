@@ -1,6 +1,5 @@
 package com.dili.trace.service;
 
-import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -12,6 +11,7 @@ import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.glossary.UserTypeEnum;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;

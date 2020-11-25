@@ -12,6 +12,10 @@ public enum UserTypeEnum {
      */
     CORPORATE(20, "企业"),
 
+    USUAL_USER(30, "园区业户"),
+
+    COMMISSION_USER(40, "园外业户")
+
     ;
 
     private Integer code;
