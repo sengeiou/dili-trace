@@ -3,7 +3,6 @@ package com.dili.sg.trace.controller;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
-import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.sg.trace.util.MaskUserInfo;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -12,6 +11,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
+import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
@@ -95,7 +95,7 @@ public class UserController {
 	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody BaseOutput<Long> insert(@RequestBody User user) {
 		try {
-			UserTypeEnum userTypeEnum= UserTypeEnum.fromCode(user.getUserType()).orElse(null);
+			UserTypeEnum userTypeEnum= UserTypeEnum.fromCode(user.getUserType());
 			if(userTypeEnum==null) {
 				return BaseOutput.failure("用户类型错误");
 			}

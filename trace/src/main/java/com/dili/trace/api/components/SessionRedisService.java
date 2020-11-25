@@ -44,6 +44,11 @@ public class SessionRedisService {
         return key.toString();
     }
 
+    /**
+     *
+     * @param sessionData
+     * @return
+     */
     private String getAccountRedisKey(SessionData sessionData) {
         StringBuilder key = new StringBuilder();
         key.append(USERID_PREFIX);
@@ -53,16 +58,36 @@ public class SessionRedisService {
         return key.toString();
     }
 
+    /**
+     *
+     * @param userId
+     */
     public void addWaitDisabledUser(Long userId) {
         redisUtil.getRedisTemplate().opsForSet().add(WAITING_DISABLED_USER_PREFIX, userId);
     }
+
+    /**
+     *
+     * @param userId
+     */
     public void removeUserFromWaitDisabled(Long userId) {
         redisUtil.getRedisTemplate().opsForSet().remove(WAITING_DISABLED_USER_PREFIX, userId);
     }
+
+    /**
+     *
+     * @param userId
+     * @return
+     */
     public boolean checkUserDisabled(Long userId) {
         return redisUtil.getRedisTemplate().opsForSet().isMember(WAITING_DISABLED_USER_PREFIX, userId);
     }
 
+    /**
+     *
+     * @param sessionId
+     * @return
+     */
     public Optional<SessionData> loadFromRedis(String sessionId) {
         logger.info("loadFromRedis:sessionId={}", sessionId);
         if (StringUtils.isBlank(sessionId)) {
@@ -98,6 +123,10 @@ public class SessionRedisService {
         return Optional.of(sessionData);
     }
 
+    /**
+     * 删除User
+     * @param user
+     */
     public void removeUser(User user) {
         SessionData sessionData = SessionData.fromUser(user, LoginIdentityTypeEnum.USER.getCode());
         logger.info("removeUser:sessionData={}", sessionData.toMap());
@@ -111,6 +140,10 @@ public class SessionRedisService {
 
     }
 
+    /**
+     * 更新 User
+     * @param user
+     */
     public void updateUser(User user) {
         SessionData sessionData = SessionData.fromUser(user, LoginIdentityTypeEnum.USER.getCode());
         logger.info("updateUser:sessionData={}", sessionData.toMap());
@@ -128,6 +161,10 @@ public class SessionRedisService {
 
     }
 
+    /**
+     * 删除 session 缓存
+     * @param sessionId
+     */
     public void deleteFromRedis(String sessionId) {
         logger.info("deleteFromRedis:sessionId={}", sessionId);
         if (StringUtils.isBlank(sessionId)) {
@@ -145,6 +182,10 @@ public class SessionRedisService {
 
     }
 
+    /**
+     * 刷新 session
+     * @param sessionData
+     */
     public void refresh(SessionData sessionData) {
         if (sessionData == null) {
             return;
@@ -160,6 +201,11 @@ public class SessionRedisService {
 
     }
 
+    /**
+     * 保存 session
+     * @param sessionData
+     * @return
+     */
     public SessionData saveToRedis(SessionData sessionData) {
         if (sessionData == null) {
             return sessionData;
@@ -168,6 +214,12 @@ public class SessionRedisService {
         return sessionData;
     }
 
+    /**
+     * 保存 session 并加超时时间
+     * @param sessionData
+     * @param expire
+     * @return
+     */
     private SessionData saveToRedis(SessionData sessionData, long expire) {
         if (sessionData == null) {
             return sessionData;
