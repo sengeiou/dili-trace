@@ -10,6 +10,8 @@ import com.dili.trace.dto.CategoryListInput;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import java.util.function.Function;
  */
 @Service
 public class CategoryService extends BaseServiceImpl<Category, Long> {
+	private static final Logger logger= LoggerFactory.getLogger(CategoryService.class);
 	@Autowired(required = false)
 	AssetsRpc assetsRpc;
 	@Autowired
@@ -42,6 +45,16 @@ public class CategoryService extends BaseServiceImpl<Category, Long> {
 		} else {
 
 		}
+		return getCategories(cusQuery);
+
+	}
+
+	/**
+	 * 远程查询品类
+	 * @param cusQuery
+	 * @return
+	 */
+	private List<Category> getCategories(CusCategoryQuery cusQuery) {
 		cusQuery.setMarketId(this.globalVarService.getMarketId());
 		try {
 			BaseOutput<List<CusCategoryDTO>> out = this.assetsRpc.listCusCategory(cusQuery);
@@ -52,9 +65,9 @@ public class CategoryService extends BaseServiceImpl<Category, Long> {
 				return !c.getName().contains("蔬菜") && !c.getName().equals("椒类");
 			}).map(Category::convert).toList();
 		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
 			return Lists.newArrayList();
 		}
-
 	}
 
 	/**
@@ -67,9 +80,23 @@ public class CategoryService extends BaseServiceImpl<Category, Long> {
 		if (StringUtils.isBlank(keyword)) {
 			return new ArrayList<>();
 		}
-		CategoryListInput query = new CategoryListInput();
-		query.setKeyword(keyword);
-		List<Category> list = this.listCategoryByCondition(query);
+		CusCategoryQuery cusQuery=new CusCategoryQuery();
+		cusQuery.setKeyword(keyword);
+		List<Category> list = this.getCategories(cusQuery);
+		return list;
+
+	}
+	/**
+	 * 根据关键字查询 品类
+	 *
+	 * @param cusQuery
+	 * @return
+	 */
+	public List<Category> listCategoryByCondition(CusCategoryQuery cusQuery) {
+		if (cusQuery==null) {
+			return new ArrayList<>();
+		}
+		List<Category> list = this.getCategories(cusQuery);
 		return list;
 
 	}
