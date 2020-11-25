@@ -89,13 +89,7 @@ public class RegisterBillController {
         UserTicket user = SessionContext.getSessionContext().getUserTicket();
         modelMap.put("user", user);
 
-        String view=this.webCtxService.getCurrentFirm().map(Firm::getCode).map(String::toLowerCase).map(code->{
-            if(!"sg".equalsIgnoreCase(code)){
-                return "";
-            }
-            return "-"+code;
-        }).map(suffix->"index"+suffix).orElse("index");
-        return "registerBill/"+view;
+        return "registerBill/index";
 
     }
 
@@ -244,13 +238,8 @@ public class RegisterBillController {
         String str = String.valueOf(System.currentTimeMillis());
         modelMap.put("plate", "川A" + str.substring(str.length() - 5));
 
-        String view=this.webCtxService.getCurrentFirm().map(Firm::getCode).map(String::toLowerCase).map(code->{
-            if(!"sg".equalsIgnoreCase(code)){
-                return "";
-            }
-           return "-"+code;
-        }).map(suffix->"create"+suffix).orElse("create");
-        return "registerBill/"+view;
+
+        return "registerBill/create";
     }
 
     /**
