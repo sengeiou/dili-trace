@@ -46,9 +46,9 @@ import java.util.stream.Stream;
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
-@Api("/registerBill")
+@Api("/sg/registerBill")
 @Controller
-@RequestMapping("/registerBill")
+@RequestMapping("/sg/registerBill")
 public class SgRegisterBillController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillController.class);
 	@Autowired

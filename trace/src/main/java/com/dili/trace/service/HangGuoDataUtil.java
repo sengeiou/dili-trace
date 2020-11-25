@@ -252,6 +252,10 @@ public class HangGuoDataUtil {
         logger.info("============>>> 处理交易数据用时：" + (DateUtils.getCurrentDate().getTime() - createTime.getTime()));
     }
 
+    /**
+     * 
+     * @param createTime
+     */
     private void updateCacheTradeReportFlag(Date createTime) {
 
         //获取其用户商品集合
@@ -1140,7 +1144,7 @@ public class HangGuoDataUtil {
         int tradeRequestSize = 5;
         String preKey = "prefix";
         String seqKey = "seq";
-        CodeGenerate codeGenerate = DTOUtils.newDTO(CodeGenerate.class);
+        CodeGenerate codeGenerate = new CodeGenerate();
         codeGenerate.setType(TRADE_REQUEST_CODE_TYPE);
         List<CodeGenerate> codeGenerateList = codeGenerateService.listByExample(codeGenerate);
         if (CollectionUtils.isNotEmpty(codeGenerateList)) {
