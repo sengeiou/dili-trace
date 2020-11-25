@@ -19,6 +19,9 @@ import com.google.common.collect.Lists;
 
 import one.util.streamex.StreamEx;
 
+/**
+ * SeperatePrintReportService
+ */
 @Service
 public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintReport, Long> {
 	@Autowired
@@ -33,6 +36,11 @@ public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintRep
 	@Value("${current.baseWebPath}")
 	private String baseWebPath;
 
+	/**
+	 *
+	 * @param id
+	 * @return
+	 */
 	public Optional<SeperatePrintReportOutputDto> findPrintReportOutDtoById(Long id) {
 
 		SeperatePrintReport item = this.get(id);
@@ -43,6 +51,12 @@ public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintRep
 		return Optional.ofNullable(dto);
 	}
 
+	/**
+	 *
+	 * @param reportList
+	 * @param operatorUser
+	 * @return
+	 */
 	public List<SeperatePrintReportOutputDto> saveSeperatePrintReportList(List<SeperatePrintReport> reportList,
 			OperatorUser operatorUser) {
 		if (reportList.isEmpty()) {
@@ -66,6 +80,12 @@ public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintRep
 
 	}
 
+	/**
+	 *
+	 * @param reportList
+	 * @param operatorUser
+	 * @return
+	 */
 	public List<SeperatePrintReportOutputDto> buildPreViewOutputList(List<SeperatePrintReport> reportList,
 			OperatorUser operatorUser) {
 
@@ -88,6 +108,11 @@ public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintRep
 		}).toList();
 	}
 
+	/**
+	 *
+	 * @param r
+	 * @return
+	 */
 	private SeperatePrintReportOutputDto buildOutdto(SeperatePrintReport r) {
 		RegisterBill bill = billService.get(r.getBillId());
 		String approverBase64Sign = this.base64SignatureService
@@ -99,6 +124,11 @@ public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintRep
 
 	}
 
+	/**
+	 *
+	 * @param id
+	 * @return
+	 */
 	private String buildBase64QrCode(Long id) {
 		try {
 			String base64Qrcode = this.qrCodeService.getBase64QrCode(this.baseWebPath
@@ -110,6 +140,11 @@ public class SeperatePrintReportService extends BaseServiceImpl<SeperatePrintRep
 		}
 	}
 
+	/**
+	 *
+	 * @param seperateRecocrdId
+	 * @return
+	 */
 	private Optional<SeperatePrintReport> findBySeperateRecocrdId(Long seperateRecocrdId) {
 		SeperatePrintReport condition = new SeperatePrintReport();
 		condition.setSeperateRecocrdId(seperateRecocrdId);

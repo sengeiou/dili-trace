@@ -33,7 +33,7 @@ public class CodeGenerateServiceImpl extends BaseServiceImpl<CodeGenerate, Long>
 
 	private boolean checkAndInitTradeRequestCode() {
 		CodeGenerate codeGenerate = this.getMapper().selectByTypeForUpdate(TRADE_REQUEST_CODE_TYPE).stream().findFirst()
-				.orElse(DTOUtils.newDTO(CodeGenerate.class));
+				.orElse(new CodeGenerate());
 		codeGenerate.setPattern("yyyyMMddHH");
 		codeGenerate.setType(TRADE_REQUEST_CODE_TYPE);
 		codeGenerate.setPrefix("HZSY");
