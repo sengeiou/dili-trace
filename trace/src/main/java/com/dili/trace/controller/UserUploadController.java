@@ -1,17 +1,12 @@
 package com.dili.trace.controller;
 
-import java.io.InputStream;
-import java.util.List;
 import java.util.Optional;
 
-import com.alibaba.excel.EasyExcel;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Category;
 import com.dili.trace.enums.PreserveTypeEnum;
 import com.dili.trace.enums.VocationTypeEnum;
 import com.dili.trace.excel.ExcelUserData;
-import com.dili.trace.excel.ExcelUserDataListener;
-import com.dili.trace.service.CategoryService;
+import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.util.ChineseStringUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +28,7 @@ import one.util.streamex.StreamEx;
 @RequestMapping("/userUpload")
 public class UserUploadController {
     @Autowired
-    CategoryService categoryService;
+    AssetsRpcService categoryService;
 
     /**
      * 跳转到updateUser页面
@@ -95,9 +90,9 @@ public class UserUploadController {
      */
     private ExcelUserData feedData(ExcelUserData eu) {
 
-        this.findByName(eu.getCategoryName()).ifPresent(category -> {
+  /*      this.findByName(eu.getCategoryName()).ifPresent(category -> {
             eu.setCategoryId(category.getId());
-        });
+        });*/
         this.findPreserveTypeByName(eu.getPreserveTypeName()).ifPresent(pt -> {
             eu.setPreserveType(pt.getCode());
         });
@@ -140,17 +135,17 @@ public class UserUploadController {
         return StreamEx.of(VocationTypeEnum.values()).filterBy(VocationTypeEnum::getName, vocationTypeName.trim())
                 .findFirst();
     }
-
-    /**
+/*
+    *//**
      * 查询品类
      *
      * @param categoryName
      * @return
-     */
+     *//*
     private Optional<Category> findByName(String categoryName) {
         if (StringUtils.isBlank(categoryName)) {
             return Optional.empty();
         }
         return StreamEx.of(this.categoryService.listCategoryByCondition(categoryName.trim())).findFirst();
-    }
+    }*/
 }

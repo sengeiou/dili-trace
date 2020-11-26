@@ -10,17 +10,7 @@
         </foreach>
     </insert>
 
-    <update id="updateHangGuoCommodityParent" parameterType="com.dili.trace.domain.Category">
 
-               UPDATE category c,category c2
-                SET c2.parent_id=c.id
-                WHERE c.code=c2.parent_code
-                AND c2.parent_code IS NOT NULL
-                AND c.market_id=#{marketId}
-                AND c2.market_id=#{marketId}
-                AND DATE(c2.created) = DATE(#{created})
-
-    </update>
 
     <select id="getUserListByThirdPartyCode" parameterType="java.util.List"
             resultType="com.dili.trace.domain.User">
@@ -54,29 +44,7 @@
         </foreach>
     </update>
 
-    <select id="getCategoryListByThirdCode" parameterType="java.util.List"
-            resultType="com.dili.trace.domain.Category">
-        select
-        id,
-        parent_id,
-        name,
-        full_name,
-        level,
-        created,
-        modified,
-        market_id,
-        code,
-        is_show,
-        type,
-        specification,
-        parent_code
-        from category
-        where
-        code
-        <foreach collection="list" open=" IN (" close=")" item="thirdCode" separator=",">
-            #{thirdCode}
-        </foreach>
-    </select>
+
 
     <delete id="deleteHangGuoCommodityByThirdCode" parameterType="java.util.List">
         delete from category
@@ -372,23 +340,6 @@
             #{t.id}
         </foreach>
     </update>
-
-    <select id="getCategoryFaultList" parameterType="com.dili.trace.domain.Category"
-            resultType="com.dili.trace.domain.Category">
-                SELECT
-                    c.id,c.parent_id,c.name,c.full_name,c.level,c.created,c.modified,c.market_id,c.code,c.is_show,c.type,c.parent_code
-                 FROM category c
-                 WHERE c.parent_id is null
-                 <![CDATA[ and c.level <> 1 ]]>
-                 and c.market_id=#{marketId}
-
-    </select>
-    <select id="getCategoryByThirdCode" resultType="com.dili.trace.domain.Category">
-        SELECT
-            c.id,c.parent_id,c.name,c.full_name,c.level,c.created,c.modified,c.market_id,c.code,c.is_show,c.type,c.parent_code
-         FROM category c
-         WHERE c.code  = #{code}
-    </select>
 
     <update id="batchUpdateCategoryByThirdCode" parameterType="java.util.List">
         UPDATE category

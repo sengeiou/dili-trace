@@ -1,5 +1,6 @@
 package com.dili.trace.api;
 
+import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
@@ -8,12 +9,11 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.input.RegisterBillApiInputDto;
 import com.dili.trace.api.input.RegisterBillQueryInputDto;
-import com.dili.trace.domain.Category;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.service.CategoryService;
+import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
 import io.swagger.annotations.Api;
@@ -50,7 +50,7 @@ public class RegisterBillApi {
     @Autowired
     private UserService userService;
     @Autowired
-    private CategoryService categoryService;
+    private AssetsRpcService categoryService;
 
     /**
      * 通过登记单ID获取登记单详细信息
@@ -124,7 +124,7 @@ public class RegisterBillApi {
                 userId = userList.get(0).getId();
             }
             if (StringUtils.isNotBlank(goodsCode)) {
-                productId = getCategoryByGoodsCode(goodsCode);
+//                productId = getCategoryByGoodsCode(goodsCode);
             }
 
             // 根据经营户和商品id查询报备单
@@ -166,12 +166,12 @@ public class RegisterBillApi {
 
     }
 
-    /**
+   /* *//**
      * 返回商品码对应的第三级品种ID
      *
      * @param goodsCode 商品码
      * @return
-     */
+     *//*
     private Long getCategoryByGoodsCode(String goodsCode) {
         Category queCate = new Category();
         queCate.setCode(goodsCode);
@@ -182,14 +182,17 @@ public class RegisterBillApi {
         } else {
             throw new TraceBizException("商品码[" + goodsCode + "]不存在，请联系管理员检查商品主数据！");
         }
-    }
+    }*/
+/*
 
-    /**
+    */
+/**
      * 查询目标商品的三级商品
      * @param resCategory
      * @return
-     */
-    private Long getParentCategoryId(Category resCategory) {
+     *//*
+
+    private Long getParentCategoryId(CusCategoryDTO resCategory) {
         if (null == resCategory) {
             return null;
         }
@@ -203,9 +206,9 @@ public class RegisterBillApi {
         while (recursionCode.length() > 1) {
             // 无锡斯坦有些商品主数据级别不完整，直接根据商品码截取形式查询上级
             String parentCode = recursionCode.substring(0, recursionCode.length() - 1);
-            Category condition = new Category();
+            CusCategoryDTO condition = new CusCategoryDTO();
             condition.setCode(parentCode);
-            List<Category> parentCategories = categoryService.list(condition);
+            List<CusCategoryDTO> parentCategories = categoryService.list(condition);
             if (CollectionUtils.isEmpty(parentCategories)) {
                 // 没有找到父级商品，继续截取。处理级别中断问题。
                 recursionCode = parentCode;
@@ -214,7 +217,7 @@ public class RegisterBillApi {
             if (parentCategories.size() > 1) {
                 logger.error("商品码["+ parentCode +"]重复!!!");
             }
-            Category parentCategory = parentCategories.get(0);
+            CusCategoryDTO parentCategory = parentCategories.get(0);
             if (parentCategory.getLevel() > targetLevel) {
                 // 级别大于3，继续找父级
                 recursionCode = parentCode;
@@ -227,5 +230,6 @@ public class RegisterBillApi {
         }
         throw new TraceBizException("商品码[" + resCategory.getCode() + "]的三级商品不存在，请联系管理员检查商品主数据！");
     }
+*/
 
 }

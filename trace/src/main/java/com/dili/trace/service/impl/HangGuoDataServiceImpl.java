@@ -30,7 +30,7 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     @Autowired
     private HangGuoDataMapper hangGuoDataMapper;
 
-    @Override
+    /*@Override
     public void bachInsertCommodityList(List<Category> commodityList) {
         hangGuoDataMapper.bachInsertCommodityList(commodityList);
     }
@@ -38,7 +38,7 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     @Override
     public void updateHangGuoCommodityParent(Category category) {
         hangGuoDataMapper.updateHangGuoCommodityParent(category);
-    }
+    }*/
 
     @Override
     public List<User> getUserListByThirdPartyCode(List<String> list) {
@@ -50,7 +50,7 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
         hangGuoDataMapper.batchUpdateUserByThirdCode(updateUserList);
     }
 
-    @Override
+    /*@Override
     public List<Category> getCategoryListByThirdCode(List<String> codeList) {
         return hangGuoDataMapper.getCategoryListByThirdCode(codeList);
     }
@@ -58,7 +58,7 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     @Override
     public void deleteHangGuoCommodityByThirdCode(List<Category> categoryList) {
         hangGuoDataMapper.deleteHangGuoCommodityByThirdCode(categoryList);
-    }
+    }*/
 
     @Override
     public void batchInsertCacheTradeList(List<HangGuoTrade> tradeList) {
@@ -139,7 +139,7 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     public void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos) {
         hangGuoDataMapper.updateCheckOrderDisposeReportFlag(disposalDtos);
     }
-
+/*
     @Override
     public List<Category> getCategoryFaultList(Category category) {
         return hangGuoDataMapper.getCategoryFaultList(category);
@@ -153,6 +153,6 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
     @Override
     public void batchUpdateCategoryByThirdCode(List<Category> categoryList) {
         hangGuoDataMapper.batchUpdateCategoryByThirdCode(categoryList);
-    }
+    }*/
 
 }

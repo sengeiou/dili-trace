@@ -12,7 +12,6 @@ import com.dili.trace.api.input.TradeDetailInputDto;
 import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.Brand;
-import com.dili.trace.domain.Category;
 import com.dili.trace.domain.TradeDetail;
 import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.User;
@@ -29,7 +28,7 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
     @Autowired
     ProductStockService batchStockService;
     @Autowired
-    CategoryService categoryService;
+    AssetsRpcService categoryService;
     @Autowired
     BrandService brandService;
     @Autowired
@@ -65,13 +64,13 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         brand.setBrandName("demo");
         brandService.insertSelective(brand);
 
-        Category category = super.findCategory();
-        assertNotNull(category);
+//        Category category = super.findCategory();
+//        assertNotNull(category);
         ProductStock batchStock = new ProductStock();
         batchStock.setUserId(seller.getId());
         batchStock.setUserName(seller.getName());
-        batchStock.setProductId(category.getId());
-        batchStock.setProductName(category.getName());
+//        batchStock.setProductId(category.getId());
+//        batchStock.setProductName(category.getName());
         batchStock.setStockWeight(BigDecimal.valueOf(120));
         batchStock.setTotalWeight(BigDecimal.valueOf(120));
         batchStock.setPreserveType(PreserveTypeEnum.FRESH.getCode());
@@ -130,14 +129,14 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         brand.setUserId(seller.getId());
         brand.setBrandName("demo");
         brandService.insertSelective(brand);
-
-        Category category = super.findCategory();
-        assertNotNull(category);
+//
+//        Category category = super.findCategory();
+//        assertNotNull(category);
         ProductStock batchStock = new ProductStock();
         batchStock.setUserId(seller.getId());
         batchStock.setUserName(seller.getName());
-        batchStock.setProductId(category.getId());
-        batchStock.setProductName(category.getName());
+//        batchStock.setProductId(category.getId());
+//        batchStock.setProductName(category.getName());
         batchStock.setStockWeight(BigDecimal.valueOf(120));
         batchStock.setTotalWeight(BigDecimal.valueOf(120));
         batchStock.setPreserveType(PreserveTypeEnum.FRESH.getCode());
@@ -182,13 +181,13 @@ public class TradeRequestServiceTest extends AutoWiredBaseTest {
         brand.setBrandName("demo");
         brandService.insertSelective(brand);
 
-        Category category = super.findCategory();
-        assertNotNull(category);
+//        Category category = super.findCategory();
+//        assertNotNull(category);
         ProductStock batchStock = new ProductStock();
         batchStock.setUserId(ownedUser.getId());
         batchStock.setUserName(ownedUser.getName());
-        batchStock.setProductId(category.getId());
-        batchStock.setProductName(category.getName());
+//        batchStock.setProductId(category.getId());
+//        batchStock.setProductName(category.getName());
         batchStock.setStockWeight(BigDecimal.valueOf(120));
         batchStock.setTotalWeight(BigDecimal.valueOf(120));
         batchStock.setPreserveType(PreserveTypeEnum.FRESH.getCode());

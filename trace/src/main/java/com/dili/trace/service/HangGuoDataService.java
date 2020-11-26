@@ -17,19 +17,19 @@ import java.util.Map;
  */
 public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
 
-    /**
+/*    *//**
      * 杭果商品信息存储到溯源系统
      *
      * @param commodityList
-     */
+     *//*
     void bachInsertCommodityList(List<Category> commodityList);
 
-    /**
+    *//**
      * 杭果商品插入后更新parentId
      *
      * @param category
-     */
-    void updateHangGuoCommodityParent(Category category);
+     *//*
+    void updateHangGuoCommodityParent(Category category);*/
 
     /**
      * 根据第三方编码获取用户更新列表
@@ -46,20 +46,20 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      */
     void batchUpdateUserByThirdCode(List<User> updateUserList);
 
-    /**
+/*    *//**
      * 根据商品编码获取商品列表
      *
      * @param codeList
      * @return
-     */
+     *//*
     List<Category> getCategoryListByThirdCode(List<String> codeList);
 
-    /**
+    *//**
      * 根据第三方编码删除商品
      *
      * @param categoryList
-     */
-    void deleteHangGuoCommodityByThirdCode(List<Category> categoryList);
+     *//*
+    void deleteHangGuoCommodityByThirdCode(List<Category> categoryList);*/
 
     /**
      * 插入交易缓存数据
@@ -174,24 +174,24 @@ public interface HangGuoDataService extends BaseService<HangGuoUser, Long> {
      * @param disposalDtos
      */
     void updateCheckOrderDisposeReportFlag(List<ReportUnqualifiedDisposalDto> disposalDtos);
-
-    /**
+/*
+    *//**
      * 获取不符合规范的断层商品列表
      * @param category
      * @return
-     */
+     *//*
     List<Category> getCategoryFaultList(Category category);
 
-    /**
+    *//**
      * 获取商品详情
      * @param parentCode
      * @return
-     */
+     *//*
     Category getCategoryByThirdCode(String parentCode);
 
-    /**
+    *//**
      * 更新商品信息
      * @param categoryList
-     */
-    void batchUpdateCategoryByThirdCode(List<Category> categoryList);
+     *//*
+    void batchUpdateCategoryByThirdCode(List<Category> categoryList);*/
 }

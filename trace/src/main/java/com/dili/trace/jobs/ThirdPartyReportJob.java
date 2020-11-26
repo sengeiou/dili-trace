@@ -1,8 +1,6 @@
 package com.dili.trace.jobs;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -10,13 +8,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.dao.UserMapper;
-import com.dili.trace.domain.Category;
 import com.dili.trace.domain.Market;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
@@ -26,12 +24,7 @@ import com.dili.trace.dto.thirdparty.report.CodeCountDto;
 import com.dili.trace.dto.thirdparty.report.MarketCountDto;
 import com.dili.trace.dto.thirdparty.report.RegionCountDto;
 import com.dili.trace.dto.thirdparty.report.RegionCountInfo;
-import com.dili.trace.dto.thirdparty.report.ReportCountDto;
-import com.dili.trace.dto.thirdparty.report.UnqualifiedPdtInfo;
 import com.dili.trace.dto.thirdparty.report.WaringInfoDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UserQrStatusEnum;
 import com.dili.trace.service.*;
 import com.google.common.collect.Lists;
@@ -44,7 +37,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import cn.hutool.core.date.DateUtil;
 import one.util.streamex.StreamEx;
 
 @Component
@@ -63,7 +55,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     UserMapper userMapper;
 
     @Autowired
-    CategoryService categoryService;
+    AssetsRpcService categoryService;
 
     @Autowired
     RegisterBillMapper registerBillMapper;
@@ -138,7 +130,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
         query.setYn(YesOrNoEnum.YES.getCode());
         Integer userCount = this.userService.countUser(query);
 
-        Category category = new Category();
+        CusCategoryQuery category = new CusCategoryQuery();
         //TODO
 /*        category.setMarketId(marketId);
         Integer categoryCount = this.categoryService.count(category);*/
