@@ -527,7 +527,6 @@
     function initRegisterBillGrid() {
         var pager = _registerBillGrid.datagrid('getPager');
         var toolbar = [
-            <#resource method="post" url="registerBill/index.html#add">
     {
         iconCls:'icon-add',
         text:'新增',
@@ -535,8 +534,6 @@
         openInsert();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#edit">
     {
         iconCls:'icon-edit',
         text:'修改',
@@ -546,8 +543,6 @@
         openEdit();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#audit">
     {
         iconCls:'icon-man',
         text:'进场审核',
@@ -557,8 +552,6 @@
         audit();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#batchAudit">
     {
         iconCls:'icon-man',
         text:'批量审核',
@@ -569,8 +562,6 @@
     }
     },
 
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#auditWithoutDetect">
     {
         iconCls:'icon-man',
         text:'审核不检测',
@@ -580,8 +571,6 @@
         auditWithoutDetect();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#review">
     {
         iconCls:'icon-man',
         text:'复检',
@@ -591,8 +580,6 @@
         reviewCheck();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#auto">
     {
         iconCls:'icon-man',
         text:'主动送检',
@@ -602,9 +589,6 @@
         autoCheck();
     }
     },
-    </#resource>
-
-        <#resource method="post" url="registerBill/index.html#batchAuto">
     {
         iconCls:'icon-man',
         text:'批量主动送检',
@@ -614,8 +598,6 @@
         batchAutoCheck();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#sampling">
     {
         iconCls:'icon-man',
         text:'采样检测',
@@ -625,8 +607,6 @@
         samplingCheck();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#batchSampling">
     {
         iconCls:'icon-man',
         text:'批量采样检测',
@@ -636,8 +616,6 @@
         batchSamplingCheck();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#undo">
     {
         iconCls:'icon-undo',
         text:'撤销',
@@ -648,9 +626,6 @@
         undo();
     }
     },
-    </#resource>
-
-        <#resource method="post" url="registerBill/index.html#batchUndo">
     {
         iconCls:'icon-undo',
         text:'批量撤销',
@@ -661,9 +636,6 @@
         registerBillGrid.doBatchUndo();
     }
     },
-    </#resource>
-
-        <#resource method="post" url="registerBill/index.html#createCheckSheet">
     {
         iconCls:'icon-add',
         text:'创建打印报告',
@@ -674,8 +646,6 @@
         doCreateCheckSheet();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#handle">
     {
         iconCls:'icon-redo',
         text:'上传处理结果',
@@ -686,8 +656,6 @@
         doHandler();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#uploadOrigincertifiy">
     {
         iconCls:'icon-edit',
         text:'上传产地证明',
@@ -698,8 +666,6 @@
         doUploadOrigincertifiy();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#modify">
     {
         iconCls:'icon-edit',
         text:'上传检测报告',
@@ -710,8 +676,6 @@
         doUploadDetectReport();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#removeReportAndCertifiy">
     {
         iconCls:'icon-remove',
         text:'删除检测报告和产地证明',
@@ -722,9 +686,6 @@
         doRemoveReportAndCertifiy();
     }
     },
-    </#resource>
-
-        <#resource method="post" url="registerBill/index.html#copy">
     {
         iconCls:'icon-copy',
         text:'补录',
@@ -735,8 +696,6 @@
         doCopy();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#detail">
     {
         iconCls:'icon-detail',
         id:'detail-btn',
@@ -746,8 +705,6 @@
         doDetail();
     }
     },
-    </#resource>
-        <#resource method="post" url="registerBill/index.html#export">
     {
         iconCls:'icon-export',
         text:'导出',
@@ -769,7 +726,6 @@
 
     }
     }
-    </#resource>
     ]
         _registerBillGrid.datagrid({
             toolbar: toolbar

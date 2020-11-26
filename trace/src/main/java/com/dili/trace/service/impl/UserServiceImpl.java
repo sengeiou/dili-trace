@@ -1075,4 +1075,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
     }
+
+    /**
+     * 获取无照片的经营户
+     * @return
+     */
+    @Override
+    public List<User> getUserByCredentialUrl(User user) {
+        return getActualDao().getUserByCredentialUrl(user);
+    }
 }

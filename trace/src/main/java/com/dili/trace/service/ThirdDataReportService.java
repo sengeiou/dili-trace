@@ -31,6 +31,12 @@ public class ThirdDataReportService {
     private Integer userStatusNormal = 1;
     private Integer userStatusDelete = -1;
 
+    /**
+     *
+     * @param info
+     * @param platformMarketId
+     * @return
+     */
     public ReportUserDto reprocessUser(User info, Long platformMarketId) {
         ReportUserDto reportUser = new ReportUserDto();
         reportUser.setAccountName(info.getName());
@@ -125,15 +131,15 @@ public class ThirdDataReportService {
             userImgList.add(imgDto);
         }
         //证件照
-        if (StringUtils.isNotBlank(info.getCredentialUrl())) {
-            String url = info.getCredentialUrl();
-            ReportUserImgDto imgDto = new ReportUserImgDto();
-            imgDto.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
-            if (StringUtils.isNotBlank(url)) {
-                imgDto.setPicUrl(baseWebPath + url);
-            }
-            userImgList.add(imgDto);
-        }
+//        if (StringUtils.isNotBlank(info.getCredentialUrl())) {
+//            String url = info.getCredentialUrl();
+//            ReportUserImgDto imgDto = new ReportUserImgDto();
+//            imgDto.setCredentialName(ReportInterfacePicEnum.ID_CARD_REVERSE.getName());
+//            if (StringUtils.isNotBlank(url)) {
+//                imgDto.setPicUrl(baseWebPath + url);
+//            }
+//            userImgList.add(imgDto);
+//        }
         return userImgList;
     }
 

@@ -255,4 +255,18 @@
       </foreach>
   </update>
 
+  <select id="getUserByCredentialUrl" parameterType="com.dili.trace.domain.User" resultType="com.dili.trace.domain.User">
+    SELECT
+      u.`id`,
+      u.`third_party_code`
+    FROM
+      `user` u JOIN `user_ext` e ON u.id = e.user_id
+    WHERE u.`yn` = 1
+        <if test="marketId != null">
+          and market_id = #{marketId}
+        </if>
+          AND e.credential_url IS NULL
+          AND e.supplier_type IS NOT NULL
+  </select>
+
 </mapper>

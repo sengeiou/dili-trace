@@ -90,6 +90,12 @@ public interface UserService extends BaseService<User, Long> {
      */
     BaseOutput updateEnable(Long id, Boolean enable);
 
+    /**
+     *
+     * @param dto
+     * @return
+     * @throws Exception
+     */
     public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception;
 
     /**
@@ -99,22 +105,69 @@ public interface UserService extends BaseService<User, Long> {
      */
     BaseOutput deleteUser(Long id);
 
+    /**
+     *
+     * @param user
+     * @return
+     */
     BaseOutput<List<UserOutput>> countGroupByValidateState(User user);
 
+    /**
+     *
+     * @param user
+     * @return
+     */
     BasePage<UserOutput> pageUserByQuery(UserInput user);
 
+    /**
+     *
+     * @param input
+     * @param operatorUser
+     * @return
+     */
     BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser);
 
+    /**
+     *
+     * @param keyword
+     * @return
+     */
     public List<User> findUserByNameOrPhoneOrTallyNo(String keyword);
 
+    /**
+     *
+     * @param userId
+     * @return
+     * @throws Exception
+     */
     public UserQrOutput getUserQrCode(Long userId) throws Exception;
 
+    /**
+     *
+     * @param qrStatusList
+     * @return
+     */
     public List<User> findUserByQrStatusList(List<Integer> qrStatusList);
 
+    /**
+     *
+     * @param user
+     * @param smscode
+     */
     public void renewPassword(User user, String smscode);
 
+    /**
+     *
+     * @param user
+     * @return
+     */
     public Integer countUser(User user);
 
+    /**
+     *
+     * @param openid
+     * @return
+     */
     User wxLogin(String openid);
 
     /**
@@ -197,4 +250,10 @@ public interface UserService extends BaseService<User, Long> {
      * @return
      */
     public List<DTO> queryByTallyAreaNo(String likeTallyAreaNo);
+
+    /**
+     * 获取无照片的经营户
+     * @return
+     */
+    List<User> getUserByCredentialUrl(User user);
 }

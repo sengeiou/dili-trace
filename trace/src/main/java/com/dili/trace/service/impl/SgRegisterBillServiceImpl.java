@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -67,10 +68,10 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Transactional
     @Override
-    public BaseOutput createRegisterBill(RegisterBill registerBill) {
+    public int createRegisterBill(RegisterBill registerBill) {
         BaseOutput recheck = checkBill(registerBill);
         if (!recheck.isSuccess()) {
-            return recheck;
+            throw new TraceBizException(recheck.getMessage());
         }
         String code = this.codeGenerateService.nextRegisterBillCode();
         registerBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
@@ -95,7 +96,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         // 车牌转大写
         registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
         if (!this.checkPlate(registerBill)) {
-            return BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号");
+            throw new TraceBizException("当前车牌号已经与其他用户绑定,请使用其他牌号");
         }
 
         /*
@@ -110,9 +111,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         int result = this.billService.saveOrUpdate(registerBill);
         if (result == 0) {
             LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
-            recheck = BaseOutput.failure("创建失败");
+            throw new TraceBizException("创建失败");
         }
-        return recheck;
+        return result;
     }
 
     private boolean checkPlate(RegisterBill registerBill) {
@@ -953,6 +954,13 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         return this.billMapper.selectByIdForUpdate(id).orElseThrow(() -> {
             return new TraceBizException("操作登记单失败");
         });
+    }
+
+    @Override
+    public int createRegisterBillList(List<RegisterBill> registerBillList) {
+        return StreamEx.ofNullable(registerBillList).flatCollection(Function.identity()).nonNull().map(rb -> {
+           return  this.createRegisterBill(rb);
+        }).mapToInt(Integer::valueOf).sum();
     }
 
 }

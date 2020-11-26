@@ -12,6 +12,7 @@ import com.dili.trace.domain.hangguo.HangGuoTrade;
 import com.dili.trace.domain.hangguo.HangGuoUser;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.EnabledStateEnum;
+import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.glossary.hanguo.HangGuoGoodsLevelEnum;
 import com.dili.trace.glossary.hanguo.HangGuoVocationTypeEnum;
@@ -49,6 +50,8 @@ public class HangGuoDataUtil {
     private static final Logger logger = LoggerFactory.getLogger(HangGuoDataUtil.class);
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserExtService userExtService;
     @Autowired
     private HangGuoDataService hangGuoDataService;
     @Autowired
@@ -117,15 +120,16 @@ public class HangGuoDataUtil {
                     Integer endPos = i == part ? userList.size() : (i + 1) * batchSize;
                     List<User> partBills = userList.subList(i * batchSize, endPos);
                     addUser(partBills);
+                    addUserExt(partBills);
                 }
             }
             Long cTime = DateUtils.getCurrentDate().getTime();
             logger.info("===========>插入经营户数据用时：" + (cTime - pTime));
             //更新经营户正式表
-            List<User> updateUserList = getHangGuoMemberList(updateHangGuoUserList, createTime);
-            if (CollectionUtils.isNotEmpty(updateUserList)) {
-                updateUserByThirdCode(updateUserList);
-            }
+//            List<User> updateUserList = getHangGuoMemberList(updateHangGuoUserList, createTime);
+//            if (CollectionUtils.isNotEmpty(updateUserList)) {
+//                updateUserByThirdCode(updateUserList);
+//            }
             logger.info("===========>处理经营户数据总用时：" + (cTime - startTime));
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -170,12 +174,13 @@ public class HangGuoDataUtil {
                     Integer endPos = i == part ? userList.size() : (i + 1) * batchSize;
                     List<User> partBills = userList.subList(i * batchSize, endPos);
                     addUser(partBills);
+                    addUserExt(partBills);
                 }
             }
 
-            //更新经营户正式表
-            List<User> updateUserList = getHangGuoSupplierList(updateHangGuoUserList, createTime);
-            updateUserByThirdCode(updateUserList);
+            //更新经营户正式表 【拉取数据时，数据已经存在则忽略】
+//            List<User> updateUserList = getHangGuoSupplierList(updateHangGuoUserList, createTime);
+//            updateUserByThirdCode(updateUserList);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -253,7 +258,7 @@ public class HangGuoDataUtil {
     }
 
     /**
-     * 
+     *
      * @param createTime
      */
     private void updateCacheTradeReportFlag(Date createTime) {
@@ -272,6 +277,10 @@ public class HangGuoDataUtil {
 
     }
 
+    /**
+     *
+     * @return
+     */
     private Map<String, User> getUserMap() {
         User u = DTOUtils.newDTO(User.class);
         u.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
@@ -280,6 +289,12 @@ public class HangGuoDataUtil {
         return StreamEx.of(userList).nonNull().collect(Collectors.toMap(us -> us.getThirdPartyCode(), user -> user, (a, b) -> a));
     }
 
+    /**
+     *
+     * @param userMap
+     * @param categoryMap
+     * @param createTime
+     */
     private void updateCacheTradeReportFlagToFalse(Map<String, User> userMap, Map<String, Category> categoryMap, Date createTime) {
         //大于50W的交易金额patch为无需上报
         hangGuoDataService.updateTradeReportListByBeyondAmount(reportMaxAmountInt);
@@ -380,7 +395,9 @@ public class HangGuoDataUtil {
         StreamEx.of(picMap.entrySet()).nonNull().forEach(p -> {
             User user = DTOUtils.newDTO(User.class);
             user.setThirdPartyCode(p.getKey());
-            user.setCredentialUrl(p.getValue());
+//            user.setCredentialUrl(p.getValue());
+            user.setCardNoFrontUrl(p.getValue());
+            user.setCardNoBackUrl(p.getValue());
             user.setModified(createTime);
             updateUserList.add(user);
         });
@@ -389,6 +406,13 @@ public class HangGuoDataUtil {
         }
     }
 
+    /**
+     *
+     * @param code
+     * @param type
+     * @param picContent
+     * @return
+     */
     public String createHangGuoUserPic(String code, String type, String picContent) {
         String picPath = null;
         if (StringUtils.isBlank(picContent)) {
@@ -404,6 +428,12 @@ public class HangGuoDataUtil {
         return picPath;
     }
 
+    /**
+     *
+     * @param memberNo
+     * @param img64Str
+     * @return
+     */
     private String createPicFile(String memberNo, String img64Str) {
         if (StringUtils.isBlank(img64Str)) {
             logger.info("createPicFile IS NULL");
@@ -460,6 +490,12 @@ public class HangGuoDataUtil {
         return userList;
     }
 
+    /**
+     *
+     * @param info
+     * @param createTime
+     * @return
+     */
     private User getHangGuoMember(HangGuoUser info, Date createTime) {
         String nullStr = "''";
         Integer version = 0;
@@ -468,21 +504,13 @@ public class HangGuoDataUtil {
         sellerUser.setThirdPartyCode(info.getMemberNo() == null ? null : info.getMemberNo().trim());
         sellerUser.setCreated(info.getEnableDate());
         sellerUser.setName(info.getName() == null ? null : info.getName().trim());
-        sellerUser.setCredentialType(info.getCredentialType() == null ? null : info.getCredentialType().trim());
-        sellerUser.setCredentialName(info.getCredentialName());
-        sellerUser.setCredentialNumber(info.getCredentialNumber() == null ? null : info.getCredentialNumber().trim());
         Integer vocationType = getVocationType(info.getOperateType());
         sellerUser.setVocationType(vocationType);
         sellerUser.setValidateState(ValidateStateEnum.PASSED.getCode());
-        sellerUser.setIdAddr(info.getIdAddr());
         sellerUser.setAddr(info.getOperateAddr());
         sellerUser.setPhone(info.getPhoneNumber() == null ? nullStr : info.getPhoneNumber().trim());
-        sellerUser.setWhereis(info.getWhereis());
         //0非激活1激活
         sellerUser.setState(info.getStatusCode());
-        sellerUser.setCreditLimit(info.getCreditLimit());
-        sellerUser.setEffectiveDate(info.getEffectiveDateTime());
-        sellerUser.setRemark(info.getRemarkMemo());
         if (null != info.getEffectiveDateTime()) {
             //有效时间在当前时间之前则为禁用
             if (info.getEffectiveDateTime().before(DateUtils.getCurrentDate())) {
@@ -505,6 +533,20 @@ public class HangGuoDataUtil {
         sellerUser.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
         sellerUser.setMarketName(MarketIdEnum.FRUIT_TYPE.getName());
         sellerUser.setIsActive(UserActiveEnum.DOWN.getCode());
+        // 杭果全部为【个人】
+        sellerUser.setUserType(UserTypeEnum.USER.getCode());
+
+        UserExt userExt = new UserExt();
+        userExt.setCredentialType(info.getCredentialType() == null ? null : info.getCredentialType().trim());
+        userExt.setCredentialName(info.getCredentialName());
+        userExt.setCredentialNumber(info.getCredentialNumber() == null ? null : info.getCredentialNumber().trim());
+        userExt.setIdAddr(info.getIdAddr());
+        userExt.setWhereis(info.getWhereis());
+        userExt.setCreditLimit(info.getCreditLimit());
+        userExt.setEffectiveDate(info.getEffectiveDateTime());
+        userExt.setRemark(info.getRemarkMemo());
+        sellerUser.setUserExt(userExt);
+
         return sellerUser;
     }
 
@@ -532,6 +574,12 @@ public class HangGuoDataUtil {
         }
     }
 
+    /**
+     *
+     * @param list
+     * @param createTime
+     * @return
+     */
     private List<User> getHangGuoSupplierList(List<HangGuoUser> list, Date createTime) {
         List<User> userList = new ArrayList<>();
         StreamEx.of(list).nonNull().forEach(user -> {
@@ -544,15 +592,38 @@ public class HangGuoDataUtil {
         return userList;
     }
 
+    /**
+     *
+     * @param updateUserList
+     */
     private void updateUserByThirdCode(List<User> updateUserList) {
         if (CollectionUtils.isNotEmpty(updateUserList)) {
             hangGuoDataService.batchUpdateUserByThirdCode(updateUserList);
         }
     }
 
+    /**
+     *
+     * @param userList
+     */
     private void addUser(List<User> userList) {
         if (CollectionUtils.isNotEmpty(userList)) {
             userService.batchInsert(userList);
+        }
+    }
+
+    /**
+     *
+     * @param userList
+     */
+    private void addUserExt(List<User> userList) {
+        if (CollectionUtils.isNotEmpty(userList)) {
+            List userExts = StreamEx.of(userList).map(u -> {
+                UserExt userExt = u.getUserExt();
+                userExt.setUserId(u.getId());
+                return userExt;
+            }).toList();
+            userExtService.batchInsert(userExts);
         }
     }
 
@@ -569,25 +640,8 @@ public class HangGuoDataUtil {
         User sellerUser = DTOUtils.newDTO(User.class);
         sellerUser.setThirdPartyCode(info.getSupplierNo() == null ? null : info.getSupplierNo().trim());
         sellerUser.setName(info.getSupplierName() == null ? null : info.getSupplierName().trim());
-        sellerUser.setCredentialType(info.getCredentialType());
-        sellerUser.setCredentialName(info.getCredentialName());
-        sellerUser.setCredentialNumber(info.getCredentialNumber() == null ? null : info.getCredentialNumber().trim());
-        sellerUser.setSex(info.getSex());
         sellerUser.setLicense(info.getLiscensNo());
         sellerUser.setPhone(info.getMobileNumber() == null ? null : info.getMobileNumber().trim());
-        sellerUser.setFixedTelephone(info.getPhoneNumber());
-        //0非激活1激活
-        sellerUser.setState(info.getStatusCode());
-        sellerUser.setChargeRate(info.getChargeRate());
-        sellerUser.setMangerRate(info.getMangerRate());
-        sellerUser.setStorageRate(info.getStorageRate());
-        sellerUser.setAssessRate(info.getAssessRate());
-        sellerUser.setApprover(info.getApprover());
-        sellerUser.setSupplierType(info.getSupplierType() == null ? nullStr : info.getSupplierType());
-        sellerUser.setIdAddr(info.getIdAddr());
-        sellerUser.setAddr(info.getOperateAddr());
-        sellerUser.setEffectiveDate(info.getEffectiveDateTime());
-        sellerUser.setRemark(info.getRemarkMemo());
         if (null != info.getEffectiveDateTime()) {
             //有效时间在当前时间之前则为禁用
             if (info.getEffectiveDateTime().before(DateUtils.getCurrentDate())) {
@@ -611,6 +665,32 @@ public class HangGuoDataUtil {
         sellerUser.setMarketId(Long.valueOf(MarketIdEnum.FRUIT_TYPE.getCode()));
         sellerUser.setMarketName(MarketIdEnum.FRUIT_TYPE.getName());
         sellerUser.setIsActive(UserActiveEnum.DOWN.getCode());
+        sellerUser.setAddr(info.getOperateAddr());
+        //0非激活1激活
+        sellerUser.setState(info.getStatusCode());
+        // 杭果全部个人
+        sellerUser.setUserType(UserTypeEnum.USER.getCode());
+
+        // 维护 UserExt
+        UserExt userExt = new UserExt();
+        userExt.setCredentialType(info.getCredentialType());
+        userExt.setCredentialName(info.getCredentialName());
+        userExt.setCredentialNumber(info.getCredentialNumber() == null ? null : info.getCredentialNumber().trim());
+        userExt.setSex(info.getSex());
+        userExt.setFixedTelephone(info.getPhoneNumber());
+        userExt.setChargeRate(info.getChargeRate());
+        userExt.setMangerRate(info.getMangerRate());
+        userExt.setStorageRate(info.getStorageRate());
+        userExt.setAssessRate(info.getAssessRate());
+        userExt.setApprover(info.getApprover());
+        userExt.setSupplierType(info.getSupplierType() == null ? nullStr : info.getSupplierType());
+        userExt.setIdAddr(info.getIdAddr());
+        userExt.setEffectiveDate(info.getEffectiveDateTime());
+        userExt.setRemark(info.getRemarkMemo());
+
+        sellerUser.setUserExt(userExt);
+
+
         return sellerUser;
     }
 
@@ -693,6 +773,11 @@ public class HangGuoDataUtil {
         }
     }
 
+    /**
+     *
+     * @param parentCode
+     * @return
+     */
     private String turnSubStr(String parentCode) {
         if (StringUtils.isNotBlank(parentCode)) {
             return parentCode.substring(0, parentCode.length() - 1);
@@ -838,6 +923,12 @@ public class HangGuoDataUtil {
         productStockService.batchUpdate(updateStock);
     }
 
+    /**
+     *
+     * @param addDetailList
+     * @param productStockMap
+     * @return
+     */
     private List<ProductStock> beforehandReductionStockWeight(List<TradeDetail> addDetailList, Map<Long, ProductStock> productStockMap) {
         List<ProductStock> updateStockList = new ArrayList<>();
         Integer weightUnitMagnification = 2;
@@ -945,6 +1036,11 @@ public class HangGuoDataUtil {
         updateCacheTradeHandleFlag(DataHandleFlagEnum.PROCESSED.getCode(), tradeList);
     }
 
+    /**
+     *
+     * @param billNos
+     * @return
+     */
     private Map<Long, TradeDetail> getTradeBillMap(List<String> billNos) {
         List<RegisterBill> billList = hangGuoDataService.getRegisterBillByIds(billNos);
         List<String> billIds = StreamEx.of(billList).nonNull().map(b -> b.getCode()).collect(Collectors.toList());
@@ -952,6 +1048,11 @@ public class HangGuoDataUtil {
         return StreamEx.of(orderDetailList).nonNull().collect(Collectors.toMap(TradeDetail::getBillId, Function.identity(), (a, b) -> a));
     }
 
+    /**
+     *
+     * @param handleFlag
+     * @param tradeList
+     */
     private void updateCacheTradeHandleFlag(Integer handleFlag, List<HangGuoTrade> tradeList) {
         if (CollectionUtils.isNotEmpty(tradeList)) {
             Map<String, Object> map = new HashMap<>();
@@ -961,6 +1062,11 @@ public class HangGuoDataUtil {
         }
     }
 
+    /**
+     *
+     * @param commodityCode
+     * @return
+     */
     private List<Category> getCategoryListByThirdCode(List<String> commodityCode) {
         if (CollectionUtils.isEmpty(commodityCode)) {
             return null;
@@ -968,6 +1074,11 @@ public class HangGuoDataUtil {
         return hangGuoDataService.getCategoryListByThirdCode(commodityCode);
     }
 
+    /**
+     *
+     * @param userCode
+     * @return
+     */
     private List<User> getUserListByThirdPartyCode(List<String> userCode) {
         if (CollectionUtils.isEmpty(userCode)) {
             return null;
@@ -1139,6 +1250,12 @@ public class HangGuoDataUtil {
         return requestList;
     }
 
+    /**
+     *
+     * @param addSize
+     * @param now
+     * @return
+     */
     //@Transactional(propagation = Propagation.REQUIRED)
     private Map<String, String> generNextCode(int addSize, LocalDateTime now) {
         int tradeRequestSize = 5;
