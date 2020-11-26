@@ -39,6 +39,7 @@ public class MarketServiceImpl extends BaseServiceImpl<Market, Long> implements 
         });
     }
 
+    @Override
     public Firm getCurrentMarket(){
         return this.webCtxService
                 .getCurrentFirm()
@@ -65,6 +66,11 @@ public class MarketServiceImpl extends BaseServiceImpl<Market, Long> implements 
         return marketMap;
     }
 
+    /**
+     * 从 UAP 获取市场
+     * @param marketEnum 本地市场枚举
+     * @return
+     */
     @Override
     public Firm getMarketByCode(MarketEnum marketEnum) {
         Map<String, String> marketCodeMap = this.getMarketCodeMap();

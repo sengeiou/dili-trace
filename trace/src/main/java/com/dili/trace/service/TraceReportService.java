@@ -33,6 +33,12 @@ public class TraceReportService {
     CheckinOutRecordMapper checkinOutRecordMapper;
     @Autowired
     SysConfigService sysConfigService;
+
+    /**
+     * 溯源报表
+     * @param query
+     * @return
+     */
     public Map<String, TraceReportDto> getTraceBillReportData(TraceReportQueryDto query) {
         query.setGreenBillVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.PASSED.getCode()));
         query.setRedBillVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NO_PASSED.getCode()));

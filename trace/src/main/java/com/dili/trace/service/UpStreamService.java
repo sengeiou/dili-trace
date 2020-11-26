@@ -30,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.hutool.core.collection.CollUtil;
 import tk.mybatis.mapper.entity.Example;
 
+/**
+ * 上下游业务类
+ */
 @Service
 public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	/**
