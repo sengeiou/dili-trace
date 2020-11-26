@@ -1,9 +1,11 @@
 package com.dili.trace.controller;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.domain.TradeType;
 import com.dili.trace.dto.*;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -74,6 +76,9 @@ public class SgRegisterBillController {
 
     @Autowired
     WebCtxService webCtxService;
+    @Autowired
+    ImageCertService imageCertService;
+
 
     /**
      * 跳转到RegisterBill页面
@@ -155,11 +160,28 @@ public class SgRegisterBillController {
     @RequestMapping(value = "/insert2.action", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput insert2(@RequestBody CreateListBillParam input) {
+        if (input == null) {
+            return BaseOutput.failure("参数错误");
+        }
+
         List<RegisterBill> billList = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity())
                 .nonNull()
                 .map(rbInputDto -> {
                     User user = DTOUtils.newDTO(User.class);
                     RegisterBill rb = rbInputDto.build(user);
+                    List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
+                            , rbInputDto.getHandleResultUrl(),
+                            rbInputDto.getOriginCertifiyUrl());
+                    rb.setImageCerts(imageList);
+                    rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
+                    rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
+                    rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
+                    rb.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+                    rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
+                    rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
+                    rb.setTruckType(TruckTypeEnum.FULL.getCode());
+                    rb.setIsCheckin(YesOrNoEnum.NO.getCode());
+                    rb.setIsDeleted(YesOrNoEnum.NO.getCode());
                     return rb;
                 }).toList();
         try {
@@ -171,6 +193,7 @@ public class SgRegisterBillController {
             return BaseOutput.failure("服务器出错,请重试");
         }
     }
+
 
     /**
      * 新增RegisterBill
