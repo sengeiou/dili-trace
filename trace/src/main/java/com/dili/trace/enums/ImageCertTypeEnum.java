@@ -47,6 +47,12 @@ public enum ImageCertTypeEnum {
     USER_PHOTO_HANGGUO(7, "杭果用户证件照片"),
 
     /**
+     * 处理结果图片
+     */
+    Handle_Result(8, "处理结果图片"),
+
+
+    /**
      * 其他
      */
     OTHERS(99, "其他"),

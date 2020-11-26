@@ -199,8 +199,11 @@
         var tempEl=$('#'+tempId);
         var productNameEl=tempEl.find('input[name*="productName"]');
         var originNameEl=tempEl.find('input[name*="originName"]');
+        var originCertifiyUrlEl=tempEl.find('input[id*="originCertifiyUrl"]');
         initAutoComplete(productNameEl,'/toll/category');
         initAutoComplete(originNameEl,'/toll/city')
+
+        initFileUpload1(originCertifiyUrlEl);
 
     }
     $(function () {
@@ -208,7 +211,7 @@
         createAndAppendTemplate();
 
         initFileUpload('#detectReportUrlFile');
-        initFileUpload1('#originCertifiyUrl_'+goodsItemCount);
+
 
         if(typeof(initWithLocalStorage)=='undefined'||initWithLocalStorage==true){
             if(!location.hash){
@@ -496,6 +499,7 @@
         }
     }
 
+    
     /**
      * 初始化自动完成框
      */
@@ -644,7 +648,7 @@
 
         var registerSource = $("#registerSource").val();
         var registerBills = buildTableData(registerSource);
-        var data=$('#createRecordForm').serializeJSON();
+        var data=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
         console.info(data);
         debugger
         $.ajax({
@@ -656,15 +660,9 @@
             contentType: "application/json; charset=utf-8",
             success: function (ret) {
                 if(ret.success){
-                    // TLOG.component.operateLog(TLOG.operates.add, "登记单管理",
-                    // ret.data, ret.data);
-                    // location.href = '/registerBill/index.html';
+
                     var paramStr = JSON.stringify(ret.data);
                     var registerSource = $("#registerSource").val();
-                    // if(registerSource == 1){
-                    // console.log("打印信息:--:"+paramStr);
-                    // printDirect(paramStr);
-                    // }else{
                     localStorage.setItem('registerSource',$("#registerSource").val());
                     localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
                     cacheInputtedPlate("#plate");
@@ -681,9 +679,6 @@
                             parent.closeWin('view_win');
                         }
                     );
-
-                    // }
-
 
                 }else{
                     resubmit=0;
@@ -843,33 +838,33 @@
     <tr id="goodsItem_{{index}}">
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm isSelected" name="registerBills[{{index}}].productName" id="registerBills[{{index}}].productName" required />
-                <input type="text" name="registerBills[{{index}}].productId" hidden value=""/>
+                <input type="text" class="form-control input-sm isSelected" name="registerBills[{{index}}][productName]" id="registerBills[{{index}}][productName]" required />
+                <input type="text" name="registerBills[{{index}}][productId]" hidden value=""/>
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text"   name="registerBills[{{index}}].originName" class="form-control input-sm isSelected originaNameInput" id="registerBills[{{index}}].originName" required />
-                <input type="text" name="registerBills[{{index}}].originId" hidden value="" />
+                <input type="text"   name="registerBills[{{index}}][originName]" class="form-control input-sm isSelected originaNameInput" id="registerBills[{{index}}][originName]" required />
+                <input type="text" name="registerBills[{{index}}][originId]" hidden value="" />
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm isInt" name="registerBills[{{index}}].weight" maxlength="6"  range="0 999999" value="0" />
+                <input type="text" class="form-control input-sm isInt" name="registerBills[{{index}}][weight]" maxlength="6"  range="0 999999" value="0" />
             </div>
         </td>
         <td>
             <div class="upload-div">
                 <a href="javascript:;" class="a-upload" tabindex="-1">
-                    <input type="file" id="registerBills[{{index}}].originCertifiyUrl"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
+                    <input type="file" id="registerBills[{{index}}][originCertifiyUrl]" type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data">
                     <span>上传</span>
-                    <input type="hidden" name="registerBills[{{index}}].originCertifiyUrl">
+                    <input type="hidden" name="registerBills[{{index}}][originCertifiyUrl]">
                 </a>
             </div>
             <div class="view-div" style="display: none;">
                 <span>已上传</span>
                 <a href="javascript:;" data-index="{{index}}" class="img-view-a">查看图片</a>
-                <a href="javascript:$('#registerBills[{{index}}].originCertifiyUrl').trigger('click')">重新上传</a>
+                <a href="javascript:$('#registerBills[{{index}}][originCertifiyUrl]').trigger('click')">重新上传</a>
             </div>
         </td>
         <td><a href="javascript:;" class="split-minus-btn">删除</a></td>

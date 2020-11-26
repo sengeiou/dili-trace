@@ -14,7 +14,7 @@ public enum GovPlatformSysConfigEnum {
 
     DD_CODE("rsa_config_info"),
     URL("url"),
-    MARKET_ID("market_id"),
+    MARKET_ID("marketId"),
     APP_ID("appId"),
     APP_SECRET("appSecret")
     ;

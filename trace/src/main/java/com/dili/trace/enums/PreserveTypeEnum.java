@@ -10,7 +10,10 @@ import one.util.streamex.StreamEx;
  * @author wangguofeng
  */
 public enum PreserveTypeEnum {
-
+	/**
+	 * 鲜活
+	 */
+	NONE(0, ""),
 	/**
 	 * 鲜活
 	 */

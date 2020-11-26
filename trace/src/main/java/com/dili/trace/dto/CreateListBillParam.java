@@ -18,7 +18,15 @@ public class CreateListBillParam {
 	private String idCardNo;
 	private String addr;
 	private String phone;
+	private String detectReportUrl;
 
+	public String getDetectReportUrl() {
+		return detectReportUrl;
+	}
+
+	public void setDetectReportUrl(String detectReportUrl) {
+		this.detectReportUrl = detectReportUrl;
+	}
 
 	public Long getUserId() {
 		return userId;

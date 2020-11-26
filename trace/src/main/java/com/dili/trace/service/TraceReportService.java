@@ -35,8 +35,9 @@ public class TraceReportService {
     SysConfigService sysConfigService;
 
     /**
-     * @Description
-     * @Date 2020/11/26 17:03
+     * 溯源报表
+     * @param query
+     * @return
      */
     public Map<String, TraceReportDto> getTraceBillReportData(TraceReportQueryDto query) {
         query.setGreenBillVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.PASSED.getCode()));
