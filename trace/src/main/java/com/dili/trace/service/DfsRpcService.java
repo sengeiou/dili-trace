@@ -43,7 +43,21 @@ public class DfsRpcService {
             return BaseOutput.success().setData(uri);
         }).orElse(BaseOutput.failure());
     }
+    /**
+     * 上传图片
+     * @param multipartFile
+     * @return
+     * @throws IOException
+     */
+    public BaseOutput<String> uploadFile(MultipartFile multipartFile) throws IOException {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            return BaseOutput.failure("文件为空");
+        }
 
+        return this.fileUpload(multipartFile).map(uri -> {
+            return BaseOutput.success().setData(uri);
+        }).orElse(BaseOutput.failure());
+    }
     /**
      * 检查图片格式
      * @param fileName
@@ -71,7 +85,7 @@ public class DfsRpcService {
      * @return
      * @throws IOException
      */
-    public Optional<String> fileUpload(MultipartFile multipartFile) throws IOException {
+    private Optional<String> fileUpload(MultipartFile multipartFile) throws IOException {
         return this.uploadAndCheckOutput(multipartFile);
     }
 

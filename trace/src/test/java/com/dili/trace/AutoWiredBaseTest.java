@@ -12,12 +12,10 @@ import java.util.Optional;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.api.input.CheckInApiInput;
 import com.dili.trace.api.input.CheckOutApiInput;
-import com.dili.trace.domain.Category;
 import com.dili.trace.domain.CheckinOutRecord;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
-import com.dili.trace.domain.TradeRequest;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
@@ -32,8 +30,7 @@ import com.dili.trace.enums.TradeTypeEnum;
 import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
-import com.dili.trace.glossary.YnEnum;
-import com.dili.trace.service.CategoryService;
+import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.CheckinOutRecordService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.TradeDetailService;
@@ -60,7 +57,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 	@Autowired
 	UserService userService;
 	@Autowired
-	CategoryService categoryService;
+	AssetsRpcService categoryService;
 	@Autowired
 	TradeDetailService tradeDetailService;
 	@Autowired
@@ -86,18 +83,19 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 	public void test() {
 		this.UpStreamService.listPageUpStream(11L, new UpStream());
 	}
-
+/*
 	protected Category findCategory() {
-		Category query = new Category();
 		//TODO
-	/*	query.setPage(1);
+		Category query = new Category();
+
+	*//*	query.setPage(1);
 		query.setRows(1);
 		Category categoryItem = StreamEx.of(this.categoryService.listPageByExample(query).getDatas()).findFirst()
 				.orElse(null);
 		assertNotNull(categoryItem);
-		return categoryItem;*/
+		return categoryItem;*//*
 		return null;
-	}
+	}*/
 
 	protected User findUser() {
 		User query = DTOUtils.newDTO(User.class);
@@ -116,7 +114,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 
 	protected RegisterBill buildBill() {
 		User userItem = this.findUser();
-		Category categoryItem = this.findCategory();
+//		Category categoryItem = this.findCategory();
 		RegisterBill bill = new RegisterBill();
 		bill.setBillType(BillTypeEnum.NONE.getCode());
 		bill.setVerifyType(BillVerifyStatusEnum.NONE.getCode());
@@ -128,9 +126,9 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		bill.setName(userItem.getName());
 		bill.setIdCardNo(userItem.getCardNo());
 		bill.setAddr(userItem.getAddr());
-
-		bill.setProductId(categoryItem.getId());
-		bill.setProductName(categoryItem.getName());
+//
+//		bill.setProductId(categoryItem.getId());
+//		bill.setProductName(categoryItem.getName());
 		bill.setOriginId(1L);
 		bill.setOriginName("国外");
 		return bill;

@@ -2,11 +2,11 @@ package com.dili.trace.api;
 
 import java.util.List;
 
+import com.dili.assets.sdk.dto.CusCategoryDTO;
+import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.domain.Category;
-import com.dili.trace.dto.CategoryListInput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.RUserCategory;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.service.CategoryService;
+import com.dili.trace.service.AssetsRpcService;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 public class CategoryApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoryApi.class);
     @Autowired
-    private CategoryService categoryService;
+    private AssetsRpcService categoryService;
     @Autowired
     BaseInfoRpcService baseInfoRpcService;
     @Autowired
@@ -50,9 +50,9 @@ public class CategoryApi {
      */
     @ApiOperation(value = "品类接口查询【接口已通】", notes = "品类接口查询")
     @RequestMapping(value = "/listCategoryByCondition", method = RequestMethod.POST)
-    public BaseOutput<List<com.dili.trace.domain.Category>> listCategoryByCondition(@RequestBody CategoryListInput category) {
+    public BaseOutput<List<CusCategoryDTO>> listCategoryByCondition(@RequestBody CusCategoryQuery category) {
         try {
-            List<Category> list = this.categoryService.listCategoryByCondition(category);
+            List<CusCategoryDTO> list = this.categoryService.listCusCategory(category);
             return BaseOutput.success().setData(list);
         } catch (Exception e) {
             LOGGER.error("listCityByCondition", e);

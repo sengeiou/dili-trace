@@ -141,7 +141,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             // 商品信息
             List<HangGuoTrade> tradeList = this.getTradeList(endTime);
             if (!CollectionUtils.isEmpty(tradeList)) {
-                hangGuoDataUtil.createTrade(tradeList, endTime);
+//                hangGuoDataUtil.createTrade(tradeList, endTime);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -159,12 +159,12 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             List<User> updateList = new ArrayList<>();
             StreamEx.of(userList).nonNull().forEach(u -> {
                 String picContent = getSupplierPic(u.getThirdPartyCode(), endTime);
-                String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), supType, picContent);
-                if (StringUtils.isNotBlank(picUrl)) {
-                    u.setCardNoFrontUrl(picUrl);
-                    u.setCardNoBackUrl(picUrl);
-                    updateList.add(u);
-                }
+//                String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), supType, picContent);
+//                if (StringUtils.isNotBlank(picUrl)) {
+//                    u.setCardNoFrontUrl(picUrl);
+//                    u.setCardNoBackUrl(picUrl);
+//                    updateList.add(u);
+//                }
             });
             if (!CollectionUtils.isEmpty(updateList)) {
                 hangGuoDataService.batchUpdateUserByThirdCode(updateList);
@@ -182,13 +182,13 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             List<User> updateList = new ArrayList<>();
             StreamEx.of(userList).nonNull().forEach(u -> {
                 String picContent = getMemberPic(u.getThirdPartyCode(), endTime);
-                String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), memType, picContent);
-                if (StringUtils.isNotBlank(picUrl)) {
-//                    u.setCredentialUrl(picUrl);
-                    u.setCardNoBackUrl(picUrl);
-                    u.setCardNoFrontUrl(picUrl);
-                    updateList.add(u);
-                }
+//                String picUrl = hangGuoDataUtil.createHangGuoUserPic(u.getThirdPartyCode(), memType, picContent);
+//                if (StringUtils.isNotBlank(picUrl)) {
+////                    u.setCredentialUrl(picUrl);
+//                    u.setCardNoBackUrl(picUrl);
+//                    u.setCardNoFrontUrl(picUrl);
+//                    updateList.add(u);
+//                }
             });
             if (!CollectionUtils.isEmpty(updateList)) {
                 hangGuoDataService.batchUpdateUserByThirdCode(updateList);
@@ -211,7 +211,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         }
         List<HangGuoUser> memberList = this.getMemberList(endTime, isFirst);
         if (!CollectionUtils.isEmpty(memberList)) {
-            hangGuoDataUtil.createHangGuoMember(memberList, endTime);
+//            hangGuoDataUtil.createHangGuoMember(memberList, endTime);
             this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
         }
     }
@@ -231,7 +231,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         // 供应商信息
         List<HangGuoUser> supplierList = this.getSupplierList(endTime, isFirst);
         if (!CollectionUtils.isEmpty(supplierList)) {
-            hangGuoDataUtil.createHangGuoSupplier(supplierList, endTime);
+//            hangGuoDataUtil.createHangGuoSupplier(supplierList, endTime);
             this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
         }
     }
@@ -250,13 +250,13 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             pushData.setMarketId(marketId);
             List<HangGuoCommodity> categoryList = this.getGoodsCategory(endTime, isFirst);
             if (!CollectionUtils.isEmpty(categoryList)) {
-                hangGuoDataUtil.createCommodity(categoryList, endTime);
+//                hangGuoDataUtil.createCommodity(categoryList, endTime);
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             }
         } else {
             List<HangGuoCommodity> categoryList = this.getGoodsCategory(pushData.getPushTime(), isFirst);
             if (!CollectionUtils.isEmpty(categoryList)) {
-                hangGuoDataUtil.createCommodity(categoryList, endTime);
+//                hangGuoDataUtil.createCommodity(categoryList, endTime);
                 this.thirdPartyPushDataService.updatePushTime(pushData, endTime);
             }
         }

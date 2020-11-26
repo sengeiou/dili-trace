@@ -47,7 +47,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     @Autowired
     private ThirdPartyPushDataService thirdPartyPushDataService;
     @Autowired
-    private CategoryService categoryService;
+    private AssetsRpcService categoryService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -540,7 +540,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
      * @return
      */
     private BaseOutput pushFruitsCategory(Optional<OperatorUser> optUser, Date endTime, Market market) {
-        Date updateTime = null;
+        /*Date updateTime = null;
         boolean newPushFlag = true;
         Long marketId = market.getId();
         Long platformMarketId = market.getPlatformMarketId();
@@ -596,7 +596,8 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         } else {
             logger.error("上报:{} 失败，原因:{}", ReportInterfaceEnum.HANGGUO_GOODS.getName(), baseOutput.getMessage());
         }
-        return baseOutput;
+        return baseOutput;*/
+        return  BaseOutput.success();
     }
 
 

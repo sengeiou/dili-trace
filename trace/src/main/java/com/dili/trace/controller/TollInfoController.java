@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.dili.assets.sdk.dto.CityDto;
+import com.dili.assets.sdk.dto.CusCategoryDTO;
+import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.trace.service.CityService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dili.common.service.BaseInfoRpcService;
-import com.dili.trace.domain.Category;
-import com.dili.trace.service.CategoryService;
+import com.dili.trace.service.AssetsRpcService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -32,7 +32,7 @@ public class TollInfoController {
     CityService cityService;
 
     @Autowired
-    CategoryService categoryService;
+    AssetsRpcService categoryService;
 
     /**
      * 根据名字查询品类信息
@@ -44,11 +44,13 @@ public class TollInfoController {
     @RequestMapping("/category")
     @ResponseBody
     public Map<String, ?> listByName(String name, boolean allFlag) {
-        List<Category> categorys = this.categoryService.listCategoryByCondition(name);
+        CusCategoryQuery cusCategoryQuery=new CusCategoryQuery();
+        cusCategoryQuery.setKeyword(name);
+        List<CusCategoryDTO> categorys = this.categoryService.listCusCategory(cusCategoryQuery);
 
         List<Map<String, Object>> list = Lists.newArrayList();
         if (categorys != null && !categorys.isEmpty()) {
-            for (Category c : categorys) {
+            for (CusCategoryDTO c : categorys) {
                 Map<String, Object> obj = Maps.newHashMap();
                 obj.put("id", c.getId());
                 obj.put("data", name);

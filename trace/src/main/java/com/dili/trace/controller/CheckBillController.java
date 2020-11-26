@@ -66,7 +66,7 @@ public class CheckBillController {
     private UserService userService;
 
     @Autowired
-    private CategoryService categoryService;
+    private AssetsRpcService categoryService;
 
 
     /**
@@ -303,11 +303,11 @@ public class CheckBillController {
         try {
             //TODO
        /*     Category category = categoryService.get(goodsCode);
-            category.setMarketId(MarketUtil.returnMarket());*/
+            category.setMarketId(MarketUtil.returnMarket());
             Category category = null;
             if (Objects.nonNull(category)) {
                 return BaseOutput.successData(category.getName());
-            }
+            }*/
             return BaseOutput.success("查询产品名称失败");
         } catch (TraceBizException e) {
             LOGGER.error("查询产品名称失败", e);

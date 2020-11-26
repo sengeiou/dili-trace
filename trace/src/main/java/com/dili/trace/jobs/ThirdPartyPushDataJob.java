@@ -2,6 +2,8 @@ package com.dili.trace.jobs;
 
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.dili.assets.sdk.dto.CusCategoryDTO;
+import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -47,7 +49,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     @Autowired
     TradeRequestMapper tradeRequestMapper;
     @Autowired
-    private CategoryService categoryService;
+    private AssetsRpcService categoryService;
     @Autowired
     private ThirdPartyPushDataService thirdPartyPushDataService;
     @Autowired
@@ -211,10 +213,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         Integer fruitsBigCategory = 1;
         if (thirdPartyPushData == null) {
-            Category category = new Category();
-            category.setLevel(fruitsBigCategory);
+            CusCategoryDTO category = new CusCategoryDTO();
+//TODO
+            //            category.setLevel(fruitsBigCategory);
             category.setMarketId(marketId);
-            List<Category> categories = categoryService.list(category);
+            List<CusCategoryDTO> categories = categoryService.listCusCategory(null);
 
             List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
                 CategoryDto categoryDto = new CategoryDto();
@@ -249,10 +252,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
-        Category category = new Category();
-        category.setLevel(level);
+        CusCategoryQuery category = new CusCategoryQuery();
+        //TODO
+//        category.setLevel(level);
         category.setMarketId(marketId);
-        List<Category> categories = categoryService.list(category);
+        List<CusCategoryDTO> categories = categoryService.listCusCategory(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -263,9 +267,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
             int i = 1;
             PreserveTypeEnum[] preserveTypeEnums = PreserveTypeEnum.values();
             for (PreserveTypeEnum type : preserveTypeEnums) {
-                for (Category td : categories) {
-                    boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                            && td.getModified().compareTo(endTime) <= 0);
+                for (CusCategoryDTO td : categories) {
+                    boolean needPush = true;
+                   /* boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                            && td.getModified().compareTo(endTime) <= 0);*/
                     if (needPush) {
                         CategorySecondDto categoryDto = new CategorySecondDto();
                         categoryDto.setThirdSmallClassId(td.getId().toString());
@@ -289,13 +294,14 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         } else if (categoryGoods.equals(tableName)) {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
-                boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                        && td.getModified().compareTo(endTime) <= 0);
+                boolean needPush =true;
+ /*               boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                        && td.getModified().compareTo(endTime) <= 0);*/
                 if (needPush) {
                     GoodsDto categoryDto = new GoodsDto();
                     categoryDto.setGoodsName(td.getName());
                     categoryDto.setThirdGoodsId(td.getId().toString());
-                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
+//                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
                     categoryDto.setMarketId(String.valueOf(platformMarketId));
                     categoryDtos.add(categoryDto);
                 }
@@ -324,10 +330,11 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         Long platformMarketId = market.getPlatformMarketId();
         ThirdPartyPushData thirdPartyPushData =
                 thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
-        Category category = new Category();
-        category.setLevel(level);
+        CusCategoryQuery category = new CusCategoryQuery();
+        //TODO
+//        category.setLevel(level);
         category.setMarketId(marketId);
-        List<Category> categories = categoryService.list(category);
+        List<CusCategoryDTO> categories = categoryService.listCusCategory(category);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -335,14 +342,18 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         BaseOutput baseOutput = new BaseOutput();
         if (categorySmallClass.equals(tableName)) {
             List<CategorySecondDto> categoryDtos = new ArrayList<>();
-            for (Category td : categories) {
-                boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                        && td.getModified().compareTo(endTime) <= 0);
+            for (CusCategoryDTO td : categories) {
+                //TODO
+                boolean needPush =true;
+/*                boolean needPush = thirdPartyPushData == null
+                        || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                        && td.getModified().compareTo(endTime) <= 0);*/
                 if (needPush) {
                     CategorySecondDto categoryDto = new CategorySecondDto();
                     categoryDto.setThirdSmallClassId(td.getId().toString());
                     categoryDto.setSmallClassName(td.getName());
-                    categoryDto.setThirdBigClassId(String.valueOf(td.getParentId()));
+                    //TODO
+//                    categoryDto.setThirdBigClassId(String.valueOf(td.getParentId()));
                     categoryDto.setMarketId(String.valueOf(platformMarketId));
                     categoryDtos.add(categoryDto);
                 }
@@ -358,13 +369,16 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         } else if (categoryGoods.equals(tableName)) {
             List<GoodsDto> categoryDtos = new ArrayList<>();
             StreamEx.of(categories).forEach(td -> {
-                boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
-                        && td.getModified().compareTo(endTime) <= 0);
+                //TODO
+                boolean needPush =true;
+                /*boolean needPush = thirdPartyPushData == null || (thirdPartyPushData.getPushTime().compareTo(td.getModified()) < 0
+                        && td.getModified().compareTo(endTime) <= 0);*/
                 if (needPush) {
                     GoodsDto categoryDto = new GoodsDto();
                     categoryDto.setGoodsName(td.getName());
                     categoryDto.setThirdGoodsId(td.getId().toString());
-                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
+//TODO
+                    //                    categoryDto.setThirdSmallClassId(td.getParentId().toString());
                     categoryDto.setMarketId(String.valueOf(platformMarketId));
                     categoryDtos.add(categoryDto);
                 }

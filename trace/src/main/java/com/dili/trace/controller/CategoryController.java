@@ -1,9 +1,9 @@
 package com.dili.trace.controller;
 
+import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.domain.Category;
-import com.dili.trace.service.CategoryService;
+import com.dili.trace.service.AssetsRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/category")
 public class CategoryController {
     @Autowired
-    CategoryService categoryService;
+    AssetsRpcService assetsRpcService;
 
     /**
      * 查询品类信息
@@ -30,7 +30,7 @@ public class CategoryController {
     @RequestMapping("/listCategories.action")
     @ResponseBody
     public BaseOutput listCategories(@RequestBody CusCategoryQuery query) {
-        List<Category> categories = this.categoryService.listCategoryByCondition(query);
+        List<CusCategoryDTO> categories = this.assetsRpcService.listCusCategory(query);
         return BaseOutput.successData(categories);
 //        if (categorys != null && !categorys.isEmpty()) {
 //            for (Category c : categorys) {
