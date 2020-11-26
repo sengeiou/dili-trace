@@ -89,22 +89,25 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            List<Market> marketList = marketService.list(new Market());
+            List<Market> marketList = marketService.listFromUap();
+            Map<String, String> marketCodeMap = marketService.getMarketCodeMap();
             for (Market market : marketList) {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();
                 String contextUrl = market.getContextUrl();
-                Integer marketId = market.getId().intValue();
+                String marketCode = market.getCode();
                 if (appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl)) {
                     Date endTime = this.registerBillMapper.selectCurrentTime();
-                    if (marketId.equals(MarketIdEnum.AQUATIC_TYPE.getCode())) {
+                    // 水产市场商品推送逻辑
+                    if (marketCode.equals(marketCodeMap.get(MarketEnum.HZSC.getCode()))) {
                         // 商品大类新增/修改
                         this.pushBigCategory(optUser, market);
                         // 商品二级类目新增/修改
                         // 商品新增/修改
                         this.pushCategory(ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getCode(), ReportInterfaceEnum.CATEGORY_SMALL_CLASS.getName(), 1, optUser, endTime, market);
                         this.pushCategory(ReportInterfaceEnum.CATEGORY_GOODS.getCode(), ReportInterfaceEnum.CATEGORY_GOODS.getName(), 2, optUser, endTime, market);
-                    } else if (marketId.equals(MarketIdEnum.FRUIT_TYPE.getCode())) {
+                    // 水果市场商品推送逻辑
+                    } else if (marketCode.equals(marketCodeMap.get(MarketEnum.HZSG.getCode()))) {
                         // 杭果-商品大类新增/修改
                         this.pushFruitsBigCategory(optUser, market);
                         // 杭果-商品二级类目新增/修改
@@ -147,7 +150,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     public void pushRegisterBillData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            List<Market> marketList = marketService.list(new Market());
+            List<Market> marketList = marketService.listFromUap();
             for (Market market : marketList) {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();

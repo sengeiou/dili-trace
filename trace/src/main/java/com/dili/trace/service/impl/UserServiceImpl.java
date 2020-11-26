@@ -187,9 +187,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         // user.getSalesCityId());
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
-        if (StringUtils.isBlank(user.getMarketName())) {
-            user.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
-            user.setMarketName("杭州水产");
+        if (StringUtils.isBlank(user.getMarketName()) || Objects.isNull(user.getMarketId())) {
+            throw new TraceBizException("用户市场为空");
+//            user.setMarketId(Long.valueOf(MarketEnum.AQUATIC_TYPE.getCode()));
+//            user.setMarketName("杭州水产");
         }
         insertSelective(user);
         this.tallyAreaNoService.saveOrUpdateTallyAreaNo(user.getId(), tallyAreaNos);
@@ -724,9 +725,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setValidateState(ValidateStateEnum.CERTREQ.getCode());
         String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
         user.setTallyAreaNos(tallyAreaNos);
-        if (StringUtils.isBlank(user.getMarketName())) {
-            user.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
-            user.setMarketName("杭州水产");
+        if (StringUtils.isBlank(user.getMarketName()) || Objects.isNull(user.getMarketId())) {
+            throw new TraceBizException("用户市场为空");
         }
         user.setSource(UpStreamSourceEnum.REGISTER.getCode());
         insertSelective(user);

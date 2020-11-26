@@ -162,9 +162,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
-        // 没有市场时默认杭水
+        // 重构版本建单不允许没有市场
         if (Objects.isNull(registerBill.getMarketId())) {
-            registerBill.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
+            logger.error("登记单市场不存在！" + JSON.toJSONString(registerBill));
+            throw new TraceBizException("登记单市场不存在");
         }
 
         // 保存报备单

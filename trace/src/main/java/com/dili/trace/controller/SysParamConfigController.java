@@ -5,9 +5,9 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.SysConfig;
-import com.dili.trace.enums.MarketIdEnum;
 import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.service.SysConfigService;
+import com.dili.trace.util.MarketUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,7 +58,7 @@ public class SysParamConfigController {
         SysConfig sysConfig = new SysConfig();
         sysConfig.setOptType(SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode());
         sysConfig.setOptCategory(SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode());
-        sysConfig.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
+        sysConfig.setMarketId(MarketUtil.returnMarket());
         List<SysConfig> sysConfigList = this.sysConfigService.listByExample(sysConfig);
         if (CollectionUtils.isNotEmpty(sysConfigList)) {
             sysConfig = sysConfigList.get(0);
@@ -88,7 +88,7 @@ public class SysParamConfigController {
             if (StringUtils.isNotBlank(query.getOptCategory())) {
                 queSysConfig.setOptCategory(query.getOptCategory());
             }
-            queSysConfig.setMarketId(Long.valueOf(MarketIdEnum.AQUATIC_TYPE.getCode()));
+            queSysConfig.setMarketId(MarketUtil.returnMarket());
             List<SysConfig> list = sysConfigService.listByExample(queSysConfig);
             return list;
         } catch (TraceBizException e) {

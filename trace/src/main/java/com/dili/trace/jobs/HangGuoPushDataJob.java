@@ -75,14 +75,15 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            List<Market> marketList = marketService.list(new Market());
+            List<Market> marketList = marketService.listFromUap();
+            Map<String, String> marketCodeMap = marketService.getMarketCodeMap();
             for (Market market : marketList) {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();
                 String contextUrl = market.getContextUrl();
-                Integer marketId = market.getId().intValue();
+                String marketCode = market.getCode();
                 boolean isValidate = null != market.getAppId() && StringUtils.isNotBlank(contextUrl) && StringUtils.isNotBlank(appSecret);
-                boolean isHangGuo = marketId.equals(MarketIdEnum.FRUIT_TYPE.getCode()) && appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl);
+                boolean isHangGuo = marketCode.equals(marketCodeMap.get(MarketEnum.HZSG.getCode())) && appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl);
                 if (isHangGuo && isValidate) {
                     Date endTime = this.registerBillMapper.selectCurrentTime();
                     // 商品上报
@@ -104,14 +105,15 @@ public class HangGuoPushDataJob implements CommandLineRunner {
     public void pushHangGuoTradeData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            List<Market> marketList = marketService.list(new Market());
+            List<Market> marketList = marketService.listFromUap();
+            Map<String, String> marketCodeMap = marketService.getMarketCodeMap();
             for (Market market : marketList) {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();
                 String contextUrl = market.getContextUrl();
-                Integer marketId = market.getId().intValue();
+                String marketCode = market.getCode();
                 boolean isValidate = null != market.getAppId() && StringUtils.isNotBlank(contextUrl) && StringUtils.isNotBlank(appSecret);
-                boolean isHangGuo = marketId.equals(MarketIdEnum.FRUIT_TYPE.getCode()) && appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl);
+                boolean isHangGuo = marketCode.equals(marketCodeMap.get(MarketEnum.HZSG.getCode())) && appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl);
                 if (isHangGuo && isValidate) {
                     Date endTime = this.registerBillMapper.selectCurrentTime();
                     //交易单

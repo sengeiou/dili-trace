@@ -1,14 +1,14 @@
 package com.dili.trace.component;
 
-import com.dili.assets.sdk.dto.CityDto;
-import com.dili.assets.sdk.rpc.CityRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Market;
 import com.dili.trace.enums.datadic.GovPlatformSysConfigEnum;
+import com.dili.trace.enums.datadic.MarketMapSysConfigEnum;
 import com.dili.uap.sdk.domain.DataDictionaryValue;
 import com.dili.uap.sdk.rpc.DataDictionaryRpc;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,10 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Guzman
@@ -55,7 +56,6 @@ public class RpcComponent {
         }
     }
 
-
     /**
      *
      * @Author guzman.liu
@@ -63,7 +63,7 @@ public class RpcComponent {
      * 获取上传给融食安系统的市场的配置
      * @Date 2020/11/26 10:57
      */
-    public Optional<List<Market>> getMarketConfigs(){
+    public Optional<List<Market>> getMarketConfigs() {
         List<DataDictionaryValue> dataDictionaryValues = this.listDataDictionaryValueByDdCode(GovPlatformSysConfigEnum.DD_CODE.getName());
 
         if (CollectionUtils.isEmpty(dataDictionaryValues)){
@@ -72,19 +72,37 @@ public class RpcComponent {
         Map<String, Map<String, String>> collect = dataDictionaryValues.stream()
                 .collect(Collectors.groupingBy(DataDictionaryValue::getFirmCode,Collectors.toMap(DataDictionaryValue::getName,DataDictionaryValue::getCode)));
 
-        List<Market> marketList = collect.values().stream().map(e -> {
+        List<Market> marketList = collect.entrySet().stream().map(e -> {
+            Map<String, String> value = e.getValue();
             Market market = new Market();
-            String appId = e.get(GovPlatformSysConfigEnum.APP_ID.getName());
-            String appSecret = e.get(GovPlatformSysConfigEnum.APP_SECRET.getName());
-            String marketId = e.get(GovPlatformSysConfigEnum.MARKET_ID.getName());
-            String url = e.get(GovPlatformSysConfigEnum.URL.getName());
+            String appId = value.get(GovPlatformSysConfigEnum.APP_ID.getName());
+            String appSecret = value.get(GovPlatformSysConfigEnum.APP_SECRET.getName());
+            String marketId = value.get(GovPlatformSysConfigEnum.MARKET_ID.getName());
+            String url = value.get(GovPlatformSysConfigEnum.URL.getName());
             market.setPlatformMarketId(StringUtils.isEmpty(marketId) ? null : Long.valueOf(marketId));
             market.setAppId(StringUtils.isEmpty(appId) ? null : Long.valueOf(appId));
             market.setAppSecret(appSecret);
             market.setContextUrl(url);
+            market.setCode(e.getKey().trim());
             return market;
         }).collect(Collectors.toList());
 
         return Optional.of(marketList);
+    }
+
+    /**
+     * 获取UAP市场编译映射配置
+     * @return
+     */
+    public Optional<Map<String, String>> getMarketCodeMap() {
+        List<DataDictionaryValue> dataDictionaryValues = this.listDataDictionaryValueByDdCode(MarketMapSysConfigEnum.DD_CODE.getName());
+        if (CollectionUtils.isEmpty(dataDictionaryValues)) {
+            return Optional.empty();
+        }
+        Map<String, String> marketCodeMap = new HashedMap();
+        dataDictionaryValues.stream().forEach(d -> {
+            marketCodeMap.put(d.getCode(), d.getName());
+        });
+        return Optional.of(marketCodeMap);
     }
 }

@@ -89,7 +89,7 @@ public class ThirdPartyReportJob implements CommandLineRunner {
     public void reportData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
-            List<Market> marketList = marketService.list(new Market());
+            List<Market> marketList = marketService.listFromUap();
             for (Market market : marketList) {
                 Long appId = market.getAppId();
                 String appSecret = market.getAppSecret();

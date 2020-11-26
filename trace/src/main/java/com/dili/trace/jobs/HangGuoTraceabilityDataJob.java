@@ -2,19 +2,19 @@ package com.dili.trace.jobs;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.*;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.MarketIdEnum;
+import com.dili.trace.enums.MarketEnum;
 import com.dili.trace.enums.ReportInterfaceEnum;
 import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.enums.ThirdSourceTypeEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.*;
+import com.dili.uap.sdk.domain.Firm;
 import one.util.streamex.StreamEx;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +53,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     UserService userService;
     @Autowired
     SysConfigService sysConfigService;
+    @Autowired
+    MarketService marketService;
 
     @Value("${thrid.insert.batch.size}")
     private Integer insertBatchSize;
@@ -105,7 +107,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             }
             Date endTime = this.registerBillMapper.selectCurrentTime();
             // 商品信息
-           // getThirdGoodsData(endTime);
+            getThirdGoodsData(endTime);
             //供应商
             getThirdSupplierData(endTime);
             //会员
@@ -150,7 +152,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
     private void getThirdSupplierPicData(Date endTime) {
         User user = DTOUtils.newInstance(User.class);
-        user.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
+        user.setMarketId(firm.getId());
         user.setYn(YnEnum.YES.getCode());
         List<User> userList = userService.getUserByCredentialUrl(user);
 
@@ -174,7 +177,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
     private void getThirdMemberPicData(Date endTime) {
         User user = DTOUtils.newInstance(User.class);
-        user.setMarketId(MarketIdEnum.FRUIT_TYPE.getCode().longValue());
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
+        user.setMarketId(firm.getId());
         user.setYn(YnEnum.YES.getCode());
         List<User> userList = userService.getUserByCredentialUrl(user);
         if (!CollectionUtils.isEmpty(userList)) {
@@ -198,8 +202,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
 
 
     private void getThirdMemberData(Date endTime) {
-        Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getCode(), marketId);
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getCode(), firm.getId());
         boolean isFirst = false;
         if (null == pushData) {
             isFirst = true;
@@ -207,7 +211,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_MEMBER.getName());
             pushData.setPushTime(endTime);
-            pushData.setMarketId(marketId);
+            pushData.setMarketId(firm.getId());
         }
         List<HangGuoUser> memberList = this.getMemberList(endTime, isFirst);
         if (!CollectionUtils.isEmpty(memberList)) {
@@ -217,8 +221,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     }
 
     private void getThirdSupplierData(Date endTime) {
-        Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_SUPPLIER.getCode(), marketId);
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_SUPPLIER.getCode(), firm.getId());
         boolean isFirst = false;
         if (null == pushData) {
             isFirst = true;
@@ -226,7 +230,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_SUPPLIER.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_SUPPLIER.getName());
             pushData.setPushTime(endTime);
-            pushData.setMarketId(marketId);
+            pushData.setMarketId(firm.getId());
         }
         // 供应商信息
         List<HangGuoUser> supplierList = this.getSupplierList(endTime, isFirst);
@@ -237,8 +241,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     }
 
     private void getThirdGoodsData(Date endTime) {
-        Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode(), marketId);
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode(), firm.getId());
         boolean isFirst = false;
         //由于updatetime为预留参数没有实际意义.因此获取了一次后不会再获取,否则又是全量数据
         if (null == pushData) {
@@ -247,7 +251,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_GOODS.getName());
             pushData.setPushTime(endTime);
-            pushData.setMarketId(marketId);
+            pushData.setMarketId(firm.getId());
             List<HangGuoCommodity> categoryList = this.getGoodsCategory(endTime, isFirst);
             if (!CollectionUtils.isEmpty(categoryList)) {
 //                hangGuoDataUtil.createCommodity(categoryList, endTime);
@@ -265,9 +269,8 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
     private List<HangGuoTrade> getTradeList(Date endTime) {
         List<HangGuoTrade> tradeList = new ArrayList<>();
         String tradeStr = null;
-
-        Long marketId = MarketIdEnum.FRUIT_TYPE.getCode().longValue();
-        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_TRADE.getCode(), marketId);
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
+        ThirdPartyPushData pushData = thirdPartyPushDataService.getThredPartyPushData(ReportInterfaceEnum.SOURCE_HANGGUO_TRADE.getCode(), firm.getId());
         boolean isFirst = false;
         if (null == pushData) {
             isFirst = true;
@@ -275,7 +278,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
             pushData.setTableName(ReportInterfaceEnum.SOURCE_HANGGUO_TRADE.getCode());
             pushData.setInterfaceName(ReportInterfaceEnum.SOURCE_HANGGUO_TRADE.getName());
             pushData.setPushTime(endTime);
-            pushData.setMarketId(marketId);
+            pushData.setMarketId(firm.getId());
         }
 
         HangGuoResult result1 = getHangGuoTradeResult(endTime, isFirst);
@@ -292,7 +295,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? tradeStr.length() : (i + 1) * batchSize;
                 String partBills = tradeStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.TRADE.getCode(), ThirdSourceTypeEnum.TRADE.getDesc(),
-                        endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+                        endTime, firm.getId());
             }
             tradeList = JSON.parseArray(tradeStr, HangGuoTrade.class);
             logger.info("-----===>获取交易数量总数为：" + tradeList.size());
@@ -302,7 +305,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 tradeStr = JSON.toJSONString(result1);
             }
             addSource(tradeStr, ThirdSourceTypeEnum.TRADE.getCode(), ThirdSourceTypeEnum.TRADE.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+                    endTime, firm.getId());
         }
         logger.info("====>end getTradeList time:" + (DateUtils.getCurrentDate().getTime() - endTime.getTime()));
         return tradeList;
@@ -312,6 +315,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         List<HangGuoUser> hangGuoUserList = new ArrayList<>();
         Date startdate = DateUtils.getCurrentDate();
         String userStr = null;
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
 
         HangGuoResult result1 = getHangGuoMemberResult(endTime, isFirst);
         if (null != result1 && StringUtils.isBlank(result1.getRecode())) {
@@ -327,7 +331,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? userStr.length() : (i + 1) * batchSize;
                 String partBills = userStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.MEMBER.getCode(), ThirdSourceTypeEnum.MEMBER.getDesc(),
-                        endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+                        endTime, firm.getId());
             }
             hangGuoUserList = JSON.parseArray(userStr, HangGuoUser.class);
             logger.info("-----===>getMemberList:" + hangGuoUserList.size());
@@ -337,7 +341,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 userStr = JSON.toJSONString(result1);
             }
             addSource(userStr, ThirdSourceTypeEnum.MEMBER.getCode(), ThirdSourceTypeEnum.MEMBER.getDesc(),
-                    startdate, MarketIdEnum.FRUIT_TYPE.getCode());
+                    startdate, firm.getId());
         }
         logger.info("====>end getMemberList time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         return hangGuoUserList;
@@ -348,6 +352,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         List<HangGuoUser> hangGuoUserList = new ArrayList<>();
         Date startdate = DateUtils.getCurrentDate();
         String userStr = null;
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
         HangGuoResult result = getHangGuoSupplierResult(endTime, isFirst);
         if (null != result && StringUtils.isBlank(result.getRecode())) {
             userStr = result.getData();
@@ -361,7 +366,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? userStr.length() : (i + 1) * batchSize;
                 String partBills = userStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.SUPPLIER.getCode(), ThirdSourceTypeEnum.SUPPLIER.getDesc(),
-                        endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+                        endTime, firm.getId());
             }
             hangGuoUserList = JSON.parseArray(userStr, HangGuoUser.class);
             logger.info("-----===>getSupplierList:" + hangGuoUserList.size());
@@ -371,7 +376,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 userStr = JSON.toJSONString(result);
             }
             addSource(userStr, ThirdSourceTypeEnum.SUPPLIER.getCode(), ThirdSourceTypeEnum.SUPPLIER.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+                    endTime, firm.getId());
         }
         logger.info("====>end getMemberList time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         return hangGuoUserList;
@@ -381,6 +386,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         List<HangGuoCommodity> commodityList = new ArrayList<>();
         Date startdate = DateUtils.getCurrentDate();
         String resultStr = null;
+        Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
 
         HangGuoResult result = getHangGuoGoodsResult(endTime, isFirst);
         if (null != result && StringUtils.isBlank(result.getRecode())) {
@@ -395,7 +401,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 Integer endPos = i == part ? resultStr.length() : (i + 1) * batchSize;
                 String partBills = resultStr.substring(i * batchSize, endPos);
                 addSource(partBills, ThirdSourceTypeEnum.CATEGORY.getCode(), ThirdSourceTypeEnum.CATEGORY.getDesc(),
-                        endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+                        endTime, firm.getId());
             }
             commodityList = JSON.parseArray(resultStr, HangGuoCommodity.class);
         } else {
@@ -403,7 +409,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
                 resultStr = JSON.toJSONString(result);
             }
             addSource(resultStr, ThirdSourceTypeEnum.CATEGORY.getCode(), ThirdSourceTypeEnum.CATEGORY.getDesc(),
-                    endTime, MarketIdEnum.FRUIT_TYPE.getCode());
+                    endTime, firm.getId());
         }
         logger.info("====>end getGoodsCategory time:" + (DateUtils.getCurrentDate().getTime() - startdate.getTime()));
         return commodityList;
@@ -566,7 +572,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
      * @param startdate
      * @param marketId
      */
-    private void addSource(String dataStr, Integer code, String desc, Date startdate, Integer marketId) {
+    private void addSource(String dataStr, Integer code, String desc, Date startdate, Long marketId) {
         OperatorUser optUser = new OperatorUser(-1L, "auto");
         ThirdPartySourceData sourceData = new ThirdPartySourceData();
         sourceData.setType(code);
@@ -574,7 +580,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         sourceData.setData(dataStr);
         sourceData.setCreated(startdate);
         sourceData.setModified(startdate);
-        sourceData.setMarketId(marketId == null ? null : Long.valueOf(marketId));
+        sourceData.setMarketId(marketId);
         sourceData.setOperatorId(optUser.getId());
         sourceData.setOperatorName(optUser.getName());
         hangGuoDataService.insertThirdPartySourceData(sourceData);
