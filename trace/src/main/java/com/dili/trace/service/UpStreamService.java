@@ -134,6 +134,12 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	}
 
 	// 增加下游企业时创建用户
+	/**
+	 *
+	 * @Date 2020/11/26 18:04
+	 * @Param
+	 * @return
+	 */
 	public Optional<Long> addUserForDownStream(UpStreamDto upStreamDto) {
 
 		if (UserFlagEnum.DOWN.equalsToCode(upStreamDto.getUpORdown())) {

@@ -31,6 +31,12 @@ public class ExecutionConstants {
     // TODO:值待定
     public static final String REDIS_SYSTEM_VERCODE_PREIX="";
 
+    /**
+     *
+     * @Date 2020/11/26 18:04
+     * @Param
+     * @return
+     */
     public String getMarketCode() {
         Firm currentMarket = marketService.getCurrentMarket();
         return currentMarket.getCode();
