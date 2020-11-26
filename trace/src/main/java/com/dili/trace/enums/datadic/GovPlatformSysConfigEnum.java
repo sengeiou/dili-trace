@@ -10,6 +10,8 @@ package com.dili.trace.enums.datadic;
  */
 public enum GovPlatformSysConfigEnum {
 
+
+
     DD_CODE("rsa_config_info"),
     URL("url"),
     MARKET_ID("market_id"),
