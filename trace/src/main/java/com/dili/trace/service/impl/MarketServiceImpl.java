@@ -25,14 +25,11 @@ public class MarketServiceImpl extends BaseServiceImpl<Market, Long> implements 
         return this.webCtxService.getCurrentFirm().map(Firm::getId).orElseThrow(() -> {
             return new TraceBizException("当前登录用户所属市场不存在");
         });
-//        System.out.println(out);
-//        // 根据市场code查询市场id
-//        Market query = new Market();
-//        query.setCode(firmCode);
-//        List<Market> markets = this.list(query);
-//        if (CollectionUtils.isEmpty(markets)) {
-//            throw new TraceBusinessException("市场【"+firmId+"】不存在");
-//        }
-//        return markets.get(0).getId();
+    }
+
+    public Firm getCurrentMarket(){
+        return this.webCtxService
+                .getCurrentFirm()
+                .orElseThrow(()-> new TraceBizException("当前登录用户所属市场不存在"));
     }
 }

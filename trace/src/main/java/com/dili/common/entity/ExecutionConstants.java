@@ -1,5 +1,8 @@
 package com.dili.common.entity;
 
+import com.dili.trace.service.MarketService;
+import com.dili.uap.sdk.domain.Firm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +12,9 @@ public class ExecutionConstants {
     //市场Code
     @Value("${market.code}")
     private String marketCode;
+
+    @Autowired
+    private MarketService marketService;
 
     //未登陆
     public static final String NO_LOGIN="401";
@@ -23,6 +29,7 @@ public class ExecutionConstants {
     public static final String REDIS_SYSTEM_VERCODE_PREIX="";
 
     public String getMarketCode() {
-        return marketCode;
+        Firm currentMarket = marketService.getCurrentMarket();
+        return currentMarket.getCode();
     }
 }
