@@ -6,6 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * 常量类
+ * @Author guzman.liu
+ * @Date 2020/11/26 17:48
+ */
 @Component
 public class ExecutionConstants {
 

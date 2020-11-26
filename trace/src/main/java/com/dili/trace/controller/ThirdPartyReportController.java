@@ -1,6 +1,8 @@
 package com.dili.trace.controller;
 
+import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.component.RpcComponent;
 import com.dili.trace.domain.Market;
 import com.dili.trace.domain.ThirdPartyReportData;
 import com.dili.trace.dto.OperatorUser;
@@ -15,12 +17,14 @@ import com.dili.trace.service.ThirdPartyReportDataService;
 import com.dili.trace.service.TraceReportService;
 import com.dili.trace.util.BeanMapUtil;
 import com.dili.trace.util.MarketUtil;
+import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
+import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -55,6 +60,9 @@ public class ThirdPartyReportController {
 
     @Autowired
     private MarketService marketService;
+
+    @Autowired
+    private RpcComponent rpcComponent;
 
     /**
      * 页面跳转
@@ -109,21 +117,53 @@ public class ThirdPartyReportController {
         if (input == null || input.getCheckBatch() == null || input.getCheckBatch() < 0) {
             return BaseOutput.failure("参数错误");
         }
-        Market market = marketService.get(MarketUtil.returnMarket());
-        if (market == null) {
-            return BaseOutput.failure("市场不存在");
+        try {
+            final Market ma = getMarket();
+            Optional<OperatorUser> opt = this.fromSessionContext();
+            this.thirdPartyReportJob.codeCount(opt, ma);
+            this.thirdPartyReportJob.marketCount(opt, ma);
+            this.thirdPartyReportJob.regionCount(opt, ma);
+            this.thirdPartyReportJob.reportCount(opt, input.getCheckBatch(), ma);
+
+        } catch (TraceBizException e1){
+            return BaseOutput.failure(e1.getMessage());
+        } catch (Exception e){
+            logger.error("countAll.action错误",e);
+            return BaseOutput.failure("参数错误");
         }
-        Long appId = market.getAppId();
-        String appSecret = market.getAppSecret();
-        String contextUrl = market.getContextUrl();
-        if (!(appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl))) {            return BaseOutput.failure("市场关联数据有误");
-        }
-        Optional<OperatorUser> opt = this.fromSessionContext();
-        this.thirdPartyReportJob.codeCount(opt, market);
-        this.thirdPartyReportJob.marketCount(opt, market);
-        this.thirdPartyReportJob.regionCount(opt, market);
-        this.thirdPartyReportJob.reportCount(opt, input.getCheckBatch(), market);
+
+
+
         return BaseOutput.success();
+    }
+
+    /**
+     * 获取当前登录的Market
+     * @Author guzman.liu
+     * @Date 2020/11/26 17:37
+     */
+    private Market getMarket() {
+        Firm currentMarket = marketService.getCurrentMarket();
+        final Market ma  = new Market();
+        rpcComponent.getMarketConfigs().ifPresent(e ->{
+            Market market1 = e.stream()
+                    .filter(market -> currentMarket.getCode().equalsIgnoreCase(market.getCode()))
+                    .findFirst()
+                    .orElse(new Market());
+            try {
+                BeanUtilsBean2.getInstance().copyProperties(ma,market1);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        Long appId = ma.getAppId();
+        String appSecret = ma.getAppSecret();
+        String contextUrl = ma.getContextUrl();
+        if (!(appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl))) {
+            throw new TraceBizException("市场关联数据有误");
+        }
+        return ma;
     }
 
     /**
@@ -138,18 +178,8 @@ public class ThirdPartyReportController {
         if (input == null || input.getId() == null) {
             return BaseOutput.failure("参数错误");
         }
-        Market market = marketService.get(MarketUtil.returnMarket());
-        if (market == null) {
-            return BaseOutput.failure("市场不存在");
-        }
-        Long appId = market.getAppId();
-        String appSecret = market.getAppSecret();
-        String contextUrl = market.getContextUrl();
-        if (!(appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl))) {
-            return BaseOutput.failure("市场关联数据有误");
-        }
-
         try {
+            final Market market = getMarket();
             Optional<OperatorUser> opt = this.fromSessionContext();
             ThirdPartyReportData reportData = this.thirdPartyReportDataService.get(input.getId());
             if (reportData.getSuccess() != null && reportData.getSuccess() == 1) {
@@ -228,6 +258,8 @@ public class ThirdPartyReportController {
             }else {
                 return BaseOutput.failure("数据错误");
             }
+        } catch (TraceBizException e1){
+            return BaseOutput.failure(e1.getMessage());
         } catch (Exception e) {
             return BaseOutput.failure("服务端出错");
         }
@@ -244,15 +276,6 @@ public class ThirdPartyReportController {
     public BaseOutput dailyReport(ModelMap modelMap, @RequestBody ThirdPartyReportDataQueryDto input) {
         if (StringUtils.isBlank(input.getCreatedStart()) || StringUtils.isBlank(input.getCreatedEnd())) {
             return BaseOutput.failure("参数错误");
-        }
-        Market market = marketService.get(MarketUtil.returnMarket());
-        if (market == null) {
-            return BaseOutput.failure("市场不存在");
-        }
-        Long appId = market.getAppId();
-        String appSecret = market.getAppSecret();
-        String contextUrl = market.getContextUrl();
-        if (!(appId != null && StringUtils.isNoneBlank(appSecret) && StringUtils.isNoneBlank(contextUrl))) {            return BaseOutput.failure("市场关联数据有误");
         }
 
         DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -286,24 +309,29 @@ public class ThirdPartyReportController {
             dateList.add(start);
             start = start.plusDays(1);
         }
-        Optional<OperatorUser> opt = this.fromSessionContext();
-        List<BaseOutput> list = StreamEx.of(dateList).mapToEntry(ld -> {
-            return ld.atTime(0, 0, 0);
-        }, ld -> {
+        try {
+            Market market = getMarket();
+            Optional<OperatorUser> opt = this.fromSessionContext();
+            List<BaseOutput> list = StreamEx.of(dateList)
+                    .mapToEntry(ld -> ld.atTime(0, 0, 0), ld -> ld.atTime(23, 59, 59))
+                    .mapKeyValue((k, v) -> {
+                        BaseOutput output = this.dataReportService.reportCount(opt, k, v, 0, market);
+                        logger.info("success:{},message:{}", output.isSuccess(), output.getMessage());
+                        return output;
+                    })
+                    .filter(o -> !o.isSuccess()).toList();
 
-            return ld.atTime(23, 59, 59);
-
-        }).mapKeyValue((k, v) -> {
-            BaseOutput output = this.dataReportService.reportCount(opt, k, v, 0, market);
-            logger.info("success:{},message:{}", output.isSuccess(), output.getMessage());
-            return output;
-        }).filter(o -> !o.isSuccess()).toList();
-        if (list.size() > 0) {
-            return BaseOutput.failure("部分请求失败,请查看后台日志");
-        } else {
-            return BaseOutput.success();
+            if (list.size() > 0) {
+                return BaseOutput.failure("部分请求失败,请查看后台日志");
+            } else {
+                return BaseOutput.success();
+            }
+        } catch (TraceBizException e1){
+            return BaseOutput.failure(e1.getMessage());
+        }catch (Exception e) {
+            logger.error("",e);
+            return BaseOutput.failure("系统繁忙，请稍后再试");
         }
-
     }
 
     /**
