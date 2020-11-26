@@ -12,11 +12,49 @@ import java.util.Map;
  * @author Lily
  */
 public interface MarketService extends BaseService<Market, Long> {
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * 获取当前市场的ID
+     * @Date 2020/11/26 14:23
+     */
     Long getCurrentLoginMarketId();
 
+    /**
+     *
+     * @Author guzman.liu
+     * @Description
+     * 获取当前市场的所有信息
+     * @Date 2020/11/26 14:23
+     */
+    public Firm getCurrentMarket();
+
+    /**
+     *
+     * @Author Alvin.li
+     * @Description
+     * 获取uap溯源系统市场列表
+     * ==>从数据字典获取，主要用于数据上报
+     * @Date 2020/11/26 14:23
+     */
     List<Market> listFromUap();
 
+    /**
+     *
+     * @Author Alvin.li
+     * @Description
+     * 获取uap溯源系统市场映射
+     * @Date 2020/11/26 14:23
+     */
     Map<String, String> getMarketCodeMap();
 
+    /**
+     *
+     * @Author Alvin.li
+     * @Description
+     * 根据市场编码获取市场信息
+     * @Date 2020/11/26 14:23
+     */
     Firm getMarketByCode(MarketEnum marketEnum);
 }
