@@ -1,14 +1,18 @@
 package com.dili.trace.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dili.ss.domain.BaseOutput;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.BatchAuditDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.enums.ImageCertBillTypeEnum;
+import com.dili.trace.enums.ImageCertTypeEnum;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -241,4 +245,29 @@ public interface SgRegisterBillService {
      * @return
      */
     int createRegisterBillList(List<RegisterBill> registerBillList);
+
+
+    /**
+     * 构造图片列表
+     * @param detectReportUrl
+     * @param handleResultUrl
+     * @param originCertifiyUrl
+     * @return
+     */
+    public List<ImageCert>buildImageCertList(String detectReportUrl,String handleResultUrl,String originCertifiyUrl);
+
+
+    /**
+     * 查询图片列表
+     * @param billId
+     * @return
+     */
+    public List<ImageCert>findImageCertListByBillId(Long billId);
+
+    /**
+     * 查询图片列表
+     * @param billId
+     * @return
+     */
+    public Map<ImageCertTypeEnum,List<ImageCert>> findImageCertMapListByBillId(Long billId);
 }

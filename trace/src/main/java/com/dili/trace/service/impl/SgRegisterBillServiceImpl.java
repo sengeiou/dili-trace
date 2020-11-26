@@ -3,11 +3,14 @@ package com.dili.trace.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.*;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
+import com.dili.trace.enums.ImageCertBillTypeEnum;
+import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.dto.RegisterBillDto;
@@ -25,6 +28,7 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,21 +68,24 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     BillService billService;
     @Autowired
     RegisterBillMapper billMapper;
+    @Autowired
+    ImageCertService imageCertService;
 
 
     @Transactional
     @Override
     public int createRegisterBill(RegisterBill registerBill) {
-        BaseOutput recheck = checkBill(registerBill);
-        if (!recheck.isSuccess()) {
-            throw new TraceBizException(recheck.getMessage());
-        }
+//        BaseOutput recheck = checkBill(registerBill);
+//        if (!recheck.isSuccess()) {
+//            throw new TraceBizException(recheck.getMessage());
+//        }
         String code = this.codeGenerateService.nextRegisterBillCode();
         registerBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
         registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         registerBill.setCode(code);
         registerBill.setVersion(1);
         registerBill.setCreated(new Date());
+        registerBill.setModified(new Date());
         if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
             // 交易区没有理货区号
             registerBill.setTallyAreaNo(null);
@@ -106,9 +113,11 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
          * (!otherUserPlateList.isEmpty()) { return
          * BaseOutput.failure("当前车牌号已经与其他用户绑定,请使用其他牌号"); } }
          */
+
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,
                 registerBill.getOriginId());
         int result = this.billService.saveOrUpdate(registerBill);
+        this.imageCertService.insertImageCert(registerBill.getImageCerts(),registerBill.getId());
         if (result == 0) {
             LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
             throw new TraceBizException("创建失败");
@@ -959,8 +968,33 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public int createRegisterBillList(List<RegisterBill> registerBillList) {
         return StreamEx.ofNullable(registerBillList).flatCollection(Function.identity()).nonNull().map(rb -> {
-           return  this.createRegisterBill(rb);
+            return this.createRegisterBill(rb);
         }).mapToInt(Integer::valueOf).sum();
     }
 
+
+    public List<ImageCert> buildImageCertList(String detectReportUrl, String handleResultUrl, String originCertifiyUrl) {
+
+        List<ImageCert> detectReport = this.imageCertService.stringToImageCertList(detectReportUrl, ImageCertTypeEnum.DETECT_REPORT, ImageCertBillTypeEnum.BILL_TYPE);
+        List<ImageCert> handleResult = this.imageCertService.stringToImageCertList(handleResultUrl, ImageCertTypeEnum.Handle_Result, ImageCertBillTypeEnum.BILL_TYPE);
+        List<ImageCert> originCertifies = this.imageCertService.stringToImageCertList(originCertifiyUrl, ImageCertTypeEnum.ORIGIN_CERTIFIY, ImageCertBillTypeEnum.BILL_TYPE);
+
+        return StreamEx.of(detectReport).append(handleResult).append(originCertifies).toList();
+
+
+    }
+
+    @Override
+    public List<ImageCert> findImageCertListByBillId(Long billId) {
+        return this.imageCertService.findImageCertListByBillId(billId,ImageCertBillTypeEnum.BILL_TYPE);
+    }
+
+    @Override
+    public Map<ImageCertTypeEnum, List<ImageCert>> findImageCertMapListByBillId(Long billId) {
+        return StreamEx.of(this.findImageCertListByBillId(billId))
+                .mapToEntry(item->ImageCertTypeEnum.fromCode(item.getCertType()),Function.identity())
+                .filterKeys(Optional::isPresent)
+                .mapKeys(Optional::get)
+                .grouping();
+    }
 }

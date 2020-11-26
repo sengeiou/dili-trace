@@ -3,16 +3,21 @@ package com.dili.trace.domain;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.TFEnum;
 import io.swagger.annotations.ApiModelProperty;
+import one.util.streamex.StreamEx;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -268,6 +273,11 @@ public class RegisterBill extends BaseDomain {
 
     public Integer getSalesType() {
         return salesType;
+    }
+    public Map<Integer,List<ImageCert>> getGroupedImageCertList(){
+          return StreamEx.ofNullable(this.imageCerts).flatCollection(Function.identity())
+                .mapToEntry(item-> item.getCertType(), Function.identity())
+                .grouping();
     }
 
     public void setSalesType(Integer salesType) {
