@@ -139,7 +139,6 @@ public class ThirdPartyReportController {
 
     /**
      * 获取当前登录的Market
-     * @Author guzman.liu
      * @Date 2020/11/26 17:37
      */
     private Market getMarket() {
