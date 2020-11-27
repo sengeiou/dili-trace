@@ -1,5 +1,7 @@
 package com.dili.trace.glossary;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Optional;
 
 /**
@@ -52,6 +54,7 @@ public enum RegisterSourceEnum {
         return RegisterSourceEnum.getRegisterSourceEnum(code).map(item -> this == item).orElse(false);
     }
 
+    @JsonValue
     public Integer getCode() {
         return code;
     }

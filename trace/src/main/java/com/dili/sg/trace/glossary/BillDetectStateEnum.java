@@ -1,5 +1,7 @@
 package com.dili.sg.trace.glossary;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Optional;
 
 /**
@@ -62,6 +64,7 @@ public enum BillDetectStateEnum {
 		return BillDetectStateEnum.fromCode(code).map(item -> this == item).orElse(false);
 	}
 
+	@JsonValue
     public Integer getCode() {
         return code;
     }
