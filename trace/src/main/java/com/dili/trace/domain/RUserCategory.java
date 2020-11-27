@@ -3,6 +3,7 @@ package com.dili.trace.domain;
 import com.dili.ss.domain.BaseDomain;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Table(name = "r_user_category")
 public class RUserCategory extends BaseDomain {
@@ -24,7 +25,7 @@ public class RUserCategory extends BaseDomain {
     private String categoryName;
 
     @Column(name = "create_time")
-    private String createTime;
+    private Date createTime;
 
     @Override
     public Long getId() {
@@ -68,11 +69,11 @@ public class RUserCategory extends BaseDomain {
         this.categoryName = categoryName;
     }
 
-    public String getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 }

@@ -94,7 +94,8 @@ public class SessionData {
         data.tallyAreaNos = user.getTallyAreaNos();
         data.validateState = -1;
         data.qrStatus = -1;
-        data.marketName = null;
+        data.marketId = user.getMarketId();
+        data.marketName = user.getMarketName();
         data.mapData = data.convertThisToMap();
         return data;
     }
@@ -246,5 +247,21 @@ public class SessionData {
      */
     public String getMarketName() {
         return marketName;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public Set<String> getUserWeChatMenus() {
+        return userWeChatMenus;
+    }
+
+    public void setUserWeChatMenus(Set<String> userWeChatMenus) {
+        this.userWeChatMenus = userWeChatMenus;
     }
 }

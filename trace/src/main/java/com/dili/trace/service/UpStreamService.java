@@ -197,6 +197,8 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 				RUserUpstream rUserUpstream = new RUserUpstream();
 				rUserUpstream.setUpstreamId(upStreamDto.getId());
 				rUserUpstream.setUserId(o);
+				rUserUpstream.setCreated(new Date());
+				rUserUpstream.setModified(new Date());
 				if (CollUtil.isEmpty(rUserUpStreamService.listByExample(rUserUpstream))){
 					rUserUpstream.setOperatorId(operatorUser.getId());
 					rUserUpstream.setOperatorName(operatorUser.getName());
@@ -248,6 +250,11 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		return getActualDao().queryUsersByUpstreamIds(upstreamIds);
 	}
 
+	/**
+	 *
+	 * @param userId
+	 * @return
+	 */
 	public List<UpStream> queryUpStreamByUserId(Long userId) {
 		if (userId == null) {
 			return new ArrayList<>();
@@ -265,7 +272,13 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	}
 
-	
+	/**
+	 * 根据条件查询上游
+	 * @param userId
+	 * @param userFlagEnum
+	 * @param sourceUserId
+	 * @return
+	 */
 	public List<UpStream> queryUpStreamByUserIdAndFlag(Long userId,UserFlagEnum userFlagEnum,Long sourceUserId) {
 		if (userId == null) {
 			return new ArrayList<>();
@@ -283,6 +296,11 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	}
 
+	/**
+	 * 根据条件查询上游
+	 * @param sourceUserId
+	 * @return
+	 */
 	public UpStream queryUpStreamBySourceUserId(Long sourceUserId) {
 		if (sourceUserId == null) {
 			return null;
@@ -294,6 +312,12 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 
 	}
 
+	/**
+	 * 根据关键字查询经营户上游
+	 * @param userId 经营户主键
+	 * @param keyword 关键字
+	 * @return
+	 */
 	public List<UpStream> queryUpStreamByKeyword(Long userId, String keyword) {
 		if (userId == null || StringUtils.isBlank(keyword)) {
 			return new ArrayList<>();

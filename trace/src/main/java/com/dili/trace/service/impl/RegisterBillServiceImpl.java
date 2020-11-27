@@ -151,6 +151,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setPlate(plate);
         registerBill.setModified(new Date());
         registerBill.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
+        // TODO:需要确认是否是这个值
+        registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
 
         // 补单直接进门状态
         if (BillTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getBillType())) {
