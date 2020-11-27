@@ -29,6 +29,7 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
