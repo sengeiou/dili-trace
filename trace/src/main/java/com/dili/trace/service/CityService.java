@@ -44,6 +44,7 @@ public class CityService {
         query.setId(condition.getId());
         query.setCityCode(condition.getCityCode());
         query.setLevelType(condition.getLevelType());
+        query.setParentId(condition.getParentId());
 //        query.setKeyword(condition.getKeyword());
         List<CityDto> result = this.listCity(query);
         return result;

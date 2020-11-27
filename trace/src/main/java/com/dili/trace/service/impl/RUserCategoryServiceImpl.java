@@ -9,6 +9,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,6 +25,7 @@ public class RUserCategoryServiceImpl extends BaseServiceImpl<RUserCategory,Long
             }
 
             deleteByExample(rUserCategory);
+            rUserCategory.setCreateTime(new Date());
         }
         int rows = batchInsert(rUserCategoryList);
 
