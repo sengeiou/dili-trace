@@ -972,7 +972,7 @@
             });
             return;
         }
-        openWin('${contextPath}/sg/registerBill/view/' + selected.id + '/true');
+        openWin('${contextPath}/sg/registerBill/view.html?id=' + selected.id + '&displayWeight=true');
     }
 
     function audit() {
@@ -986,7 +986,7 @@
             });
             return;
         }
-        openIframe('${contextPath}/sg/registerBill/audit/' + selected.id, selected)
+        openIframe('${contextPath}/sg/registerBill/audit.html?id=' + selected.id, selected)
 
     }
 
@@ -1475,7 +1475,7 @@
             if (result.value) {
                 $.ajax({
                     type: "GET",
-                    url: "${contextPath}/registerBill/undo/" + selected.id,
+                    url: "${contextPath}/sg/registerBill/undo.html?id" + selected.id,
                     processData: true,
                     dataType: "json",
                     async: true,
@@ -1548,7 +1548,7 @@
             });
             return;
         }
-        openWin('${contextPath}/registerBill/uploadOrigincertifiy/' + selected.id);
+        openWin('${contextPath}/sg/registerBill/uploadOrigincertifiy.html?id=' + selected.id);
     }
 
     function doUploadDetectReport() {
@@ -1563,7 +1563,7 @@
             });
             return;
         }
-        openWin('${contextPath}/registerBill/uploadDetectReport/' + selected.id);
+        openWin('${contextPath}/sg/registerBill/uploadDetectReport.html?id=' + selected.id);
     }
 
     function doCreateCheckSheet() {
@@ -1615,7 +1615,7 @@
             yes: function (index, layero) {
                 $.ajax({
                     type: "GET",
-                    url: "${contextPath}/registerBill/audit/" + selected.id + "/true",
+                    url: "${contextPath}/sg/registerBill/audit.html?id=" + selected.id,
                     processData: true,
                     dataType: "json",
                     async: true,

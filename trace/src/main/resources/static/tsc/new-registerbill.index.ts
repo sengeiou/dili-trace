@@ -1,12 +1,14 @@
-class RegisterBillGrid {
+class NewRegisterBillGrid extends  PageTs{
     ctx:string;
     grid: any;
     billStateEnums: any;
 
     constructor(ctx:string,grid: any, billStateEnums: any) {
+        super();
         this.ctx=ctx;
         this.grid = grid;
         this.billStateEnums = billStateEnums;
+
     }
 
     get rows() {

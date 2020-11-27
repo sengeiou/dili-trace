@@ -327,8 +327,9 @@ public class SgRegisterBillController {
      * @param modelMap
      * @return
      */
-    @RequestMapping(value = "/view/{id}/{displayWeight}", method = RequestMethod.GET)
-    public String view(ModelMap modelMap, @PathVariable Long id, @PathVariable(required = false) Boolean displayWeight) {
+    @RequestMapping(value = "/view.html", method = RequestMethod.GET)
+    public String view(ModelMap modelMap, @RequestParam(required = true,name = "id") Long id
+            ,  @RequestParam(required = false,name = "displayWeight") Boolean displayWeight) {
         RegisterBill registerBill = billService.get(id);
         if (registerBill == null) {
             return "";
@@ -369,8 +370,8 @@ public class SgRegisterBillController {
      * @param id       交易单ID
      * @return
      */
-    @RequestMapping(value = "/tradeBillSsRecord/{id}", method = RequestMethod.GET)
-    public String tradeBillSRecord(ModelMap modelMap, @PathVariable Long id) {
+    @RequestMapping(value = "/tradeBillSsRecord.html", method = RequestMethod.GET)
+    public String tradeBillSRecord(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
         QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.get(id);
         SeparateSalesRecord condition = new SeparateSalesRecord();
         condition.setTradeNo(qualityTraceTradeBill.getOrderId());
@@ -385,8 +386,8 @@ public class SgRegisterBillController {
      * @param modelMap
      * @return
      */
-    @RequestMapping(value = "/uploadDetectReport/{id}", method = RequestMethod.GET)
-    public String uploadDetectReport(ModelMap modelMap, @PathVariable Long id) {
+    @RequestMapping(value = "/uploadDetectReport.html", method = RequestMethod.GET)
+    public String uploadDetectReport(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
         RegisterBill registerBill = billService.get(id);
         if (registerBill == null) {
             return "";
@@ -419,8 +420,8 @@ public class SgRegisterBillController {
      * @param modelMap
      * @return
      */
-    @RequestMapping(value = "/uploadOrigincertifiy/{id}", method = RequestMethod.GET)
-    public String uploadOrigincertifiy(ModelMap modelMap, @PathVariable Long id) {
+    @RequestMapping(value = "/uploadOrigincertifiy.html", method = RequestMethod.GET)
+    public String uploadOrigincertifiy(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
         RegisterBill registerBill = billService.get(id);
         if (registerBill == null) {
             return "";
@@ -454,8 +455,8 @@ public class SgRegisterBillController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/audit/{id}", method = RequestMethod.GET)
-    public String audit(ModelMap modelMap, @PathVariable Long id) {
+    @RequestMapping(value = "/audit.html", method = RequestMethod.GET)
+    public String audit(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
         modelMap.put("registerBill", billService.get(id));
         return "sg/registerBill/audit";
     }
@@ -561,9 +562,9 @@ public class SgRegisterBillController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/undo/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/undo.html", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput undo(@PathVariable Long id) {
+    BaseOutput undo(@RequestParam(name = "id",required = true) Long id) {
         try {
             registerBillService.undoRegisterBill(id);
         } catch (TraceBizException e) {

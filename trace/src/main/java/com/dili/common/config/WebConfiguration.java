@@ -4,6 +4,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.interceptor.LoginInterceptor;
 import com.dili.common.interceptor.SessionInterceptor;
 import com.dili.common.interceptor.SignInterceptor;
+import com.dili.trace.interceptors.RequestInterceptor;
 import com.dili.uap.sdk.session.SessionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -65,11 +66,21 @@ public class WebConfiguration implements WebMvcConfigurer {
         return new SignInterceptor();
     }
 
+    @Bean
+    public RequestInterceptor requestInterceptor() {
+        return new RequestInterceptor(this.webVars());
+    }
+    @Bean
+    WebVars webVars(){
+
+        return new WebVars();
+    }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor()).addPathPatterns("/api/**");
         registry.addInterceptor(loginInterceptor()).addPathPatterns("/api/**");
         registry.addInterceptor(signInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(requestInterceptor()).addPathPatterns("/**");
     }
 
 }

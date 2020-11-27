@@ -1,20 +1,18 @@
-var DemoClass = (function () {
-    function DemoClass(props) {
+class DemoClass {
+    constructor(props) {
     }
-    return DemoClass;
-}());
+}
 function demo() {
     console.info("abcd");
 }
-var Ajax = (function () {
-    function Ajax(settings) {
+class Ajax {
+    constructor(settings) {
     }
-    Ajax.prototype.postForm = function (formData) {
+    postForm(formData) {
         _.chain($.makeArray("post")).value();
-    };
-    Ajax.prototype.postJson = function (jsonObject) {
+    }
+    postJson(jsonObject) {
         console.info($.type(jsonObject));
-    };
-    return Ajax;
-}());
+    }
+}
 //# sourceMappingURL=demo.js.map

@@ -1,16 +1,15 @@
-class NewRegisterBillGrid {
+class RegisterBillGrid {
     ctx:string;
     grid: any;
     billStateEnums: any;
 
-    constructor(ctx:string,grid: any, billStateEnums: any) {
-        this.ctx=ctx;
+    constructor(grid: any, billStateEnums: any) {
         this.grid = grid;
         this.billStateEnums = billStateEnums;
     }
 
     get rows() {
-        return this.grid.datagrid("getSelections");
+        return RegisterBillGrid.getInstance().grid.datagrid("getSelections");
     }
     public static getInstance():RegisterBillGrid{
         return window['registerBillGrid'] as RegisterBillGrid;
@@ -156,7 +155,7 @@ class NewRegisterBillGrid {
     }
 
     private filterByProp(prop: string, propValues: any[]) {
-        let arrayData = $.makeArray(this.rows);
+        let arrayData = $.makeArray(RegisterBillGrid.getInstance().rows);
         let arrayValue = $.makeArray(propValues);
         let values: any[] = _.chain(arrayData).filter(element => $.inArray(element[prop], arrayValue) > -1).value();
         return values;

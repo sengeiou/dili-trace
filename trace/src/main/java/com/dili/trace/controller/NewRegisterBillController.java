@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -73,8 +74,7 @@ public class NewRegisterBillController {
      */
     @ApiOperation("跳转到RegisterBill页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
-    public String index(ModelMap modelMap) {
-
+    public String index(ModelMap modelMap, HttpServletRequest req) {
         BillReportQueryDto query = new BillReportQueryDto();
         Date now = new Date();
         query.setBillCreatedEnd(DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
