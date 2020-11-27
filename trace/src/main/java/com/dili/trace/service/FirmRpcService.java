@@ -2,11 +2,13 @@ package com.dili.trace.service;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.Firm;
+import com.dili.uap.sdk.domain.dto.FirmDto;
 import com.dili.uap.sdk.rpc.FirmRpc;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -43,6 +45,22 @@ public class FirmRpcService {
             return Optional.empty();
         }
         BaseOutput<Firm>out=this.firmRpc.getByCode(firmCode);
+        if(out==null||!out.isSuccess()){
+            return Optional.empty();
+        }
+        return Optional.ofNullable(out.getData());
+    }
+
+    /**
+     * 查询市场列表
+     * @param firmDto
+     * @return
+     */
+    public Optional<List<Firm>> getFirms(FirmDto firmDto) {
+        if (firmDto == null) {
+            return Optional.empty();
+        }
+        BaseOutput<List<Firm>> out = firmRpc.listByExample(firmDto);
         if(out==null||!out.isSuccess()){
             return Optional.empty();
         }
