@@ -7,11 +7,12 @@ import com.dili.uap.sdk.domain.Firm;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Lily
  */
-public interface MarketService extends BaseService<Market, Long> {
+public interface MarketService {
     /**
      *
      * @Author guzman.liu
@@ -57,4 +58,10 @@ public interface MarketService extends BaseService<Market, Long> {
      * @Date 2020/11/26 14:23
      */
     Firm getMarketByCode(MarketEnum marketEnum);
+
+    /**
+     *根据Makeid获取市场
+     * @Date 2020/11/26 17:07
+     */
+    public Optional<Firm> getMarketById(Long marketId);
 }

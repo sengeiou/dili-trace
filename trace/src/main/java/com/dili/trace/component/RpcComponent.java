@@ -95,13 +95,13 @@ public class RpcComponent {
      * @return
      */
     public Optional<Map<String, String>> getMarketCodeMap() {
-        List<DataDictionaryValue> dataDictionaryValues = this.listDataDictionaryValueByDdCode(MarketMapSysConfigEnum.DD_CODE.getName());
+        List<DataDictionaryValue> dataDictionaryValues = this.listDataDictionaryValueByDdCode(MarketMapSysConfigEnum.DD_CODE.getCode());
         if (CollectionUtils.isEmpty(dataDictionaryValues)) {
             return Optional.empty();
         }
         Map<String, String> marketCodeMap = new HashedMap();
         dataDictionaryValues.stream().forEach(d -> {
-            marketCodeMap.put(d.getCode(), d.getName());
+            marketCodeMap.put(d.getName(), d.getCode());
         });
         return Optional.of(marketCodeMap);
     }

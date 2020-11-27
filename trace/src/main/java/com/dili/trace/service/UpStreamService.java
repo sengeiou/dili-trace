@@ -20,6 +20,7 @@ import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.UserFlagEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 
+import com.dili.uap.sdk.domain.Firm;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +134,12 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 	}
 
 	// 增加下游企业时创建用户
+	/**
+	 *
+	 * @Date 2020/11/26 18:04
+	 * @Param
+	 * @return
+	 */
 	public Optional<Long> addUserForDownStream(UpStreamDto upStreamDto) {
 
 		if (UserFlagEnum.DOWN.equalsToCode(upStreamDto.getUpORdown())) {
@@ -152,10 +159,10 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			object.put("name", upStreamDto.getName());
 			if (Objects.nonNull(upStreamDto.getMarketId())) {
 				object.put("marketId", upStreamDto.getMarketId());
-				Market market = marketService.get(upStreamDto.getMarketId());
-				if (Objects.nonNull(market)) {
-					object.put("marketName", market.getName());
-				}
+
+				marketService.getMarketById(upStreamDto.getMarketId()).ifPresent(e ->{
+					object.put("marketName", e.getName());
+				});
 			}
 			if (upStreamDto.getUpstreamType() == UpStreamTypeEnum.CORPORATE.getCode()) {// 企业
 				object.put("legal_person", upStreamDto.getLegalPerson());

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -24,7 +25,7 @@ import java.util.Map;
  */
 @Transactional(rollbackFor = Exception.class)
 @Service
-public class MarketServiceImpl extends BaseServiceImpl<Market, Long> implements MarketService {
+public class MarketServiceImpl implements MarketService {
     @Autowired
     WebCtxService webCtxService;
     @Autowired
@@ -81,6 +82,11 @@ public class MarketServiceImpl extends BaseServiceImpl<Market, Long> implements 
         return firmRpcService.getFirmByCode(marketCode).orElseThrow(() -> {
             return new TraceBizException("Code["+marketEnum.getCode()+"]对应的市场不存在");
         });
+    }
+
+
+    public Optional<Firm> getMarketById(Long marketId){
+         return this.firmRpcService.getFirmById(marketId);
     }
 
 }

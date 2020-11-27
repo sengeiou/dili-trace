@@ -160,15 +160,14 @@ public class ManageSystemComponent {
      */
     public List<User> findUserByUserResource(String authUrl, Long marketId) {
         try {
+            Firm firm = marketService.getMarketById(marketId).orElse(null);
             // 从前端获取 firmCode
-            Market market = marketService.get(marketId);
-            if (market == null || StringUtils.isBlank(market.getCode())) {
+            if (firm == null || StringUtils.isBlank(firm.getCode())) {
                 logger.error("市场用户查询失败。市场【"+marketId+"】不存在或者市场编码未维护！");
                 return new ArrayList<>();
             }
-
             //根据权限code获取有这个权限code的用户列表 // SessionContext.getSessionContext().getUserTicket().getFirmCode()
-            BaseOutput<List<User>> usersByResourceCodeList = userRpc.findCurrentFirmUsersByResourceCode(market.getCode()
+            BaseOutput<List<User>> usersByResourceCodeList = userRpc.findCurrentFirmUsersByResourceCode(firm.getCode()
                     , authUrl);
 
             return usersByResourceCodeList.getData();

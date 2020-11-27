@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class ClientMarketApi {
 	@RequestMapping(value = "/list.api", method = {RequestMethod.GET, RequestMethod.POST})
 	public BaseOutput<List<Market>> list() {
 		try {
-			List<Market> marketList = marketService.list(new Market());
+			List<Market> marketList = Collections.EMPTY_LIST;
 			return BaseOutput.success().setData(marketList);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
