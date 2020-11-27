@@ -38,7 +38,8 @@ public class ExecutionConstants {
      * @return
      */
     public String getMarketCode() {
-        Firm currentMarket = marketService.getCurrentMarket();
-        return currentMarket.getCode();
+//        Firm currentMarket = marketService.getCurrentMarket();
+//        return currentMarket.getCode();
+        return marketCode;
     }
 }

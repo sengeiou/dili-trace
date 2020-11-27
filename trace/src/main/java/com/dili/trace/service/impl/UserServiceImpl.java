@@ -222,6 +222,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             userStore.setStoreName(getUserStoreNameUnique(userStore.getStoreName()));
         }
         userStore.setUserId(user.getId());
+        userStore.setCreated(new Date());
+        userStore.setModified(new Date());
         userStoreService.insert(userStore);
     }
 
