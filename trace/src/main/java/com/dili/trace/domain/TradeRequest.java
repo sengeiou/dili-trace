@@ -161,20 +161,17 @@ public class TradeRequest extends BaseDomain {
     @Column(name = "`report_flag`")
     private Integer reportFlag;
 
-    @Column(name = "`order_date`")
+    @Transient
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date orderDate;
 
-    @Column(name = "`buyer_no`")
-    @Like
+    @Transient
     private String buyerNo;
 
-    @Column(name = "`seller_no`")
-    @Like
+    @Transient
     private String sellerNo;
 
-    @Column(name = "`product_code`")
-    @Like
+    @Transient
     private String productCode;
 
     @Transient
