@@ -268,38 +268,36 @@
                             <%} }  %>
             <div class="form-item-group">
             		<h4 class="form-item-title">产地证明</h4>
-                          <%if(isNotEmpty(registerBill.originCertifiyUrl)){
-                        	for(originCertifiy in strutil.split (registerBill.originCertifiyUrl,",")){
+                          <%if((imageCertMap[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY].~size!0)>0){
+                        	for(originCertifiy in imageCertMap[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY]){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${originCertifiy!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${originCertifiy.url!}" >
 							</div>
                         <%	}
                         }%>
             </div>
             <div class="form-item-group">
             		<h4 class="form-item-title">检测报告</h4>
-                          <%if(isNotEmpty(registerBill.detectReportUrl)){
-                        	for(detectReport in strutil.split (registerBill.detectReportUrl,",")){
+                          <%if((imageCertMap[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){
+                        	for(detectReport in imageCertMap[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT]){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${detectReport!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${detectReport.url!}" >
 							</div>
                         <%	}
                         }%>
             </div>
 
-			<%if(isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
+			<%if((imageCertMap[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result].~size!0)>0){%>
 				<div class="form-item-group">
 	            		<h4 class="form-item-title">处理结果图片</h4>
-	                          <%if(isNotEmpty(registerBill.handleResultUrl)){
-	                        	for(src in strutil.split (registerBill.handleResultUrl,",")){
+	                          <%for(handleResult in imageCertMap[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result]){
 	                        	%>
 	                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-	                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${src!}" >
+	                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${handleResult.url!}" >
 								</div>
-	                        <%	}
-	                        }%>
+	                        <%}%>
 	            </div>
 	             <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>

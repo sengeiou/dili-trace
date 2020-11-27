@@ -4,24 +4,40 @@ class RegisterBillGrid extends PageTs {
         this.handleTimeUpdateEvent = (event) => {
         };
         let cthis = this;
+        var onClickRow = function () {
+            cthis.onClickRow();
+        };
         this.grid = grid;
         this.grid.datagrid({
-            onClickRow: function () {
-                cthis.onClickRow();
-            },
-            onSelect: function () {
-                cthis.onClickRow();
-            },
-            onSelectAll: function () {
-                cthis.onClickRow();
-            },
-            onUnselect: function () {
-                cthis.onClickRow();
-            },
-            onUnselectAll: function () {
-                cthis.onClickRow();
+            onClickRow: onClickRow,
+            onSelect: onClickRow,
+            onSelectAll: onClickRow,
+            onUnselect: onClickRow,
+            onUnselectAll: onClickRow,
+            loader: async function (param, success, error) {
+                await cthis.loadRegisterBillGridData(param, success, error);
             }
         });
+    }
+    queryRegisterBillGrid() {
+        var opts = this.grid.datagrid("options");
+        if (null == opts.url || "" == opts.url) {
+            opts.url = this.contextPath + "/sg/registerBill/listPage.action";
+        }
+        if (!$('#queryForm').form("validate")) {
+            return false;
+        }
+        this.grid.datagrid("reload", this.buildGridQueryData());
+        this.resetButtons();
+    }
+    resetButtons() {
+        var btnArray = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'handle-btn',
+            'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn'];
+        for (var i = 0; i < btnArray.length; i++) {
+            var btnId = btnArray[i];
+            $('#' + btnId).linkbutton('enable');
+            $('#' + btnId).hide();
+        }
     }
     isCreateSheet() {
         var arr = this.filterByProp('$_detectState', ["PASS", "REVIEW_PASS"]).filter(function (v, i) {
@@ -46,8 +62,51 @@ class RegisterBillGrid extends PageTs {
     isSingleUploadOriginCertify() {
         return this.rows.length == 1;
     }
+    multiRows() {
+        if (this.rows.length <= 1) {
+            return;
+        }
+    }
+    singleRow() {
+        if (this.rows.length != 1) {
+            return;
+        }
+    }
+    async findHighLightBill() {
+        try {
+            return await jq.postJson2(this.contextPath + "/sg/registerBill/findHighLightBill.action", {}, {});
+        }
+        catch (e) {
+            return {};
+        }
+    }
+    buildGridQueryData() {
+        var formdata = bindGridMeta2Form("registerBillGrid", "queryForm");
+        delete formdata['productCombobox'];
+        var rows = this.grid.datagrid("getRows");
+        var options = this.grid.datagrid("options");
+        formdata['rows'] = options.pageSize;
+        formdata['page'] = options.pageNumber;
+        formdata['sort'] = options.sortName;
+        formdata['order'] = options.sortOrder;
+        return formdata;
+    }
+    async loadRegisterBillGridData(param, success, error) {
+        this.highLightBill = await this.findHighLightBill();
+        $.extend(this.grid.datagrid("options").queryParams, this.buildGridQueryData());
+        var datas = this.buildGridQueryData();
+        var ret = await jq.postJson2(this.contextPath + "/sg/registerBill/listPage.action", datas, {
+            processData: true, type: 'json'
+        });
+        if (ret && ret.rows) {
+            success(ret);
+        }
+        else {
+            success({ rows: [], total: 0 });
+        }
+    }
     onClickRow() {
-        initBtnStatus();
+        this.resetButtons();
         var rows = this.rows;
         if (rows.length == 0) {
             return;
@@ -70,12 +129,18 @@ class RegisterBillGrid extends PageTs {
             $('#edit-btn').show();
             $('#upload-detectreport-btn').show();
         }
-        let hasImages = _.chain(waitAuditRows).filter(item => { return item.originCertifiyUrl == '有' || item.detectReportUrl == '有'; }).size().value() > 0;
+        let hasImages = _.chain(waitAuditRows).filter(item => {
+            return item.originCertifiyUrl == '有' || item.detectReportUrl == '有';
+        }).size().value() > 0;
         hasImages ? $('#remove-reportAndcertifiy-btn').show() : $('#remove-reportAndcertifiy-btn').hide();
         let auditWithoutDetect = _.chain(waitAuditRows)
             .filter(item => 1 == item.registerSource)
-            .filter(item => { return item.originCertifiyUrl && item.originCertifiyUrl != null; })
-            .filter(item => { item.originCertifiyUrl != '' && item.originCertifiyUrl != '无'; }).size().value() > 0;
+            .filter(item => {
+            return item.originCertifiyUrl && item.originCertifiyUrl != null;
+        })
+            .filter(item => {
+            item.originCertifiyUrl != '' && item.originCertifiyUrl != '无';
+        }).size().value() > 0;
         auditWithoutDetect ? $('#audit-withoutDetect-btn').show() : $('#audit-withoutDetect-btn').hide();
         var WAIT_SAMPLE_ROWS = this.filterByProp("$_state", [6]);
         if (WAIT_SAMPLE_ROWS.length == 1) {
@@ -148,6 +213,7 @@ class RegisterBillGrid extends PageTs {
             });
             return;
         }
+        var cthis = this;
         var arr = this.filterByProp("$_state", [1]);
         let promise = new Promise((resolve, reject) => {
             layer.confirm('请确认是否撤销选中数据？<br/>' + arr.map(e => e.code).join("<br\>"), {
@@ -183,11 +249,11 @@ class RegisterBillGrid extends PageTs {
                             time: 600,
                             end: function () {
                                 layer.closeAll();
-                                queryRegisterBillGrid();
+                                cthis.queryRegisterBillGrid();
                             }
                         }, function () {
                             layer.closeAll();
-                            queryRegisterBillGrid();
+                            cthis.queryRegisterBillGrid();
                         });
                     }
                     else {

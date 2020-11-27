@@ -1,27 +1,22 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.trace.domain.Customer;
-import com.dili.trace.domain.TradeType;
-import com.dili.trace.dto.*;
-import com.dili.trace.enums.*;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
-import com.dili.trace.service.CityService;
-import com.dili.trace.service.CustomerService;
-import com.dili.trace.service.SgRegisterBillService;
-import com.dili.trace.service.TradeTypeService;
-import com.dili.trace.util.MaskUserInfo;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import com.dili.trace.dto.*;
+import com.dili.trace.enums.*;
+import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
+import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import io.swagger.annotations.Api;
@@ -145,9 +140,9 @@ public class SgRegisterBillController {
             @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(RegisterBillDto registerBill) throws Exception {
-
-        return registerBillService.listPage(registerBill);
+    Object listPage(@RequestBody  RegisterBillDto registerBill) throws Exception {
+        String json=registerBillService.listPage(registerBill);
+        return JSON.parse(json);
     }
 
     /**
@@ -360,6 +355,10 @@ public class SgRegisterBillController {
         modelMap.put("detectRecordList", detectRecordList);
         modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
         modelMap.put("displayWeight", displayWeight);
+
+        Map<ImageCertTypeEnum, List<ImageCert>>imageCertMap= this.registerBillService.findImageCertMapListByBillId(registerBill.getBillId());
+        modelMap.put("imageCertMap", imageCertMap);
+
         return "sg/registerBill/view";
     }
 

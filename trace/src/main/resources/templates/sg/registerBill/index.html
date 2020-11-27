@@ -149,7 +149,7 @@
                     </div>
                     <div class="search-wrap-btn">
                         <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                           onclick="queryRegisterBillGrid()">查询</a>&nbsp;&nbsp;
+                           onclick="registerBillGrid.queryRegisterBillGrid()">查询</a>&nbsp;&nbsp;
                         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear"
                            onclick="clearQueryForm()">清除</a>
                     </div>
@@ -167,7 +167,7 @@
                pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
                loadMsg="数据加载中..." singleSelect="false" method="post" multiSort="false" sortName="code" sortOrder="desc"
                align="center" fit="true" idField="id" selectOnCheck="true"
-               data-options="onBeforeLoad:onBeforeLoad,loader: loadRegisterBillGridData,rowStyler:coloredRowRender, onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
+               data-options="onBeforeLoad:onBeforeLoad,rowStyler:coloredRowRender, onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
             <thead>
             <tr>
                 <th field="ck" checkbox="true" data-options="field:'ck' "></th>
@@ -358,91 +358,14 @@
         return true;
     }
 
-    //表格查询
-    function loadRegisterBillGridData(param, success, error) {
-
-        //console.info('loadRegisterBillGridData')
-        //debugger
-        $.extend(_registerBillGrid.datagrid("options").queryParams, buildGridQueryData());
-
-
-        var data = {};
-        findHighLightBill();
-        $.ajax({
-            type: "POST",
-            url: "${contextPath}/sg/registerBill/listPage.action",
-            processData: true,
-            dataType: "json",
-            data: buildGridQueryData(),
-            async: false,
-            success: function (ret) {
-                if (ret && ret.rows) {
-                    data = ret;
-                }
-            },
-            error: function () {
-                data = {}
-            }
-        });
-        success(data);
-    }
-
-    function queryRegisterBillGrid() {
-        var opts = _registerBillGrid.datagrid("options");
-        if (null == opts.url || "" == opts.url) {
-            opts.url = "${contextPath}/sg/registerBill/listPage.action";
-        }
-        //console.info('queryRegisterBillGrid')
-        if (!$('#queryForm').form("validate")) {
-            return false;
-        }
-        _registerBillGrid.datagrid("reload", buildGridQueryData());
-        initBtnStatus();
-
-    }
-
-    function buildGridQueryData() {
-        var formdata = bindGridMeta2Form("registerBillGrid", "queryForm");
-        delete formdata['productCombobox'];
-        var rows = _registerBillGrid.datagrid("getRows");
-        var options = _registerBillGrid.datagrid("options");
-        //debugger
-
-        formdata['rows'] = options.pageSize;
-        formdata['page'] = options.pageNumber;
-
-        formdata['sort'] = options.sortName;
-        formdata['order'] = options.sortOrder;
-
-        return formdata;
-    }
-
-    var highLightBill = {};
-
-    function findHighLightBill() {
-        highLightBill = {};
-        $.ajax({
-            type: "POST",
-            url: "${contextPath}/sg/registerBill/findHighLightBill.action",
-            processData: true,
-            dataType: "json",
-            data: {},
-            async: false,
-            success: function (ret) {
-                if (ret && ret.code == '200') {
-                    highLightBill = ret.data;
-                }
-            },
-            error: function () {
-                highLightBill = {}
-            }
-        });
-    }
-
     function coloredRowRender(index, row) {
-        if (highLightBill && highLightBill.id && row.id == highLightBill.id) {
-            return {style: 'background:#7dc57d'};
+        if(window['registerBillGrid']){
+            var highLightBill=registerBillGrid.highLightBill;
+            if (highLightBill && highLightBill.id && row.id == highLightBill.id) {
+                return {style: 'background:#7dc57d'};
+            }
         }
+
     }
 
     function queryPlatesByTallyAreaNo(tallyAreaNo) {
@@ -476,7 +399,7 @@
 
     function onPlateChange(v) {
         if (v && v != '全部') {
-            queryRegisterBillGrid();
+            registerBillGrid.queryRegisterBillGrid();
         }
 
     }
@@ -515,9 +438,8 @@
         });
 
 
-        bindFormEvent("queryForm", "registerSource", queryRegisterBillGrid);
+        bindFormEvent("queryForm", "registerSource", function(){registerBillGrid.queryRegisterBillGrid();});
         initRegisterBillGrid();
-        //queryRegisterBillGrid();
 
     })
 
@@ -737,24 +659,6 @@
 
     })
         ;
-    }
-
-    function initBtnStatus() {
-        /*$('#undo-btn').linkbutton('disable');
-        $('#audit-btn').linkbutton('disable');
-        $('#auto-btn').linkbutton('disable');
-        $('#sampling-btn').linkbutton('disable');
-        $('#review-btn').linkbutton('disable');
-        $('#handle-btn').linkbutton('disable');*/
-
-        var btnArray = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'handle-btn'
-            , 'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn']
-        for (var i = 0; i < btnArray.length; i++) {
-            var btnId = btnArray[i];
-            $('#' + btnId).linkbutton('enable');
-            $('#' + btnId).hide();
-
-        }
     }
 
     function isOnlyBatchAudit() {
@@ -1646,12 +1550,12 @@
                                 time: 600,
                                 end: function () {
                                     layer.closeAll();
-                                    queryRegisterBillGrid();
+                                    registerBillGrid.queryRegisterBillGrid();
                                 }
                             },
                             function () {
                                 layer.closeAll();
-                                queryRegisterBillGrid();
+                                registerBillGrid.queryRegisterBillGrid();
                             }
                         );
 
@@ -1703,7 +1607,7 @@
                     layer.alert('处理成功', function () {
                         layer.closeAll();
                         $('#handle-btn').hide();
-                        queryRegisterBillGrid();
+                        registerBillGrid.queryRegisterBillGrid();
                     })
 
                 } else {
