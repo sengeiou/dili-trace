@@ -119,7 +119,7 @@ class RegisterBillGrid extends PageTs {
         this.highLightBill = await this.findHighLightBill();
         $.extend(this.grid.datagrid("options").queryParams, this.buildGridQueryData());
         var datas = this.buildGridQueryData();
-        var ret = await jq.postJson2(this.contextPath + "/sg/registerBill/listPage.action", datas, {
+        var ret = await jq.postJson(this.contextPath + "/sg/registerBill/listPage.action", datas, {
             processData: true,type:'json'
         });
         if (ret && ret.rows) {
