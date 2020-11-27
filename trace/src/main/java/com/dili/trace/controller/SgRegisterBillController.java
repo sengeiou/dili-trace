@@ -28,6 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -325,25 +326,25 @@ public class SgRegisterBillController {
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true,name = "id") Long id
             ,  @RequestParam(required = false,name = "displayWeight") Boolean displayWeight) {
-        RegisterBill registerBill = billService.get(id);
-        if (registerBill == null) {
+        RegisterBill item = billService.get(id);
+        if (item == null) {
             return "";
         }
         if (displayWeight == null) {
             displayWeight = false;
         }
-        if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
+        if (RegisterSourceEnum.TALLY_AREA.getCode().equals(item.getRegisterSource())) {
             // 分销信息
-            if (registerBill.getSalesType() != null
-                    && registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+            if (item.getSalesType() != null
+                    && item.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
                 // 分销
                 List<SeparateSalesRecord> records = separateSalesRecordService
-                        .findByRegisterBillCode(registerBill.getCode());
+                        .findByRegisterBillCode(item.getCode());
                 modelMap.put("separateSalesRecords", records);
             }
         } else {
             QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
-            condition.setRegisterBillCode(registerBill.getCode());
+            condition.setRegisterBillCode(item.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
 
@@ -351,13 +352,17 @@ public class SgRegisterBillController {
 //		conditon.setRegisterBillCode(registerBill.getCode());
 //		conditon.setSort("id");
 //		conditon.setOrder("desc");
-        List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(registerBill.getCode());
+        List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
         modelMap.put("detectRecordList", detectRecordList);
-        modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
         modelMap.put("displayWeight", displayWeight);
 
-        Map<ImageCertTypeEnum, List<ImageCert>>imageCertMap= this.registerBillService.findImageCertMapListByBillId(registerBill.getBillId());
-        modelMap.put("imageCertMap", imageCertMap);
+        RegisterBillOutputDto registerBill=new RegisterBillOutputDto();
+        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item),registerBill);
+
+        List<ImageCert>imageCerts=this.registerBillService.findImageCertListByBillId(item.getBillId());
+        registerBill.setImageCerts(imageCerts);
+
+        modelMap.put("registerBill", registerBill);
 
         return "sg/registerBill/view";
     }

@@ -2,9 +2,12 @@ package com.dili.trace.dto;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
+import one.util.streamex.StreamEx;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.dili.common.exception.TraceBizException;
@@ -15,10 +18,15 @@ public class RegisterBillOutputDto extends RegisterBill {
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<TradeDetail> tradeDetailList;
-	private List<ImageCert> imageCertList;
 	private String upStreamName;
 	private List<SeparateSalesRecord>separateSalesRecords;
 	List<QualityTraceTradeBill> qualityTraceTradeBillList;
+
+	public Map<Integer,List<ImageCert>> getGroupedImageCertList(){
+		return StreamEx.ofNullable(this.getImageCerts()).flatCollection(Function.identity())
+				.mapToEntry(item-> item.getCertType(), Function.identity())
+				.grouping();
+	}
 
 	public List<QualityTraceTradeBill> getQualityTraceTradeBillList() {
 		return qualityTraceTradeBillList;
@@ -64,21 +72,6 @@ public class RegisterBillOutputDto extends RegisterBill {
 	public void setDetectRecord(DetectRecord detectRecord) {
 		this.detectRecord = detectRecord;
 	}
-
-	/**
-	 * @return List<ImageCert> return the imageCertList
-	 */
-	public List<ImageCert> getImageCertList() {
-		return imageCertList;
-	}
-
-	/**
-	 * @param imageCertList the imageCertList to set
-	 */
-	public void setImageCertList(List<ImageCert> imageCertList) {
-		this.imageCertList = imageCertList;
-	}
-
 
     /**
      * @return String return the upStreamName

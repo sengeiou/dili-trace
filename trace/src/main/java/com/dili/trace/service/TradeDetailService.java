@@ -30,6 +30,9 @@ import cn.hutool.core.date.DateUtil;
 import one.util.streamex.StreamEx;
 import tk.mybatis.mapper.entity.Example;
 
+/**
+ * 交易详情
+ */
 @Service
 public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	private static final Logger logger = LoggerFactory.getLogger(TradeDetailService.class);
@@ -49,6 +52,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 	@Autowired
 	UserQrHistoryService userQrHistoryService;
 
+	/**
+	 * 查询详情信息
+	 * @param billId
+	 * @return
+	 */
 	public Optional<TradeDetail> findBilledTradeDetailByBillId(Long billId) {
 
 		// 查找报备相关的TradeDetail信息

@@ -274,11 +274,7 @@ public class RegisterBill extends BaseDomain {
     public Integer getSalesType() {
         return salesType;
     }
-    public Map<Integer,List<ImageCert>> getGroupedImageCertList(){
-          return StreamEx.ofNullable(this.imageCerts).flatCollection(Function.identity())
-                .mapToEntry(item-> item.getCertType(), Function.identity())
-                .grouping();
-    }
+
 
     public void setSalesType(Integer salesType) {
         this.salesType = salesType;
