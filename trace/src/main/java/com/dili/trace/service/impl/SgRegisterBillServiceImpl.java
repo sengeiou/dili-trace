@@ -12,6 +12,7 @@ import com.dili.sg.trace.glossary.*;
 import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
@@ -29,6 +30,7 @@ import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +44,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -117,14 +120,21 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,
                 registerBill.getOriginId());
+
+
+        registerBill.setHasDetectReport(0);
+        registerBill.setHasOriginCertifiy(0);
+        registerBill.setHasHandleResult(0);
+
         int result = this.billService.saveOrUpdate(registerBill);
-        this.imageCertService.insertImageCert(registerBill.getImageCerts(),registerBill.getId());
+        this.billService.updateHasImage(registerBill.getId(), registerBill.getImageCerts());
         if (result == 0) {
             LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
             throw new TraceBizException("创建失败");
         }
         return result;
     }
+
 
     private boolean checkPlate(RegisterBill registerBill) {
 
@@ -280,7 +290,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
                 // 理货区
                 if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())
-                        && StringUtils.isNotBlank(registerBill.getDetectReportUrl())) {
+                        && TFEnum.TRUE.equalsCode(registerBill.getHasDetectReport())) {
                     // 有检测报告，直接已审核
                     // registerBill.setLatestDetectTime(new Date());
                     registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
@@ -403,8 +413,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     return registerBill;
                 }).filter(Objects::nonNull).filter(registerBill -> {
                     if (Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-                        if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
-                                && StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+                        if (TFEnum.TRUE.equalsCode(registerBill.getHasOriginCertifiy())
+                                && TFEnum.TRUE.equalsCode(registerBill.getHasDetectReport())) {
                             return false;
                         }
                     }
@@ -412,8 +422,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 }).collect(Collectors.partitioningBy((registerBill) -> {
 
                     if (Boolean.TRUE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
-                        if (StringUtils.isNotBlank(registerBill.getOriginCertifiyUrl())
-                                && StringUtils.isBlank(registerBill.getDetectReportUrl())) {
+                        if (TFEnum.TRUE.equalsCode(registerBill.getHasOriginCertifiy())
+                                && TFEnum.TRUE.equalsCode(registerBill.getHasDetectReport())) {
                             return true;
                         }
                     }
@@ -616,7 +626,12 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public Long saveHandleResult(RegisterBill input) {
         if (input == null || input.getId() == null
-                || StringUtils.isAnyBlank(input.getHandleResult(), input.getHandleResultUrl())) {
+                || StringUtils.isAnyBlank(input.getHandleResult())) {
+            throw new TraceBizException("参数错误");
+        }
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity())
+                .nonNull().toList();
+        if (imageCertList.isEmpty()) {
             throw new TraceBizException("参数错误");
         }
         if (input.getHandleResult().trim().length() > 1000) {
@@ -630,8 +645,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         RegisterBill example = new RegisterBill();
         example.setId(item.getId());
         example.setHandleResult(input.getHandleResult());
-        example.setHandleResultUrl(input.getHandleResultUrl());
         this.billService.updateSelective(example);
+        this.billService.updateHasImage(item.getBillId(), imageCertList);
 
         return example.getId();
 
@@ -669,7 +684,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (registerBill == null) {
             throw new TraceBizException("数据错误");
         }
-        if (StringUtils.isBlank(registerBill.getOriginCertifiyUrl())) {
+        if (registerBill.getImageCerts() == null || registerBill.getImageCerts().isEmpty()) {
             throw new TraceBizException("请上传产地证明");
         }
         if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
@@ -728,7 +743,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
-        if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        if (imageCertList.isEmpty()) {
+            //StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
             throw new TraceBizException("请上传报告");
         }
         RegisterBill item = this.billService.get(input.getId());
@@ -738,14 +755,15 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
             throw new TraceBizException("状态错误,不能上传检测报告");
         }
+        List<ImageCert> imageCerts =
+                StreamEx.of(this.findImageCertListByBillId(item.getBillId())).filter(img -> {
+                    Integer cerType = img.getCertType();
+                    return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(cerType) && !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(cerType);
 
-        RegisterBill example = new RegisterBill();
-        example.setId(item.getId());
-        example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-        example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
-        this.billService.updateSelective(example);
+                }).append(imageCertList).toList();
 
-        return example.getId();
+        this.billService.updateHasImage(item.getBillId(),imageCerts);
+        return item.getBillId();
     }
 
     @Override
@@ -753,23 +771,22 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
-        if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).nonNull().flatCollection(Function.identity()).nonNull().toList();
+        if (imageCertList.isEmpty()) {
             throw new TraceBizException("请上传报告");
         }
         RegisterBill item = this.billService.get(input.getId());
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
-        // if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
-        // throw new TraceBizException("状态错误,不能上传产地证明");
-        // }
-        RegisterBill example = new RegisterBill();
-        example.setId(item.getId());
-        example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-        // example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
-        this.billService.updateSelective(example);
+        List<ImageCert> imageCerts =
+                StreamEx.of(this.findImageCertListByBillId(item.getBillId())).filter(img -> {
+                    Integer cerType = img.getCertType();
+                    return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(cerType) && !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(cerType);
 
-        return example.getId();
+                }).append(imageCertList).toList();
+        this.billService.updateHasImage(item.getBillId(),imageCerts);
+        return item.getBillId();
     }
 
     @Override
@@ -781,13 +798,23 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
             throw new TraceBizException("状态错误,不能删除产地证明和检测报告");
         }
+        List<ImageCert> imageCertList = this.findImageCertListByBillId(item.getBillId());
+
         if ("all".equalsIgnoreCase(deleteType)) {
-            item.setOriginCertifiyUrl(null);
-            item.setDetectReportUrl(null);
+            List<ImageCert> imageCerts = StreamEx.of(imageCertList).filter(imageCert -> {
+                return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(imageCert.getCertType())
+                        && !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(imageCert.getCertType());
+            }).toList();
         } else if ("originCertifiy".equalsIgnoreCase(deleteType)) {
-            item.setOriginCertifiyUrl(null);
+            List<ImageCert> imageCerts = StreamEx.of(imageCertList).filter(imageCert -> {
+                return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(imageCert.getCertType());
+            }).toList();
+            item.setImageCerts(imageCerts);
         } else if ("detectReport".equalsIgnoreCase(deleteType)) {
-            item.setDetectReportUrl(null);
+            List<ImageCert> imageCerts = StreamEx.of(imageCertList).filter(imageCert -> {
+                return !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(imageCert.getCertType());
+            }).toList();
+            item.setImageCerts(imageCerts);
         } else {
             // do nothing
             return BaseOutput.success();
@@ -906,33 +933,33 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     private StringBuilder buildDynamicCondition(RegisterBillDto registerBill) {
         StringBuilder sql = new StringBuilder();
         if (registerBill.getHasDetectReport() != null) {
-            if (registerBill.getHasDetectReport()) {
-                sql.append("  (detect_report_url is not null AND detect_report_url<>'') ");
-            } else {
-                sql.append("  (detect_report_url is  null or detect_report_url='') ");
-            }
+//            if (registerBill.getHasDetectReport()) {
+//                sql.append("  (detect_report_url is not null AND detect_report_url<>'') ");
+//            } else {
+//                sql.append("  (detect_report_url is  null or detect_report_url='') ");
+//            }
         }
 
         if (registerBill.getHasOriginCertifiy() != null) {
             if (sql.length() > 0) {
                 sql.append(" AND ");
             }
-            if (registerBill.getHasOriginCertifiy()) {
-                sql.append("  (origin_certifiy_url is not null AND origin_certifiy_url<>'') ");
-            } else {
-                sql.append("  (origin_certifiy_url is  null or origin_certifiy_url='') ");
-            }
+//            if (registerBill.getHasOriginCertifiy()) {
+//                sql.append("  (origin_certifiy_url is not null AND origin_certifiy_url<>'') ");
+//            } else {
+//                sql.append("  (origin_certifiy_url is  null or origin_certifiy_url='') ");
+//            }
         }
 
         if (registerBill.getHasHandleResult() != null) {
             if (sql.length() > 0) {
                 sql.append(" AND ");
             }
-            if (registerBill.getHasHandleResult()) {
-                sql.append("  (handle_result is not null AND handle_result<>'') ");
-            } else {
-                sql.append("  (handle_result is  null or handle_result='') ");
-            }
+//            if (registerBill.getHasHandleResult()) {
+//                sql.append("  (handle_result is not null AND handle_result<>'') ");
+//            } else {
+//                sql.append("  (handle_result is  null or handle_result='') ");
+//            }
         }
         if (registerBill.getHasCheckSheet() != null) {
             if (sql.length() > 0) {
@@ -987,13 +1014,13 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Override
     public List<ImageCert> findImageCertListByBillId(Long billId) {
-        return this.imageCertService.findImageCertListByBillId(billId,ImageCertBillTypeEnum.BILL_TYPE);
+        return this.imageCertService.findImageCertListByBillId(billId, ImageCertBillTypeEnum.BILL_TYPE);
     }
 
     @Override
     public Map<ImageCertTypeEnum, List<ImageCert>> findImageCertMapListByBillId(Long billId) {
         return StreamEx.of(this.findImageCertListByBillId(billId))
-                .mapToEntry(item->ImageCertTypeEnum.fromCode(item.getCertType()),Function.identity())
+                .mapToEntry(item -> ImageCertTypeEnum.fromCode(item.getCertType()), Function.identity())
                 .filterKeys(Optional::isPresent)
                 .mapKeys(Optional::get)
                 .grouping();

@@ -32,7 +32,7 @@ public class AssetsRpcService {
 	 */
 	public List<CusCategoryDTO> listCusCategory(CusCategoryQuery cusQuery) {
 		// 应该调用方传入 marketId
-		// cusQuery.setMarketId(this.globalVarService.getMarketId());
+		 cusQuery.setMarketId(this.globalVarService.getMarketId());
 		try {
 			BaseOutput<List<CusCategoryDTO>> out = this.assetsRpc.listCusCategory(cusQuery);
 			if (!out.isSuccess()) {

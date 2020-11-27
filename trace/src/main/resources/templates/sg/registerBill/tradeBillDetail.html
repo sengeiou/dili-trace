@@ -155,11 +155,12 @@
           <div align="center">
           
           
-           <%if(isNotEmpty(registerBill.originCertifiyUrl)){%>
+           <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY].~size!0)>0){%>
               <a href="javascript:void(0);" onclick="initImageBox('${registerBill.originCertifiyUrl}')" title="查看产地证明" style="font-size: medium;">产地证明</a>
            <%}%>
+
              
-          <%if(isNotEmpty(registerBill.detectReportUrl)){%>
+          <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){%>
            <span style="width: 10%;display:inline-block"></span>
           <a href="javascript:void(0);" onclick="initImageBox('${registerBill.detectReportUrl}')" title="查看检测报告" style="font-size: medium;">检测报告</a>
           <%}%>

@@ -62,15 +62,6 @@ public class RegisterBillDto extends RegisterBill {
 	private String attrValue;
 
 	@Transient
-	Boolean hasDetectReport;
-
-	@Transient
-	Boolean hasHandleResult;
-
-	@Transient
-	Boolean hasOriginCertifiy;
-
-	@Transient
 	Boolean hasCheckSheet;
 
 	@Column(name = "`state`")
@@ -374,30 +365,6 @@ public class RegisterBillDto extends RegisterBill {
 
 	public void setLikeName(String likeName) {
 		this.likeName = likeName;
-	}
-
-	public Boolean getHasDetectReport() {
-		return hasDetectReport;
-	}
-
-	public void setHasDetectReport(Boolean hasDetectReport) {
-		this.hasDetectReport = hasDetectReport;
-	}
-
-	public Boolean getHasHandleResult() {
-		return hasHandleResult;
-	}
-
-	public void setHasHandleResult(Boolean hasHandleResult) {
-		this.hasHandleResult = hasHandleResult;
-	}
-
-	public Boolean getHasOriginCertifiy() {
-		return hasOriginCertifiy;
-	}
-
-	public void setHasOriginCertifiy(Boolean hasOriginCertifiy) {
-		this.hasOriginCertifiy = hasOriginCertifiy;
 	}
 
 	public Boolean getHasCheckSheet() {

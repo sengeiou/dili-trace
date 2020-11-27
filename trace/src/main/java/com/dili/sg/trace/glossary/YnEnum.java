@@ -1,8 +1,8 @@
 package com.dili.sg.trace.glossary;
 
 public enum YnEnum {
-    YES(1,"正常"),
-    NO(-1,"删除");
+        YES(1,"正常"),
+        NO(-1,"删除");
 
     private Integer code;
     private String desc;

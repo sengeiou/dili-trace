@@ -5,13 +5,18 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.enums.ImageCertBillTypeEnum;
+import com.dili.trace.enums.ImageCertTypeEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,10 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +50,8 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 	UsualAddressService usualAddressService;
 	@Autowired
 	DetectTaskService detectTaskService;
+	@Autowired
+	ImageCertService imageCertService;
 
 	/**
 	 * 返回mapper
@@ -142,8 +147,12 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 	 * @return
 	 */
 	public Long saveHandleResult(RegisterBill input) {
-		if (input == null || input.getId() == null
-				|| StringUtils.isAnyBlank(input.getHandleResult(), input.getHandleResultUrl())) {
+		if (input == null || input.getId() == null||input.getImageCerts()==null
+				|| StringUtils.isBlank(input.getHandleResult())) {
+			throw new TraceBizException("参数错误");
+		}
+		List<ImageCert>imageCertList=StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+		if (imageCertList.isEmpty()) {
 			throw new TraceBizException("参数错误");
 		}
 		if (input.getHandleResult().trim().length() > 1000) {
@@ -157,13 +166,42 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 		RegisterBill example =  new RegisterBill();
 		example.setId(item.getId());
 		example.setHandleResult(input.getHandleResult());
-		example.setHandleResultUrl(input.getHandleResultUrl());
 		this.updateSelective(example);
 
 		return example.getId();
 
 	}
+	/**
+	 * 保存图片并更新与图片有关的属性
+	 * @param billId
+	 * @param imageList
+	 * @return
+	 */
+	public Long updateHasImage(Long billId, List<ImageCert> imageList) {
+		List<ImageCert> imageCertList = this.imageCertService.insertImageCert(imageList, billId);
+		Map<Integer, List<ImageCert>> imageCertMap = StreamEx.of(imageCertList).groupingBy(ImageCert::getCertType);
+		Integer hasDetectReport = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.DETECT_REPORT.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
+		Integer hasOriginCertify = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
+		Integer hasHandleResult = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.Handle_Result.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
 
+		RegisterBill item = new RegisterBill();
+		item.setId(billId);
+		item.setHasDetectReport(hasDetectReport);
+		item.setHasOriginCertifiy(hasOriginCertify);
+		item.setHasHandleResult(hasHandleResult);
+		this.updateSelective(item);
+		return billId;
+	}
+
+	/**
+	 * 查询图片
+	 * @param billId
+	 * @return
+	 */
+
+	public List<ImageCert> findImageCertListByBillId(Long billId) {
+		return this.imageCertService.findImageCertListByBillId(billId, ImageCertBillTypeEnum.BILL_TYPE);
+	}
 
 	/**
 	 * 上传检测报告
@@ -174,7 +212,8 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 		if (input == null || input.getId() == null) {
 			throw new TraceBizException("参数错误");
 		}
-		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+		List<ImageCert>imageCertList=StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+		if (imageCertList.isEmpty()) {
 			throw new TraceBizException("请上传报告");
 		}
 		RegisterBill item = this.get(input.getId());
@@ -185,13 +224,14 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 			throw new TraceBizException("状态错误,不能上传检测报告");
 		}
 
-		RegisterBill example =  new RegisterBill();
-		example.setId(item.getId());
-		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-		example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
-		this.updateSelective(example);
+		List<ImageCert>imageCerts=StreamEx.ofNullable(this.findImageCertListByBillId(item.getBillId()))
+				.flatCollection(Function.identity()).filter(img->{
 
-		return example.getId();
+					return !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(img.getCertType());
+				}).append(imageCertList).toList();
+
+		this.updateHasImage(item.getBillId(),imageCerts);
+		return item.getId();
 	}
 
 	/**
@@ -203,23 +243,23 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 		if (input == null || input.getId() == null) {
 			throw new TraceBizException("参数错误");
 		}
-		if (StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
+		List<ImageCert>imageCertList=StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+
+		if (imageCertList.isEmpty()) {
 			throw new TraceBizException("请上传报告");
 		}
 		RegisterBill item = this.get(input.getId());
 		if (item == null) {
 			throw new TraceBizException("数据错误");
 		}
-		// if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
-		// throw new TraceBizException("状态错误,不能上传产地证明");
-		// }
-		RegisterBill example =  new RegisterBill();
-		example.setId(item.getId());
-		example.setOriginCertifiyUrl(StringUtils.trimToNull(input.getOriginCertifiyUrl()));
-		// example.setDetectReportUrl(StringUtils.trimToNull(input.getDetectReportUrl()));
-		this.updateSelective(example);
 
-		return example.getId();
+		List<ImageCert>imageCerts=StreamEx.ofNullable(this.findImageCertListByBillId(item.getBillId()))
+				.flatCollection(Function.identity()).filter(img->{
+
+					return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(img.getCertType());
+				}).append(imageCertList).toList();
+
+		return item.getBillId();
 	}
 
 	/**

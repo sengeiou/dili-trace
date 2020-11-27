@@ -250,6 +250,54 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`sales_type`")
     private Integer salesType;
 
+    /**
+     *
+     * {@link com.dili.trace.glossary.TFEnum}
+     */
+    @ApiModelProperty(value = "检测报告 0：无,1:有")
+    @Column(name = "`has_detect_report`")
+    private Integer hasDetectReport;
+
+    /**
+     *
+     * {@link com.dili.trace.glossary.TFEnum}
+     */
+    @ApiModelProperty(value = "产地证明 0：无,1:有")
+    @Column(name = "`has_origin_certifiy`")
+    private Integer hasOriginCertifiy;
+
+    /**
+     *
+     * {@link com.dili.trace.glossary.TFEnum}
+     */
+    @ApiModelProperty(value = "处理结果 0：无,1:有")
+    @Column(name = "`has_handle_result`")
+    private Integer hasHandleResult;
+
+    public Integer getHasDetectReport() {
+        return hasDetectReport;
+    }
+
+    public void setHasDetectReport(Integer hasDetectReport) {
+        this.hasDetectReport = hasDetectReport;
+    }
+
+    public Integer getHasOriginCertifiy() {
+        return hasOriginCertifiy;
+    }
+
+    public void setHasOriginCertifiy(Integer hasOriginCertifiy) {
+        this.hasOriginCertifiy = hasOriginCertifiy;
+    }
+
+    public Integer getHasHandleResult() {
+        return hasHandleResult;
+    }
+
+    public void setHasHandleResult(Integer hasHandleResult) {
+        this.hasHandleResult = hasHandleResult;
+    }
+
     @Transient
     private List<ImageCert> imageCerts;
 
@@ -301,21 +349,11 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`trade_type_name`")
     private String tradeTypeName;
 
-    @ApiModelProperty(value = "检测报告url")
-    @Column(name = "`detect_report_url`")
-    private String detectReportUrl;
-
-    @ApiModelProperty(value = "产地证明图片")
-    @Column(name = "`origin_certifiy_url`")
-    private String originCertifiyUrl;
-
     @ApiModelProperty(value = "仪器编号")
     @Column(name = "`exe_machine_no`")
     String exeMachineNo;
 
-    @ApiModelProperty(value = "处理结果图片URL")
-    @Column(name = "`handle_result_url`")
-    private String handleResultUrl;
+
 
     @ApiModelProperty(value = "处理结果备注")
     @Column(name = "`handle_result`")
@@ -1019,21 +1057,7 @@ public class RegisterBill extends BaseDomain {
         this.tradeTypeName = tradeTypeName;
     }
 
-    public String getDetectReportUrl() {
-        return detectReportUrl;
-    }
 
-    public void setDetectReportUrl(String detectReportUrl) {
-        this.detectReportUrl = detectReportUrl;
-    }
-
-    public String getOriginCertifiyUrl() {
-        return originCertifiyUrl;
-    }
-
-    public void setOriginCertifiyUrl(String originCertifiyUrl) {
-        this.originCertifiyUrl = originCertifiyUrl;
-    }
 
     public String getExeMachineNo() {
         return exeMachineNo;
@@ -1043,13 +1067,6 @@ public class RegisterBill extends BaseDomain {
         this.exeMachineNo = exeMachineNo;
     }
 
-    public String getHandleResultUrl() {
-        return handleResultUrl;
-    }
-
-    public void setHandleResultUrl(String handleResultUrl) {
-        this.handleResultUrl = handleResultUrl;
-    }
 
     public String getHandleResult() {
         return handleResult;

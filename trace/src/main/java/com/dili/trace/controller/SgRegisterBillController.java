@@ -190,13 +190,13 @@ public class SgRegisterBillController {
         }
     }
 
-
-    /**
+/*
+    *//**
      * 新增RegisterBill
      *
      * @param registerBills
      * @return
-     */
+     *//*
     @ApiOperation("新增RegisterBill")
     @RequestMapping(value = "/insert.action", method = RequestMethod.POST)
     public @ResponseBody
@@ -256,7 +256,7 @@ public class SgRegisterBillController {
             return BaseOutput.failure("服务器出错,请重试");
         }
 
-    }
+    }*/
 
     /**
      * 修改RegisterBill
@@ -693,7 +693,9 @@ public class SgRegisterBillController {
 
         if (null != registerBill) {
             registerBill.setDetectRecord(detectRecordService.findByRegisterBillCode(registerBill.getCode()));
+            registerBill.setImageCerts(this.registerBillService.findImageCertListByBillId(registerBill.getBillId()));
         }
+
         modelMap.put("registerBill", registerBill);
         modelMap.put("qualityTraceTradeBill", qualityTraceTradeBill);
         return "sg/registerBill/tradeBillDetail";

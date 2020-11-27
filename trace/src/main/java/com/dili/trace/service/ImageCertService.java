@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import java.util.List;
+import java.util.function.Function;
 
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.ImageCertBillTypeEnum;
@@ -41,7 +42,6 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
                     return cert;
                 }).toList();
     }
-
     /**
      * 保存图片
      *
@@ -58,7 +58,7 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
             this.deleteByExample(deleteConditon);
 
             // 增加新的图片
-            return StreamEx.of(imageCertList).nonNull().map(cert -> {
+            return StreamEx.ofNullable(imageCertList).flatCollection(Function.identity()).map(cert -> {
                 cert.setBillId(billId);
                 cert.setId(null);
                 cert.setBillType(BillTypeEnum.REGISTER_BILL.getCode());

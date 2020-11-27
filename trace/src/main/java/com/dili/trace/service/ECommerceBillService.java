@@ -5,8 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
@@ -133,16 +135,18 @@ public class ECommerceBillService {
 
 		if (RegisterBillStateEnum.ALREADY_CHECK.equalsToCode(inputBill.getState())
 				&& BillDetectStateEnum.PASS.equalsToCode(inputBill.getDetectState())) {
-			if (StringUtils.isNotBlank(item.getDetectReportUrl())
-					|| StringUtils.isNotBlank(item.getOriginCertifiyUrl())) {
+
+			    List<ImageCert>imageCertList=StreamEx.ofNullable(inputBill.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+
+				if (imageCertList.isEmpty()) {
+					throw new TraceBizException("参数错误");
+				}
+				this.billService.updateHasImage(item.getId(),imageCertList);
 				updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 				updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
 				updatable.setLatestDetectOperator(operatorUser.getName());
 				updatable.setLatestDetectTime(new Date());
 				updatable.setLatestPdResult("100%");
-			} else {
-				throw new TraceBizException("参数错误");
-			}
 
 		} else if (RegisterBillStateEnum.WAIT_CHECK.equalsToCode(inputBill.getState())
 				&& inputBill.getDetectState() == null) {

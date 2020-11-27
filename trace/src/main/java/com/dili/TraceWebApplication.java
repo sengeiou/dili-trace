@@ -31,7 +31,10 @@ import tk.mybatis.spring.annotation.MapperScan;
 @EnableScheduling
 
 @EnableAsync
-@EnableFeignClients(basePackages = {"com.dili.assets.sdk.rpc","com.dili.trace.rpc","com.dili.bpmc.sdk.rpc"})
+@EnableFeignClients(basePackages = {"com.dili.assets.sdk.rpc"
+        ,"com.dili.customer.sdk.rpc"
+        ,"com.dili.trace.rpc"
+        ,"com.dili.bpmc.sdk.rpc"})
 @Import(FeignClientsConfiguration.class)
 @EnableDiscoveryClient
 /**
