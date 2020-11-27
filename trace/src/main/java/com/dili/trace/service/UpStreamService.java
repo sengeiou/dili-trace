@@ -150,6 +150,11 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 		return Optional.empty();
 	}
 
+	/**
+	 * 新增用户
+	 * @param upStreamDto
+	 * @return
+	 */
 	private Long doAddUser(UpStreamDto upStreamDto) {
 		List<User> users = userService.getUserByExistsAccount(upStreamDto.getTelphone());
 		boolean existsFlag = !CollUtil.isEmpty(users);

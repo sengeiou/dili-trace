@@ -1,6 +1,5 @@
 package com.dili.trace.service;
 
-import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.Market;
 import com.dili.trace.enums.MarketEnum;
 import com.dili.uap.sdk.domain.Firm;
@@ -63,5 +62,11 @@ public interface MarketService {
      *根据Makeid获取市场
      * @Date 2020/11/26 17:07
      */
-    public Optional<Firm> getMarketById(Long marketId);
+    Optional<Firm> getMarketById(Long marketId);
+
+    /**
+     *获取市场列表（已激活，非）
+     * @Date 2020/11/26 17:07
+     */
+    Optional<List<Market>> getMarkets();
 }
