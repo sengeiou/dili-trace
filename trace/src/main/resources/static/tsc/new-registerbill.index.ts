@@ -1,4 +1,4 @@
-class NewRegisterBillGrid {
+class RegisterBillGrid {
     ctx:string;
     grid: any;
     billStateEnums: any;
@@ -24,7 +24,14 @@ class NewRegisterBillGrid {
             url:url,
             success:function(resp){
                 data=resp.suggestions.map(function(v,i){v['parentId']='';return v});
+                //console.info(data)
                 success(data);
+                //data.unshift({id:'',value:'全部'});
+                //$('#productName').combobox({data:data});
+                //	$('#productName').combobox('showPanel');
+                //$('#productName').combotree('setText',productName);
+                //	$('#productIdList').focus();
+                //$('#productIdList').next().find('input').focus()
             }
         })
 
