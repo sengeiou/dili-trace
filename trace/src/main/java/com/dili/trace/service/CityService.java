@@ -45,7 +45,8 @@ public class CityService {
         query.setCityCode(condition.getCityCode());
         query.setLevelType(condition.getLevelType());
         query.setParentId(condition.getParentId());
-//        query.setKeyword(condition.getKeyword());
+        // 小程序需要模糊查询城市
+        query.setKeyword(condition.getKeyword());
         List<CityDto> result = this.listCity(query);
         return result;
 
