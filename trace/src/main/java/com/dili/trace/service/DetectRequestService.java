@@ -2,14 +2,21 @@ package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.enums.DetectRequestStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
+import com.google.common.collect.Lists;
+import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * 检测请求service
@@ -19,6 +26,8 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     @Autowired
     BillService billService;
+    @Autowired
+    DetectRequestMapper detectRequestMapper;
 
     /**
      * 根据报备单创建检测请求数据
@@ -26,20 +35,59 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @param billId
      * @return
      */
-    public DetectRequest createByBillId(Long billId) {
-        RegisterBill item = this.billService.get(billId);
-        if (item == null) {
+    public DetectRequest createByBillId(@NotNull Long billId, DetectTypeEnum detectTypeEnum, @NotNull IdNameDto creatorDto, @NotNull Optional<IdNameDto> designatedDto) {
+        RegisterBill billItem = this.billService.get(billId);
+        if (billItem == null) {
             throw new TraceBizException("报备单不存在");
         }
 
+
         DetectRequest detectRequest = new DetectRequest();
-        detectRequest.setBillId(item.getBillId());
+        detectRequest.setDetectRequestStatus(DetectRequestStatusEnum.NEW.getCode());
+        detectRequest.setDetectType(detectTypeEnum.getCode());
+
+        this.findLatestDetectRequest(billId).ifPresent(detectRequestItem -> {
+            if (!DetectRequestStatusEnum.FINISHED.equalsToCode(detectRequestItem.getDetectRequestStatus())) {
+                throw new TraceBizException("已经有进行中的检测任务");
+            }
+/*            if(DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequestItem.getDetectType())){
+                detectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
+            }*/
+
+        });
+
+
+        detectRequest.setBillId(billItem.getBillId());
         detectRequest.setCreated(new Date());
         detectRequest.setModified(new Date());
-        detectRequest.setDetectType(DetectTypeEnum.NONE.getCode());
-        detectRequest.setDetectRequestStatus(DetectRequestStatusEnum.NEW.getCode());
+
+        designatedDto.ifPresent(idname -> {
+            detectRequest.setDesignatedId(idname.getId());
+            detectRequest.setDesignatedName(idname.getName());
+        });
+        detectRequest.setCreatorId(creatorDto.getId());
+        detectRequest.setCreatorName(creatorDto.getName());
         this.insert(detectRequest);
         return detectRequest;
+    }
 
+
+    /**
+     * 查询已经关联的检测任务
+     *
+     * @param billId
+     * @return
+     */
+    private Optional<DetectRequest> findLatestDetectRequest(Long billId) {
+        if (billId == null) {
+            throw new TraceBizException("参数错误");
+        }
+
+        DetectRequest example = new DetectRequest();
+        example.setSort("id");
+        example.setOrder("desc");
+        example.setPage(1);
+        example.setRows(1);
+        return StreamEx.of(this.detectRequestMapper.selectByExample(example)).findFirst();
     }
 }

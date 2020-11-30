@@ -34,16 +34,29 @@ public class DetectRequest extends BaseDomain {
     private String creatorName;
 
     /**
-     * 指定检测员ID
+     * 被指定检测员ID
      */
     @Column(name = "`designated_id`")
     private Long designatedId;
 
     /**
-     * 指定检测员姓名
+     * 被指定检测员姓名
      */
     @Column(name = "`designated_name`")
     private String designatedName;
+
+
+    /**
+     * 检测员ID
+     */
+    @Column(name = "`detector_id`")
+    private Long detectorId;
+
+    /**
+     * 检测员姓名
+     */
+    @Column(name = "`detector_name`")
+    private String detectorName;
 
     /**
      * 检测类型
@@ -148,5 +161,21 @@ public class DetectRequest extends BaseDomain {
 
     public void setDetectRequestStatus(Integer detectRequestStatus) {
         this.detectRequestStatus = detectRequestStatus;
+    }
+
+    public Long getDetectorId() {
+        return detectorId;
+    }
+
+    public void setDetectorId(Long detectorId) {
+        this.detectorId = detectorId;
+    }
+
+    public String getDetectorName() {
+        return detectorName;
+    }
+
+    public void setDetectorName(String detectorName) {
+        this.detectorName = detectorName;
     }
 }

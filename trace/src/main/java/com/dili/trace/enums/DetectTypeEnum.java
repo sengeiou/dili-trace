@@ -3,12 +3,9 @@ package com.dili.trace.enums;
 import java.util.Optional;
 
 public enum DetectTypeEnum {
+
     /**
-     * 初检合格
-     */
-    NONE(0, ""),
-    /**
-     * 初检合格
+     * 初检
      */
     INITIAL_CHECK(1, "初检"),
     /**
@@ -23,14 +20,14 @@ public enum DetectTypeEnum {
 
 
     private String name;
-    private Integer code ;
+    private Integer code;
 
-    DetectTypeEnum(Integer code, String name){
+    DetectTypeEnum(Integer code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static Optional<DetectTypeEnum> fromCode(Integer code){
+    public static Optional<DetectTypeEnum> fromCode(Integer code) {
         for (DetectTypeEnum anEnum : DetectTypeEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return Optional.ofNullable(anEnum);
@@ -38,9 +35,11 @@ public enum DetectTypeEnum {
         }
         return Optional.empty();
     }
-    public Boolean equalsToCode(Integer code){
+
+    public Boolean equalsToCode(Integer code) {
         return this.getCode().equals(code);
     }
+
     public Integer getCode() {
         return code;
     }

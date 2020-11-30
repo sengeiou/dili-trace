@@ -11,11 +11,11 @@ public enum DetectRequestStatusEnum {
     /**
      * 检测中
      */
-    检测中(10, "检测中"),
+    DETECTING(10, "检测中"),
     /**
      * 复检
      */
-    检测结束(20, "检测结束"),
+    FINISHED(20, "检测结束"),
     ;
 
 
