@@ -15,13 +15,20 @@ import org.springframework.stereotype.Component;
 
 import com.dili.ss.dto.DTOUtils;
 
+/**
+ *
+ * @Date 2020/11/30 8:42
+ */
 @EnableAsync
 @Component
 public class UsualAddressCountClearJob {
 	private static final Logger logger = LoggerFactory.getLogger(UsualAddressCountClearJob.class);
 	@Autowired
 	UsualAddressMapper usualAddressMapper;
-	//应用启用时处理一次数据，防止上一次任务未执行
+	/**
+	 *应用启用时处理一次数据，防止上一次任务未执行
+	 * @Date 2020/11/30 8:43
+	 */
 	@PostConstruct
 	public void init() {
 		this.checkAndClearUsedCount();
