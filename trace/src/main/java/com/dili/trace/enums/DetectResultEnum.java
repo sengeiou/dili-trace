@@ -6,7 +6,7 @@ public enum DetectResultEnum {
     /**
      * 无
      */
-    NONE(0, ""),
+    NONE(0, "未知"),
     /**
      * 合格
      */

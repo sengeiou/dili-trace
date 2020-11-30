@@ -19,7 +19,7 @@ class jq {
      */
 
     public static async postJson(url:string,data:object,settings:JQuery.AjaxSettings={}):Promise<any> {
-        _.extend(settings,{method:'post',contentType:'application/json',data:JSON.stringify(data),url:url})
+        _.extend(settings,{method:'post',dataType:'json',contentType:'application/json',data:JSON.stringify(data),url:url})
         let resp:any=await jq.ajax(settings);
         return resp;
     }

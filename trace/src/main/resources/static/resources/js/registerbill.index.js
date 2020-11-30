@@ -74,7 +74,7 @@ class RegisterBillGrid extends PageTs {
     }
     async findHighLightBill() {
         try {
-            return await jq.postJson2(this.contextPath + "/sg/registerBill/findHighLightBill.action", {}, {});
+            return await jq.postJson(this.contextPath + "/sg/registerBill/findHighLightBill.action", {}, {});
         }
         catch (e) {
             return {};

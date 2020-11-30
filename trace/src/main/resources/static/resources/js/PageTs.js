@@ -1,6 +1,6 @@
 class PageTs {
     constructor() {
-        this._webConfig = config;
+        this._webConfig = webGlobalConfig;
     }
     get webConfig() {
         return this._webConfig;

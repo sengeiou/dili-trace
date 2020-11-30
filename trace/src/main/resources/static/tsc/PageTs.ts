@@ -2,7 +2,7 @@ class PageTs{
     private _webConfig:WebConfig;
     constructor() {
         //@ts-ignore
-        this._webConfig=(config as WebConfig);
+        this._webConfig=(webGlobalConfig as WebConfig);
     }
     public get webConfig():WebConfig{
         return this._webConfig;

@@ -10,7 +10,6 @@ class CategoryController {
         }
     }
     public static async listSuggestionsCategories(cusCategoryQuery: any) :Promise<any>{
-
         let resp = await jq.postJson('../../category/listCategories.action',  cusCategoryQuery);
         if (resp.code == '200') {
             return _.chain(resp.data).map(item => {

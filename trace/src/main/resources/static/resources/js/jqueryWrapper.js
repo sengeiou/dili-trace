@@ -10,7 +10,7 @@ class jq {
         return p;
     }
     static async postJson(url, data, settings = {}) {
-        _.extend(settings, { method: 'post', contentType: 'application/json', data: JSON.stringify(data), url: url });
+        _.extend(settings, { method: 'post', dataType: 'json', contentType: 'application/json', data: JSON.stringify(data), url: url });
         let resp = await jq.ajax(settings);
         return resp;
     }

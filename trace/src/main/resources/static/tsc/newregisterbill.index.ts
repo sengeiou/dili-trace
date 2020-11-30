@@ -1,40 +1,89 @@
-class RegisterBillGrid extends PageTs {
+import Table = WebAssembly.Table;
+
+class NewRegisterBillGrid extends PageTs {
     grid: any;
+    queryform: any;
     highLightBill: any;
 
-    constructor(grid: any) {
+    constructor(grid: any, queryform: any) {
         super();
+        this.grid = grid;
+        this.queryform = queryform;
+
         let cthis = this;
         var onClickRow = function () {
             cthis.onClickRow()
         }
-        this.grid = grid;
-        this.grid.datagrid({
-            onClickRow: onClickRow
-            , onSelect: onClickRow
-            , onSelectAll: onClickRow
-            , onUnselect: onClickRow
-            , onUnselectAll: onClickRow
-            , loader: async function (param, success, error) {
-                await cthis.loadRegisterBillGridData(param, success, error);
-            }
+
+        this.grid.on('check.bs.table', () => {
+            cthis.onClickRow()
         });
+        this.grid.on('uncheck.bs.table', () => {
+            cthis.onClickRow()
+        });
+
+        this.queryform.find('#query').click(() => {
+            cthis.queryData();
+        })
+        $('#edit-btn').click(function () {
+            cthis.openEditPage();
+        })
+
+        /*        this.grid.datagrid({
+                    onClickRow: onClickRow
+                    , onSelect: onClickRow
+                    , onSelectAll: onClickRow
+                    , onUnselect: onClickRow
+                    , onUnselectAll: onClickRow
+                    , loader: async function (param, success, error) {
+                        await cthis.loadRegisterBillGridData(param, success, error);
+                    }
+                });*/
+
+        $(window).resize(function () {
+            cthis.grid.bootstrapTable('resetView')
+        });
+        this.queryData();
+        //  this.loadData();
 
     }
 
+    private async queryData() {
+        if (this.queryform.validate().form()) {
+            $('#toolbar button').attr('disabled', "disabled");
+            await this.loadDataToGrid();
+            $('#toolbar button').removeAttr('disabled');
+        } else {
+            //@ts-ignore
+            bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
+        }
+
+    }
+
+    private async loadDataToGrid() {
+        this.resetButtons();
+        this.grid.bootstrapTable('showLoading');
+        this.highLightBill = await this.findHighLightBill();
+        var url = this.contextPath + "/newRegisterBill/listPage.action";
+        try{
+            var resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
+            this.grid.bootstrapTable('load',resp);
+        }catch (e){
+            this.grid.bootstrapTable('load',{rows:[],total:0});
+        }
+        this.grid.bootstrapTable('hideLoading');
+
+
+    }
+
+    private openEditPage() {
+
+    }
+
+
     private queryRegisterBillGrid() {
 
-        var opts = this.grid.datagrid("options");
-        if (null == opts.url || "" == opts.url) {
-            opts.url = this.contextPath + "/sg/registerBill/listPage.action";
-        }
-        //@ts-ignore
-        if (!$('#queryForm').form("validate")) {
-            return false;
-        }
 
-        this.grid.datagrid("reload", this.buildGridQueryData());
-        this.resetButtons();
 
     }
 
@@ -44,7 +93,8 @@ class RegisterBillGrid extends PageTs {
         for (var i = 0; i < btnArray.length; i++) {
             var btnId = btnArray[i];
             //@ts-ignore
-            $('#' + btnId).linkbutton('enable');
+            //  $('#' + btnId).linkbutton('enable');
+
             $('#' + btnId).hide();
 
         }
@@ -88,10 +138,10 @@ class RegisterBillGrid extends PageTs {
         if (this.rows.length != 1) {
             return;
         }
-
     }
 
     private async findHighLightBill() {
+
         try {
             return await jq.postJson(this.contextPath + "/sg/registerBill/findHighLightBill.action", {}, {});
         } catch (e) {
@@ -115,17 +165,17 @@ class RegisterBillGrid extends PageTs {
     }
 
     //表格查询
-    private async loadRegisterBillGridData(param, success, error) {
+    private async loadRegisterBillGridData() {
         this.highLightBill = await this.findHighLightBill();
         $.extend(this.grid.datagrid("options").queryParams, this.buildGridQueryData());
         var datas = this.buildGridQueryData();
         var ret = await jq.postJson(this.contextPath + "/sg/registerBill/listPage.action", datas, {
-            processData: true,type:'json'
+            processData: true, type: 'json'
         });
         if (ret && ret.rows) {
-            success(ret);
-        }else{
-            success({rows:[],total:0});
+            //success(ret);
+        } else {
+            // success({rows:[],total:0});
         }
 
     }
@@ -201,7 +251,8 @@ class RegisterBillGrid extends PageTs {
     }
 
     get rows() {
-        return RegisterBillGrid.getInstance().grid.datagrid("getSelections");
+        let rows = this.grid.bootstrapTable('getSelections');
+        return rows;
     }
 
     public static getInstance(): RegisterBillGrid {
@@ -285,7 +336,7 @@ class RegisterBillGrid extends PageTs {
             });
             return;
         }
-        var cthis=this;
+        var cthis = this;
         var arr = this.filterByProp("$_state", [RegisterBillStateEnum.WAIT_AUDIT]);
 
         let promise = new Promise((resolve, reject) => {
@@ -356,7 +407,8 @@ class RegisterBillGrid extends PageTs {
     }
 
     private filterByProp(prop: string, propValues: any[]) {
-        let arrayData = $.makeArray(RegisterBillGrid.getInstance().rows);
+
+        let arrayData = $.makeArray(this.rows);
         let arrayValue = $.makeArray(propValues);
         let values: any[] = _.chain(arrayData).filter(element => $.inArray(element[prop], arrayValue) > -1).value();
         return values;
