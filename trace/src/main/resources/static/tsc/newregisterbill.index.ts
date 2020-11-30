@@ -28,6 +28,14 @@ class NewRegisterBillGrid extends PageTs {
         $('#edit-btn').on('click',function () {
             cthis.openEditPage();
         })
+        $('#btn_add').on('click',function () {
+            cthis.openCreatePage();
+        })
+        $('#copy-btn').on('click',function () {
+            cthis.openCopyPage();
+        })
+
+
         $(window).on('resize',function () {
             cthis.grid.bootstrapTable('resetView')
         });
@@ -62,7 +70,24 @@ class NewRegisterBillGrid extends PageTs {
         this.grid.bootstrapTable('hideLoading');
         $('#toolbar button').removeAttr('disabled');
     }
+    private openCopyPage(){
 
+    }
+    private openCreatePage() {
+        let url = this.toUrl("/newRegisterBill/create.html");
+
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '新增报备单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
     private openEditPage() {
 
     }

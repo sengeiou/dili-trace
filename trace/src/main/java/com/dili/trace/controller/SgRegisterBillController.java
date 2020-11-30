@@ -82,18 +82,18 @@ public class SgRegisterBillController {
      * @param modelMap
      * @return
      */
-    @ApiOperation("跳转到RegisterBill页面")
-    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
-    public String index(ModelMap modelMap) {
-        Date now = new Date();
-        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
-        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
-        modelMap.put("state", RegisterBillStateEnum.WAIT_AUDIT.getCode());
-        UserTicket user = SessionContext.getSessionContext().getUserTicket();
-        modelMap.put("user", user);
-
-        return "sg/registerBill/index";
-    }
+//    @ApiOperation("跳转到RegisterBill页面")
+//    @RequestMapping(value = "/index.html", method = RequestMethod.GET)
+//    public String index(ModelMap modelMap) {
+//        Date now = new Date();
+//        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+//        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+//        modelMap.put("state", RegisterBillStateEnum.WAIT_AUDIT.getCode());
+//        UserTicket user = SessionContext.getSessionContext().getUserTicket();
+//        modelMap.put("user", user);
+//
+//        return "sg/registerBill/index";
+//    }
 
     /**
      * 查询RegisterBill
@@ -119,15 +119,15 @@ public class SgRegisterBillController {
      * @return
      * @throws Exception
      */
-    @ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string")})
-    @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    Object listPage(@RequestBody  RegisterBillDto registerBill) throws Exception {
-        String json=registerBillService.listPage(registerBill);
-        return JSON.parse(json);
-    }
+//    @ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string")})
+//    @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
+//    public @ResponseBody
+//    Object listPage(@RequestBody  RegisterBillDto registerBill) throws Exception {
+//        String json=registerBillService.listPage(registerBill);
+//        return JSON.parse(json);
+//    }
 
     /**
      * 新增RegisterBill
@@ -350,12 +350,12 @@ public class SgRegisterBillController {
         return "sg/registerBill/tradeBillSsRecord";
     }
 
-    /**
+   /* *//**
      * 登记单录修改页面
      *
      * @param modelMap
      * @return
-     */
+     *//*
     @RequestMapping(value = "/uploadDetectReport.html", method = RequestMethod.GET)
     public String uploadDetectReport(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
         RegisterBill registerBill = billService.get(id);
@@ -383,7 +383,7 @@ public class SgRegisterBillController {
 
         return "sg/registerBill/upload-detectReport";
     }
-
+*/
     /**
      * 上传产地证明
      *
@@ -732,77 +732,9 @@ public class SgRegisterBillController {
         return "sg/registerBill/tradeBillQRCode";
     }
 
-    /**
-     * 交易单复制
-     *
-     * @param id
-     * @param modelMap
-     * @return
-     */
-    @RequestMapping(value = "/copy.html", method = RequestMethod.GET)
-    public String copy(Long id, ModelMap modelMap) {
-        RegisterBill registerBill = billService.get(id);
-        String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
-                .filter(StringUtils::isNotBlank).findFirst().orElse("");
-        registerBill.setTallyAreaNo(firstTallyAreaNo);
 
-        UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
-        modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
-        modelMap.put("tradeTypes", tradeTypeService.findAll());
-        modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
-        modelMap.put("citys", this.queryCitys());
 
-        if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-            List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
-            modelMap.put("userPlateList", userPlateList);
-        } else {
-            modelMap.put("userPlateList", new ArrayList<>(0));
-        }
-
-        return "sg/registerBill/copy";
-    }
-
-    /**
-     * 查找用户信息
-     *
-     * @param registerBill
-     * @param firstTallyAreaNo
-     * @return
-     */
-    private UserInfoDto findUserInfoDto(RegisterBill registerBill, String firstTallyAreaNo) {
-        UserInfoDto userInfoDto = new UserInfoDto();
-        if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
-            // 理货区
-            User user = userService.findByTallyAreaNo(firstTallyAreaNo);
-
-            if (user != null) {
-                userInfoDto.setUserId(String.valueOf(user.getId()));
-                userInfoDto.setName(user.getName());
-                userInfoDto.setIdCardNo(user.getCardNo());
-                userInfoDto.setPhone(user.getPhone());
-                userInfoDto.setAddr(user.getAddr());
-
-            }
-
-        } else {
-
-            Customer condition = new Customer();
-            condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
-            condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
-            Customer customer = this.customerService.findCustomer(condition).orElse(null);
-            if (customer != null) {
-                userInfoDto.setUserId(customer.getCustomerId());
-                userInfoDto.setName(customer.getName());
-                userInfoDto.setIdCardNo(customer.getIdNo());
-                userInfoDto.setPhone(customer.getPhone());
-                userInfoDto.setAddr(customer.getAddress());
-                userInfoDto.setPrintingCard(customer.getPrintingCard());
-            }
-
-        }
-        return userInfoDto;
-    }
 
     /**
      * 保存处理结果
@@ -912,38 +844,6 @@ public class SgRegisterBillController {
 
     }
 
-    /**
-     * 交易单修改
-     *
-     * @param id
-     * @param modelMap
-     * @return
-     */
-    @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
-    public String edit(Long id, ModelMap modelMap) {
-        RegisterBill registerBill = billService.get(id);
-        String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
-                .filter(StringUtils::isNotBlank).findFirst().orElse("");
-        registerBill.setTallyAreaNo(firstTallyAreaNo);
-
-        UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
-        modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
-        modelMap.put("tradeTypes", tradeTypeService.findAll());
-        modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
-
-        modelMap.put("citys", this.queryCitys());
-
-        UserTicket user = SessionContext.getSessionContext().getUserTicket();
-        modelMap.put("user", user);
-
-        if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-            List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(registerBill.getUserId());
-            modelMap.put("userPlateList", userPlateList);
-        } else {
-            modelMap.put("userPlateList", new ArrayList<>(0));
-        }
-        return "sg/registerBill/edit";
-    }
 
     /**
      * 保存处理结果
