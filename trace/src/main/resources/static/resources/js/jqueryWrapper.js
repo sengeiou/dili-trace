@@ -9,12 +9,7 @@ class jq {
         });
         return p;
     }
-    static async postJson(settings) {
-        _.extend(settings, { method: 'post', contentType: 'application/json', data: JSON.stringify(settings.data) });
-        let resp = await jq.ajax(settings);
-        return resp;
-    }
-    static async postJson2(url, data, settings = {}) {
+    static async postJson(url, data, settings = {}) {
         _.extend(settings, { method: 'post', contentType: 'application/json', data: JSON.stringify(data), url: url });
         let resp = await jq.ajax(settings);
         return resp;
