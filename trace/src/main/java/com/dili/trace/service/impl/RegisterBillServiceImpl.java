@@ -859,6 +859,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             registerBill.setVerifyType(VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode());
         }
 
+        if (registerBill.getRegisterSource() == null) {
+            // 默认理货区
+            registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
+        }
+
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 

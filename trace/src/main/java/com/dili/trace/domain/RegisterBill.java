@@ -275,6 +275,9 @@ public class RegisterBill extends BaseDomain {
     private Integer hasHandleResult;
 
     public Integer getHasDetectReport() {
+        if (handleResult == null) {
+            return 0;
+        }
         return hasDetectReport;
     }
 
@@ -283,6 +286,9 @@ public class RegisterBill extends BaseDomain {
     }
 
     public Integer getHasOriginCertifiy() {
+        if (hasOriginCertifiy == null) {
+            return 0;
+        }
         return hasOriginCertifiy;
     }
 
@@ -291,6 +297,9 @@ public class RegisterBill extends BaseDomain {
     }
 
     public Integer getHasHandleResult() {
+        if (hasHandleResult == null) {
+            return 0;
+        }
         return hasHandleResult;
     }
 
