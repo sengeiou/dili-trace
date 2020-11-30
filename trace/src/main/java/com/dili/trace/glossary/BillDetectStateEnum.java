@@ -31,6 +31,7 @@ public enum BillDetectStateEnum {
     REVIEW_NO_PASS(4, "复检不合格"),
     ;
 
+
     private String name;
     private Integer code ;
 
