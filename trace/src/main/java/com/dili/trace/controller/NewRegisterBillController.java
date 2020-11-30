@@ -9,12 +9,14 @@ import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.dto.BillReportQueryDto;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import io.swagger.annotations.Api;
@@ -47,6 +49,9 @@ public class NewRegisterBillController {
     private static final Logger logger = LoggerFactory.getLogger(NewRegisterBillController.class);
     @Autowired
     SgRegisterBillService registerBillService;
+    @Autowired
+    TradeTypeService tradeTypeService;
+
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
     @Autowired
@@ -105,6 +110,44 @@ public class NewRegisterBillController {
         return registerBillService.listPage(registerBill);
     }
 
+    /**
+     * 分页查询RegisterBill
+     *
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string")})
+    @RequestMapping(value = "/findHighLightBill.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    Object findHighLightBill(RegisterBillDto dto) throws Exception {
+
+        RegisterBill registerBill = registerBillService.findHighLightBill(dto);
+        return BaseOutput.success().setData(registerBill);
+    }
+
+
+
+
+    /**
+     * 登记单录入页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/create.html")
+    public String create(ModelMap modelMap) {
+        try {
+            modelMap.put("tradeTypes", tradeTypeService.findAll());
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        modelMap.put("citys", this.queryCitys());
+
+        return "new-registerBill/create";
+    }
 
     /**
      * 新增RegisterBill
@@ -148,6 +191,16 @@ public class NewRegisterBillController {
         } catch (Exception e) {
             return BaseOutput.failure("服务器出错,请重试");
         }
+    }
+
+
+    /**
+     * 查询城市
+     *
+     * @return
+     */
+    private List<UsualAddress> queryCitys() {
+        return usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.REGISTER);
     }
 
 }

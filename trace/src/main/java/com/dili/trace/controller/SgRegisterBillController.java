@@ -111,23 +111,6 @@ public class SgRegisterBillController {
         return billService.list(registerBill);
     }
 
-    /**
-     * 分页查询RegisterBill
-     *
-     * @param dto
-     * @return
-     * @throws Exception
-     */
-    @ApiOperation(value = "分页查询RegisterBill", notes = "分页查询RegisterBill，返回easyui分页信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string")})
-    @RequestMapping(value = "/findHighLightBill.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    Object findHighLightBill(RegisterBillDto dto) throws Exception {
-
-        RegisterBill registerBill = registerBillService.findHighLightBill(dto);
-        return BaseOutput.success().setData(registerBill);
-    }
 
     /**
      * 分页查询RegisterBill
@@ -290,23 +273,6 @@ public class SgRegisterBillController {
         return BaseOutput.success("删除成功");
     }
 
-    /**
-     * 登记单录入页面
-     *
-     * @param modelMap
-     * @return
-     */
-    @RequestMapping(value = "/create.html")
-    public String create(ModelMap modelMap) {
-        try {
-            modelMap.put("tradeTypes", tradeTypeService.findAll());
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        modelMap.put("citys", this.queryCitys());
-
-        return "sg/registerBill/create";
-    }
 
     /**
      * 查询城市

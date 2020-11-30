@@ -16,44 +16,44 @@ class NewRegisterBillGrid extends PageTs {
         this.grid.on('uncheck.bs.table', () => {
             cthis.onClickRow();
         });
-        this.queryform.find('#query').click(() => {
-            cthis.queryData();
+        this.queryform.find('#query').click(async () => {
+            await this.queryGridData();
         });
-        $('#edit-btn').click(function () {
+        $('#edit-btn').on('click', function () {
             cthis.openEditPage();
         });
-        $(window).resize(function () {
+        $(window).on('resize', function () {
             cthis.grid.bootstrapTable('resetView');
         });
-        this.queryData();
+        (async () => {
+            await this.queryGridData();
+        })();
     }
-    async queryData() {
-        if (this.queryform.validate().form()) {
-            $('#toolbar button').attr('disabled', "disabled");
-            await this.loadDataToGrid();
-            $('#toolbar button').removeAttr('disabled');
-        }
-        else {
+    async queryGridData() {
+        if (!this.queryform.validate().form()) {
             bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
+            return;
         }
+        await this.remoteQuery();
     }
-    async loadDataToGrid() {
-        this.resetButtons();
+    async remoteQuery() {
+        $('#toolbar button').attr('disabled', "disabled");
         this.grid.bootstrapTable('showLoading');
+        this.resetButtons();
         this.highLightBill = await this.findHighLightBill();
-        var url = this.contextPath + "/newRegisterBill/listPage.action";
         try {
-            var resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
+            let url = this.contextPath + "/newRegisterBill/listPage.action";
+            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
             this.grid.bootstrapTable('load', resp);
         }
         catch (e) {
+            console.error(e);
             this.grid.bootstrapTable('load', { rows: [], total: 0 });
         }
         this.grid.bootstrapTable('hideLoading');
+        $('#toolbar button').removeAttr('disabled');
     }
     openEditPage() {
-    }
-    queryRegisterBillGrid() {
     }
     resetButtons() {
         var btnArray = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'handle-btn',
@@ -98,9 +98,10 @@ class NewRegisterBillGrid extends PageTs {
     }
     async findHighLightBill() {
         try {
-            return await jq.postJson(this.contextPath + "/sg/registerBill/findHighLightBill.action", {}, {});
+            return await jq.postJson(this.contextPath + "/newRegisterBill/findHighLightBill.action", {}, {});
         }
         catch (e) {
+            console.log(e);
             return {};
         }
     }
@@ -270,13 +271,13 @@ class NewRegisterBillGrid extends PageTs {
                         layer.alert('操作成功', {
                             title: '操作',
                             time: 600,
-                            end: function () {
+                            end: async function () {
                                 layer.closeAll();
-                                cthis.queryRegisterBillGrid();
+                                await cthis.queryGridData();
                             }
-                        }, function () {
+                        }, async function () {
                             layer.closeAll();
-                            cthis.queryRegisterBillGrid();
+                            await cthis.queryGridData();
                         });
                     }
                     else {
