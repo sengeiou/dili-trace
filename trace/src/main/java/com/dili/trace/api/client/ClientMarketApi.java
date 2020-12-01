@@ -1,6 +1,8 @@
 package com.dili.trace.api.client;
 
+import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.Role;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Market;
@@ -26,7 +28,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/client/market")
 @Api(value = "/api/client/market", description = "市场相关接口")
-@InterceptConfiguration
+@Access(role = Role.Client,url = "")
 public class ClientMarketApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientMarketApi.class);
 

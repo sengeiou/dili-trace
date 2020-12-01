@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Access {
-    Role role() default  Role.User;
+    Role role() default  Role.Manager;
     String method() default "post";
     String url() default "";
 }

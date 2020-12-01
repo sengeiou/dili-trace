@@ -2,6 +2,8 @@ package com.dili.trace.api.manager;
 
 import javax.annotation.Resource;
 
+import com.dili.common.annotation.Access;
+import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.trace.service.ImageCertService;
 import com.dili.trace.service.RegisterBillService;
@@ -22,6 +24,7 @@ import io.swagger.annotations.Api;
 @RestController
 @RequestMapping(value = "/api/manager/managerRegisterBill")
 @Api(value = "/api/manager/managerRegisterBill", description = "登记单相关接口")
+@Access(role = Role.Manager,url = "dili-trace-app-auth")
 public class ManagerRegisterBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerRegisterBillApi.class);
 	@Autowired

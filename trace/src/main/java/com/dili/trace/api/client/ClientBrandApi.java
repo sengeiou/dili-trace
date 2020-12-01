@@ -2,7 +2,9 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
+import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
@@ -33,7 +35,7 @@ import one.util.streamex.StreamEx;
 @RestController
 @RequestMapping(value = "/api/client/clientBrand")
 @Api(value = "/api/client/clientBrand", description = "品牌相关接口")
-@InterceptConfiguration
+@Access(role = Role.Client,url = "")
 public class ClientBrandApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientBrandApi.class);
 	@Autowired

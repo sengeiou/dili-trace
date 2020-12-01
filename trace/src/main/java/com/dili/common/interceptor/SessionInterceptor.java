@@ -59,7 +59,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
                 throw new TraceBizException("没有权限访问");
             }
             this.sessionContext.setSessionData(SessionData.mockClient());
-        } else if (access.role() == Role.User) {
+        } else if (access.role() == Role.Manager) {
             if (!this.uapRpcService.hasAccess(access)) {
                 throw new TraceBizException("没有权限访问");
             }

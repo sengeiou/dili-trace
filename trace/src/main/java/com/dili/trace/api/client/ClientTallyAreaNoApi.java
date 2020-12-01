@@ -1,6 +1,8 @@
 package com.dili.trace.api.client;
 
+import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
@@ -30,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/client/clientTallyAreaNo")
 @Api(value = "/api/client/clientTallyAreaNo", description = "区位相关接口")
-@InterceptConfiguration
+@Access(role = Role.Client,url = "")
 public class ClientTallyAreaNoApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTallyAreaNoApi.class);
 	@Autowired

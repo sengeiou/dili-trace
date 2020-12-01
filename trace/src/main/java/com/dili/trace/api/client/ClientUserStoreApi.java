@@ -1,6 +1,8 @@
 package com.dili.trace.api.client;
 
+import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
@@ -24,7 +26,7 @@ import java.util.List;
  */
 @Api(value = "/api/client/clientUserStoreApi")
 @RestController
-@InterceptConfiguration
+@Access(role = Role.Client,url = "")
 @RequestMapping(value = "/api/client/clientUserStoreApi")
 public class ClientUserStoreApi {
 
