@@ -8,6 +8,7 @@ import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.StringUtils;
 
 public class CheckSheetQueryDto extends CheckSheet {
 	@Transient
@@ -42,7 +43,7 @@ public class CheckSheetQueryDto extends CheckSheet {
 
 
 	public void setLikeApproverUserName(String likeApproverUserName) {
-		this.likeApproverUserName = likeApproverUserName;
+		this.likeApproverUserName =StringUtils.trimToNull(likeApproverUserName);
 	}
 
 
@@ -52,7 +53,7 @@ public class CheckSheetQueryDto extends CheckSheet {
 
 
 	public void setCreatedStart(String createdStart) {
-		this.createdStart = createdStart;
+		this.createdStart = StringUtils.trimToNull(createdStart);
 	}
 
 
@@ -62,7 +63,7 @@ public class CheckSheetQueryDto extends CheckSheet {
 
 
 	public void setCreatedEnd(String createdEnd) {
-		this.createdEnd = createdEnd;
+		this.createdEnd = StringUtils.trimToNull(createdEnd);;
 	}
 
 
@@ -72,7 +73,7 @@ public class CheckSheetQueryDto extends CheckSheet {
 
 
 	public void setLikeOperatorName(String likeOperatorName) {
-		this.likeOperatorName = likeOperatorName;
+		this.likeOperatorName = StringUtils.trimToNull(likeOperatorName);
 	}
 
 

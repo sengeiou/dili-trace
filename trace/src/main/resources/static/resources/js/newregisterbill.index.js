@@ -1,5 +1,5 @@
 var Table = WebAssembly.Table;
-class NewRegisterBillGrid extends PageTs {
+class NewRegisterBillGrid extends WebConfig {
     constructor(grid, queryform) {
         super();
         this.handleTimeUpdateEvent = (event) => {
@@ -48,7 +48,7 @@ class NewRegisterBillGrid extends PageTs {
         this.resetButtons();
         this.highLightBill = await this.findHighLightBill();
         try {
-            let url = this.contextPath + "/newRegisterBill/listPage.action";
+            let url = this.toUrl("/newRegisterBill/listPage.action");
             let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
             this.grid.bootstrapTable('load', resp);
         }
@@ -119,7 +119,8 @@ class NewRegisterBillGrid extends PageTs {
     }
     async findHighLightBill() {
         try {
-            return await jq.postJson(this.contextPath + "/newRegisterBill/findHighLightBill.action", {}, {});
+            var url = this.toUrl("/newRegisterBill/findHighLightBill.action");
+            return await jq.postJson(url, {}, {});
         }
         catch (e) {
             console.log(e);
@@ -136,18 +137,6 @@ class NewRegisterBillGrid extends PageTs {
         formdata['sort'] = options.sortName;
         formdata['order'] = options.sortOrder;
         return formdata;
-    }
-    async loadRegisterBillGridData() {
-        this.highLightBill = await this.findHighLightBill();
-        $.extend(this.grid.datagrid("options").queryParams, this.buildGridQueryData());
-        var datas = this.buildGridQueryData();
-        var ret = await jq.postJson(this.contextPath + "/sg/registerBill/listPage.action", datas, {
-            processData: true, type: 'json'
-        });
-        if (ret && ret.rows) {
-        }
-        else {
-        }
     }
     onClickRow() {
         this.resetButtons();
@@ -212,7 +201,7 @@ class NewRegisterBillGrid extends PageTs {
     static queryProduct(param, success, error) {
         var productName = $('#productCombobox').combotree('getText');
         var data = [];
-        var url = RegisterBillGrid.getInstance().contextPath + '/toll/category?name=' + productName;
+        var url = '/toll/category?name=' + productName;
         $.ajax({
             url: url,
             success: function (resp) {
@@ -276,7 +265,7 @@ class NewRegisterBillGrid extends PageTs {
         });
         let result = await promise;
         if (result) {
-            var _url = RegisterBillGrid.getInstance().contextPath + "/registerBill/batchUndo.action";
+            var _url = "/registerBill/batchUndo.action";
             var idlist = arr.map(e => e.id);
             $.ajax({
                 type: "POST",

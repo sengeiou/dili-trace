@@ -127,7 +127,7 @@ color:#333!important;
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.rotate.js"></script>
 <script>
 	function showCheckSheet(checkSheetId){
-		var url="${contextPath}/checkSheet/view/"+checkSheetId;
+		var url="${contextPath}/checkSheet/view.html?id="+checkSheetId;
 		$(window.parent.document.body).append('<iframe id="checksheet_view_win" name="view_win" src="'+url+'" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0;z-index:99999"></iframe>');
 	}
 	function rotateImg(angle){

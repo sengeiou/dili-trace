@@ -150,7 +150,7 @@ public class CheckSheetController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "CheckSheet", paramType = "form", value = "CheckSheet的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(CheckSheetQueryDto checkSheet) throws Exception {
+	public @ResponseBody String listPage(@RequestBody  CheckSheetQueryDto checkSheet) throws Exception {
 		
 		if (checkSheet.getBillType() == null) {
 			checkSheet.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
@@ -246,8 +246,8 @@ public class CheckSheetController {
 	 * @return
 	 */
 	@ApiOperation("跳转到CheckSheet页面")
-	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
-	public String view(ModelMap modelMap, @PathVariable Long id) {
+	@RequestMapping(value = "/view.html", method = RequestMethod.GET)
+	public String view(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
 		modelMap.put("item", null);
 		modelMap.put("checkSheetDetailList", Collections.emptyList());
 		modelMap.put("billIdBillMap", Collections.emptyMap());

@@ -2,6 +2,7 @@ package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import javax.persistence.*;
@@ -103,7 +104,7 @@ public class CheckSheet extends BaseDomain {
 	}
 
 	public void setUserName(String userName) {
-		this.userName = userName;
+		this.userName = StringUtils.trimToNull(userName);
 	}
 
 	public Integer getValidPeriod() {
@@ -127,7 +128,7 @@ public class CheckSheet extends BaseDomain {
 	}
 
 	public void setDetectOperatorName(String detectOperatorName) {
-		this.detectOperatorName = detectOperatorName;
+		this.detectOperatorName = StringUtils.trimToNull(detectOperatorName);;
 	}
 
 	public String getRemark() {
