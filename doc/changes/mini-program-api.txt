@@ -1,0 +1,137 @@
+//用户
+  register: "/api/userApi/register.api", //注册
+  login: "/api/loginApi/login.api", //登录
+  quit: "/api/userApi/quit.api", //登出
+  changePassword: "/api/userApi/changePassword.api", //修改密码
+  getUserInfo: "/api/userApi/get.api", //获取个人信息
+  send: "/api/userApi/sendVerificationCode.api", //发送手机验证码
+  isLogin: "/api/userApi/isLogin.api", //检查用户登录是否过期
+  perfectInfo: "/api/userApi/realNameCertificationReq.api", //资料完善
+  usualCategory: "/api/categoryApi/userCategory.api",//常用品类列表
+  createCategory: "/api/categoryApi/addUserCategory.api",//新增常用品类
+  deleteCategory: "/api/categoryApi/delUserCategory.api",//删除常用品类
+  getUserQrcode: "/api/userApi/getUserQrCode.api", //获取个人二维码
+  qrcodeDetail: "/api/client/clientUserQrHistoryApi/listPage.api", //获取二维码详情
+  sendSmsCode: "/api/userApi/sendSmsCodeForRenewPassword.api", //发送手机验证码(忘记密码)
+  resetPassword: "/api/userApi/renewPassword.api", //忘记密码,
+  getUserStore: "/api/client/clientUserStoreApi/getUserStore.api", //查询用户店铺
+  updateUserStore: "/api/client/clientUserStoreApi/updateUserStore.api", //修改用户店铺
+  findUserByKeyword: "/api/userApi/findUserByKeyword.api",// 模糊获取用户信息
+
+
+  getWxOpenidUnionid: "/api/wxTokenApi/getWxOpenidUnionId.api", //(openid,session_key）
+  wxLogin: "/api/loginApi/wxLogin.api", //微信登录
+  decodePhone: "/api/wxTokenApi/decodePhone.api", //解密手机号
+  wxRegister: "/api/userApi/wxRegister.api", //微信注册
+  wxBind: "/api/userApi/userBindWeChat.api", //绑定微信号
+  getUserBindWeChat: "/api/userApi/getUserBindWeChat.api", //查询是否需要弹框
+  confirmBindWeChatTip: "/api/userApi/confirmBindWeChatTip.api", //用户确认不再弹出
+  getUserInfoById : "/api/userApi/getUserInfo.api", // 通过userID获取用户信息
+  validateWeChatBindUser: "/api/userApi/validateWeChatBindUser.api", //查询是否需要弹框
+
+  //报备单
+  cityList: "/api/cityApi/listCityByCondition", //获取城市列表
+  upload: "/api/imageApi/upload", //上传图片
+  createExamine: "/api/client/clientRegisterBill/createRegisterBillList.api", //创建报备单
+  modifyExamine: "/api/client/clientRegisterBill/doEditRegisterBill.api", //修改登记单
+  newExamineList: "/api/client/clientRegisterBill/listPage.api", //报备单列表
+  deleteRegisterBill: "/api/client/clientRegisterBill/doDeleteRegisterBill.api", //删除报备单
+  getNewExamine: "/api/separateSales/id", //报备单详情
+  createBuyRecord: "/api/client/clientTradeRequestApi/createBuyProductRequest.api", //创建分销单
+  createSalesRecord: "/api/client/clientTradeRequestApi/createSellProductRequest.api", //创建分销单
+  getUserPlate: "/api/userApi/getUserPlate.api", //获取登记车牌号
+  getExamineCheckInfo: "/api/client/clientRegisterBillHistoryApi/list.api", //获取报备单历史数据
+
+  // 获取品类列表
+  category: "/api/categoryApi/listCategoryByCondition",
+  // 获取品牌列表
+  brand: "/api/client/clientBrand/listPage.api",
+  // 新增品牌
+  createBrand: "/api/client/clientBrand/createBrand.api",
+
+  // 上游企业
+  listPagedUpStream: "/api/upstreamApi/listPagedUpStream.api", //列表
+  deleteUpStream: "/api/upstreamApi/deleteUpStream.api", //删除
+  createUpStream: "/api/upstreamApi/doCreateUpStream.api", //创建上游信息
+  modifyUpStream: "/api/upstreamApi/doModifyUpStream.api", //修改上游信息
+
+  // 查验
+  checkInList: "/api/checkinRecordApi/listPagedAvailableCheckInData.api", //进场登记单列表
+  checkOutList: "/api/checkinRecordApi/listPagedAvailableCheckOutData.api", //出场登记单列表
+  checkInDetail: "/api/checkinRecordApi/getCheckInDetail.api", //进场登记单详情
+  checkInState: "/api/checkinRecordApi/doCheckin.api", //进场登记单审核
+  checkOutDetail: "/api/checkinRecordApi/getCheckoutDataDetail.api", //出场登记单详情
+  checkOutState: "/api/checkinRecordApi/doCheckout.api", //出场登记单审核
+  manullyCheck: "/api/checkinRecordApi/doManullyCheck.api", //人工检测合格或不合格
+  ioList: "/api/checkinRecordApi/listPagedData.api", //首页列表
+
+  tradeCategory: "/api/client/clientProductStockApi/listMyProductStock.api", //交易商品列表
+  sellerTradeCategory: "/api/client/clientProductStockApi/listSellersProductStock.api", //卖家商品列表
+  batchTradeCategory: "/api/client/clientProductStockApi/listTradeDetailForSaleByProductStoreId.api", //批次商品列表
+  searchUser: "/api/userApi/findUserByLikeName.api", //搜索用户
+  orderList: "/api/client/clientTradeRequestApi/listPage.api", //订单列表
+  orderDetail: "/api/client/clientTradeRequestApi/viewTradeDetail.api", //订单详情
+  orderReturn: "/api/client/clientTradeRequestApi/createReturning.api", //订单申请退回
+  orderHandle: "/api/client/clientTradeRequestApi/handleReturning.api", //订单同意/拒绝退回
+  listBuyHistory: "/api/client/clientTradeRequestApi/listBuyHistory.api", // 查找历史订单数据
+  listSeller:"/api/client/clientTradeRequestApi/listSeller.api",//商户搜索
+  listSaleableProduct:"/api/client/clientTradeRequestApi/listSaleableProduct.api", // 查询可售列表
+  createBuyProductRequest:"/api/client/clientTradeRequestApi/createBuyProductRequest.api", // 创建交易订单
+  handleBuyerRquest:"/api/client/clientTradeRequestApi/handleBuyerRquest.api", // 拒绝或同意买卖单
+
+  /*进门登记单接口*/
+  registerList : "/api/client/clientRegisterFormBill/listPage.api", // 列表
+  registerCountByStatus : "/api/client/clientRegisterFormBill/countByVerifyStatus.api", // 列表count
+  createRegisterList: "/api/client/clientRegisterFormBill/createRegisterFormBillList.api", // 新增
+  editRegisterList: "/api/client/clientRegisterFormBill/doEditRegisterBill.api", // 修改
+  viewRegisterBill: "/api/client/clientRegisterFormBill/viewRegisterBill.api", // 查看
+  doDeleteRegisterBill: "/api/client/clientRegisterFormBill/doDeleteRegisterBill.api", // 作废
+  doVerify: "/api/client/clientRegisterFormBill/doVerify.api", // 进门登记单审核(通过/进门/不通过/退回/进门待检)
+  area: "/api/client/clientTallyAreaNo/listPage.api", // 区位查询
+
+
+  /*主台账接口*/
+  registerHeadList : "/api/client/clientRegisterHead/listPage.api", // 列表
+  registerHeadCountByStatus : "/api/client/clientRegisterHead/countByStatus.api", // 列表count
+  createRegisterHeadList: "/api/client/clientRegisterHead/createRegisterHeadList.api", // 新增主台账
+  viewRegisterHead: "/api/client/clientRegisterHead/viewRegisterHead.api", // 新增主台账
+  doUpdateActiveRegisterHead: "/api/client/clientRegisterHead/doUpdateActiveRegisterHead.api", // 启用/关闭进门主台账单
+  doDeleteRegisterHead: "/api/client/clientRegisterHead/doDeleteRegisterHead.api", // 启用/关闭进门主台账单
+  doEditRegisterHead: "/api/client/clientRegisterHead/doEditRegisterHead.api", // 更新进门主台账单
+  viewPartialRegisterHead:"/api/client/clientRegisterHead/viewPartialRegisterHead.api",// 分批详情
+
+  /**监管端 */
+  userCertCount: "/api/manager/user/userCertCount.api", // 商户审核数据统计
+  userCertList: "/api/manager/user/listUserCertByQuery.api", // 商户审核列表
+  userCertDetail: "/api/manager/user/userCertDetail.api", // 商户审核详情
+  userCertCheck: "/api/manager/user/verifyUserCert.api", // 商户审核审核
+  reportedList: "/api/manager/managerVerifyApi/listPage.api", // 报备审核列表
+  reportedCount: "/api/manager/managerVerifyApi/countByVerifyStatus.api", // 报备列表状态数量统计
+  reportedInCount: "/api/manager/managerAfterCheckInApi/countByVerifyStatus.api", // 场内列表状态数量统计
+  reportedCheck: "/api/manager/managerVerifyApi/doVerify.api", // 报备审核操作
+  reportedInList: "/api/manager/managerAfterCheckInApi/listPage.api", // 场内报备审核列表
+  reportedInCheck: "/api/manager/managerAfterCheckInApi/doVerify.api", // 场内报备审核操作
+  reportedDetail: "/api/registerBillApi/viewTradeDetailBill.api", //报备单详情
+  checkInDataList: "/api/manager/managerCheckinRecord/listPageCheckInData.api", // 进门审核列表
+  checkInState: "/api/manager/managerCheckinRecord/doCheckin.api", // 进门审核
+  checkRecordList: "/api/manager/managerCheckinRecordApi/listPage.api", //查询当前管理员进门操作数据记录
+  searchMarket: "/api/userApi/findUserByLikeName.api", //搜索市场
+  countryList: "/api/cityApi/listCountryByCondition", //获取国家列表
+
+
+  /**溯源 */
+  traceList: "/api/client/clientBillTraceApi/listPage.api",      //溯源列表
+  traceDetail: "/api/client/clientBillTraceApi/viewBillTrace.api", //溯源详情
+  traceBatch: "/api/client/clientBillTraceApi/viewTradeDetailList.api", //溯源批次
+
+  /** 消息 */
+  msgList: "/api/message/listPage.api", //消息列表
+  // msgList: 'http://172.18.188.58:3000/mock/55/api/manager/listPage',
+  msgRead: "/api/message/read.api", //消息已读
+  msgReadAll: "/api/message/doReadAll.api", //消息全部已读
+
+  /** 商品库存管理 */
+  getShelvesInvList: "/api/client/clientTradePush/shelvesProduct.api", //可售商品列表
+  getUnavailableInvList: "/api/client/clientTradePush/unavailableProduct.api", //下架商品列表
+  invDetail: "/api/client/clientTradePush/viewTradeDetail.api", //库存详情
+  pushupOraway: "/api/client/clientTradePush/push.api", //上架/下架
