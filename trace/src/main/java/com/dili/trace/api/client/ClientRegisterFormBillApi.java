@@ -5,6 +5,7 @@ import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
@@ -75,7 +76,8 @@ public class ClientRegisterFormBillApi {
 	public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto input) {
 		logger.info("获取进门登记单列表:{}", JSON.toJSONString(input));
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 
 			logger.info("获取进门登记单列表 操作用户:{}", userId);
 			input.setSort("created");
@@ -104,16 +106,18 @@ public class ClientRegisterFormBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 
 			List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills())
 					.nonNull().toList();
 			if (registerBills == null) {
 				return BaseOutput.failure("没有进门登记单");
 			}
-			logger.info("保存多个进门登记单操作用户:{}，{}", operatorUser.getId(), operatorUser.getName());
+			logger.info("保存多个进门登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
 			List<RegisterBill> billList = this.registerBillService.createRegisterFormBillList(registerBills,
-					userService.get(createListBillParam.getUserId()), Optional.of(operatorUser), createListBillParam.getMarketId());
+					userService.get(createListBillParam.getUserId()), Optional.empty(), createListBillParam.getMarketId());
 			List<String> codeList = StreamEx.of(billList).nonNull().map(RegisterBill::getCode).toList();
 			return BaseOutput.success().setData(codeList);
 		} catch (TraceBizException e) {
@@ -137,14 +141,13 @@ public class ClientRegisterFormBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			if (operatorUser == null) {
-				return BaseOutput.failure("未登陆用户");
-			}
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
+
 			User user = userService.get(dto.getUserId());
 			RegisterBill registerBill = dto.build(user);
 			logger.info("保存进门登记单:{}", JSON.toJSONString(registerBill));
-			this.registerBillService.doEditFormBill(registerBill, dto.getImageCertList(), Optional.ofNullable(operatorUser));
+			this.registerBillService.doEditFormBill(registerBill, dto.getImageCertList(), Optional.empty());
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
 		} catch (Exception e) {

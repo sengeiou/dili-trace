@@ -21,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import one.util.streamex.StreamEx;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
+ @EnableDiscoveryClient
 public class ClientBrandApiTest extends AutoWiredBaseTest {
     @Autowired
     ClientBrandApi clientBrandApi;

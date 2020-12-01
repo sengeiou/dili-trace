@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.ServletContext;
 
+import com.dili.ss.retrofitful.annotation.RestfulScan;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,9 +23,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.openfeign.FeignClientsConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -40,12 +48,13 @@ import com.dili.ss.retrofitful.RetrofitfulRegistrar;
 
 import mockit.Invocation;
 import mockit.MockUp;
+import tk.mybatis.spring.annotation.MapperScan;
 
 //@RunWith(SpringRunner.class)
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@ActiveProfiles("dev")
 @WebAppConfiguration("src/main/resources")
 //@TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, inheritListeners = true, value = {
 //		MockitoDependencyInjectionTestExecutionListener.class }) // ,
@@ -53,8 +62,22 @@ import mockit.MockUp;
 // })
 @EnableTransactionManagement
 //@Transactional
-@Transactional(propagation = Propagation.REQUIRED)
+@Transactional(propagation = Propagation.NEVER)
 @Rollback
+@MapperScan(basePackages = {"com.dili.trace.dao", "com.dili.ss.dao", "com.dili.ss.uid.dao"})
+@ComponentScan(basePackages = {"com.dili.ss", "com.dili.trace", "com.dili.common", "com.dili.commons", "com.dili.uap.sdk"})
+@RestfulScan({"com.dili.trace.rpc", "com.dili.uap.sdk.rpc", "com.dili.bpmc.sdk.rpc"})
+//@DTOScan({"com.dili.trace","com.dili.ss"})
+//@Import(DynamicRoutingDataSourceRegister.class)
+@EnableScheduling
+
+@EnableAsync
+@EnableFeignClients(basePackages = {"com.dili.assets.sdk.rpc"
+		, "com.dili.customer.sdk.rpc"
+		, "com.dili.trace.rpc"
+		, "com.dili.bpmc.sdk.rpc"})
+@Import(FeignClientsConfiguration.class)
+@EnableDiscoveryClient
 //@TestInstance()
 public class BaseTestWithouMVC {
 	protected static final Logger logger = LoggerFactory.getLogger(BaseTestWithouMVC.class);

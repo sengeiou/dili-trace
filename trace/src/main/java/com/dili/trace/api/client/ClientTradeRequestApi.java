@@ -72,7 +72,7 @@ public class ClientTradeRequestApi {
 	public BaseOutput<BasePage<TradeRequest>> listPage(@RequestBody TradeRequestListInput condition) {
 
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			Long userId = this.sessionContext.getSessionData().getUserId();
 			if (condition.getBuyerId() == null && condition.getSellerId() == null) {
 				return BaseOutput.failure("参数错误");
 			}

@@ -5,6 +5,7 @@ import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -70,16 +71,17 @@ public class ClientRegisterBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 
 			List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills())
 					.nonNull().toList();
 			if (registerBills == null) {
 				return BaseOutput.failure("没有登记单");
 			}
-			logger.info("保存多个登记单操作用户:{}，{}", operatorUser.getId(), operatorUser.getName());
+			logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
 			List<Long> idList = this.registerBillService.createBillList(registerBills,
-					userService.get(operatorUser.getId()), Optional.empty());
+					userService.get(sessionData.getUserId()), Optional.empty());
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -102,9 +104,9 @@ public class ClientRegisterBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER);
+			SessionData sessionData=this.sessionContext.getSessionData();
 
-			User user = userService.get(operatorUser.getId());
+			User user = userService.get(sessionData.getUserId());
 			if (user == null) {
 				return BaseOutput.failure("未登陆用户");
 			}

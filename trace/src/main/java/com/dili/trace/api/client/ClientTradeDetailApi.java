@@ -62,7 +62,7 @@ public class ClientTradeDetailApi {
 	public BaseOutput<BasePage<TradeDetail>> listPage(@RequestBody TradeDetailQueryDto query) {
 
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			Long userId = this.sessionContext.getSessionData().getUserId();
 			if(!userId.equals(query.getBuyerId())&&!userId.equals(query.getSellerId())){
 				return BaseOutput.failure("参数错误");
 			}

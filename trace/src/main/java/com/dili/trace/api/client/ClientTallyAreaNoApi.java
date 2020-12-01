@@ -50,7 +50,7 @@ public class ClientTallyAreaNoApi {
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
 	public BaseOutput<List<TallyAreaNo>> listPage(@RequestBody TallyAreaNo inputDto) {
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			Long userId = this.sessionContext.getSessionData().getUserId();
 			logger.info("获取区位列表 操作用户:{}", userId);
 			if (StringUtils.isBlank(inputDto.getOrder())) {
 				inputDto.setOrder("asc");

@@ -4,6 +4,7 @@ import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
@@ -52,7 +53,9 @@ public class ClientRegisterBillHistoryApi {
     @RequestMapping(value = "/list.api", method = RequestMethod.POST)
     public BaseOutput<List<RegisterBillHistory>> list(@RequestBody RegisterBillHistory inputDto) {
         try {
-            Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData=this.sessionContext.getSessionData();
+            Long userId = sessionData.getUserId();
+
             logger.info("获取报备单历史列表操作用户:{}", userId);
             inputDto.setUserId(userId);
             if (StringUtils.isBlank(inputDto.getOrder())) {

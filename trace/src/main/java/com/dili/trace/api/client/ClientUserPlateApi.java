@@ -45,7 +45,7 @@ public class ClientUserPlateApi {
     @RequestMapping(value = "/listPage.api", method = { RequestMethod.POST })
     public BaseOutput<List<UserPlate>> listPage(@RequestBody UserPlateQueryDto condition) {
         try {
-            Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            Long userId = this.sessionContext.getSessionData().getUserId();
             condition.setUserId(userId);
             if(StringUtils.isNotBlank(condition.getLikePlate())){
                 condition.setLikePlate(condition.getLikePlate().trim().toUpperCase());

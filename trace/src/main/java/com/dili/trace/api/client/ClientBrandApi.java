@@ -6,6 +6,7 @@ import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -53,7 +54,8 @@ public class ClientBrandApi {
 	@RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
 	public BaseOutput<List<BrandOutputDto>> listPage(@RequestBody BrandInputDto inputDto) {
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 			logger.info("获取品牌列表 操作用户:{}", userId);
 			// inputDto.setUserId(userId);
 			if (StringUtils.isBlank(inputDto.getOrder())) {
@@ -61,7 +63,7 @@ public class ClientBrandApi {
 				inputDto.setSort("created");
 			}
 			if (inputDto.getMarketId() == null) {
-				inputDto.setMarketId(MarketUtil.returnMarket());
+				inputDto.setMarketId(sessionData.getMarketId());
 			}
 			List<BrandOutputDto>list=StreamEx.of(brandService.listByExample(inputDto)).map(BrandOutputDto::build).toList();
 			return BaseOutput.success().setData(list);
@@ -88,7 +90,9 @@ public class ClientBrandApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
+
 			if (inputDto.getUserId() != null) {
 				userId = inputDto.getUserId();
 			}
@@ -96,7 +100,7 @@ public class ClientBrandApi {
 			// query.setUserId(userId);
 			query.setBrandName(StringUtils.trimToNull(inputDto.getBrandName()));
 			if (inputDto.getMarketId() == null) {
-				query.setMarketId(MarketUtil.returnMarket());
+				query.setMarketId(sessionData.getMarketId());
 			} else {
 				query.setMarketId(inputDto.getMarketId());
 			}

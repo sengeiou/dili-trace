@@ -49,7 +49,7 @@ public class ClientUserQrHistoryApi {
             return BaseOutput.failure("参数错误");
         }
         try {
-            Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            Long userId = this.sessionContext.getSessionData().getUserId();
             logger.info("当前登录用户:{}",userId);
             // condition.setUserId(userId);
             condition.setSort("created");

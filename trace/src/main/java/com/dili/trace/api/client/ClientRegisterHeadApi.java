@@ -76,7 +76,7 @@ public class ClientRegisterHeadApi {
 	public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody RegisterHeadDto input) {
 		logger.info("获取进门主台账单列表:{}", JSON.toJSONString(input));
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
+			Long userId = this.sessionContext.getSessionData().getUserId();
 			logger.info("获取进门主台账单列表 操作用户:{}", userId);
 			input.setSort("created");
 			input.setOrder("desc");

@@ -6,6 +6,7 @@ import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -80,7 +81,8 @@ public class ClientBillTraceApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 //			BasePage<TradeRequest> page = this.tradeRequestService.listPageTradeRequestByBuyerIdOrSellerId(query,userId);
 			BasePage<TradeRequest> page = this.tradeRequestService.listPageForStatusOrder(query,userId);
 			return BaseOutput.success().setData(page);
@@ -103,7 +105,8 @@ public class ClientBillTraceApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 			TraceDetailOutputDto traceDetailOutputDto = this.billTraceService
 					.viewBillTrace(inputDto.getTradeRequestId(), userId);
 			return BaseOutput.success().setData(traceDetailOutputDto);
@@ -128,7 +131,8 @@ public class ClientBillTraceApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 			List<TradeDetail> list = this.billTraceService.viewTradeDetailList(inputDto.getTradeRequestId(), userId);
 			return BaseOutput.success().setData(list);
 		} catch (TraceBizException e) {

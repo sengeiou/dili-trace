@@ -51,7 +51,7 @@ public class ClientTradeOrderApi {
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<TradeOrder>> listPage(@RequestBody TradeOrder inputDto) {
         try {
-            Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            Long userId = this.sessionContext.getSessionData().getUserId();
             logger.info("订单列表 操作用户:{}", userId);
             inputDto.setBuyerId(userId);
             if (StringUtils.isBlank(inputDto.getOrder())) {

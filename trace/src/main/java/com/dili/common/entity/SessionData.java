@@ -41,6 +41,8 @@ public class SessionData {
         sessionData.setMarketId(8L);
         sessionData.setUserId(1L);
         sessionData.setUserName("zhangsan");
+        sessionData.setMarketId(8L);
+        sessionData.setMarketName("寿光");
         return sessionData;
     }
 

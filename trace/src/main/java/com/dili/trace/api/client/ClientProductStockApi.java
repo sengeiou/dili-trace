@@ -6,6 +6,7 @@ import com.dili.common.annotation.Access;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -63,7 +64,8 @@ public class ClientProductStockApi {
 	@RequestMapping(value = "/listMyProductStock.api", method = { RequestMethod.POST })
 	public BaseOutput<BasePage<ProductStock>> listMyProductStock(@RequestBody ProductStockQueryDto condition) {
 		try {
-			Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 			condition.setUserId(userId);
 			condition.setSort("created");
 			condition.setOrder("desc");
@@ -89,7 +91,9 @@ public class ClientProductStockApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
+
 			condition.setSort("created");
 			condition.setOrder("desc");
 			condition.setMinTradeDetailNum(1);
@@ -116,7 +120,8 @@ public class ClientProductStockApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData=this.sessionContext.getSessionData();
+			Long userId = sessionData.getUserId();
 			ProductStock batchStockItem = this.batchStockService.get(inputDto.getProductStockId());
 			if (batchStockItem == null) {
 				return BaseOutput.failure("数据不存在");
