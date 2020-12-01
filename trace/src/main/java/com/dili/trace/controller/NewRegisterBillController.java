@@ -97,7 +97,6 @@ public class NewRegisterBillController {
         modelMap.put("user", user);
 
         return "new-registerBill/index";
-
     }
 
 

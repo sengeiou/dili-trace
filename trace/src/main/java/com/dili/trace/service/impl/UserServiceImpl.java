@@ -110,7 +110,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setState(com.dili.sg.trace.glossary.EnabledStateEnum.ENABLED.getCode());
         user.setPassword(MD5Util.md5(originalPassword));
         user.setIsDelete(0L);
-        user.setYn(com.dili.sg.trace.glossary.YnEnum.YES.getCode());
+        user.setYn(com.dili.trace.glossary.YnEnum.YES.getCode());
         user.setUserType(userType.getCode());
 
 //		// 验证验证码是否正确
@@ -1047,7 +1047,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public boolean existsCardNo(String cardNo) {
         User query = DTOUtils.newDTO(User.class);
         query.setCardNo(cardNo);
-        query.setYn(com.dili.sg.trace.glossary.YnEnum.YES.getCode());
+        query.setYn(com.dili.trace.glossary.YnEnum.YES.getCode());
         return !CollUtil.isEmpty(listByExample(query));
     }
 

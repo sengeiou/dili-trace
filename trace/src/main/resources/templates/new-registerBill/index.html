@@ -37,7 +37,6 @@
                 <#bcomboProvider _id="detectResult" _provider="detectResultEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
 
-
             <div class="form-group col">
                 <label for="likeTallyAreaNo">理货区号</label>
                 <input type="text" class="form-control" name="likeTallyAreaNo" id="likeTallyAreaNo"/>
@@ -63,7 +62,30 @@
                 <select id="hasHandleResult" name="hasHandleResult" class="form-control"></select>
             </div>
 
+            <div class="form-group col">
+                <label for="verifyStatus">审核状态</label>
+                <select id="verifyStatus" name="verifyStatus" class="form-control"></select>
+                <#bcomboProvider _id="verifyStatus" _provider="billVerifyStatusEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
 
+            <div class="form-group col">
+                <label for="isDeleted">是否已删除</label>
+                <select id="isDeleted" name="isDeleted" class="form-control">
+                    <option value="">全部</option>
+                    <option value="1">是</option>
+                    <option value="0">否</option>
+                </select>
+            </div>
+
+            <div class="form-group col">
+                <label for="likeUserName">业户姓名</label>
+                <input type="text" class="form-control" name="likeUserName" id="likeUserName"/>
+            </div>
+
+            <div class="form-group col">
+                <label for="likeUserName">登记编号</label>
+                <input type="text" class="form-control" name="likeCode" id="likeCode"/>
+            </div>
 
             <div class="form-group col-auto">
                 <label for="createdStart">检测时间</label>
@@ -100,6 +122,25 @@
                     </div>
                 </div>
             </div>
+
+            <div class="form-group col-auto">
+                <label for="createdStart">进门时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="createdStart" id="checkinCreatedStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="createdEnd" id="checkinCreatedEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-auto align-self-center mt-3">
                 <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
                 <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
@@ -150,8 +191,11 @@
             <thead>
             <tr>
                 <th data-checkbox="true"></th>
-                <th data-field="code" data-sortable="true" data-align="center">
+                <th data-field="billCreated" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     登记时间
+                </th>
+                <th data-field="billTypeName" data-sortable="true" data-align="center">
+                    登记类型
                 </th>
                 <th data-field="code" data-sortable="true" data-align="center">
                     编号
@@ -168,17 +212,35 @@
                 <th data-field="name" data-sortable="true" data-align="center">
                     业户姓名
                 </th>
-                <th data-field="plate" data-sortable="true" data-align="center" data-provider="sexProvider">
+                <th data-field="thirdPartyCode" data-sortable="true" data-align="center">
+                    业户卡号
+                </th>
+                <th data-field="plate" data-sortable="true" data-align="center">
                     车牌
                 </th>
-                <th data-field="productName" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                <th data-field="brandName" data-sortable="true" data-align="center">
+                    品牌
+                </th>
+                <th data-field="preserveTypeName" data-sortable="true" data-align="center">
+                    商品类型
+                </th>
+                <th data-field="productName" data-sortable="true" data-align="center">
                     商品名称
                 </th>
-                <th data-field="originName" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
+                <th data-field="originName" data-sortable="true" data-align="center">
                     产地
                 </th>
-                <th data-field="weight" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
+                <th data-field="weight" data-sortable="true" data-align="center">
                     重量/KG
+                </th>
+                <th data-field="measureTypeName" data-sortable="true" data-align="center">
+                    计量类型
+                </th>
+                <th data-field="pieceNum" data-sortable="true" data-align="center">
+                    件数
+                </th>
+                <th data-field="pieceWeight" data-sortable="true" data-align="center">
+                    件重
                 </th>
 
                 <th data-field="hasOriginCertifiy" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
@@ -216,6 +278,19 @@
                 <th width="4%"
                     data-options="field:'checkSheetId', _provider:'hasOrNoneProvider', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
                     打印报告
+                </th>
+
+                <th data-field="verifyStatus" data-sortable="true" data-align="center" data-provider="verifyStatusProvider">
+                    审核状态
+                </th>
+                <th data-field="checkinStatusName" data-sortable="true" data-align="center">
+                    是否进门
+                </th>
+                <th data-field="checkinCreated" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    进门时间
+                </th>
+                <th data-field="isDeletedName" data-sortable="true" data-align="center">
+                    是否删除
                 </th>
             </tr>
             </thead>
