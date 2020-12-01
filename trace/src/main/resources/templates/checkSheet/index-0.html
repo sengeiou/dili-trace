@@ -154,37 +154,7 @@
            }
        });
 
-           function initFileUpload(){
-           $(":file").fileupload({
-               dataType : 'json',
-               formData: {type:4,compress:true},
-               done : function(e, res) {
-                   if (res.result.code == 200) {
-                       var url = res.result.data;
-                       $(this).siblings(".magnifying").attr('src', url).show();
-                       $(this).siblings("input:hidden").val(url);
-                       $(this).siblings('.fileimg-cover,.fileimg-edit').show();
-                   }
-               },
-               add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
-                   var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
-                   var name = data.originalFiles[0]["name"];
-                   var index = name.lastIndexOf(".")+1;
-                   var fileType = name.substring(index,name.length);
-                   if(!acceptFileTypes.test(fileType)){
-                       swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
-                       return ;
-                   }
-                   var size = data.originalFiles[0]["size"];
-                   // 10M
-                   if(size > (1024*10*1024)){
-                       swal('错误', '上传文件超过最大限制!', 'error');
-                       return ;
-                   }
-                   data.submit();
-               }
-           });
-       }
+       
 
        /**
         * 初始化用户列表组件
@@ -274,7 +244,7 @@
                });
                return;
            }
-           openWin('${contextPath}/checkSheet/view/' + selected.id)
+           openWin('${contextPath}/checkSheet/view.html?id=' + selected.id)
        }
        function doPrint(){
 	           var selected = _checkSheetGrid.datagrid("getSelected");
