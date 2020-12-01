@@ -6,34 +6,221 @@ class NewRegisterBillGrid extends WebConfig {
         };
         this.grid = grid;
         this.queryform = queryform;
-        let cthis = this;
-        var onClickRow = function () {
-            cthis.onClickRow();
-        };
-        this.grid.on('check.bs.table', () => {
-            cthis.onClickRow();
-        });
-        this.grid.on('uncheck.bs.table', () => {
-            cthis.onClickRow();
-        });
-        this.queryform.find('#query').click(async () => {
-            await this.queryGridData();
-        });
-        $('#edit-btn').on('click', function () {
-            cthis.openEditPage();
-        });
-        $('#btn_add').on('click', function () {
-            cthis.openCreatePage();
-        });
-        $('#copy-btn').on('click', function () {
-            cthis.openCopyPage();
-        });
-        $(window).on('resize', function () {
-            cthis.grid.bootstrapTable('resetView');
-        });
+        this.grid.on('check.bs.table', () => this.onClickRow());
+        this.grid.on('uncheck.bs.table', () => this.onClickRow());
+        this.queryform.find('#query').click(async () => await this.queryGridData());
+        $('#edit-btn').on('click', async () => await this.openEditPage());
+        $('#btn_add').on('click', async () => await this.openCreatePage());
+        $('#copy-btn').on('click', async () => await this.openCopyPage());
+        $('#upload-origincertifiy-btn').on('click', async () => await this.openUploadOriginCertifyPage());
+        $('#upload-detectreport-btn').on('click', async () => await this.openUploadDetectReportPage());
+        $('#upload-handleresult-btn').on('click', async () => await this.openUploadHandleResultPage());
+        $('#detail-btn').on('click', async () => await this.openDetailPage());
+        $('#audit-btn').on('click', async () => await this.openAuditPage());
+        $('#undo-btn').on('click', async () => await this.doUndo());
+        $('#batch-undo-btn').on('click', async () => await this.doBatchUndo());
+        $('#batch-audit-btn').on('click', async () => await this.doBatchAudit());
+        $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         (async () => {
             await this.queryGridData();
         })();
+    }
+    async doUndo() {
+        var row = this.rows[0];
+        var url = this.toUrl('/newRegisterBill/doUndo.action');
+        var resp = await jq.postJson(url, { id: row.billId });
+        alert('undo');
+    }
+    async doBatchAudit() {
+        var rows = this.rows;
+        if (rows.length == 0) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        var codeList = [];
+        var batchIdList = [];
+        var onlyWithOriginCertifiyUrlIdList = [];
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].$_state == 1) {
+                batchIdList.push(rows[i].id);
+                codeList.push(rows[i].code);
+                if (rows[i].originCertifiyUrl == '有' && rows[i].detectReportUrl == '无') {
+                    onlyWithOriginCertifiyUrlIdList.push(rows[i].code);
+                }
+                ;
+            }
+        }
+        if (codeList.length == 0) {
+            layer.alert('所选登记单不能进行审核');
+            return;
+        }
+        let promise = new Promise((resolve, reject) => {
+            layer.confirm(codeList.join("<br\>"), { btn: ['确定', '取消'], title: "批量审核" }, function () {
+                resolve("yes");
+            }, function () {
+                resolve("cancel");
+            });
+        });
+        let result = await promise;
+        if (result == 'yes') {
+            var passWithOriginCertifiyUrl = null;
+            if (onlyWithOriginCertifiyUrlIdList.length > 0) {
+                let reconfirmPromise = new Promise((resolve, reject) => {
+                    layer.confirm('只有产地证明登记单:<br/>' + onlyWithOriginCertifiyUrlIdList.join("<br\>"), { btn: ['不检测', '检测'], title: "是否不再进行检测" }, function () {
+                        resolve(true);
+                    }, function () {
+                        resolve(false);
+                    });
+                });
+                passWithOriginCertifiyUrl = await reconfirmPromise;
+            }
+            layer.closeAll();
+            var cthis = this;
+            $.ajax({
+                type: "POST",
+                url: "${contextPath}/registerBill/doBatchAudit",
+                processData: true,
+                contentType: 'application/json;charset=utf-8',
+                data: JSON.stringify({ registerBillIdList: batchIdList, pass: true, passWithOriginCertifiyUrl: passWithOriginCertifiyUrl }),
+                dataType: "json",
+                async: true,
+                success: function (ret) {
+                    if (ret.success) {
+                        var failureList = ret.data.failureList;
+                        if (failureList.length == 0) {
+                            cthis.queryGridData();
+                            TLOG.component.operateLog('登记单管理', "批量审核", "【编号】:" + codeList.join(','));
+                            layer.alert('操作成功：</br>' + ret.data.successList.join('</br>'), { title: '操作', time: 3000 });
+                        }
+                        else {
+                            swal('操作', '成功:' + ret.data.successList.join('</br>') + '失败:' + ret.data.failureList.join('</br>'), 'info');
+                        }
+                    }
+                    else {
+                        swal('错误', ret.result, 'error');
+                    }
+                },
+                error: function () {
+                    swal('错误', '远程访问失败', 'error');
+                }
+            });
+        }
+    }
+    async openAuditPage() {
+        var row = this.rows[0];
+        var url = this.toUrl('/newRegisterBill/audit.html?id=' + row.billId);
+        var dia = bs4pop.dialog({
+            title: '进场审核',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
+    async openDetailPage() {
+        var row = this.rows[0];
+        var url = this.toUrl('/newRegisterBill/view.html?id=' + row.billId);
+        var dia = bs4pop.dialog({
+            title: '报备单详情',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
+    async openUploadHandleResultPage() {
+        var row = this.rows[0];
+        var url = this.toUrl('/newRegisterBill/uploadHandleResult.html?id=' + row.billId);
+        var dia = bs4pop.dialog({
+            title: '上传处理结果',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
+    async openUploadDetectReportPage() {
+        var row = this.rows[0];
+        var url = this.toUrl('/newRegisterBill/uploadDetectReport.html?id=' + row.billId);
+        var dia = bs4pop.dialog({
+            title: '上传检测报告',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
+    async openUploadOriginCertifyPage() {
+        var row = this.rows[0];
+        var url = this.toUrl('/newRegisterBill/uploadOrigincertifiy.html?id=' + row.billId);
+        var dia = bs4pop.dialog({
+            title: '上传产地证明',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
+    openCopyPage() {
+        var row = this.rows[0];
+        let url = this.toUrl("/newRegisterBill/copy.html?id=" + row.billId);
+        var dia = bs4pop.dialog({
+            title: '复制报备单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
+    openCreatePage() {
+        let url = this.toUrl("/newRegisterBill/create.html");
+        var dia = bs4pop.dialog({
+            title: '新增报备单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+    }
+    openEditPage() {
+        var row = this.rows[0];
+        let url = this.toUrl("/newRegisterBill/edit.html?id=" + row.billId);
+        var dia = bs4pop.dialog({
+            title: '修改报备单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
     }
     async queryGridData() {
         if (!this.queryform.validate().form()) {
@@ -59,29 +246,12 @@ class NewRegisterBillGrid extends WebConfig {
         this.grid.bootstrapTable('hideLoading');
         $('#toolbar button').removeAttr('disabled');
     }
-    openCopyPage() {
-    }
-    openCreatePage() {
-        let url = this.toUrl("/newRegisterBill/create.html");
-        var dia = bs4pop.dialog({
-            title: '新增报备单',
-            content: url,
-            isIframe: true,
-            closeBtn: true,
-            backdrop: 'static',
-            width: '98%',
-            height: '98%',
-            btns: []
-        });
-    }
-    openEditPage() {
-    }
     resetButtons() {
-        var btnArray = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'handle-btn',
+        var btnArray = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn',
             'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn'];
         for (var i = 0; i < btnArray.length; i++) {
             var btnId = btnArray[i];
-            $('#' + btnId).hide();
+            $('#' + btnId).show();
         }
     }
     isCreateSheet() {
@@ -189,7 +359,7 @@ class NewRegisterBillGrid extends WebConfig {
             .filter(item => item.handleResult == null || item.handleResult == '')
             .size().value() > 0;
         review ? $('#review-btn').show() : $('#review-btn').hide();
-        $('#handle-btn').show();
+        $('#upload-handleresult-btn').show();
     }
     get rows() {
         let rows = this.grid.bootstrapTable('getSelections');
@@ -265,7 +435,7 @@ class NewRegisterBillGrid extends WebConfig {
         });
         let result = await promise;
         if (result) {
-            var _url = "/registerBill/batchUndo.action";
+            var _url = "/registerBill/doBatchUndo.action";
             var idlist = arr.map(e => e.id);
             $.ajax({
                 type: "POST",

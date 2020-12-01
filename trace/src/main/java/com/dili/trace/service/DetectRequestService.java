@@ -9,6 +9,7 @@ import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.enums.DetectRequestStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,10 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * 检测请求service
@@ -68,6 +72,11 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         detectRequest.setCreatorId(creatorDto.getId());
         detectRequest.setCreatorName(creatorDto.getName());
         this.insert(detectRequest);
+
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setId(billId);
+        registerBill.setDetectRequestId(detectRequest.getId());
+        this.billService.updateSelective(registerBill);
         return detectRequest;
     }
 
@@ -89,5 +98,21 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         example.setPage(1);
         example.setRows(1);
         return StreamEx.of(this.detectRequestMapper.selectByExample(example)).findFirst();
+    }
+
+    /**
+     * 根据id集合查询
+     *
+     * @param detectRequestIdList
+     * @return
+     */
+    public Map<Long, DetectRequest> findDetectRequestByIdList(List<Long> detectRequestIdList) {
+        if (detectRequestIdList.isEmpty()) {
+            return Maps.newHashMap();
+        }
+
+        Example example = new Example(DetectRequest.class);
+        example.and().andIn("id", detectRequestIdList);
+        return StreamEx.of(this.detectRequestMapper.selectByExample(example)).toMap(DetectRequest::getId, Function.identity());
     }
 }

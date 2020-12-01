@@ -886,6 +886,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     public String listPage(RegisterBillDto input) throws Exception {
         RegisterBillDto dto = this.preBuildDTO(input);
         dto.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
+
         return this.billService.listEasyuiPageByExample(dto, true).toString();
     }
 

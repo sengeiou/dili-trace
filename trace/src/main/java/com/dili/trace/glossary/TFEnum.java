@@ -5,13 +5,13 @@ import java.util.stream.Stream;
 
 public enum TFEnum {
 	/**
-	 * true
+	 * 是
 	 */
-	TRUE(1, "true"),
+	TRUE(1, "是"),
 	/**
-	 * false
+	 * 否
 	 */
-	FALSE(0, "false"),
+	FALSE(0, "否"),
 	;
 
 	private Integer code;

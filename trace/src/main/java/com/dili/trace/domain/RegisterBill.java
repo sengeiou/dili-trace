@@ -251,7 +251,6 @@ public class RegisterBill extends BaseDomain {
     private Integer salesType;
 
     /**
-     *
      * {@link com.dili.trace.glossary.TFEnum}
      */
     @ApiModelProperty(value = "检测报告 0：无,1:有")
@@ -259,7 +258,6 @@ public class RegisterBill extends BaseDomain {
     private Integer hasDetectReport;
 
     /**
-     *
      * {@link com.dili.trace.glossary.TFEnum}
      */
     @ApiModelProperty(value = "产地证明 0：无,1:有")
@@ -267,7 +265,6 @@ public class RegisterBill extends BaseDomain {
     private Integer hasOriginCertifiy;
 
     /**
-     *
      * {@link com.dili.trace.glossary.TFEnum}
      */
     @ApiModelProperty(value = "处理结果 0：无,1:有")
@@ -363,7 +360,6 @@ public class RegisterBill extends BaseDomain {
     String exeMachineNo;
 
 
-
     @ApiModelProperty(value = "处理结果备注")
     @Column(name = "`handle_result`")
     private String handleResult;
@@ -383,6 +379,29 @@ public class RegisterBill extends BaseDomain {
     @ApiModelProperty(value = "商品别名")
     @Column(name = "`product_alias_name`")
     private String productAliasName;
+
+    @ApiModelProperty(value = "检测请求ID")
+    @Column(name = "`detect_request_id`")
+    private Long detectRequestId;
+
+    @Transient
+    private DetectRequest detectRequest;
+
+    public DetectRequest getDetectRequest() {
+        return detectRequest;
+    }
+
+    public void setDetectRequest(DetectRequest detectRequest) {
+        this.detectRequest = detectRequest;
+    }
+
+    public Long getDetectRequestId() {
+        return detectRequestId;
+    }
+
+    public void setDetectRequestId(Long detectRequestId) {
+        this.detectRequestId = detectRequestId;
+    }
 
     public String getTruckTypeName() {
         return truckTypeName;
@@ -1065,7 +1084,6 @@ public class RegisterBill extends BaseDomain {
     public void setTradeTypeName(String tradeTypeName) {
         this.tradeTypeName = tradeTypeName;
     }
-
 
 
     public String getExeMachineNo() {

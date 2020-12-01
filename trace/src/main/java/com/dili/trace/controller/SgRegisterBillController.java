@@ -287,7 +287,7 @@ public class SgRegisterBillController {
      *
      * @param modelMap
      * @return
-     */
+     *//*
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true,name = "id") Long id
             ,  @RequestParam(required = false,name = "displayWeight") Boolean displayWeight) {
@@ -330,7 +330,7 @@ public class SgRegisterBillController {
         modelMap.put("registerBill", registerBill);
 
         return "sg/registerBill/view";
-    }
+    }*/
 
     /**
      * 交易区交易单分销记录
@@ -383,12 +383,12 @@ public class SgRegisterBillController {
         return "sg/registerBill/upload-detectReport";
     }
 */
-    /**
+   /* *//**
      * 上传产地证明
      *
      * @param modelMap
      * @return
-     */
+     *//*
     @RequestMapping(value = "/uploadOrigincertifiy.html", method = RequestMethod.GET)
     public String uploadOrigincertifiy(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
         RegisterBill registerBill = billService.get(id);
@@ -415,7 +415,7 @@ public class SgRegisterBillController {
         modelMap.put("user", user);
 
         return "sg/registerBill/upload-origincertifiy";
-    }
+    }*/
 
     /**
      * 审核页面
@@ -423,20 +423,19 @@ public class SgRegisterBillController {
      * @param modelMap
      * @param id
      * @return
-     */
     @RequestMapping(value = "/audit.html", method = RequestMethod.GET)
     public String audit(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
         modelMap.put("registerBill", billService.get(id));
         return "sg/registerBill/audit";
     }
 
-    /**
+    *//**
      * 审核
      *
      * @param id
      * @param pass
      * @return
-     */
+     *//*
     @RequestMapping(value = "/audit/{id}/{pass}", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput audit(@PathVariable Long id, @PathVariable Boolean pass) {
@@ -448,13 +447,13 @@ public class SgRegisterBillController {
         return BaseOutput.success("操作成功");
     }
 
-    /**
+    *//**
      * 批量主动送检
      *
      * @param modelMap
      * @param idList
      * @return
-     */
+     *//*
     @RequestMapping(value = "/doBatchAutoCheck", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput doBatchAutoCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
@@ -466,13 +465,13 @@ public class SgRegisterBillController {
         return this.registerBillService.doBatchAutoCheck(idList);
     }
 
-    /**
+    *//**
      * 批量撤销
      *
      * @param modelMap
      * @param idList
      * @return
-     */
+     *//*
     @RequestMapping(value = "/batchUndo.action", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput batchUndo(ModelMap modelMap, @RequestBody List<Long> idList) {
@@ -483,13 +482,13 @@ public class SgRegisterBillController {
         return this.registerBillService.doBatchUndo(idList);
     }
 
-    /**
+    *//**
      * 批量采样检测
      *
      * @param modelMap
      * @param idList
      * @return
-     */
+     *//*
     @RequestMapping(value = "/doBatchSamplingCheck", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput doBatchSamplingCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
@@ -501,13 +500,13 @@ public class SgRegisterBillController {
         return this.registerBillService.doBatchSamplingCheck(idList);
     }
 
-    /**
+    *//**
      * 批量审核
      *
      * @param modelMap
      * @param batchAuditDto
      * @return
-     */
+     *//*
     @RequestMapping(value = "/doBatchAudit", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput doBatchAudit(ModelMap modelMap, @RequestBody BatchAuditDto batchAuditDto) {
@@ -525,12 +524,12 @@ public class SgRegisterBillController {
         return this.registerBillService.doBatchAudit(batchAuditDto);
     }
 
-    /**
+    *//**
      * 撤销
      *
      * @param id
      * @return
-     */
+     *//*
     @RequestMapping(value = "/undo.html", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput undo(@RequestParam(name = "id",required = true) Long id) {
@@ -542,12 +541,12 @@ public class SgRegisterBillController {
         return BaseOutput.success("操作成功");
     }
 
-    /**
+    *//**
      * 自动送检
      *
      * @param id
      * @return
-     */
+     *//*
     @RequestMapping(value = "/autoCheck/{id}", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput autoCheck(@PathVariable Long id) {
@@ -559,12 +558,12 @@ public class SgRegisterBillController {
         return BaseOutput.success("操作成功");
     }
 
-    /**
+    *//**
      * 采样检测
      *
      * @param id
      * @return
-     */
+     *//*
     @RequestMapping(value = "/samplingCheck/{id}", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput samplingCheck(@PathVariable Long id) {
@@ -576,12 +575,12 @@ public class SgRegisterBillController {
         return BaseOutput.success("操作成功");
     }
 
-    /**
+    *//**
      * 复检
      *
      * @param id
      * @return
-     */
+     *//*
     @RequestMapping(value = "/reviewCheck/{id}", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput reviewCheck(@PathVariable Long id) {
@@ -591,7 +590,7 @@ public class SgRegisterBillController {
             return BaseOutput.failure(e.getMessage());
         }
         return BaseOutput.success("操作成功");
-    }
+    }*/
 
     /**
      * 跳转到statics页面
@@ -740,7 +739,7 @@ public class SgRegisterBillController {
      *
      * @param input
      * @return
-     */
+     *//*
     @RequestMapping(value = "/saveHandleResult.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput<?> saveHandleResult(RegisterBill input) {
@@ -751,15 +750,18 @@ public class SgRegisterBillController {
             return BaseOutput.failure(e.getMessage());
         }
 
-    }
+    }*/
+/*
 
 
-    /**
+    */
+/**
      * 上传产地报告
      *
      * @param input
      * @return
-     */
+     *//*
+
     @RequestMapping(value = "/doUploadOrigincertifiy.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput<?> doUploadOrigincertifiy(@RequestBody RegisterBill input) {
@@ -776,12 +778,14 @@ public class SgRegisterBillController {
 
     }
 
-    /**
+    */
+/**
      * 上传检测报告
      *
      * @param input
      * @return
-     */
+     *//*
+
     @RequestMapping(value = "/doUploadDetectReport.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput<?> doUploadDetectReport(@RequestBody RegisterBill input) {
@@ -798,13 +802,15 @@ public class SgRegisterBillController {
 
     }
 
-    /**
+    */
+/**
      * 删除检测报告及产地证明
      *
      * @param id
      * @param deleteType
      * @return
-     */
+     *//*
+
     @RequestMapping(value = "/doRemoveReportAndCertifiy.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput<?> doRemoveReportAndCertifiy(Long id, String deleteType) {
@@ -821,12 +827,14 @@ public class SgRegisterBillController {
 
     }
 
-    /**
+    */
+/**
      * 保存处理结果
      *
      * @param input
      * @return
-     */
+     *//*
+
     @RequestMapping(value = "/doAuditWithoutDetect.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput<?> doAuditWithoutDetect(RegisterBill input) {
@@ -842,6 +850,7 @@ public class SgRegisterBillController {
         }
 
     }
+*/
 
 
     /**
@@ -849,7 +858,7 @@ public class SgRegisterBillController {
      *
      * @param input
      * @return
-     */
+     *//*
     @RequestMapping(value = "/doEdit.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput<?> doEdit(RegisterBill input) {
@@ -865,7 +874,7 @@ public class SgRegisterBillController {
             return BaseOutput.failure("服务端出错");
         }
 
-    }
+    }*/
 
     /**
      * 所有状态列表

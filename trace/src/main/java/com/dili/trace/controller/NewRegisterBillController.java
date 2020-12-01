@@ -8,10 +8,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
-import com.dili.trace.dto.BillReportQueryDto;
-import com.dili.trace.dto.CreateListBillParam;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.UserInfoDto;
+import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -25,9 +22,11 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -37,7 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -59,6 +60,8 @@ public class NewRegisterBillController {
 
     @Autowired
     CustomerService customerService;
+    @Autowired
+    DetectRecordService detectRecordService;
 
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
@@ -247,8 +250,427 @@ public class NewRegisterBillController {
         return "new-registerBill/upload-detectReport";
     }
 
+    /**
+     * 上传产地证明
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/uploadOrigincertifiy.html", method = RequestMethod.GET)
+    public String uploadOrigincertifiy(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
+        RegisterBill registerBill = billService.get(id);
+        if (registerBill == null) {
+            return "";
+        }
+        if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
+            // 分销信息
+            if (registerBill.getSalesType() != null
+                    && registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+                // 分销
+                List<SeparateSalesRecord> records = separateSalesRecordService
+                        .findByRegisterBillCode(registerBill.getCode());
+                modelMap.put("separateSalesRecords", records);
+            }
+        } else {
+            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            condition.setRegisterBillCode(registerBill.getCode());
+            modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+        }
+        modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+
+        UserTicket user = SessionContext.getSessionContext().getUserTicket();
+        modelMap.put("user", user);
+
+        return "new-registerBill/upload-origincertifiy";
+    }
+    /**
+     * 上传产地证明
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/uploadHandleResult.html", method = RequestMethod.GET)
+    public String uploadHandleResult(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
+        RegisterBill registerBill = billService.get(id);
+        if (registerBill == null) {
+            return "";
+        }
+        if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
+            // 分销信息
+            if (registerBill.getSalesType() != null
+                    && registerBill.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+                // 分销
+                List<SeparateSalesRecord> records = separateSalesRecordService
+                        .findByRegisterBillCode(registerBill.getCode());
+                modelMap.put("separateSalesRecords", records);
+            }
+        } else {
+            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            condition.setRegisterBillCode(registerBill.getCode());
+            modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+        }
+        modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
+
+        UserTicket user = SessionContext.getSessionContext().getUserTicket();
+        modelMap.put("user", user);
+
+        return "new-registerBill/upload-handleresult";
+    }
+    /**
+     * 审核页面
+     *
+     * @param modelMap
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/audit.html", method = RequestMethod.GET)
+    public String audit(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
+        modelMap.put("registerBill", billService.get(id));
+        return "sg/registerBill/audit";
+    }
+
+    /**
+     * 审核
+     *
+     * @param id
+     * @param pass
+     * @return
+     */
+    @RequestMapping(value = "/audit/{id}/{pass}", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput audit(@PathVariable Long id, @PathVariable Boolean pass) {
+        try {
+            registerBillService.auditRegisterBill(id, pass);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 批量主动送检
+     *
+     * @param modelMap
+     * @param idList
+     * @return
+     */
+    @RequestMapping(value = "/doBatchAutoCheck", method = RequestMethod.POST)
+    public @ResponseBody
+    BaseOutput doBatchAutoCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+        idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(idList)) {
+            return BaseOutput.failure("参数错误");
+        }
+        return this.registerBillService.doBatchAutoCheck(idList);
+    }
+
+    /**
+     * 批量撤销
+     *
+     * @param modelMap
+     * @param idList
+     * @return
+     */
+    @RequestMapping(value = "/doBatchUndo.action", method = RequestMethod.POST)
+    public @ResponseBody
+    BaseOutput doBatchUndo(ModelMap modelMap, @RequestBody List<Long> idList) {
+        idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(idList)) {
+            return BaseOutput.failure("参数错误");
+        }
+        return this.registerBillService.doBatchUndo(idList);
+    }
+
+    /**
+     * 批量采样检测
+     *
+     * @param modelMap
+     * @param idList
+     * @return
+     */
+    @RequestMapping(value = "/doBatchSamplingCheck", method = RequestMethod.POST)
+    public @ResponseBody
+    BaseOutput doBatchSamplingCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+        idList = CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(idList)) {
+            return BaseOutput.failure("参数错误");
+        }
+        return this.registerBillService.doBatchSamplingCheck(idList);
+    }
+
+    /**
+     * 批量审核
+     *
+     * @param modelMap
+     * @param batchAuditDto
+     * @return
+     */
+    @RequestMapping(value = "/doBatchAudit", method = RequestMethod.POST)
+    public @ResponseBody
+    BaseOutput doBatchAudit(ModelMap modelMap, @RequestBody BatchAuditDto batchAuditDto) {
+//		modelMap.put("registerBill", registerBillService.get(id));
+//		if (batchAuditDto.getPass() == null) {
+//			return BaseOutput.failure("参数错误");
+//		}
+        List<Long> idList = CollectionUtils.emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream()
+                .filter(Objects::nonNull).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(idList)) {
+            return BaseOutput.failure("参数错误");
+        }
+        batchAuditDto.setPass(true);
+        batchAuditDto.setRegisterBillIdList(idList);
+        return this.registerBillService.doBatchAudit(batchAuditDto);
+    }
+
+    /**
+     * 撤销
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/doUndo.action", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput undo(@RequestParam(name = "id",required = true) Long id) {
+        try {
+            registerBillService.undoRegisterBill(id);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+    /**
+     * 登记单录查看页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/view.html", method = RequestMethod.GET)
+    public String view(ModelMap modelMap, @RequestParam(required = true,name = "id") Long id
+            ,  @RequestParam(required = false,name = "displayWeight") Boolean displayWeight) {
+        RegisterBill item = billService.get(id);
+        if (item == null) {
+            return "";
+        }
+        if (displayWeight == null) {
+            displayWeight = false;
+        }
+        if (RegisterSourceEnum.TALLY_AREA.getCode().equals(item.getRegisterSource())) {
+            // 分销信息
+            if (item.getSalesType() != null
+                    && item.getSalesType().intValue() == SalesTypeEnum.SEPARATE_SALES.getCode().intValue()) {
+                // 分销
+                List<SeparateSalesRecord> records = separateSalesRecordService
+                        .findByRegisterBillCode(item.getCode());
+                modelMap.put("separateSalesRecords", records);
+            }
+        } else {
+            QualityTraceTradeBill condition = DTOUtils.newDTO(QualityTraceTradeBill.class);
+            condition.setRegisterBillCode(item.getCode());
+            modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
+        }
+
+//		DetectRecord conditon=DTOUtils.newDTO(DetectRecord.class);
+//		conditon.setRegisterBillCode(registerBill.getCode());
+//		conditon.setSort("id");
+//		conditon.setOrder("desc");
+        List<DetectRecord> detectRecordList = this.detectRecordService.findTop2AndLatest(item.getCode());
+        modelMap.put("detectRecordList", detectRecordList);
+        modelMap.put("displayWeight", displayWeight);
+
+        RegisterBillOutputDto registerBill=new RegisterBillOutputDto();
+        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item),registerBill);
+
+        List<ImageCert>imageCerts=this.registerBillService.findImageCertListByBillId(item.getBillId());
+        registerBill.setImageCerts(imageCerts);
+
+        modelMap.put("registerBill", registerBill);
+
+        return "sg/registerBill/view";
+    }
+    /**
+     * 自动送检
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/autoCheck/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput autoCheck(@PathVariable Long id) {
+        try {
+            registerBillService.autoCheckRegisterBill(id);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 采样检测
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/samplingCheck/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput samplingCheck(@PathVariable Long id) {
+        try {
+            registerBillService.samplingCheckRegisterBill(id);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 复检
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/reviewCheck/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput reviewCheck(@PathVariable Long id) {
+        try {
+            registerBillService.reviewCheckRegisterBill(id);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+    /**
+     * 保存处理结果
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping(value = "/doUploadHandleResult.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput<?> saveHandleResult(RegisterBill input) {
+        try {
+            Long id = this.registerBillService.saveHandleResult(input);
+            return BaseOutput.success().setData(id);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+
+    }
 
 
+
+
+    /**
+     * 上传产地报告
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping(value = "/doUploadOrigincertifiy.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput<?> doUploadOrigincertifiy(@RequestBody RegisterBill input) {
+        try {
+            Long id = this.registerBillService.doUploadOrigincertifiy(input);
+            return BaseOutput.success().setData(id);
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+
+    }
+
+    /**
+     * 上传检测报告
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping(value = "/doUploadDetectReport.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput<?> doUploadDetectReport(@RequestBody RegisterBill input) {
+        try {
+            Long id = this.registerBillService.doUploadDetectReport(input);
+            return BaseOutput.success().setData(id);
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+
+    }
+
+    /**
+     * 删除检测报告及产地证明
+     *
+     * @param id
+     * @param deleteType
+     * @return
+     */
+    @RequestMapping(value = "/doRemoveReportAndCertifiy.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput<?> doRemoveReportAndCertifiy(Long id, String deleteType) {
+        try {
+//			Long id = this.registerBillService.doUploadDetectReport(input);
+            return this.registerBillService.doRemoveReportAndCertifiy(id, deleteType);
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+
+    }
+
+    /**
+     * 保存处理结果
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping(value = "/doAuditWithoutDetect.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput<?> doAuditWithoutDetect(RegisterBill input) {
+        try {
+            Long id = this.registerBillService.doAuditWithoutDetect(input);
+            return BaseOutput.success().setData(id);
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+
+    }
+
+    /**
+     * 保存处理结果
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping(value = "/doEdit.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput<?> doEdit(RegisterBill input) {
+        try {
+
+            Long id = this.registerBillService.doEdit(input);
+            return BaseOutput.success().setData(id);
+        } catch (TraceBizException e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+
+    }
     /**
      * 新增RegisterBill
      *

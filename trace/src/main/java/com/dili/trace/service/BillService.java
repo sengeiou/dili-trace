@@ -4,7 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
@@ -15,6 +18,7 @@ import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,6 +56,8 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 	DetectTaskService detectTaskService;
 	@Autowired
 	ImageCertService imageCertService;
+	@Autowired
+	DetectRequestService detectRequestService;
 
 	/**
 	 * 返回mapper
@@ -59,6 +65,20 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 	 */
 	public RegisterBillMapper getActualDao() {
 		return (RegisterBillMapper) getDao();
+	}
+
+
+	@Override
+	public EasyuiPageOutput listEasyuiPageByExample(RegisterBill domain, boolean useProvider) throws Exception {
+		List<RegisterBill> list = listByExample(domain);
+		Map<Long, DetectRequest> idAndDetectRquestMap=this.detectRequestService.findDetectRequestByIdList(StreamEx.of(list).map(RegisterBill::getDetectRequestId).toList());
+		StreamEx.of(list).forEach(rb->{
+			rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
+		});
+
+		long total = list instanceof Page ? ( (Page) list).getTotal() : list.size();
+		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
+		return new EasyuiPageOutput(total, results);
 	}
 
 

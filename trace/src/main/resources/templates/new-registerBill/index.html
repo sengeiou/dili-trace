@@ -160,28 +160,28 @@
             <button id="btn_withdraw" type="button" class="btn btn-primary" onclick="openWithdrawHandler()"><i class="fa fa-undo"></i> 撤回</button>
             <button id="btn_cancel" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 取消</button>-->
             <button id="btn_add" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增(页面层)</button>
-            <button id="edit-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 修改</button>
-            <button id="audit-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 进场审核</button>
-            <button id="batch-audit-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 批量审核</button>
+            <button id="edit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 修改</button>
+            <button id="audit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 进场审核</button>
+            <button id="batch-audit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 批量审核</button>
             <button id="audit-withoutDetect-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 审核不检测</button>
             <button id="review-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 复检</button>
 
 
-            <button id="auto-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 主动送检</button>
-            <button id="batch-auto-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 批量主动送检</button>
-            <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i> 采样检测</button>
+            <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 主动送检</button>
+            <button id="batch-auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 批量主动送检</button>
+            <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 采样检测</button>
 
-            <button id="batch-sampling-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>批量采样检测</button>
-            <button id="undo-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>撤销</button>
-            <button id="batch-undo-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>批量撤销</button>
-            <button id="createsheet-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>创建打印报告</button>
-            <button id="handle-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>上传处理结果</button>
+            <button id="batch-sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>批量采样检测</button>
+            <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>撤销</button>
+            <button id="batch-undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>批量撤销</button>
+            <button id="createsheet-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>创建打印报告</button>
+            <button id="upload-handleresult-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传处理结果</button>
 
-            <button id="upload-origincertifiy-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>上传产地证明</button>
-            <button id="upload-detectreport-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>上传检测报告</button>
-            <button id="remove-reportAndcertifiy-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>删除检测报告和产地证明</button>
+            <button id="upload-origincertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传产地证明</button>
+            <button id="upload-detectreport-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>上传检测报告</button>
+            <button id="remove-reportAndcertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>删除检测报告和产地证明</button>
             <button id="copy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>补录</button>
-            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary" onclick="openCancelHandler()"><i class="fa fa-ban"></i>查看</button>
+            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>查看</button>
             <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
         <table id="registerBillGrid" data-toggle="table" data-title="客户列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
@@ -231,7 +231,10 @@
                     产地
                 </th>
                 <th data-field="weight" data-sortable="true" data-align="center">
-                    重量/KG
+                    重量
+                </th>
+                <th data-field="weightUnitName" data-sortable="true" data-align="center">
+                    重量单位
                 </th>
                 <th data-field="measureTypeName" data-sortable="true" data-align="center">
                     计量类型
@@ -242,7 +245,6 @@
                 <th data-field="pieceWeight" data-sortable="true" data-align="center">
                     件重
                 </th>
-
                 <th data-field="hasOriginCertifiy" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
                     产地证明
                 </th>
@@ -252,35 +254,25 @@
                 <th data-field="hasHandleResult" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
                     处理结果
                 </th>
-
-
-                <th width="4%"
-                    data-options="field:'latestDetectOperator',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-field="detectRequest.id" data-sortable="true" data-align="center" >
                     检测类型
                 </th>
-                <th width="4%"
-                    data-options="field:'latestDetectOperator',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-field="detectRequest.id" data-sortable="true" data-align="center" >
                     检测状态
                 </th>
-
-                <th width="10%"
-                    data-options="field:'latestDetectTime',  _provider:'datetimeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-field="detectRequest.id" data-sortable="true" data-align="center" >
                     检测时间
                 </th>
-                <th width="4%"
-                    data-options="field:'detectState',  _provider:'billDetectStateProvider' , sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-field="detectState" data-sortable="true" data-align="center">
                     检测结果
                 </th>
-                <th width="4%"
-                    data-options="field:'latestDetectOperator',  sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
+                <th data-field="latestDetectOperator" data-sortable="true" data-align="center">
                     检测员
                 </th>
-                <th width="4%"
-                    data-options="field:'checkSheetId', _provider:'hasOrNoneProvider', sortable:false, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                    打印报告
+                <th data-field="checkSheetId" data-sortable="true" data-align="center" data-provider="hasOrNoneProvider">
+                    检测已打印
                 </th>
-
-                <th data-field="verifyStatus" data-sortable="true" data-align="center" data-provider="verifyStatusProvider">
+                <th data-field="verifyStatusName" data-sortable="true" data-align="center">
                     审核状态
                 </th>
                 <th data-field="checkinStatusName" data-sortable="true" data-align="center">
