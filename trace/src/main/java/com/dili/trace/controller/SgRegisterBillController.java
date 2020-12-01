@@ -1,6 +1,5 @@
 package com.dili.trace.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.sg.trace.glossary.RegisterBillStateEnum;
@@ -71,7 +70,7 @@ public class SgRegisterBillController {
     UsualAddressService usualAddressService;
 
     @Autowired
-    WebCtxService webCtxService;
+    UapRpcService uapRpcService;
     @Autowired
     ImageCertService imageCertService;
 

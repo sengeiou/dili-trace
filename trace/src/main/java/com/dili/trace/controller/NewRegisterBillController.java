@@ -73,7 +73,7 @@ public class NewRegisterBillController {
     @Autowired
     ImageCertService imageCertService;
     @Autowired
-    WebCtxService webCtxService;
+    UapRpcService uapRpcService;
 
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
@@ -93,7 +93,7 @@ public class NewRegisterBillController {
         query.setBillCreatedEnd(DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
         query.setBillCreatedStart(DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
         modelMap.put("query", query);
-        UserTicket user = this.webCtxService.getCurrentUserTicket().orElse(DTOUtils.newDTO(UserTicket.class));
+        UserTicket user = this.uapRpcService.getCurrentUserTicket().orElse(DTOUtils.newDTO(UserTicket.class));
         modelMap.put("user", user);
 
         return "new-registerBill/index";

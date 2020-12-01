@@ -1,14 +1,13 @@
 package com.dili.trace.service.impl;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.component.RpcComponent;
 import com.dili.trace.domain.Market;
 import com.dili.trace.enums.MarketEnum;
 import com.dili.trace.service.FirmRpcService;
 import com.dili.trace.service.MarketService;
-import com.dili.trace.service.WebCtxService;
+import com.dili.trace.service.UapRpcService;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.dto.FirmDto;
 import one.util.streamex.StreamEx;
@@ -30,7 +29,7 @@ import java.util.Optional;
 @Service
 public class MarketServiceImpl implements MarketService {
     @Autowired
-    WebCtxService webCtxService;
+    UapRpcService uapRpcService;
     @Autowired
     RpcComponent rpcComponent;
     @Autowired
@@ -38,14 +37,14 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     public Long getCurrentLoginMarketId() {
-        return this.webCtxService.getCurrentFirm().map(Firm::getId).orElseThrow(() -> {
+        return this.uapRpcService.getCurrentFirm().map(Firm::getId).orElseThrow(() -> {
             return new TraceBizException("当前登录用户所属市场不存在");
         });
     }
 
     @Override
     public Firm getCurrentMarket(){
-        return this.webCtxService
+        return this.uapRpcService
                 .getCurrentFirm()
                 .orElseThrow(()-> new TraceBizException("当前登录用户所属市场不存在"));
     }

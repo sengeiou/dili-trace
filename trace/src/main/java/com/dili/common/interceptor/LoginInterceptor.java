@@ -1,18 +1,15 @@
 package com.dili.common.interceptor;
 
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.common.entity.ExecutionConstants;
+import com.dili.common.annotation.Access;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.ss.domain.BaseOutput;
 
+import com.dili.trace.service.UapRpcService;
+import com.dili.uap.sdk.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,24 +25,17 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
 	@Autowired
 	private LoginSessionContext sessionContext;
+	@Autowired
+	UapRpcService uapRpcService;
 
 
-	private void logRequest(HttpServletRequest request) {
-		if (this.sessionContext.getSessionData() != null && this.sessionContext.getSessionData().getUserId() != null) {
-			String requestUri = request.getRequestURI();
-			logger.info("loginType={},accountId={},requestUri={}", this.sessionContext.getSessionData().getIdentityType(),
-					this.sessionContext.getAccountId(), requestUri);
-		}
-	}
+
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
 		boolean value = this.preHandleCheck(request, response, handler);
-		if (value) {
-			this.logRequest(request);
-		}
 		return value;
 	}
 
@@ -55,24 +45,12 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		if (!(handler instanceof HandlerMethod)) {
 			return true;
 		}
-		InterceptConfiguration interceptConfiguration = findAnnotation((HandlerMethod) handler,
-				InterceptConfiguration.class);
-		if (interceptConfiguration == null || !interceptConfiguration.loginRequired()) {
+		Access access = findAnnotation((HandlerMethod) handler,
+				Access.class);
+		if (access == null) {
 			return true;
 		}
-		/*if (sessionContext.getAccountId() == null) {// 用户id为空表示未登陆
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			BaseOutput baseOutput = new BaseOutput(ExecutionConstants.NO_LOGIN, "未登陆");
-			Writer writer = response.getWriter();
-			writer.write(JSONObject.toJSONString(baseOutput));
-			writer.flush();
-			if (writer != null) {
-				writer.close();
-			}
-			return false;
-		}*/
-		return true;
+		return SessionContext.hasAccess(access.method(),access.url());
 	}
 
 	private <T extends Annotation> T findAnnotation(HandlerMethod handler, Class<T> annotationType) {

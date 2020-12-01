@@ -17,7 +17,6 @@ import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
-import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
@@ -69,7 +68,7 @@ public class RegisterBillController {
     @Autowired(required = false)
     EventRpc eventRpc;
     @Autowired
-    WebCtxService webCtxService;
+    UapRpcService uapRpcService;
 
 
     /**

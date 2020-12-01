@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import com.dili.common.annotation.Access;
 import com.dili.common.exception.TraceBizException;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -19,7 +20,7 @@ import java.util.Optional;
  * web请求上下文环境变量接口
  */
 @Service
-public class WebCtxService {
+public class UapRpcService {
     @Autowired
     FirmRpcService firmRpcService;
 
@@ -54,4 +55,24 @@ public class WebCtxService {
         }).findFirst();
 
     }
+
+    /**
+     * 是否有访问权限
+     * @param method
+     * @param url
+     * @return
+     */
+    public boolean hasAccess(String method,String url){
+        return SessionContext.hasAccess(method,url);
+    }
+
+    /**
+     * 是否有访问权限
+     * @param access
+     * @return
+     */
+    public boolean hasAccess(  Access access){
+        return SessionContext.hasAccess(access.method(),access.url());
+    }
+
 }
