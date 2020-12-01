@@ -191,13 +191,6 @@ public class SessionRedisService {
             return;
         }
         logger.info("refresh:sessionId={}", sessionData.toMap());
-        if (sessionData.changed()) {
-            if (sessionData.isInvalidate()) {
-                this.deleteFromRedis(sessionData.getSessionId());
-            } else {
-                this.saveToRedis(sessionData);
-            }
-        }
 
     }
 

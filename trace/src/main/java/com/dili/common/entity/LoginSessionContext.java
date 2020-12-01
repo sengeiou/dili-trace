@@ -8,14 +8,14 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.trace.dto.OperatorUser;
 
 public class LoginSessionContext implements Serializable {
-	private static final long serialVersionUID = -12145451L;
+	private static final long serialVersionUID = 1L;
 	private SessionData sessionData;
-
-	public void setInvalidate(boolean invalidate) {
-		if (this.sessionData != null) {
-			this.getSessionData().setInvalidate(invalidate);
-		}
-	}
+//
+//	public void setInvalidate(boolean invalidate) {
+//		if (this.sessionData != null) {
+//			this.getSessionData().setInvalidate(invalidate);
+//		}
+//	}
 
 	public String getUserName() {
 

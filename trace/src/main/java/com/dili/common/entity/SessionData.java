@@ -3,6 +3,7 @@ package com.dili.common.entity;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.uap.sdk.domain.Firm;
+import com.dili.uap.sdk.domain.UserTicket;
 import com.google.common.base.Objects;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.BeanUtils;
@@ -32,9 +33,15 @@ public class SessionData {
     private Long marketId;
     private Set<String> userWeChatMenus;
 
-    private Map<Object, Object> mapData = new HashMap<>();
 
     private SessionData() {
+    }
+    public static SessionData mockClient(){
+        SessionData sessionData=new SessionData();
+        sessionData.setMarketId(8L);
+        sessionData.setUserId(1L);
+        sessionData.setUserName("zhangsan");
+        return sessionData;
     }
 
 
@@ -47,13 +54,11 @@ public class SessionData {
         data.marketName = firm.getName();
         data.userWeChatMenus = userWeChatMenus;
 
-        data.mapData = data.convertThisToMap();
         return data;
     }
 
     private Map<Object, Object> convertThisToMap() {
         Map<Object, Object> map = new HashMap<>(new BeanMap(this));
-        map.remove("mapData");
         return map;
     }
 
@@ -65,25 +70,10 @@ public class SessionData {
         SessionData data = new SessionData();
         try {
             BeanUtils.copyProperties(data, map);
-            data.mapData = data.convertThisToMap();
         } catch (IllegalAccessException | InvocationTargetException e) {
             logger.error(e.getMessage(), e);
         }
         return data;
-    }
-
-    public boolean changed() {
-        Map<Object, Object> previousMapData=  this.mapData;
-        Map<Object, Object> currentMapData=  this.convertThisToMap();
-        for(Object key:previousMapData.keySet()){
-            Object preValue=previousMapData.get(key);
-            Object currentValue=currentMapData.get(key);
-            if(!Objects.equal(preValue, currentValue)){
-                return true;
-            }
-        }
-        return false;
-
     }
 
     public static SessionData fromUser(User user, Integer identityType) {
@@ -96,7 +86,6 @@ public class SessionData {
         data.qrStatus = -1;
         data.marketId = user.getMarketId();
         data.marketName = user.getMarketName();
-        data.mapData = data.convertThisToMap();
         return data;
     }
 
@@ -105,7 +94,12 @@ public class SessionData {
         data.identityType = identityType;
         data.userId = user.getId();
         data.userName = user.getName();
-        data.mapData = data.convertThisToMap();
+        return data;
+    }
+    public static SessionData fromUserTicket(UserTicket ut) {
+        SessionData data = new SessionData();
+        data.userId = ut.getId();
+        data.userName = ut.getRealName();
         return data;
     }
 

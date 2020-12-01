@@ -7,8 +7,10 @@ import com.dili.common.annotation.Access;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.components.SessionRedisService;
+import com.dili.trace.service.ClientRpcService;
 import com.dili.trace.service.UapRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,8 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     SessionRedisService sessionRedisService;
     @Autowired
     UapRpcService uapRpcService;
+    @Autowired
+    ClientRpcService clientRpcService;
 
 
     @Override
@@ -51,16 +55,23 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         if (access.role() == Role.Client) {
-
+            if (!this.clientRpcService.hasAccess(access)) {
+                throw new TraceBizException("没有权限访问");
+            }
+            this.sessionContext.setSessionData(SessionData.mockClient());
         } else if (access.role() == Role.User) {
             if (!this.uapRpcService.hasAccess(access)) {
-
+                throw new TraceBizException("没有权限访问");
             }
-            this.uapRpcService.getCurrentUserTicket().map(userTicket -> {
-                return "";
+            SessionData sessionData= this.uapRpcService.getCurrentUserTicket().map(ut -> {
+                return SessionData.fromUserTicket(ut);
             }).orElseGet(() -> {
-                return "";
+                return null;
             });
+            if(sessionData==null){
+                throw new TraceBizException("没有权限访问");
+            }
+            this.sessionContext.setSessionData(sessionData);
         } else {
             throw new TraceBizException("参数错误");
         }

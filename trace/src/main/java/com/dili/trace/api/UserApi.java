@@ -316,7 +316,7 @@ public class UserApi {
      *
      * @return
      */
-    @ApiOperation(value = "退出【接口已通】", notes = "退出")
+    /*@ApiOperation(value = "退出【接口已通】", notes = "退出")
     @RequestMapping(value = "/quit.api", method = RequestMethod.POST)
     @InterceptConfiguration
     public BaseOutput<String> quit() {
@@ -330,7 +330,7 @@ public class UserApi {
             return BaseOutput.failure();
         }
     }
-
+*/
     /**
      * 验证是否登录【接口已通】
      *

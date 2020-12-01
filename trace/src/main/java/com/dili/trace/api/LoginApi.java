@@ -79,7 +79,7 @@ public class LoginApi {
      *
      * @return
      */
-    @ApiOperation(value = "退出【接口已通】", notes = "退出")
+   /* @ApiOperation(value = "退出【接口已通】", notes = "退出")
     @RequestMapping(value = "/quit.api", method = RequestMethod.POST)
     @InterceptConfiguration
     public BaseOutput<String> quit() {
@@ -92,7 +92,7 @@ public class LoginApi {
             logger.error("quit", e);
             return BaseOutput.failure();
         }
-    }
+    }*/
 
     /**
      * 退出【接口已通】
