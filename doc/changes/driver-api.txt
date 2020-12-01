@@ -1,0 +1,32 @@
+ //用户
+  register: "/api/userApi/register.api", //注册
+  login: "/api/loginApi/login.api", //登录
+  quit: "/api/userApi/quit.api", //登出
+  changePassword: "/api/userApi/changePassword.api", //修改密码
+  getUserInfo: "/api/userApi/get.api", //获取个人信息
+  send: "/api/userApi/sendVerificationCode.api", //发送手机验证码
+  isLogin: "/api/userApi/isLogin.api", //检查用户登录是否过期
+  perfectInfo: "/api/userApi/realNameCertificationReq.api", //资料完善
+  usualCategory: "/api/categoryApi/userCategory.api",//常用品类列表
+  createCategory: "/api/categoryApi/addUserCategory.api",//新增常用品类
+  deleteCategory: "/api/categoryApi/delUserCategory.api",//删除常用品类
+  getUserQrcode: "/api/userApi/getUserQrCode.api", //获取个人二维码
+  qrcodeDetail: "/api/client/clientUserQrHistoryApi/listPage.api", //获取二维码详情
+  sendSmsCode: "/api/userApi/sendSmsCodeForRenewPassword.api", //发送手机验证码(忘记密码)
+  resetPassword: "/api/userApi/renewPassword.api", //忘记密码,
+  getUserStore: "/api/client/clientUserStoreApi/getUserStore.api", //查询用户店铺
+  updateUserStore: "/api/client/clientUserStoreApi/updateUserStore.api", //修改用户店铺
+
+  getWxOpenidUnionid: "/api/wxTokenApi/getWxOpenidUnionId.api", //(openid,session_key）
+  wxLogin: "/api/loginApi/wxLogin.api", //微信登录
+  decodePhone: "/api/wxTokenApi/decodePhone.api", //解密手机号
+  wxRegister: "/api/userApi/wxRegister.api", //微信注册
+  wxBind: "/api/userApi/userBindWeChat.api", //绑定微信号
+  getUserBindWeChat: "/api/userApi/getUserBindWeChat.api", //查询是否需要弹框
+  confirmBindWeChatTip: "/api/userApi/confirmBindWeChatTip.api", //用户确认不再弹出
+  getUserInfoById : "/api/userApi/getUserInfo.api", // 通过userID获取用户信息
+  validateWeChatBindUser: "/api/userApi/validateWeChatBindUser.api", //查询是否需要弹框
+
+  needRegister: "/api/driverUserApi/needRegister", //手机号是否已经在对应平台注册
+  getDriverUserList : "/api/driverUserApi/getDriverUserList", // 获取司机用户列表信息
+  insertOrUpdateShareTime: "/api/driverUserApi/updateDriverUserRef",
