@@ -48,4 +48,25 @@ class jq {
         let resp:any=await jq.ajax(settings);
         return resp;
     }
+
+    /**
+     * 对ajax异步请求转换为promise
+     * @param settings
+     */
+
+    public static async postJsonWithProcessing(url:string,data:object,settings:JQuery.AjaxSettings={}):Promise<any> {
+        _.extend(settings,{method:'post',dataType:'json',contentType:'application/json',data:JSON.stringify(data),url:url})
+        try{
+            //@ts-ignore
+            bui.loading.show('努力提交中，请稍候。。。');
+            let resp:any=await jq.ajax(settings);
+            //@ts-ignore
+            bui.loading.hide();
+            return resp;
+        }catch (e){
+            //@ts-ignore
+            bui.loading.hide();
+            throw e
+        }
+    }
 }

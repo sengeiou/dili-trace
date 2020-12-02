@@ -33,5 +33,18 @@ class jq {
         let resp = await jq.ajax(settings);
         return resp;
     }
+    static async postJsonWithProcessing(url, data, settings = {}) {
+        _.extend(settings, { method: 'post', dataType: 'json', contentType: 'application/json', data: JSON.stringify(data), url: url });
+        try {
+            bui.loading.show('努力提交中，请稍候。。。');
+            let resp = await jq.ajax(settings);
+            bui.loading.hide();
+            return resp;
+        }
+        catch (e) {
+            bui.loading.hide();
+            throw e;
+        }
+    }
 }
 //# sourceMappingURL=jqueryWrapper.js.map
