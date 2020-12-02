@@ -1,12 +1,18 @@
-class EcommerceBillGrid extends WebConfig {
+class UserHistoryServiceIndex extends WebConfig {
     constructor(grid, queryform) {
         super();
         this.grid = grid;
         this.queryform = queryform;
+        (async () => this.init())();
+    }
+    async init() {
         this.queryform.find('#query').click(async () => await this.queryGridData());
-        (async () => {
-            await this.queryGridData();
-        })();
+        this.grid.on('check.bs.table', async () => await this.rowClick());
+        this.grid.on('uncheck.bs.table', async () => await this.rowClick());
+        await this.queryGridData();
+    }
+    async rowClick() {
+        debugger;
     }
     async queryGridData() {
         if (!this.queryform.validate().form()) {
@@ -18,11 +24,11 @@ class EcommerceBillGrid extends WebConfig {
     async remoteQuery() {
         $('#toolbar button').attr('disabled', "disabled");
         this.grid.bootstrapTable('showLoading');
-        this.highLightBill = await this.findHighLightBill();
         try {
-            let url = this.toUrl("/ecommerceBill/listPage.action");
+            let url = this.toUrl("/userHistory/listPage.action");
             let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
             this.grid.bootstrapTable('load', resp);
+            await this.queryStatics();
         }
         catch (e) {
             console.error(e);
@@ -31,15 +37,16 @@ class EcommerceBillGrid extends WebConfig {
         this.grid.bootstrapTable('hideLoading');
         $('#toolbar button').removeAttr('disabled');
     }
-    async findHighLightBill() {
+    async queryStatics() {
         try {
-            var url = this.toUrl("/ecommerceBill/findHighLightBill.action");
-            return await jq.postJson(url, {}, {});
+            let url = this.toUrl("/userHistory/queryStatics.action");
+            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
+            console.info("====>", resp);
+            $('#plateAmount').val(resp.plateAmount);
         }
         catch (e) {
-            console.log(e);
-            return {};
+            $('#plateAmount').val('0');
         }
     }
 }
-//# sourceMappingURL=ecommercebill.index.js.map
+//# sourceMappingURL=userHistoryService.index.js.map
