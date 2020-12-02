@@ -133,7 +133,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         registerBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
-        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
+//        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
+        registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
         registerBill.setVersion(1);
         registerBill.setCreated(new Date());
@@ -427,8 +428,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         RegisterBillDto dto = new RegisterBillDto();
         UserTicket userTicket = getOptUser();
         dto.setOperatorId(userTicket.getId());
-        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+//        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+        dto.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         dto.setRows(1);
+
         dto.setSort("code");
         dto.setOrder("desc");
         return this.listByExample(dto).stream().findFirst().orElse(new RegisterBill());
@@ -829,7 +832,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.checkBill(registerBill);
 
         registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
-        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
+        registerBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
+//        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
+        registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
         registerBill.setVersion(1);
         registerBill.setCreated(new Date());
@@ -1141,7 +1146,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         RegisterBillDto dto = new RegisterBillDto();
         UserTicket userTicket = getOptUser();
         dto.setOperatorId(userTicket.getId());
-        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+//        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+        dto.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         dto.setRows(1);
         dto.setSort("code");
         dto.setOrder("desc");

@@ -81,8 +81,8 @@ public class AllRegisterBillApi {
 		input.setOrder("desc");
 		LOGGER.info("查询登记单:{}", input);
 		RegisterBillDto condition = new RegisterBillDto();
-		condition.setState(input.getState());
-		condition.setDetectState(input.getDetectState());
+		condition.setDetectStatus(input.getDetectStatus());
+		condition.setVerifyStatus(input.getVerifyStatus());
 		condition.setPage(input.getPage());
 		condition.setRows(input.getRows());
 		condition.setSort(input.getSort());

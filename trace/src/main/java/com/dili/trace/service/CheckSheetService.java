@@ -1,8 +1,8 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.domain.CheckSheet;
-import com.dili.trace.domain.CheckSheetDetail;
+import com.dili.trace.domain.*;
+import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.dto.CheckSheetAliasInputDto;
 import com.dili.trace.dto.CheckSheetInputDto;
@@ -10,8 +10,6 @@ import com.dili.trace.dto.CheckSheetPrintOutput;
 import com.dili.sg.trace.glossary.BillDetectStateEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.trace.domain.ApproverInfo;
-import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.OperatorUser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +40,8 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 	DetectTaskService detectTaskService;
 	@Autowired
 	QrCodeService qrCodeService;
+	@Autowired
+	DetectRequestService detectRequestService;
 	
 	
 	@Value("${current.baseWebPath}")
@@ -169,8 +169,11 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 		// 生成详情
 		List<CheckSheetDetail> checkSheetDetailList = IntStream.range(0, registerBillList.size()).boxed().map(index -> {
 
+
 			RegisterBill registerBill = registerBillList.get(index);
 			CheckSheetDetail detail = new CheckSheetDetail();
+			DetectRequest detectRequest=detectRequestService.findDetectRequestByBillId(registerBill.getBillId()).orElse(null);
+
 			detail.setRegisterBillId(registerBill.getId());
 			detail.setCheckSheetId(input.getId());
 			detail.setCreated(new Date());
@@ -178,7 +181,10 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 			detail.setOriginName(registerBill.getOriginName());
 			detail.setProductName(registerBill.getProductName());
 			detail.setProductAliasName(billIdAliasNameMap.get(registerBill.getId()));
-			detail.setDetectState(registerBill.getDetectState());
+			detail.setDetectResult(detectRequest.getDetectResult());
+			detail.setDetectStatus(registerBill.getDetectStatus());
+			detail.setVerifyStatus(registerBill.getVerifyStatus());
+
 			detail.setOrderNumber(index + 1);
 			detail.setLatestPdResult(registerBill.getLatestPdResult());
 			return detail;
@@ -269,9 +275,11 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 			throw new TraceBizException("类型错误");
 		}
 
-		boolean allChecked = registerBillList.stream()
-				.allMatch(bill -> BillDetectStateEnum.PASS.getCode().equals(bill.getDetectState())
-						|| BillDetectStateEnum.REVIEW_PASS.getCode().equals(bill.getDetectState()));
+		boolean allChecked = registerBillList.stream().allMatch(bill->{
+
+			DetectRequest detectRequest= this.detectRequestService.findDetectRequestByBillId(bill.getBillId()).orElse(null);
+			return DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult());
+		});
 		if (!allChecked) {
 			throw new TraceBizException("登记单状态错误");
 		}

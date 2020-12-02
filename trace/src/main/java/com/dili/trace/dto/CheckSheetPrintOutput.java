@@ -12,6 +12,7 @@ import com.dili.trace.domain.CheckSheet;
 import com.dili.trace.domain.CheckSheetDetail;
 import com.dili.sg.trace.glossary.BillDetectStateEnum;
 
+import com.dili.trace.enums.DetectResultEnum;
 import org.apache.commons.collections4.CollectionUtils;
 
 public class CheckSheetPrintOutput {
@@ -55,10 +56,8 @@ public class CheckSheetPrintOutput {
         checkSheetPrintOutput.setShowProductAlias(showProductAlias);
 
         List<CheckSheetDetailPrintOutput> detailPrintOutputList = list.stream().map(detail -> {
-            Integer detectState = detail.getDetectState();
             String detectStateView="未知";
-            if (BillDetectStateEnum.PASS.getCode().equals(detectState)
-                    || BillDetectStateEnum.REVIEW_PASS.getCode().equals(detectState)) {
+            if ( DetectResultEnum.PASSED.equalsToCode(detail.getDetectResult())) {
                         detectStateView="合格";
             }
             CheckSheetDetailPrintOutput detailOutprint =CheckSheetDetailPrintOutput.build(detail,detectStateView);
