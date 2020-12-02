@@ -2,6 +2,7 @@ package com.dili.trace.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -314,14 +315,15 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int undoRegisterBill(Long id) {
-        return Optional.ofNullable(this.billService.get(id)).map(registerBill -> {
-            if (RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(registerBill.getState())
-                    || RegisterBillStateEnum.WAIT_SAMPLE.equalsToCode(registerBill.getState())) {
+        return Optional.ofNullable(this.billService.get(id)).map(item -> {
+            if (RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(item.getState())
+                    || RegisterBillStateEnum.WAIT_SAMPLE.equalsToCode(item.getState())) {
                 UserTicket userTicket = getOptUser();
-//                LOGGER.info(userTicket.getDepName() + ":" + userTicket.getRealName() + "删除登记单"
-//                        + JSON.toJSON(registerBill).toString());
-                return this.billService.delete(id);
-                // return update(registerBill);
+
+                RegisterBill bill=new RegisterBill();
+                bill.setId(item.getBillId());
+                bill.setIsDeleted(YesOrNoEnum.YES.getCode());
+                return this.billService.updateSelective(bill);
             } else {
                 throw new TraceBizException("操作失败，数据状态已改变");
             }

@@ -326,7 +326,7 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/audit.html", method = RequestMethod.GET)
     public String audit(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
         modelMap.put("registerBill", billService.get(id));
-        return "sg/registerBill/audit";
+        return "new-registerBill/audit";
     }
 
     /**
@@ -336,9 +336,9 @@ public class NewRegisterBillController {
      * @param pass
      * @return
      */
-    @RequestMapping(value = "/audit/{id}/{pass}", method = RequestMethod.GET)
+    @RequestMapping(value = "/doAudit.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput audit(@PathVariable Long id, @PathVariable Boolean pass) {
+    BaseOutput doAudit(@RequestParam(name = "id",required = true) Long id, @RequestParam(name = "pass",required = true) Boolean pass) {
         try {
             registerBillService.auditRegisterBill(id, pass);
         } catch (TraceBizException e) {
@@ -354,7 +354,7 @@ public class NewRegisterBillController {
      * @param idList
      * @return
      */
-    @RequestMapping(value = "/doBatchAutoCheck", method = RequestMethod.POST)
+    @RequestMapping(value = "/doBatchAutoCheck.action", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput doBatchAutoCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
 //		modelMap.put("registerBill", registerBillService.get(id));
@@ -389,7 +389,7 @@ public class NewRegisterBillController {
      * @param idList
      * @return
      */
-    @RequestMapping(value = "/doBatchSamplingCheck", method = RequestMethod.POST)
+    @RequestMapping(value = "/doBatchSamplingCheck.action", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput doBatchSamplingCheck(ModelMap modelMap, @RequestBody List<Long> idList) {
 //		modelMap.put("registerBill", registerBillService.get(id));
@@ -407,7 +407,7 @@ public class NewRegisterBillController {
      * @param batchAuditDto
      * @return
      */
-    @RequestMapping(value = "/doBatchAudit", method = RequestMethod.POST)
+    @RequestMapping(value = "/doBatchAudit.action", method = RequestMethod.POST)
     public @ResponseBody
     BaseOutput doBatchAudit(ModelMap modelMap, @RequestBody BatchAuditDto batchAuditDto) {
 //		modelMap.put("registerBill", registerBillService.get(id));
@@ -432,7 +432,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doUndo.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput undo(@RequestParam(name = "id",required = true) Long id) {
+    BaseOutput doUndo(@RequestParam(name = "id",required = true) Long id) {
         try {
             registerBillService.undoRegisterBill(id);
         } catch (TraceBizException e) {
@@ -487,7 +487,7 @@ public class NewRegisterBillController {
 
         modelMap.put("registerBill", registerBill);
 
-        return "sg/registerBill/view";
+        return "new-registerBill/view";
     }
     /**
      * 自动送检
@@ -495,9 +495,9 @@ public class NewRegisterBillController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/autoCheck/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/doAutoCheck.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput autoCheck(@PathVariable Long id) {
+    BaseOutput doAutoCheck(@RequestParam(name = "id",required = true) Long id) {
         try {
             registerBillService.autoCheckRegisterBill(id);
         } catch (TraceBizException e) {
@@ -512,9 +512,9 @@ public class NewRegisterBillController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/samplingCheck/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/doSamplingCheck.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput samplingCheck(@PathVariable Long id) {
+    BaseOutput doSamplingCheck(@RequestParam(name = "id",required = true)  Long id) {
         try {
             registerBillService.samplingCheckRegisterBill(id);
         } catch (TraceBizException e) {
@@ -529,9 +529,9 @@ public class NewRegisterBillController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/reviewCheck/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/doReviewCheck.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput reviewCheck(@PathVariable Long id) {
+    BaseOutput doReviewCheck(@RequestParam(name = "id",required = true) Long id) {
         try {
             registerBillService.reviewCheckRegisterBill(id);
         } catch (TraceBizException e) {

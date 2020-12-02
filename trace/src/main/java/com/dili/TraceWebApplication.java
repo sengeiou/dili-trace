@@ -50,8 +50,8 @@ public class TraceWebApplication extends SpringBootServletInitializer {
         SpringApplication sa = new SpringApplication(TraceWebApplication.class);
         sa.addListeners(new ApplicationPidFileWriter());
         ConfigurableApplicationContext ctx = sa.run(args);
-        DatetimeProvider dtp = ctx.getBean(DatetimeProvider.class);
-        System.out.println(dtp);
+//        DatetimeProvider dtp = ctx.getBean(DatetimeProvider.class);
+//        System.out.println(dtp);
     }
 
 

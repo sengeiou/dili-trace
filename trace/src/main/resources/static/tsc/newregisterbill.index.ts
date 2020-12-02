@@ -10,10 +10,11 @@ class NewRegisterBillGrid extends WebConfig {
         this.grid = grid;
         this.queryform = queryform;
 
-        this.grid.on('check.bs.table', () => this.onClickRow());
-        this.grid.on('uncheck.bs.table', () => this.onClickRow());
+        this.grid.on('check.bs.table uncheck.bs.table', () => this.onClickRow());
+        this.queryform.find('#query').click(async () => await this.queryGridData());
 
-        this.queryform.find('#query').click(async () => await this.queryGridData())
+        $(window).on('resize',()=> this.grid.bootstrapTable('resetView') );
+
         $('#edit-btn').on('click',async ()=>await this.openEditPage())
         $('#btn_add').on('click',async ()=>await this.openCreatePage())
         $('#copy-btn').on('click',async ()=>await this.openCopyPage())
@@ -25,29 +26,438 @@ class NewRegisterBillGrid extends WebConfig {
         $('#undo-btn').on('click',async ()=>await this.doUndo())
         $('#batch-undo-btn').on('click',async ()=>await this.doBatchUndo())
         $('#batch-audit-btn').on('click',async ()=>await this.doBatchAudit())
-        //$('#createsheet-btn').on('click',async ()=>await this.doBatchAudit())
-        //$('#sampling-btn').on('click',async ()=>await this.doBatchAudit())
-        //$('#batch-auto-btn').on('click',async ()=>await this.doBatchAudit())
-        //$('#auto-btn').on('click',async ()=>await this.doBatchAudit())
-        //$('#remove-reportAndcertifiy-btn').on('click',async ()=>await this.doBatchAudit())
-        //$('#batch-sampling-btn').on('click',async ()=>await this.doBatchAudit())
+        $('#createsheet-btn').on('click',async ()=>await this.openCreateSheetPage())
+        $('#sampling-btn').on('click',async ()=>await this.doSamplingCheck())
+        $('#batch-auto-btn').on('click',async ()=>await this.doBatchAutoCheck())
+        $('#auto-btn').on('click',async ()=>await this.doAutoCheck())
+        $('#remove-reportAndcertifiy-btn').on('click',async ()=>await this.doRemoveReportAndCertifiy())
+        $('#batch-sampling-btn').on('click',async ()=>await this.doBatchSamplingCheck())
 
-        //$('#audit-withoutDetect-btn').on('click',async ()=>await this.doBatchAudit())
-        //$('#review-btn').on('click',async ()=>await this.doBatchAudit())
+        $('#audit-withoutDetect-btn').on('click',async ()=>await this.doAuditWithoutDetect());
+        $('#review-btn').on('click',async ()=>await this.doReviewCheck());
 
-
-        $(window).on('resize',()=> this.grid.bootstrapTable('resetView') );
         (async ()=>{
             await this.queryGridData();
         })();
 
+        //@ts-ignore
+       // bui.loading.show('努力提交中，请稍候。。。');  bui.loading.hide();
+       // bs4pop.alert(ret.result, {type: 'error'});
+        //bs4pop.notice(ret.result, {type: 'warning',position: 'center'});
+
+    }
+    private async  doReviewCheck() {
+        var selected = this.rows[0];
+        let cthis=this;
+        let url= this.toUrl("/newRegisterBill/doReviewCheck.action?id="+ selected.id);
+        //@ts-ignore
+        bs4pop.confirm('请确认是否复检？', undefined, async function (sure) {
+            if(!sure){
+                return;
+            }
+            try{
+                var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+                if(!resp.success){
+                    //@ts-ignore
+                    bs4pop.alert(resp.message, {type: 'error'});
+                    return;
+                }
+                await cthis.queryGridData();
+                //@ts-ignore
+                TLOG.component.operateLog('登记单管理',"复检","【编号】:"+selected.code);
+                //@ts-ignore
+                layer.alert('操作成功',{title:'操作',time : 600});
+            }catch (e){
+                //@ts-ignore
+                bs4pop.alert('远程访问失败', {type: 'error'});
+            }
+
+        });
+    }
+    private async   doAuditWithoutDetect(){
+        var selected = this.rows[0];
+        let cthis=this;
+        let url= this.toUrl("/newRegisterBill/doAuditWithoutDetect.action");
+        //@ts-ignore
+        bs4pop.confirm('确认审核不检测？', undefined, async function (sure) {
+            if(!sure){
+                return;
+            }
+            try{
+                var resp=await jq.ajaxWithProcessing({type: "POST",data:{id:selected.id},url: url,processData:true,dataType: "json"});
+                if(!resp.success){
+                    //@ts-ignore
+                    bs4pop.alert(resp.message, {type: 'error'});
+                    return;
+                }
+                await cthis.queryGridData();
+                //@ts-ignore
+                TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
+                //@ts-ignore
+                layer.alert('操作成功',{title:'操作',time : 600});
+            }catch (e){
+                //@ts-ignore
+                bs4pop.alert('远程访问失败', {type: 'error'});
+            }
+
+        });
+    }
+    private async doBatchSamplingCheck(){
+        var rows=this.rows;
+        if (rows.length==0) {
+            //@ts-ignore
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        var codeList=[];
+        var batchIdList=[];
+        for(var i=0;i<rows.length;i++){
+            if (rows[i].$_state ==RegisterBillStateEnum.WAIT_SAMPLE){
+                batchIdList.push(rows[i].id);
+                codeList.push(rows[i].code)
+            }
+        }
+        if(codeList.length==0){
+            //@ts-ignore
+            layer.alert('所选登记单子不能采样检测')
+            return;
+        }
+        var cthis=this;
+        //@ts-ignore
+        layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量采样检测"}, function () {
+            $.ajax({
+                type: "POST",
+                url: "${contextPath}/newRegisterBill/doBatchSamplingCheck.action",
+                processData:true,
+                contentType:'application/json;charset=utf-8',
+                data:JSON.stringify(batchIdList),
+                dataType: "json",
+                async : true,
+                success: function (ret) {
+                    if(ret.success){
+                        var failureList=ret.data.failureList;
+                        if(failureList.length==0){
+                            cthis.queryGridData();
+                            //@ts-ignore
+                            TLOG.component.operateLog('登记单管理',"批量采样检测","【编号】:"+codeList.join(','));
+                            //@ts-ignore
+                            layer.alert('操作成功',{title:'操作',time : 600});
+
+                        }else{
+                            //@ts-ignore
+                            swal(
+                                '操作',
+                                '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
+                                'info'
+                            );
+                        }
+                    }else{
+                        //@ts-ignore
+                        swal(
+                            '错误',
+                            ret.result,
+                            'error'
+                        );
+                    }
+                },
+                error: function(){
+                    //@ts-ignore
+                    swal(
+                        '错误',
+                        '远程访问失败',
+                        'error'
+                    );
+                }
+            });
+        })
+
+    }
+
+    private async  doRemoveReportAndCertifiy(){
+        var selected = this.rows[0];
+        if (null == selected) {
+            //@ts-ignore
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        let promise = new Promise((resolve, reject) => {
+            //@ts-ignore
+            layer.confirm('请确认是否删除产地证明和报告？', {btn:['全部删除','删除产地证明','删除检测报告','取消'], title: "警告！！！",
+                btn1:function(){
+                    resolve("all");
+                    return false;
+                },
+                btn2:function(){
+                    resolve("originCertifiy");
+                    return false;
+                },
+                btn3:function(){
+                    resolve("detectReport");
+                    return false;
+                },
+                btn4:function(){
+                    resolve("cancel");
+                    return false;
+                }
+            });
+            $('.layui-layer').width('460px');
+        });
+        var cthis=this;
+        let result = await promise; // wait until the promise resolves (*)
+
+        if(result!='cancel'){
+            var _url = "${contextPath}/newRegisterBill/doRemoveReportAndCertifiy.action";
+            $.ajax({
+                type: "POST",
+                url: _url,
+                data: {id:selected.id,deleteType:result},
+                processData:true,
+                dataType: "json",
+                async : true,
+                success:  function (data) {
+                    if(data.code=="200"){
+                        //@ts-ignore
+                        TLOG.component.operateLog('登记单管理',"删除产地证明和报告",'【ID】:'+selected.id);
+                        //@ts-ignore
+                        layer.alert('操作成功',{
+                                title:'操作',
+                                time : 600,
+                                end :async function(){
+                                    //@ts-ignore
+                                    layer.closeAll();
+                                    await cthis.queryGridData();
+                                }
+                            },
+                            async function () {
+                                //@ts-ignore
+                                layer.closeAll();
+                                await cthis.queryGridData();
+                            }
+                        );
+
+                    }else{
+                        //@ts-ignore
+                        layer.closeAll();
+                        //@ts-ignore
+                        swal('错误',data.result, 'error');
+                    }
+                },
+                error: function(){
+                    //@ts-ignore
+                    layer.closeAll();
+                    //@ts-ignore
+                    swal('错误', '远程访问失败', 'error');
+                }
+            });
+        }else{
+            //@ts-ignore
+            layer.closeAll();
+        }
+
+
+    }
+    private async doAutoCheck() {
+
+        var selected = this.rows[0];
+
+        let cthis=this;
+        var url= this.toUrl( "/newRegisterBill/doAutoCheck.action?id="+ selected.id);
+        //@ts-ignore
+        bs4pop.confirm('请确认是否主动送检？', undefined, async function (sure) {
+            if(!sure){
+                return;
+            }
+            try{
+                var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+                if(!resp.success){
+                    //@ts-ignore
+                    bs4pop.alert(resp.message, {type: 'error'});
+                    return;
+                }
+                await cthis.queryGridData();
+                //@ts-ignore
+                TLOG.component.operateLog('登记单管理',"主动送检","【编号】:"+selected.code);
+                //@ts-ignore
+                layer.alert('操作成功',{title:'操作',time : 600});
+            }catch (e){
+                //@ts-ignore
+                bs4pop.alert('远程访问失败', {type: 'error'});
+            }
+
+        });
+
+    }
+    private async doBatchAutoCheck(){
+        var rows=this.rows;
+        if (rows.length==0) {
+            //@ts-ignore
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+
+        var codeList=[];
+        var batchIdList=[];
+        for(var i=0;i<rows.length;i++){
+            if (rows[i].$_state == RegisterBillStateEnum.WAIT_SAMPLE){
+                batchIdList.push(rows[i].id);
+                codeList.push(rows[i].code)
+            }
+        }
+        if(codeList.length==0){
+            //@ts-ignore
+            layer.alert('所选登记单子不能主动送检')
+            return;
+        }
+        var cthis=this;
+        //@ts-ignore
+        layer.confirm(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量主动送检"}, function () {
+            $.ajax({
+                type: "POST",
+                url: "${contextPath}/newRegisterBill/doBatchAutoCheck.action",
+                processData:true,
+                dataType: "json",
+                contentType:'application/json;charset=utf-8',
+                data:JSON.stringify(batchIdList),
+                async : true,
+                success: async function (ret) {
+                    if(ret.success){
+                        var failureList=ret.data.failureList;
+                        if(failureList.length==0){
+                           await cthis.queryGridData();
+                            //@ts-ignore
+                            TLOG.component.operateLog('登记单管理',"批量主动送检","【编号】:"+codeList.join(','));
+                            //@ts-ignore
+                            layer.alert('操作成功',{title:'操作',time : 600});
+
+                        }else{
+                            //@ts-ignore
+                            swal(
+                                '操作',
+                                '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
+                                'info'
+                            );
+                        }
+
+
+
+                    }else{
+                        //@ts-ignore
+                        swal(
+                            '错误',
+                            ret.result,
+                            'error'
+                        );
+                    }
+                },
+                error: function(){
+                    //@ts-ignore
+                    swal(
+                        '错误',
+                        '远程访问失败',
+                        'error'
+                    );
+                }
+            });
+
+
+
+
+        })
+
+    }
+    private async  doSamplingCheck() {
+        var selected = this.rows[0];
+
+        let cthis=this;
+        var url= this.toUrl( "/newRegisterBill/doSamplingCheck.action?id="+ selected.id);
+        //@ts-ignore
+        bs4pop.confirm('请确认是否采样检测？', undefined, async function (sure) {
+            if(!sure){
+                return;
+            }
+            try{
+                var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+                if(!resp.success){
+                    //@ts-ignore
+                    bs4pop.alert(resp.message, {type: 'error'});
+                    return;
+                }
+                await cthis.queryGridData();
+                //@ts-ignore
+                TLOG.component.operateLog('登记单管理',"采样检测","【编号】:"+selected.code);
+                //@ts-ignore
+                layer.alert('操作成功',{title:'操作',time : 600});
+            }catch (e){
+                //@ts-ignore
+                bs4pop.alert('远程访问失败', {type: 'error'});
+            }
+
+        });
+
+    }
+    private async openCreateSheetPage(){
+
+        var rows=this.rows;
+        var idList=rows.map(function(v,i){return v.id});
+        let url=this.toUrl('/checkSheet/edit.html?'+$.param({idList:idList},true));
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '打印检测报告',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
+
     }
     private async doUndo(){
-        var row=this.rows[0]
-        var url=this.toUrl('/newRegisterBill/doUndo.action');
-        var resp=await  jq.postJson(url,{id:row.billId})
-        //var url=this.toUrl('/newRegisterBill/doUndo.action?id='+row.billId);
-        alert('undo')
+
+        let selected = this.rows[0];
+
+        let cthis=this;
+        let url= this.toUrl( "/newRegisterBill/doUndo.action?id="+ selected.id);
+        //@ts-ignore
+        bs4pop.confirm('请确认是否撤销？', undefined, async function (sure) {
+            if(!sure){
+                return;
+            }
+            try{
+                var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+                debugger
+                if(!resp.success){
+                    //@ts-ignore
+                    bs4pop.alert(resp.message, {type: 'error'});
+                    return;
+                }
+                await cthis.queryGridData();
+                //@ts-ignore
+                TLOG.component.operateLog('登记单管理',"撤销","【编号】:"+selected.code);
+                //@ts-ignore
+                layer.alert('操作成功',{title:'操作',time : 600});
+            }catch (e){
+                //@ts-ignore
+                bs4pop.alert('远程访问失败', {type: 'error'});
+            }
+
+        });
     }
 
 
@@ -109,7 +519,7 @@ class NewRegisterBillGrid extends WebConfig {
             var cthis=this;
             $.ajax({
                 type: "POST",
-                url: "${contextPath}/registerBill/doBatchAudit",
+                url: "${contextPath}/newRegisterBill/doBatchAudit.action",
                 processData:true,
                 contentType:'application/json;charset=utf-8',
                 data:JSON.stringify({registerBillIdList:batchIdList,pass:true,passWithOriginCertifiyUrl:passWithOriginCertifiyUrl}),
