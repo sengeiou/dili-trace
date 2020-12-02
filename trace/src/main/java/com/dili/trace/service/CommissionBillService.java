@@ -135,7 +135,7 @@ public class CommissionBillService {
         .map(item->{
             item.setOperatorName(operatorUser.getName());
             item.setOperatorId(operatorUser.getId());
-            item.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
+//            item.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
             item.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
             item.setExeMachineNo(null);
             item.setModified(new Date());

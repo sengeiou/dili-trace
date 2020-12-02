@@ -1,6 +1,8 @@
 package com.dili.trace.domain;
 
+import com.dili.sg.trace.glossary.SampleSourceEnum;
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.DetectResultEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -58,20 +60,29 @@ public class DetectRequest extends BaseDomain {
     @Column(name = "`detector_name`")
     private String detectorName;
 
+
     /**
      * 检测类型
      * {@link com.dili.trace.enums.DetectTypeEnum}
      */
     @Column(name = "`detect_type`")
     private Integer detectType;
-
+    /**
+     * 采样类型
+     * {@link com.dili.trace.glossary.SampleSourceEnum}
+     */
+    @Column(name = "`detect_source`")
+    private Integer detectSource;
 
     /**
-     * 检测状态
-     * {@link com.dili.trace.enums.DetectRequestStatusEnum}
+     * 检测类型
+     * {@link com.dili.trace.enums.DetectResultEnum}
      */
-    @Column(name = "`detect_request_status`")
-    private Integer detectRequestStatus;
+    @Column(name = "`detect_result`")
+    private Integer detectResult;
+
+
+
 
 
     @Column(name = "`created`")
@@ -80,6 +91,17 @@ public class DetectRequest extends BaseDomain {
     @Column(name = "`modified`")
     private Date modified;
 
+    @Transient
+    public String getDetectSourceName() {
+        return SampleSourceEnum.name(this.detectSource);
+    }
+    public Integer getDetectSource() {
+        return detectSource;
+    }
+
+    public void setDetectSource(Integer detectSource) {
+        this.detectSource = detectSource;
+    }
 
     @Override
     public Long getId() {
@@ -155,13 +177,6 @@ public class DetectRequest extends BaseDomain {
         this.modified = modified;
     }
 
-    public Integer getDetectRequestStatus() {
-        return detectRequestStatus;
-    }
-
-    public void setDetectRequestStatus(Integer detectRequestStatus) {
-        this.detectRequestStatus = detectRequestStatus;
-    }
 
     public Long getDetectorId() {
         return detectorId;
@@ -177,5 +192,16 @@ public class DetectRequest extends BaseDomain {
 
     public void setDetectorName(String detectorName) {
         this.detectorName = detectorName;
+    }
+    @Transient
+    public String getDetectResultName() {
+        return DetectResultEnum.name(this.detectResult);
+    }
+    public Integer getDetectResult() {
+        return detectResult;
+    }
+
+    public void setDetectResult(Integer detectResult) {
+        this.detectResult = detectResult;
     }
 }

@@ -6,7 +6,7 @@ public enum DetectResultEnum {
     /**
      * 无
      */
-    NONE(0, "未知"),
+    NONE(0, "无"),
     /**
      * 合格
      */
@@ -33,6 +33,9 @@ public enum DetectResultEnum {
             }
         }
         return Optional.empty();
+    }
+    public static String name(Integer code) {
+        return DetectResultEnum.fromCode(code).map(DetectResultEnum::getName).orElse("");
     }
 
     public Boolean equalsToCode(Integer code) {

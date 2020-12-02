@@ -1,5 +1,7 @@
 package com.dili.sg.trace.glossary;
 
+import java.util.Optional;
+
 /**
  * <B>Description</B>
  * 本软件源代码版权归农丰时代及其团队所有,未经许可不得任意复制与传播
@@ -10,8 +12,11 @@ package com.dili.sg.trace.glossary;
  */
 public enum SampleSourceEnum {
 
+    NONE(0, ""),
     SAMPLE_CHECK(1, "采样检测"),
     AUTO_CHECK(2, "主动送检"),
+    SPOT_CHECK(3, "抽检"),
+    OTHERS(9999, "其他"),
     ;
 
     private String name;
@@ -31,6 +36,17 @@ public enum SampleSourceEnum {
         return null;
     }
 
+    public static Optional<SampleSourceEnum> fromCode(Integer code) {
+        for (SampleSourceEnum anEnum : SampleSourceEnum.values()) {
+            if (anEnum.getCode().equals(code)) {
+                return Optional.ofNullable(anEnum);
+            }
+        }
+        return Optional.empty();
+    }
+    public static String name(Integer code){
+        return SampleSourceEnum.fromCode(code).map(SampleSourceEnum::getName).orElse("");
+    }
     public Integer getCode() {
         return code;
     }

@@ -1,10 +1,7 @@
 package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.ImageCertTypeEnum;
-import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BillDetectStateEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.TFEnum;
@@ -70,9 +67,9 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`state`")
     private Integer state;
 
-    @ApiModelProperty(value = "1:采样检测 2:主动送检")
-    @Column(name = "`sample_source`")
-    private Integer sampleSource;
+//    @ApiModelProperty(value = "1:采样检测 2:主动送检")
+//    @Column(name = "`sample_source`")
+//    private Integer sampleSource;
 
     @ApiModelProperty(value = "商品名称")
     @Column(name = "`product_name`")
@@ -157,6 +154,11 @@ public class RegisterBill extends BaseDomain {
     @ApiModelProperty(value = "保存类型")
     @Column(name = "`preserve_type`")
     private Integer preserveType;
+
+    @ApiModelProperty(value = "检测状态")
+    @Column(name = "`detect_status`")
+    private Integer detectStatus;
+
 
 
     @ApiModelProperty(value = "查验类型")
@@ -270,6 +272,18 @@ public class RegisterBill extends BaseDomain {
     @ApiModelProperty(value = "处理结果 0：无,1:有")
     @Column(name = "`has_handle_result`")
     private Integer hasHandleResult;
+
+    public Integer getDetectStatus() {
+        return detectStatus;
+    }
+    @Transient
+    public String getDetectStatusName() {
+        return DetectStatusEnum.name(this.getDetectStatus());
+    }
+
+    public void setDetectStatus(Integer detectStatus) {
+        this.detectStatus = detectStatus;
+    }
 
     public Integer getHasDetectReport() {
         if (handleResult == null) {
@@ -463,7 +477,7 @@ public class RegisterBill extends BaseDomain {
 
     @Transient
     public String getVerifyStatusName() {
-        return BillVerifyStatusEnum.fromCode(this.getVerifyStatus()).map(BillVerifyStatusEnum::getName).orElse("");
+        return BillVerifyStatusEnum.name(this.getVerifyStatus());
     }
 
     @Transient
@@ -587,13 +601,13 @@ public class RegisterBill extends BaseDomain {
         this.state = state;
     }
 
-    public Integer getSampleSource() {
-        return sampleSource;
-    }
-
-    public void setSampleSource(Integer sampleSource) {
-        this.sampleSource = sampleSource;
-    }
+//    public Integer getSampleSource() {
+//        return sampleSource;
+//    }
+//
+//    public void setSampleSource(Integer sampleSource) {
+//        this.sampleSource = sampleSource;
+//    }
 
     public String getProductName() {
         return productName;
