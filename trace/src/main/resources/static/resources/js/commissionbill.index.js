@@ -8,7 +8,7 @@ class CommissionBillGrid extends WebConfig {
         this.queryform.find('#query').click(async () => await this.queryGridData());
         (async () => {
             await this.queryGridData();
-    })();
+        })();
     }
     async queryGridData() {
         if (!this.queryform.validate().form()) {
@@ -68,18 +68,18 @@ class CommissionBillGrid extends WebConfig {
         var arr = this.findReviewCheckData();
         let promise = new Promise((resolve, reject) => {
             layer.confirm('请确认是否复检选中数据？<br/>' + arr.map(e => e.code).join("<br\>"), {
-            btn: ['确定', '取消'], title: "警告！！！",
+                btn: ['确定', '取消'], title: "警告！！！",
                 btn1: function () {
-                resolve(true);
-                return false;
-            },
-            btn2: function () {
-                resolve(false);
-                return false;
-            }
+                    resolve(true);
+                    return false;
+                },
+                btn2: function () {
+                    resolve(false);
+                    return false;
+                }
+            });
+            $('.layui-layer').width('460px');
         });
-        $('.layui-layer').width('460px');
-    });
         let result = await promise;
         if (result) {
             var _url = ctx + "/commissionBill/doBatchReviewCheck.action";
