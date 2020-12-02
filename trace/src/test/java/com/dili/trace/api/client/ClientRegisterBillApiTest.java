@@ -109,7 +109,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 	@Test
 	public void doEdit() {
 		RegisterBill query = new RegisterBill();
-		query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+		query.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
 		RegisterBill item = registerBillService.listPageByExample(query).getDatas().stream().findFirst().orElse(null);
 
 		CreateRegisterBillInputDto rb = new CreateRegisterBillInputDto();

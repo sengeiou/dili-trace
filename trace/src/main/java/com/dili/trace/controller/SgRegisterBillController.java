@@ -154,7 +154,7 @@ public class SgRegisterBillController {
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
-                    rb.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+                    rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
                     rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
                     rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
                     rb.setTruckType(TruckTypeEnum.FULL.getCode());

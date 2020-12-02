@@ -82,33 +82,45 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Transactional
     @Override
-    public int createRegisterBill(RegisterBill registerBill) {
+    public int createRegisterBill(RegisterBill inputBill) {
 //        BaseOutput recheck = checkBill(registerBill);
 //        if (!recheck.isSuccess()) {
 //            throw new TraceBizException(recheck.getMessage());
 //        }
-        String code = this.codeGenerateService.nextRegisterBillCode();
-        registerBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
-        registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-        registerBill.setCode(code);
 
-        if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
+        inputBill.setHasDetectReport(0);
+        inputBill.setHasOriginCertifiy(0);
+        inputBill.setHasHandleResult(0);
+        inputBill.setVersion(1);
+        inputBill.setCreated(new Date());
+        inputBill.setModified(new Date());
+        inputBill.setIsDeleted(YesOrNoEnum.NO.getCode());
+        inputBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
+        inputBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
+        inputBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
+//        inputBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+        
+        String code = this.codeGenerateService.nextRegisterBillCode();
+
+        inputBill.setCode(code);
+
+        if (inputBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
             // 交易区没有理货区号
-            registerBill.setTallyAreaNo(null);
+            inputBill.setTallyAreaNo(null);
             // 交易区数据直接进行待检测状态
             // registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
             // registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
         }
-        if (StringUtils.isBlank(registerBill.getOperatorName())) {
+        if (StringUtils.isBlank(inputBill.getOperatorName())) {
             UserTicket userTicket = getOptUser();
-            registerBill.setOperatorName(userTicket.getRealName());
-            registerBill.setOperatorId(userTicket.getId());
+            inputBill.setOperatorName(userTicket.getRealName());
+            inputBill.setOperatorId(userTicket.getId());
         }
 
-        registerBill.setIdCardNo(StringUtils.trimToEmpty(registerBill.getIdCardNo()).toUpperCase());
+        inputBill.setIdCardNo(StringUtils.trimToEmpty(inputBill.getIdCardNo()).toUpperCase());
         // 车牌转大写
-        registerBill.setPlate(StringUtils.trimToEmpty(registerBill.getPlate()).toUpperCase());
-        if (!this.checkPlate(registerBill)) {
+        inputBill.setPlate(StringUtils.trimToEmpty(inputBill.getPlate()).toUpperCase());
+        if (!this.checkPlate(inputBill)) {
             throw new TraceBizException("当前车牌号已经与其他用户绑定,请使用其他牌号");
         }
 
@@ -121,22 +133,14 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
          */
 
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,
-                registerBill.getOriginId());
+                inputBill.getOriginId());
 
 
-        registerBill.setHasDetectReport(0);
-        registerBill.setHasOriginCertifiy(0);
-        registerBill.setHasHandleResult(0);
-        registerBill.setVersion(1);
-        registerBill.setCreated(new Date());
-        registerBill.setModified(new Date());
-        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
-        registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
-        registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
-        int result = this.billService.saveOrUpdate(registerBill);
-        this.billService.updateHasImage(registerBill.getId(), registerBill.getImageCerts());
+
+        int result = this.billService.saveOrUpdate(inputBill);
+        this.billService.updateHasImage(inputBill.getId(), inputBill.getImageCerts());
         if (result == 0) {
-            LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(registerBill));
+            LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(inputBill));
             throw new TraceBizException("创建失败");
         }
         return result;

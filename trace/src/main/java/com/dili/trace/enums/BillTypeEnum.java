@@ -68,7 +68,7 @@ public enum BillTypeEnum {
 	}
 
 	public static boolean canDoVerify(Integer code) {
-		return BillVerifyStatusEnum.NONE.equalsToCode(code) || BillVerifyStatusEnum.RETURNED.equalsToCode(code);
+		return BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(code) || BillVerifyStatusEnum.RETURNED.equalsToCode(code);
 	}
 
 	public Integer getCode() {

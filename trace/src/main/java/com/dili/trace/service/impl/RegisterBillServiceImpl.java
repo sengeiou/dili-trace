@@ -131,7 +131,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                                    Optional<OperatorUser> operatorUser) {
         this.checkBill(registerBill);
 
-        registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+        registerBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
         registerBill.setState(RegisterBillStateEnum.NEW.getCode());
         registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
@@ -289,7 +289,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         RegisterBill billItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
 
-        if (BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
+        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(billItem.getVerifyStatus())
                 || BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
             // 待审核，或者已退回状态可以进行数据修改
         } else {
@@ -304,7 +304,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         input.setPlate(plate);
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
-        input.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+        input.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         input.setModified(new Date());
 
         input.setOperatorName(null);
@@ -542,10 +542,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         logger.info("审核: billId: {} from {} to {}", billItem.getBillId(), fromVerifyState.getName(),
                 toVerifyState.getName());
-        if (!BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())) {
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(billItem.getVerifyStatus())) {
             throw new TraceBizException("当前状态不能进行数据操作");
         }
-        if (BillVerifyStatusEnum.NONE == toVerifyState) {
+        if (BillVerifyStatusEnum.WAIT_AUDIT == toVerifyState) {
             throw new TraceBizException("不支持的操作");
         }
         if (fromVerifyState == toVerifyState) {
@@ -931,7 +931,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         RegisterBill billItem = this.getAndCheckById(input.getId())
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
 
-        if (BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus())
+        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(billItem.getVerifyStatus())
                 || BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
             // 待审核，或者已退回状态可以进行数据修改
         } else {
@@ -1009,7 +1009,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (!BillVerifyStatusEnum.RETURNED.equalsToCode(billItem.getVerifyStatus())) {
             throw new TraceBizException("当前状态不能进行数据操作");
         }
-        if (BillVerifyStatusEnum.NONE == toVerifyState) {
+        if (BillVerifyStatusEnum.WAIT_AUDIT == toVerifyState) {
             throw new TraceBizException("不支持的操作");
         }
         if (fromVerifyState == toVerifyState) {

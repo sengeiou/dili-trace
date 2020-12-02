@@ -14,7 +14,7 @@ public enum BillVerifyStatusEnum {
 	/**
 	 * 待审核
 	 */
-	NONE(0, "待审核"),
+	WAIT_AUDIT(0, "待审核"),
 	/**
 	 * 已退回
 	 */

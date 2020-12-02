@@ -44,7 +44,7 @@ public class SgRegisterBillServiceTest extends AutoWiredBaseTest {
     @Test
     public void doVerifyBeforeCheckIn() {
         RegisterBill query = new RegisterBill();
-        query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+        query.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         RegisterBill input = StreamEx.of(this.registerBillService.listByExample(query)).findFirst().orElse(null);
         assertNotNull(input);
         OperatorUser operatorUser = new OperatorUser(1L, "test");
@@ -57,10 +57,10 @@ public class SgRegisterBillServiceTest extends AutoWiredBaseTest {
     public void doVerifyAfterCheckIn() {
 
         RegisterBill query = new RegisterBill();
-        query.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
+        query.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         RegisterBill input = StreamEx.of(this.registerBillService.listByExample(query)).findFirst().orElse(null);
         assertNotNull(input);
-        assertTrue(BillVerifyStatusEnum.NONE.equalsToCode(input.getVerifyStatus()));
+        assertTrue(BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(input.getVerifyStatus()));
         CheckInApiInput checkInApiInput = new CheckInApiInput();
         checkInApiInput.setBillIdList(Lists.newArrayList(input.getId()));
         checkInApiInput.setCheckinStatus(CheckinStatusEnum.ALLOWED.getCode());

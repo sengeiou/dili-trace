@@ -104,7 +104,7 @@ public class UserQrHistoryService extends BaseServiceImpl<UserQrHistory, Long> i
 			case RETURNED:
 				userQrStatus = UserQrStatusEnum.YELLOW;
 				break;
-			case NONE:
+			case WAIT_AUDIT:
 				userQrStatus = UserQrStatusEnum.YELLOW;
 				break;
 			default:

@@ -62,7 +62,7 @@ public class ClientRegisterBillHistoryApi {
                 inputDto.setOrder("desc");
                 inputDto.setSort("modified");
             }
-            inputDto.setMetadata(IDTO.AND_CONDITION_EXPR, "verify_status <>" + BillVerifyStatusEnum.NONE.getCode());
+            inputDto.setMetadata(IDTO.AND_CONDITION_EXPR, "verify_status <>" + BillVerifyStatusEnum.WAIT_AUDIT.getCode());
             List<RegisterBillHistory> page = this.billHistoryService.listByExample(inputDto);
             return BaseOutput.success().setData(page);
         } catch (TraceBizException e) {

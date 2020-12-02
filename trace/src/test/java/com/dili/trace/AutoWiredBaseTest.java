@@ -117,7 +117,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 //		Category categoryItem = this.findCategory();
 		RegisterBill bill = new RegisterBill();
 		bill.setBillType(BillTypeEnum.NONE.getCode());
-		bill.setVerifyType(BillVerifyStatusEnum.NONE.getCode());
+		bill.setVerifyType(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
 		bill.setPreserveType(PreserveTypeEnum.FRESH.getCode());
 		bill.setWeight(BigDecimal.valueOf(100L));
 		bill.setWeightUnit(WeightUnitEnum.JIN.getCode());
@@ -145,7 +145,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		assertNotNull(billId);
 		RegisterBill billItem = this.registerBillService.get(billId);
 		assertNotNull(billItem);
-		assertTrue(BillVerifyStatusEnum.NONE.equalsToCode(billItem.getVerifyStatus()));
+		assertTrue(BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(billItem.getVerifyStatus()));
 		return billItem;
 	}
 
