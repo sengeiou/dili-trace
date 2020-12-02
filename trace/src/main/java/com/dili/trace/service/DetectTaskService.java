@@ -7,6 +7,9 @@ import com.dili.trace.dto.DetectRecordParam;
 
 import java.util.List;
 
+/**
+ * 检测任务接口
+ */
 public interface DetectTaskService {
 
     /**

@@ -13,6 +13,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.glossary.TFEnum;
@@ -240,7 +241,7 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
 		if (item == null) {
 			throw new TraceBizException("数据错误");
 		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
+		if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
 			throw new TraceBizException("状态错误,不能上传检测报告");
 		}
 

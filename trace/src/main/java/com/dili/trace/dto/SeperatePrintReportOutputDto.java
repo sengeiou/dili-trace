@@ -42,7 +42,7 @@ public class SeperatePrintReportOutputDto {
 
     private String latestPdResult;
 
-    private String detectStateView;
+//    private String detectStateView;
     
     private String detectOperatorName;
     
@@ -62,7 +62,7 @@ public class SeperatePrintReportOutputDto {
 		dto.setApproverBase64Sign(approverBase64Sign);
 		dto.setBase64Qrcode(base64Qrcode);
 		dto.setLatestPdResult(bill.getLatestPdResult());
-		dto.setDetectStateView(bill.getDetectStateName());
+//		dto.setDetectStateView(bill.getDetectStateName());
 		dto.setValidPeriod(seperatePrintReport.getValidPeriod());
 		dto.setCreated(seperatePrintReport.getCreated().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
 		dto.setDetectOperatorName(bill.getLatestDetectOperator());
@@ -85,14 +85,14 @@ public class SeperatePrintReportOutputDto {
 	public void setLatestPdResult(String latestPdResult) {
 		this.latestPdResult = latestPdResult;
 	}
-
-	public String getDetectStateView() {
-		return detectStateView;
-	}
-
-	public void setDetectStateView(String detectStateView) {
-		this.detectStateView = detectStateView;
-	}
+//
+//	public String getDetectStateView() {
+//		return detectStateView;
+//	}
+//
+//	public void setDetectStateView(String detectStateView) {
+//		this.detectStateView = detectStateView;
+//	}
 
 	public String getTallyAreaNo() {
 		return tallyAreaNo;

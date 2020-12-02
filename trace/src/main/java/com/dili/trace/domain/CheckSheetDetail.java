@@ -42,10 +42,22 @@ public class CheckSheetDetail extends BaseDomain {
 
 
 
-    @ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
-    @Column(name = "`detect_state`")
+//    @ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
+//    @Column(name = "`detect_state`")
+//
+//    private Integer detectState;
 
-    private Integer detectState;
+	@ApiModelProperty(value = "审核状态")
+	@Column(name = "`verify_status`")
+	private Integer verifyStatus;
+
+	@ApiModelProperty(value = "检测状态")
+	@Column(name = "`detect_status`")
+	private Integer detectStatus;
+
+	@ApiModelProperty(value = "检测结果")
+	@Column(name = "`detect_result`")
+	private Integer detectResult;
 
 
     @Column(name = "`product_alias_name`")
@@ -112,13 +124,13 @@ public class CheckSheetDetail extends BaseDomain {
 		this.originName = originName;
 	}
 
-	public Integer getDetectState() {
-		return detectState;
-	}
-
-	public void setDetectState(Integer detectState) {
-		this.detectState = detectState;
-	}
+//	public Integer getDetectState() {
+//		return detectState;
+//	}
+//
+//	public void setDetectState(Integer detectState) {
+//		this.detectState = detectState;
+//	}
 
 	public String getProductAliasName() {
 		return productAliasName;
@@ -168,4 +180,27 @@ public class CheckSheetDetail extends BaseDomain {
 		this.latestPdResult = latestPdResult;
 	}
 
+	public Integer getVerifyStatus() {
+		return verifyStatus;
+	}
+
+	public void setVerifyStatus(Integer verifyStatus) {
+		this.verifyStatus = verifyStatus;
+	}
+
+	public Integer getDetectStatus() {
+		return detectStatus;
+	}
+
+	public void setDetectStatus(Integer detectStatus) {
+		this.detectStatus = detectStatus;
+	}
+
+	public Integer getDetectResult() {
+		return detectResult;
+	}
+
+	public void setDetectResult(Integer detectResult) {
+		this.detectResult = detectResult;
+	}
 }

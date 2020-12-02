@@ -28,6 +28,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * 报备单统一服务
+ */
 @Service
 public class BillReportService {
     @Autowired
@@ -39,6 +42,12 @@ public class BillReportService {
 
     private static final Logger logger = LoggerFactory.getLogger(BillReportService.class);
 
+    /**
+     * 页面查询
+     * @param query
+     * @return
+     * @throws Exception
+     */
     public EasyuiPageOutput listEasyuiPage(BillReportQueryDto query) throws Exception {
         // query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         BasePage<BillReportDto> listPageBillReport = this.listPageBillReport(query);
@@ -49,6 +58,11 @@ public class BillReportService {
 
     }
 
+    /**
+     * 查询报表
+     * @param query
+     * @return
+     */
     public BasePage<BillReportDto> listPageBillReport(BillReportQueryDto query) {
         if (query.getPage() == null || query.getPage() <= 0) {
             query.setPage(1);
@@ -105,6 +119,11 @@ public class BillReportService {
 
     }
 
+    /**
+     * 查询报表
+     * @param limitDay
+     * @return
+     */
     public List<TradeReportDto> getUserBillReport(int limitDay) {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
@@ -139,6 +158,11 @@ public class BillReportService {
         return list;
     }
 
+    /**
+     * 查询报表
+     * @param limitDay
+     * @return
+     */
     public List<TradeReportDto> getUserTradeReport(int limitDay) {
         String baseDay = "";
         Map<String, Object> map = new HashMap<>(16);
@@ -175,6 +199,11 @@ public class BillReportService {
         return resultList;
     }
 
+    /**
+     * 统计
+     * @param userType
+     * @return
+     */
     private int getUserCount(String userType) {
         int resultCount = 0;
         String optType = SysConfigTypeEnum.STATISTIC_BASE_USER.getCode();

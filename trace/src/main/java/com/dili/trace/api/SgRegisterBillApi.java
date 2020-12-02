@@ -5,8 +5,11 @@ import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.sg.trace.glossary.*;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.BillService;
@@ -63,6 +66,8 @@ public class SgRegisterBillApi {
 	UserService userService;
 	@Autowired
     UserTallyAreaService userTallyAreaService;
+	@Autowired
+	DetectRequestService detectRequestService;
 
 	/**
 	 * 保存多个登记单
@@ -225,12 +230,12 @@ public class SgRegisterBillApi {
 			if (registerBill == null) {
 				return BaseOutput.failure("没有查到需要分销的登记单");
 			}
-			if (registerBill.getState() == null) {
-				return BaseOutput.failure("登记单状态错误");
-			}
+			DetectRequest detectRequest=this.detectRequestService.findDetectRequestByBillId(registerBill.getBillId()).orElse(null);
+
+
 			List<Integer> stateList = Arrays.asList(RegisterBillStateEnum.ALREADY_CHECK.getCode(),
 					RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-			if (!stateList.contains(registerBill.getState())) {
+			if (!DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult())) {
 				return BaseOutput.failure("当前状态登记单不能分销");
 			}
 
@@ -484,7 +489,7 @@ public class SgRegisterBillApi {
 		if (registerBill == null) {
 			return BaseOutput.failure("登记单不存在");
 		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(registerBill.getState())) {
+		if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
 			return BaseOutput.failure("不能删除当前状态登记单");
 		}
 		this.billService.delete(registerBill.getId());

@@ -34,7 +34,25 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     @Autowired
     DetectRequestMapper detectRequestMapper;
 
+    /**
+     * 查询检测请求
+     *
+     * @param billId
+     * @return
+     */
+    public Optional<DetectRequest> findDetectRequestByBillId(Long billId) {
+        if (billId == null) {
+            return Optional.empty();
+        }
 
+        RegisterBill registerBill=this.billService.get(billId);
+        if(registerBill==null){
+            return Optional.empty();
+        }
+        Long detectRequestId=registerBill.getDetectRequestId();
+        return Optional.ofNullable(this.get(detectRequestId));
+
+    }
 
     /**
      * 创建检测请求
