@@ -43,8 +43,8 @@ public class TraceReportService {
         query.setGreenBillVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.PASSED.getCode()));
         query.setRedBillVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NO_PASSED.getCode()));
         query.setYellowBillVerifyStatus(
-                Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode(), BillVerifyStatusEnum.RETURNED.getCode()));
-        query.setNoneVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.NONE.getCode()));
+                Lists.newArrayList(BillVerifyStatusEnum.WAIT_AUDIT.getCode(), BillVerifyStatusEnum.RETURNED.getCode()));
+        query.setNoneVerifyStatus(Lists.newArrayList(BillVerifyStatusEnum.WAIT_AUDIT.getCode()));
         query.setMarketId(MarketUtil.returnMarket());
 //        query.setMarketId(1L);
         // settingUserActive(query);
@@ -97,6 +97,10 @@ public class TraceReportService {
 
     }
 
+    /**
+     * 我也不知道
+     * @param query
+     */
     public void settingUserActive(TraceReportQueryDto query) {
         String optType = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
         String optCategory = SysConfigTypeEnum.OPERATION_LIMIT_DAY.getCode();
@@ -115,7 +119,10 @@ public class TraceReportService {
         }
         query.setIsUserActive(val);
     }
-
+    /**
+     * 我也不知道
+     * @param query
+     */
     public Map<String,TraceReportDto> getCommonCheckinReportData(TraceReportQueryDto query) {
         query.setBillType(BillTypeEnum.NONE.getCode());
         List<TraceReportDto>list=this.checkinOutRecordMapper.groupCountCommonBillByColor(query);
@@ -130,7 +137,10 @@ public class TraceReportService {
         mapData.put("Total", total);
         return mapData;
     }
-
+    /**
+     * 我也不知道
+     * @param query
+     */
     public TraceReportDto getSupplementCheckinReportData(TraceReportQueryDto query) {
         query.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
         return StreamEx.ofNullable(this.checkinOutRecordMapper.groupCountSupplementBillByColor(query)).nonNull()
@@ -140,7 +150,10 @@ public class TraceReportService {
                 });
 
     }
-
+    /**
+     * 我也不知道
+     * @param query
+     */
     private TraceReportDto defaultReportDTO() {
         TraceReportDto dto = new TraceReportDto();
         dto.setBillCount(0);
