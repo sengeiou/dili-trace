@@ -7,7 +7,7 @@
             <div class="form-group col">
                 <label for="registerSource">登记来源</label>
                 <select id="registerSource" name="registerSource" class="form-control"></select>
-                <#bcomboProvider _id="registerSource" _provider="tradeTypeProvider" _value="" _onLoadSuccess=""/>
+                <#bcomboProvider _id="registerSource" _provider="registerSourceProvider" _value="" _onLoadSuccess=""/>
             </div>
 
             <div class="form-group col">
@@ -17,7 +17,7 @@
             <div class="form-group col">
                 <label for="tradeTypeId">交易区</label>
                 <select id="tradeTypeId" name="tradeTypeId" class="form-control"></select>
-                <#bcomboProvider _id="tradeTypeId" _provider="DetectTypeEnumProvider" _value="" _onLoadSuccess=""/>
+                <#bcomboProvider _id="tradeTypeId" _provider="tradeTypeProvider" _value="" _onLoadSuccess=""/>
             </div>
 
             <div class="form-group col">
@@ -191,7 +191,7 @@
             <thead>
             <tr>
                 <th data-checkbox="true"></th>
-                <th data-field="billCreated" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     登记时间
                 </th>
                 <th data-field="billTypeName" data-sortable="true" data-align="center">

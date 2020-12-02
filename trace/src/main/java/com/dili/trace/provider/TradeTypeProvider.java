@@ -49,7 +49,6 @@ public class TradeTypeProvider implements ValueProvider {
         }catch (Exception e){
             return Lists.newArrayList();
         }
-
     }
 
     @Override
