@@ -1,0 +1,145 @@
+<#bs4Body>
+
+<div class="container-fluid">
+    <form id="queryForm" role="form" >
+        <div class="row row-cols-6">
+            <div class="form-group col">
+                <label for="state">状态</label>
+                <select id="state" name="state" class="form-control"></select>
+                <#bcomboProvider _id="state" _provider="registerBillStateProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <!--likeProductName-->
+            <div class="form-group col">
+                <label for="productId">商品</label>
+                <select id="productId" name="productId" class="form-control"></select>
+            </div>
+            <!--_salesCityName-->
+            <div class="form-group col">
+                <label for="originId">产地</label>
+                <select id="originId" name="originId" class="form-control"></select>
+            </div>
+            <div class="form-group col">
+                <label for="detectState">检测结果</label>
+                <select id="detectState" name="detectState" class="form-control"></select>
+                <#bcomboProvider _id="detectState" _provider="billDetectStateProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col-auto">
+                <label for="latestDetectTimeTimeStart">检测时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" class="form-control laydatetime laystart"/>
+                        <div class="input-group-append">
+                            <label for="latestDetectTimeTimeStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="latestDetectTimeTimeEnd" id="latestDetectTimeTimeEnd" class="form-control laydatetime layend"/>
+                        <div class="input-group-append">
+                            <label for="latestDetectTimeTimeEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <label for="createdStart">登记时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="createdStart" id="createdStart" class="form-control laydatetime laystart"/>
+                        <div class="input-group-append">
+                            <label for="createdStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="createdEnd" id="createdEnd" class="form-control laydatetime layend"/>
+                        <div class="input-group-append">
+                            <label for="createdEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col">
+                <label for="code">登记编号</label>
+                <input type="text" class="form-control" name="code" id="code"/>
+            </div>
+
+            <div class="col-auto align-self-center mt-3">
+                <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
+                <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <div>
+        <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+            <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
+            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+        </div>
+        <table id="ecommerceBillGrid" data-toggle="table" data-title="电商登记单列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
+               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
+            <thead>
+            <tr>
+                <th data-checkbox="true"></th>
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    登记时间
+                </th>
+                <th data-field="code" data-sortable="true" data-align="center">
+                    编号
+                </th>
+                <th data-field="sampleCode" data-sortable="true" data-align="center">
+                    采样编号
+                </th>
+                <th data-field="name" data-sortable="true" data-align="center">
+                    业户姓名
+                </th>
+                <th data-field="corporateName" data-sortable="true" data-align="center">
+                    企业姓名
+                </th>
+                <th data-field="productName" data-sortable="true" data-align="center">
+                    商品名称
+                </th>
+                <th data-field="weight" data-sortable="true" data-align="center">
+                    重量
+                </th>
+                <th data-field="weightUnitName" data-sortable="true" data-align="center">
+                    重量单位
+                </th>
+                <th data-field="latestPdResult" data-sortable="true" data-align="center">
+                    检测值
+                </th>
+                <th data-field="originName" data-sortable="true" data-align="center">
+                    产地
+                </th>
+                <th data-field="state" data-sortable="true" data-align="center" data-provider="registerBillStateProvider">
+                    状态
+                </th>
+                <th data-field="latestDetectTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    检测时间
+                </th>
+                <th data-field="detectState" data-sortable="true" data-align="center" data-provider="billDetectStateProvider">
+                    检测结果
+                </th>
+                <th data-field="latestDetectOperator" data-sortable="true" data-align="center">
+                    检测员
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+</#bs4Body>
+
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/ecommercebill.index.js"></script>
+<#webGlobalConfig/>
+
+<script>
+    $(function () {
+        var ecommerceBillGrid=new EcommerceBillGrid($('#ecommerceBillGrid'),$('#queryForm'));
+    });
+</script>
