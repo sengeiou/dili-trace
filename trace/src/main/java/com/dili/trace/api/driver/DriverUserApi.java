@@ -25,7 +25,7 @@ import java.util.Collections;
 public class DriverUserApi {
 
     /**
-     * 是否需要注册
+     *是否需要注册
      * @param user
      * @return
      */
@@ -49,7 +49,6 @@ public class DriverUserApi {
         driverDto.setDriverId(1L);
         return BaseOutput.success().setData(Collections.singletonList(driverDto));
     }
-
 
     /**
      * 获取司机列表
