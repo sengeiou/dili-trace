@@ -254,27 +254,33 @@
                 <th data-field="hasHandleResult" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
                     处理结果
                 </th>
-                <th data-field="detectRequest.id" data-sortable="true" data-align="center" >
-                    检测类型
+                <th data-field="verifyStatusName" data-sortable="true" data-align="center" >
+                    审核状态
                 </th>
-                <th data-field="detectRequest.id" data-sortable="true" data-align="center" >
+                <th data-field="detectStatusName" data-sortable="true" data-align="center" >
                     检测状态
                 </th>
+
                 <th data-field="detectRequest.id" data-sortable="true" data-align="center" >
+                    检测请求ID
+                </th>
+                <th data-field="detectRequest.detectSourceName" data-sortable="true" data-align="center" >
+                    检测请求来源
+                </th>
+
+                <th data-field="detectRequest.created" data-sortable="true" data-align="center" >
                     检测时间
                 </th>
-                <th data-field="detectState" data-sortable="true" data-align="center">
+                <th data-field="detectRequest.detectResultName" data-sortable="true" data-align="center">
                     检测结果
                 </th>
-                <th data-field="latestDetectOperator" data-sortable="true" data-align="center">
+                <th data-field="detectRequest.detectorName" data-sortable="true" data-align="center">
                     检测员
                 </th>
                 <th data-field="checkSheetId" data-sortable="true" data-align="center" data-provider="hasOrNoneProvider">
                     检测已打印
                 </th>
-                <th data-field="verifyStatusName" data-sortable="true" data-align="center">
-                    审核状态
-                </th>
+
                 <th data-field="checkinStatusName" data-sortable="true" data-align="center">
                     是否进门
                 </th>
@@ -297,11 +303,10 @@
 <script src="${contextPath!}/resources/js/newregisterbill.index.js"></script>
 <script src="${contextPath!}/resources/js/bs4popWrapper.js"></script>
 <#webGlobalConfig/>
-<script>
+<script type="text/javascript">
     $(function () {
-        var registerBillGrid=new NewRegisterBillGrid($('#registerBillGrid'),$('#queryForm'));
+        new NewRegisterBillGrid($('#registerBillGrid'),$('#queryForm'));
     });
-
 </script>
 
 

@@ -45,7 +45,9 @@ public enum BillVerifyStatusEnum {
 	public static Optional<BillVerifyStatusEnum> fromCode(Integer code) {
 		return StreamEx.of(BillVerifyStatusEnum.values()).filterBy(BillVerifyStatusEnum::getCode, code).findFirst();
 	}
-
+	public static String name(Integer code){
+		return BillVerifyStatusEnum.fromCode(code).map(BillVerifyStatusEnum::getName).orElse("");
+	}
 	public boolean equalsToCode(Integer code) {
 		return this.getCode().equals(code);
 	}

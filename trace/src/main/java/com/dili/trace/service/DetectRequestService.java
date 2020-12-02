@@ -1,12 +1,13 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.sg.trace.glossary.SampleSourceEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.IdNameDto;
-import com.dili.trace.enums.DetectRequestStatusEnum;
+import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -33,6 +34,53 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     @Autowired
     DetectRequestMapper detectRequestMapper;
 
+
+
+    /**
+     * 创建检测请求
+     *
+     * @param billId
+     * @param creatorDto
+     * @return
+     */
+    public Long createOtherPassedRequest(@NotNull Long billId, @NotNull IdNameDto creatorDto) {
+
+        DetectRequest item = this.createByBillId(billId, DetectTypeEnum.NEW, creatorDto, Optional.empty());
+
+        DetectRequest detectRequest = new DetectRequest();
+        detectRequest.setId(item.getId());
+        detectRequest.setDetectType(DetectTypeEnum.OTHERS.getCode());
+        detectRequest.setDetectSource(SampleSourceEnum.OTHERS.getCode());
+        detectRequest.setDetectResult(DetectResultEnum.PASSED.getCode());
+
+        this.updateSelective(detectRequest);
+        return item.getId();
+    }
+
+    /**
+     * 更新检测结果
+     *
+     * @param detectRequestId
+     * @param resultEnum
+     * @return
+     */
+    public Long updateRequest(Long detectRequestId, DetectResultEnum resultEnum) {
+        DetectRequest item = this.get(detectRequestId);
+        if (item == null) {
+            throw new TraceBizException("数据不存在");
+        }
+        if (DetectResultEnum.NONE == resultEnum) {
+            throw new TraceBizException("检测值错误");
+        }
+        DetectRequest detectRequest = new DetectRequest();
+        detectRequest.setId(detectRequestId);
+        detectRequest.setDetectResult(resultEnum.getCode());
+        this.updateSelective(detectRequest);
+        return detectRequestId;
+    }
+
+
+
     /**
      * 根据报备单创建检测请求数据
      *
@@ -47,18 +95,10 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
 
         DetectRequest detectRequest = new DetectRequest();
-        detectRequest.setDetectRequestStatus(DetectRequestStatusEnum.NEW.getCode());
         detectRequest.setDetectType(detectTypeEnum.getCode());
+        detectRequest.setDetectSource(SampleSourceEnum.NONE.getCode());
+        detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
 
-        this.findLatestDetectRequest(billId).ifPresent(detectRequestItem -> {
-            if (!DetectRequestStatusEnum.FINISHED.equalsToCode(detectRequestItem.getDetectRequestStatus())) {
-                throw new TraceBizException("已经有进行中的检测任务");
-            }
-/*            if(DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequestItem.getDetectType())){
-                detectRequest.setDetectType(DetectTypeEnum.RECHECK.getCode());
-            }*/
-
-        });
 
 
         detectRequest.setBillId(billItem.getBillId());
@@ -81,24 +121,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
 
-    /**
-     * 查询已经关联的检测任务
-     *
-     * @param billId
-     * @return
-     */
-    private Optional<DetectRequest> findLatestDetectRequest(Long billId) {
-        if (billId == null) {
-            throw new TraceBizException("参数错误");
-        }
-
-        DetectRequest example = new DetectRequest();
-        example.setSort("id");
-        example.setOrder("desc");
-        example.setPage(1);
-        example.setRows(1);
-        return StreamEx.of(this.detectRequestMapper.selectByExample(example)).findFirst();
-    }
 
     /**
      * 根据id集合查询

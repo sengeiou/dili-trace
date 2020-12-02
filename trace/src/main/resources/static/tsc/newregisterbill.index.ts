@@ -14,6 +14,7 @@ class NewRegisterBillGrid extends WebConfig {
         this.queryform.find('#query').click(async () => await this.queryGridData());
 
         $(window).on('resize',()=> this.grid.bootstrapTable('resetView') );
+        window['RegisterBillGridObj']=this;
 
         $('#edit-btn').on('click',async ()=>await this.openEditPage())
         $('#btn_add').on('click',async ()=>await this.openCreatePage())
@@ -45,6 +46,51 @@ class NewRegisterBillGrid extends WebConfig {
        // bs4pop.alert(ret.result, {type: 'error'});
         //bs4pop.notice(ret.result, {type: 'warning',position: 'center'});
 
+    }
+    public removeAllAndLoadData(){
+        //@ts-ignore
+        bs4pop.removeAll();
+        (async ()=>{
+            await this.queryGridData();
+        })();
+    }
+    public async doAudit(billId:string,code:string){
+        //@ts-ignore
+        bs4pop.removeAll();
+        let promise = new Promise((resolve, reject) => {
+            //@ts-ignore
+            bs4pop.confirm('是否审核通过当前登记单？<br/>'+code,
+                {type: 'warning',btns: [
+                        {label: '通过', className: 'btn-primary',onClick(cb){  resolve("true");}},
+                        {label: '不通过', className: 'btn-primary',onClick(cb){resolve("false");}},
+                        {label: '取消', className: 'btn-cancel',onClick(cb){resolve("cancel");}},
+                    ]});
+
+        });
+        let result = await promise; // wait until the promise resolves (*)
+        if(result=='cancel'){
+            return;
+        }
+        let url= this.toUrl("/newRegisterBill/doAudit.action?id="+billId+"&pass="+result);
+
+        try{
+            var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+            if(!resp.success){
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+            await this.queryGridData();
+            //@ts-ignore
+            TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
+            //@ts-ignore
+            bs4pop.alert('操作成功', {type: 'info'});
+            //@ts-ignore
+            setTimeout(()=>bs4pop.removeAll(),600)
+        }catch (e){
+            //@ts-ignore
+            bs4pop.alert('远程访问失败', {type: 'error'});
+        }
     }
     private async  doReviewCheck() {
         var selected = this.rows[0];
@@ -459,8 +505,8 @@ class NewRegisterBillGrid extends WebConfig {
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '98%',
-            height: '98%',
+            width: '80%',
+            height: '60%',
             btns: []
         });
     }

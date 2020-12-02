@@ -2,48 +2,50 @@ package com.dili.trace.enums;
 
 import java.util.Optional;
 
-public enum DetectTypeEnum {
+public enum DetectStatusEnum {
     /**
-     * 无
+     * 初始状态
      */
-    NEW(10, "无"),
+    NONE(10, ""),
     /**
-     * 初检
+     * 待采样
      */
-    INITIAL_CHECK(20, "初检"),
+    WAIT_SAMPLE(20, "待采样"),
     /**
-     * 复检
+     * 待检测
      */
-    RECHECK(30, "复检"),
+    WAIT_DETECT(30, "待检测"),
+
+    /**
+     * 检测中
+     */
+    DETECTING(40, "检测中"),
     /**
      * 抽检
      */
-    SPOT_CHECK(40, "抽检"),
-
-
-
-    /**
-     * 其他
-     */
-    OTHERS(9999, "其他"),
+    FINISH_DETECT(50, "已检测"),
     ;
 
 
     private String name;
     private Integer code;
 
-    DetectTypeEnum(Integer code, String name) {
+    DetectStatusEnum(Integer code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static Optional<DetectTypeEnum> fromCode(Integer code) {
-        for (DetectTypeEnum anEnum : DetectTypeEnum.values()) {
+    public static Optional<DetectStatusEnum> fromCode(Integer code) {
+        for (DetectStatusEnum anEnum : DetectStatusEnum.values()) {
             if (anEnum.getCode().equals(code)) {
                 return Optional.ofNullable(anEnum);
             }
         }
         return Optional.empty();
+    }
+
+    public static String name(Integer code) {
+        return DetectStatusEnum.fromCode(code).map(DetectStatusEnum::getName).orElse("");
     }
 
     public Boolean equalsToCode(Integer code) {

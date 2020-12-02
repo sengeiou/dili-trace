@@ -5,6 +5,11 @@ public class IdNameDto {
     private String name;
     private Long marketId;
     private String marketName;
+    public IdNameDto(){}
+    public IdNameDto(Long id,String name){
+        this.id=id;
+        this.name=name;
+    }
 
     public String getMarketName() {
         return marketName;
