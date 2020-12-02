@@ -1,70 +1,59 @@
- <#body head_title="常用地址列表">
-     <style>
-         .textbox-text[readonly] {
-             background: #ebebe4;
-         }
-     </style>
-    <div class="easyui-layout" fit="true">
-        <!-- ====================================================================================================================== -->
-        <!-- 上方布局 -->
-        <!-- ====================================================================================================================== -->
-        <div region="north" height="auto" align="center">
-            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
-            </div>
-            <!-- =========================================================表单========================================================= -->
-            <div class="easyui-panel" style="width:100%;" align="left">
-                <form id="queryForm" class="easyui-form" method="post" fit="true">
-                    <div class="search-wrap">
-                         <div class="search-item">
-                            <input name="type" id="type" style="width:100%;" editable="false" panelWidth="auto" panelHeight="auto" label="分类:" labelAlign="right"/>
-                            <#comboProvider _id="type" _provider='usualAddressTypeProvider' _queryParams='{emptyText:"全部"}' />
-                        </div>
-                        <div class="search-item">
-                            <input class="easyui-textbox" name="address" id="address" style="width:100%" labelAlign="right" data-options="label:'地址:'" />
-                        </div>
+<#bs4Body>
 
-                        <div class="search-wrap-btn">
-                            <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="queryBtn"
-                               onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" onclick="clearQueryForm()">清除</a>
-                        </div>
-                    </div>
-                </form>
+<div class="container-fluid">
+    <form id="queryForm" role="form" >
+        <div class="row row-cols-6">
+            <div class="form-group col">
+                <label for="type">分类</label>
+                <select id="type" name="type" class="form-control"></select>
+                <#bcomboProvider _id="verifyStatus" _provider="usualAddressTypeProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="address">地址</label>
+                <input type="text" class="form-control" name="address" id="address"/>
+            </div>
+
+            <div class="col-auto align-self-center mt-3">
+                <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
+                <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
             </div>
         </div>
-        <!-- ====================================================================================================================== -->
-        <!-- 中央布局 -->
-        <!-- ====================================================================================================================== -->
-        <!-- 表格 -->
-        <div region="center" style="width:100%;" height="auto">
-            <!-- =========================================================表格========================================================= -->
-            <table class="easyui-datagrid" title="常用地址列表" id="userGrid" fitColumns="true" noheader="true"
-                   pagination="true" pageSize="30" pageNumber="1" pagePosition="top" border="false"
-                   loadMsg="数据加载中..." singleSelect="true" method="post" multiSort="false" sortName="id" sortOrder="desc"
-                   align="center" fit="true" idField="id" data-options="onClickRow:onClickRow,onHeaderContextMenu:headerContextMenu,onLoadSuccess:clearGridSelectedAndChecked">
-                <thead>
-                    <tr>
-                        <th width="10%" data-options="field:'addressId',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            ID
-                        </th>
-                        <th width="25%" data-options="field:'type',  _provider:'usualAddressTypeProvider', sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                          分类                  
-                        </th>
-                        <th width="30%" data-options="field:'address',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            地址
-                        </th>
-                        <th width="35%" data-options="field:'mergedAddress',   sortable:true, order:'asc', align:'center', resizable:'true', fixed:'false'">
-                            全地址
-                        </th>
-
-                   </tr>
-                </thead>
-            </table>
+    </form>
+    <hr>
+    <div>
+        <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+            <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
+            <button id="edit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 修改</button>
+            <button id="delete-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>删除</button>
+            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
+        <table id="grid" data-toggle="table" data-title="常用配置列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
+               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="true">
+            <thead>
+            <tr>
+                <th data-field="addressId" data-sortable="true" data-align="center">
+                    ID
+                </th>
+                <th data-field="type" data-sortable="true" data-align="center">
+                    分类
+                </th>
+                <th data-field="address" data-sortable="true" data-align="center">
+                    地址
+                </th>
+                <th data-field="mergedAddress" data-sortable="true" data-align="center">
+                    全地址
+                </th>
+            </tr>
+            </thead>
+        </table>
     </div>
-    <!-- 隐藏编辑框 -->
-    <div id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="常用地址新增" style="padding:20px" modal="true" border="thin" closed="true"
-         data-options="
+</div>
+
+<!-- 隐藏编辑框 -->
+<div style="display: none" id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="常用地址新增" style="padding:20px" modal="true" border="thin" closed="true"
+     data-options="
 				iconCls: 'icon-edit',
 				height: 350,
 				buttons: [{
@@ -90,28 +79,37 @@
             </tr>
             <tr>
                 <td style="padding:5px;">
-                       <select class="easyui-combobox" name="_addressId" id="_addressId" style="width:100%;" 
-                       data-options="label:'城市*:',loader:cityLoader,
-                       mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入',
-                        panelWidth:'auto',panelMinWidth:'340', panelHeight:'auto',panelMaxHeight:'400',  
-                       editable:true,validType:'comboBoxEditvalid[\'_addressId\']',required:true">
-                       </select>
+                    <select class="easyui-combobox" name="_addressId" id="_addressId" style="width:100%;"
+                            data-options="label:'城市*:',loader:cityLoader,
+                           mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入',
+                            panelWidth:'auto',panelMinWidth:'340', panelHeight:'auto',panelMaxHeight:'400',
+                           editable:true,validType:'comboBoxEditvalid[\'_addressId\']',required:true">
+                    </select>
                 </td>
             </tr>
         </table>
-        
     </form>
+</div>
 
-    </div>
-    <!-- ====================================================================================================================== -->
-    <!-- style & script 分隔线 -->
-    <!-- ====================================================================================================================== -->
-     <script src="http://base.nong12.com/static/log/log.build.js"></script>
-     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
-     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
-     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
-     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
-     <#usualAddress_indexJs />
-</#body>
+</#bs4Body>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/usualAddress.index.js"></script>
+<#webGlobalConfig/>
+<script>
+    $(function () {
+        var usualAddressIndex=new UsualAddressIndex($('#grid'),$('#queryForm'));
+    });
+
+</script>
+
+<!--<script src="http://base.nong12.com/static/log/log.build.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">-->
+<!--<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>-->
+<!--<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>-->
+<!--<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>-->
+<!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
+<!--<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>-->
+<!--<#usualAddress_indexJs />-->
