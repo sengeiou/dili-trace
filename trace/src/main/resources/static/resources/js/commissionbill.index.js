@@ -1,8 +1,47 @@
-class CommissionBillGrid {
-    constructor(grid, billStateEnums, billDetectStateEnums) {
+class CommissionBillGrid extends WebConfig {
+    constructor(grid, queryform, billStateEnums, billDetectStateEnums) {
+        super();
         this.grid = grid;
+        this.queryform = queryform;
         this.billStateEnums = billStateEnums;
         this.billDetectStateEnums = billDetectStateEnums;
+        this.queryform.find('#query').click(async () => await this.queryGridData());
+        (async () => {
+            await this.queryGridData();
+    })();
+    }
+    async queryGridData() {
+        if (!this.queryform.validate().form()) {
+            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
+            return;
+        }
+        await this.remoteQuery();
+    }
+    async remoteQuery() {
+        $('#toolbar button').attr('disabled', "disabled");
+        this.grid.bootstrapTable('showLoading');
+        this.highLightBill = await this.findHighLightBill();
+        try {
+            let url = this.toUrl("/commissionBill/listPage.action");
+            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
+            this.grid.bootstrapTable('load', resp);
+        }
+        catch (e) {
+            console.error(e);
+            this.grid.bootstrapTable('load', { rows: [], total: 0 });
+        }
+        this.grid.bootstrapTable('hideLoading');
+        $('#toolbar button').removeAttr('disabled');
+    }
+    async findHighLightBill() {
+        try {
+            var url = this.toUrl("/commissionBill/findHighLightBill.action");
+            return await jq.postJson(url, {}, {});
+        }
+        catch (e) {
+            console.log(e);
+            return {};
+        }
     }
     get rows() {
         return this.grid.datagrid("getSelections");
@@ -29,18 +68,18 @@ class CommissionBillGrid {
         var arr = this.findReviewCheckData();
         let promise = new Promise((resolve, reject) => {
             layer.confirm('请确认是否复检选中数据？<br/>' + arr.map(e => e.code).join("<br\>"), {
-                btn: ['确定', '取消'], title: "警告！！！",
+            btn: ['确定', '取消'], title: "警告！！！",
                 btn1: function () {
-                    resolve(true);
-                    return false;
-                },
-                btn2: function () {
-                    resolve(false);
-                    return false;
-                }
-            });
-            $('.layui-layer').width('460px');
+                resolve(true);
+                return false;
+            },
+            btn2: function () {
+                resolve(false);
+                return false;
+            }
         });
+        $('.layui-layer').width('460px');
+    });
         let result = await promise;
         if (result) {
             var _url = ctx + "/commissionBill/doBatchReviewCheck.action";
