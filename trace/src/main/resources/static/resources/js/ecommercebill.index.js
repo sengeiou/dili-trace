@@ -6,7 +6,7 @@ class EcommerceBillGrid extends WebConfig {
         this.queryform.find('#query').click(async () => await this.queryGridData());
         (async () => {
             await this.queryGridData();
-    })();
+        })();
     }
     async queryGridData() {
         if (!this.queryform.validate().form()) {
