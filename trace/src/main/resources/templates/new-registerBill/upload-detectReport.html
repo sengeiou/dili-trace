@@ -1,11 +1,6 @@
 <#bodyOrigin>
 <div class="main-container">
-    <div class="topicTop">
-        <div class="toppic-title">
-            <span class="topic-title-text maincolor">上传检测报告</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
-        </div>
-    </div>
+
     <div class="form-box border">
         <form id="modifyRegisterBillForm" class="form-inline" role="form">
          <input type="hidden" name="id" value="${registerBill.id}"/>
@@ -291,7 +286,7 @@
 <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
     <div class="text-center mt30" style="width: 50%">
         <button class="btn-main2 btn-sm" onclick="doModifyRegisterBill()">提交</button>&nbsp;&nbsp;
-        <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+        <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
     </div>
 </div>
 </#bodyOrigin>

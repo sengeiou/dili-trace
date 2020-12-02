@@ -10,8 +10,10 @@ import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.*;
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
+import com.dili.trace.enums.VerifyTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.service.SgRegisterBillService;
@@ -89,9 +91,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         registerBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
         registerBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         registerBill.setCode(code);
-        registerBill.setVersion(1);
-        registerBill.setCreated(new Date());
-        registerBill.setModified(new Date());
+
         if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
             // 交易区没有理货区号
             registerBill.setTallyAreaNo(null);
@@ -127,7 +127,12 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         registerBill.setHasDetectReport(0);
         registerBill.setHasOriginCertifiy(0);
         registerBill.setHasHandleResult(0);
-
+        registerBill.setVersion(1);
+        registerBill.setCreated(new Date());
+        registerBill.setModified(new Date());
+        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
+        registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
+        registerBill.setVerifyStatus(BillVerifyStatusEnum.NONE.getCode());
         int result = this.billService.saveOrUpdate(registerBill);
         this.billService.updateHasImage(registerBill.getId(), registerBill.getImageCerts());
         if (result == 0) {
