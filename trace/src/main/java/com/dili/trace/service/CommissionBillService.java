@@ -4,11 +4,19 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
+import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.enums.DetectStatusEnum;
+import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 委托单
@@ -31,6 +40,8 @@ public class CommissionBillService {
     CodeGenerateService codeGenerateService;
     @Autowired
     BillService billService;
+    @Autowired
+    DetectRequestService detectRequestService;
 
     /**
      * 分页查询委托单
@@ -110,7 +121,8 @@ public class CommissionBillService {
     public RegisterBill findHighLightCommissionBill(RegisterBillDto input, OperatorUser operatorUser) throws Exception {
         RegisterBillDto dto = new RegisterBillDto();
         dto.setOperatorId(operatorUser.getId());
-        dto.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+//        dto.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+        dto.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
         dto.setBillType(this.supportedBillType().getCode());
         dto.setRows(1);
         dto.setSort("code");
@@ -118,6 +130,13 @@ public class CommissionBillService {
         return this.billService.listByExample(dto).stream().findFirst().orElse(new RegisterBill());
     }
 
+    /**
+     * 当前用户
+     * @return
+     */
+    UserTicket getOptUser() {
+        return SessionContext.getSessionContext().getUserTicket();
+    }
     /**
      * 批量复检
      *
@@ -127,20 +146,36 @@ public class CommissionBillService {
     public List<String> doBatchReviewCheck(List<Long> billIdList, OperatorUser operatorUser) {
         return StreamEx.of(billIdList).map(billId -> {
             RegisterBill bill = this.billService.get(billId);
+            bill.setDetectRequest(this.detectRequestService.findDetectRequestByBillId(bill.getBillId()).orElse(null));
             return bill;
         }).filter(bill -> this.supportedBillType().equalsToCode(bill.getBillType()))
-                .filter(bill -> RegisterBillStateEnum.ALREADY_CHECK.equalsToCode(bill.getState()))
-                .filter(bill -> BillDetectStateEnum.NO_PASS.equalsToCode(bill.getDetectState())
-                        || BillDetectStateEnum.REVIEW_NO_PASS.equalsToCode(bill.getDetectState()))
-        .map(item->{
-            item.setOperatorName(operatorUser.getName());
-            item.setOperatorId(operatorUser.getId());
+                .filter(bill -> DetectStatusEnum.FINISH_DETECT.equalsToCode(bill.getDetectStatus()))
+                .filter(bill -> DetectResultEnum.PASSED.equalsToCode(bill.getDetectRequest().getDetectResult()))
+        .map(bill->{
+            UserTicket userTicket = getOptUser();
+            DetectRequest detectRequest=bill.getDetectRequest();
+
+            if(!DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())){
+                throw new TraceBizException("操作失败，数据状态已改变");
+            }
+            bill.setOperatorName(operatorUser.getName());
+            bill.setOperatorId(operatorUser.getId());
 //            item.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
-            item.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-            item.setExeMachineNo(null);
-            item.setModified(new Date());
-            this.billService.update(item);
-            return item.getCode();
+//            item.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
+            DetectRequest item = this.detectRequestService.createByBillId(bill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(),userTicket.getRealName()), Optional.empty());
+
+            DetectRequest updatable = new DetectRequest();
+            updatable.setId(item.getId());
+
+            updatable.setDetectSource(detectRequest.getDetectSource());
+            updatable.setDetectResult(DetectResultEnum.NONE.getCode());
+            updatable.setDetectType(DetectTypeEnum.RECHECK.getCode());
+            this.detectRequestService.updateSelective(detectRequest);
+
+            bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+
+            this.billService.update(bill);
+            return bill.getCode();
         }).toList();
     }
 
@@ -165,7 +200,8 @@ public class CommissionBillService {
         }
         bill.setCode(this.codeGenerateService.nextCommissionBillCode());
         bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
-        bill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+
+
         bill.setBillType(this.supportedBillType().getCode());
         bill.setCreated(new Date());
         bill.setModified(new Date());
@@ -174,6 +210,16 @@ public class CommissionBillService {
         bill.setOperatorName(operatorUser.getName());
         bill.setPlate("");
         this.billService.insertSelective(bill);
+        UserTicket userTicket = getOptUser();
+        DetectRequest item = this.detectRequestService.createByBillId(bill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(),userTicket.getRealName()), Optional.empty());
+
+        DetectRequest detectRequest = new DetectRequest();
+        detectRequest.setId(item.getId());
+
+        detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
+        detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+        this.detectRequestService.updateSelective(detectRequest);
+
         return BaseOutput.success();
     }
 
@@ -197,7 +243,9 @@ public class CommissionBillService {
         }
         bill.setCode(this.codeGenerateService.nextCommissionBillCode());
 //		bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
-        bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+//        bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+        bill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
+        bill.setDetectStatus(DetectStatusEnum.NONE.getCode());
         bill.setBillType(this.supportedBillType().getCode());
         bill.setCreated(new Date());
         bill.setModified(new Date());
@@ -251,12 +299,13 @@ public class CommissionBillService {
         if (item == null) {
             throw new TraceBizException("数据不存在");
         }
-        if (!RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(item.getState())) {
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
             throw new TraceBizException("登记单状态错误");
         }
         RegisterBill bill = new RegisterBill();
         bill.setId(item.getBillId());
-        bill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+//        bill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+        bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
         bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
         bill.setModified(new Date());
         bill.setOperatorId(operatorUser.getId());

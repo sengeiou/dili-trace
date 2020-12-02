@@ -325,8 +325,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public int undoRegisterBill(Long id) {
         return Optional.ofNullable(this.billService.get(id)).map(item -> {
-            if (RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(item.getState())
-                    || RegisterBillStateEnum.WAIT_SAMPLE.equalsToCode(item.getState())) {
+
+            if ( DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())||
+                    BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
                 UserTicket userTicket = getOptUser();
 
                 RegisterBill bill=new RegisterBill();
@@ -457,12 +458,16 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
         // 只有产地证明，且需要进行批量处理
         CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.TRUE)).forEach(registerBill -> {
-            if (registerBill.getState().intValue() == RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+
+
+
+            if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
                 UserTicket userTicket = getOptUser();
                 registerBill.setOperatorName(userTicket.getRealName());
                 registerBill.setOperatorId(userTicket.getId());
-                registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
-                registerBill.setDetectState(null);
+//                registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+                registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
+                registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
                 this.billService.updateSelective(registerBill);
                 dto.getSuccessList().add(registerBill.getCode());
             } else {
@@ -519,27 +524,46 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public int reviewCheckRegisterBill(Long id) {
         RegisterBill registerBill = this.billService.get(id);
-        if (registerBill.getState().intValue() != RegisterBillStateEnum.ALREADY_CHECK.getCode().intValue()) {
+        if(!DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBill.getDetectStatus())){
             throw new TraceBizException("操作失败，数据状态已改变");
         }
 
-        boolean updateState = false;
-        // 第一次复检
-        if (registerBill.getDetectState().intValue() == BillDetectStateEnum.NO_PASS.getCode().intValue()) {
-            updateState = true;
-        } else if (registerBill.getDetectState().intValue() == BillDetectStateEnum.REVIEW_NO_PASS.getCode().intValue()
-                && StringUtils.isBlank(registerBill.getHandleResult())) {
-            // 多次复检
-            updateState = true;
+        Integer hasHandleResult=registerBill.getHasHandleResult();
+        DetectRequest detectRequest=this.detectRequestService.get(registerBill.getDetectRequestId());
+
+        if(!DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())){
+            throw new TraceBizException("操作失败，数据状态已改变");
         }
+        Predicate<DetectRequest>pred=(DetectRequest item)->{
+
+            if(DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())){
+                return true;
+            }else if(DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())&&hasHandleResult.equals(0)){
+                return true;
+            }
+            return false;
+        };
+
+        boolean updateState =  Optional.of(detectRequest).stream().anyMatch(pred);
+
         if (updateState) {
             UserTicket userTicket = getOptUser();
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
-//            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
-            registerBill.setExeMachineNo(null);
-            registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-            registerBill.setModified(new Date());
+
+
+
+            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(),userTicket.getRealName()), Optional.empty());
+
+            DetectRequest updatable = new DetectRequest();
+            updatable.setId(item.getId());
+
+            updatable.setDetectSource(detectRequest.getDetectSource());
+            updatable.setDetectResult(DetectResultEnum.NONE.getCode());
+            updatable.setDetectType(DetectTypeEnum.RECHECK.getCode());
+            this.detectRequestService.updateSelective(detectRequest);
+
+            registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
             return this.billService.update(registerBill);
         } else {
             throw new TraceBizException("操作失败，数据状态已改变");
@@ -724,14 +748,15 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (registerBill.getImageCerts() == null || registerBill.getImageCerts().isEmpty()) {
             throw new TraceBizException("请上传产地证明");
         }
-        if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
             throw new TraceBizException("数据状态错误");
         }
         if (!RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             throw new TraceBizException("数据来源错误");
 
         }
-        registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
+        registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
         // registerBill.setDetectState(null);
         this.billService.updateSelective(registerBill);
 
@@ -747,7 +772,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (registerBill == null) {
             throw new TraceBizException("数据错误");
         }
-        if (registerBill.getState().intValue() != RegisterBillStateEnum.WAIT_AUDIT.getCode().intValue()) {
+
+        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
             throw new TraceBizException("数据状态错误");
         }
 
@@ -789,7 +815,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
-        if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
             throw new TraceBizException("状态错误,不能上传检测报告");
         }
         List<ImageCert> imageCerts =
@@ -832,7 +858,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
-        if (!RegisterBillStateEnum.WAIT_AUDIT.getCode().equals(item.getState())) {
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
             throw new TraceBizException("状态错误,不能删除产地证明和检测报告");
         }
         List<ImageCert> imageCertList = this.findImageCertListByBillId(item.getBillId());
@@ -911,7 +937,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         RegisterBillDto dto = new RegisterBillDto();
         UserTicket userTicket = getOptUser();
         dto.setOperatorId(userTicket.getId());
-        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+//        dto.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+        dto.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         dto.setRows(1);
         dto.setSort("code");
         dto.setOrder("desc");

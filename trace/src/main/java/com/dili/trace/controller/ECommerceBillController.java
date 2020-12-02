@@ -216,7 +216,7 @@ public class ECommerceBillController {
 	 */
 	@RequestMapping(value = "/doAudit.action", method = RequestMethod.POST)
 	public @ResponseBody BaseOutput doAudit(@RequestBody RegisterBill inputBill) {
-		if (inputBill == null || inputBill.getId() == null || inputBill.getState() == null) {
+		if (inputBill == null || inputBill.getId() == null) {
 
 			return BaseOutput.failure("参数错误");
 		}

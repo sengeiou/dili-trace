@@ -495,31 +495,31 @@ public class RegisterBill extends BaseDomain {
         return this.getId();
     }
 
-    @Transient
-    public String getDetectStateName() {
-        try {
-            if (getDetectState() == null) {
-                return "";
-            }
-        } catch (Exception e) {
-            return "";
-        }
-        BillDetectStateEnum state = BillDetectStateEnum.getBillDetectStateEnum(getDetectState());
-        return state.getName();
+//    @Transient
+//    public String getDetectStateName() {
+//        try {
+//            if (getDetectState() == null) {
+//                return "";
+//            }
+//        } catch (Exception e) {
+//            return "";
+//        }
+//        BillDetectStateEnum state = BillDetectStateEnum.getBillDetectStateEnum(getDetectState());
+//        return state.getName();
+//
+//    }
 
-    }
-
-    @Transient
-    public String getStateName() {
-        try {
-            if (getState() == null) {
-                return "";
-            }
-        } catch (Exception e) {
-            return "";
-        }
-        return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
-    }
+//    @Transient
+//    public String getStateName() {
+//        try {
+//            if (getState() == null) {
+//                return "";
+//            }
+//        } catch (Exception e) {
+//            return "";
+//        }
+//        return RegisterBillStateEnum.getRegisterBillStateEnum(getState()).getName();
+//    }
 
     public Long getId() {
         return id;
@@ -593,13 +593,13 @@ public class RegisterBill extends BaseDomain {
         this.plate = plate;
     }
 
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
-    }
+//    public Integer getState() {
+//        return state;
+//    }
+//
+//    public void setState(Integer state) {
+//        this.state = state;
+//    }
 
 //    public Integer getSampleSource() {
 //        return sampleSource;
@@ -657,13 +657,13 @@ public class RegisterBill extends BaseDomain {
         this.weightUnit = weightUnit;
     }
 
-    public Integer getDetectState() {
-        return detectState;
-    }
-
-    public void setDetectState(Integer detectState) {
-        this.detectState = detectState;
-    }
+//    public Integer getDetectState() {
+//        return detectState;
+//    }
+//
+//    public void setDetectState(Integer detectState) {
+//        this.detectState = detectState;
+//    }
 
     public Long getLatestDetectRecordId() {
         return latestDetectRecordId;

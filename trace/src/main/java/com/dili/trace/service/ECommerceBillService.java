@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
@@ -36,6 +40,9 @@ import com.dili.trace.glossary.RegisterSourceEnum;
 
 import one.util.streamex.StreamEx;
 
+/**
+ * 电商报备
+ */
 @Service
 public class ECommerceBillService {
 	private static final Logger logger = LoggerFactory.getLogger(ECommerceBillService.class);
@@ -53,12 +60,26 @@ public class ECommerceBillService {
 	@Value("${current.baseWebPath}")
 	private String baseWebPath;
 
+	@Autowired
+	DetectRequestService detectRequestService;
+
+	/**
+	 * 查询
+	 * @param input
+	 * @return
+	 * @throws Exception
+	 */
 	public String listPage(RegisterBillDto input) throws Exception {
 		RegisterBillDto dto = this.preBuildDTO(input);
 		dto.setBillType(this.supportedBillType().getCode());
 		return this.billService.listEasyuiPageByExample(dto, true).toString();
 	}
 
+	/**
+	 * 构造查询
+	 * @param dto
+	 * @return
+	 */
 	private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
 		String attr = StringUtils.trimToEmpty(dto.getAttr());
 		String attrValue = dto.getAttrValue();
@@ -98,14 +119,26 @@ public class ECommerceBillService {
 		return dto;
 	}
 
+	/**
+	 * 支持的类型
+	 * @return
+	 */
 	public BillTypeEnum supportedBillType() {
 		return BillTypeEnum.E_COMMERCE_BILL;
 	}
 
+	/**
+	 * 查找 最新操作数据
+	 * @param input
+	 * @param operatorUser
+	 * @return
+	 * @throws Exception
+	 */
 	public RegisterBill findHighLightEcommerceBill(RegisterBillDto input, OperatorUser operatorUser) throws Exception {
 		RegisterBillDto dto = new RegisterBillDto();
 		dto.setOperatorId(operatorUser.getId());
-		dto.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+//		dto.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+		dto.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
 		dto.setBillType(this.supportedBillType().getCode());
 		dto.setRows(1);
 		dto.setSort("code");
@@ -113,6 +146,12 @@ public class ECommerceBillService {
 		return this.billService.listByExample(dto).stream().findFirst().orElse(new RegisterBill());
 	}
 
+	/**
+	 * 审核
+	 * @param inputBill
+	 * @param operatorUser
+	 * @return
+	 */
 	@Transactional
 	public Long doAuditEcommerceBill(RegisterBill inputBill, OperatorUser operatorUser) {
 
@@ -120,10 +159,12 @@ public class ECommerceBillService {
 		if (item == null) {
 			throw new TraceBizException("没有找到数据，可能已经被删除");
 		}
+		DetectRequest detectRequest=this.detectRequestService.findDetectRequestByBillId(item.getBillId()).orElse(null);
+
 		if (!this.supportedBillType().equalsToCode(item.getBillType())) {
 			throw new TraceBizException("数据错误,登记单类型错误");
 		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(item.getState())) {
+		if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
 			throw new TraceBizException("登记单状态错误");
 		}
 
@@ -133,8 +174,8 @@ public class ECommerceBillService {
 		updatable.setOperatorId(operatorUser.getId());
 		updatable.setOperatorName(operatorUser.getName());
 
-		if (RegisterBillStateEnum.ALREADY_CHECK.equalsToCode(inputBill.getState())
-				&& BillDetectStateEnum.PASS.equalsToCode(inputBill.getDetectState())) {
+
+		if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
 
 			    List<ImageCert>imageCertList=StreamEx.ofNullable(inputBill.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
 
@@ -142,15 +183,17 @@ public class ECommerceBillService {
 					throw new TraceBizException("参数错误");
 				}
 				this.billService.updateHasImage(item.getId(),imageCertList);
-				updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-				updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
+				this.billService.updateHasImage(item.getId(),imageCertList);
+				updatable.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
+				updatable.setDetectStatus(DetectStatusEnum.NONE.getCode());
+	//			updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+	//				updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
 				updatable.setLatestDetectOperator(operatorUser.getName());
 				updatable.setLatestDetectTime(new Date());
 				updatable.setLatestPdResult("100%");
 
-		} else if (RegisterBillStateEnum.WAIT_CHECK.equalsToCode(inputBill.getState())
-				&& inputBill.getDetectState() == null) {
-			updatable.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+		} else if (DetectStatusEnum.NONE.equalsToCode(inputBill.getDetectStatus()) ) {
+			updatable.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
 		} else {
 			throw new TraceBizException("参数错误");
 		}
@@ -180,7 +223,8 @@ public class ECommerceBillService {
 		if (!this.supportedBillType().equalsToCode(item.getBillType())) {
 			throw new TraceBizException("数据错误,登记单类型错误");
 		}
-		if (!RegisterBillStateEnum.WAIT_AUDIT.equalsToCode(item.getState())) {
+
+		if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
 			throw new TraceBizException("登记单状态错误");
 		}
 
@@ -310,6 +354,12 @@ public class ECommerceBillService {
 
 	}
 
+	/**
+	 * 创建电商登记单
+	 * @param bill
+	 * @param operatorUser
+	 * @return
+	 */
 	// 创建电商登记单
 	private Long createBill(RegisterBill bill, OperatorUser operatorUser) {
 		if (bill.getWeight() == null || bill.getWeight().compareTo(BigDecimal.ZERO) <= 0) {
@@ -322,7 +372,9 @@ public class ECommerceBillService {
 		}
 		bill.setCode(this.codeGenerateService.nextECommerceBillCode());
 
-		bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+//		bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
+		bill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
+		bill.setDetectStatus(DetectStatusEnum.NONE.getCode());
 		bill.setCreated(new Date());
 		bill.setModified(new Date());
 		bill.setBillType(this.supportedBillType().getCode());
