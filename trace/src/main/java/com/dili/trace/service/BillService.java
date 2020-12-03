@@ -2,7 +2,6 @@ package com.dili.trace.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;

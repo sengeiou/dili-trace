@@ -235,8 +235,6 @@ public class SgRegisterBillApi {
 			DetectRequest detectRequest=this.detectRequestService.findDetectRequestByBillId(registerBill.getBillId()).orElse(null);
 
 
-			List<Integer> stateList = Arrays.asList(RegisterBillStateEnum.ALREADY_CHECK.getCode(),
-					RegisterBillStateEnum.ALREADY_AUDIT.getCode());
 			if (!DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult())) {
 				return BaseOutput.failure("当前状态登记单不能分销");
 			}
