@@ -2,6 +2,7 @@ package com.dili.trace.enums;
 
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import one.util.streamex.StreamEx;
 
 /**
@@ -52,6 +53,7 @@ public enum BillVerifyStatusEnum {
 		return this.getCode().equals(code);
 	}
 
+	@JsonValue
 	public Integer getCode() {
 		return code;
 	}

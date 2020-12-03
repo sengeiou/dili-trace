@@ -1,7 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.glossary.SampleSourceEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;

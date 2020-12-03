@@ -32,10 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.dto.ECommerceBillPrintOutput;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.sg.trace.glossary.BillDetectStateEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 
 import one.util.streamex.StreamEx;

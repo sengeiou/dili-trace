@@ -2,8 +2,6 @@ package com.dili.trace.controller;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.sg.trace.glossary.RegisterBillStateEnum;
-import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
@@ -882,7 +880,7 @@ public class SgRegisterBillController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/listState.action", method = {RequestMethod.GET, RequestMethod.POST})
+    /*@RequestMapping(value = "/listState.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public List<Map<String, String>> listState() {
 
@@ -895,7 +893,7 @@ public class SgRegisterBillController {
 
         }).collect(Collectors.toList());
 
-    }
+    }*/
 
     /**
      * 权限判断并保护敏感信息

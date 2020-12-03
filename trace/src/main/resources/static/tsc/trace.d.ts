@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.27.744 on 2020-12-01 13:31:31.
+// Generated using typescript-generator version 2.27.744 on 2020-12-03 09:53:15.
 
 interface Market {
     id: number;
@@ -12,25 +12,38 @@ interface Market {
     platformMarketId: number;
 }
 
-declare const enum RegisterBillStateEnum {
-    NEW = 0,
-    WAIT_AUDIT = 1,
-    WAIT_SAMPLE = 2,
-    WAIT_CHECK = 4,
-    CHECKING = 5,
-    ALREADY_CHECK = 6,
-    ALREADY_AUDIT = 7,
-}
-
-declare const enum BillDetectStateEnum {
-    PASS = "PASS",
-    NO_PASS = "NO_PASS",
-    REVIEW_PASS = "REVIEW_PASS",
-    REVIEW_NO_PASS = "REVIEW_NO_PASS",
-}
-
 declare const enum RegisterSourceEnum {
     OTHERS = 0,
     TALLY_AREA = 1,
     TRADE_AREA = 2,
+}
+
+declare const enum BillVerifyStatusEnum {
+    WAIT_AUDIT = 0,
+    RETURNED = 10,
+    PASSED = 20,
+    NO_PASSED = 30,
+    DELETED = 40,
+}
+
+declare const enum DetectStatusEnum {
+    NONE = 10,
+    WAIT_SAMPLE = 20,
+    WAIT_DETECT = 30,
+    DETECTING = 40,
+    FINISH_DETECT = 50,
+}
+
+declare const enum DetectResultEnum {
+    NONE = 0,
+    PASSED = 1,
+    FAILED = 2,
+}
+
+declare const enum DetectTypeEnum {
+    NEW = 10,
+    INITIAL_CHECK = 20,
+    RECHECK = 30,
+    SPOT_CHECK = 40,
+    OTHERS = 9999,
 }

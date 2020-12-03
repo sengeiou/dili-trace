@@ -39,12 +39,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
+/**登记单相关接口
  * Created by laikui on 2019/7/26.
  */
 @RestController
 @RequestMapping(value = "/api/bill")
-@Api(value = "/api/bill", description = "登记单相关接口")
+@Api(value = "/api/bill")
 @InterceptConfiguration
 public class SgRegisterBillApi {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillApi.class);
@@ -60,7 +60,7 @@ public class SgRegisterBillApi {
 
 	@Autowired
 	DetectRecordService detectRecordService;
-	@Resource
+	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UserService userService;
@@ -97,6 +97,8 @@ public class SgRegisterBillApi {
 			registerBill.setName(user.getName());
 			registerBill.setAddr(user.getAddr());
 			registerBill.setIdCardNo(user.getCardNo());
+			registerBill.setTradeTypeId(createListBillParam.getTradeTypeId());
+			registerBill.setTradeTypeName(createListBillParam.getTradeTypeName());
 			if (registerBill.getRegisterSource() == null) {
 				// 小程序默认理货区
 				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
@@ -233,8 +235,6 @@ public class SgRegisterBillApi {
 			DetectRequest detectRequest=this.detectRequestService.findDetectRequestByBillId(registerBill.getBillId()).orElse(null);
 
 
-			List<Integer> stateList = Arrays.asList(RegisterBillStateEnum.ALREADY_CHECK.getCode(),
-					RegisterBillStateEnum.ALREADY_AUDIT.getCode());
 			if (!DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult())) {
 				return BaseOutput.failure("当前状态登记单不能分销");
 			}

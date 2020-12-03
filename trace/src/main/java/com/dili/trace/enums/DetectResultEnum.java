@@ -1,5 +1,7 @@
 package com.dili.trace.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Optional;
 
 public enum DetectResultEnum {
@@ -41,7 +43,7 @@ public enum DetectResultEnum {
     public Boolean equalsToCode(Integer code) {
         return this.getCode().equals(code);
     }
-
+    @JsonValue
     public Integer getCode() {
         return code;
     }

@@ -9,7 +9,6 @@ import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.sg.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.service.BillService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.dao.RegisterBillMapper;

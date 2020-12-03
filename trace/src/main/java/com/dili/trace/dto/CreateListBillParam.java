@@ -9,7 +9,9 @@ public class CreateListBillParam {
 	private Long marketId;
 	private Integer registerSource;
 	private String tallyAreaNo;
-	private Integer tradeTypeId;
+	private String tradeTypeId;
+	private String tradeTypeName;
+
 	private String plate;
 	private String tradeAccount;
 
@@ -19,6 +21,14 @@ public class CreateListBillParam {
 	private String addr;
 	private String phone;
 	private String detectReportUrl;
+
+	public String getTradeTypeName() {
+		return tradeTypeName;
+	}
+
+	public void setTradeTypeName(String tradeTypeName) {
+		this.tradeTypeName = tradeTypeName;
+	}
 
 	public String getDetectReportUrl() {
 		return detectReportUrl;
@@ -70,11 +80,11 @@ public class CreateListBillParam {
 		this.tallyAreaNo = tallyAreaNo;
 	}
 
-	public Integer getTradeTypeId() {
+	public String getTradeTypeId() {
 		return tradeTypeId;
 	}
 
-	public void setTradeTypeId(Integer tradeTypeId) {
+	public void setTradeTypeId(String tradeTypeId) {
 		this.tradeTypeId = tradeTypeId;
 	}
 

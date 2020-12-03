@@ -1,6 +1,6 @@
 package com.dili.trace.domain;
 
-import com.dili.sg.trace.glossary.SampleSourceEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.DetectResultEnum;
 

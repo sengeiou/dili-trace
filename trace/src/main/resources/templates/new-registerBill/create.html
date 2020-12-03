@@ -67,6 +67,7 @@
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>交易区号</label>
+                    <input type="hidden" name="tradeTypeName" id="tradeTypeName">
                     <select class="form-control input-sm" name="tradeTypeId" id="tradeTypeId"  required>
                         <option value="">请选择</option>
                         <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
@@ -169,7 +170,7 @@
     <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
     <div class="text-center mt30">
         <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
-        <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+        <button class="btn-greyweak btn-sm" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">取消</button>
     </div>
 </div>
 </#bodyOrigin>
@@ -183,7 +184,18 @@
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 
 <script type="text/javascript">
-
+    function getTopWindow(winObj=undefined){
+        if(!winObj){
+            winObj=window;
+        }
+        if(winObj.top == winObj.self) {
+            // Top level window
+            return winObj;
+        } else {
+            return getTopWindow(winObj.parent.window);
+        }
+    }
+    // console.info(getTopWindow().location.href)
     var currentUser={"depId":"${user.depId!}"
         ,"id":"${user.id!}"
         ,"realName":"${user.realName!}"
@@ -229,6 +241,10 @@
             console.info('disable init')
         }
 
+        $('#tradeTypeId').on('change',function(){
+            $('#tradeTypeName').val($(this).find('option:selected').text());
+        });
+        $('#tradeTypeId').trigger('change')
     });
 
     function returnBack(){
@@ -653,7 +669,7 @@
         debugger
         $.ajax({
             type: "POST",
-            url: "${contextPath}/sg/registerBill/insert2.action",
+            url: "${contextPath}/newRegisterBill/insert.action",
             data :  JSON.stringify(data),
             dataType: "json",
             async : true,
@@ -670,13 +686,12 @@
                             type:0,
                             time : 600,
                             end :function(){
-                                parent.closeWin('view_win');
-
+                                window.parent.postMessage(JSON.stringify({obj:'RegisterBillGridObj',fun:'removeAllAndLoadData',args:[]}));
                             }
                         },
 
                         function () {
-                            parent.closeWin('view_win');
+                            window.parent.postMessage(JSON.stringify({obj:'RegisterBillGridObj',fun:'removeAllAndLoadData',args:[]}));
                         }
                     );
 

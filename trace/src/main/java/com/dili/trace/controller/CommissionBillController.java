@@ -1,26 +1,23 @@
 package com.dili.trace.controller;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.dili.trace.service.CityService;
-import com.dili.trace.service.SgRegisterBillService;
-import com.dili.trace.service.TradeTypeService;
+import com.dili.common.exception.TraceBizException;
+import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
-import com.dili.trace.service.UserService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
-import com.dili.common.exception.TraceBizException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -29,24 +26,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.util.DateUtils;
-import com.dili.trace.domain.UsualAddress;
-import com.dili.sg.trace.glossary.BillTypeEnum;
-import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
-import com.dili.sg.trace.glossary.RegisterBillStateEnum;
-import com.dili.trace.glossary.UsualAddressTypeEnum;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -336,7 +322,7 @@ public class CommissionBillController {
      * @param
      * @return
      */
-    @RequestMapping(value = "/listState.action", method = {RequestMethod.GET, RequestMethod.POST})
+    /*@RequestMapping(value = "/listState.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public List<Map<String, String>> listState() {
 
@@ -349,7 +335,7 @@ public class CommissionBillController {
 
         }).collect(Collectors.toList());
 
-    }
+    }*/
 
     /**
      * 批量复检

@@ -95,9 +95,9 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`weight_unit`")
     private Integer weightUnit;
 
-    @ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
+/*    @ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
     @Column(name = "`detect_state`")
-    private Integer detectState;
+    private Integer detectState;*/
 
     @ApiModelProperty(value = "检测记录ID")
     @Column(name = "`latest_detect_record_id`")
@@ -364,7 +364,7 @@ public class RegisterBill extends BaseDomain {
     private String tradePrintingCard;
 
     @Column(name = "`trade_type_id`")
-    String tradeTypeId;
+    private String tradeTypeId;
 
     @Column(name = "`trade_type_name`")
     private String tradeTypeName;

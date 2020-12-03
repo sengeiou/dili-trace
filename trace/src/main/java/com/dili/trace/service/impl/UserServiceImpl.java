@@ -107,7 +107,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void register(User user, UserTypeEnum userType, String originalPassword) {
-        user.setState(com.dili.sg.trace.glossary.EnabledStateEnum.ENABLED.getCode());
+        user.setState(EnabledStateEnum.ENABLED.getCode());
         user.setPassword(MD5Util.md5(originalPassword));
         user.setIsDelete(0L);
         user.setYn(com.dili.trace.glossary.YnEnum.YES.getCode());
@@ -964,7 +964,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
         User userQuery = DTOUtils.newDTO(User.class);
         userQuery.setId(userTallyArea.getUserId());
-        userQuery.setState(com.dili.sg.trace.glossary.EnabledStateEnum.ENABLED.getCode());
+        userQuery.setState(EnabledStateEnum.ENABLED.getCode());
         return list(userQuery).stream().findFirst().orElse(null);
     }
 
