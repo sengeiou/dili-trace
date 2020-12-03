@@ -27,7 +27,6 @@
                 <div class="col-auto align-self-center mt-3">
                     <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
                     <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
-<!--                    onclick="queryUserGrid()">查询</a>&nbsp;&nbsp;-->
                 </div>
             </div>
         </form>
@@ -122,8 +121,17 @@
 <script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/ApproverInfo.index.js"></script>
+<script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <#webGlobalConfig/>
 <script>
+    laydate.render({
+        elem: '#createdStart',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#createdEnd',
+        type: 'datetime'
+    });
     $(function () {
         var approverInfoIndex=new ApproverInfoIndex($('#grid'),$('#queryForm'));
     });
