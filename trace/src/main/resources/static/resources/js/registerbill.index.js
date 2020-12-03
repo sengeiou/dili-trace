@@ -40,7 +40,7 @@ class RegisterBillGrid extends PageTs {
         }
     }
     isCreateSheet() {
-        var arr = this.filterByProp('$_detectState', ["PASS", "REVIEW_PASS"]).filter(function (v, i) {
+        var arr = this.filterByProp('$_detectState', [BillDetectStateEnum.PASS, BillDetectStateEnum.REVIEW_PASS]).filter(function (v, i) {
             if (v.$_checkSheetId && v.$_checkSheetId != null && v.$_checkSheetId != '') {
                 return false;
             }
@@ -122,7 +122,7 @@ class RegisterBillGrid extends PageTs {
         this.isSingleCopy() ? $('#copy-btn').show() : $('#copy-btn').hide();
         this.isSingleDetail() ? $('#detail-btn').show() : $('#detail-btn').hide();
         this.isSingleUploadOriginCertify() ? $('#upload-origincertifiy-btn').show() : $('#upload-origincertifiy-btn').hide();
-        var waitAuditRows = this.filterByProp("$_state", [1]);
+        var waitAuditRows = this.filterByProp("$_state", [RegisterBillStateEnum.WAIT_AUDIT]);
         if (waitAuditRows.length == 1) {
             $('#undo-btn').show();
             $('#audit-btn').show();
@@ -142,17 +142,17 @@ class RegisterBillGrid extends PageTs {
             item.originCertifiyUrl != '' && item.originCertifiyUrl != '无';
         }).size().value() > 0;
         auditWithoutDetect ? $('#audit-withoutDetect-btn').show() : $('#audit-withoutDetect-btn').hide();
-        var WAIT_SAMPLE_ROWS = this.filterByProp("$_state", [6]);
+        var WAIT_SAMPLE_ROWS = this.filterByProp("$_state", [RegisterBillStateEnum.ALREADY_CHECK]);
         if (WAIT_SAMPLE_ROWS.length == 1) {
             $('#undo-btn').show();
             $('#auto-btn').show();
             $('#sampling-btn').show();
         }
-        var ALREADY_CHECK_ROWS = this.filterByProp("$_state", [6]);
-        var review = _.chain(ALREADY_CHECK_ROWS).filter(item => "NO_PASS" == item.$_detectState).size().value() > 0;
+        var ALREADY_CHECK_ROWS = this.filterByProp("$_state", [RegisterBillStateEnum.ALREADY_CHECK]);
+        var review = _.chain(ALREADY_CHECK_ROWS).filter(item => BillDetectStateEnum.NO_PASS == item.$_detectState).size().value() > 0;
         review ? $('#review-btn').show() : $('#review-btn').hide();
         var review = _.chain(ALREADY_CHECK_ROWS)
-            .filter(item => "REVIEW_NO_PASS" == item.$_detectState)
+            .filter(item => BillDetectStateEnum.REVIEW_NO_PASS == item.$_detectState)
             .filter(item => item.handleResult == null || item.handleResult == '')
             .size().value() > 0;
         review ? $('#review-btn').show() : $('#review-btn').hide();
@@ -180,25 +180,25 @@ class RegisterBillGrid extends PageTs {
         });
     }
     isBatchSimpling() {
-        if (this.filterByProp('$_state', [2]).length > 0) {
+        if (this.filterByProp('$_state', [RegisterBillStateEnum.WAIT_SAMPLE]).length > 0) {
             return true;
         }
         return false;
     }
     isBatchAudit() {
-        if (this.filterByProp('$_state', [1]).length > 0) {
+        if (this.filterByProp('$_state', [RegisterBillStateEnum.WAIT_AUDIT]).length > 0) {
             return true;
         }
         return false;
     }
     isBatchAuto() {
-        if (this.filterByProp('$_state', [2]).length > 0) {
+        if (this.filterByProp('$_state', [RegisterBillStateEnum.WAIT_SAMPLE]).length > 0) {
             return true;
         }
         return false;
     }
     isBatchUndo() {
-        if (this.filterByProp('$_state', [1]).length > 0) {
+        if (this.filterByProp('$_state', [RegisterBillStateEnum.WAIT_AUDIT]).length > 0) {
             return true;
         }
         return false;
@@ -214,7 +214,7 @@ class RegisterBillGrid extends PageTs {
             return;
         }
         var cthis = this;
-        var arr = this.filterByProp("$_state", [1]);
+        var arr = this.filterByProp("$_state", [RegisterBillStateEnum.WAIT_AUDIT]);
         let promise = new Promise((resolve, reject) => {
             layer.confirm('请确认是否撤销选中数据？<br/>' + arr.map(e => e.code).join("<br\>"), {
                 btn: ['确定', '取消'], title: "警告！！！",

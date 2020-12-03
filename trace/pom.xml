@@ -454,9 +454,11 @@
                     <noFileComment>false</noFileComment>
                     <classes>
                         <class>com.dili.trace.domain.Market</class>
-                        <class>com.dili.trace.glossary.RegisterBillStateEnum</class>
-                        <class>com.dili.trace.glossary.BillDetectStateEnum</class>
                         <class>com.dili.trace.glossary.RegisterSourceEnum</class>
+                        <class>com.dili.trace.enums.BillVerifyStatusEnum</class>
+                        <class>com.dili.trace.enums.DetectStatusEnum</class>
+                        <class>com.dili.trace.enums.DetectResultEnum</class>
+                        <class>com.dili.trace.enums.DetectTypeEnum</class>
                     </classes>
                     <outputKind>global</outputKind>
                     <outputFile>src/main/resources/static/tsc/trace.d.ts</outputFile>

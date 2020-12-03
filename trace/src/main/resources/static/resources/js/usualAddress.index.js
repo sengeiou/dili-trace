@@ -24,7 +24,7 @@ class UsualAddressIndex extends WebConfig {
     async openExportPage() {
     }
     async rowClick() {
-    debugger;
+        debugger;
     }
     async queryGridData() {
         if (!this.queryform.validate().form()) {

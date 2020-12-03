@@ -11,4 +11,4 @@ class WebConfig {
         return this.contextPath + url;
     }
 }
-//# sourceMappingURL=WebConfig.js.map
+//# sourceMappingURL=webconfig.js.map

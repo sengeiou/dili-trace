@@ -4,17 +4,21 @@ class NewRegisterBillGrid extends WebConfig {
     grid: any;
     queryform: any;
     highLightBill: any;
+    btns:string[];
 
     constructor(grid: any, queryform: any) {
         super();
         this.grid = grid;
         this.queryform = queryform;
 
-        this.grid.on('check.bs.table uncheck.bs.table', () => this.onClickRow());
+        this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
         this.queryform.find('#query').click(async () => await this.queryGridData());
 
         $(window).on('resize',()=> this.grid.bootstrapTable('resetView') );
         window['RegisterBillGridObj']=this;
+
+        this.btns= ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn'
+            , 'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn']
 
         $('#edit-btn').on('click',async ()=>await this.openEditPage())
         $('#btn_add').on('click',async ()=>await this.openCreatePage())
@@ -84,9 +88,9 @@ class NewRegisterBillGrid extends WebConfig {
             //@ts-ignore
             TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
             //@ts-ignore
-            bs4pop.alert('操作成功', {type: 'info'});
+            bs4pop.removeAll()
             //@ts-ignore
-            setTimeout(()=>bs4pop.removeAll(),600)
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
@@ -111,9 +115,9 @@ class NewRegisterBillGrid extends WebConfig {
             //@ts-ignore
             TLOG.component.operateLog('登记单管理',"复检","【编号】:"+selected.code);
             //@ts-ignore
-            bs4pop.alert('操作成功', {type: 'info'});
+            bs4pop.removeAll()
             //@ts-ignore
-            setTimeout(()=>bs4pop.removeAll(),600)
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
@@ -140,9 +144,9 @@ class NewRegisterBillGrid extends WebConfig {
             //@ts-ignore
             TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
             //@ts-ignore
-            bs4pop.alert('操作成功', {type: 'info'});
+            bs4pop.removeAll()
             //@ts-ignore
-            setTimeout(()=>bs4pop.removeAll(),600)
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
@@ -150,18 +154,17 @@ class NewRegisterBillGrid extends WebConfig {
     }
     private async doBatchSamplingCheck(){
         var rows=this.rows;
-        var codeList=[];
-        var batchIdList=[];
-        for(var i=0;i<rows.length;i++){
-            if (rows[i].$_state ==RegisterBillStateEnum.WAIT_SAMPLE){
-                batchIdList.push(rows[i].id);
-                codeList.push(rows[i].code)
-            }
-        }
-        if(codeList.length==0){
+
+        if(this.batchSamplingRows.length==0){
             //@ts-ignore
             layer.alert('所选登记单子不能采样检测')
             return;
+        }
+        var codeList=[];
+        var batchIdList=[];
+        for(var i=0;i<this.batchSamplingRows.length;i++){
+                batchIdList.push(this.batchSamplingRows[i].id);
+                codeList.push(this.batchSamplingRows[i].code)
         }
         let sure=await popwrapper.confirm('批量采样检测'+codeList.join("<br\>"),undefined);
         if(!sure){
@@ -190,9 +193,9 @@ class NewRegisterBillGrid extends WebConfig {
             //@ts-ignore
             TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
             //@ts-ignore
-            bs4pop.alert('操作成功', {type: 'info'});
+            bs4pop.removeAll()
             //@ts-ignore
-            setTimeout(()=>bs4pop.removeAll(),600)
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
@@ -228,9 +231,9 @@ class NewRegisterBillGrid extends WebConfig {
                 //@ts-ignore
                 TLOG.component.operateLog('登记单管理',"删除产地证明和报告",'【ID】:'+selected.id);
                 //@ts-ignore
-                bs4pop.alert('操作成功', {type: 'info'});
+                bs4pop.removeAll()
                 //@ts-ignore
-                setTimeout(()=>bs4pop.removeAll(),600)
+                bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
             }catch (e){
                 //@ts-ignore
                 bs4pop.alert('远程访问失败', {type: 'error'});
@@ -264,31 +267,28 @@ class NewRegisterBillGrid extends WebConfig {
             //@ts-ignore
             TLOG.component.operateLog('登记单管理',"主动送检","【编号】:"+selected.code);
             //@ts-ignore
+            bs4pop.removeAll()
             //@ts-ignore
-            bs4pop.alert('操作成功', {type: 'info'});
-            //@ts-ignore
-            setTimeout(()=>bs4pop.removeAll(),600)
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
         }
     }
     private async doBatchAutoCheck(){
-        var rows=this.rows;
-
-        var codeList=[];
-        var batchIdList=[];
-        for(var i=0;i<rows.length;i++){
-            if (rows[i].$_state == RegisterBillStateEnum.WAIT_SAMPLE){
-                batchIdList.push(rows[i].id);
-                codeList.push(rows[i].code)
-            }
-        }
-        if(codeList.length==0){
+        if(this.batchSamplingRows.length==0){
             //@ts-ignore
             bs4pop.alert('所选登记单子不能主动送检', {type: 'warning'});
             return;
         }
+
+        var codeList=[];
+        var batchIdList=[];
+        for(var i=0;i<this.batchSamplingRows.length;i++){
+                batchIdList.push(this.batchSamplingRows[i].id);
+                codeList.push(this.batchSamplingRows[i].code)
+        }
+
 
         var url= this.toUrl( "/newRegisterBill/doBatchAutoCheck.action");
         let sure=await popwrapper.confirm('请确认是否主动送检？',undefined);
@@ -313,9 +313,9 @@ class NewRegisterBillGrid extends WebConfig {
             //@ts-ignore
             TLOG.component.operateLog('登记单管理',"批量主动送检","【编号】:"+codeList.join(','));
             //@ts-ignore
-            layer.alert('操作成功',{title:'操作',time : 600});
+            bs4pop.removeAll()
             //@ts-ignore
-            setTimeout(()=>bs4pop.removeAll(),600)
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
@@ -339,9 +339,9 @@ class NewRegisterBillGrid extends WebConfig {
             //@ts-ignore
             TLOG.component.operateLog('登记单管理',"采样检测","【编号】:"+selected.code);
             //@ts-ignore
-            bs4pop.alert('操作成功', {type: 'info'});
+            bs4pop.removeAll()
             //@ts-ignore
-            setTimeout(()=>bs4pop.removeAll(),600)
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
@@ -390,9 +390,9 @@ class NewRegisterBillGrid extends WebConfig {
                 //@ts-ignore
                 TLOG.component.operateLog('登记单管理',"撤销","【编号】:"+selected.code);
                 //@ts-ignore
-                bs4pop.alert('操作成功', {type: 'info'});
+                bs4pop.removeAll()
                 //@ts-ignore
-                setTimeout(()=>bs4pop.removeAll(),600)
+                bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
             }catch (e){
                 //@ts-ignore
                 bs4pop.alert('远程访问失败', {type: 'error'});
@@ -403,24 +403,23 @@ class NewRegisterBillGrid extends WebConfig {
 
 
     private async  doBatchAudit(){
-        var rows=this.rows;
-        var codeList=[];
-        var batchIdList=[];
-        var onlyWithOriginCertifiyUrlIdList=[];
-        for(var i=0;i<rows.length;i++){
-            if (rows[i].$_state == RegisterBillStateEnum.WAIT_AUDIT ){
-                batchIdList.push(rows[i].id);
-                codeList.push(rows[i].code)
-                if(rows[i].originCertifiyUrl=='有'&&rows[i].detectReportUrl=='无'){
-                    onlyWithOriginCertifiyUrlIdList.push(rows[i].code)
-                };
-            }
-        }
-        if(codeList.length==0){
+        var waitAudit=this.filterByProp('verifyStatus', [BillVerifyStatusEnum.WAIT_AUDIT]);
+        if(waitAudit.length==0){
             //@ts-ignore
             bs4pop.alert('所选登记单不能进行审核', {type: 'error'});
             return;
         }
+        var codeList=[];
+        var batchIdList=[];
+        var onlyWithOriginCertifiyUrlIdList=[];
+        for(var i=0;i<waitAudit.length;i++){
+                batchIdList.push(waitAudit[i].id);
+                codeList.push(waitAudit[i].code)
+                if(waitAudit[i].hasOriginCertifiy!=0&&waitAudit[i].hasDetectReport==0){
+                    onlyWithOriginCertifiyUrlIdList.push(waitAudit[i].code)
+                };
+        }
+
         let promise = new Promise((resolve, reject) => {
             //@ts-ignore
             bs4pop.confirm('批量审核<br\>'+codeList.join("<br\>"), undefined, async function (sure) {
@@ -647,41 +646,85 @@ class NewRegisterBillGrid extends WebConfig {
         $('#toolbar button').removeAttr('disabled');
     }
     private resetButtons() {
-        var btnArray = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn'
-            , 'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn']
+        var btnArray = this.btns;
         for (var i = 0; i < btnArray.length; i++) {
             var btnId = btnArray[i];
             $('#' + btnId).show();
-
         }
     }
+    private checkAndShowHideBtns(){
+        var btnArray = this.btns;
+        for (var i = 0; i < btnArray.length; i++) {
+            $('#' + btnArray[i]).hide();
+        }
+        var rows=this.rows;
+        if(rows.length==0){
+            return ;
+        }
+        var createCheckSheet=_.chain(this.rows)
+            .filter(item=>DetectResultEnum.PASSED==item.detectRequest.detectResult)
+            .filter(item=>_.isUndefined(item.checkSheetId)||item.checkSheetId==null).value().length>0;
+        createCheckSheet?$('#createsheet-btn').show():$('#createsheet-btn').hide();
 
-    private isCreateSheet() {
-        var arr = this.filterByProp('$_detectState', [BillDetectStateEnum.PASS, BillDetectStateEnum.REVIEW_PASS]).filter(function (v, i) {
-            if (v.$_checkSheetId && v.$_checkSheetId != null && v.$_checkSheetId != '') {
-                return false;
-            } else {
-                return true;
+        if(rows.length==1){
+            var selected=rows[0];
+            $('#copy-btn').show();
+            $('#detail-btn').show();
+            $('#upload-origincertifiy-btn').show();
+            $('#upload-handleresult-btn').show();
+
+            var waitAudit = this.waitAuditRows;
+            if(waitAudit.length==1){
+                $('#undo-btn').show();
+                $('#audit-btn').show();
+                $('#edit-btn').show();
+                $('#upload-detectreport-btn').show();
             }
-        });
-        return arr.length > 0;
+            if(selected.hasOriginCertifiy!=0){
+                $('#remove-reportAndcertifiy-btn').show();
+            }
+            if(selected.registerSource==RegisterSourceEnum.TALLY_AREA){
+                if(selected.hasOriginCertifiy!=0){
+                    $('#audit-withoutDetect-btn').show();
+                }
+            }
+
+            if(selected.detectStatus==DetectStatusEnum.WAIT_SAMPLE){
+                $('#auto-btn').show();
+                $('#undo-btn').show();
+                $('#sampling-btn').show();
+            }
+            if(selected.detectRequest.detectResult==DetectResultEnum.FAILED){
+                if(selected.detectRequest.detectType==DetectTypeEnum.INITIAL_CHECK){
+                    $('#review-btn').show();
+                }else if(selected.detectRequest.detectType==DetectTypeEnum.RECHECK&&selected.hasHandleResult==0){
+                    $('#review-btn').show();
+                }
+            }
+          //  $('#createsheet-btn').show();
+            return;
+        }
+        var batchAudit = this.filterByProp('verifyStatus', [BillVerifyStatusEnum.WAIT_AUDIT]).length>0;
+        batchAudit? $('#batch-audit-btn').show(): $('#batch-audit-btn').hide();
+
+        var batchSampling = this.batchSamplingRows.length>0;
+        batchSampling?$('#batch-sampling-btn').show():$('#batch-sampling-btn').hide();
+
+        var batchAuto=batchSampling;
+        batchAuto?$('#batch-auto-btn').show():$('#batch-auto-btn').hide();
+
+        var batchUndo=_.chain(this.rows).filter(item=>{
+           return (BillVerifyStatusEnum.WAIT_AUDIT==item.verifyStatus)||(DetectStatusEnum.WAIT_SAMPLE==item.detectStatus)
+        })
+        batchUndo? $('#batch-undo-btn').show():$('#batch-undo-btn').hide();
+    }
+    get waitAuditRows(){
+        return  this.filterByProp('verifyStatus', [BillVerifyStatusEnum.WAIT_AUDIT]);
+    }
+    get batchSamplingRows(){
+         return this.filterByProp('detectStatus', [DetectStatusEnum.WAIT_SAMPLE]);
     }
 
-    private isSingleAudit() {
-        return true;
-    }
-
-    private isSingleCopy() {
-        return this.rows.length == 1;
-    }
-
-    private isSingleDetail() {
-        return this.rows.length == 1;
-    }
-
-    private isSingleUploadOriginCertify() {
-        return this.rows.length == 1;
-    }
 
     private multiRows() {
         if (this.rows.length <= 1) {
@@ -722,75 +765,6 @@ class NewRegisterBillGrid extends WebConfig {
     }
 
 
-    private onClickRow() {
-        //@ts-ignore
-        this.resetButtons();
-        var rows = this.rows;
-        if (rows.length == 0) {
-            return;
-        }
-
-        this.isCreateSheet() ? $('#createsheet-btn').show() : $('#createsheet-btn').hide();
-
-        //batch
-        this.isBatchAudit() ? $('#batch-audit-btn').show() : $('#batch-audit-btn').hide();
-        this.isBatchSimpling() ? $('#batch-sampling-btn').show() : $('#batch-sampling-btn').hide();
-        this.isBatchAuto() ? $('#batch-auto-btn').show() : $('#batch-auto-btn').hide();
-        this.isBatchUndo() ? $('#batch-undo-btn').show() : $('#batch-undo-btn').hide();
-
-        if (rows.length > 1) {
-            return;
-        }
-        this.isSingleCopy() ? $('#copy-btn').show() : $('#copy-btn').hide();
-        this.isSingleDetail() ? $('#detail-btn').show() : $('#detail-btn').hide();
-        this.isSingleUploadOriginCertify() ? $('#upload-origincertifiy-btn').show() : $('#upload-origincertifiy-btn').hide();
-
-
-        var waitAuditRows = this.filterByProp("$_state", [RegisterBillStateEnum.WAIT_AUDIT]);
-        if (waitAuditRows.length == 1) {
-            //接车状态是“已打回”,启用“撤销打回”操作
-            $('#undo-btn').show();
-            $('#audit-btn').show();
-            $('#edit-btn').show();
-            $('#upload-detectreport-btn').show();
-        }
-        let hasImages = _.chain(waitAuditRows).filter(item => {
-            return item.originCertifiyUrl == '有' || item.detectReportUrl == '有'
-        }).size().value() > 0;
-        hasImages ? $('#remove-reportAndcertifiy-btn').show() : $('#remove-reportAndcertifiy-btn').hide();
-
-
-        let auditWithoutDetect = _.chain(waitAuditRows)
-            .filter(item => RegisterSourceEnum.TALLY_AREA == item.registerSource)
-            .filter(item => {
-                return item.originCertifiyUrl && item.originCertifiyUrl != null
-            })
-            .filter(item => {
-                item.originCertifiyUrl != '' && item.originCertifiyUrl != '无'
-            }).size().value() > 0;
-        auditWithoutDetect ? $('#audit-withoutDetect-btn').show() : $('#audit-withoutDetect-btn').hide();
-
-
-        var WAIT_SAMPLE_ROWS = this.filterByProp("$_state", [RegisterBillStateEnum.ALREADY_CHECK]);
-        if (WAIT_SAMPLE_ROWS.length == 1) {
-            $('#undo-btn').show();
-            $('#auto-btn').show();
-            $('#sampling-btn').show();
-        }
-
-        var ALREADY_CHECK_ROWS = this.filterByProp("$_state", [RegisterBillStateEnum.ALREADY_CHECK]);
-        var review = _.chain(ALREADY_CHECK_ROWS).filter(item => BillDetectStateEnum.NO_PASS == item.$_detectState).size().value() > 0;
-        review ? $('#review-btn').show() : $('#review-btn').hide();
-
-
-        var review = _.chain(ALREADY_CHECK_ROWS)
-            .filter(item => BillDetectStateEnum.REVIEW_NO_PASS == item.$_detectState)
-            .filter(item => item.handleResult == null || item.handleResult == '')
-            .size().value() > 0;
-        review ? $('#review-btn').show() : $('#review-btn').hide();
-
-        $('#upload-handleresult-btn').show();
-    }
 
     get rows() {
         let rows = this.grid.bootstrapTable('getSelections');
@@ -825,42 +799,8 @@ class NewRegisterBillGrid extends WebConfig {
         // return data;
     }
 
-    public isBatchSimpling() {
-        if (this.filterByProp('$_state', [RegisterBillStateEnum.WAIT_SAMPLE]).length > 0) {
-            return true;
-        }
-        return false;
-    }
 
-    public isBatchAudit() {
-        if (this.filterByProp('$_state', [RegisterBillStateEnum.WAIT_AUDIT]).length > 0) {
-            return true;
-        }
-        return false;
-    }
 
-    /**
-     * 是否可以进行批量采样
-     * @param applyStates
-     */
-    public isBatchAuto() {
-        if (this.filterByProp('$_state', [RegisterBillStateEnum.WAIT_SAMPLE]).length > 0) {
-            return true;
-        }
-        return false;
-
-    }
-
-    /**
-     * 是否可以批量撤销
-     * @param applyStates
-     */
-    public isBatchUndo() {
-        if (this.filterByProp('$_state', [RegisterBillStateEnum.WAIT_AUDIT]).length > 0) {
-            return true;
-        }
-        return false;
-    }
 
 
     /**
@@ -868,18 +808,9 @@ class NewRegisterBillGrid extends WebConfig {
      * @param applyStates
      */
     public async doBatchUndo() {
-        if (!this.isBatchUndo()) {
-            // @ts-ignore
-            swal({
-                title: '警告',
-                text: '没有数据可以进行批量撤销',
-                type: 'warning',
-                width: 300
-            });
-            return;
-        }
+
         var cthis = this;
-        var arr = this.filterByProp("$_state", [RegisterBillStateEnum.WAIT_AUDIT]);
+        var waitAudit = this.waitAuditRows;
 
         let promise = new Promise((resolve, reject) => {
             // @ts-ignore
@@ -899,7 +830,7 @@ class NewRegisterBillGrid extends WebConfig {
         let result = await promise; // wait until the promise resolves (*)
         if (result) {
             var _url =  "/registerBill/doBatchUndo.action";
-            var idlist = arr.map(e => e.id);
+            var idlist = waitAudit.map(e => e.id);
             $.ajax({
                 type: "POST",
                 url: _url,
