@@ -7,7 +7,6 @@ import com.dili.trace.service.QrCodeService;
 import com.dili.trace.dto.CheckSheetAliasInputDto;
 import com.dili.trace.dto.CheckSheetInputDto;
 import com.dili.trace.dto.CheckSheetPrintOutput;
-import com.dili.sg.trace.glossary.BillDetectStateEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dto.OperatorUser;
@@ -24,6 +23,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * 打印检测报告信息
+ */
 @Service
 public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 	@Autowired

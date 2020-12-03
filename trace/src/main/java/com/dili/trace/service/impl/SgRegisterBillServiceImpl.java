@@ -11,6 +11,7 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterSourceEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.dto.RegisterBillDto;

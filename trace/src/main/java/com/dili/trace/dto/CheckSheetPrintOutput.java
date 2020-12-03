@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import com.dili.trace.domain.CheckSheet;
 import com.dili.trace.domain.CheckSheetDetail;
-import com.dili.sg.trace.glossary.BillDetectStateEnum;
 
 import com.dili.trace.enums.DetectResultEnum;
 import org.apache.commons.collections4.CollectionUtils;

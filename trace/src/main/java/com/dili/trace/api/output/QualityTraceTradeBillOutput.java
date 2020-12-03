@@ -3,7 +3,7 @@ package com.dili.trace.api.output;
 import java.util.Date;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.dili.sg.trace.glossary.BillDetectStateEnum;
+import com.dili.trace.glossary.BillDetectStateEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 
