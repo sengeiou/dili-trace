@@ -337,6 +337,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	}
 
+	/**
+	 * 根据id集合查询
+	 * @param idList
+	 * @return
+	 */
 	public List<TradeDetail> findTradeDetailByIdList(List<Long> idList) {
 		if (idList == null || idList.isEmpty()) {
 			return Lists.newArrayList();
@@ -347,6 +352,11 @@ public class TradeDetailService extends BaseServiceImpl<TradeDetail, Long> {
 
 	}
 
+	/**
+	 * 根据父级id查询
+	 * @param parentIdList
+	 * @return
+	 */
 	public List<TradeDetail> findTradeDetailByParentIdList(List<Long> parentIdList) {
 		if (parentIdList == null || parentIdList.isEmpty()) {
 			return Lists.newArrayList();

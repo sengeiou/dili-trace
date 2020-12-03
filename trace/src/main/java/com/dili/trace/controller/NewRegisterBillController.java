@@ -703,6 +703,8 @@ public class NewRegisterBillController {
                     rb.setTruckType(TruckTypeEnum.FULL.getCode());
                     rb.setIsCheckin(YesOrNoEnum.NO.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
+                    rb.setTradeTypeId(input.getTradeTypeId());
+                    rb.setTradeTypeName(input.getTradeTypeName());
                     return rb;
                 }).toList();
         try {

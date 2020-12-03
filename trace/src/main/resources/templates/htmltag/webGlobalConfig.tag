@@ -3,5 +3,5 @@
         contextPath:'${contextPath}',
         imageserverPath:''
     }
-    console.info(webGlobalConfig);
+    //console.info(webGlobalConfig);
 </script>

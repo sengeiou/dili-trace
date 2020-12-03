@@ -364,7 +364,7 @@ public class RegisterBill extends BaseDomain {
     private String tradePrintingCard;
 
     @Column(name = "`trade_type_id`")
-    String tradeTypeId;
+    private String tradeTypeId;
 
     @Column(name = "`trade_type_name`")
     private String tradeTypeName;

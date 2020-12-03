@@ -6,10 +6,20 @@ class NewRegisterBillGrid extends WebConfig {
         };
         this.grid = grid;
         this.queryform = queryform;
+        this.uid = _.uniqueId("trace_id_");
         this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
         this.queryform.find('#query').click(async () => await this.queryGridData());
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
+        var cthis = this;
         window['RegisterBillGridObj'] = this;
+        window.addEventListener('message', function (e) {
+            var data = JSON.parse(e.data);
+            if (data.obj && data.fun) {
+                if (data.obj == 'RegisterBillGridObj') {
+                    cthis[data.fun].call(cthis, data.args);
+                }
+            }
+        }, false);
         this.btns = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn',
             'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn'];
         $('#edit-btn').on('click', async () => await this.openEditPage());
@@ -461,6 +471,7 @@ class NewRegisterBillGrid extends WebConfig {
     }
     openCreatePage() {
         let url = this.toUrl("/newRegisterBill/create.html");
+        var cthis = this;
         var dia = bs4pop.dialog({
             title: '新增报备单',
             content: url,
@@ -469,7 +480,10 @@ class NewRegisterBillGrid extends WebConfig {
             backdrop: 'static',
             width: '98%',
             height: '98%',
-            btns: []
+            btns: [],
+            onShowEnd: function () {
+                dia.$el.find('iframe')[0].contentWindow['RegisterBillGridObj'] = cthis;
+            }
         });
     }
     openEditPage() {
@@ -514,14 +528,11 @@ class NewRegisterBillGrid extends WebConfig {
         var btnArray = this.btns;
         for (var i = 0; i < btnArray.length; i++) {
             var btnId = btnArray[i];
-            $('#' + btnId).show();
+            $('#' + btnId).hide();
         }
     }
     checkAndShowHideBtns() {
-        var btnArray = this.btns;
-        for (var i = 0; i < btnArray.length; i++) {
-            $('#' + btnArray[i]).hide();
-        }
+        this.resetButtons();
         var rows = this.rows;
         if (rows.length == 0) {
             return;
