@@ -7,10 +7,8 @@ import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.domain.*;
-import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.service.DetectRecordService;
-import com.dili.trace.service.SeparateSalesRecordService;
+import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,13 +31,6 @@ import com.dili.trace.dto.ECommerceBillInputDto;
 import com.dili.trace.dto.ECommerceBillPrintOutput;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.ApproverInfoService;
-import com.dili.trace.service.BillService;
-import com.dili.trace.service.ECommerceBillService;
-import com.dili.trace.service.SgRegisterBillService;
-import com.dili.trace.service.SeperatePrintReportService;
-import com.dili.trace.service.TradeTypeService;
-import com.dili.trace.service.UsualAddressService;
 import com.google.common.collect.Lists;
 
 import io.swagger.annotations.Api;
@@ -79,6 +70,8 @@ public class ECommerceBillController {
 
 	@Autowired
 	SeperatePrintReportService seperatePrintReportService;
+	@Autowired
+	UapRpcService uapRpcService;
 
 	/**
 	 * 跳转到CommissionBill页面
@@ -110,8 +103,7 @@ public class ECommerceBillController {
 	@RequestMapping(value = "/findHighLightBill.action", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody Object findHighLightBill(RegisterBillDto dto) throws Exception {
 		try {
-			OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
-			RegisterBill bill = this.eCommerceBillService.findHighLightEcommerceBill(dto, operatorUser);
+			RegisterBill bill = this.eCommerceBillService.findHighLightEcommerceBill(dto, this.uapRpcService.getCurrentOperator().get());
 			return BaseOutput.success().setData(bill);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -149,10 +141,9 @@ public class ECommerceBillController {
 			if (input == null || input.getBill() == null) {
 				return BaseOutput.failure("参数错误");
 			}
-			OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
 			input.getBill().setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
 			this.eCommerceBillService.createECommerceBill(input.getBill(), input.getSeparateSalesRecordList(),
-					operatorUser);
+					uapRpcService.getCurrentOperator().get());
 			return BaseOutput.success("新增成功");
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -221,8 +212,7 @@ public class ECommerceBillController {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
-			this.eCommerceBillService.doAuditEcommerceBill(inputBill, operatorUser);
+			this.eCommerceBillService.doAuditEcommerceBill(inputBill, this.uapRpcService.getCurrentOperator().get());
 			return BaseOutput.success("操作成功");
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
@@ -242,8 +232,7 @@ public class ECommerceBillController {
 	public @ResponseBody BaseOutput doDelete(@RequestBody RegisterBill inputBill) {
 
 		try {
-			OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
-			this.eCommerceBillService.doDeleteEcommerceBill(inputBill, operatorUser);
+			this.eCommerceBillService.doDeleteEcommerceBill(inputBill, this.uapRpcService.getCurrentOperator().get());
 			return BaseOutput.success("操作成功");
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());

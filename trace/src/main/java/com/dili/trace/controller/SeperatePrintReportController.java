@@ -5,8 +5,7 @@ import java.util.function.Function;
 
 import com.dili.trace.dto.SeperatePrintOutput;
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.uap.sdk.session.SessionContext;
+import com.dili.trace.service.UapRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,8 @@ public class SeperatePrintReportController {
 	BillService billService;
 	@Autowired
 	ApproverInfoService approverInfoService;
+	@Autowired
+	UapRpcService uapRpcService;
 
 	/**
 	 * 进入打印页面
@@ -61,7 +62,7 @@ public class SeperatePrintReportController {
 
 		try {
 			List<SeperatePrintReportOutputDto> resultList = this.seperatePrintReportService.buildPreViewOutputList(
-					seperatePrintReportList, OperatorUser.build(SessionContext.getSessionContext()));
+					seperatePrintReportList, this.uapRpcService.getCurrentOperator().get());
 			SeperatePrintOutput data=SeperatePrintOutput.build(resultList);
 			return BaseOutput.success().setData(resultList);
 		} catch (TraceBizException e) {
@@ -95,7 +96,7 @@ public class SeperatePrintReportController {
 
 		try {
 			List<SeperatePrintReportOutputDto> resultList = this.seperatePrintReportService.saveSeperatePrintReportList(
-					seperatePrintReportList, OperatorUser.build(SessionContext.getSessionContext()));
+					seperatePrintReportList, this.uapRpcService.getCurrentOperator().get());
 
 			return BaseOutput.success().setData(resultList);
 		} catch (TraceBizException e) {

@@ -67,6 +67,8 @@ public class CommissionBillController {
 
     @Autowired
     SgRegisterBillService registerBillService;
+    @Autowired
+    UapRpcService uapRpcService;
 
     /**
      * 跳转到CommissionBill页面
@@ -120,8 +122,7 @@ public class CommissionBillController {
     public @ResponseBody
     Object findHighLightBill(RegisterBillDto dto) throws Exception {
         try {
-            OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
-            RegisterBill bill = this.commissionBillService.findHighLightCommissionBill(dto, operatorUser);
+            RegisterBill bill = this.commissionBillService.findHighLightCommissionBill(dto, this.uapRpcService.getCurrentOperator().get());
             return BaseOutput.success().setData(bill);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -167,8 +168,7 @@ public class CommissionBillController {
             bill.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
         }
         try {
-            OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
-            this.commissionBillService.createCommissionBillByManager(billList, operatorUser);
+            this.commissionBillService.createCommissionBillByManager(billList, this.uapRpcService.getCurrentOperator().get());
             return BaseOutput.success("新增成功");
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -226,7 +226,7 @@ public class CommissionBillController {
     public @ResponseBody
     BaseOutput doAuditCommissionBillByManager(Long billId) {
         try {
-            this.commissionBillService.doAuditCommissionBillByManager(billId, OperatorUser.build(SessionContext.getSessionContext()));
+            this.commissionBillService.doAuditCommissionBillByManager(billId, this.uapRpcService.getCurrentOperator().get());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -355,8 +355,7 @@ public class CommissionBillController {
             if (billIdList.isEmpty()) {
                 return BaseOutput.failure("参数不能为空");
             }
-            OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
-            List<String>reviewCheckedCodeList= this.commissionBillService.doBatchReviewCheck(billIdList, operatorUser);
+            List<String>reviewCheckedCodeList= this.commissionBillService.doBatchReviewCheck(billIdList, this.uapRpcService.getCurrentOperator().get());
             return BaseOutput.success().setData(reviewCheckedCodeList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

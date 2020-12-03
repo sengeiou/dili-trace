@@ -1,5 +1,6 @@
 package com.dili.common.entity;
 
+import com.dili.common.annotation.Role;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.uap.sdk.domain.Firm;
@@ -20,6 +21,7 @@ public class SessionData {
     private static final Logger logger = LoggerFactory.getLogger(SessionData.class);
 
     private Integer identityType;
+    private Role role;
     private Long userId;
     private String userName;
     private String tallyAreaNos;
@@ -76,6 +78,14 @@ public class SessionData {
             logger.error(e.getMessage(), e);
         }
         return data;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public static SessionData fromUser(User user, Integer identityType) {

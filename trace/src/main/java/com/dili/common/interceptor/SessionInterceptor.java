@@ -75,6 +75,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         } else {
             throw new TraceBizException("参数错误");
         }
+        this.sessionContext.getSessionData().setRole(access.role());
 //        Boolean initialized = (Boolean) request.getAttribute(ATTRIBUTE_CONTEXT_INITIALIZED);
 //        if (Boolean.TRUE.equals(initialized)) {
 //            return true;

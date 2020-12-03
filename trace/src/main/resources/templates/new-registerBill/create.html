@@ -88,6 +88,7 @@
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">客户Code</label>
                     <div class="input-group">
+                        <input type="hidden" name="userId" id="userId"/>
                         <input type="text" class="form-control input-sm" name="tradeAccountInput"  data-value-type="skip"   id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"/>
                         <input type="hidden" name="tradeAccount" id="tradeAccount"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
@@ -182,9 +183,10 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/postmsg.js"></script>
 
 <script type="text/javascript">
-    function getTopWindow(winObj=undefined){
+ /*   function getTopWindow(winObj=undefined){
         if(!winObj){
             winObj=window;
         }
@@ -194,7 +196,7 @@
         } else {
             return getTopWindow(winObj.parent.window);
         }
-    }
+    }*/
     // console.info(getTopWindow().location.href)
     var currentUser={"depId":"${user.depId!}"
         ,"id":"${user.id!}"
@@ -444,6 +446,7 @@
 
                         $("#idCardNo").val(customer.idNo).valid();
                         $("#name").val(customer.name).valid();
+                        $("#userId").val(customer.id).valid();
                         $("#addr").val(customer.address).valid();
                         $("#phone").val(customer.phone).valid();
                     } else {
@@ -452,6 +455,7 @@
                         $("#tradeAccount").val('')
                         $("#idCardNo").val("");
                         $("#name").val("");
+                        $("#userId").val("");
                         $("#addr").val("");
                         $("#phone").val("");
                     }
@@ -686,12 +690,12 @@
                             type:0,
                             time : 600,
                             end :function(){
-                                window.parent.postMessage(JSON.stringify({obj:'RegisterBillGridObj',fun:'removeAllAndLoadData',args:[]}));
+                                postMsg('removeAllAndLoadData');
                             }
                         },
 
                         function () {
-                            window.parent.postMessage(JSON.stringify({obj:'RegisterBillGridObj',fun:'removeAllAndLoadData',args:[]}));
+                            postMsg('removeAllAndLoadData');
                         }
                     );
 

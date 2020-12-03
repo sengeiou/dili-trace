@@ -2,6 +2,8 @@ package com.dili.trace.service;
 
 import com.dili.common.annotation.Access;
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.dto.IdNameDto;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -23,6 +25,17 @@ import java.util.Optional;
 public class UapRpcService {
     @Autowired
     FirmRpcService firmRpcService;
+
+    /**
+     * 当前登录用户名和id
+     * @return
+     */
+    public Optional<OperatorUser> getCurrentOperator() {
+        return this.getCurrentUserTicket().map(ut -> {
+            OperatorUser dto = new OperatorUser(ut.getId(), ut.getRealName());
+            return dto;
+        });
+    }
 
     /**
      * 查询当前登录用户信息
@@ -58,21 +71,23 @@ public class UapRpcService {
 
     /**
      * 是否有访问权限
+     *
      * @param method
      * @param url
      * @return
      */
-    public boolean hasAccess(String method,String url){
-        return SessionContext.hasAccess(method,url);
+    public boolean hasAccess(String method, String url) {
+        return SessionContext.hasAccess(method, url);
     }
 
     /**
      * 是否有访问权限
+     *
      * @param access
      * @return
      */
-    public boolean hasAccess(  Access access){
-        return SessionContext.hasAccess(access.method(),access.url());
+    public boolean hasAccess(Access access) {
+        return SessionContext.hasAccess(access.method(), access.url());
     }
 
 }

@@ -66,6 +66,8 @@ public class CheckSheetController {
     DetectTaskService detectTaskService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Autowired
+    UapRpcService uapRpcService;
 
     /**
      * 跳转到CheckSheet页面
@@ -185,8 +187,7 @@ public class CheckSheetController {
     BaseOutput<CheckSheetPrintOutput> insert(@RequestBody CheckSheetInputDto input) {
 
         try {
-            OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
-            CheckSheetPrintOutput resultMapDto = this.checkSheetService.createCheckSheet(input, operatorUser);
+            CheckSheetPrintOutput resultMapDto = this.checkSheetService.createCheckSheet(input, this.uapRpcService.getCurrentOperator().get());
             return BaseOutput.success("新增成功").setData(resultMapDto);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -211,8 +212,7 @@ public class CheckSheetController {
     BaseOutput<Object> prePrint(@RequestBody CheckSheetInputDto input) {
 
         try {
-            OperatorUser operatorUser = OperatorUser.build(SessionContext.getSessionContext());
-            CheckSheetPrintOutput resultMapDto = this.checkSheetService.prePrint(input, operatorUser);
+            CheckSheetPrintOutput resultMapDto = this.checkSheetService.prePrint(input, this.uapRpcService.getCurrentOperator().get());
             return BaseOutput.success().setData(resultMapDto);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
