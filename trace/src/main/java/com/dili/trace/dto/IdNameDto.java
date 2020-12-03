@@ -1,8 +1,9 @@
 package com.dili.trace.dto;
 
-public class IdNameDto {
-    private Long id;
-    private String name;
+import com.dili.trace.dto.idname.AbstraceIdName;
+
+public class IdNameDto extends AbstraceIdName {
+
     private Long marketId;
     private String marketName;
     public IdNameDto(){}
@@ -19,21 +20,6 @@ public class IdNameDto {
         this.marketName = marketName;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Long getMarketId() {
         return marketId;

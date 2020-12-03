@@ -2,7 +2,9 @@ package com.dili.common.entity;
 
 import com.dili.common.annotation.Role;
 import com.dili.trace.domain.User;
+import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.idname.AbstraceIdName;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.google.common.base.Objects;
@@ -12,10 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SessionData {
     private static final Logger logger = LoggerFactory.getLogger(SessionData.class);
@@ -35,11 +34,26 @@ public class SessionData {
     private Long marketId;
     private Set<String> userWeChatMenus;
 
+    public <T extends AbstraceIdName> Optional<T> to() {
+        if (Role.Manager == this.role) {
+            Optional opt = Optional.<OperatorUser>of(new OperatorUser(this.userId, this.userName));
+            return opt;
+        } else if (Role.Client == this.role) {
+            Optional opt = Optional.<IdNameDto>of(new IdNameDto(this.userId, this.userName));
+            return opt;
+        }else{
+            return Optional.empty();
+        }
+
+
+    }
 
     private SessionData() {
+
     }
-    public static SessionData mockClient(){
-        SessionData sessionData=new SessionData();
+
+    public static SessionData mockClient() {
+        SessionData sessionData = new SessionData();
         sessionData.setMarketId(8L);
         sessionData.setUserId(1L);
         sessionData.setUserName("zhangsan");
@@ -108,6 +122,7 @@ public class SessionData {
         data.userName = user.getName();
         return data;
     }
+
     public static SessionData fromUserTicket(UserTicket ut) {
         SessionData data = new SessionData();
         data.userId = ut.getId();
