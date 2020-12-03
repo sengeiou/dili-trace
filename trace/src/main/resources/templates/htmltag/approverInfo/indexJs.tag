@@ -260,7 +260,7 @@
                     swal('错误', '上传文件超过最大限制!', 'error');
                     return ;
                 }
-                
+
                 toBase64(data.originalFiles[0]).then((base64) => {
                 	 
                       $(this).siblings(".magnifying").attr('src', base64).show();
@@ -330,17 +330,6 @@
         var state = row.$_state;
 
     }
-
-
-
-    function phoneFormatter(val,row){
-        if(val){
-            return val.replace(val.substring(3,7), "****")
-        }
-        return val;
-    }
-
-
 
     function closeLastWin(id){
         $('#'+id).last().remove();

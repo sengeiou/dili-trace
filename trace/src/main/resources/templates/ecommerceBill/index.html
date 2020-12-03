@@ -136,9 +136,26 @@
 <script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/ecommercebill.index.js"></script>
+<script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <#webGlobalConfig/>
 
 <script>
+    laydate.render({
+        elem: '#latestDetectTimeTimeStart',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#latestDetectTimeTimeEnd',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#createdStart',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#createdEnd',
+        type: 'datetime'
+    });
     $(function () {
         var ecommerceBillGrid=new EcommerceBillGrid($('#ecommerceBillGrid'),$('#queryForm'));
     });

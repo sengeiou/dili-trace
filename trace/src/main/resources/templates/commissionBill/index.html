@@ -36,18 +36,18 @@
             </div>
 
             <div class="form-group col-auto">
-                <label for="latestDetectTimeStart">检测时间</label>
+                <label for="latestDetectTimeTimeStart">检测时间</label>
                 <div class="form-inline">
                     <div class="input-group">
-                        <input type="text" name="latestDetectTimeStart" id="latestDetectTimeStart" class="form-control laydatetime laystart"/>
+                        <input type="text" name="latestDetectTimeTimeStart" id="latestDetectTimeTimeStart" class="form-control laydatetime laystart"/>
                         <div class="input-group-append">
-                            <label for="latestDetectTimeStart" class="input-group-text fa fa-calendar"></label>
+                            <label for="latestDetectTimeTimeStart" class="input-group-text fa fa-calendar"></label>
                         </div>
                     </div>&nbsp;&nbsp;至&nbsp;&nbsp;
                     <div class="input-group">
-                        <input type="text" name="latestDetectTimeEnd" id="latestDetectTimeEnd" class="form-control laydatetime layend"/>
+                        <input type="text" name="latestDetectTimeTimeEnd" id="latestDetectTimeTimeEnd" class="form-control laydatetime layend"/>
                         <div class="input-group-append">
-                            <label for="latestDetectTimeEnd" class="input-group-text fa fa-calendar"></label>
+                            <label for="latestDetectTimeTimeEnd" class="input-group-text fa fa-calendar"></label>
                         </div>
                     </div>
                 </div>
@@ -162,9 +162,26 @@
 <script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/commissionbill.index.js"></script>
+<script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <#webGlobalConfig/>
 
 <script>
+    laydate.render({
+        elem: '#latestDetectTimeTimeStart',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#latestDetectTimeTimeEnd',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#createdStart',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#createdEnd',
+        type: 'datetime'
+    });
     $(function () {
         var RegisterBillStateEnum={};
     <%for (ss in @com.dili.trace.glossary.RegisterBillStateEnum.values()){%>

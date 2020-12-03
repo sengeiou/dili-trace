@@ -55,9 +55,10 @@
         <table id="grid" data-toggle="table" data-title="检测列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
                data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
-               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="true">
+               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="false" data-detail-view="false">
             <thead>
             <tr>
+                <th data-checkbox="true"></th>
                 <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     创建时间
                 </th>
@@ -94,8 +95,17 @@
 <script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/CheckSheet.index.js"></script>
+<script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <#webGlobalConfig/>
 <script>
+    laydate.render({
+        elem: '#createdStart',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#createdEnd',
+        type: 'datetime'
+    });
     $(function () {
         var checkSheetIndex=new CheckSheetIndex($('#grid'),$('#queryForm'));
     });

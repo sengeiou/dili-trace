@@ -12,7 +12,13 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum UsualAddressTypeEnum {
 
+    /**
+     * 登记单产地
+     */
     REGISTER("register", "登记单产地"),
+    /**
+     * 销地城市
+     */
     USER("user", "销地城市"),
     ;
 

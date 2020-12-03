@@ -6,8 +6,9 @@
             <div class="form-group col">
                 <label for="type">分类</label>
                 <select id="type" name="type" class="form-control"></select>
-                <#bcomboProvider _id="verifyStatus" _provider="usualAddressTypeProvider" _value="" _onLoadSuccess=""/>
+                <#bcomboProvider _id="type" _provider="usualAddressTypeProvider" _value="" _onLoadSuccess=""/>
             </div>
+
             <div class="form-group col">
                 <label for="address">地址</label>
                 <input type="text" class="form-control" name="address" id="address"/>
@@ -30,9 +31,10 @@
         <table id="grid" data-toggle="table" data-title="常用配置列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
                data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
-               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="true">
+               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="false" data-detail-view="false">
             <thead>
             <tr>
+                <th data-checkbox="true"></th>
                 <th data-field="addressId" data-sortable="true" data-align="center">
                     ID
                 </th>
@@ -74,7 +76,7 @@
             <tr>
                 <td style="padding:5px;">
                     <input  name="_type" id="_type" style="width:100%" data-options="label:'分类*:', validType:'length[2,20]',required:true,panelMaxHeight:'100',editable:false" />
-                    <#comboProvider _id="_type" _provider='usualAddressTypeProvider' _queryParams='{emptyText:""}' />
+                    <#bcomboProvider _id="_type" _provider="usualAddressTypeProvider" _value="" _onLoadSuccess=""/>
                 </td>
             </tr>
             <tr>
