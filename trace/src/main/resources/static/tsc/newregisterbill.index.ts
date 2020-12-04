@@ -410,7 +410,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             try{
                 var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
-                debugger
+
                 if(!resp.success){
                     //@ts-ignore
                     bs4pop.alert(resp.message, {type: 'error'});
