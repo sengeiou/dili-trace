@@ -6,13 +6,9 @@ class CommissionBillGrid extends WebConfig {
         this.billStateEnums = billStateEnums;
         this.billDetectStateEnums = billDetectStateEnums;
         window['RegisterBillGridObj'] = this;
-        this.queryform.find('#query').click(async () => await this.queryGridData());
         $('#add-btn').on('click', async () => await this.openCreatePage());
         this.initAutoComplete($("[name='productName']"), '/toll/category');
         this.initAutoComplete($("[name='originName']"), '/toll/city');
-        (async () => {
-            await this.queryGridData();
-        })();
     }
     removeAllAndLoadData() {
         bs4pop.removeAll();

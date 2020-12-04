@@ -603,13 +603,13 @@
                             type:0,
                             time : 600,
                             end :function(){
-                                parent.closeWin('view_win');
+                                parent.window['RegisterBillGridObj'].removeAllAndLoadData()
 
                             }
                         },
 
                         function () {
-                            parent.closeWin('view_win');
+                            parent.window['RegisterBillGridObj'].removeAllAndLoadData()
                         }
                     );
 

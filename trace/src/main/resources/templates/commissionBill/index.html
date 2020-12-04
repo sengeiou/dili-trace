@@ -89,7 +89,7 @@
 
             <div class="col-auto align-self-center mt-3">
                 <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
-                <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
+                <button id="query" type="button" class="btn btn-outline-primary" onclick="search()"><i class="fa fa-search"></i> 查询</button>
             </div>
         </div>
     </form>
@@ -193,9 +193,28 @@
     <%for (ss in @com.dili.trace.glossary.BillDetectStateEnum.values()){%>
             BillDetectStateEnum['${ss}']=${ss.code};
         <%}%>
+
         var commissionBillGrid=new CommissionBillGrid($('#commissionBillGrid'),$('#queryForm'),RegisterBillStateEnum,BillDetectStateEnum);
+
+        $('#commissionBillGrid').bootstrapTable('refreshOptions', {
+            url: '/commissionBill/listPage.action'
+        });
+
     });
 
+    function search(){
+        $("#commissionBillGrid").bootstrapTable('refresh');
+    }
+    //基础查询参数设置
+    function queryParams(params) {
+        let temp = {
+            rows: params.limit,   //页面大小
+            page: ((params.offset / params.limit) + 1) || 1, //页码
+            sort: params.sort,
+            order: params.order
+        };
+        return $.extend(temp, bui.util.bindGridMeta2Form('commissionBillGrid', 'queryForm'));
+    }
 </script>
 <!--
  <script src="http://base.nong12.com/static/log/log.build.js"></script>

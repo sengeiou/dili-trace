@@ -143,7 +143,7 @@ public class CommissionBillController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(RegisterBillDto input) throws Exception {
-        return this.commissionBillService.listPage(input);
+        return this.commissionBillService.listEasyuiPageByExample(input,true).toString();
 
     }
 
