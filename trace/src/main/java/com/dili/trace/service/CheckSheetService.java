@@ -94,7 +94,11 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 	}
 
 
-
+	/**
+	 * 获取64位二维码
+	 * @param content
+	 * @return
+	 */
 	private String getBase64(String content) {
 		try {
 			return this.qrCodeService.getBase64QrCode(content, 200, 200);
