@@ -1,0 +1,395 @@
+<#body head_title="用户列表">
+    <style>
+        .textbox-text[readonly] {
+            background: #ebebe4;
+        }
+    </style>
+    <div class="easyui-layout" fit="true">
+        <!-- ====================================================================================================================== -->
+        <!-- 上方布局 -->
+        <!-- ====================================================================================================================== -->
+        <div region="north" height="auto" align="center">
+            <div id="nav" style="padding-left:15px;padding-top:10px;" align="left">
+            </div>
+            <!-- =========================================================表单========================================================= -->
+            <div class="easyui-panel" style="width:100%;" align="left">
+                <form id="form" class="easyui-form" method="post" fit="true">
+                    <input name="id" id="id" type="hidden" value="${item.id}">
+                    <table width="670px">
+                        <tr>
+                            <td style="padding:5px;width:50%">
+                                <input class="easyui-textbox" name="name" id="name" style="width:100%"
+                                    value="${item.name}"
+                                    data-options="label:'姓名*:', validType:'length[2,30]',required:true" />
+                            </td>
+
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="phone" id="phone" style="width:100%"
+                                    value="${item.phone}"
+                                    data-options="label:'手机号*:', validType:'phoneNum',required:true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="cardNo" id="cardNo" style="width:100%"
+                                    value="${item.cardNo}"
+                                    data-options="label:'身份证号*:', validType:'cardNo',required:true" />
+                            </td>
+                            <td style="padding:5px;">
+                                <input class="easyui-textbox" name="addr" id="addr" style="width:100%"
+                                    value="${item.addr}"
+                                    data-options="label:'身份地址*:', validType:['isWord','length[0,40]'],required:true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <select id="userType" class="easyui-combobox" name="userType" style="width:100%;"
+                                    data-options="label:'用户类型*:',panelWidth:'auto',panelMinWidth:'175', onChange:changUserType,
+                                    panelHeight:'auto',panelMaxHeight:'300',value:'${item.userType}'">
+                                    <% for(userType in userTypeMap){%>
+                                    <option value="${userType.key}">${userType.value}</option>
+                                    <%}%>
+                                </select>
+                            </td>
+                            <td style="padding:5px;" class="usertype-${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}">
+                                <input class="easyui-tagbox" name="tallyAreaNos" id="tallyAreaNos" style="width:100%"
+                                    value="${item.tallyAreaNos}" 
+                                    data-options="label:'摊位号:',prompt:'输入后回车',validType:['uniquetag']" />
+                            </td>
+                        </tr>
+                        <tr>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="legalPerson" id="legalPerson" style="width:100%" value="${item.legalPerson}"
+                                data-options="label:'法人*:',validType:'length[2,20]',required:true" />
+                        </td>
+                        <td style="padding:5px;">
+                            <input class="easyui-textbox" name="license" id="license" style="width:100%" value="${item.license}"
+                                data-options="label:'统一信用代码*:', validType:['isWord','length[0,40]'],required:true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;">
+                            <input class="easyui-tagbox" name="plates" id="plates" style="width:100%"
+                                value="${userPlates}"
+                                data-options="label:'车牌号:',prompt:'输入车牌号后回车',validType:['uniquetag','isLicensePlate']" />
+                        </td>
+                        <td style="padding:5px;">
+                            <input type="hidden" name="salesCityName" id="salesCityName" value="${item.salesCityName}">
+                            <select class="easyui-combobox" name="salesCityId" id="salesCityId" style="width:100%;"
+                                data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300', editable:true,validType:'comboBoxEditvalid[\'salesCityId\']',onSelect:function(record){
+                                    $('#salesCityName').val(record.text);
+                                }">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;" colspan="2">
+                            <label style="font-size: 14px">常用销地城市:</label>
+                            <div id="cityList">
+                                <% for(city in cities){%>
+                                <a href="javascript:void(0)"
+                                    onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"
+                                    title="${city.mergedAddress}">${city.address}</a>
+                                <%}%>
+                        </div>
+                    </td>
+                </tr>
+                    <tr>
+                        <td style="padding:5px; align-content: center;" colspan="2" align="center" >
+                            <div class="fileimg-box" style="margin: 0 auto;float:left" >
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传身份证正面照</span>
+                                <input type="file" name="file" id="cardNoFrontUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                                <img class="magnifying">
+                                <input type="hidden" name="cardNoFrontUrl" value="${item.cardNoFrontUrl}">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传身份证反面照</span>
+                                <input type="file" name="file" id="cardNoBackUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />
+                                <img class="magnifying">
+                                <input type="hidden" name="cardNoBackUrl" value="${item.cardNoBackUrl}">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传营业执照</span>
+                                <input type="file" name="file" id="businessLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                                <input type="hidden" name="businessLicenseUrl" value="${item.businessLicenseUrl}">
+                                <img class="magnifying">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传生产许可证</span>
+                                <input type="file" name="file" id="manufacturingLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                                <input type="hidden" name="manufacturingLicenseUrl"  value="${item.manufacturingLicenseUrl}">
+                                <img class="magnifying">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+                       
+                            <div class="fileimg-box" style="margin: 0 auto;float:left">
+                                <span class="fileimg-plus-icon">+</span>
+                                <span class="fileimg-des">上传经营许可证</span>
+                                <input type="file" name="file" id="operationLicenseUrl" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
+                                <input type="hidden" name="operationLicenseUrl" value="${item.operationLicenseUrl}">
+                                <img class="magnifying">
+                                <div class="fileimg-cover" style="display: none;"></div>
+                                <div class="fileimg-edit" style="display: none;">
+                                    <span class="fileimg-view">查看</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </table>
+                
+                <input type="button" id="submitFormBtn" style="display: none;">
+            </form>
+            <div  class="easyui-panel">
+<div id="holdHiddenDiv"  style="display: none;">
+
+
+
+            </div>
+            </div>
+            
+            </div>
+        </div>
+        <!-- ====================================================================================================================== -->
+        <!-- 中央布局 -->
+        <!-- ====================================================================================================================== -->
+        <!-- 表格 -->
+        
+    </div>
+    
+    <!-- ====================================================================================================================== -->
+    <!-- style & script 分隔线 -->
+    <!-- ====================================================================================================================== -->
+     <script src="http://base.nong12.com/static/log/log.build.js"></script>
+     <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+     <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+     <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+     <script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+     <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+     <script>
+        /**
+    * 城市自动联想加载
+    * ***/
+        var formOldData={};  
+        function cityLoader(param, success, error) {
+            var q = param.q || '';
+            if (q.length < 1) { return false }
+            $.ajax({
+                type: "POST",
+                url: '${contextPath}/provider/getLookupList.action',
+                dataType: 'json',
+                data: {
+                    provider: 'cityProvider',
+                    queryParams: '{required:true}',
+                    value: q
+                },
+                success: function (data) {
+                    success(data);
+                },
+                error: function () {
+                    error.apply(this, arguments);
+                }
+            });
+        }
+        $('#submitFormBtn').click( function (){
+            $('#tallyAreaNos').tagbox('textbox').trigger($.Event("keydown", {keyCode: 13}));
+            if(!$('#form').form("validate")){
+                return;
+            }
+            var _formData = removeKeyStartWith($("#form").serializeObject(),"_");
+            if(_formData.tallyAreaNos instanceof Array){
+                if(_formData.tallyAreaNos.length>15){
+                    swal('错误','理货区数量最多15个', 'error');
+                    return;
+                }
+                _formData.tallyAreaNos = _formData.tallyAreaNos.join(',');
+            }
+            var _url = null;
+            var isNewData=false;
+            //没有id就新增
+            if(_formData.id == null || _formData.id==""){
+                _url = "${contextPath}/user/insert.action";
+            }else{//有id就修改
+                _url = "${contextPath}/user/update.action";
+                isNewData=true;
+            }
+            $.ajax({
+                type: "POST",
+                url: _url,
+                data: JSON.stringify(_formData),
+                processData:true,
+                dataType: "json",
+                async : true,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if(data.code=="200"){
+                        submitLog(isNewData);
+                        window.parent.layer.closeAll();
+                        window.parent.queryUserGrid();
+                    }else{
+                        swal('错误',data.result, 'error');
+                    }
+                },
+                error: function(){
+                    swal('错误', '远程访问失败', 'error');
+                }
+            });
+        });
+        function submitLog(isNewData){
+		if(isNewData==true){
+			 var formNewData=$('#form').serializeObject(); 
+			 //console.info(formOldData);
+			 //console.info(formNewData);
+			var content="【ID】："+formOldData.id;
+			if(formOldData.phone!=formNewData.phone){
+				//手机号	 
+				content=content+'<br/>【手机号】:从'+formOldData.phone+'"改为"'+formNewData.phone+'"';
+			}
+			if(JSON.stringify(formOldData.tallyAreaNos)!=JSON.stringify(formNewData.tallyAreaNos)){
+				 //理货区号
+				content=content+'<br/>【理货区号】:从'+$.makeArray(formOldData.tallyAreaNos).join(',')+'"改为"'+$.makeArray(formNewData.tallyAreaNos).join(',')+'"';
+			}
+			if(JSON.stringify(formOldData.plates)!=JSON.stringify(formNewData.plates)){
+				 //车牌号
+				content=content+'<br/>【车牌号】:从'+$.makeArray(formOldData.plates).join(',')+'"改为"'+$.makeArray(formNewData.plates).join(',')+'"';
+			}
+			
+			if(formOldData.salesCityName!=formNewData.salesCityName){
+				 //销地城市
+				content=content+'<br/>【销地城市】:从'+formOldData.salesCityName+'"改为"'+formNewData.salesCityName+'"';
+			}
+			TLOG.component.operateLog('用户管理',"用户修改",content);
+		}
+		
+		
+	}
+       
+        $(document).ready(function () {
+
+            if ('${item.userType}' == '') {
+                $('#userType').combobox('setValue', '${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}');
+            }
+            changUserType($('#userType').combobox('getValue'),'');
+            if('${item.cardNoFrontUrl}'!= ''){
+                $('#cardNoFrontUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+                $('#cardNoFrontUrl').siblings(".magnifying").attr('src','${item.cardNoFrontUrl}').show();
+            }
+            if('${item.cardNoBackUrl}' != ''){
+                $('#cardNoBackUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+                $('#cardNoBackUrl').siblings(".magnifying").attr('src','${item.cardNoBackUrl}').show();
+            }
+            if('${item.businessLicenseUrl}'!= ''){
+                $('#businessLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+                $('#businessLicenseUrl').siblings(".magnifying").attr('src','${item.businessLicenseUrl}').show();
+            }
+            if('${item.manufacturingLicenseUrl}'!= ''){
+                $('#manufacturingLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+                $('#manufacturingLicenseUrl').siblings(".magnifying").attr('src','${item.manufacturingLicenseUrl}').show();
+            }
+            if('${item.operationLicenseUrl}'!= ''){
+                $('#operationLicenseUrl').siblings('.fileimg-cover,.fileimg-edit').show();
+                $('#operationLicenseUrl').siblings(".magnifying").attr('src','${item.operationLicenseUrl}').show();
+            }
+
+            $('#salesCityId').combobox('setValue', '${item.salesCityId}');
+            $('#salesCityId').combobox('setText', '${item.salesCityName}');
+            $('#salesCityName').val('${item.salesCityName}');
+            initFileUpload();
+            formOldData=$('#form').serializeObject();
+        });
+        function changUserType(newValue,oldValue){
+			var changeImageBoxVisible=false;
+			var form=$('#form');
+             if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.CORPORATE.getCode()}') {
+            	 $('#license').textbox('enableValidation')
+            	  $('#legalPerson').textbox('enableValidation')
+            	       $('#tallyAreaNos').tagbox('disableValidation');
+                $('#license').textbox('readonly',false);	// 禁用只读模式
+                $('#legalPerson').textbox('readonly',false);	// 禁用只读模式
+               // $('#tallyAreaNos').tagbox('readonly',true);
+             }else  if (newValue == '${@com.dili.trace.glossary.UserTypeEnum.USER.getCode()}') {
+            	 $('#license').textbox('disableValidation')
+            	 $('#legalPerson').textbox('disableValidation')
+            	    $('#tallyAreaNos').tagbox('enableValidation');
+            	 	$('#license').textbox('readonly',true);	// 启用只读模式
+            	 	  $('#legalPerson').textbox('readonly',true);	// 禁用只读模式
+            	 	 //$('#tallyAreaNos').tagbox('readonly',false);
+                 
+             }
+            
+           
+        }
+        function initFileUpload(){
+            $(":file").fileupload({
+                dataType : 'json',
+                formData: {type:4,compress:true},
+                done : function(e, res) {
+                    if (res.result.code == 200) {
+                        var url = res.result.data;
+                        $(this).siblings(".magnifying").attr('src', url).show();
+                        $(this).siblings("input:hidden").val(url);
+                        $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                    }
+                },
+                add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                    var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                    var name = data.originalFiles[0]["name"];
+                    var index = name.lastIndexOf(".")+1;
+                    var fileType = name.substring(index,name.length);
+                    if(!acceptFileTypes.test(fileType)){
+                        swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                        return ;
+                    }
+                    var size = data.originalFiles[0]["size"];
+                    // 10M
+                    if(size > (1024*10*1024)){
+                        swal('错误', '上传文件超过最大限制!', 'error');
+                        return ;
+                    }
+                    data.submit();
+                }
+            });
+        }
+        function selectCity(cthis, id, name) {
+
+            $('#salesCityId').combobox('setValue', id);
+            $('#salesCityId').combobox('setText', name);
+            $('#salesCityName').val(name);
+
+        }
+        $('.fileimg-view').on('click', function () {
+            var url = $(this).parent().siblings(".magnifying").attr('src');
+            if(url){
+                layer.open({
+                    title:'图片',
+                    type: 1,
+                    skin: 'layui-layer-rim',
+                    closeBtn: 2,
+                    area: ['90%', '90%'], //宽高
+                    content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+                });
+            }
+        });
+    </script>
+</#body>

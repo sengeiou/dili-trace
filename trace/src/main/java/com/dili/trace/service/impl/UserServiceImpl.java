@@ -514,25 +514,30 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     public EasyuiPageOutput listEasyuiPageByExample(UserListDto dto) throws Exception {
         // 经营户卡号查询，不足6位，左边补0
-        dto.setThirdPartyCode(StringUtils.leftPad(dto.getThirdPartyCode(), 6, "0"));
+        if (!StringUtils.isEmpty(dto.getThirdPartyCode())) {
+            dto.setThirdPartyCode(StringUtils.leftPad(dto.getThirdPartyCode(), 6, "0"));
+        }
         this.andCondition(dto).ifPresent(str -> {
             dto.mset(IDTO.AND_CONDITION_EXPR, str);
         });
         dto.setYn(1);
         EasyuiPageOutput out = this.listEasyuiPageByExample(dto, true);
-        List<DTO> users = out.getRows();
+        List<User> users = out.getRows();
         List<Long> userIdList = users.stream().map(o -> {
-            return (Long) o.get("id");
+            return o.getId();
         }).collect(toList());
         Map<Long, List<UserPlate>> userPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
-        List<DTO> userList = users.stream().map(u -> {
-            Long userId = (Long) u.get("id");
+        List<User> userList = users.stream().map(u -> {
+            // Long userId = (Long) u.get("id");
+            Long userId = u.getId();
             if (userPlateMap.containsKey(userId)) {
                 String plates = userPlateMap.get(userId).stream().map(UserPlate::getPlate)
                         .collect(Collectors.joining(","));
-                u.put("plates", plates);
+               // u.put("plates", plates);
+                u.setPlates(plates);
             } else {
-                u.put("plates", "");
+              //  u.put("plates", "");
+                u.setPlates("");
             }
             return u;
         }).collect(toList());
