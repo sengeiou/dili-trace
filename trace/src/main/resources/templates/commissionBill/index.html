@@ -10,13 +10,14 @@
             </div>
             <!--likeProductName-->
             <div class="form-group col">
-                <label for="productId">商品</label>
-                <select id="productId" name="productId" class="form-control"></select>
+                <label for="productName">商品</label>
+                <input id="productName" name="productName" class="form-control" />
+                <!--<select id="productId" name="productId" class="form-control"></select>-->
             </div>
             <!--_salesCityName-->
             <div class="form-group col">
-                <label for="originId">产地</label>
-                <select id="originId" name="originId" class="form-control"></select>
+                <label for="originName">产地</label>
+                <input id="originName" name="originName" class="form-control" />
             </div>
             <div class="form-group col">
                 <label for="detectState">检测结果</label>
@@ -194,6 +195,7 @@
         <%}%>
         var commissionBillGrid=new CommissionBillGrid($('#commissionBillGrid'),$('#queryForm'),RegisterBillStateEnum,BillDetectStateEnum);
     });
+
 </script>
 <!--
  <script src="http://base.nong12.com/static/log/log.build.js"></script>
