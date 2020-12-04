@@ -1,4 +1,10 @@
-var Table = WebAssembly.Table;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const jquery_1 = __importDefault(require("jquery"));
+const underscore_1 = __importDefault(require("underscore"));
 class NewRegisterBillGrid extends WebConfig {
     constructor(grid, queryform) {
         super();
@@ -6,31 +12,31 @@ class NewRegisterBillGrid extends WebConfig {
         };
         this.grid = grid;
         this.queryform = queryform;
-        this.uid = _.uniqueId("trace_id_");
-        $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
+        this.uid = underscore_1.default.uniqueId("trace_id_");
+        jquery_1.default(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['RegisterBillGridObj'] = this;
         this.btns = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn',
             'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn'];
-        $('#edit-btn').on('click', async () => await this.openEditPage());
-        $('#btn_add').on('click', async () => await this.openCreatePage());
-        $('#copy-btn').on('click', async () => await this.openCopyPage());
-        $('#upload-origincertifiy-btn').on('click', async () => await this.openUploadOriginCertifyPage());
-        $('#upload-detectreport-btn').on('click', async () => await this.openUploadDetectReportPage());
-        $('#upload-handleresult-btn').on('click', async () => await this.openUploadHandleResultPage());
-        $('#detail-btn').on('click', async () => await this.openDetailPage());
-        $('#audit-btn').on('click', async () => await this.openAuditPage());
-        $('#undo-btn').on('click', async () => await this.doUndo());
-        $('#batch-undo-btn').on('click', async () => await this.doBatchUndo());
-        $('#batch-audit-btn').on('click', async () => await this.doBatchAudit());
-        $('#createsheet-btn').on('click', async () => await this.openCreateSheetPage());
-        $('#sampling-btn').on('click', async () => await this.doSamplingCheck());
-        $('#batch-auto-btn').on('click', async () => await this.doBatchAutoCheck());
-        $('#auto-btn').on('click', async () => await this.doAutoCheck());
-        $('#remove-reportAndcertifiy-btn').on('click', async () => await this.doRemoveReportAndCertifiy());
-        $('#batch-sampling-btn').on('click', async () => await this.doBatchSamplingCheck());
-        $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
-        $('#review-btn').on('click', async () => await this.doReviewCheck());
+        jquery_1.default('#edit-btn').on('click', async () => await this.openEditPage());
+        jquery_1.default('#btn_add').on('click', async () => await this.openCreatePage());
+        jquery_1.default('#copy-btn').on('click', async () => await this.openCopyPage());
+        jquery_1.default('#upload-origincertifiy-btn').on('click', async () => await this.openUploadOriginCertifyPage());
+        jquery_1.default('#upload-detectreport-btn').on('click', async () => await this.openUploadDetectReportPage());
+        jquery_1.default('#upload-handleresult-btn').on('click', async () => await this.openUploadHandleResultPage());
+        jquery_1.default('#detail-btn').on('click', async () => await this.openDetailPage());
+        jquery_1.default('#audit-btn').on('click', async () => await this.openAuditPage());
+        jquery_1.default('#undo-btn').on('click', async () => await this.doUndo());
+        jquery_1.default('#batch-undo-btn').on('click', async () => await this.doBatchUndo());
+        jquery_1.default('#batch-audit-btn').on('click', async () => await this.doBatchAudit());
+        jquery_1.default('#createsheet-btn').on('click', async () => await this.openCreateSheetPage());
+        jquery_1.default('#sampling-btn').on('click', async () => await this.doSamplingCheck());
+        jquery_1.default('#batch-auto-btn').on('click', async () => await this.doBatchAutoCheck());
+        jquery_1.default('#auto-btn').on('click', async () => await this.doAutoCheck());
+        jquery_1.default('#remove-reportAndcertifiy-btn').on('click', async () => await this.doRemoveReportAndCertifiy());
+        jquery_1.default('#batch-sampling-btn').on('click', async () => await this.doBatchSamplingCheck());
+        jquery_1.default('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
+        jquery_1.default('#review-btn').on('click', async () => await this.doReviewCheck());
         this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
         this.grid.bootstrapTable('refreshOptions', { url: '/newRegisterBill/listPage.action',
             'queryParams': (params) => this.buildQueryData(params),
@@ -53,7 +59,7 @@ class NewRegisterBillGrid extends WebConfig {
             sort: params.sort,
             order: params.order
         };
-        let data = $.extend(temp, this.queryform.serializeJSON());
+        let data = jquery_1.default.extend(temp, this.queryform.serializeJSON());
         let jsonData = jq.removeEmptyProperty(data);
         return JSON.stringify(jsonData);
     }
@@ -293,7 +299,7 @@ class NewRegisterBillGrid extends WebConfig {
     async openCreateSheetPage() {
         var rows = this.rows;
         var idList = rows.map(function (v, i) { return v.id; });
-        let url = this.toUrl('/checkSheet/edit.html?' + $.param({ idList: idList }, true));
+        let url = this.toUrl('/checkSheet/edit.html?' + jquery_1.default.param({ idList: idList }, true));
         var dia = bs4pop.dialog({
             title: '打印检测报告',
             content: url,
@@ -366,7 +372,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             layer.closeAll();
             var cthis = this;
-            $.ajax({
+            jquery_1.default.ajax({
                 type: "POST",
                 url: "${contextPath}/newRegisterBill/doBatchAudit.action",
                 processData: true,
@@ -522,7 +528,7 @@ class NewRegisterBillGrid extends WebConfig {
         var btnArray = this.btns;
         for (var i = 0; i < btnArray.length; i++) {
             var btnId = btnArray[i];
-            $('#' + btnId).hide();
+            jquery_1.default('#' + btnId).hide();
         }
     }
     checkAndShowHideBtns() {
@@ -532,56 +538,56 @@ class NewRegisterBillGrid extends WebConfig {
         if (rows.length == 0) {
             return;
         }
-        var createCheckSheet = _.chain(this.rows)
+        var createCheckSheet = underscore_1.default.chain(this.rows)
             .filter(item => { var _a; return 1 == ((_a = item === null || item === void 0 ? void 0 : item.detectRequest) === null || _a === void 0 ? void 0 : _a.detectResult); })
-            .filter(item => _.isUndefined(item.checkSheetId) || item.checkSheetId == null).value().length > 0;
-        createCheckSheet ? $('#createsheet-btn').show() : $('#createsheet-btn').hide();
+            .filter(item => underscore_1.default.isUndefined(item.checkSheetId) || item.checkSheetId == null).value().length > 0;
+        createCheckSheet ? jquery_1.default('#createsheet-btn').show() : jquery_1.default('#createsheet-btn').hide();
         if (rows.length == 1) {
             var selected = rows[0];
-            $('#copy-btn').show();
-            $('#detail-btn').show();
-            $('#upload-origincertifiy-btn').show();
-            $('#upload-handleresult-btn').show();
+            jquery_1.default('#copy-btn').show();
+            jquery_1.default('#detail-btn').show();
+            jquery_1.default('#upload-origincertifiy-btn').show();
+            jquery_1.default('#upload-handleresult-btn').show();
             var waitAudit = this.waitAuditRows;
             if (waitAudit.length == 1) {
-                $('#undo-btn').show();
-                $('#audit-btn').show();
-                $('#edit-btn').show();
-                $('#upload-detectreport-btn').show();
+                jquery_1.default('#undo-btn').show();
+                jquery_1.default('#audit-btn').show();
+                jquery_1.default('#edit-btn').show();
+                jquery_1.default('#upload-detectreport-btn').show();
             }
             if (selected.hasOriginCertifiy != 0) {
-                $('#remove-reportAndcertifiy-btn').show();
+                jquery_1.default('#remove-reportAndcertifiy-btn').show();
             }
             if (selected.registerSource == 1) {
                 if (selected.hasOriginCertifiy != 0) {
-                    $('#audit-withoutDetect-btn').show();
+                    jquery_1.default('#audit-withoutDetect-btn').show();
                 }
             }
             if (selected.detectStatus == 20) {
-                $('#auto-btn').show();
-                $('#undo-btn').show();
-                $('#sampling-btn').show();
+                jquery_1.default('#auto-btn').show();
+                jquery_1.default('#undo-btn').show();
+                jquery_1.default('#sampling-btn').show();
             }
             if (((_a = selected === null || selected === void 0 ? void 0 : selected.detectRequest) === null || _a === void 0 ? void 0 : _a.detectResult) == 2) {
                 if (((_b = selected === null || selected === void 0 ? void 0 : selected.detectRequest) === null || _b === void 0 ? void 0 : _b.detectType) == 20) {
-                    $('#review-btn').show();
+                    jquery_1.default('#review-btn').show();
                 }
                 else if (((_c = selected === null || selected === void 0 ? void 0 : selected.detectRequest) === null || _c === void 0 ? void 0 : _c.detectType) == 30 && selected.hasHandleResult == 0) {
-                    $('#review-btn').show();
+                    jquery_1.default('#review-btn').show();
                 }
             }
             return;
         }
         var batchAudit = this.filterByProp('verifyStatus', [0]).length > 0;
-        batchAudit ? $('#batch-audit-btn').show() : $('#batch-audit-btn').hide();
+        batchAudit ? jquery_1.default('#batch-audit-btn').show() : jquery_1.default('#batch-audit-btn').hide();
         var batchSampling = this.batchSamplingRows.length > 0;
-        batchSampling ? $('#batch-sampling-btn').show() : $('#batch-sampling-btn').hide();
+        batchSampling ? jquery_1.default('#batch-sampling-btn').show() : jquery_1.default('#batch-sampling-btn').hide();
         var batchAuto = batchSampling;
-        batchAuto ? $('#batch-auto-btn').show() : $('#batch-auto-btn').hide();
-        var batchUndo = _.chain(this.rows).filter(item => {
+        batchAuto ? jquery_1.default('#batch-auto-btn').show() : jquery_1.default('#batch-auto-btn').hide();
+        var batchUndo = underscore_1.default.chain(this.rows).filter(item => {
             return (0 == item.verifyStatus) || (20 == item.detectStatus);
         });
-        batchUndo ? $('#batch-undo-btn').show() : $('#batch-undo-btn').hide();
+        batchUndo ? jquery_1.default('#batch-undo-btn').show() : jquery_1.default('#batch-undo-btn').hide();
     }
     get waitAuditRows() {
         return this.filterByProp('verifyStatus', [0]);
@@ -624,14 +630,11 @@ class NewRegisterBillGrid extends WebConfig {
         let rows = this.grid.bootstrapTable('getSelections');
         return rows;
     }
-    static getInstance() {
-        return window['registerBillGrid'];
-    }
     static queryProduct(param, success, error) {
-        var productName = $('#productCombobox').combotree('getText');
+        var productName = jquery_1.default('#productCombobox').combotree('getText');
         var data = [];
         var url = '/toll/category?name=' + productName;
-        $.ajax({
+        jquery_1.default.ajax({
             url: url,
             success: function (resp) {
                 data = resp.suggestions.map(function (v, i) {
@@ -657,13 +660,13 @@ class NewRegisterBillGrid extends WebConfig {
                     return false;
                 }
             });
-            $('.layui-layer').width('460px');
+            jquery_1.default('.layui-layer').width('460px');
         });
         let result = await promise;
         if (result) {
             var _url = "/registerBill/doBatchUndo.action";
             var idlist = waitAudit.map(e => e.id);
-            $.ajax({
+            jquery_1.default.ajax({
                 type: "POST",
                 url: _url,
                 data: JSON.stringify(idlist),
@@ -700,9 +703,9 @@ class NewRegisterBillGrid extends WebConfig {
         layer.closeAll();
     }
     filterByProp(prop, propValues) {
-        let arrayData = $.makeArray(this.rows);
-        let arrayValue = $.makeArray(propValues);
-        let values = _.chain(arrayData).filter(element => $.inArray(element[prop], arrayValue) > -1).value();
+        let arrayData = jquery_1.default.makeArray(this.rows);
+        let arrayValue = jquery_1.default.makeArray(propValues);
+        let values = underscore_1.default.chain(arrayData).filter(element => jquery_1.default.inArray(element[prop], arrayValue) > -1).value();
         return values;
     }
 }

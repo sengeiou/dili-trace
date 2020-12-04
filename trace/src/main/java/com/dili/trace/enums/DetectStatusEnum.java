@@ -8,7 +8,12 @@ public enum DetectStatusEnum {
     /**
      * 初始状态
      */
-    NONE(10, ""),
+    NONE(0, ""),
+
+    /**
+     * 待接单
+     */
+    WAIT_DESIGNATED(10, "待接单"),
     /**
      * 待采样
      */
