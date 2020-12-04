@@ -629,12 +629,12 @@ public class SgRegisterBillController {
     @ResponseBody
     public BaseOutput<?> listStaticsData(RegisterBillDto registerBill) {
         registerBill.setAttrValue(StringUtils.trimToEmpty(registerBill.getAttrValue()));
-        if (StringUtils.isBlank(registerBill.getLatestDetectTimeTimeStart())) {
-            registerBill.setLatestDetectTimeTimeStart(null);
-        }
-        if (StringUtils.isBlank(registerBill.getLatestDetectTimeTimeEnd())) {
-            registerBill.setLatestDetectTimeTimeEnd(null);
-        }
+//        if (StringUtils.isBlank(registerBill.getLatestDetectTimeTimeStart())) {
+//            registerBill.setLatestDetectTimeTimeStart(null);
+//        }
+//        if (StringUtils.isBlank(registerBill.getLatestDetectTimeTimeEnd())) {
+//            registerBill.setLatestDetectTimeTimeEnd(null);
+//        }
 
         RegisterBillStaticsDto staticsDto = this.registerBillService.groupByState(registerBill);
 

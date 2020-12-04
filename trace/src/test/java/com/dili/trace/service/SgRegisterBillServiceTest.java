@@ -97,8 +97,8 @@ public class SgRegisterBillServiceTest extends AutoWiredBaseTest {
     @Test
     public void listPageCheckInData() {
         RegisterBillDto query = new RegisterBillDto();
-        query.setCreatedStart("2020-07-15 00:00:00");
-        query.setCreatedEnd("2020-07-21 23:59:59");
+//        query.setCreatedStart("2020-07-15 00:00:00");
+//        query.setCreatedEnd("2020-07-21 23:59:59");
         query.setUserId(458L);
         Map<Integer, Map<String, List<RegisterBill>>> mapdata = this.registerBillService.listPageCheckInData(query);
         System.out.println(mapdata);

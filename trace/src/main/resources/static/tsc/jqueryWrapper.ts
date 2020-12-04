@@ -44,7 +44,8 @@ class jq {
      */
 
     public static async postJson(url:string,data:object,settings:JQuery.AjaxSettings={}):Promise<any> {
-        _.extend(settings,{method:'post',dataType:'json',contentType:'application/json',data:JSON.stringify(data),url:url})
+        let jsonData=this.removeEmptyProperty(data);
+        _.extend(settings,{method:'post',dataType:'json',contentType:'application/json',data:JSON.stringify(jsonData),url:url})
         let resp:any=await jq.ajax(settings);
         return resp;
     }
@@ -55,7 +56,8 @@ class jq {
      */
 
     public static async postJsonWithProcessing(url:string,data:object,settings:JQuery.AjaxSettings={}):Promise<any> {
-        _.extend(settings,{method:'post',dataType:'json',contentType:'application/json',data:JSON.stringify(data),url:url})
+        let jsonData=this.removeEmptyProperty(data);
+        _.extend(settings,{method:'post',dataType:'json',contentType:'application/json',data:JSON.stringify(jsonData),url:url})
         try{
             //@ts-ignore
             bui.loading.show('努力提交中，请稍候。。。');
@@ -68,5 +70,20 @@ class jq {
             bui.loading.hide();
             throw e
         }
+    }
+    public  static removeEmptyProperty(data:object){
+
+        let jsonData=_.chain(data)
+            .pick((v,k)=>{
+                return !_.isUndefined(v);})
+            .pick((v,k)=>{
+                if(_.isString(v)){
+                    if(_.isEmpty(v)||_.isNull(v)){
+                        return false;
+                    }
+                }
+                return true;})
+            .value();
+        return jsonData;
     }
 }

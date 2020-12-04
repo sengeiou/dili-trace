@@ -31,7 +31,7 @@ public enum BillVerifyStatusEnum {
 	NO_PASSED(30, "不通过"),
 
 	/**
-	 * 不通过
+	 * 作废
 	 */
 	DELETED(40, "作废"),;
 

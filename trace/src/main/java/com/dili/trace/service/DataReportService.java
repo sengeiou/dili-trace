@@ -119,8 +119,8 @@ public class DataReportService {
 
         Date updateTime = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-        billDto.setCreatedStart(DateUtil.format(start, "yyyy-MM-dd HH:mm:ss"));
-        billDto.setCreatedEnd(DateUtil.format(end, "yyyy-MM-dd HH:mm:ss"));
+        billDto.setCreatedStart(start);
+        billDto.setCreatedEnd(end);
         billDto.setMarketId(market.getId());
         ReportCountDto reportCountDto = StreamEx.ofNullable(this.registerBillMapper.selectReportCountData(billDto))
                 .nonNull().flatCollection(Function.identity()).findFirst().orElse(new ReportCountDto());
