@@ -4,8 +4,10 @@ import com.dili.bpmc.sdk.domain.ProcessInstanceMapping;
 import com.dili.bpmc.sdk.domain.TaskMapping;
 import com.dili.bpmc.sdk.dto.TaskDto;
 import com.dili.bpmc.sdk.rpc.*;
+import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,11 +74,20 @@ public class BpmTest {
 
     @Test
     public void test() {
-/*        TaskDto taskDto = DTOUtils.newDTO(TaskDto.class);
-        BaseOutput<List<TaskMapping>> out = this.taskRpc.list(taskDto);
-        System.out.println(out);*/
-        BaseOutput<ProcessInstanceMapping>out=runtimeRpc.startProcessInstanceById("dili_trace_test:1:202011221636427750000000","dili_trace_test","16",new HashMap<>());
+
+
+        //rentalApprovalProcess
+        //code
+        //userid
+        //parametermap
+        BaseOutput<ProcessInstanceMapping>out=runtimeRpc.startProcessInstanceByKey("dili_trace_test:1:202011221636427750000000","dili_trace_test","16",new HashMap<>());
 
         System.out.println(out);
+        if (!out.isSuccess()) {
+            throw new BusinessException(ResultCode.APP_ERROR, "流程启动失败，请联系管理员");
+        }
+        System.out.println(out.getData().getProcessDefinitionId());
+        System.out.println(out.getData().getProcessInstanceId());
+
     }
 }
