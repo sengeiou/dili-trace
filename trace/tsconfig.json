@@ -30,5 +30,6 @@
   },
   "include": ["./src/main/resources/static/tsc"],
   "compileOnSave": true,
-  "buildOnSave": true
+  "buildOnSave": true,
+  "references": ["jQuery","underscores"]
 }
