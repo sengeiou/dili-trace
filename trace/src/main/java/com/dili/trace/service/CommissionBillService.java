@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
+import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.DetectRequest;
@@ -35,7 +36,7 @@ import java.util.Optional;
  * 委托单
  */
 @Service
-public class CommissionBillService {
+public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> {
 
     @Autowired
     CodeGenerateService codeGenerateService;

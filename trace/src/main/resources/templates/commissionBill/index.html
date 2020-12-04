@@ -193,9 +193,27 @@
     <%for (ss in @com.dili.trace.glossary.BillDetectStateEnum.values()){%>
             BillDetectStateEnum['${ss}']=${ss.code};
         <%}%>
-        var commissionBillGrid=new CommissionBillGrid($('#commissionBillGrid'),$('#queryForm'),RegisterBillStateEnum,BillDetectStateEnum);
+
+
+        $('#commissionBillGrid').bootstrapTable('refreshOptions', {
+            url: '/commissionBill/listPage.action'
+        });
+
     });
 
+    function search(){
+        $("#commissionBillGrid").bootstrapTable('refresh');
+    }
+    //基础查询参数设置
+    function queryParams(params) {
+        let temp = {
+            rows: params.limit,   //页面大小
+            page: ((params.offset / params.limit) + 1) || 1, //页码
+            sort: params.sort,
+            order: params.order
+        };
+        return $.extend(temp, bui.util.bindGridMeta2Form('commissionBillGrid', 'queryForm'));
+    }
 </script>
 <!--
  <script src="http://base.nong12.com/static/log/log.build.js"></script>

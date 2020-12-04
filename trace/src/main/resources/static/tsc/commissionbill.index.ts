@@ -13,15 +13,15 @@ class CommissionBillGrid extends WebConfig{
         this.billDetectStateEnums = billDetectStateEnums;
         window['RegisterBillGridObj']=this;
 
-        this.queryform.find('#query').click(async () => await this.queryGridData());
+        //this.queryform.find('#query').click(async () => await this.queryGridData());
         $('#add-btn').on('click',async ()=>await this.openCreatePage());
 
         this.initAutoComplete($("[name='productName']"),'/toll/category');
         this.initAutoComplete($("[name='originName']"),'/toll/city');
         //load data
-        (async ()=>{
+        /*(async ()=>{
             await this.queryGridData();
-        })();
+        })();*/
     }
 
     public removeAllAndLoadData(){
@@ -52,6 +52,7 @@ class CommissionBillGrid extends WebConfig{
     }
 
     private async queryGridData(){
+        console.log("queryGridData");
         if (!this.queryform.validate().form()) {
             //@ts-ignore
             bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
