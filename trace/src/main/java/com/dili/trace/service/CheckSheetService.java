@@ -128,6 +128,12 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 
 	}
 
+	/**
+	 * 构造CheckSheet
+	 * @param checkSheet
+	 * @param checkSheetDetailList
+	 * @return
+	 */
 	private CheckSheetPrintOutput buildPrintDTOMap(CheckSheet checkSheet, List<CheckSheetDetail> checkSheetDetailList) {
 		String detailUrl = this.baseWebPath + "/checkSheet/detail/";
 		ApproverInfo approverInfo = this.approverInfoService.get(checkSheet.getApproverInfoId());
