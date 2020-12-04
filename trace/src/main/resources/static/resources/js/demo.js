@@ -3,7 +3,7 @@ class DemoClass {
     }
 }
 function demo() {
-    console.info("abcd");
+    console.info("ABC");
 }
 class Ajax {
     constructor(settings) {

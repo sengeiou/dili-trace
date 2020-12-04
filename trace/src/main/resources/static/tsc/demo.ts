@@ -1,8 +1,3 @@
-// import $ from 'jquery';
-// import _ from 'underscore';
-
-
-
 
 class DemoClass{
     constructor(props) {
@@ -10,7 +5,7 @@ class DemoClass{
     }
 }
 function demo() {
-    console.info("abcd")
+    console.info("ABC")
 }
 class Ajax{
 
