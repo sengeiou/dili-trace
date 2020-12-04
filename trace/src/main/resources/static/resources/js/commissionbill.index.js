@@ -5,10 +5,32 @@ class CommissionBillGrid extends WebConfig {
         this.queryform = queryform;
         this.billStateEnums = billStateEnums;
         this.billDetectStateEnums = billDetectStateEnums;
-        this.queryform.find('#query').click(async () => await this.queryGridData());
+        window['RegisterBillGridObj'] = this;
+        $('#add-btn').on('click', async () => await this.openCreatePage());
+        this.initAutoComplete($("[name='productName']"), '/toll/category');
+        this.initAutoComplete($("[name='originName']"), '/toll/city');
+    }
+    removeAllAndLoadData() {
+        bs4pop.removeAll();
         (async () => {
             await this.queryGridData();
         })();
+    }
+    openCreatePage() {
+        let url = this.toUrl("/commissionBill/create.html");
+        var cthis = this;
+        var dia = bs4pop.dialog({
+            title: '新增委托单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: [],
+            onShowEnd: function () {
+            }
+        });
     }
     async queryGridData() {
         if (!this.queryform.validate().form()) {
@@ -125,6 +147,40 @@ class CommissionBillGrid extends WebConfig {
         let arrayValue = $.makeArray(propValues);
         let values = _.chain(arrayData).filter(element => $.inArray(element[prop], arrayValue) > -1).value();
         return values;
+    }
+    initAutoComplete(selector, url) {
+        $(selector).keydown(function (e) {
+            if (e.keyCode == 13) {
+            }
+        });
+        $(selector).data('oldvalue', '');
+        $(selector).on('change', function () {
+            var oldvalue = $(selector).data('oldvalue');
+            var val = $(this).val();
+            if (oldvalue != val) {
+                $(this).siblings('input').val('');
+            }
+        });
+        $(selector).devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl: url,
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst: true,
+            autoFocus: true,
+            onSelect: function (suggestion) {
+                console.info('onSelect');
+                var self = this;
+                var idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value.trim());
+                $(selector).data('oldvalue', suggestion.value);
+                var v = $(self).valid();
+            }
+        });
     }
 }
 //# sourceMappingURL=commissionbill.index.js.map

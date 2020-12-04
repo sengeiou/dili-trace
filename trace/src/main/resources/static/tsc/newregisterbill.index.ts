@@ -1,4 +1,5 @@
-import Table = WebAssembly.Table;
+// import $ from 'jquery';
+// import _ from 'underscore';
 
 class NewRegisterBillGrid extends WebConfig {
     grid: any;
@@ -410,7 +411,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             try{
                 var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
-                debugger
+
                 if(!resp.success){
                     //@ts-ignore
                     bs4pop.alert(resp.message, {type: 'error'});
@@ -782,10 +783,6 @@ class NewRegisterBillGrid extends WebConfig {
     get rows() {
         let rows = this.grid.bootstrapTable('getSelections');
         return rows;
-    }
-
-    public static getInstance(): RegisterBillGrid {
-        return window['registerBillGrid'] as RegisterBillGrid;
     }
 
     private handleTimeUpdateEvent = (event) => {

@@ -34,12 +34,18 @@ public class UsualAddressCountClearJob {
 		this.checkAndClearUsedCount();
 	}
 
-	//每天00:00:01的时候执行数据处理
+	/**
+	 * 每天00:00:01的时候执行数据处理
+	 */
 	@Scheduled(cron = "1 0 0 * * ?")
 	public void execute() {
 		this.checkAndClearUsedCount();
 	}
 
+	/**
+	 * 地址统计
+	 * @return
+	 */
 	private boolean checkAndClearUsedCount() {
 
 		try {

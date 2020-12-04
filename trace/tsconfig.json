@@ -7,6 +7,10 @@
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "alwaysStrict": false,
+    "watch": true,
+    "incremental": true,
+    "plugins": [],
     "module": "CommonJS",
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
@@ -26,5 +30,6 @@
   },
   "include": ["./src/main/resources/static/tsc"],
   "compileOnSave": true,
-  "buildOnSave": true
+  "buildOnSave": true,
+  "references": ["jQuery","underscores"]
 }
