@@ -15,31 +15,31 @@ public class RegisterBillDto extends RegisterBill {
 	@ApiModelProperty(value = "查询登记开始时间")
 	@Column(name = "`created`")
 	@Operator(Operator.GREAT_EQUAL_THAN)
-	private String createdStart;
+	private Date createdStart;
 
 	@ApiModelProperty(value = "查询登记结束时间")
 	@Column(name = "`created`")
 	@Operator(Operator.LITTLE_EQUAL_THAN)
-	private String createdEnd;
+	private Date createdEnd;
 
 	@ApiModelProperty(value = "查询修改开始时间")
 	@Column(name = "`modified`")
 	@Operator(Operator.GREAT_EQUAL_THAN)
-	private String modifiedStart;
+	private Date modifiedStart;
 
 	@ApiModelProperty(value = "查询修改结束时间")
 	@Column(name = "`modified`")
 	@Operator(Operator.LITTLE_EQUAL_THAN)
-	private String modifiedEnd;
+	private Date modifiedEnd;
 
 	@ApiModelProperty(value = "查询检测开始时间")
 	@Column(name = "`latest_detect_time`")
 	@Operator(Operator.GREAT_EQUAL_THAN)
-	private String latestDetectTimeTimeStart;
+	private Date latestDetectTimeTimeStart;
 	@ApiModelProperty(value = "查询检测结束时间")
 	@Column(name = "`latest_detect_time`")
 	@Operator(Operator.LITTLE_EQUAL_THAN)
-	private String latestDetectTimeTimeEnd;
+	private Date latestDetectTimeTimeEnd;
 
 	@ApiModelProperty(value = "商品名称LIKE")
 	@Column(name = "`product_name`")
@@ -152,35 +152,35 @@ public class RegisterBillDto extends RegisterBill {
 		this.verifyStatusList = verifyStatusList;
 	}
 
-	public String getCreatedStart() {
+	public Date getCreatedStart() {
 		return createdStart;
 	}
 
-	public void setCreatedStart(String createdStart) {
+	public void setCreatedStart(Date createdStart) {
 		this.createdStart = createdStart;
 	}
 
-	public String getCreatedEnd() {
+	public Date getCreatedEnd() {
 		return createdEnd;
 	}
 
-	public void setCreatedEnd(String createdEnd) {
+	public void setCreatedEnd(Date createdEnd) {
 		this.createdEnd = createdEnd;
 	}
 
-	public String getLatestDetectTimeTimeStart() {
+	public Date getLatestDetectTimeTimeStart() {
 		return latestDetectTimeTimeStart;
 	}
 
-	public void setLatestDetectTimeTimeStart(String latestDetectTimeTimeStart) {
+	public void setLatestDetectTimeTimeStart(Date latestDetectTimeTimeStart) {
 		this.latestDetectTimeTimeStart = latestDetectTimeTimeStart;
 	}
 
-	public String getLatestDetectTimeTimeEnd() {
+	public Date getLatestDetectTimeTimeEnd() {
 		return latestDetectTimeTimeEnd;
 	}
 
-	public void setLatestDetectTimeTimeEnd(String latestDetectTimeTimeEnd) {
+	public void setLatestDetectTimeTimeEnd(Date latestDetectTimeTimeEnd) {
 		this.latestDetectTimeTimeEnd = latestDetectTimeTimeEnd;
 	}
 
@@ -335,19 +335,19 @@ public class RegisterBillDto extends RegisterBill {
         this.keyword = keyword;
     }
 
-	public String getModifiedStart() {
+	public Date getModifiedStart() {
 		return modifiedStart;
 	}
 
-	public void setModifiedStart(String modifiedStart) {
+	public void setModifiedStart(Date modifiedStart) {
 		this.modifiedStart = modifiedStart;
 	}
 
-	public String getModifiedEnd() {
+	public Date getModifiedEnd() {
 		return modifiedEnd;
 	}
 
-	public void setModifiedEnd(String modifiedEnd) {
+	public void setModifiedEnd(Date modifiedEnd) {
 		this.modifiedEnd = modifiedEnd;
 	}
 

@@ -7,19 +7,9 @@ class NewRegisterBillGrid extends WebConfig {
         this.grid = grid;
         this.queryform = queryform;
         this.uid = _.uniqueId("trace_id_");
-        this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
-        this.queryform.find('#query').click(async () => await this.queryGridData());
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['RegisterBillGridObj'] = this;
-        window.addEventListener('message', function (e) {
-            var data = JSON.parse(e.data);
-            if (data.obj && data.fun) {
-                if (data.obj == 'RegisterBillGridObj') {
-                    cthis[data.fun].call(cthis, data.args);
-                }
-            }
-        }, false);
         this.btns = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn',
             'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn'];
         $('#edit-btn').on('click', async () => await this.openEditPage());
@@ -41,9 +31,31 @@ class NewRegisterBillGrid extends WebConfig {
         $('#batch-sampling-btn').on('click', async () => await this.doBatchSamplingCheck());
         $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
-        (async () => {
-            await this.queryGridData();
-        })();
+        this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
+        this.grid.bootstrapTable('refreshOptions', { url: '/newRegisterBill/listPage.action',
+            'queryParams': (params) => this.buildQueryData(params),
+            'ajaxOptions': {}
+        });
+        this.queryform.find('#query').click(async () => await this.queryGridData());
+        window.addEventListener('message', function (e) {
+            var data = JSON.parse(e.data);
+            if (data.obj && data.fun) {
+                if (data.obj == 'RegisterBillGridObj') {
+                    cthis[data.fun].call(cthis, data.args);
+                }
+            }
+        }, false);
+    }
+    buildQueryData(params) {
+        let temp = {
+            rows: params.limit,
+            page: ((params.offset / params.limit) + 1) || 1,
+            sort: params.sort,
+            order: params.order
+        };
+        let data = $.extend(temp, this.queryform.serializeJSON());
+        let jsonData = jq.removeEmptyProperty(data);
+        return JSON.stringify(jsonData);
     }
     removeAllAndLoadData() {
         bs4pop.removeAll();
@@ -505,24 +517,7 @@ class NewRegisterBillGrid extends WebConfig {
             bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
             return;
         }
-        await this.remoteQuery();
-    }
-    async remoteQuery() {
-        $('#toolbar button').attr('disabled', "disabled");
-        this.grid.bootstrapTable('showLoading');
-        this.resetButtons();
-        this.highLightBill = await this.findHighLightBill();
-        try {
-            let url = this.toUrl("/newRegisterBill/listPage.action");
-            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
-            this.grid.bootstrapTable('load', resp);
-        }
-        catch (e) {
-            console.error(e);
-            this.grid.bootstrapTable('load', { rows: [], total: 0 });
-        }
-        this.grid.bootstrapTable('hideLoading');
-        $('#toolbar button').removeAttr('disabled');
+        this.grid.bootstrapTable('refresh');
     }
     resetButtons() {
         var btnArray = this.btns;
@@ -532,13 +527,14 @@ class NewRegisterBillGrid extends WebConfig {
         }
     }
     checkAndShowHideBtns() {
+        var _a, _b, _c;
         this.resetButtons();
         var rows = this.rows;
         if (rows.length == 0) {
             return;
         }
         var createCheckSheet = _.chain(this.rows)
-            .filter(item => 1 == item.detectRequest.detectResult)
+            .filter(item => { var _a; return 1 == ((_a = item === null || item === void 0 ? void 0 : item.detectRequest) === null || _a === void 0 ? void 0 : _a.detectResult); })
             .filter(item => _.isUndefined(item.checkSheetId) || item.checkSheetId == null).value().length > 0;
         createCheckSheet ? $('#createsheet-btn').show() : $('#createsheet-btn').hide();
         if (rows.length == 1) {
@@ -567,11 +563,11 @@ class NewRegisterBillGrid extends WebConfig {
                 $('#undo-btn').show();
                 $('#sampling-btn').show();
             }
-            if (selected.detectRequest.detectResult == 2) {
-                if (selected.detectRequest.detectType == 20) {
+            if (((_a = selected === null || selected === void 0 ? void 0 : selected.detectRequest) === null || _a === void 0 ? void 0 : _a.detectResult) == 2) {
+                if (((_b = selected === null || selected === void 0 ? void 0 : selected.detectRequest) === null || _b === void 0 ? void 0 : _b.detectType) == 20) {
                     $('#review-btn').show();
                 }
-                else if (selected.detectRequest.detectType == 30 && selected.hasHandleResult == 0) {
+                else if (((_c = selected === null || selected === void 0 ? void 0 : selected.detectRequest) === null || _c === void 0 ? void 0 : _c.detectType) == 30 && selected.hasHandleResult == 0) {
                     $('#review-btn').show();
                 }
             }

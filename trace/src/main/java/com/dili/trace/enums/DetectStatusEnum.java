@@ -23,7 +23,7 @@ public enum DetectStatusEnum {
      */
     DETECTING(40, "检测中"),
     /**
-     * 抽检
+     * 已检测
      */
     FINISH_DETECT(50, "已检测"),
     ;

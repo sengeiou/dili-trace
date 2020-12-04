@@ -14,25 +14,13 @@ class NewRegisterBillGrid extends WebConfig {
         this.grid = grid;
         this.queryform = queryform;
         this.uid=_.uniqueId("trace_id_");
-        this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
-        this.queryform.find('#query').click(async () => await this.queryGridData());
 
         $(window).on('resize',()=> this.grid.bootstrapTable('resetView') );
 
-       // $(window.document.body).attr("trace_id",this.uid);
+        // $(window.document.body).attr("trace_id",this.uid);
         var cthis=this;
         window['RegisterBillGridObj']=this;
 
-
-        window.addEventListener('message', function(e) {
-            var data=JSON.parse(e.data);
-            if(data.obj&&data.fun){
-                if(data.obj=='RegisterBillGridObj'){
-                    cthis[data.fun].call(cthis,data.args)
-                }
-           }
-
-        }, false);
 
         this.btns= ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn'
             , 'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn']
@@ -58,15 +46,40 @@ class NewRegisterBillGrid extends WebConfig {
         $('#audit-withoutDetect-btn').on('click',async ()=>await this.doAuditWithoutDetect());
         $('#review-btn').on('click',async ()=>await this.doReviewCheck());
 
-        (async ()=>{
-            await this.queryGridData();
-        })();
 
-        //@ts-ignore
-       // bui.loading.show('努力提交中，请稍候。。。');  bui.loading.hide();
-       // bs4pop.alert(ret.result, {type: 'error'});
-        //bs4pop.notice(ret.result, {type: 'warning',position: 'center'});
+        this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
+       // this.grid.bootstrapTable('refreshOptions', {url: '/chargeRule/listPage.action', pageSize: parseInt(size)});
 
+        this.grid.bootstrapTable('refreshOptions', {url: '/newRegisterBill/listPage.action'
+            ,'queryParams':(params)=>this.buildQueryData(params)
+            ,'ajaxOptions':{}
+
+        });
+        // this.grid.bootstrapTable({'query-params':(params)=>this.buildQueryData(params)});
+        this.queryform.find('#query').click(async () => await this.queryGridData());
+
+
+
+        window.addEventListener('message', function(e) {
+            var data=JSON.parse(e.data);
+            if(data.obj&&data.fun){
+                if(data.obj=='RegisterBillGridObj'){
+                    cthis[data.fun].call(cthis,data.args)
+                }
+           }
+
+        }, false);
+    }
+    private buildQueryData(params){
+        let temp = {
+            rows: params.limit,   //页面大小
+            page: ((params.offset / params.limit) + 1) || 1, //页码
+            sort: params.sort,
+            order: params.order
+        }
+        let data=$.extend(temp, this.queryform.serializeJSON());
+        let jsonData=jq.removeEmptyProperty(data);
+        return JSON.stringify(jsonData);
     }
     public removeAllAndLoadData(){
         //@ts-ignore
@@ -645,26 +658,9 @@ class NewRegisterBillGrid extends WebConfig {
             bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
             return;
         }
-        await this.remoteQuery();
+        this.grid.bootstrapTable('refresh');
     }
 
-    private async remoteQuery() {
-        $('#toolbar button').attr('disabled', "disabled");
-        this.grid.bootstrapTable('showLoading');
-        this.resetButtons();
-        this.highLightBill = await this.findHighLightBill();
-
-        try{
-            let url = this.toUrl( "/newRegisterBill/listPage.action");
-            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
-            this.grid.bootstrapTable('load',resp);
-        }catch (e){
-            console.error(e);
-            this.grid.bootstrapTable('load',{rows:[],total:0});
-        }
-        this.grid.bootstrapTable('hideLoading');
-        $('#toolbar button').removeAttr('disabled');
-    }
     private resetButtons() {
         var btnArray = this.btns;
         for (var i = 0; i < btnArray.length; i++) {
@@ -679,7 +675,7 @@ class NewRegisterBillGrid extends WebConfig {
             return ;
         }
         var createCheckSheet=_.chain(this.rows)
-            .filter(item=>DetectResultEnum.PASSED==item.detectRequest.detectResult)
+            .filter(item=>DetectResultEnum.PASSED==item?.detectRequest?.detectResult)
             .filter(item=>_.isUndefined(item.checkSheetId)||item.checkSheetId==null).value().length>0;
         createCheckSheet?$('#createsheet-btn').show():$('#createsheet-btn').hide();
 
@@ -711,10 +707,10 @@ class NewRegisterBillGrid extends WebConfig {
                 $('#undo-btn').show();
                 $('#sampling-btn').show();
             }
-            if(selected.detectRequest.detectResult==DetectResultEnum.FAILED){
-                if(selected.detectRequest.detectType==DetectTypeEnum.INITIAL_CHECK){
+            if(selected?.detectRequest?.detectResult==DetectResultEnum.FAILED){
+                if(selected?.detectRequest?.detectType==DetectTypeEnum.INITIAL_CHECK){
                     $('#review-btn').show();
-                }else if(selected.detectRequest.detectType==DetectTypeEnum.RECHECK&&selected.hasHandleResult==0){
+                }else if(selected?.detectRequest?.detectType==DetectTypeEnum.RECHECK&&selected.hasHandleResult==0){
                     $('#review-btn').show();
                 }
             }

@@ -647,10 +647,10 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         RegisterBillDto billDto = new RegisterBillDto();
         billDto.setIsDeleted(noDelete);
-        billDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        billDto.setModifiedEnd(endTime);
         billDto.setMarketId(marketId);
         if (thirdPartyPushData != null) {
-            billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
+            billDto.setModifiedStart(thirdPartyPushData.getPushTime());
         }
         List<Long> billIdList = new ArrayList<>();
         List<ReportRegisterBillDto> billList = StreamEx.ofNullable(this.registerBillMapper.selectRegisterBillReport(billDto))
@@ -720,9 +720,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         RegisterBillDto queryDto = new RegisterBillDto();
         queryDto.setMarketId(marketId);
-        queryDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        queryDto.setModifiedEnd(endTime);
         if (thirdPartyPushData != null) {
-            queryDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
+            queryDto.setModifiedStart(thirdPartyPushData.getPushTime());
         }
 
         List<ReportCheckInDto> checkInList = StreamEx.ofNullable(this.checkinOutRecordMapper.selectCheckInReport(queryDto))
@@ -1121,9 +1121,9 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         // 查询待上报的报备单
         ThirdPartyPushData thirdPartyPushData = thirdPartyPushDataService.getThredPartyPushData(tableName, marketId);
         RegisterBillDto billDto = new RegisterBillDto();
-        billDto.setModifiedEnd(DateUtil.format(endTime, "yyyy-MM-dd HH:mm:ss"));
+        billDto.setModifiedEnd(endTime);
         if (thirdPartyPushData != null) {
-            billDto.setModifiedStart(DateUtil.format(thirdPartyPushData.getPushTime(), "yyyy-MM-dd HH:mm:ss"));
+            billDto.setModifiedStart(thirdPartyPushData.getPushTime());
         }
         billDto.setIsDeleted(isDelete);
         billDto.setMarketId(marketId);

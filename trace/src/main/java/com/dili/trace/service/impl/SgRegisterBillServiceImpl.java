@@ -987,11 +987,11 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             dto.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
         }
         dto.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
-        dto.setLatestDetectTimeTimeStart(StringUtils.trimToNull(dto.getLatestDetectTimeTimeStart()));
-        dto.setLatestDetectTimeTimeEnd(StringUtils.trimToNull(dto.getLatestDetectTimeTimeEnd()));
+//        dto.setLatestDetectTimeTimeStart(StringUtils.trimToNull(dto.getLatestDetectTimeTimeStart()));
+//        dto.setLatestDetectTimeTimeEnd(StringUtils.trimToNull(dto.getLatestDetectTimeTimeEnd()));
 
-        dto.setCreatedStart(StringUtils.trimToNull(dto.getCreatedStart()));
-        dto.setCreatedEnd(StringUtils.trimToNull(dto.getCreatedEnd()));
+//        dto.setCreatedStart(StringUtils.trimToNull(dto.getCreatedStart()));
+//        dto.setCreatedEnd(StringUtils.trimToNull(dto.getCreatedEnd()));
 
         return this.billService.listEasyuiPageByExample(dto, true).toString();
     }

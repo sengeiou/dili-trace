@@ -42,8 +42,8 @@ public class TradeDetailServiceTest extends AutoWiredBaseTest {
 	public void selectTradeDetailAndBill() {
 		RegisterBillDto dto = new RegisterBillDto();
 		dto.setUserId(super.findUser().getId());
-		dto.setCreatedStart("2015-01-01 00:00:00");
-		dto.setCreatedEnd("2020-12-31 23:59:59");
+//		dto.setCreatedStart("2015-01-01 00:00:00");
+//		dto.setCreatedEnd("2020-12-31 23:59:59");
 		dto.setLikeProductName("黄瓜");
 		BasePage<TradeDetailBillOutput> page = this.tradeDetailService.selectTradeDetailAndBill(dto);
 		assertNotNull(page);
