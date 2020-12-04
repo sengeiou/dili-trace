@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 
+/**
+ * 报备单流程相关接口
+ */
 @Component
 public class BillBpmService {
     private static final String CREATE_BILL_PROCESSKEY = "";
