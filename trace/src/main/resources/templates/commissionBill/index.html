@@ -194,6 +194,7 @@
             BillDetectStateEnum['${ss}']=${ss.code};
         <%}%>
 
+        var commissionBillGrid=new CommissionBillGrid($('#commissionBillGrid'),$('#queryForm'),RegisterBillStateEnum,BillDetectStateEnum);
 
         $('#commissionBillGrid').bootstrapTable('refreshOptions', {
             url: '/commissionBill/listPage.action'
