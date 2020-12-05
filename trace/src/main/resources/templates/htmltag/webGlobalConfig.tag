@@ -1,7 +1,7 @@
 <script type="text/javascript">
     var webGlobalConfig={
         contextPath:'${contextPath}',
-        imageserverPath:''
+        imageViewPathPrefix:'${imageViewPathPrefix}'
     }
-    //console.info(webGlobalConfig);
+    console.info(webGlobalConfig);
 </script>

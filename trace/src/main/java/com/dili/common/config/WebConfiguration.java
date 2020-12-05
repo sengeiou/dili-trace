@@ -1,6 +1,7 @@
 package com.dili.common.config;
 
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.interceptor.AddAttributeInterceptor;
 import com.dili.common.interceptor.LoginInterceptor;
 import com.dili.common.interceptor.SessionInterceptor;
 import com.dili.common.interceptor.SignInterceptor;
@@ -35,11 +36,11 @@ public class WebConfiguration implements WebMvcConfigurer {
         return registration;
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/image/**")
-                .addResourceLocations("file:" + defaultConfiguration.getImageDirectory()).setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));
-    }
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        registry.addResourceHandler("/image/**")
+//                .addResourceLocations("file:" + defaultConfiguration.getImageDirectory()).setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));
+//    }
 
     @Autowired
     private DefaultConfiguration defaultConfiguration;
@@ -53,6 +54,10 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Bean
     public SessionInterceptor sessionInterceptor() {
         return new SessionInterceptor();
+    }
+    @Bean
+    public AddAttributeInterceptor addAttributeInterceptor() {
+        return new AddAttributeInterceptor();
     }
 //
 //    @Bean
@@ -69,6 +74,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(addAttributeInterceptor()).addPathPatterns("/**");
 //        registry.addInterceptor(loginInterceptor()).addPathPatterns("/api/**");
 //        registry.addInterceptor(signInterceptor()).addPathPatterns("/api/**");
     }

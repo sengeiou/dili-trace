@@ -6,7 +6,6 @@
     <userTask activiti:exclusive="true" id="sid-413F4AC7-3D51-418A-A7A7-49D8F1E5181A"/>
     <sequenceFlow id="sid-1A395D17-94B3-4AA6-899B-04C8B2880710" sourceRef="sid-251A71DD-1BC6-49AE-97DE-292D01862B83" targetRef="sid-413F4AC7-3D51-418A-A7A7-49D8F1E5181A"/>
     <sequenceFlow id="sid-F6CF10A0-12CB-4D1B-8F8E-05A88D9387E4" sourceRef="sid-413F4AC7-3D51-418A-A7A7-49D8F1E5181A" targetRef="sid-FCD01CEF-2BB5-493C-8DA6-77CEFC5C8EB4"/>
-    <boundaryEvent attachedToRef="sid-413F4AC7-3D51-418A-A7A7-49D8F1E5181A" cancelActivity="true" id="_2" name="BoundaryEvent"/>
   </process>
   <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
     <bpmndi:BPMNPlane bpmnElement="dili_trace_test">
@@ -26,12 +25,6 @@
         <omgdc:Bounds height="86.0" width="100.0" x="266.171875" y="11.0"/>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="86.0" width="100.0" x="0.0" y="0.0"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_2" id="Shape-_2">
-        <omgdc:Bounds height="32.0" width="32.0" x="290.0" y="65.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="sid-F6CF10A0-12CB-4D1B-8F8E-05A88D9387E4" id="BPMNEdge_sid-F6CF10A0-12CB-4D1B-8F8E-05A88D9387E4" sourceElement="sid-413F4AC7-3D51-418A-A7A7-49D8F1E5181A" targetElement="sid-FCD01CEF-2BB5-493C-8DA6-77CEFC5C8EB4">

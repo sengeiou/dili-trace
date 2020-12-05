@@ -213,6 +213,8 @@ class CommissionBillGrid extends WebConfig{
                 $(this).siblings('input').val('');
             }
         });
+
+        //@ts-ignore
         // 产地联系输入
         $(selector).devbridgeAutocomplete({
             noCache: 1,
@@ -231,6 +233,8 @@ class CommissionBillGrid extends WebConfig{
                 idField.val(suggestion.id);
                 $(self).val(suggestion.value.trim());
                 $(selector).data('oldvalue',suggestion.value);
+
+                //@ts-ignore
                 var v=$(self).valid();
             }
         });

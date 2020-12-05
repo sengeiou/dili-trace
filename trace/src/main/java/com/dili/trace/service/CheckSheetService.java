@@ -163,6 +163,12 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 		return checkSheetMap;
 	}
 
+	/**
+	 * 构建 打印表单数据
+	 * @param input
+	 * @param operatorUser
+	 * @return
+	 */
 	private Triple<CheckSheet, List<CheckSheetDetail>, BillTypeEnum> buildCheckSheet(CheckSheetInputDto input,OperatorUser operatorUser) {
 		Triple<List<RegisterBill>, Map<Long, String>, BillTypeEnum> triple = this.checkInputDto(input);
 		Map<Long, String> billIdAliasNameMap = triple.getMiddle();

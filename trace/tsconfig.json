@@ -18,8 +18,8 @@
     "removeComments": true,
     "sourceMap": true,
     "strictNullChecks": false,
-
-    "target": "ES2017",
+    "moduleResolution": "classic",
+    "target": "ES2020",
     "outDir":"./src/main/resources/static/resources/js",
     "lib": ["DOM","ES6"],
     "rootDirs": ["./src/main/resources/static/tsc"],
@@ -31,5 +31,5 @@
   "include": ["./src/main/resources/static/tsc"],
   "compileOnSave": true,
   "buildOnSave": true,
-  "references": ["jQuery","underscores"]
+  "references": []
 }
