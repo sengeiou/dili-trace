@@ -83,11 +83,11 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "审核", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
         catch (e) {
+            debugger;
             bs4pop.alert('远程访问失败', { type: 'error' });
         }
     }
@@ -105,7 +105,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "复检", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -127,7 +126,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "审核不检测", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -168,7 +166,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "审核不检测", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -196,7 +193,6 @@ class NewRegisterBillGrid extends WebConfig {
                     return;
                 }
                 await this.queryGridData();
-                TLOG.component.operateLog('登记单管理', "删除产地证明和报告", '【ID】:' + selected.id);
                 bs4pop.removeAll();
                 bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
             }
@@ -223,7 +219,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await cthis.queryGridData();
-            TLOG.component.operateLog('登记单管理', "主动送检", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -259,7 +254,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "批量主动送检", "【编号】:" + codeList.join(','));
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -281,7 +275,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "采样检测", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -319,7 +312,6 @@ class NewRegisterBillGrid extends WebConfig {
                     return;
                 }
                 await cthis.queryGridData();
-                TLOG.component.operateLog('登记单管理', "撤销", "【编号】:" + selected.code);
                 bs4pop.removeAll();
                 bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
             }
@@ -378,7 +370,6 @@ class NewRegisterBillGrid extends WebConfig {
                         var failureList = ret.data.failureList;
                         if (failureList.length == 0) {
                             cthis.queryGridData();
-                            TLOG.component.operateLog('登记单管理', "批量审核", "【编号】:" + codeList.join(','));
                             layer.alert('操作成功：</br>' + ret.data.successList.join('</br>'), { title: '操作', time: 3000 });
                         }
                         else {
@@ -668,7 +659,6 @@ class NewRegisterBillGrid extends WebConfig {
                 async: true,
                 success: function (data) {
                     if (data.code == "200") {
-                        TLOG.component.operateLog('登记单管理', "批量撤销", '【IDS】:' + JSON.stringify(idlist));
                         layer.alert('操作成功', {
                             title: '操作',
                             time: 600,

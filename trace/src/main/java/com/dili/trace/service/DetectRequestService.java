@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dao.DetectRequestMapper;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -45,11 +43,11 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
             return Optional.empty();
         }
 
-        RegisterBill registerBill=this.billService.get(billId);
-        if(registerBill==null){
+        RegisterBill registerBill = this.billService.get(billId);
+        if (registerBill == null) {
             return Optional.empty();
         }
-        Long detectRequestId=registerBill.getDetectRequestId();
+        Long detectRequestId = registerBill.getDetectRequestId();
         return Optional.ofNullable(this.get(detectRequestId));
 
     }
@@ -98,7 +96,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
 
-
     /**
      * 根据报备单创建检测请求数据
      *
@@ -116,7 +113,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         detectRequest.setDetectType(detectTypeEnum.getCode());
         detectRequest.setDetectSource(SampleSourceEnum.NONE.getCode());
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
-
 
 
         detectRequest.setBillId(billItem.getBillId());
@@ -139,7 +135,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
 
-
     /**
      * 根据id集合查询
      *
@@ -154,5 +149,35 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         Example example = new Example(DetectRequest.class);
         example.and().andIn("id", detectRequestIdList);
         return StreamEx.of(this.detectRequestMapper.selectByExample(example)).toMap(DetectRequest::getId, Function.identity());
+    }
+
+    /**
+     * 获得检测任务
+     *
+     * @param detectorName
+     * @param maxCount
+     * @param marketId
+     */
+    public List<DetectRequest> selectRequestForDetect(String detectorName, Integer maxCount, Long marketId) {
+        //查询并锁定没有被当前dectorName领取的检测任务
+        List<DetectRequest> detectRequestList = this.detectRequestMapper.selectRequestForDetect(marketId, detectorName, maxCount);
+
+        //更新数据的状态
+        StreamEx.of(detectRequestList).forEach(req -> {
+            DetectRequest detectRequest = new DetectRequest();
+            detectRequest.setId(req.getId());
+            detectRequest.setDesignatedName(detectorName);
+
+            RegisterBill registerBill = new RegisterBill();
+            registerBill.setId(req.getBillId());
+            registerBill.setDetectStatus(DetectStatusEnum.DETECTING.getCode());
+
+            this.updateSelective(detectRequest);
+            this.billService.updateSelective(registerBill);
+        });
+
+        //查询所有当前当前dectorName领取的检测任务
+        return this.detectRequestMapper.selectDetectRequest(marketId, detectorName, DetectStatusEnum.DETECTING);
+
     }
 }

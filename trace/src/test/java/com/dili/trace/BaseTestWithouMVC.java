@@ -78,7 +78,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 		, "com.dili.bpmc.sdk.rpc"})
 @Import(FeignClientsConfiguration.class)
 @EnableDiscoveryClient
-//@TestInstance()
+
 public class BaseTestWithouMVC {
 	protected static final Logger logger = LoggerFactory.getLogger(BaseTestWithouMVC.class);
 	@MockBean

@@ -1,5 +1,5 @@
-// import $ from 'jquery';
-// import _ from 'underscore';
+ // import $ from 'jquery';
+ // import _ from 'underscore';
 
 class NewRegisterBillGrid extends WebConfig {
     grid: any;
@@ -117,12 +117,13 @@ class NewRegisterBillGrid extends WebConfig {
             }
             await this.queryGridData();
             //@ts-ignore
-            TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
+            //TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
             //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
             bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
+            debugger
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
         }
@@ -144,7 +145,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             await this.queryGridData();
             //@ts-ignore
-            TLOG.component.operateLog('登记单管理',"复检","【编号】:"+selected.code);
+            //TLOG.component.operateLog('登记单管理',"复检","【编号】:"+selected.code);
             //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
@@ -173,7 +174,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             await this.queryGridData();
             //@ts-ignore
-            TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
+            //TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
             //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
@@ -222,7 +223,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             await this.queryGridData();
             //@ts-ignore
-            TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
+            //TLOG.component.operateLog('登记单管理',"审核不检测","【编号】:"+selected.code);
             //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
@@ -260,7 +261,7 @@ class NewRegisterBillGrid extends WebConfig {
 
                 await this.queryGridData();
                 //@ts-ignore
-                TLOG.component.operateLog('登记单管理',"删除产地证明和报告",'【ID】:'+selected.id);
+                //TLOG.component.operateLog('登记单管理',"删除产地证明和报告",'【ID】:'+selected.id);
                 //@ts-ignore
                 bs4pop.removeAll()
                 //@ts-ignore
@@ -296,7 +297,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             await cthis.queryGridData();
             //@ts-ignore
-            TLOG.component.operateLog('登记单管理',"主动送检","【编号】:"+selected.code);
+            //TLOG.component.operateLog('登记单管理',"主动送检","【编号】:"+selected.code);
             //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
@@ -342,7 +343,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             await this.queryGridData();
             //@ts-ignore
-            TLOG.component.operateLog('登记单管理',"批量主动送检","【编号】:"+codeList.join(','));
+            //TLOG.component.operateLog('登记单管理',"批量主动送检","【编号】:"+codeList.join(','));
             //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
@@ -368,7 +369,7 @@ class NewRegisterBillGrid extends WebConfig {
             }
             await this.queryGridData();
             //@ts-ignore
-            TLOG.component.operateLog('登记单管理',"采样检测","【编号】:"+selected.code);
+            //TLOG.component.operateLog('登记单管理',"采样检测","【编号】:"+selected.code);
             //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
@@ -419,7 +420,7 @@ class NewRegisterBillGrid extends WebConfig {
                 }
                 await cthis.queryGridData();
                 //@ts-ignore
-                TLOG.component.operateLog('登记单管理',"撤销","【编号】:"+selected.code);
+                //TLOG.component.operateLog('登记单管理',"撤销","【编号】:"+selected.code);
                 //@ts-ignore
                 bs4pop.removeAll()
                 //@ts-ignore
@@ -490,7 +491,7 @@ class NewRegisterBillGrid extends WebConfig {
                             // _registerBillGrid.datagrid("reload");
                             cthis.queryGridData();
                             //@ts-ignore
-                            TLOG.component.operateLog('登记单管理',"批量审核","【编号】:"+codeList.join(','));
+                            //TLOG.component.operateLog('登记单管理',"批量审核","【编号】:"+codeList.join(','));
                             //@ts-ignore
                             layer.alert('操作成功：</br>'+ret.data.successList.join('</br>'),{title:'操作',time : 3000});
 
@@ -852,7 +853,7 @@ class NewRegisterBillGrid extends WebConfig {
                 success: function (data) {
                     if (data.code == "200") {
                         // @ts-ignore
-                        TLOG.component.operateLog('登记单管理', "批量撤销", '【IDS】:' + JSON.stringify(idlist));
+                        //TLOG.component.operateLog('登记单管理', "批量撤销", '【IDS】:' + JSON.stringify(idlist));
                         // @ts-ignore
                         layer.alert('操作成功', {
                                 title: '操作',
