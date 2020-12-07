@@ -27,8 +27,8 @@ public class CommissionUserApi {
 
 	/**
 	 * 创建委托用户
-	 * @param input
-	 * @return
+	 * @param input 委托用户
+	 * @return 创建结果
 	 */
 	@RequestMapping(value = "/createCommissionUser.api")
 	public BaseOutput<?> createCommissionUser(@RequestBody User input) {
