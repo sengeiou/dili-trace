@@ -40,7 +40,7 @@
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">进场货品登记</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">返回</button>
         </div>
     </div>
     <div class="form-box border">
@@ -88,7 +88,7 @@
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">客户Code</label>
                     <div class="input-group">
-                        <input type="hidden" name="userId" id="userId"/>
+<!--                        <input type="hidden" name="userId" id="userId"/>-->
                         <input type="text" class="form-control input-sm" name="tradeAccountInput"  data-value-type="skip"   id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"/>
                         <input type="hidden" name="tradeAccount" id="tradeAccount"/>
                         <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
@@ -759,7 +759,7 @@
 
     $( document ).on( "click", ".img-view-a",function () {
         var url = $('#registerBills\\['+$(this).attr('data-index')+'\\]\\[originCertifiyUrl\\]').siblings("input:hidden").val();
-        url = "${imageViewPathPrefix}" + url;
+        // url = "${imageViewPathPrefix}" + url;
         debugger
         if(url){
             layer.open({
