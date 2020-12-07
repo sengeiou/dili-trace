@@ -1,25 +1,34 @@
 package com.dili.trace.api.output;
 
 public class VerifyBillInputDto {
-	private Long billId;
-	private Integer verifyStatus;
-	private String reason;
+    /**
+     * 报备单id
+     */
+    private Long billId;
+    /**
+     * 验证状态
+     */
+    private Integer verifyStatus;
+    /**
+     * 原因
+     */
+    private String reason;
 
-	public Long getBillId() {
-		return billId;
-	}
+    public Long getBillId() {
+        return billId;
+    }
 
-	public void setBillId(Long billId) {
-		this.billId = billId;
-	}
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
 
-	public Integer getVerifyStatus() {
-		return verifyStatus;
-	}
+    public Integer getVerifyStatus() {
+        return verifyStatus;
+    }
 
-	public void setVerifyStatus(Integer verifyStatus) {
-		this.verifyStatus = verifyStatus;
-	}
+    public void setVerifyStatus(Integer verifyStatus) {
+        this.verifyStatus = verifyStatus;
+    }
 
 
     /**
