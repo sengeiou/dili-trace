@@ -23,49 +23,81 @@ public class CheckinOutRecord extends BaseDomain {
     @Column(name = "`status`")
     private Integer status;
 
-    @ApiModelProperty(value = "状态")
+    /**
+     * 进出门状态
+     */
+    @ApiModelProperty(value = "进出门状态")
     @Column(name = "`inout`")
     private Integer inout;
     /**
-     * 身份证号
+     * 备注
      */
     @ApiModelProperty(value = "备注")
     @Column(name = "`remark`")
     private String remark;
 
+    /**
+     * 操作人姓名
+     */
     @ApiModelProperty(value = "操作人姓名")
     @Column(name = "`operator_name`")
     private String operatorName;
 
+    /**
+     * 操作人ID
+     */
     @ApiModelProperty(value = "操作人ID")
     @Column(name = "`operator_id`")
     private Long operatorId;
 
+
+    /**
+     * 创建时间
+     */
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`created`")
     private Date created;
 
+    /**
+     * 更新时间
+     */
     @ApiModelProperty(value = "更新时间")
     @Column(name = "`modified`")
     private Date modified;
 
-
+    /**
+     * 业户ID
+     */
     @ApiModelProperty(value = "业户ID")
     @Column(name = "`user_id`")
     private Long userId;
 
+    /**
+     * 业户名称
+     */
     @ApiModelProperty(value = "业户名称")
     @Column(name = "`user_name`")
     private String userName;
 
+
+    /**
+     * 商品名称
+     */
     @ApiModelProperty(value = "商品名称")
     @Column(name = "`product_name`")
     private String productName;
 
-    @ApiModelProperty(value = "查验状态值")
+
+    /**
+     * 审核状态值
+     */
+    @ApiModelProperty(value = "审核状态值")
 	@Column(name = "`verify_status`")
     private Integer verifyStatus;
-    
+
+    /**
+     * 登记单类型
+     */
     @Column(name = "`bill_type`")
 	private Integer billType;
 
@@ -78,37 +110,62 @@ public class CheckinOutRecord extends BaseDomain {
 //    @Column(name = "`seperate_sales_id`")
 //    private Long seperateSalesId;
 //    
-    
+
+
+    /**
+     * 进出门重量
+     */
     @ApiModelProperty(value = "进出门重量")
     @Column(name = "`inout_weight`")
     private BigDecimal inoutWeight;
 
+    /**
+     * 重量单位
+     */
     @ApiModelProperty(value = "重量单位")
 	@Column(name = "`weight_unit`")
 	private Integer weightUnit;
 
+    /**
+     * 分销ID
+     */
     @ApiModelProperty(value = "分销ID")
     @Column(name = "`trade_detail_id`")
     private Long tradeDetailId;
 
+    /**
+     * 报备单ID
+     */
 
     @ApiModelProperty(value = "报备单ID")
     @Column(name = "`bill_id`")
     private Long billId;
 
+    /**
+     *车牌号
+     */
     @ApiModelProperty(value = "车牌号")
     @Transient
     private String plate;
 
+    /**
+     *市场ID
+     */
     @ApiModelProperty(value = "市场ID")
     @Column(name = "market_id")
     private Long marketId;
 
+    /**
+     *进出门状态名称
+     */
     @Transient
     public String getInoutName(){
        return  CheckinOutTypeEnum.fromCode(this.getInout()).map(CheckinOutTypeEnum::getDesc).orElse("");
     }
 
+    /**
+     *重量单位名称
+     */
     @Transient
     public String getWeightUnitName(){
        return  WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");

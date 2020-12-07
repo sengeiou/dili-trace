@@ -101,7 +101,11 @@ public class ClientRegisterHeadApi {
 
 	/**
 	 * 不同审核状态数据统计
+	 * @param  query
+	 * return BaseOutput<List<VerifyStatusCountOutputDto>>
 	 */
+	@ApiOperation(value = "不同审核状态数据统计")
+	@ApiImplicitParam(paramType = "body", name = "RegisterHeadDto", dataType = "RegisterHeadDto", value = "不同审核状态数据统计")
 	@RequestMapping(value = "/countByStatus.api", method = { RequestMethod.POST })
 	public BaseOutput<List<VerifyStatusCountOutputDto>> countByStatus(@RequestBody RegisterHeadDto query) {
 		try {

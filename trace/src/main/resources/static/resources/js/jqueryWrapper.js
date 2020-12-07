@@ -61,7 +61,12 @@ class jq {
             }
             return true;
         })
-            .value();
+            .mapObject(v => {
+            if (!_.isArray(v)) {
+                return v;
+            }
+            return _.chain(v).filter(item => !_.isNull(v)).value();
+        }).value();
         return jsonData;
     }
 }

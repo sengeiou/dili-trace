@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.ss.base.BaseServiceImpl;
@@ -31,6 +32,31 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     BillService billService;
     @Autowired
     DetectRequestMapper detectRequestMapper;
+
+    public DetectRequest createDefault(Long billId, Optional<OperatorUser> operatorUser) {
+        DetectRequest detectRequest = new DetectRequest();
+        detectRequest.setDetectType(DetectTypeEnum.NEW.getCode());
+        detectRequest.setDetectSource(SampleSourceEnum.NONE.getCode());
+        detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+
+
+        detectRequest.setBillId(billId);
+        detectRequest.setCreated(new Date());
+        detectRequest.setModified(new Date());
+        this.insert(detectRequest);
+
+
+        operatorUser.ifPresent(opt->{
+            detectRequest.setCreatorId(opt.getId());
+            detectRequest.setCreatorName(opt.getName());
+        });
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setId(billId);
+        registerBill.setDetectRequestId(detectRequest.getId());
+        this.billService.updateSelective(registerBill);
+        return detectRequest;
+
+    }
 
     /**
      * 查询检测请求

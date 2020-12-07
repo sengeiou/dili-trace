@@ -73,6 +73,7 @@ class jq {
     }
     public  static removeEmptyProperty(data:object){
 
+        //属性值为空字符串，以及数组里面null的数据给移除掉
         let jsonData=_.chain(data)
             .pick((v,k)=>{
                 return !_.isUndefined(v);})
@@ -83,7 +84,13 @@ class jq {
                     }
                 }
                 return true;})
-            .value();
+            .mapObject(v=>{
+                if(!_.isArray(v)){
+                    return v;
+                }
+                return _.chain(v).filter(item=>!_.isNull(v)).value();
+
+            }).value();
         return jsonData;
     }
 }

@@ -1,6 +1,7 @@
  // import $ from 'jquery';
  // import _ from 'underscore';
 
+
 class NewRegisterBillGrid extends WebConfig {
     grid: any;
     uid:string;

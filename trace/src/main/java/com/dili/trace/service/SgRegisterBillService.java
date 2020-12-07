@@ -3,6 +3,8 @@ package com.dili.trace.service;
 import java.util.List;
 import java.util.Map;
 
+import com.dili.common.annotation.EventChecker;
+import com.dili.common.annotation.MessageEvent;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.BatchAuditDto;
@@ -11,8 +13,8 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
+import com.dili.trace.service.impl.SgRegisterBillServiceImpl;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -66,6 +68,7 @@ public interface SgRegisterBillService {
      * @param registerBill
      * @return
      */
+    @EventChecker(id = "#{registerBill.id}",type = MessageEvent.INSERT,eventQuery = SgRegisterBillServiceImpl.class)
     int createRegisterBill(RegisterBill registerBill);
 
     /**
@@ -270,4 +273,12 @@ public interface SgRegisterBillService {
      * @return
      */
     public Map<ImageCertTypeEnum,List<ImageCert>> findImageCertMapListByBillId(Long billId);
+
+    /**
+     * 查询当前用户可用事件
+     * @param billId
+     * @return
+     */
+
+    public List<MessageEvent>queryEvents(Long billId);
 }

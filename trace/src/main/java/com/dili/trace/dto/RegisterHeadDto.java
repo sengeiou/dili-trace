@@ -14,19 +14,31 @@ import java.util.List;
  * @author Lily
  */
 public class RegisterHeadDto extends RegisterHead {
+	/**
+	 *查询开始时间
+	 */
 	@ApiModelProperty(value = "查询开始时间")
 	@Column(name = "`created`")
 	@Operator(Operator.GREAT_EQUAL_THAN)
 	private String createdStart;
 
+	/**
+	 * 查询结束时间
+	 */
 	@ApiModelProperty(value = "查询结束时间")
 	@Column(name = "`created`")
 	@Operator(Operator.LITTLE_EQUAL_THAN)
 	private String createdEnd;
 
+	/**
+	 * 查询关键字
+	 */
 	@Transient
 	private String keyword;
 
+	/**
+	 *我也不知道
+	 */
 	@Transient
 	private Integer verifyRemainWeight;
 

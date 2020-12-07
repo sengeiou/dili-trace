@@ -4,7 +4,13 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.VerifyTypeEnum;
 
 public class VerifyStatusCountOutputDto {
+    /**
+     * 审核状态
+     */
     private Integer verifyStatus;
+    /**
+     * 审核状态名称
+     */
     private String verifyStatusName;
 
     private Integer num;

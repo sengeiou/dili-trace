@@ -809,4 +809,20 @@ public class NewRegisterBillController {
 
     }
 
+    /**
+     * 查询当前controller可用事件
+     * @param input
+     * @return
+     */
+    @RequestMapping("/queryEvents.action")
+    @ResponseBody
+    public BaseOutput<List<String>>queryEvents(@RequestBody RegisterBill input){
+        if(input==null||input.getId()==null){
+            return BaseOutput.success();
+        }
+        RegisterBill item=this.billService.get(input.getId());
+
+        return BaseOutput.success();
+    }
+
 }

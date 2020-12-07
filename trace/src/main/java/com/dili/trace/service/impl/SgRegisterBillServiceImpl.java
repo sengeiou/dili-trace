@@ -2,6 +2,8 @@ package com.dili.trace.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.dili.common.annotation.EventQuery;
+import com.dili.common.annotation.MessageEvent;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.trace.dao.RegisterBillMapper;
@@ -51,7 +53,7 @@ import java.util.stream.Collectors;
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
 @Service
-public class SgRegisterBillServiceImpl implements SgRegisterBillService {
+public class SgRegisterBillServiceImpl implements SgRegisterBillService, EventQuery {
     private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillServiceImpl.class);
 
     @Autowired
@@ -98,7 +100,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         inputBill.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
         inputBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
 //        inputBill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
-        
+
         String code = this.codeGenerateService.nextRegisterBillCode();
 
         inputBill.setCode(code);
@@ -133,7 +135,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
         this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.REGISTER,
                 inputBill.getOriginId());
-
 
 
         int result = this.billService.saveOrUpdate(inputBill);
@@ -292,7 +293,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     }
 
     private int auditRegisterBill(Boolean pass, RegisterBill registerBill) {
-        if(BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())){
+        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
             UserTicket userTicket = getOptUser();
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
@@ -305,7 +306,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 //                    registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
                     registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
                     registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
-                    this.detectRequestService.createOtherPassedRequest(registerBill.getBillId(),new IdNameDto(userTicket.getId(),userTicket.getRealName()));
+                    this.detectRequestService.createOtherPassedRequest(registerBill.getBillId(), new IdNameDto(userTicket.getId(), userTicket.getRealName()));
                 }
                 if (!BillVerifyStatusEnum.PASSED.getCode().equals(registerBill.getVerifyStatus())) {
                     registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
@@ -317,7 +318,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 registerBill.setVerifyStatus(BillVerifyStatusEnum.NO_PASSED.getCode());
             }
             return this.billService.update(registerBill);
-        }else {
+        } else {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
     }
@@ -327,11 +328,11 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     public int undoRegisterBill(Long id) {
         return Optional.ofNullable(this.billService.get(id)).map(item -> {
 
-            if ( DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())||
+            if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus()) ||
                     BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
                 UserTicket userTicket = getOptUser();
 
-                RegisterBill bill=new RegisterBill();
+                RegisterBill bill = new RegisterBill();
                 bill.setId(item.getBillId());
                 bill.setIsDeleted(YesOrNoEnum.YES.getCode());
                 return this.billService.updateSelective(bill);
@@ -350,7 +351,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     }
 
     private int autoCheckRegisterBill(RegisterBill registerBill) {
-        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus()) ){
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
             UserTicket userTicket = getOptUser();
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
@@ -358,7 +359,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
 
 
-            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(),userTicket.getRealName()), Optional.empty());
+            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getRealName()), Optional.empty());
 
             DetectRequest detectRequest = new DetectRequest();
             detectRequest.setId(item.getId());
@@ -461,7 +462,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         CollectionUtils.emptyIfNull(partitionedMap.get(Boolean.TRUE)).forEach(registerBill -> {
 
 
-
             if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(registerBill.getVerifyStatus())) {
                 UserTicket userTicket = getOptUser();
                 registerBill.setOperatorName(userTicket.getRealName());
@@ -498,7 +498,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     }
 
     private int samplingCheckRegisterBill(RegisterBill registerBill) {
-        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus()) ){
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
             UserTicket userTicket = getOptUser();
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
@@ -506,7 +506,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
 
 
-            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(),userTicket.getRealName()), Optional.empty());
+            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getRealName()), Optional.empty());
 
             DetectRequest detectRequest = new DetectRequest();
             detectRequest.setId(item.getId());
@@ -525,27 +525,27 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public int reviewCheckRegisterBill(Long id) {
         RegisterBill registerBill = this.billService.get(id);
-        if(!DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBill.getDetectStatus())){
+        if (!DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
 
-        Integer hasHandleResult=registerBill.getHasHandleResult();
-        DetectRequest detectRequest=this.detectRequestService.get(registerBill.getDetectRequestId());
+        Integer hasHandleResult = registerBill.getHasHandleResult();
+        DetectRequest detectRequest = this.detectRequestService.get(registerBill.getDetectRequestId());
 
-        if(!DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())){
+        if (!DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
-        Predicate<DetectRequest>pred=(DetectRequest item)->{
+        Predicate<DetectRequest> pred = (DetectRequest item) -> {
 
-            if(DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())){
+            if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())) {
                 return true;
-            }else if(DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType())&&hasHandleResult.equals(0)){
+            } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType()) && hasHandleResult.equals(0)) {
                 return true;
             }
             return false;
         };
 
-        boolean updateState =  Optional.of(detectRequest).stream().anyMatch(pred);
+        boolean updateState = Optional.of(detectRequest).stream().anyMatch(pred);
 
         if (updateState) {
             UserTicket userTicket = getOptUser();
@@ -553,8 +553,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             registerBill.setOperatorId(userTicket.getId());
 
 
-
-            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(),userTicket.getRealName()), Optional.empty());
+            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getRealName()), Optional.empty());
 
             DetectRequest updatable = new DetectRequest();
             updatable.setId(item.getId());
@@ -826,7 +825,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
                 }).append(imageCertList).toList();
 
-        this.billService.updateHasImage(item.getBillId(),imageCerts);
+        this.billService.updateHasImage(item.getBillId(), imageCerts);
         return item.getBillId();
     }
 
@@ -849,7 +848,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(cerType) && !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(cerType);
 
                 }).append(imageCertList).toList();
-        this.billService.updateHasImage(item.getBillId(),imageCerts);
+        this.billService.updateHasImage(item.getBillId(), imageCerts);
         return item.getBillId();
     }
 
@@ -1090,5 +1089,12 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 .filterKeys(Optional::isPresent)
                 .mapKeys(Optional::get)
                 .grouping();
+    }
+
+    @Override
+    public List<MessageEvent> queryEvents(Long billId) {
+
+
+        return Lists.newArrayList();
     }
 }
