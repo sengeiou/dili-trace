@@ -709,6 +709,7 @@ public class NewRegisterBillController {
                     rb.setTruckType(TruckTypeEnum.FULL.getCode());
                     rb.setIsCheckin(YesOrNoEnum.NO.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
+                    rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
                     // 理货类型为交易区时才保存交易区号和id
                     if (RegisterSourceEnum.TRADE_AREA.getCode().equals(input.getRegisterSource())) {
                         rb.setTradeTypeId(input.getTradeTypeId());

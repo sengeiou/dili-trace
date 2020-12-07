@@ -3,11 +3,24 @@ package com.dili.trace.api.input;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * 库存
+ */
 public class ProductStockInput {
+
+    /**
+     * 商品ID
+     */
     private Long productStockId;
 
+    /**
+     * 交易重量
+     */
     private BigDecimal tradeWeight;
 
+    /**
+     * 交易详情列表
+     */
     private List<TradeDetailInputDto> tradeDetailInputList;
     
 

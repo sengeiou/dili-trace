@@ -6,87 +6,108 @@ import java.util.List;
 import com.dili.trace.domain.ImageCert;
 
 public class TraceDetailOutputDto {
-	private Long tradeRequestId;
-	
-	private List<ImageCert> imageCertList;
+    /**
+     * 交易單requestId
+     */
+    private Long tradeRequestId;
+    /**
+     * 图片集合
+     */
+    private List<ImageCert> imageCertList;
+    /**
+     * 商品名称
+     */
+    private String productName;
+    /**
+     * 规格名称
+     */
+    private String specName;
+    /**
+     * 品牌名称
+     */
+    private String brandName;
+    /**
+     * 创建时间
+     */
+    private Date created;
+    /**
+     * 上游数据集合
+     */
+    private List<TraceDataDto> upTraceList;
+    /**
+     * 下游数据集合
+     */
+    private List<TraceDataDto> downTraceList;
 
-	private String productName;
-	private String specName;
-	private String brandName;
-	private Date created;
-	private List<TraceDataDto> upTraceList;
-	private List<TraceDataDto> downTraceList;
-	
-	/**
-	 * @return List<ImageCert> return the imageCertList
-	 */
-	public List<ImageCert> getImageCertList() {
-		return imageCertList;
-	}
+    /**
+     * @return List<ImageCert> return the imageCertList
+     */
+    public List<ImageCert> getImageCertList() {
+        return imageCertList;
+    }
 
-	/**
-	 * @param imageCertList the imageCertList to set
-	 */
-	public void setImageCertList(List<ImageCert> imageCertList) {
-		this.imageCertList = imageCertList;
-	}
+    /**
+     * @param imageCertList the imageCertList to set
+     */
+    public void setImageCertList(List<ImageCert> imageCertList) {
+        this.imageCertList = imageCertList;
+    }
 
-	// /**
-	// * @return List<String> return the originNameList
-	// */
-	// public List<String> getOriginNameList() {
-	// return originNameList;
-	// }
+    // /**
+    // * @return List<String> return the originNameList
+    // */
+    // public List<String> getOriginNameList() {
+    // return originNameList;
+    // }
 
-	// /**
-	// * @param originNameList the originNameList to set
-	// */
-	// public void setOriginNameList(List<String> originNameList) {
-	// this.originNameList = originNameList;
-	// }
+    // /**
+    // * @param originNameList the originNameList to set
+    // */
+    // public void setOriginNameList(List<String> originNameList) {
+    // this.originNameList = originNameList;
+    // }
 
-	/**
-	 * @return String return the productName
-	 */
-	public String getProductName() {
-		return productName;
-	}
+    /**
+     * @return String return the productName
+     */
+    public String getProductName() {
+        return productName;
+    }
 
-	/**
-	 * @param productName the productName to set
-	 */
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
+    /**
+     * @param productName the productName to set
+     */
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
-	/**
-	 * @return String return the specName
-	 */
-	public String getSpecName() {
-		return specName;
-	}
+    /**
+     * @return String return the specName
+     */
+    public String getSpecName() {
+        return specName;
+    }
 
-	/**
-	 * @param specName the specName to set
-	 */
-	public void setSpecName(String specName) {
-		this.specName = specName;
-	}
+    /**
+     * @param specName the specName to set
+     */
+    public void setSpecName(String specName) {
+        this.specName = specName;
+    }
 
-	/**
-	 * @return String return the brandName
-	 */
-	public String getBrandName() {
-		return brandName;
-	}
+    /**
+     * @return String return the brandName
+     */
+    public String getBrandName() {
+        return brandName;
+    }
 
-	/**
-	 * @param brandName the brandName to set
-	 */
-	public void setBrandName(String brandName) {
-		this.brandName = brandName;
-	}
-
+    /**
+     * @param brandName the brandName to set
+     */
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
 
 
     /**
@@ -102,7 +123,6 @@ public class TraceDetailOutputDto {
     public void setDownTraceList(List<TraceDataDto> downTraceList) {
         this.downTraceList = downTraceList;
     }
-
 
 
     /**
@@ -133,7 +153,6 @@ public class TraceDetailOutputDto {
     public void setCreated(Date created) {
         this.created = created;
     }
-
 
 
     /**

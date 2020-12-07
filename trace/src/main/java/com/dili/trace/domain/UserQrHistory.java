@@ -19,15 +19,22 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Table(name = "`user_qr_history`")
 public class UserQrHistory extends BaseDomain {
+    /**
+     * 二维码条目主键
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
     private Long id;
 
+    /**
+     * 业户主键
+     */
     @Column(name = "`user_id`")
     private Long userId;
+
     /**
-     * 二维码条目参数值
+     * 二维码条目参数值（业户名称）
      */
     @Column(name = "`user_name`")
     private String userName;
@@ -38,30 +45,50 @@ public class UserQrHistory extends BaseDomain {
     @Column(name = "`qr_status`")
     private Integer qrStatus;
 
+    /**
+     * 二维码内容
+     */
     @Column(name = "`content`")
     private String content;
 
+    /**
+     * 创建时间
+     */
     @ApiModelProperty(value = "创建时间")
     @Column(name = "`created`")
     private Date created;
 
+    /**
+     * 修改时间
+     */
     @ApiModelProperty(value = "修改时间")
     @Column(name = "`modified`")
     private Date modified;
 
-    
+    /**
+     * 报备单ID
+     */
     @ApiModelProperty(value = "报备单ID")
     @Column(name = "`bill_id`")
     private Long billId;
 
+    /**
+     * 交易单ID
+     */
     @ApiModelProperty(value = "交易单ID")
     @Column(name = "`trade_request_id`")
     private Long tradeRequestId;
-    
+
+    /**
+     * 查验状态
+     */
     @ApiModelProperty(value = "查验状态")
     @Column(name = "`verify_status`")
     private Integer verifyStatus;
-    
+
+    /**
+     * 是否有效
+     */
     @ApiModelProperty(value = "是否有效")
     @Column(name = "`is_valid`")
     private Integer isValid;
