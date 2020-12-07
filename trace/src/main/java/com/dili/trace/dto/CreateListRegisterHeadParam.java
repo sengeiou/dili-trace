@@ -10,7 +10,13 @@ import java.util.List;
  * @author Lily
  */
 public class CreateListRegisterHeadParam {
+	/**
+	 * 业户ID
+	 */
 	private Long userId;
+	/**
+	 * 市场ID
+	 */
 	private Long marketId;
 
 	public Long getUserId() {

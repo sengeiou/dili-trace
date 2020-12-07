@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
+ * 用户店铺相关接口
  * @author asa.lee
  */
 @Api(value = "/api/client/clientUserStoreApi")

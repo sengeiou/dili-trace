@@ -9,49 +9,85 @@ import java.util.Date;
 @SuppressWarnings("serial")
 @Table(name = "`trade_order`")
 public class TradeOrder extends BaseDomain {
+    /**
+     * ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
     private Long id;
 
+    /**
+     * 买家ID
+     */
     @ApiModelProperty(value = "买家ID")
     @Column(name = "`buyer_id`")
     private Long buyerId;
 
+    /**
+     * 买家姓名
+     */
     @ApiModelProperty(value = "买家姓名")
     @Column(name = "`buyer_name`")
     private String buyerName;
 
+    /**
+     * 买家市场
+     */
     @ApiModelProperty(value = "买家市场")
     @Column(name = "`buyer_market_id`")
     private Long buyerMarketId;
 
+    /**
+     * 卖家ID
+     */
     @ApiModelProperty(value = "卖家ID")
     @Column(name = "`seller_id`")
     private Long sellerId;
 
+    /**
+     * 卖家姓名
+     */
     @ApiModelProperty(value = "卖家姓名")
     @Column(name = "`seller_name`")
     private String sellerName;
 
+    /**
+     * 卖家市场
+     */
     @ApiModelProperty(value = "卖家市场")
     @Column(name = "`seller_market_id`")
     private Long sellerMarketId;
 
+    /**
+     * 交易状态
+     */
     @ApiModelProperty(value = "交易状态")
     @Column(name = "`order_status`")
     private Integer orderStatus;
 
+    /**
+     * 交易类型
+     */
     @ApiModelProperty(value = "交易类型")
     @Column(name = "`order_type`")
     private Integer orderType;
 
+    /**
+     * 创建时间
+     */
     @Column(name = "`created`")
     private Date created;
 
+    /**
+     * 修改时间
+     */
     @Column(name = "`modified`")
     private Date modified;
 
+    /**
+     * 第三方流水号
+     */
     @ApiModelProperty(value = "第三方流水号")
     @Transient
     private String tradeNo;

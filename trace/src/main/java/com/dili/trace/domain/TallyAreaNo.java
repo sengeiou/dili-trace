@@ -18,40 +18,64 @@ import io.swagger.annotations.ApiModelProperty;
  * 由MyBatis Generator工具自动生成
  * 
  * This file was generated on 2019-07-26 09:20:34.
+ * 摊位表
  */
 @SuppressWarnings("serial")
 @Table(name = "`tally_area_no`")
 public class TallyAreaNo extends BaseDomain {
 
+    /**
+     * ID
+     */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
     @JSONField(serialize = false)
 	private Long id;
 
+    /**
+     * 摊位号
+     */
 	@ApiModelProperty(value = "摊位号")
 	@Column(name = "`number`")
     private String number;
-    
+
+    /**
+     * 街区号
+     */
 	@ApiModelProperty(value = "街区号")
 	@Column(name = "`street`")
 	private String street;
-    
 
+    /**
+     * 区域
+     */
     @ApiModelProperty(value = "区域")
 	@Column(name = "`area`")
     private String area;
-    
-	@Column(name = "`created`")
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "`created`")
 	private Date created;
 
+    /**
+     * 修改时间
+     */
 	@Column(name = "`modified`")
     private Date modified;
 
+    /**
+     * 市场ID
+     */
     @ApiModelProperty(value = "市场ID")
     @Column(name = "`market_id`")
     private String marketId;
 
+    /**
+     * 区位
+     */
     @Column(name="area")
     @Like(value = Like.BOTH)
     private String likeAreaName;

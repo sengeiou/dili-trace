@@ -16,63 +16,123 @@ import java.util.List;
  * @author Lily
  */
 public class CreateRegisterHeadInputDto {
+	/**
+	 * 进门主台账单ID
+	 */
 	@ApiModelProperty(value = "进门主台账单ID")
 	private Long id;
 
+	/**
+	 * 单据类型 {@link com.dili.trace.enums.BillTypeEnum}
+	 */
 	@ApiModelProperty(value = "单据类型")
 	private Integer billType;
 
+	/**
+	 * 商品名称
+	 */
 	@ApiModelProperty(value = "商品名称")
 	private String productName;
 
+	/**
+	 * 商品ID
+	 */
 	@ApiModelProperty(value = "商品ID")
 	private Long productId;
 
+	/**
+	 * 计量类型 {@link com.dili.trace.enums.MeasureTypeEnum}
+	 */
 	@ApiModelProperty(value = "计量类型")
 	private Integer measureType;
 
+	/**
+	 * 件数
+	 */
 	@ApiModelProperty(value = "件数")
 	private BigDecimal pieceNum;
 
+	/**
+	 * 件重
+	 */
 	@ApiModelProperty(value = "件重")
 	private BigDecimal pieceWeight;
 
+	/**
+	 * 总重量
+	 */
 	@ApiModelProperty(value = "总重量")
 	private BigDecimal weight;
 
+	/**
+	 * 重量单位 {@link com.dili.trace.enums.WeightUnitEnum}
+	 */
 	@ApiModelProperty(value = "重量单位")
 	private Integer weightUnit;
 
+	/**
+	 * 上游企业ID
+	 */
 	@ApiModelProperty(value = "上游企业ID")
 	private Long upStreamId;
 
+	/**
+	 * 产地ID
+	 */
 	@ApiModelProperty(value = "产地ID")
 	private Long originId;
 
+	/**
+	 * 产地名
+	 */
 	@ApiModelProperty(value = "产地名")
 	private String originName;
 
+	/**
+	 * 规格
+	 */
 	@ApiModelProperty(value = "规格")
 	private String specName;
 
+	/**
+	 * 品牌名称
+	 */
 	@ApiModelProperty(value = "品牌名称")
 	private String brandName;
 
+	/**
+	 * 品牌ID
+	 */
 	@ApiModelProperty(value = "品牌ID")
 	private Long brandId;
 
+	/**
+	 * 车牌
+	 */
 	@ApiModelProperty(value = "车牌")
 	private String plate;
 
+	/**
+	 * 备注
+	 */
 	@ApiModelProperty(value = "备注")
 	private String remark;
 
+	/**
+	 * 是否启用
+	 */
 	@ApiModelProperty(value = "是否启用")
 	private Integer active;
 
+	/**
+	 * 是否废弃
+	 */
     @ApiModelProperty(value = "是否废弃")
 	private Integer isDeleted;
 
+	/**
+	 * 经营户ID
+	 */
 	@ApiModelProperty(value = "经营户ID")
     private Long userId;
 

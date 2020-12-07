@@ -40,11 +40,10 @@ public class ClientTradeOrderApi {
     @Autowired
     TradeOrderService tradeOrderService;
 
-
     /**
      * 获取订单列表
-     * @param inputDto
-     * @return
+     * @param inputDto 查询条件
+     * @return 订单列表
      */
     @ApiOperation(value = "获取订单列表")
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")
@@ -71,8 +70,8 @@ public class ClientTradeOrderApi {
 
     /**
      * 获取订单列表
-     * @param inputDto
-     * @return
+     * @param inputDto 查询条件
+     * @return 订单列表
      */
     @ApiOperation(value = "获取订单列表")
     @ApiImplicitParam(paramType = "body", name = "RegisterBill", dataType = "RegisterBill", value = "获取登记单列表")

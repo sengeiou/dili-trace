@@ -4,10 +4,20 @@ import java.math.BigDecimal;
 
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+ * 交易详情
+ */
 public class TradeDetailInputDto {
 
+    /**
+     * 交易重量
+     */
     @ApiModelProperty(value = "购买重量")
     private BigDecimal tradeWeight;
+
+    /**
+     * 订单ID
+     */
     @ApiModelProperty(value = "订单ID")
     private Long tradeDetailId;
 

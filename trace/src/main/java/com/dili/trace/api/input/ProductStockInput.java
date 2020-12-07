@@ -3,9 +3,13 @@ package com.dili.trace.api.input;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * 库存
+ */
 public class ProductStockInput {
+
     /**
-     * 商品库存id
+     * 商品ID
      */
     private Long productStockId;
 
@@ -15,20 +19,21 @@ public class ProductStockInput {
     private BigDecimal tradeWeight;
 
     /**
-     * 交易购买明细列表
+     * 交易详情列表
      */
     private List<TradeDetailInputDto> tradeDetailInputList;
+    
 
 
     public Long getProductStockId() {
-        return productStockId;
-    }
+		return productStockId;
+	}
 
-    public void setProductStockId(Long productStockId) {
-        this.productStockId = productStockId;
-    }
+	public void setProductStockId(Long productStockId) {
+		this.productStockId = productStockId;
+	}
 
-    /**
+	/**
      * @return BigDecimal return the tradeWeight
      */
     public BigDecimal getTradeWeight() {
@@ -41,6 +46,9 @@ public class ProductStockInput {
     public void setTradeWeight(BigDecimal tradeWeight) {
         this.tradeWeight = tradeWeight;
     }
+
+
+  
 
 
     /**

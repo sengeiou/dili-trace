@@ -11,23 +11,37 @@ import com.dili.trace.domain.TradeRequest;
 
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+ * 交易列表查询实体
+ */
 public class TradeRequestListInput extends TradeRequest {
 
+    /**
+     * 商品名称（模糊查询条件）
+     */
     @Column(name = "`product_name`")
     @Like()
     private String likeProductName;
 
+    /**
+     * 登记开始时间
+     */
     @ApiModelProperty(value = "查询登记开始时间")
     @Column(name = "`created`")
     @Operator(Operator.GREAT_EQUAL_THAN)
     private String createdStart;
 
+    /**
+     * 登记结束时间
+     */
     @ApiModelProperty(value = "查询登记结束时间")
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
     private String createdEnd;
 
-
+    /**
+     * 库存列表
+     */
     @Transient
     private List<ProductStockInput> batchStockList;
 

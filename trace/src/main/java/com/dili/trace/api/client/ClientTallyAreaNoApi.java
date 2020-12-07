@@ -42,8 +42,8 @@ public class ClientTallyAreaNoApi {
 
 	/**
 	 * 获取区位列表
-	 * @param inputDto
-	 * @return
+	 * @param inputDto 查询条件
+	 * @return 区位列表
 	 */
 	@ApiOperation(value = "获取区位列表")
 	@ApiImplicitParam(paramType = "body", name = "TallyAreaNo", dataType = "TallyAreaNo", value = "获取区位列表")
