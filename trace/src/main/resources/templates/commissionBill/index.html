@@ -100,7 +100,11 @@
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
             <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
-            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <button id="audit-btn" type="button" class="btn btn-primary"><i class="fa  fa-user"></i> 进场审核</button>
+            <button id="batch-reviewCheck-btn" type="button" class="btn btn-primary"><i class="fa  fa-check-square-o"></i> 批量复检</button>
+            <button id="createsheet-btn" type="button" class="btn btn-primary"><i class="fa  fa-plus"></i> 创建打印报告</button>
+            <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa  fa-list"></i> 查看</button>
+            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('commissionBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
         <table id="commissionBillGrid" data-toggle="table" data-title="委托登记单列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
@@ -200,15 +204,17 @@
         var commissionBillGrid=new CommissionBillGrid($('#commissionBillGrid'),$('#queryForm'),RegisterBillStateEnum,BillDetectStateEnum);
 
         $('#commissionBillGrid').bootstrapTable('refreshOptions', {
-            url: '/commissionBill/listPage.action'
+            url: '/commissionBill/listPage.action',
+            onCheck:onClickRow,
+            onUncheck:onClickRow
         });
-
+        initBtnStatus();
     });
 
     function search(){
         $("#commissionBillGrid").bootstrapTable('refresh');
     }
-    //基础查询参数设置
+    //基础查询参数设置,ts中调用不到bui.util
     function queryParams(params) {
         let temp = {
             rows: params.limit,   //页面大小
@@ -218,7 +224,491 @@
         };
         return $.extend(temp, bui.util.bindGridMeta2Form('commissionBillGrid', 'queryForm'));
     }
+
 </script>
+
+<script type="text/javascript">
+
+    window._commissionBillGrid = $('#commissionBillGrid');
+    function onBeforeLoad(param) {
+        return true;
+    }
+    var highLightBill={};
+    function findHighLightBill(){
+        highLightBill = {};
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/commissionBill/findHighLightBill.action",
+            processData:true,
+            dataType: "json",
+            data:{},
+            async : false,
+            success: function (ret) {
+                if(ret&&ret.code=='200'){
+                    highLightBill = ret.data;
+                }
+            },
+            error: function(){
+                highLightBill = {}
+            }
+        });
+    }
+    function coloredRowRender(index,row){
+        if(highLightBill&&highLightBill.id&&row.id==highLightBill.id){
+            return {style:'background:#7dc57d'};
+        }
+    }
+
+    function queryPlatesByTallyAreaNo(tallyAreaNo){
+        //console.info(tallyAreaNo)
+        //console.info(tallyAreaNo)
+        $('#likePlate').combobox('loadData', [])
+        if(tallyAreaNo&&tallyAreaNo!=''){
+            $.ajax({
+                type: "POST",
+                url: "${contextPath}/user/findPlatesByTallyAreaNo.action",
+                processData: true,
+                dataType: "json",
+                data: { tallyAreaNo: tallyAreaNo },
+                async: true,
+                success: function (ret) {
+                    if (ret.success) {
+                        $('#likePlate').combobox('loadData', ret.data)
+                    } else {
+                        //$('#plate').combobox('loadData',[])
+                    }
+                },
+                error: function () {
+                    // $('#plate').combobox('loadData',[])
+                }
+            });
+
+        }
+    }
+
+    function onPlateChange(v){
+        if(v&&v!='全部'){
+            queryCommissionBillGrid();
+        }
+
+    }
+
+    //表格表头右键菜单
+    function headerContextMenu(e, field){
+        e.preventDefault();
+        if (!cmenu){
+            createColumnMenu("commissionBillGrid");
+        }
+        cmenu.menu('show', {
+            left:e.pageX,
+            top:e.pageY
+        });
+    }
+
+    function initBtnStatus(){
+        var btnArray=['detail-btn','createsheet-btn','audit-btn','batch-reviewCheck-btn'];
+        $.each(btnArray,function(i,btnId){
+            //$('#' + btnId).linkbutton('enable');
+            $('#'+btnId).hide();
+        })
+
+    }
+
+    function onUnselectAll (){
+        onClickRow();
+    }
+    function onSelectAll(){
+        onClickRow();
+    }
+    function onUnselect(index,row){
+        onClickRow(index, row);
+    }
+
+    /**
+     * datagrid行点击事件
+     * 目前用于来判断 启禁用是否可点
+     */
+    function onClickRow(index,row) {
+
+        initBtnStatus();
+        var rows=_commissionBillGrid.bootstrapTable("getSelections");
+        console.log(rows);
+        if(rows.length==0){
+            return;
+        }
+        if(window['commissionBillGrid'].isReviewCheck()){
+            $('#batch-reviewCheck-btn').show();
+        }
+        var rows=_commissionBillGrid.bootstrapTable("getSelections");
+
+        var exists_detectState_pass=$.makeArray(rows).filter(function(v,i){
+            var detectState=v.$_detectState;
+            if(!_.isUndefined(detectState)){
+                return true;
+            }
+            return false;
+        }).filter(function(v,i){
+            if(v.$_checkSheetId&&v.$_checkSheetId!=null&&v.$_checkSheetId!=''){
+                return false;
+            }else{
+                return true;
+            }
+        }).length>0;
+
+        var hasName=false;
+        var hasCorporateName=false;
+        var rowsArray=$.makeArray(rows);
+
+        var nameArray=rowsArray.map(function(v,i){
+            return v.name;
+        }).filter(function(v,i){
+            return $.trim(v) != '';
+        });
+
+        if(exists_detectState_pass){
+            var distinctNameArray=nameArray.reduce(function(accumulator, currentValue, index, array ){
+                if($.inArray(currentValue,array,index+1)==-1){
+                    accumulator.push(currentValue);
+                }
+                return accumulator;
+            },[] );
+
+            var corporateNameArray=rowsArray.map(function(v,i){
+                return v.corporateName;
+            }).filter(function(v,i){
+                return $.trim(v) != '';
+            })
+
+            var distinctCorporateNameArray=corporateNameArray.reduce(function(accumulator, currentValue, index, array ){
+                if($.inArray(currentValue,array,index+1)==-1){
+                    accumulator.push(currentValue);
+                }
+                return accumulator;
+            },[] );
+
+            $('#createsheet-btn').hide();
+
+            if(rowsArray.length==corporateNameArray.length&&distinctCorporateNameArray.length==1){ //全部都有企业名称，且企业名称相同
+                $('#createsheet-btn').show();
+            }else if(rowsArray.length==nameArray.length&&distinctCorporateNameArray.length==0&&distinctNameArray.length==1){ //全部没有企业名称，且业户名称相同
+                $('#createsheet-btn').show();
+            }else{
+                $('#createsheet-btn').hide();
+            }
+        }else{
+            $('#createsheet-btn').hide();
+        }
+
+        if(rows.length>1){
+            //batch
+            return;
+        }
+        var selected = rows[0];
+        //console.info(selected)
+        if(selected.$_state=='${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()}'){
+            $('#audit-btn').show();
+        }else{
+            $('#audit-btn').hide();
+        }
+
+        $('#detail-btn').show();
+
+
+        var state = selected.$_state;
+        var detectState= selected.$_detectState;
+
+    } async function audit(){
+        var selected = _commissionBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        var url='${contextPath}/commissionBill/audit.html?billId=' + selected.id;
+
+        layer.open({
+            type: 2,
+            title: "审核",
+            shadeClose: true,
+            shade: 0.3,
+            offset: "20%",
+            shadeClose : false,
+            area: ['800px', "350px"],
+            content: url,//传入一个链接地址 比如：http://www.baidu.com
+            btn: ['进场审核','取消'],
+            yes: function(index, layero){
+                $.ajax({
+                    type: "POST",
+                    data:{billId:selected.id},
+                    url: "${contextPath}/commissionBill/doAuditCommissionBillByManager.action",
+                    processData:true,
+                    dataType: "json",
+
+                    async : true,
+                    success: function (ret) {
+                        if(ret.success){
+                            _commissionBillGrid.datagrid("reload");
+                            TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
+                            // layer.alert('操作成功',{title:'操作',time : 3000});
+
+                            layer.alert('操作成功',{
+                                    title:'操作',
+                                    time : 600,
+                                    end :function(){
+                                        layer.closeAll();
+
+                                    }
+                                },
+                                function () {
+                                    layer.closeAll();
+                                }
+                            );
+
+                        }else{
+                            swal(
+                                '操作',
+                                ret.result,
+                                'info'
+                            );
+                            layer.closeAll();
+
+                        }
+
+                    },
+                    error: function(){
+
+                        swal(
+                            '错误',
+                            '远程访问失败',
+                            'error'
+                        );
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+
+
+
+        let promise = new Promise((resolve, reject) => {
+            layer.open(codeList.join("<br\>"), {btn: ['确定', '取消'], title: "批量审核"},function () {
+                    resolve("yes");
+                },function(){
+                    resolve("cancel");
+                }
+            );
+        });
+
+        let result = await promise; // wait until the promise resolves (*)
+
+
+
+
+    }
+    function blankFormatter(val,row){
+        if(!val){
+            return "-";
+        }
+        return val;
+    }
+
+    function closeLastWin(id){
+        $('#' + id).last().remove();
+    }
+    function closeWin(id){
+        $('#' + id).remove();
+        $('#commissionBillGrid').datagrid('reload');
+    }
+    function openWin(url){
+        $('body').append('<iframe id="view_win" name="view_win" src="' + url + '" style="border:0px;width:100%;height:100%;position:fixed;left:0;top:0"></iframe>');
+    }
+    function openInsert(){
+        openWin('${contextPath}/commissionBill/create.html');
+    }
+
+
+    //打开处理结果窗口
+    function openIframe(content,selected){}
+    function doDetail(){
+        var selected = _commissionBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+        openWin('${contextPath}/commissionBill/view/' + selected.id+'/true');
+    }
+    function cityLoader(param,success,error) {
+        var q = param.q || '';
+        if (q.length < 1){return false}
+        $.ajax({
+            type: "POST",
+            url: '${contextPath}/provider/getLookupList.action',
+            dataType: 'json',
+            data: {
+                provider: 'cityProvider',
+                queryParams: '{required:true}',
+                value: q
+            },
+            success: function(data){
+                success(data);
+            },
+            error: function(){
+                error.apply(this, arguments);
+            }
+        });
+    }
+    function doCreateCheckSheet(){
+        var selected = _commissionBillGrid.datagrid("getSelected");
+        if (null == selected) {
+            swal({
+                title: '警告',
+                text: '请选中一条数据',
+                type: 'warning',
+                width: 300
+            });
+            return;
+        }
+
+        var rows=_commissionBillGrid.datagrid("getSelections");
+        var idList=rows.filter(function(v,i){return true;}).map(function(v,i){return v.id});
+        openWin('/checkSheet/edit.html?' +$.param({idList:idList},true));
+    }
+    function openLayer(url){
+        layer.open({
+            area: ['600px', "400px"],
+            title: '审核',
+            content: [url, 'no'], //iframe的url
+            btn: ['确定', '取消'],
+            yes: function (index, layero) {
+                //按钮【确认】的回调
+                var body = layer.getChildFrame('body', index); //iframe的body获取方式
+                var password = $(body).find("#password").val();
+            }
+        });
+    }
+
+
+
+
+    $('.fileimg-view').on('click', function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        if(url){
+            layer.open({
+                title: '图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+    $('.fileimg-delete').on('click', function () {
+
+        var imgBox=$(this).parents('.fileimg-box:first');
+        var td= imgBox.parent('td');
+        var imgBoxArr=td.find('.fileimg-box');
+        if(imgBoxArr.length==10){
+            var lastImgBox=$(imgBoxArr[imgBoxArr.length-1]);
+            if(lastImgBox.find("input:hidden").val()!=''){
+
+                imgBox.find(".magnifying").attr('src', '').hide();
+                imgBox.find("input:hidden").val('');
+                imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+
+                imgBox.appendTo(td);
+            }else{
+                imgBox.remove();
+            }
+        }else if(imgBoxArr.length>1){
+            imgBox.remove();
+        }else{
+            imgBox.find(".magnifying").attr('src', '').hide();
+            imgBox.find("input:hidden").val('');
+            imgBox.find('.fileimg-cover,.fileimg-edit').hide();
+        }
+
+    });
+    function initFileUpload(){
+        initFileInput($("input[type='file']"));
+    }
+    function afterUpload(url,fileInputObj){
+        var imgBox=fileInputObj.parent();
+        var td= imgBox.parent('td');
+        var newImgBox=imgBox.clone(true);
+
+        imgBox.find(".magnifying").attr('src', url).show();
+        imgBox.find("input[type='hidden']").val(url);
+        imgBox.find('.fileimg-cover,.fileimg-edit').show();
+        //console.info(url)
+        //debugger
+        if(td.find('.fileimg-box').length<10){
+            newImgBox.find('input[type="file"]').remove();
+            $('<input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))
+            newImgBox.appendTo(td);
+            initFileInput(newImgBox.find('input[type="file"]'))
+        }
+    }
+
+    function initFileInput(jqueryObj){
+        jqueryObj.fileupload({
+            dataType: 'json',
+            formData: { type: 5, compress: true },
+            done: function (e, res) {
+                if (res.result.code == 200) {
+                    var url = res.result.data;
+                    var fileInputObj = $(e.target);
+                    afterUpload(url, fileInputObj);
+                    /*var imgBox=fileInputObj.parent();
+                    var td= imgBox.parent('td');
+                     var newImgBox=imgBox.clone(true);
+
+                    imgBox.find(".magnifying").attr('src', url).show();
+                    imgBox.find("input:hidden").val(url);
+                    imgBox.find('.fileimg-cover,.fileimg-edit').show();
+
+                    if(td.find('.fileimg-box').length<10){
+                        newImgBox.find('input[type="file"]').remove();
+                        $('<input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))
+                        newImgBox.appendTo(td);
+                        initFileInput(newImgBox.find('input[type="file"]'))
+                    }*/
+                }
+            },
+            add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".") + 1;
+                var fileType = name.substring(index, name.length);
+                if (!acceptFileTypes.test(fileType)) {
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if (size > (1024 * 10 * 1024)) {
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return;
+                }
+                data.submit();
+            }
+        });
+
+
+    }
+
+
+</script>
+
 <!--
  <script src="http://base.nong12.com/static/log/log.build.js"></script>
  <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">

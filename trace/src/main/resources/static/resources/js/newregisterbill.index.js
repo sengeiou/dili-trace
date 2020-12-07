@@ -531,7 +531,7 @@ class NewRegisterBillGrid extends WebConfig {
             return;
         }
         var createCheckSheet = _.chain(this.rows)
-            .filter(item => 1 == item?.detectRequest?.detectResult)
+            .filter(item => 1 == item ? .detectRequest ? .detectResult :  : )
             .filter(item => _.isUndefined(item.checkSheetId) || item.checkSheetId == null).value().length > 0;
         createCheckSheet ? $('#createsheet-btn').show() : $('#createsheet-btn').hide();
         if (rows.length == 1) {
@@ -560,11 +560,11 @@ class NewRegisterBillGrid extends WebConfig {
                 $('#undo-btn').show();
                 $('#sampling-btn').show();
             }
-            if (selected?.detectRequest?.detectResult == 2) {
-                if (selected?.detectRequest?.detectType == 20) {
+            if (selected ? .detectRequest ? .detectResult == 2 :  : ) {
+                if (selected ? .detectRequest ? .detectType == 20 :  : ) {
                     $('#review-btn').show();
                 }
-                else if (selected?.detectRequest?.detectType == 30 && selected.hasHandleResult == 0) {
+                else if (selected ? .detectRequest ? .detectType == 30 && selected.hasHandleResult == 0 :  : ) {
                     $('#review-btn').show();
                 }
             }
