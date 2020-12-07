@@ -1,0 +1,214 @@
+<#bs4Body>
+<div class="container-fluid">
+    <form id="queryForm" role="form" >
+        <div class="row row-cols-6">
+            <div class="form-group col-auto">
+                <label for="createdStart">注册时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="createdStart" id="createdStart" class="form-control laydatetime laystart" value="${createdStart}"/>
+                        <div class="input-group-append">
+                            <label for="createdStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group" id="datetimepicker3">
+                        <input type="text" name="createdEnd" id="createdEnd" class="form-control laydatetime layend" value="${createdEnd}"/>
+                        <div class="input-group-append">
+                            <label for="createdEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col">
+                <label for="likeName">姓名</label>
+                <input type="text" class="form-control" name="likeName" id="likeName"/>
+            </div>
+            <div class="form-group col">
+                <label for="phone">手机号</label>
+                <input type="text" class="form-control" name="phone" id="phone"/>
+            </div>
+            <div class="form-group col">
+                <label for="userType">类型</label>
+                <select id="userType" name="userType" class="form-control"></select>
+                <#bcomboProvider _id="userType" _provider="userTypeEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="likeTallyAreaNos">理货区号</label>
+                <input type="text" class="form-control" name="likeTallyAreaNos" id="likeTallyAreaNos"/>
+            </div>
+            <div class="form-group col">
+                <label for="salesCityId">销地城市</label>
+                <!--data-options="label:'销地城市:',loader:cityLoader,mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入', panelWidth:'auto',panelMinWidth:'175', panelHeight:'auto',panelMaxHeight:'300',  editable:true,validType:'comboBoxEditvalid[\'salesCityId\']'">-->
+                <select id="salesCityId" name="salesCityId" class="form-control"></select>
+            </div>
+            <div class="form-group col">
+                <label for="plates">车牌</label>
+                <input type="text" class="form-control" name="plates" id="plates"/>
+            </div>
+            <div class="form-group col">
+                <label for="hasBusinessLicense">营业执照</label>
+                <select id="hasBusinessLicense" name="hasBusinessLicense" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="true">有</option>
+                    <option value="false">无</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label for="state">状态</label>
+                <select id="state" name="state" class="form-control"></select>
+                <#bcomboProvider _id="state" _provider="enabledStateProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="thirdPartyCode">经营户卡号</label>
+                <input type="text" class="form-control" name="thirdPartyCode" id="thirdPartyCode"/>
+            </div>
+            <div class="col-auto align-self-center mt-3">
+                <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
+                <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <div>
+        <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+            <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
+            <button id="edit-btn" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 修改</button>
+            <button id="reset-btn" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 重置密码</button>
+            <button id="enabled-btn" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 启用</button>
+            <button id="disabled-btn" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 禁用</button>
+            <button id="delete-btn" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 删除</button>
+            <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i> 查看</button>
+            <button id="export" type="button" class="btn btn-primary"><i class="fa fa-eye"></i> 导出</button>
+            <button id="download-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i> 下载二维码</button>
+        </div>
+        <table id="grid" data-toggle="table" data-title="客户列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
+               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="false" data-detail-view="false">
+            <thead>
+            <tr>
+                <th data-checkbox="true"></th>
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    注册时间
+                </th>
+                <th data-field="id" data-sortable="true" data-align="center">
+                    ID
+                </th>
+                <th data-field="name" data-sortable="true" data-align="center">
+                    名称
+                </th>
+                <th data-field="legalPerson" data-sortable="true" data-align="center">
+                    法人
+                </th>
+                <th data-field="phone" data-sortable="true" data-align="center" data-formatter="phoneFormatter">
+                    手机号
+                </th>
+                <th data-field="cardNo" data-sortable="true" data-align="center" data-formatter="cardNoFormatter">
+                    身份证号
+                </th>
+                <th data-field="userType" data-sortable="true" data-align="center" data-provider="userTypeEnumProvider">
+                    类型
+                </th>
+                <th data-field="tallyAreaNos" data-sortable="true" data-align="center">
+                    理货区号
+                </th>
+                <th data-field="salesCityName" data-sortable="true" data-align="center">
+                    销地城市
+                </th>
+                <th data-field="plates" data-align="center">
+                    车牌
+                </th>
+                <!--data-formatter="function(val){return val?'有':'无'}"-->
+                <th data-field="businessLicenseUrl" data-sortable="true" data-align="center" data-formatter="businessLicenseUrlFormatter">
+                    营业执照
+                </th>
+                <th data-field="state" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
+                    状态
+                </th>
+                <th data-field="isActive" data-sortable="true" data-align="center" data-provider="userActiveEnumProvider">
+                    活跃
+                </th>
+                <th data-field="qrStatus" data-sortable="true" data-align="center" data-provider="userQrStatusEnumProvider" data-formatter="userQrStatusFormatter">
+                    二维码
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+</#bs4Body>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/newuser.index.js"></script>
+<script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
+<#webGlobalConfig/>
+<script>
+    laydate.render({
+        elem: '#createdStart',
+        type: 'datetime'
+    });
+    laydate.render({
+        elem: '#createdEnd',
+        type: 'datetime'
+    });
+
+    function phoneFormatter(val,row){
+        if(val){
+            return val.replace(val.substring(3,7), "****")
+        }
+        return val;
+    }
+
+    function cardNoFormatter(val,row){
+        if(val){
+            var val = val.substr(0,4)+'**************';
+        }
+        return val;
+    }
+
+    function businessLicenseUrlFormatter(val, row) {
+        return val?'有':'无'
+    }
+
+    function selectCity(cthis, id, name) {
+        $('#_salesCityId').combobox('setValue', id);
+        $('#_salesCityId').combobox('setText', name);
+        $('#_salesCityName').val(name);
+    }
+
+    function userQrStatusFormatter(value, rowData, rowIndex) {
+        var qrStatus = rowData['$_qrStatus'];
+        var text=$('<span></span>');
+        console.log("qrStatus=====>", qrStatus);
+        if ($.type(qrStatus) == 'number') {
+            if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.GREEN.getCode()}') {
+                text.css('color','green');
+                // text.html('查看');
+            } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.YELLOW.getCode()}') {
+                text.css('color','yellow');
+                // text.html('审核');
+            } else if (qrStatus == '${@com.dili.trace.glossary.UserQrStatusEnum.RED.getCode()}') {
+                text.css('color','red');
+                // text.html('审核');
+            }
+        }
+        return text.html(value)[0].outerHTML;
+    }
+
+    $(function () {
+        var userIndex=new UserIndex($('#grid'),$('#queryForm'));
+    });
+</script>
+
+
+<!--<script src="http://base.nong12.com/static/log/log.build.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<#user_indexJs />-->

@@ -31,6 +31,11 @@ public class ImageCert extends BaseDomain {
 	@Column(name = "`url`")
 	private String url;
 
+	@ApiModelProperty(value = "图片唯一id")
+	@Column(name = "`uid`")
+	private String uid;
+
+
 	/**
 	 * {@link ImageCertTypeEnum}
 	 */
@@ -53,7 +58,14 @@ public class ImageCert extends BaseDomain {
 
 	@Transient
 	private String certTypeName;
-	
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
 
 	public Long getId() {
 		return id;

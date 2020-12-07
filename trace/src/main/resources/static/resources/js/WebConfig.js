@@ -5,10 +5,10 @@ class WebConfig {
             console.error("没有初始化webGlobalConfig,请先引入webGlobalConfig.tag");
         }
         this.contextPath = webGlobalConfig.contextPath;
-        this.imageserverPath = webGlobalConfig.imageserverPath;
+        this.imageViewPathPrefix = webGlobalConfig.imageViewPathPrefix;
     }
     toUrl(url) {
         return this.contextPath + url;
     }
 }
-//# sourceMappingURL=webconfig.js.map
+//# sourceMappingURL=WebConfig.js.map

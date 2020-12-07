@@ -286,20 +286,17 @@
     </div>
 </div>
 </#bs4Body>
+<#webGlobalConfig/>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/newregisterbill.index.js"></script>
 <script src="${contextPath!}/resources/js/bs4popWrapper.js"></script>
-<#webGlobalConfig/>
+
 <script type="text/javascript">
     $(function () {
         new NewRegisterBillGrid($('#registerBillGrid'),$('#queryForm'));
-        window.onProviderFinished=function(){
-
-            alert(1)
-        }
     });
 </script>
 
