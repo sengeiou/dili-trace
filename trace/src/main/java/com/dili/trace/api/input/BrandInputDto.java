@@ -6,6 +6,9 @@ import com.dili.ss.domain.annotation.Like;
 import com.dili.trace.domain.Brand;
 
 public class BrandInputDto extends Brand{
+    /**
+     * 品牌名
+     */
     @Column(name="brand_name")
     @Like(value = Like.BOTH)
     private String likeBrandName;

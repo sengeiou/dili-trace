@@ -67,8 +67,8 @@ public class ClientRegisterHeadApi {
 
 	/**
 	 * 获取进门主台账单列表
-	 * @param input
-	 * @return
+	 * @param input 查询条件
+	 * @return 主台账单列表
 	 */
 	@ApiOperation(value = "获取进门主台账单列表")
 	@ApiImplicitParam(paramType = "body", name = "RegisterHead", dataType = "RegisterHead", value = "获取进门主台账单列表")
@@ -100,12 +100,10 @@ public class ClientRegisterHeadApi {
 	}
 
 	/**
-	 * 不同审核状态数据统计
-	 * @param  query
-	 * return BaseOutput<List<VerifyStatusCountOutputDto>>
+	 *  不同审核状态数据统计
+	 * @param query 查询条件
+	 * @return 审核状态数据统计
 	 */
-	@ApiOperation(value = "不同审核状态数据统计")
-	@ApiImplicitParam(paramType = "body", name = "RegisterHeadDto", dataType = "RegisterHeadDto", value = "不同审核状态数据统计")
 	@RequestMapping(value = "/countByStatus.api", method = { RequestMethod.POST })
 	public BaseOutput<List<VerifyStatusCountOutputDto>> countByStatus(@RequestBody RegisterHeadDto query) {
 		try {
@@ -137,8 +135,8 @@ public class ClientRegisterHeadApi {
 
 	/**
 	 * 保存多个进门主台账单
-	 * @param createListRegisterHeadParam
-	 * @return
+	 * @param createListRegisterHeadParam 主台账单信息
+	 * @return 主台账单ID集合
 	 */
 	@ApiOperation("保存多个进门主台账单")
 	@RequestMapping(value = "/createRegisterHeadList.api", method = RequestMethod.POST)
@@ -169,8 +167,8 @@ public class ClientRegisterHeadApi {
 
 	/**
 	 * 修改进门主台账单
-	 * @param dto
-	 * @return
+	 * @param dto 主台账单信息
+	 * @return 修改结果
 	 */
 	@ApiOperation("修改进门主台账单")
 	@RequestMapping(value = "/doEditRegisterHead.api", method = RequestMethod.POST)
@@ -200,8 +198,8 @@ public class ClientRegisterHeadApi {
 
 	/**
 	 * 作废进门主台账单
-	 * @param dto
-	 * @return
+	 * @param dto 主台账单信息
+	 * @return 作废结果
 	 */
 	@ApiOperation("作废进门主台账单")
 	@RequestMapping(value = "/doDeleteRegisterHead.api", method = RequestMethod.POST)
@@ -229,8 +227,8 @@ public class ClientRegisterHeadApi {
 
 	/**
 	 * 启用/关闭进门主台账单
-	 * @param dto
-	 * @return
+	 * @param dto 主台账单信息
+	 * @return 启用/关闭结果
 	 */
 	@ApiOperation("启用/关闭进门主台账单")
 	@RequestMapping(value = "/doUpdateActiveRegisterHead.api", method = RequestMethod.POST)
@@ -257,8 +255,8 @@ public class ClientRegisterHeadApi {
 
 	/**
 	 * 查看进门主台账单
-	 * @param baseDomain
-	 * @return
+	 * @param baseDomain 主台账单信息（ID）
+	 * @return 主台账单详情
 	 */
 	@ApiOperation("查看进门主台账单")
 	@SuppressWarnings("unchecked")
@@ -288,8 +286,8 @@ public class ClientRegisterHeadApi {
 
 	/**
 	 * 分批详情
-	 * @param code
-	 * @return
+	 * @param code 主台账单编号
+	 * @return 主台账单分批详情列表
 	 */
 	@ApiOperation("分批详情")
 	@SuppressWarnings("unchecked")

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class RegisterHeadDto extends RegisterHead {
 	/**
-	 *查询开始时间
+	 * 查询开始时间
 	 */
 	@ApiModelProperty(value = "查询开始时间")
 	@Column(name = "`created`")
@@ -37,7 +37,7 @@ public class RegisterHeadDto extends RegisterHead {
 	private String keyword;
 
 	/**
-	 *我也不知道
+	 * 是否校验主台账剩余重量大于0（1：是 0：否）
 	 */
 	@Transient
 	private Integer verifyRemainWeight;

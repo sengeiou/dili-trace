@@ -15,90 +15,184 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.Column;
 
 public class CreateRegisterBillInputDto {
+    /**
+     * 报备单ID
+     */
     @ApiModelProperty(value = "报备单ID")
     private Long billId;
 
+    /**
+     * 保存类型
+     */
     @ApiModelProperty(value = "保存类型")
     private Integer preserveType;
 
+    /**
+     * 商品名称
+     */
     @ApiModelProperty(value = "商品名称")
     private String productName;
 
+    /**
+     * 商品ID
+     */
     @ApiModelProperty(value = "商品ID")
     private Long productId;
 
+    /**
+     * 产地ID
+     */
     @ApiModelProperty(value = "产地ID")
     private Long originId;
 
+    /**
+     * 产地名
+     */
     @ApiModelProperty(value = "产地名")
     private String originName;
 
+    /**
+     * 重量
+     */
     @ApiModelProperty(value = "重量")
     private BigDecimal weight;
 
+    /**
+     * 重量单位
+     */
     @ApiModelProperty(value = "重量单位")
     private Integer weightUnit;
 
+    /**
+     * 规格
+     */
     @ApiModelProperty(value = "规格")
     private String specName;
 
+    /**
+     * 拼车类型
+     */
     @ApiModelProperty(value = "拼车类型")
     private Integer truckType;
 
+    /**
+     * 报备类型
+     */
     @ApiModelProperty(value = "报备类型")
     private Integer billType;
 
+    /**
+     * 品牌名称
+     */
     @ApiModelProperty(value = "品牌名称")
     private String brandName;
 
+    /**
+     * 品牌ID
+     */
     @ApiModelProperty(value = "品牌ID")
     private Long brandId;
+    /**
+     * 车牌
+     */
     @ApiModelProperty(value = "车牌")
     private String plate;
+    /**
+     * 上游企业ID
+     */
     @ApiModelProperty(value = "上游企业ID")
     private Long upStreamId;
 
+    /**
+     * 主台账编号
+     */
     @ApiModelProperty(value = "主台账编号")
     private String registerHeadCode;
 
+    /**
+     * 计量类型。10-计件 20-计重。默认计件。
+     */
     @ApiModelProperty(value = "计量类型。10-计件 20-计重。默认计件。")
     private Integer measureType;
 
+    /**
+     * 件数
+     */
     @ApiModelProperty(value = "件数")
     private BigDecimal pieceNum;
 
+    /**
+     * 件重
+     */
     @ApiModelProperty(value = "件重")
     private BigDecimal pieceWeight;
 
+    /**
+     * 区号
+     */
     @ApiModelProperty(value = "区号")
     private String area;
 
+    /**
+     * 包装
+     */
     @ApiModelProperty(value = "包装")
     private String packaging;
 
+    /**
+     * 备注
+     */
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    /**
+     * 查验状态
+     */
     @ApiModelProperty(value = "查验状态")
     private Integer verifyStatus;
 
+    /**
+     * 是否废弃
+     */
     @ApiModelProperty(value = "是否废弃")
     private Integer isDeleted;
 
+    /**
+     * 经营户ID
+     */
     @ApiModelProperty(value = "经营户ID")
     private Long userId;
 
+    /**
+     * 原因
+     */
     @ApiModelProperty(value = "原因")
     private String reason;
 
+    /**
+     * 单据类型
+     */
     @ApiModelProperty(value = "单据类型")
     private Integer orderType;
 
+    /**
+     * 创建来源
+     */
     @ApiModelProperty(value = "创建来源")
     private Integer creationSource;
 
+    /**
+     * 检测报告url
+     */
     private String detectReportUrl;
+    /**
+     * 产地凭证url
+     */
     private String originCertifiyUrl;
+
+    /**
+     * 处理结果url
+     */
     private String handleResultUrl;
 
     public String getDetectReportUrl() {

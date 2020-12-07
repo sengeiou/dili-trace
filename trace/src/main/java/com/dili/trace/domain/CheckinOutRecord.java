@@ -1,6 +1,7 @@
 package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,9 +10,15 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * 进门单据实体
+ */
 @Table(name = "`checkinout_record`")
 public class CheckinOutRecord extends BaseDomain {
 
+    /**
+     * ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
@@ -24,11 +31,12 @@ public class CheckinOutRecord extends BaseDomain {
     private Integer status;
 
     /**
-     * 进出门状态
+     * 进门出门（10：进门 20：出门）
      */
-    @ApiModelProperty(value = "进出门状态")
+    @ApiModelProperty(value = "状态")
     @Column(name = "`inout`")
     private Integer inout;
+
     /**
      * 备注
      */
@@ -49,7 +57,6 @@ public class CheckinOutRecord extends BaseDomain {
     @ApiModelProperty(value = "操作人ID")
     @Column(name = "`operator_id`")
     private Long operatorId;
-
 
     /**
      * 创建时间
@@ -79,7 +86,6 @@ public class CheckinOutRecord extends BaseDomain {
     @Column(name = "`user_name`")
     private String userName;
 
-
     /**
      * 商品名称
      */
@@ -87,16 +93,15 @@ public class CheckinOutRecord extends BaseDomain {
     @Column(name = "`product_name`")
     private String productName;
 
-
     /**
-     * 审核状态值
+     * 查验状态值 {@link com.dili.trace.enums.BillVerifyStatusEnum}
      */
-    @ApiModelProperty(value = "审核状态值")
+    @ApiModelProperty(value = "查验状态值")
 	@Column(name = "`verify_status`")
     private Integer verifyStatus;
 
     /**
-     * 登记单类型
+     * 单据类型 {@link com.dili.trace.enums.BillTypeEnum}
      */
     @Column(name = "`bill_type`")
 	private Integer billType;
@@ -110,7 +115,6 @@ public class CheckinOutRecord extends BaseDomain {
 //    @Column(name = "`seperate_sales_id`")
 //    private Long seperateSalesId;
 //    
-
 
     /**
      * 进出门重量
@@ -136,36 +140,29 @@ public class CheckinOutRecord extends BaseDomain {
     /**
      * 报备单ID
      */
-
     @ApiModelProperty(value = "报备单ID")
     @Column(name = "`bill_id`")
     private Long billId;
 
     /**
-     *车牌号
+     * 车牌号
      */
     @ApiModelProperty(value = "车牌号")
     @Transient
     private String plate;
 
     /**
-     *市场ID
+     * 市场ID
      */
     @ApiModelProperty(value = "市场ID")
     @Column(name = "market_id")
     private Long marketId;
 
-    /**
-     *进出门状态名称
-     */
     @Transient
     public String getInoutName(){
        return  CheckinOutTypeEnum.fromCode(this.getInout()).map(CheckinOutTypeEnum::getDesc).orElse("");
     }
 
-    /**
-     *重量单位名称
-     */
     @Transient
     public String getWeightUnitName(){
        return  WeightUnitEnum.fromCode(this.getWeightUnit()).map(WeightUnitEnum::getName).orElse("");
