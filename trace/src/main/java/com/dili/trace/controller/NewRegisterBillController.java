@@ -690,21 +690,30 @@ public class NewRegisterBillController {
                 .map(rbInputDto -> {
                     User user = DTOUtils.newDTO(User.class);
                     RegisterBill rb = rbInputDto.build(user);
+                    rb.setIdCardNo(input.getIdCardNo());
+                    rb.setName(input.getName());
+                    rb.setPhone(input.getPhone());
+                    rb.setPlate(input.getPlate());
+                    rb.setAddr(input.getAddr());
+                    rb.setUserId(input.getUserId());
                     List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
-                            , rbInputDto.getHandleResultUrl(),
-                            rbInputDto.getOriginCertifiyUrl());
+                            , rbInputDto.getHandleResultUrl(), rbInputDto.getOriginCertifiyUrl());
                     rb.setImageCerts(imageList);
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
+                    rb.setTallyAreaNo(input.getTallyAreaNo());
                     rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
                     rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
                     rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
                     rb.setTruckType(TruckTypeEnum.FULL.getCode());
                     rb.setIsCheckin(YesOrNoEnum.NO.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
-                    rb.setTradeTypeId(input.getTradeTypeId());
-                    rb.setTradeTypeName(input.getTradeTypeName());
+                    // 理货类型为交易区时才保存交易区号和id
+                    if (RegisterSourceEnum.TRADE_AREA.getCode().equals(input.getRegisterSource())) {
+                        rb.setTradeTypeId(input.getTradeTypeId());
+                        rb.setTradeTypeName(input.getTradeTypeName());
+                    }
                     return rb;
                 }).toList();
         try {

@@ -5,8 +5,9 @@ class CommissionBillGrid extends WebConfig {
         this.queryform = queryform;
         this.billStateEnums = billStateEnums;
         this.billDetectStateEnums = billDetectStateEnums;
-        window['RegisterBillGridObj'] = this;
+        window['commissionBillGrid'] = this;
         $('#add-btn').on('click', async () => await this.openCreatePage());
+        $('#detail-btn').on('click', async () => await this.doDetail());
         this.initAutoComplete($("[name='productName']"), '/toll/category');
         this.initAutoComplete($("[name='originName']"), '/toll/city');
     }
@@ -18,9 +19,29 @@ class CommissionBillGrid extends WebConfig {
     }
     openCreatePage() {
         let url = this.toUrl("/commissionBill/create.html");
-        var cthis = this;
         var dia = bs4pop.dialog({
             title: '新增委托单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: [],
+            onShowEnd: function () {
+            }
+        });
+    }
+    doDetail() {
+        let row = this.rows();
+        if (row.length == 0) {
+            return;
+        }
+        console.log(row);
+        let selected_id = row[0].id;
+        let url = this.toUrl('/commissionBill/view/' + selected_id + '/true');
+        var dia = bs4pop.dialog({
+            title: '查看委托单',
             content: url,
             isIframe: true,
             closeBtn: true,
@@ -67,7 +88,7 @@ class CommissionBillGrid extends WebConfig {
         }
     }
     get rows() {
-        return this.grid.datagrid("getSelections");
+        return this.grid.bootstrapTable("getSelections");
     }
     findReviewCheckData() {
         var detectStateArr = [this.billDetectStateEnums.NO_PASS, this.billDetectStateEnums.REVIEW_NO_PASS];

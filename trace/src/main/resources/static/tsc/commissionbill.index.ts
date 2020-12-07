@@ -11,10 +11,10 @@ class CommissionBillGrid extends WebConfig{
         this.queryform = queryform;
         this.billStateEnums = billStateEnums;
         this.billDetectStateEnums = billDetectStateEnums;
-        window['RegisterBillGridObj']=this;
-
+        window['commissionBillGrid']=this;
         //this.queryform.find('#query').click(async () => await this.queryGridData());
         $('#add-btn').on('click',async ()=>await this.openCreatePage());
+        $('#detail-btn').on('click',async ()=>await this.doDetail());
 
         this.initAutoComplete($("[name='productName']"),'/toll/category');
         this.initAutoComplete($("[name='originName']"),'/toll/city');
@@ -34,7 +34,6 @@ class CommissionBillGrid extends WebConfig{
 
     private openCreatePage() {
         let url = this.toUrl("/commissionBill/create.html");
-        var cthis=this;
         //@ts-ignore
         var dia = bs4pop.dialog({
             title: '新增委托单',
@@ -51,6 +50,29 @@ class CommissionBillGrid extends WebConfig{
         });
     }
 
+    private doDetail(){
+        let  row= this.rows();
+        if (row.length == 0) {
+            return;
+        }
+        console.log(row);
+        let selected_id=row[0].id;
+        let url = this.toUrl('/commissionBill/view/' + selected_id +'/true');
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '查看委托单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: [],
+            onShowEnd:function(){
+                //dia.$el.find('iframe')[0].contentWindow['RegisterBillGridObj']=cthis;
+            }
+        });
+    }
     private async queryGridData(){
         console.log("queryGridData");
         if (!this.queryform.validate().form()) {
@@ -89,7 +111,7 @@ class CommissionBillGrid extends WebConfig{
     }
 
     get rows() {
-        return this.grid.datagrid("getSelections");
+        return this.grid.bootstrapTable("getSelections");
     }
 
     private findReviewCheckData() {
@@ -239,4 +261,5 @@ class CommissionBillGrid extends WebConfig{
             }
         });
     }
+
 }
