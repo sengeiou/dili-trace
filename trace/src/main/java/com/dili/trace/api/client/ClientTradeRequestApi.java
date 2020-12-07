@@ -216,6 +216,8 @@ public class ClientTradeRequestApi {
 
 	/**
 	 * 发起退货
+	 * @param inputDto
+	 * @return 交易请求主键
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/createReturning.api", method = { RequestMethod.POST })
@@ -235,11 +237,12 @@ public class ClientTradeRequestApi {
 
 	/**
 	 * 确认退货
+	 * @param inputDto
+	 * @return 交易请求主键
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/handleReturning.api", method = { RequestMethod.POST })
 	public BaseOutput<Long> handleReturning(@RequestBody TradeRequestInputDto inputDto) {
-
 		try {
 			TradeReturnStatusEnum returnStatus = TradeReturnStatusEnum.fromCode(inputDto.getReturnStatus())
 					.orElse(null);
@@ -256,7 +259,6 @@ public class ClientTradeRequestApi {
 			logger.error(e.getMessage(), e);
 			return BaseOutput.failure("服务端出错");
 		}
-
 	}
 
 	/**
@@ -279,8 +281,8 @@ public class ClientTradeRequestApi {
 
 	/**
 	 * 查询购买历史信息
-	 * @param buyerId
-	 * @return
+	 * @param buyerId 买家ID
+	 * @return 买家列表
 	 */
 	@RequestMapping(value = "/listBuyHistory.api", method = { RequestMethod.GET })
 	public BaseOutput<List<UserOutput>> listBuyHistory(@RequestParam Long buyerId) {
@@ -297,9 +299,9 @@ public class ClientTradeRequestApi {
 
 	/**
 	 * 查询卖家信息
-	 * @param queryCondition
-	 * @param marketId
-	 * @return
+	 * @param queryCondition 查询条件（卖家名称、店铺名称、摊位号）
+	 * @param marketId 市场ID
+	 * @return 卖家列表
 	 */
 	@RequestMapping(value = "/listSeller.api", method = { RequestMethod.GET })
 	public BaseOutput<List<UserOutput>> listSeller(@RequestParam String queryCondition, @RequestParam Long marketId) {
@@ -317,8 +319,8 @@ public class ClientTradeRequestApi {
 
 	/**
 	 * 查询可销售商品列表
-	 * @param userId
-	 * @return
+	 * @param userId 业户ID
+	 * @return 库存列表
 	 */
 	@RequestMapping(value = "/listSaleableProduct.api", method = { RequestMethod.GET })
 	public BaseOutput<List<ProductStock>> listSaleableProduct(@RequestParam Long userId) {

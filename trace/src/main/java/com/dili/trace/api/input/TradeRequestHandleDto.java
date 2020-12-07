@@ -1,9 +1,23 @@
 package com.dili.trace.api.input;
 
+/**
+ * 处理购买请求实体
+ */
 public class TradeRequestHandleDto extends TradeRequestListInput {
 
+    /**
+     * 交易请求ID
+     */
     private Long tradeRequestId;
+
+    /**
+     * 处理结果
+     */
     private Integer handleStatus;
+
+    /**
+     * 原因
+     */
     private String reason;
 
     @Override

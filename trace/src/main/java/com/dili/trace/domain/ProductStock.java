@@ -25,65 +25,113 @@ import io.swagger.annotations.ApiModelProperty;
 @Table(name = "`product_stock`")
 public class ProductStock extends BaseDomain {
 
+    /**
+     * ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
     @JSONField(serialize =false)
     private Long id;
 
+    /**
+     * 业户姓名
+     */
     @ApiModelProperty(value = "业户姓名")
     @Column(name = "`user_name`")
     private String userName;
 
+    /**
+     * 用户ID
+     */
     @ApiModelProperty(value = "用户iD")
     @Column(name = "`user_id`")
     private Long userId;
 
+    /**
+     * 保存类型 {@link com.dili.trace.enums.PreserveTypeEnum}
+     */
     @ApiModelProperty(value = "保存类型")
     @Column(name = "`preserve_type`")
     private Integer preserveType;
 
+    /**
+     * 商品名称
+     */
     @ApiModelProperty(value = "商品名称")
     @Column(name = "`product_name`")
     private String productName;
 
+    /**
+     * 商品ID
+     */
     @ApiModelProperty(value = "商品ID")
     @Column(name = "`product_id`")
     private Long productId;
 
+    /**
+     * 库存重量
+     */
     @ApiModelProperty(value = "库存重量")
     @Column(name = "`stock_weight`")
     private BigDecimal stockWeight;
 
+    /**
+     * 累计总重量
+     */
     @ApiModelProperty(value = "累计总重量")
     @Column(name = "`total_weight`")
     private BigDecimal totalWeight;
 
+    /**
+     * 重量单位 {@link com.dili.trace.enums.WeightUnitEnum}
+     */
     @ApiModelProperty(value = "重量单位")
     @Column(name = "`weight_unit`")
     private Integer weightUnit;
 
+    /**
+     * 规格名称
+     */
     @ApiModelProperty(value = "规格名称")
     @Column(name = "`spec_name`")
     private String specName;
 
+    /**
+     * 品牌ID
+     */
     @ApiModelProperty(value = "品牌ID")
     @Column(name = "`brand_id`")
     private Long brandId;
 
+    /**
+     * 创建时间
+     */
     @Column(name = "`created`")
     private Date created;
 
+    /**
+     * 修改时间
+     */
     @Column(name = "`modified`")
     private Date modified;
 
+    /**
+     * 批次数量
+     */
     @Column(name = "`trade_detail_num`")
     private Integer tradeDetailNum;
 
+    /**
+     * 品牌名称
+     */
     @ApiModelProperty(value = "品牌名称")
     @Column(name = "`brand_name`")
     private String brandName;
 
+    /**
+     * 单位名称
+     */
     @Transient
     private String weightUnitName;
 

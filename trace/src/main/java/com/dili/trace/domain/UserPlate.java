@@ -18,6 +18,10 @@ import javax.persistence.Id;
  */
 @Table(name = "`user_plate`")
 public interface UserPlate extends IBaseDomain {
+    /**
+     * ID
+     * @return
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
@@ -27,6 +31,10 @@ public interface UserPlate extends IBaseDomain {
 
     void setId(Long id);
 
+    /**
+     * 车牌号
+     * @return
+     */
     @Column(name = "`plate`")
     @FieldDef(label="车牌号", maxLength = 20)
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -34,6 +42,10 @@ public interface UserPlate extends IBaseDomain {
 
     void setPlate(String plate);
 
+    /**
+     * 用户id
+     * @return
+     */
     @Column(name = "`user_id`")
     @FieldDef(label="用户id")
     @EditMode(editor = FieldEditor.Number, required = false)
@@ -41,6 +53,10 @@ public interface UserPlate extends IBaseDomain {
 
     void setUserId(Long userId);
 
+    /**
+     * 创建时间
+     * @return
+     */
     @Column(name = "`created`")
     @FieldDef(label="created")
     @EditMode(editor = FieldEditor.Datetime, required = true)
@@ -48,6 +64,10 @@ public interface UserPlate extends IBaseDomain {
 
     void setCreated(Date created);
 
+    /**
+     * 修改时间
+     * @return
+     */
     @Column(name = "`modified`")
     @FieldDef(label="modified")
     @EditMode(editor = FieldEditor.Datetime, required = true)

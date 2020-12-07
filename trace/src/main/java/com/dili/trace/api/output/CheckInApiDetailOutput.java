@@ -5,14 +5,31 @@ import com.dili.trace.domain.User;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 
 public class CheckInApiDetailOutput {
+	/**
+	 * 报备单ID
+	 */
 	private Long id;//registerbill id
+
+	/**
+	 * 状态
+	 */
 	private Integer state;
+
+	/**
+	 * 检测状态
+	 */
 	private Integer detectState;
 
+	/**
+	 * 上游企业
+	 */
 	private UpStream upStream;
+
+	/**
+	 * 经营户
+	 */
 	private User user;
 
- 
 	public Integer getDetectState() {
 		return detectState;
 	}
@@ -63,9 +80,5 @@ public class CheckInApiDetailOutput {
 	public void setState(Integer state) {
 		this.state = state;
 	}
-
-
-
-
 
 }
