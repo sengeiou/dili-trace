@@ -759,6 +759,7 @@
 
     $( document ).on( "click", ".img-view-a",function () {
         var url = $('#registerBills\\['+$(this).attr('data-index')+'\\]\\[originCertifiyUrl\\]').siblings("input:hidden").val();
+        url = "${imageViewPathPrefix}" + url;
         debugger
         if(url){
             layer.open({
@@ -779,7 +780,7 @@
             formData: {type: 4, compress: true},
             done: function (e, res) {
                 if (res.result.code == 200) {
-                    var url = res.result.data;
+                    var url = "${imageViewPathPrefix}" + res.result.data;
                     $(this).siblings('.magnifying').attr('src', url).show();
                     $(this).siblings("input:hidden").val(url);
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
@@ -813,7 +814,7 @@
             formData: {type: 4, compress: true},
             done: function (e, res) {
                 if (res.result.code == 200) {
-                    var url = res.result.data;
+                    var url = "${imageViewPathPrefix}" + res.result.data;
                     $(this).siblings("input:hidden").val(url);
                     $(this).parent().parent().hide();
                     $(this).parent().parent().next().show();
