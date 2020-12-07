@@ -33,6 +33,7 @@ class CommissionBillGrid extends WebConfig {
         });
     }
     async queryGridData() {
+        console.log("queryGridData");
         if (!this.queryform.validate().form()) {
             bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
             return;

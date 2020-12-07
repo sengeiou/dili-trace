@@ -34,9 +34,10 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
         return StreamEx.ofNullable(urls).map(String::trim).filter(item -> item.length() > 0)
                 .flatArray(item -> {
                     return item.split(",");
-                }).filter(StringUtils::isNotBlank).map(url -> {
+                }).filter(StringUtils::isNotBlank).map(uid -> {
                     ImageCert cert = new ImageCert();
-                    cert.setUrl(url);
+//                    cert.setUrl(url);
+                    cert.setUid(uid);
                     cert.setCertType(certTypeEnum.getCode());
                     cert.setBillType(certBillTypeEnum.getCode());
                     return cert;

@@ -1,11 +1,12 @@
-
+import $ from 'jquery'
+import _ from 'underscore'
 class DemoClass{
     constructor(props) {
         // @ts-ignore
     }
 }
 function demo() {
-    console.info("ABC")
+    console.info("bbb")
 }
 class Ajax{
 
