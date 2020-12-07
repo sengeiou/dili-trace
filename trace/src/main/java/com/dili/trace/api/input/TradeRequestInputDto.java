@@ -2,8 +2,17 @@ package com.dili.trace.api.input;
 
 public class TradeRequestInputDto extends TradeRequestListInput {
 
+    /**
+     * 交易单明细id
+     */
     private Long tradeRequestId;
+    /**
+     * 交易单主单id
+     */
     private Long traderOrderId;
+    /**
+     * 原因
+     */
     private String reason;
 
     /**

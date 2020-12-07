@@ -20,55 +20,94 @@ import java.util.Date;
 @SuppressWarnings("serial")
 @Table(name = "`trade_request`")
 public class TradeRequest extends BaseDomain {
+    /**
+     * 主键
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
     @JSONField(serialize = false)
     private Long id;
 
+    /**
+     * 交易单request编号
+     */
     @Column(name = "`code`")
     private String code;
 
+    /**
+     * 商品名称
+     */
     @Column(name = "`product_name`")
     @Like
     private String productName;
 
+    /**
+     * 重量单位
+     */
     @Column(name = "`weight_unit`")
     private Integer weightUnit;
 
+    /**
+     * 交易单id
+     */
     @Column(name = "`trade_order_Id`")
     private Long tradeOrderId;
 
+    /**
+     * 买家ID
+     */
     @ApiModelProperty(value = "买家ID")
     @Column(name = "`buyer_id`")
     private Long buyerId;
 
+    /**
+     * 买家姓名
+     */
     @ApiModelProperty(value = "买家姓名")
     @Column(name = "`buyer_name`")
     @Like
     private String buyerName;
 
+    /**
+     * 买家市场
+     */
     @ApiModelProperty(value = "买家市场")
     @Column(name = "`buyer_market_id`")
     private Long buyerMarketId;
 
+    /**
+     * 卖家ID
+     */
     @ApiModelProperty(value = "卖家ID")
     @Column(name = "`seller_id`")
     private Long sellerId;
 
+    /**
+     * 卖家姓名
+     */
     @ApiModelProperty(value = "卖家姓名")
     @Column(name = "`seller_name`")
     @Like
     private String sellerName;
 
+    /**
+     * 卖家市场
+     */
     @ApiModelProperty(value = "卖家市场")
     @Column(name = "`seller_market_id`")
     private Long sellerMarketId;
 
+    /**
+     * 交易重量
+     */
     @ApiModelProperty(value = "交易重量")
     @Column(name = "`trade_weight`")
     private BigDecimal tradeWeight;
 
+    /**
+     * 批次库存ID
+     */
     @ApiModelProperty(value = "批次库存ID")
     @Column(name = "`product_stock_id`")
     private Long productStockId;
@@ -81,20 +120,35 @@ public class TradeRequest extends BaseDomain {
     // @Column(name = "`trade_status`")
     // private Integer tradeStatus;
 
+    /**
+     * 退货状态
+     */
     @ApiModelProperty(value = "退货状态")
     @Column(name = "`return_status`")
     private Integer returnStatus;
 
+    /**
+     * 原因
+     */
     @ApiModelProperty(value = "原因")
     @Column(name = "`reason`")
     private String reason;
 
+    /**
+     * 创建时间
+     */
     @Column(name = "`created`")
     private Date created;
 
+    /**
+     * 修改时间
+     */
     @Column(name = "`modified`")
     private Date modified;
 
+    /**
+     * 交易确认时间
+     */
     @Column(name = "`handle_time`")
     private Date handleTime;
 
@@ -103,83 +157,161 @@ public class TradeRequest extends BaseDomain {
         return this.id;
     }
 
+    /**
+     * 交易单状态
+     */
     @Transient
     private Integer orderStatus;
 
+    /**
+     * 交易单状态描述
+     */
     @Transient
     private String orderStatusName;
 
+    /**
+     * 第三方交易编码
+     */
     @Column(name = "`third_trade_no`")
     private String thirdTradeNo;
 
+    /**
+     * 批次号
+     */
     @Column(name = "`batch_no`")
     private String batchNo;
 
+    /**
+     * 产地名
+     */
     @Column(name = "`origin_name`")
     private String originName;
 
+    /**
+     * 仓位码
+     */
     @Column(name = "`position_no`")
     private String positionNo;
 
+    /**
+     * 仓位名称
+     */
     @Column(name = "`position_name`")
     private String positionName;
 
+    /**
+     * 成交价格
+     */
     @Column(name = "`price`")
     private BigDecimal price;
 
+    /**
+     * 件数
+     */
     @Column(name = "`package_number`")
     private Integer packageNumber;
 
+    /**
+     * 成交数量
+     */
     @Column(name = "`number`")
     private Integer number;
 
+    /**
+     * 成交金额
+     */
     @Column(name = "`amount`")
     private BigDecimal amount;
 
+    /**
+     *
+     */
     @Column(name = "`pos_no`")
     private String posNo;
 
+    /**
+     * POS机号
+     */
     @Column(name = "`pay_way`")
     private String payWay;
 
+    /**
+     * 总金额
+     */
     @Column(name = "`total_amount`")
     private BigDecimal totalAmount;
 
+    /**
+     * 营业员
+     */
     @Column(name = "`operator`")
     private String operator;
 
+    /**
+     * 收款员
+     */
     @Column(name = "`payer`")
     @Like
     private String payer;
 
+    /**
+     * 支付流水号
+     */
     @Column(name = "`pay_no`")
     private String payNo;
 
+    /**
+     * 来源类型
+     */
     @Column(name = "`source_type`")
     private Integer sourceType;
 
+    /**
+     * 上报标志位
+     */
     @Column(name = "`report_flag`")
     private Integer reportFlag;
 
+    /**
+     * 交易时间
+     */
     @Transient
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date orderDate;
 
+    /**
+     * 买家第三方卡号
+     */
     @Transient
     private String buyerNo;
 
+    /**
+     * 卖家第三方卡号
+     */
     @Transient
     private String sellerNo;
 
+    /**
+     * 商品码
+     */
     @Transient
     private String productCode;
 
+    /**
+     * 交易时间开始
+     */
     @Transient
     private Date orderDateStart;
 
+    /**
+     * 交易时间结束
+     */
     @Transient
     private Date orderDateEnd;
 
+    /**
+     * 上报标志位描述
+     */
     @Transient
     private String reportFlagStr;
 
