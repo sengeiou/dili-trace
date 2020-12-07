@@ -8,6 +8,9 @@ import com.dili.trace.domain.Brand;
 import org.apache.commons.beanutils.BeanUtils;
 
 public class BrandOutputDto extends Brand {
+    /**
+     * 品牌id
+     */
     private Long brandId;
 
     public static BrandOutputDto build(Brand brand) {

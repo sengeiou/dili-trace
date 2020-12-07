@@ -5,142 +5,190 @@ import java.util.List;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 
 public class CreateListBillParam {
-	private Long userId;
-	private Long marketId;
-	private Integer registerSource;
-	private String tallyAreaNo;
-	private String tradeTypeId;
-	private String tradeTypeName;
+    /**
+     * 用户id
+     */
+    private Long userId;
+    /**
+     * 市场id
+     */
+    private Long marketId;
+    /**
+     * 登记来源
+     */
+    private Integer registerSource;
+    /**
+     * 理货区编号
+     */
+    private String tallyAreaNo;
+    /**
+     * 交易类型id
+     */
+    private String tradeTypeId;
+    /**
+     * 交易类型描述
+     */
+    private String tradeTypeName;
 
-	private String plate;
-	private String tradeAccount;
+    /**
+     * 车牌
+     */
+    private String plate;
 
-	private String tradePrintingCard;
-	private String name;
-	private String idCardNo;
-	private String addr;
-	private String phone;
-	private String detectReportUrl;
+    /**
+     * 交易账号
+     */
+    private String tradeAccount;
 
-	public String getTradeTypeName() {
-		return tradeTypeName;
-	}
+    /**
+     * 交易印卡
+     */
+    private String tradePrintingCard;
 
-	public void setTradeTypeName(String tradeTypeName) {
-		this.tradeTypeName = tradeTypeName;
-	}
+    /**
+     * 名称
+     */
+    private String name;
 
-	public String getDetectReportUrl() {
-		return detectReportUrl;
-	}
+    /**
+     * 身份证
+     */
+    private String idCardNo;
 
-	public void setDetectReportUrl(String detectReportUrl) {
-		this.detectReportUrl = detectReportUrl;
-	}
+    /**
+     * 地址
+     */
+    private String addr;
 
-	public Long getUserId() {
-		return userId;
-	}
+    /**
+     * 电话号码
+     */
+    private String phone;
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+    /**
+     * 检测报告url
+     */
+    private String detectReportUrl;
 
-	private List<CreateRegisterBillInputDto> registerBills;
+    public String getTradeTypeName() {
+        return tradeTypeName;
+    }
 
-	public List<CreateRegisterBillInputDto> getRegisterBills() {
-		return registerBills;
-	}
+    public void setTradeTypeName(String tradeTypeName) {
+        this.tradeTypeName = tradeTypeName;
+    }
 
-	public void setRegisterBills(List<CreateRegisterBillInputDto> registerBills) {
-		this.registerBills = registerBills;
-	}
+    public String getDetectReportUrl() {
+        return detectReportUrl;
+    }
 
-	public Long getMarketId() {
-		return marketId;
-	}
+    public void setDetectReportUrl(String detectReportUrl) {
+        this.detectReportUrl = detectReportUrl;
+    }
 
-	public void setMarketId(Long marketId) {
-		this.marketId = marketId;
-	}
+    public Long getUserId() {
+        return userId;
+    }
 
-	public Integer getRegisterSource() {
-		return registerSource;
-	}
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-	public void setRegisterSource(Integer registerSource) {
-		this.registerSource = registerSource;
-	}
+    private List<CreateRegisterBillInputDto> registerBills;
 
-	public String getTallyAreaNo() {
-		return tallyAreaNo;
-	}
+    public List<CreateRegisterBillInputDto> getRegisterBills() {
+        return registerBills;
+    }
 
-	public void setTallyAreaNo(String tallyAreaNo) {
-		this.tallyAreaNo = tallyAreaNo;
-	}
+    public void setRegisterBills(List<CreateRegisterBillInputDto> registerBills) {
+        this.registerBills = registerBills;
+    }
 
-	public String getTradeTypeId() {
-		return tradeTypeId;
-	}
+    public Long getMarketId() {
+        return marketId;
+    }
 
-	public void setTradeTypeId(String tradeTypeId) {
-		this.tradeTypeId = tradeTypeId;
-	}
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
 
-	public String getPlate() {
-		return plate;
-	}
+    public Integer getRegisterSource() {
+        return registerSource;
+    }
 
-	public void setPlate(String plate) {
-		this.plate = plate;
-	}
+    public void setRegisterSource(Integer registerSource) {
+        this.registerSource = registerSource;
+    }
 
-	public String getTradeAccount() {
-		return tradeAccount;
-	}
+    public String getTallyAreaNo() {
+        return tallyAreaNo;
+    }
 
-	public void setTradeAccount(String tradeAccount) {
-		this.tradeAccount = tradeAccount;
-	}
+    public void setTallyAreaNo(String tallyAreaNo) {
+        this.tallyAreaNo = tallyAreaNo;
+    }
 
-	public String getTradePrintingCard() {
-		return tradePrintingCard;
-	}
+    public String getTradeTypeId() {
+        return tradeTypeId;
+    }
 
-	public void setTradePrintingCard(String tradePrintingCard) {
-		this.tradePrintingCard = tradePrintingCard;
-	}
+    public void setTradeTypeId(String tradeTypeId) {
+        this.tradeTypeId = tradeTypeId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getPlate() {
+        return plate;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setPlate(String plate) {
+        this.plate = plate;
+    }
 
-	public String getIdCardNo() {
-		return idCardNo;
-	}
+    public String getTradeAccount() {
+        return tradeAccount;
+    }
 
-	public void setIdCardNo(String idCardNo) {
-		this.idCardNo = idCardNo;
-	}
+    public void setTradeAccount(String tradeAccount) {
+        this.tradeAccount = tradeAccount;
+    }
 
-	public String getAddr() {
-		return addr;
-	}
+    public String getTradePrintingCard() {
+        return tradePrintingCard;
+    }
 
-	public void setAddr(String addr) {
-		this.addr = addr;
-	}
+    public void setTradePrintingCard(String tradePrintingCard) {
+        this.tradePrintingCard = tradePrintingCard;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIdCardNo() {
+        return idCardNo;
+    }
+
+    public void setIdCardNo(String idCardNo) {
+        this.idCardNo = idCardNo;
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }

@@ -18,6 +18,9 @@ import java.util.Date;
 @SuppressWarnings("serial")
 @Table(name = "`trade_detail`")
 public class TradeDetail extends BaseDomain {
+    /**
+     * 交易明细id
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")

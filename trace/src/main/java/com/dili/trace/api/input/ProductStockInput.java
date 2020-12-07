@@ -4,23 +4,31 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductStockInput {
+    /**
+     * 商品库存id
+     */
     private Long productStockId;
 
+    /**
+     * 交易重量
+     */
     private BigDecimal tradeWeight;
 
+    /**
+     * 交易购买明细列表
+     */
     private List<TradeDetailInputDto> tradeDetailInputList;
-    
 
 
     public Long getProductStockId() {
-		return productStockId;
-	}
+        return productStockId;
+    }
 
-	public void setProductStockId(Long productStockId) {
-		this.productStockId = productStockId;
-	}
+    public void setProductStockId(Long productStockId) {
+        this.productStockId = productStockId;
+    }
 
-	/**
+    /**
      * @return BigDecimal return the tradeWeight
      */
     public BigDecimal getTradeWeight() {
@@ -33,9 +41,6 @@ public class ProductStockInput {
     public void setTradeWeight(BigDecimal tradeWeight) {
         this.tradeWeight = tradeWeight;
     }
-
-
-  
 
 
     /**

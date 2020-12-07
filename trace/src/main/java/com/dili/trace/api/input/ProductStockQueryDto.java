@@ -9,25 +9,38 @@ import com.dili.trace.domain.ProductStock;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ProductStockQueryDto extends ProductStock{
+public class ProductStockQueryDto extends ProductStock {
+    /**
+     * 查询登记开始时间
+     */
     @ApiModelProperty(value = "查询登记开始时间")
-	@Column(name = "`created`")
-	@Operator(Operator.GREAT_EQUAL_THAN)
-	private String createdStart;
+    @Column(name = "`created`")
+    @Operator(Operator.GREAT_EQUAL_THAN)
+    private String createdStart;
 
-	@ApiModelProperty(value = "查询登记结束时间")
-	@Column(name = "`created`")
-	@Operator(Operator.LITTLE_EQUAL_THAN)
-	private String createdEnd;
-	@ApiModelProperty(value = "商品名称LIKE")
-	@Column(name = "`product_name`")
-	@Like(value = "RIGHT")
+    /**
+     * 查询登记结束时间
+     */
+    @ApiModelProperty(value = "查询登记结束时间")
+    @Column(name = "`created`")
+    @Operator(Operator.LITTLE_EQUAL_THAN)
+    private String createdEnd;
+
+    /**
+     * 商品名称LIKE
+     */
+    @ApiModelProperty(value = "商品名称LIKE")
+    @Column(name = "`product_name`")
+    @Like(value = "RIGHT")
     private String likeProductName;
 
+    /**
+     * 交易单明细数量
+     */
     @Column(name = "`trade_detail_num`")
     @Operator(Operator.GREAT_EQUAL_THAN)
     private Integer minTradeDetailNum;
-    
+
 
     /**
      * @return String return the createdStart

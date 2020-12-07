@@ -11,10 +11,19 @@ import javax.persistence.Column;
  */
 public class Market {
 
+    /**
+     * 市场id
+     */
     private Long id;
 
+    /**
+     * 市场编码
+     */
     private String code;
 
+    /**
+     * 市场名
+     */
     private String name;
 
     @ApiModelProperty(value = "appId")
