@@ -55,7 +55,10 @@ public class ClientTradePushApi {
     private LoginSessionContext sessionContext;
 
     /**
-     * 查询报备单
+     * 查询库存详情
+     * @param tradeDetailId 交易明细ID
+     * @param pushType 上下架类型 {@link com.dili.trace.enums.PushTypeEnum}
+     * @return 库存明细
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/viewTradeDetail.api", method = {RequestMethod.GET})
@@ -95,7 +98,9 @@ public class ClientTradePushApi {
     }
 
     /**
-     * 查询报备单
+     * 上架/下架
+     * @param pushLog 上下架参数
+     * @return 上下架结果
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/push.api", method = {RequestMethod.POST})
@@ -117,8 +122,8 @@ public class ClientTradePushApi {
 
     /**
      * 查询上架商品列表
-     * @param tradeDetail
-     * @return
+     * @param tradeDetail 查询条件
+     * @return 上架商品列表
      */
     @ApiOperation(value = "查询上架商品列表", notes = "查询上架商品列表")
     @RequestMapping(value = "/shelvesProduct.api", method = RequestMethod.POST)
@@ -143,7 +148,7 @@ public class ClientTradePushApi {
     /**
      * 查询下架商品列表
      * @param tradeDetail
-     * @return
+     * @return 下架商品列表
      */
     @ApiOperation(value = "查询下架商品列表", notes = "查询下架商品列表")
     @RequestMapping(value = "/unavailableProduct.api", method = RequestMethod.POST)

@@ -54,8 +54,8 @@ public class ClientTradeDetailApi {
 
 	/**
 	 * 获得批次详情列表
-	 * @param query
-	 * @return
+	 * @param query 查询条件
+	 * @return 批次详情列表
 	 */
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/listPage.api", method = { RequestMethod.POST})
