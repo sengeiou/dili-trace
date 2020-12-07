@@ -22,40 +22,64 @@ import io.swagger.annotations.ApiModelProperty;
 @SuppressWarnings("serial")
 @Table(name = "`image_cert`")
 public class ImageCert extends BaseDomain {
+	/**
+	 * ID
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "`id`")
 	private Long id;
 
+	/**
+	 * 图片URL
+	 */
 	@ApiModelProperty(value = "图片URL")
 	@Column(name = "`url`")
 	private String url;
 
+	/**
+	 * 图片唯一id
+	 */
 	@ApiModelProperty(value = "图片唯一id")
 	@Column(name = "`uid`")
 	private String uid;
 
 
 	/**
-	 * {@link ImageCertTypeEnum}
+	 * 图片类型 {@link ImageCertTypeEnum}
 	 */
 	@ApiModelProperty(value = "图片类型")
 	@Column(name = "`cert_type`")
 	private Integer certType;
 
+	/**
+	 * 关联单据ID
+	 */
 	@Column(name = "`bill_id`")
 	private Long billId;
 
+	/**
+	 * 创建时间
+	 */
 	@Column(name = "`created`")
 	private Date created;
 
+	/**
+	 * 修改时间
+	 */
 	@Column(name = "`modified`")
 	private Date modified;
 
+	/**
+	 * 单据类型 {@link com.dili.trace.enums.BillTypeEnum}
+	 */
 	@ApiModelProperty(value = "单据类型。1-报备单 2-检测单 3-检测不合格处置单 4-进门主台账单。默认为1")
 	@Column(name = "`bill_type`")
 	private Integer billType;
 
+	/**
+	 * 类型名称
+	 */
 	@Transient
 	private String certTypeName;
 

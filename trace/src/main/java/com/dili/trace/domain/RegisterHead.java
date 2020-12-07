@@ -21,167 +21,292 @@ import java.util.List;
  */
 @Table(name = "`register_head`")
 public class RegisterHead extends BaseDomain {
+	/**
+	 * ID
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "`id`")
 	private Long id;
 
+	/**
+	 * 主台账编号
+	 */
 	@ApiModelProperty(value = "主台账编号")
 	@Column(name = "`code`")
 	private String code;
 
+	/**
+	 * 单据类型。{@link com.dili.trace.enums.BillTypeEnum}
+	 */
 	@ApiModelProperty(value = "单据类型。10-正常进场 20-补单 30-外冷分批进场。")
 	@Column(name = "`bill_type`")
 	private Integer billType;
 
+	/**
+	 * 业户ID
+	 */
 	@ApiModelProperty(value = "业户ID")
 	@Column(name = "`user_id`")
 	private Long userId;
 
+	/**
+	 * 业户姓名
+	 */
 	@ApiModelProperty(value = "业户姓名")
 	@Column(name = "`name`")
 	private String name;
 
+	/**
+	 * 业户身份证号
+	 */
 	@ApiModelProperty(value = "业户身份证号")
 	@Column(name = "`id_card_no`")
 	private String idCardNo;
 
+	/**
+	 * 经营户卡号
+	 */
 	@ApiModelProperty(value = "经营户卡号")
 	@Column(name = "`third_party_code`")
 	private String thirdPartyCode;
 
+	/**
+	 * 身份地址
+	 */
 	@ApiModelProperty(value = "身份地址")
 	@Column(name = "`addr`")
 	private String addr;
 
+	/**
+	 * 业户手机号
+	 */
 	@ApiModelProperty(value = "业户手机号")
 	@Column(name = "`phone`")
 	private String phone;
 
+	/**
+	 * 车牌号
+	 */
 	@ApiModelProperty(value = "车牌号")
 	@Column(name = "`plate`")
 	private String plate;
 
+	/**
+	 * 商品ID
+	 */
 	@ApiModelProperty(value = "商品ID")
 	@Column(name = "`product_id`")
 	private Long productId;
 
+	/**
+	 * 商品名称
+	 */
 	@ApiModelProperty(value = "商品名称")
 	@Column(name = "`product_name`")
 	private String productName;
 
+	/**
+	 * 计量类型。10-计件 20-计重。默认计件。
+	 */
 	@ApiModelProperty(value = "计量类型。10-计件 20-计重。默认计件。")
 	@Column(name = "`measure_type`")
 	private Integer measureType;
 
+	/**
+	 * 件数
+	 */
 	@ApiModelProperty(value = "件数")
 	@Column(name = "`piece_num`")
 	private BigDecimal pieceNum;
 
+	/**
+	 * 件重
+	 */
 	@ApiModelProperty(value = "件重")
 	@Column(name = "`piece_weight`")
 	private BigDecimal pieceWeight;
 
+	/**
+	 * 总重量
+	 */
 	@ApiModelProperty(value = "总重量")
 	@Column(name = "`weight`")
 	private BigDecimal weight;
 
+	/**
+	 * 剩余重量
+	 */
 	@ApiModelProperty(value = "剩余重量")
 	@Column(name = "`remain_weight`")
 	private BigDecimal remainWeight;
 
+	/**
+	 * 重量单位。1-斤 2-公斤。默认1
+	 */
 	@ApiModelProperty(value = "重量单位。1-斤 2-公斤。默认1")
 	@Column(name = "`weight_unit`")
 	private Integer weightUnit;
 
+	/**
+	 * 上游信息ID
+	 */
 	@ApiModelProperty(value = "上游信息ID")
 	@Column(name = "`upstream_id`")
 	private Long upStreamId;
 
+	/**
+	 * 规格名称
+	 */
 	@ApiModelProperty(value = "规格名称")
 	@Column(name = "`spec_name`")
 	private String specName;
 
+	/**
+	 * 产地ID
+	 */
 	@ApiModelProperty(value = "产地ID")
 	@Column(name = "`origin_id`")
 	private Long originId;
 
+	/**
+	 * 产地名
+	 */
 	@ApiModelProperty(value = "产地名")
 	@Column(name = "`origin_name`")
 	private String originName;
 
+	/**
+	 * 品牌ID
+	 */
 	@ApiModelProperty(value = "品牌ID")
 	@Column(name = "`brand_id`")
 	private Long brandId;
 
+	/**
+	 * 品牌名称
+	 */
 	@ApiModelProperty(value = "品牌名称")
 	@Column(name = "`brand_name`")
 	private String brandName;
 
+	/**
+	 * 备注
+	 */
 	@ApiModelProperty(value = "备注")
 	@Column(name = "`remark`")
 	private String remark;
 
+	/**
+	 * 创建人
+	 */
 	@ApiModelProperty(value = "创建人")
 	@Column(name = "`create_user`")
 	private String createUser;
 
+	/**
+	 * 创建时间
+	 */
 	@ApiModelProperty(value = "创建时间")
 	@Column(name = "`created`")
 	private Date created;
 
+	/**
+	 * 修改人
+	 */
 	@ApiModelProperty(value = "修改人")
 	@Column(name = "`modify_user`")
 	private String modifyUser;
 
+	/**
+	 * 修改时间
+	 */
 	@ApiModelProperty(value = "修改时间")
 	@Column(name = "`modified`")
 	private Date modified;
 
+	/**
+	 * 是否作废。0-否 1-是
+	 */
 	@ApiModelProperty(value = "是否作废。0-否 1-是")
 	@Column(name = "`is_deleted`")
 	private Integer isDeleted;
 
+	/**
+	 * 作废人
+	 */
 	@ApiModelProperty(value = "作废人")
 	@Column(name = "`delete_user`")
 	private String deleteUser;
 
+	/**
+	 * 作废时间
+	 */
 	@ApiModelProperty(value = "作废时间")
 	@Column(name = "`delete_time`")
 	private Date deleteTime;
 
+	/**
+	 * 版本
+	 */
 	@ApiModelProperty(value = "版本")
 	@Column(name = "`version`")
 	private Integer version;
 
+	/**
+	 * 原因
+	 */
 	@ApiModelProperty(value = "原因")
 	@Column(name = "`reason`")
 	private String reason;
 
+	/**
+	 * 是否启用。0-否 1-是
+	 */
 	@ApiModelProperty(value = "是否启用。0-否 1-是")
 	@Column(name = "`active`")
 	private Integer active;
 
+	/**
+	 * 市场ID
+	 */
 	@ApiModelProperty(value = "市场ID")
 	@Column(name = "market_id")
 	private Long marketId;
 
-
+	/**
+	 * 重量单位名称
+	 */
 	@Transient
 	private String weightUnitName;
 
+	/**
+	 * 证件列表
+	 */
 	@Transient
 	private List<ImageCert> imageCertList;
 
+	/**
+	 * 报备单列表
+	 */
 	@Transient
 	private List<RegisterBill> registerBills;
 
+	/**
+	 * 上/下游名称
+	 */
 	@Transient
 	private String upStreamName;
 
+	/**
+	 * 状态描述
+	 */
 	@Transient
 	private String statusStr;
 
+	/**
+	 * 单据类型描述
+	 */
 	@Transient
 	private String billTypeName;
 
