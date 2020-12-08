@@ -156,8 +156,8 @@ public class CommissionBillApi {
     /**
      * 通过登记单ID获取登记单详细信息
      *
-     * @param input
-     * @return
+     * @param input 查询条件
+     * @return 登记单详细信息
      */
     @ApiOperation(value = "通过登记单ID获取登记单详细信息")
     @RequestMapping(value = "/detail.api", method = RequestMethod.POST)

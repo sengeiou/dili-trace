@@ -67,9 +67,9 @@ public class ECommerceBillApi {
 	}
 
 	/**
-	 * 电创建商登记单
-	 * @param input
-	 * @return
+	 * 创建电商登记单
+	 * @param input 电商登记单
+	 * @return 电商登记单ID
 	 */
 	@ApiOperation("创建记录")
 	@RequestMapping(value = "/createEcommerceBill.api", method = RequestMethod.POST)
@@ -100,8 +100,8 @@ public class ECommerceBillApi {
 
 	/**
 	 * 电商登记单列表
-	 * @param input
-	 * @return
+	 * @param input 查询条件
+	 * @return 电商登记单列表
 	 */
 	@ApiOperation("电商登记单列表")
 	@RequestMapping(value = "/listEcommerceBill.api", method = RequestMethod.POST)
@@ -129,8 +129,8 @@ public class ECommerceBillApi {
 
 	/**
 	 * 查看电商登记单详情
-	 * @param input
-	 * @return
+	 * @param input 查询条件
+	 * @return 电商登记单详情
 	 */
 	@ApiOperation("查看电商登记单详情")
 	@RequestMapping(value = "/detailEcommerceBill.api", method = RequestMethod.POST)
@@ -153,8 +153,8 @@ public class ECommerceBillApi {
 
 	/**
 	 * 撤销电商登记单
-	 * @param input
-	 * @return
+	 * @param input 操作条件
+	 * @return 撤销结果
 	 */
 	@ApiOperation("撤销电商登记单")
 	@RequestMapping(value = "/deleteEcommerceBill.api", method = RequestMethod.POST)
@@ -174,8 +174,8 @@ public class ECommerceBillApi {
 
 	/**
 	 * 查询电商登记单
-	 * @param likeTallyAreaNo
-	 * @return
+	 * @param likeTallyAreaNo 摊位号
+	 * @return 电商登记单
 	 */
 	@RequestMapping(value = "/queryByTallyAreaNo.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody

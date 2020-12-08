@@ -26,7 +26,7 @@ public class DriverUserApi {
 
     /**
      *是否需要注册
-     * @param user
+     * @param user 业户
      * @return
      */
     @ApiOperation(value = "是否需要注册", notes = "是否需要注册")
@@ -38,8 +38,8 @@ public class DriverUserApi {
 
     /**
      * 获取司机用户列表
-     * @param user
-     * @return
+     * @param user 查询条件
+     * @return 司机用户列表
      */
     @ApiOperation(value = "获取司机用户列表", notes = "获取司机用户列表")
     @RequestMapping(value = "/getDriverUserList", method = RequestMethod.POST)
@@ -52,7 +52,7 @@ public class DriverUserApi {
 
     /**
      * 获取司机列表
-     * @return
+     * @return 司机列表
      */
     @ApiOperation(value = "获取司机列表", notes = "获取司机列表")
     @RequestMapping(value = "/getDriverList", method = RequestMethod.POST)
@@ -67,8 +67,8 @@ public class DriverUserApi {
 
     /**
      * 新增司机与卖家关联关系
-     * @param userRef
-     * @return
+     * @param userRef 司机与卖家关联关系信息
+     * @return 新增结果
      */
     @ApiOperation(value = "新增司机与卖家关联关系", notes = "新增司机与卖家关联关系")
     @RequestMapping(value = "/updateDriverUserRef", method = RequestMethod.POST)
