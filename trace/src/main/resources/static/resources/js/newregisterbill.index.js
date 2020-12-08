@@ -1,16 +1,16 @@
 class NewRegisterBillGrid extends WebConfig {
-    constructor(grid, queryform) {
+    constructor(grid, queryform, toolbar) {
         super();
         this.handleTimeUpdateEvent = (event) => {
         };
         this.grid = grid;
         this.queryform = queryform;
+        this.toolbar = toolbar;
+        this.btns = this.toolbar.find('button');
         this.uid = _.uniqueId("trace_id_");
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['RegisterBillGridObj'] = this;
-        this.btns = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn',
-            'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn'];
         $('#edit-btn').on('click', async () => await this.openEditPage());
         $('#btn_add').on('click', async () => await this.openCreatePage());
         $('#copy-btn').on('click', async () => await this.openCopyPage());
@@ -510,26 +510,16 @@ class NewRegisterBillGrid extends WebConfig {
     }
     resetButtons() {
         var btnArray = this.btns;
-        for (var i = 0; i < btnArray.length; i++) {
-            var btnId = btnArray[i];
-            $('#' + btnId).hide();
-        }
+        _.chain(btnArray).each((btn) => {
+            $(btn).hide();
+        });
     }
     async checkAndShowHideBtns() {
         this.resetButtons();
         var rows = this.rows;
-        if (rows.length == 0) {
-            return;
-        }
-        var createCheckSheet = _.chain(this.rows)
-            .filter(v => !_.isUndefined(v.detectRequest))
-            .filter(item => 1 == item.detectRequest.detectResult)
-            .filter(item => _.isUndefined(item.checkSheetId) || item.checkSheetId == null).value().length > 0;
-        createCheckSheet ? $('#createsheet-btn').show() : $('#createsheet-btn').hide();
         try {
             var billIdList = _.chain(rows).map(v => v.id).value();
             var resp = await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'), billIdList);
-            console.info(resp);
             resp.forEach(btnid => { $('#' + btnid).show(); });
         }
         catch (e) {
