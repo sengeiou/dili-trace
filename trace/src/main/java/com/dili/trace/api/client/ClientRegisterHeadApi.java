@@ -145,16 +145,16 @@ public class ClientRegisterHeadApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-
+			Long userId=sessionContext.getAccountId();
+			String userName=sessionContext.getUserName();
 			List<CreateRegisterHeadInputDto> registerHeads = StreamEx.of(createListRegisterHeadParam.getRegisterBills())
 					.nonNull().toList();
 			if (registerHeads == null) {
 				return BaseOutput.failure("没有进门主台账单");
 			}
-			logger.info("保存多个进门主台账单操作用户:{}，{}", operatorUser.getId(), operatorUser.getName());
+			logger.info("保存多个进门主台账单操作用户:{}，{}", userId, userName);
 			List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads,
-					userService.get(createListRegisterHeadParam.getUserId()), Optional.of(operatorUser), createListRegisterHeadParam.getMarketId());
+					userId, Optional.empty());
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());

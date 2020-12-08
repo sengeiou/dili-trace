@@ -92,9 +92,8 @@ public class SessionData {
     public static SessionData mockClient() {
         SessionData sessionData = new SessionData();
         sessionData.setMarketId(8L);
-        sessionData.setUserId(1L);
-        sessionData.setUserName("zhangsan");
-        sessionData.setMarketId(8L);
+        sessionData.setUserId(31L);
+        sessionData.setUserName("悟空");
         sessionData.setMarketName("寿光");
         return sessionData;
     }

@@ -2,6 +2,12 @@ package com.dili.trace.service;
 
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.User;
+import com.dili.trace.dto.UserInfoDto;
+import com.dili.trace.enums.ValidateStateEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -58,22 +64,42 @@ public class ClientRpcService {
 
     /**
      * 是否有访问权限
+     *
      * @param method
      * @param url
      * @return
      */
-    public boolean hasAccess(String method,String url){
+    public boolean hasAccess(String method, String url) {
 
         return true;
     }
 
     /**
      * 是否有访问权限
+     *
      * @param access
      * @return
      */
-    public boolean hasAccess(  AppAccess access){
+    public boolean hasAccess(AppAccess access) {
         return true;
+    }
+
+
+    /**
+     * 查询客户
+     *
+     * @param userId
+     * @return
+     */
+    public User findUserInfoById(Long userId) {
+
+        User user = DTOUtils.newDTO(User.class);
+        user.setMarketId(8L);
+        user.setId(31L);
+        user.setName("悟空");
+        user.setIsDelete(0L);
+        user.setValidateState(ValidateStateEnum.PASSED.getCode());
+        return user;
     }
 
 }
