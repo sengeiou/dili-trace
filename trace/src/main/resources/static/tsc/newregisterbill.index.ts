@@ -49,7 +49,7 @@ class NewRegisterBillGrid extends WebConfig {
         $('#review-btn').on('click',async ()=>await this.doReviewCheck());
 
 
-        this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
        // this.grid.bootstrapTable('refreshOptions', {url: '/chargeRule/listPage.action', pageSize: parseInt(size)});
 
         this.grid.bootstrapTable('refreshOptions', {url: '/newRegisterBill/listPage.action'
@@ -671,68 +671,28 @@ class NewRegisterBillGrid extends WebConfig {
             $('#' + btnId).hide();
         }
     }
-    private checkAndShowHideBtns(){
+    private async checkAndShowHideBtns(){
         this.resetButtons();
         var rows=this.rows;
         if(rows.length==0){
             return ;
         }
+
         var createCheckSheet=_.chain(this.rows)
-            .filter(item=>DetectResultEnum.PASSED==item?.detectRequest?.detectResult)
+            .filter(v=>!_.isUndefined(v.detectRequest))
+            .filter(item=>DetectResultEnum.PASSED==item.detectRequest.detectResult)
             .filter(item=>_.isUndefined(item.checkSheetId)||item.checkSheetId==null).value().length>0;
         createCheckSheet?$('#createsheet-btn').show():$('#createsheet-btn').hide();
 
-        if(rows.length==1){
-            var selected=rows[0];
-            $('#copy-btn').show();
-            $('#detail-btn').show();
-            $('#upload-origincertifiy-btn').show();
-            $('#upload-handleresult-btn').show();
-
-            var waitAudit = this.waitAuditRows;
-            if(waitAudit.length==1){
-                $('#undo-btn').show();
-                $('#audit-btn').show();
-                $('#edit-btn').show();
-                $('#upload-detectreport-btn').show();
-            }
-            if(selected.hasOriginCertifiy!=0){
-                $('#remove-reportAndcertifiy-btn').show();
-            }
-            if(selected.registerSource==RegisterSourceEnum.TALLY_AREA){
-                if(selected.hasOriginCertifiy!=0){
-                    $('#audit-withoutDetect-btn').show();
-                }
+            try{
+                var billIdList=_.chain(rows).map(v=>v.id).value();
+                var resp=await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'),billIdList);
+                console.info(resp)
+                resp.forEach(btnid=>{ $('#'+btnid).show();})
+            }catch (e){
+                console.error(e);
             }
 
-            if(selected.detectStatus==DetectStatusEnum.WAIT_SAMPLE){
-                $('#auto-btn').show();
-                $('#undo-btn').show();
-                $('#sampling-btn').show();
-            }
-            if(selected?.detectRequest?.detectResult==DetectResultEnum.FAILED){
-                if(selected?.detectRequest?.detectType==DetectTypeEnum.INITIAL_CHECK){
-                    $('#review-btn').show();
-                }else if(selected?.detectRequest?.detectType==DetectTypeEnum.RECHECK&&selected.hasHandleResult==0){
-                    $('#review-btn').show();
-                }
-            }
-          //  $('#createsheet-btn').show();
-            return;
-        }
-        var batchAudit = this.filterByProp('verifyStatus', [BillVerifyStatusEnum.WAIT_AUDIT]).length>0;
-        batchAudit? $('#batch-audit-btn').show(): $('#batch-audit-btn').hide();
-
-        var batchSampling = this.batchSamplingRows.length>0;
-        batchSampling?$('#batch-sampling-btn').show():$('#batch-sampling-btn').hide();
-
-        var batchAuto=batchSampling;
-        batchAuto?$('#batch-auto-btn').show():$('#batch-auto-btn').hide();
-
-        var batchUndo=_.chain(this.rows).filter(item=>{
-           return (BillVerifyStatusEnum.WAIT_AUDIT==item.verifyStatus)||(DetectStatusEnum.WAIT_SAMPLE==item.detectStatus)
-        })
-        batchUndo? $('#batch-undo-btn').show():$('#batch-undo-btn').hide();
     }
     get waitAuditRows(){
         return  this.filterByProp('verifyStatus', [BillVerifyStatusEnum.WAIT_AUDIT]);

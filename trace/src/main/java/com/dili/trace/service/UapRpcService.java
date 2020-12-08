@@ -1,8 +1,7 @@
 package com.dili.trace.service;
 
-import com.dili.common.annotation.Access;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -86,7 +85,7 @@ public class UapRpcService {
      * @param access
      * @return
      */
-    public boolean hasAccess(Access access) {
+    public boolean hasAccess(AppAccess access) {
         return SessionContext.hasAccess(access.method(), access.url());
     }
 

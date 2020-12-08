@@ -71,26 +71,34 @@ class jq {
             throw e
         }
     }
-    public  static removeEmptyProperty(data:object){
-
-        //属性值为空字符串，以及数组里面null的数据给移除掉
-        let jsonData=_.chain(data)
-            .pick((v,k)=>{
-                return !_.isUndefined(v);})
-            .pick((v,k)=>{
-                if(_.isString(v)){
-                    if(_.isEmpty(v)||_.isNull(v)){
-                        return false;
+    public  static removeEmptyProperty(data:any){
+        if(_.isArray(data)){
+            var jsonData= _.chain(data).filter(item=>!_.isNull(item)).value();
+            return jsonData;
+        }else{
+            //属性值为空字符串，以及数组里面null的数据给移除掉
+            let jsonData=_.chain(data)
+                .pick((v,k)=>{
+                    return !_.isUndefined(v);})
+                .pick((v,k)=>{
+                    if(_.isString(v)){
+                        if(_.isEmpty(v)||_.isNull(v)){
+                            return false;
+                        }
                     }
-                }
-                return true;})
-            .mapObject(v=>{
-                if(!_.isArray(v)){
-                    return v;
-                }
-                return _.chain(v).filter(item=>!_.isNull(v)).value();
+                    return true;})
+                 .mapObject(v=>{
+                     if(!_.isArray(v)){
+                         return v;
+                     }
+                     return _.chain(v).filter(v=>!_.isNull(v)).value();
 
-            }).value();
-        return jsonData;
+                 })
+                .value();
+            return jsonData;
+        }
+
+
+
     }
 }

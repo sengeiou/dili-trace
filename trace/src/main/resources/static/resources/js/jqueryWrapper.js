@@ -49,25 +49,32 @@ class jq {
         }
     }
     static removeEmptyProperty(data) {
-        let jsonData = _.chain(data)
-            .pick((v, k) => {
-            return !_.isUndefined(v);
-        })
-            .pick((v, k) => {
-            if (_.isString(v)) {
-                if (_.isEmpty(v) || _.isNull(v)) {
-                    return false;
+        if (_.isArray(data)) {
+            var jsonData = _.chain(data).filter(item => !_.isNull(item)).value();
+            return jsonData;
+        }
+        else {
+            let jsonData = _.chain(data)
+                .pick((v, k) => {
+                return !_.isUndefined(v);
+            })
+                .pick((v, k) => {
+                if (_.isString(v)) {
+                    if (_.isEmpty(v) || _.isNull(v)) {
+                        return false;
+                    }
                 }
-            }
-            return true;
-        })
-            .mapObject(v => {
-            if (!_.isArray(v)) {
-                return v;
-            }
-            return _.chain(v).filter(item => !_.isNull(v)).value();
-        }).value();
-        return jsonData;
+                return true;
+            })
+                .mapObject(v => {
+                if (!_.isArray(v)) {
+                    return v;
+                }
+                return _.chain(v).filter(v => !_.isNull(v)).value();
+            })
+                .value();
+            return jsonData;
+        }
     }
 }
 //# sourceMappingURL=jqueryWrapper.js.map

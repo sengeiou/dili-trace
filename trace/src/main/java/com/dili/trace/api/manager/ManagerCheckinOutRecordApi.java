@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.dili.common.annotation.Access;
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
@@ -43,7 +42,7 @@ import one.util.streamex.StreamEx;
 @SuppressWarnings("deprecation")
 @Api(value = "/api/manager/managerCheckinRecordApi")
 @RestController
-@Access(role = Role.Manager,url = "dili-trace-app-auth")
+@AppAccess(role = Role.Manager,url = "dili-trace-app-auth")
 @RequestMapping(value = "/api/manager/managerCheckinRecord")
 public class ManagerCheckinOutRecordApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerCheckinOutRecordApi.class);

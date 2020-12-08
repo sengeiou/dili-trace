@@ -2,8 +2,7 @@ package com.dili.trace.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.EventQuery;
-import com.dili.common.annotation.MessageEvent;
+import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.trace.dao.RegisterBillMapper;
@@ -30,9 +29,7 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,19 +38,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
  */
 @Service
-public class SgRegisterBillServiceImpl implements SgRegisterBillService, EventQuery {
+public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillServiceImpl.class);
 
     @Autowired
@@ -811,7 +808,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService, EventQu
             //StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
             throw new TraceBizException("请上传报告");
         }
-        RegisterBill item = this.billService.get(input.getId());
+        RegisterBill item = this.checkEvent(input.getId(), RegisterBillMessageEvent.upload_detectreport).orElse(null);
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
@@ -1092,9 +1089,77 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService, EventQu
     }
 
     @Override
-    public List<MessageEvent> queryEvents(Long billId) {
+    public List<RegisterBillMessageEvent> queryEvents(Long billId) {
+        if (billId == null) {
+            return Lists.newArrayList();
+        }
+        RegisterBill item = this.billService.get(billId);
+        if (item == null) {
+            return Lists.newArrayList();
+        }
+        List<RegisterBillMessageEvent> msgStream = Lists.newArrayList(
+                RegisterBillMessageEvent.COPY
+                , RegisterBillMessageEvent.DETAIL
+                , RegisterBillMessageEvent.upload_origincertifiy
+                , RegisterBillMessageEvent.upload_handleresult);
+        if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
+            msgStream.addAll(Lists.newArrayList(RegisterBillMessageEvent.undo
+                    , RegisterBillMessageEvent.audit
+                    , RegisterBillMessageEvent.edit
+                    , RegisterBillMessageEvent.upload_detectreport));
+        }
+        if (item.getHasOriginCertifiy() > 0) {
+            msgStream.add(RegisterBillMessageEvent.remove_reportAndcertifiy);
+        }
+        if (RegisterSourceEnum.TALLY_AREA.equalsToCode(item.getRegisterSource()) && item.getHasOriginCertifiy() > 0) {
+            msgStream.add(RegisterBillMessageEvent.audit_withoutDetect);
+        }
+        if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
+            msgStream.addAll(Lists.newArrayList(RegisterBillMessageEvent.auto, RegisterBillMessageEvent.undo, RegisterBillMessageEvent.sampling));
+        }
+        if (item.getDetectRequestId() != null) {
+            DetectRequest detectRequest = this.detectRequestService.get(item.getDetectRequestId());
+            if (detectRequest != null) {
+
+                if (DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
+                    if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())) {
+                        msgStream.add(RegisterBillMessageEvent.review);
+                    } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType()) && item.getHasHandleResult() == 0) {
+                        msgStream.add(RegisterBillMessageEvent.review);
+                    }
+
+                    if (DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult())) {
+                        if (item.getCheckSheetId() == null) {
+                            msgStream.add(RegisterBillMessageEvent.createsheet);
+                        }
+                    }
+                }
+            }
+        }
 
 
+        return msgStream;
+    }
+
+    @Override
+    public Optional<RegisterBill> checkEvent(Long billId, RegisterBillMessageEvent messageEvent) {
+        if (billId == null) {
+            return Optional.empty();
+        }
+        RegisterBill item = this.selectByIdForUpdate(billId);
+        if (item == null) {
+            return Optional.empty();
+        }
+        if (!BillTypeEnum.REGISTER_BILL.equalsToCode(item.getBillType())) {
+            return Optional.empty();
+        }
+        return StreamEx.of(this.queryEvents(item)).filterBy(Function.identity(), messageEvent).map((v) -> item).findFirst();
+    }
+
+    private List<RegisterBillMessageEvent> queryEvents(RegisterBill bill) {
+        if (bill == null) {
+            return Lists.newArrayList();
+        }
         return Lists.newArrayList();
     }
 }

@@ -2,13 +2,11 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
-import com.dili.common.annotation.Access;
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.UserPlateQueryDto;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.service.UserPlateService;
@@ -29,7 +27,7 @@ import io.swagger.annotations.Api;
  */
 @Api(value = "/api/client/clientUserPlateApi")
 @RestController
-@Access(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "")
 @RequestMapping(value = "/api/client/clientUserPlateApi")
 public class ClientUserPlateApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientUserPlateApi.class);

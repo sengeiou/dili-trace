@@ -1,6 +1,6 @@
 package com.dili.trace.service;
 
-import com.dili.common.annotation.Access;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.exception.TraceBizException;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -72,7 +72,7 @@ public class ClientRpcService {
      * @param access
      * @return
      */
-    public boolean hasAccess(  Access access){
+    public boolean hasAccess(  AppAccess access){
         return true;
     }
 
