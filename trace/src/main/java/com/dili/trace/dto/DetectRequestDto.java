@@ -28,12 +28,6 @@ public class DetectRequestDto extends DetectRequest {
     private Date createdEnd;
 
     /**
-     * 报备单编号
-     */
-    @Transient
-    private String likeBillCode;
-
-    /**
      * 创建人
      */
     @Column(name = "creator_name")
@@ -53,6 +47,24 @@ public class DetectRequestDto extends DetectRequest {
     @Column(name = "detector_name")
     @Like
     private String likeDetectorName;
+
+    /**
+     * 报备单编号查询条件
+     */
+    @Transient
+    private String likeBillCode;
+
+    /**
+     * 报备单编号
+     */
+    @Transient
+    private String billCode;
+
+    /**
+     * 检测状态
+     */
+    @Transient
+    private Integer detectStatus;
 
     public Date getCreatedStart() {
         return createdStart;
@@ -100,5 +112,21 @@ public class DetectRequestDto extends DetectRequest {
 
     public void setLikeDetectorName(String likeDetectorName) {
         this.likeDetectorName = likeDetectorName;
+    }
+
+    public String getBillCode() {
+        return billCode;
+    }
+
+    public void setBillCode(String billCode) {
+        this.billCode = billCode;
+    }
+
+    public Integer getDetectStatus() {
+        return detectStatus;
+    }
+
+    public void setDetectStatus(Integer detectStatus) {
+        this.detectStatus = detectStatus;
     }
 }

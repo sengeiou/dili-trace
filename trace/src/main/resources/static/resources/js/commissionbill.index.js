@@ -170,39 +170,5 @@ class CommissionBillGrid extends WebConfig {
         let values = _.chain(arrayData).filter(element => $.inArray(element[prop], arrayValue) > -1).value();
         return values;
     }
-    initAutoComplete(selector, url) {
-        $(selector).keydown(function (e) {
-            if (e.keyCode == 13) {
-            }
-        });
-        $(selector).data('oldvalue', '');
-        $(selector).on('change', function () {
-            var oldvalue = $(selector).data('oldvalue');
-            var val = $(this).val();
-            if (oldvalue != val) {
-                $(this).siblings('input').val('');
-            }
-        });
-        $(selector).devbridgeAutocomplete({
-            noCache: 1,
-            serviceUrl: url,
-            dataType: 'json',
-            onSearchComplete: function (query, suggestions) {
-            },
-            showNoSuggestionNotice: true,
-            noSuggestionNotice: "不存在，请重输！",
-            autoSelectFirst: true,
-            autoFocus: true,
-            onSelect: function (suggestion) {
-                console.info('onSelect');
-                var self = this;
-                var idField = $(self).siblings('input');
-                idField.val(suggestion.id);
-                $(self).val(suggestion.value.trim());
-                $(selector).data('oldvalue', suggestion.value);
-                var v = $(self).valid();
-            }
-        });
-    }
 }
 //# sourceMappingURL=commissionbill.index.js.map
