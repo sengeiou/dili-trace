@@ -1,16 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class NewRegisterBillGrid extends WebConfig {
-    constructor(grid, queryform, toolbar) {
+    constructor(grid, queryform) {
         super();
         this.handleTimeUpdateEvent = (event) => {
         };
         this.grid = grid;
         this.queryform = queryform;
-        this.toolbar = toolbar;
-        this.btns = this.toolbar.find('button');
         this.uid = _.uniqueId("trace_id_");
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['RegisterBillGridObj'] = this;
+        this.btns = ['upload-detectreport-btn', 'upload-origincertifiy-btn', 'copy-btn', 'edit-btn', 'detail-btn', 'undo-btn', 'audit-btn', 'audit-withoutDetect-btn', 'auto-btn', 'sampling-btn', 'review-btn', 'upload-handleresult-btn',
+            'batch-audit-btn', 'batch-sampling-btn', 'batch-auto-btn', 'batch-undo-btn', 'remove-reportAndcertifiy-btn', 'createsheet-btn'];
         $('#edit-btn').on('click', async () => await this.openEditPage());
         $('#btn_add').on('click', async () => await this.openCreatePage());
         $('#copy-btn').on('click', async () => await this.openCopyPage());
@@ -30,7 +32,7 @@ class NewRegisterBillGrid extends WebConfig {
         $('#batch-sampling-btn').on('click', async () => await this.doBatchSamplingCheck());
         $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
-        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
+        this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
         this.grid.bootstrapTable('refreshOptions', { url: '/newRegisterBill/listPage.action',
             'queryParams': (params) => this.buildQueryData(params),
             'ajaxOptions': {}
@@ -510,21 +512,67 @@ class NewRegisterBillGrid extends WebConfig {
     }
     resetButtons() {
         var btnArray = this.btns;
-        _.chain(btnArray).each((btn) => {
-            $(btn).hide();
-        });
+        for (var i = 0; i < btnArray.length; i++) {
+            var btnId = btnArray[i];
+            $('#' + btnId).hide();
+        }
     }
-    async checkAndShowHideBtns() {
+    checkAndShowHideBtns() {
         this.resetButtons();
         var rows = this.rows;
-        try {
-            var billIdList = _.chain(rows).map(v => v.id).value();
-            var resp = await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'), billIdList);
-            resp.forEach(btnid => { $('#' + btnid).show(); });
+        if (rows.length == 0) {
+            return;
         }
-        catch (e) {
-            console.error(e);
+        var createCheckSheet = _.chain(this.rows)
+            .filter(item => 1 == item?.detectRequest?.detectResult)
+            .filter(item => _.isUndefined(item.checkSheetId) || item.checkSheetId == null).value().length > 0;
+        createCheckSheet ? $('#createsheet-btn').show() : $('#createsheet-btn').hide();
+        if (rows.length == 1) {
+            var selected = rows[0];
+            $('#copy-btn').show();
+            $('#detail-btn').show();
+            $('#upload-origincertifiy-btn').show();
+            $('#upload-handleresult-btn').show();
+            var waitAudit = this.waitAuditRows;
+            if (waitAudit.length == 1) {
+                $('#undo-btn').show();
+                $('#audit-btn').show();
+                $('#edit-btn').show();
+                $('#upload-detectreport-btn').show();
+            }
+            if (selected.hasOriginCertifiy != 0) {
+                $('#remove-reportAndcertifiy-btn').show();
+            }
+            if (selected.registerSource == 1) {
+                if (selected.hasOriginCertifiy != 0) {
+                    $('#audit-withoutDetect-btn').show();
+                }
+            }
+            if (selected.detectStatus == 20) {
+                $('#auto-btn').show();
+                $('#undo-btn').show();
+                $('#sampling-btn').show();
+            }
+            if (selected?.detectRequest?.detectResult == 2) {
+                if (selected?.detectRequest?.detectType == 20) {
+                    $('#review-btn').show();
+                }
+                else if (selected?.detectRequest?.detectType == 30 && selected.hasHandleResult == 0) {
+                    $('#review-btn').show();
+                }
+            }
+            return;
         }
+        var batchAudit = this.filterByProp('verifyStatus', [0]).length > 0;
+        batchAudit ? $('#batch-audit-btn').show() : $('#batch-audit-btn').hide();
+        var batchSampling = this.batchSamplingRows.length > 0;
+        batchSampling ? $('#batch-sampling-btn').show() : $('#batch-sampling-btn').hide();
+        var batchAuto = batchSampling;
+        batchAuto ? $('#batch-auto-btn').show() : $('#batch-auto-btn').hide();
+        var batchUndo = _.chain(this.rows).filter(item => {
+            return (0 == item.verifyStatus) || (20 == item.detectStatus);
+        });
+        batchUndo ? $('#batch-undo-btn').show() : $('#batch-undo-btn').hide();
     }
     get waitAuditRows() {
         return this.filterByProp('verifyStatus', [0]);

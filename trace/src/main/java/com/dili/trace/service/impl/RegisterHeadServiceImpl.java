@@ -55,14 +55,18 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
     @Autowired
     UpStreamService upStreamService;
+    @Autowired
+    ClientRpcService clientRpcService;
 
     public RegisterHeadMapper getActualDao() {
         return (RegisterHeadMapper) getDao();
     }
 
     @Override
-    public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, User user,
-                                             Optional<OperatorUser> operatorUser, Long marketId) {
+    public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long userId,
+                                             Optional<OperatorUser> operatorUser) {
+
+        User user=this.clientRpcService.findUserInfoById(userId);
         if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
             throw new TraceBizException("用户未审核通过不能创建报备单");
         }
@@ -70,7 +74,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
             RegisterHead registerHead = dto.build(user);
-            registerHead.setMarketId(marketId);
+            registerHead.setMarketId(user.getMarketId());
             return this.createRegisterHead(registerHead, dto.getImageCertList(), operatorUser);
         }).toList();
     }
@@ -103,7 +107,8 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         String plate = StreamEx.ofNullable(registerHead.getPlate()).nonNull().map(StringUtils::trimToNull).nonNull()
                 .map(String::toUpperCase).findFirst().orElse(null);
         registerHead.setPlate(plate);
-
+        registerHead.setCreated(new Date());
+        registerHead.setModified(new Date());
         // 保存车牌
         this.userPlateService.checkAndInsertUserPlate(registerHead.getUserId(), plate);
 
