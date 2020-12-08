@@ -7,23 +7,37 @@ import java.util.Date;
 
 @Table(name = "r_user_category")
 public class RUserCategory extends BaseDomain {
+    /**
+     * ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
+    /**
+     * 经营户id
+     */
     @Column(name = "user_id")
     private Long userId;
-
+    /**
+     * 分类id
+     */
     @Column(name = "category_id")
     private Long categoryId;
-
+    /**
+     * 分类类型
+     */
     @Column(name = "category_type")
     private Integer categoryType;
-
+    /**
+     * 分类名称
+     */
     @Column(name = "category_name")
     private String categoryName;
-
+    /**
+     * 创建时间
+     */
     @Column(name = "create_time")
     private Date createTime;
 

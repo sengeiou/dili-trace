@@ -52,17 +52,29 @@ public class DetectTaskApiOutputDto extends BaseDomain {
      * 商品重量/KG
      */
     private Integer weight;
-
+    /**
+     * 检测单id
+     */
     private Long checkSheetId;
-
+    /**
+     * 检测状态
+     */
     private Integer detectState;
-
+    /**
+     * 状态
+     */
     private Integer state;
-
+    /**
+     * 最终检测结果
+     */
     private String latestPdResult;
-
+    /**
+     * 产地
+     */
     private String originName;
-
+    /**
+     * 最终检测人员
+     */
     private String latestDetectOperator;
 
     public static List<DetectTaskApiOutputDto> build(List<RegisterBill> billList) {

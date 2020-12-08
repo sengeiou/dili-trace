@@ -9,11 +9,17 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class CheckinOutRecordQueryDto extends CheckinOutRecord {
 
+    /**
+     * 查询登记开始时间
+     */
     @ApiModelProperty(value = "查询登记开始时间")
     @Column(name = "`created`")
     @Operator(Operator.GREAT_EQUAL_THAN)
     private String createdStart;
 
+    /**
+     * 查询登记结束时间
+     */
     @ApiModelProperty(value = "查询登记结束时间")
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)

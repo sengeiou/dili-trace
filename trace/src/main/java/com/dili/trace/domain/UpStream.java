@@ -17,7 +17,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Table(name = "`upstream`")
 public class UpStream extends BaseDomain {
-
+    /**
+     * Id
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")

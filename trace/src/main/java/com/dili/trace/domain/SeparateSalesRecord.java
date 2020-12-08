@@ -92,17 +92,15 @@ public class SeparateSalesRecord extends BaseDomain {
 	private Long billId;
 
 	/**
-	 * 销售类型 {@link com.dili.sg.trace.glossary.SalesTypeEnum}
+	 * 销售类型
 	 */
 	@Column(name = "`sales_type`")
 	private Integer salesType;
-
 	/**
 	 * 创建时间
 	 */
 	@Column(name = "`created`")
 	private Date created;
-
 	/**
 	 * 修改时间
 	 */

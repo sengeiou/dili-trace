@@ -13,6 +13,9 @@ import javax.persistence.*;
  */
 @Table(name = "`countries`")
 public class Countries  extends BaseDomain {
+    /**
+     * ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "`id`")
