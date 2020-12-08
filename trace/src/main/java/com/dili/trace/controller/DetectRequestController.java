@@ -5,6 +5,10 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.service.DetectRequestService;
+import com.dili.trace.service.UserRpcService;
+import com.dili.uap.sdk.domain.User;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,6 +26,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * 检测请求业务类
@@ -34,6 +41,9 @@ public class DetectRequestController {
 
     @Autowired
     DetectRequestService detectRequestService;
+
+    @Autowired
+    UserRpcService userRpcService;
 
     /**
      * 跳转到DetectRequest页面
@@ -97,5 +107,30 @@ public class DetectRequestController {
             return BaseOutput.failure(e.getMessage());
         }
         return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 根据名字查询检测员信息
+     *
+     * @param name
+     * @return
+     */
+    @RequestMapping("/detector")
+    @ResponseBody
+    public Map<String, ?> listByName(String name) {
+
+        List<User> detectorUsers = userRpcService.findDetectDepartmentUsers(name).orElse(Lists.newArrayList());
+        List<Map<String, Object>> list = Lists.newArrayList();
+        for (User c : detectorUsers) {
+            Map<String, Object> obj = Maps.newHashMap();
+            obj.put("id", c.getId());
+            obj.put("data", name);
+            obj.put("value", c.getUserName());
+            list.add(obj);
+        }
+
+        Map map = Maps.newHashMap();
+        map.put("suggestions", list);
+        return map;
     }
 }

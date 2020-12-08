@@ -23,7 +23,8 @@ public class DepartmentRpcService {
     private static final Logger logger = LoggerFactory.getLogger(DepartmentRpcService.class);
 
 
-    private static final String DetectDepartmentCode = "detector_group";
+//    private static final String DetectDepartmentCode = "detector_group";
+      private static final String DetectDepartmentCode = "hzsc-79"; // 杭水测试
 
     @Autowired(required = false)
     DepartmentRpc departmentRpc;
@@ -50,9 +51,6 @@ public class DepartmentRpcService {
         }
 
         return Optional.empty();
-
-
     }
-
 
 }

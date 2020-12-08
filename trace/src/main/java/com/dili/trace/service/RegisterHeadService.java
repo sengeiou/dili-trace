@@ -20,7 +20,7 @@ import java.util.Optional;
 public interface RegisterHeadService extends BaseService<RegisterHead, Long> {
 
 	/**
-	 * SB
+	 * 主台账列表查询
 	 * @param dto
 	 * @return
 	 * @throws Exception

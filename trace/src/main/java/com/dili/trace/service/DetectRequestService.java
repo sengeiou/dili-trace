@@ -1,9 +1,6 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.DetectStatusEnum;
-import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.dao.DetectRequestMapper;
@@ -11,17 +8,24 @@ import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.dto.IdNameDto;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -221,7 +225,17 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         EasyuiPageOutput out = this.listEasyuiPageByExample(dto, true);
 
         // 查询报备单信息
-        List<DetectRequestDto> requests = out.getRows();
+        List<Map<?,?>> requests = out.getRows();
+        if (CollectionUtils.isNotEmpty(requests)) {
+
+            for (Map r : requests) {
+                RegisterBill registerBill = billService.get((Long)r.get("billId"));
+                r.put("detectStatus", registerBill.getDetectStatus());
+                r.put("billCode", registerBill.getCode());
+//                r.setDetectStatus(registerBill.getDetectStatus());
+//                r.setBillCode(registerBill.getCode());
+            }
+        }
 
         out.setRows(requests);
 
