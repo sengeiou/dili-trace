@@ -2,7 +2,9 @@ package com.dili.trace.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.BatchAuditDto;
@@ -11,7 +13,6 @@ import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.dto.QualityTraceTradeBillOutDto;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 
 /**
@@ -270,4 +271,20 @@ public interface SgRegisterBillService {
      * @return
      */
     public Map<ImageCertTypeEnum,List<ImageCert>> findImageCertMapListByBillId(Long billId);
+
+    /**
+     * 查询当前用户可用事件
+     * @param billId
+     * @return
+     */
+
+    public List<RegisterBillMessageEvent>queryEvents(Long billId);
+
+
+    /**
+     * 检查当前事件
+     * @param billId
+     * @param messageEvent
+     */
+    public Optional<RegisterBill> checkEvent(Long billId, RegisterBillMessageEvent messageEvent);
 }

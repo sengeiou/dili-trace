@@ -6,11 +6,15 @@
     "@babel/core": "7.12.7",
     "@babel/plugin-proposal-class-properties": "7.12.1",
     "@babel/plugin-proposal-object-rest-spread": "7.12.1",
+    "@babel/preset-env": "7.12.7",
     "@babel/preset-typescript": "7.12.7",
     "@types/jquery": "^3.5.4",
     "@types/underscore": "1.10.24",
     "babel-preset-minify": "0.5.1",
+    "combine-type-predicates": "^0.1.2",
     "requirejs": "^2.3.6"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-plugin-transform-remove-imports": "^1.4.1"
+  }
 }

@@ -2,15 +2,13 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
-import com.dili.common.annotation.Access;
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.TradeRequestInputDto;
 import com.dili.trace.api.output.TraceDetailOutputDto;
 import com.dili.trace.domain.TradeDetail;
@@ -42,7 +40,7 @@ import io.swagger.annotations.Api;
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientBillTraceApi")
 @RestController
-@Access(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "")
 @RequestMapping(value = "/api/client/clientBillTraceApi")
 public class ClientBillTraceApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientBillTraceApi.class);

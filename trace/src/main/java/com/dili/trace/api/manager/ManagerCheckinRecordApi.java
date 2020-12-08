@@ -1,6 +1,6 @@
 package com.dili.trace.api.manager;
 
-import com.dili.common.annotation.Access;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/manager/managerCheckinRecordApi")
 @Api(value = "/api/manager/managerCheckinRecordApi", description = "进门数据接口")
-@Access(role = Role.Manager,url = "dili-trace-app-auth")
+@AppAccess(role = Role.Manager,url = "dili-trace-app-auth")
 public class ManagerCheckinRecordApi {
     private static final Logger logger = LoggerFactory.getLogger(ManagerCheckinRecordApi.class);
     @Autowired

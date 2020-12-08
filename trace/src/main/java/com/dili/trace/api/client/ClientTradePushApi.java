@@ -1,7 +1,7 @@
 package com.dili.trace.api.client;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.Access;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -28,7 +28,7 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradePush")
 @RestController
-@Access(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "")
 @RequestMapping(value = "/api/client/clientTradePush")
 public class ClientTradePushApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientTradePushApi.class);

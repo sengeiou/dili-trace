@@ -3,7 +3,7 @@ package com.dili.trace.api.manager;
 import java.util.List;
 import java.util.Optional;
 
-import com.dili.common.annotation.Access;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping(value = "/api/manager/managerVerifyApi")
 @Api(value = "/api/manager/managerVerifyApi", description = "登记单相关接口")
-@Access(role = Role.Manager,url = "dili-trace-app-auth")
+@AppAccess(role = Role.Manager,url = "dili-trace-app-auth")
 public class ManagerVerifyApi {
     private static final Logger logger = LoggerFactory.getLogger(ManagerVerifyApi.class);
     @Autowired

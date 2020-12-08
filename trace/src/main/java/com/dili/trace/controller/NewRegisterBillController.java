@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
@@ -17,10 +18,12 @@ import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +36,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -115,7 +115,7 @@ public class NewRegisterBillController {
             @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody  RegisterBillDto registerBill) throws Exception {
+    String listPage(@RequestBody RegisterBillDto registerBill) throws Exception {
 
         return registerBillService.listPage(registerBill);
     }
@@ -139,8 +139,6 @@ public class NewRegisterBillController {
     }
 
 
-
-
     /**
      * 登记单录入页面
      *
@@ -154,6 +152,7 @@ public class NewRegisterBillController {
 
         return "new-registerBill/create";
     }
+
     /**
      * 交易单复制
      *
@@ -184,6 +183,7 @@ public class NewRegisterBillController {
 
         return "new-registerBill/copy";
     }
+
     /**
      * 交易单修改
      *
@@ -216,6 +216,7 @@ public class NewRegisterBillController {
         }
         return "new-registerBill/edit";
     }
+
     /**
      * 登记单录修改页面
      *
@@ -223,7 +224,7 @@ public class NewRegisterBillController {
      * @return
      */
     @RequestMapping(value = "/uploadDetectReport.html", method = RequestMethod.GET)
-    public String uploadDetectReport(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
+    public String uploadDetectReport(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
         RegisterBill registerBill = billService.get(id);
         if (registerBill == null) {
             return "";
@@ -257,7 +258,7 @@ public class NewRegisterBillController {
      * @return
      */
     @RequestMapping(value = "/uploadOrigincertifiy.html", method = RequestMethod.GET)
-    public String uploadOrigincertifiy(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
+    public String uploadOrigincertifiy(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
         RegisterBill registerBill = billService.get(id);
         if (registerBill == null) {
             return "";
@@ -283,6 +284,7 @@ public class NewRegisterBillController {
 
         return "new-registerBill/upload-origincertifiy";
     }
+
     /**
      * 上传产地证明
      *
@@ -290,7 +292,7 @@ public class NewRegisterBillController {
      * @return
      */
     @RequestMapping(value = "/uploadHandleResult.html", method = RequestMethod.GET)
-    public String uploadHandleResult(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
+    public String uploadHandleResult(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
         RegisterBill registerBill = billService.get(id);
         if (registerBill == null) {
             return "";
@@ -316,6 +318,7 @@ public class NewRegisterBillController {
 
         return "new-registerBill/upload-handleresult";
     }
+
     /**
      * 审核页面
      *
@@ -324,7 +327,7 @@ public class NewRegisterBillController {
      * @return
      */
     @RequestMapping(value = "/audit.html", method = RequestMethod.GET)
-    public String audit(ModelMap modelMap, @RequestParam(name = "id",required = true) Long id) {
+    public String audit(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
         modelMap.put("registerBill", billService.get(id));
         return "new-registerBill/audit";
     }
@@ -338,7 +341,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doAudit.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput doAudit(@RequestParam(name = "id",required = true) Long id, @RequestParam(name = "pass",required = true) Boolean pass) {
+    BaseOutput doAudit(@RequestParam(name = "id", required = true) Long id, @RequestParam(name = "pass", required = true) Boolean pass) {
         try {
             registerBillService.auditRegisterBill(id, pass);
         } catch (TraceBizException e) {
@@ -432,7 +435,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doUndo.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput doUndo(@RequestParam(name = "id",required = true) Long id) {
+    BaseOutput doUndo(@RequestParam(name = "id", required = true) Long id) {
         try {
             registerBillService.undoRegisterBill(id);
         } catch (TraceBizException e) {
@@ -440,6 +443,7 @@ public class NewRegisterBillController {
         }
         return BaseOutput.success("操作成功");
     }
+
     /**
      * 登记单录查看页面
      *
@@ -447,8 +451,8 @@ public class NewRegisterBillController {
      * @return
      */
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
-    public String view(ModelMap modelMap, @RequestParam(required = true,name = "id") Long id
-            ,  @RequestParam(required = false,name = "displayWeight") Boolean displayWeight) {
+    public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id
+            , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
         RegisterBill item = billService.get(id);
         if (item == null) {
             return "";
@@ -479,16 +483,17 @@ public class NewRegisterBillController {
         modelMap.put("detectRecordList", detectRecordList);
         modelMap.put("displayWeight", displayWeight);
 
-        RegisterBillOutputDto registerBill=new RegisterBillOutputDto();
-        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item),registerBill);
+        RegisterBillOutputDto registerBill = new RegisterBillOutputDto();
+        BeanUtils.copyProperties(this.maskRegisterBillOutputDto(item), registerBill);
 
-        List<ImageCert>imageCerts=this.registerBillService.findImageCertListByBillId(item.getBillId());
+        List<ImageCert> imageCerts = this.registerBillService.findImageCertListByBillId(item.getBillId());
         registerBill.setImageCerts(imageCerts);
 
         modelMap.put("registerBill", registerBill);
 
         return "new-registerBill/view";
     }
+
     /**
      * 自动送检
      *
@@ -497,7 +502,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doAutoCheck.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput doAutoCheck(@RequestParam(name = "id",required = true) Long id) {
+    BaseOutput doAutoCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
             registerBillService.autoCheckRegisterBill(id);
         } catch (TraceBizException e) {
@@ -514,7 +519,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doSamplingCheck.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput doSamplingCheck(@RequestParam(name = "id",required = true)  Long id) {
+    BaseOutput doSamplingCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
             registerBillService.samplingCheckRegisterBill(id);
         } catch (TraceBizException e) {
@@ -531,7 +536,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doReviewCheck.action", method = RequestMethod.GET)
     public @ResponseBody
-    BaseOutput doReviewCheck(@RequestParam(name = "id",required = true) Long id) {
+    BaseOutput doReviewCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
             registerBillService.reviewCheckRegisterBill(id);
         } catch (TraceBizException e) {
@@ -539,6 +544,7 @@ public class NewRegisterBillController {
         }
         return BaseOutput.success("操作成功");
     }
+
     /**
      * 保存处理结果
      *
@@ -556,8 +562,6 @@ public class NewRegisterBillController {
         }
 
     }
-
-
 
 
     /**
@@ -671,6 +675,7 @@ public class NewRegisterBillController {
         }
 
     }
+
     /**
      * 新增RegisterBill
      *
@@ -736,6 +741,7 @@ public class NewRegisterBillController {
     private List<UsualAddress> queryCitys() {
         return usualAddressService.findUsualAddressByType(UsualAddressTypeEnum.REGISTER);
     }
+
     /**
      * 查找用户信息
      *
@@ -776,6 +782,7 @@ public class NewRegisterBillController {
         }
         return userInfoDto;
     }
+
     /**
      * 保护敏感信息
      *
@@ -789,6 +796,7 @@ public class NewRegisterBillController {
         }
         return dto.mask(!SessionContext.hasAccess("post", "registerBill/create.html#user"));
     }
+
     /**
      * 权限判断并保护敏感信息
      *
@@ -807,6 +815,63 @@ public class NewRegisterBillController {
             return dto;
         }
 
+    }
+
+    /**
+     * 查询当前controller可用事件
+     *
+     * @param billIdList
+     * @return
+     */
+    @RequestMapping("/queryEvents.action")
+    @ResponseBody
+    public List<String> queryEvents(@RequestBody List<Long> billIdList) {
+        if (billIdList == null || billIdList.size()==0) {
+            return Lists.newArrayList();
+        }
+        if(billIdList.size()==1){
+           return StreamEx.of(this.registerBillService.queryEvents(billIdList.get(0))).map(msg -> {
+                return msg.getCode();
+            }).nonNull().toList();
+        }else{
+            return StreamEx.of(this.queryBatchEvents(billIdList)).map(msg -> {
+                return msg.getCode();
+            }).nonNull().toList();
+        }
+
+    }
+
+    /**
+     * SB
+     * @param idList
+     * @return
+     */
+    private List<RegisterBillMessageEvent> queryBatchEvents(List<Long> idList) {
+        Map<RegisterBillMessageEvent, Boolean> eventCount = StreamEx.ofNullable(idList).flatCollection(Function.identity()).nonNull().flatMap(bid -> {
+            return StreamEx.of(this.registerBillService.queryEvents(bid));
+        }).distinct().mapToEntry(v -> v, v -> v).collapseKeys().mapValues(v -> v.size() > 0).toMap();
+
+        List<RegisterBillMessageEvent> batchEventList = Lists.newLinkedList();
+        if (eventCount.getOrDefault(RegisterBillMessageEvent.audit, false)) {
+            batchEventList.add(RegisterBillMessageEvent.batch_audit);
+        }
+
+        if (eventCount.getOrDefault(RegisterBillMessageEvent.audit, false)) {
+            batchEventList.add(RegisterBillMessageEvent.batch_audit);
+        }
+
+        if (eventCount.getOrDefault(RegisterBillMessageEvent.auto, false)) {
+            batchEventList.add(RegisterBillMessageEvent.batch_auto);
+        }
+
+        if (eventCount.getOrDefault(RegisterBillMessageEvent.sampling, false)) {
+            batchEventList.add(RegisterBillMessageEvent.batch_sampling);
+        }
+
+        if (eventCount.getOrDefault(RegisterBillMessageEvent.undo, false)) {
+            batchEventList.add(RegisterBillMessageEvent.batch_undo);
+        }
+        return batchEventList;
     }
 
 }
