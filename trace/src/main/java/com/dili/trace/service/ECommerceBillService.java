@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
@@ -14,6 +15,8 @@ import com.dili.trace.dto.*;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
+import com.dili.trace.enums.DetectTypeEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
@@ -179,16 +182,24 @@ public class ECommerceBillService {
 				this.billService.updateHasImage(item.getId(),imageCertList);
 				this.billService.updateHasImage(item.getId(),imageCertList);
 				updatable.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-				updatable.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
-			//			updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
-	//				updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
+				updatable.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
 				updatable.setLatestDetectOperator(operatorUser.getName());
 				updatable.setLatestDetectTime(new Date());
 				updatable.setLatestPdResult("100%");
 
+			    DetectRequest detectRequest=this.detectRequestService.createDefault(item.getId(), Optional.ofNullable(operatorUser));
+				detectRequest.setDetectType(DetectTypeEnum.OTHERS.getCode());
+				detectRequest.setDetectResult(DetectResultEnum.PASSED.getCode());
+				this.detectRequestService.updateSelective(detectRequest);
+
 
 		} else if (DetectStatusEnum.NONE.equalsToCode(inputBill.getDetectStatus()) ) {
 			updatable.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+			DetectRequest detectRequest=this.detectRequestService.createDefault(item.getId(), Optional.ofNullable(operatorUser));
+			detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
+			detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
+			detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+			this.detectRequestService.updateSelective(detectRequest);
 		} else {
 			throw new TraceBizException("参数错误");
 		}
