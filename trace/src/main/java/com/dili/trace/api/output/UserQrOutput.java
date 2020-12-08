@@ -1,9 +1,21 @@
 package com.dili.trace.api.output;
 
 public class UserQrOutput {
+    /**
+     * 业户id
+     */
     private Long userId;
+    /**
+     * 更新时间
+     */
     private String updated;
+    /**
+     * 64位图片码
+     */
     private String base64QRImg;
+    /**
+     * 业户名称
+     */
     private String userName;
 
     public String getUserName() {

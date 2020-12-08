@@ -12,6 +12,10 @@ import javax.persistence.Transient;
  * Created by laikui on 2019/8/15.
  */
 public interface DetectRecordParam extends DetectRecord {
+    /**
+     * 仪器编号
+     * @return
+     */
     @ApiModelProperty(value = "仪器编号")
     @FieldDef(label="exeMachineNo")
     @EditMode(editor = FieldEditor.Text, required = false)
@@ -19,6 +23,10 @@ public interface DetectRecordParam extends DetectRecord {
 
     void setExeMachineNo(String exeMachineNo);
 
+    /**
+     * 环境标记
+     * @return
+     */
     @ApiModelProperty(value = "环境标记")
     @FieldDef(label="tag")
     @EditMode(editor = FieldEditor.Text, required = false)

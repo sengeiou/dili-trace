@@ -36,7 +36,7 @@ public class WxAppTokenApi {
 
     /**
      * 初始化小程序access_token
-     * @param wxInfo
+     * @param wxInfo（appId）
      * @return
      */
     @ApiOperation(value = "初始化小程序access_token", notes = "初始化小程序access_token")
@@ -78,7 +78,7 @@ public class WxAppTokenApi {
 
     /**
      * 获取小程序access_token
-     * @param wxInfo
+     * @param wxInfo（appId）
      * @return
      */
     @ApiOperation(value = "获取小程序access_token", notes = "获取小程序access_token")
@@ -102,7 +102,7 @@ public class WxAppTokenApi {
 
     /**
      * 获取授权信息
-     * @param wxInfo
+     * @param wxInfo（js_code，appId）
      * @return
      */
     @ApiOperation(value = "获取授权信息", notes = "获取授权信息")
@@ -131,7 +131,7 @@ public class WxAppTokenApi {
 
     /**
      * 获取用户信息
-     * @param wxInfo
+     * @param wxInfo（appId，openId）
      * @return
      */
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
@@ -163,7 +163,7 @@ public class WxAppTokenApi {
 
     /**
      * 解密手机号信息
-     * @param wxInfo
+     * @param wxInfo（sessionKey，encryptedData）
      * @return
      */
     @ApiOperation(value = "解密手机号信息", notes = "解密手机号信息")

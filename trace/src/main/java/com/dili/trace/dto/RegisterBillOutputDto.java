@@ -17,19 +17,24 @@ import com.dili.common.exception.TraceBizException;
 import org.apache.commons.lang3.StringUtils;
 
 public class RegisterBillOutputDto extends RegisterBill {
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
+    /**
+     * 交易单明细集合
+     */
     private List<TradeDetail> tradeDetailList;
+    /**
+     * 上游企业名称
+     */
     private String upStreamName;
+    /**
+     * 单独销售记录
+     */
     private List<SeparateSalesRecord> separateSalesRecords;
     List<QualityTraceTradeBill> qualityTraceTradeBillList;
 
     public String getHandleResultUrl() {
         return this.joinImageUrl(ImageCertTypeEnum.Handle_Result);
     }
-
 
 
     public String getOriginCertifiyUrl() {

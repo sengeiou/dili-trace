@@ -1,7 +1,13 @@
 package com.dili.trace.api.input;
 
 public class RegisterBillApiInputDto {
+    /**
+     * 报备单id
+     */
 	private Long billId;
+    /**
+     * 交易单明细id
+     */
 	private Long tradeDetailId;
 	
 

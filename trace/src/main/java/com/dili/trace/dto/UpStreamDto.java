@@ -11,29 +11,44 @@ import java.util.List;
 
 public class UpStreamDto extends UpStream {
 
+    /**
+     * 创建时间开始
+     */
     @Column(name = "`created`")
     @Operator(Operator.GREAT_EQUAL_THAN)
     private Date createdStart;
-
+    /**
+     * 创建时间结束
+     */
     @Column(name = "`created`")
     @Operator(Operator.LITTLE_EQUAL_THAN)
     private Date createdEnd;
-
+    /**
+     * ID
+     */
     @Column(name = "`id`")
     @Operator(Operator.IN)
     private List<Long> ids;
-
+    /**
+     * 上游企业名 like
+     */
     @Column(name = "name")
     @Like
     private String likeName;
 
-    //业户名称模糊查
+    /**
+     * 业户名称模糊查询
+     */
     @Transient
     private String likeUserName;
-
+    /**
+     * 业户id集合
+     */
     @Transient
     private List<Long> userIds;
-
+    /**
+     * 业户名称
+     */
     @Transient
     private String userNames;
 

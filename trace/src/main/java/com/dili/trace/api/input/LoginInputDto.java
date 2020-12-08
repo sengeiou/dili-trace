@@ -1,8 +1,17 @@
 package com.dili.trace.api.input;
 
 public class LoginInputDto {
+	/**
+	 * 用户名称
+	 */
 	private String username;
+	/**
+	 * 密码
+	 */
 	private String password;
+	/**
+	 * 登录类型
+	 */
 	private Integer loginIdentityType;
 
 	public String getUsername() {

@@ -9,16 +9,28 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class QualityTraceTradeBillOutput {
 
+    /**
+     * 报备单id
+     */
     private Long billId;
 
+    /**
+     * 检测记录时间
+     */
     @ApiModelProperty(value = "检测记录时间")
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date latestDetectTime;
 
+    /**
+     * 检测人员
+     */
     @ApiModelProperty(value = "检测人员")
     private String latestDetectOperator;
 
+    /**
+     * 检测值结果
+     */
     @ApiModelProperty(value = "检测值结果")
     private String latestPdResult;
 

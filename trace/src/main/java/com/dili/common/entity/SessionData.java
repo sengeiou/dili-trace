@@ -18,20 +18,57 @@ import java.util.*;
 
 public class SessionData {
     private static final Logger logger = LoggerFactory.getLogger(SessionData.class);
-
+    /**
+     * 身份类型
+     */
     private Integer identityType;
+    /**
+     * 角色
+     */
     private Role role;
+    /**
+     * 用户id
+     */
     private Long userId;
+    /**
+     * 用户名
+     */
     private String userName;
+    /**
+     * 摊位号
+     */
     private String tallyAreaNos;
+    /**
+     * 验证状态
+     */
     private Integer validateState;
+    /**
+     * 二维码状态
+     */
     private Integer qrStatus;
+    /**
+     * 市场名称
+     */
     private String marketName;
-
+    /**
+     * 登录时间
+     */
     private Date loginDateTime;
+    /**
+     * 过期
+     */
     private boolean invalidate;
+    /**
+     * sessionid
+     */
     private String sessionId;
+    /**
+     * 市场id
+     */
     private Long marketId;
+    /**
+     * 用户微信菜单
+     */
     private Set<String> userWeChatMenus;
 
     public <T extends AbstraceIdName> Optional<T> to() {
@@ -41,7 +78,7 @@ public class SessionData {
         } else if (Role.Client == this.role) {
             Optional opt = Optional.<IdNameDto>of(new IdNameDto(this.userId, this.userName));
             return opt;
-        }else{
+        } else {
             return Optional.empty();
         }
 

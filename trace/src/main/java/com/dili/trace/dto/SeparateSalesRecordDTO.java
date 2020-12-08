@@ -13,11 +13,15 @@ import javax.persistence.Transient;
 @Table(name = "`separate_sales_record`")
 public class SeparateSalesRecordDTO extends SeparateSalesRecord {
 
+	/**
+	 * 交易单号
+	 */
 	@Transient
 	private String tradeNo;
-
+	/**
+	 * 注册来源
+	 */
 	@Transient
-
 	private Integer registerSource;
 
 	public String getTradeNo() {
