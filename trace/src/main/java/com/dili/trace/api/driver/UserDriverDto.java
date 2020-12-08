@@ -9,18 +9,39 @@ import java.util.Date;
  * @createTime 2020年12月01日 17:34:00
  */
 public class UserDriverDto {
+    /**
+     * ID
+     */
     private Long id;
 
+    /**
+     * 司机ID
+     */
     private Long driverId;
 
+    /**
+     * 司机名称
+     */
     private String driverName;
 
+    /**
+     * 卖家ID
+     */
     private Long sellerId;
 
+    /**
+     * 卖家名称
+     */
     private String sellerName;
 
+    /**
+     * 卖家分享时间
+     */
     private Date shareTime;
 
+    /**
+     * 卖家摊位号
+     */
     private String tallyAreaNos;
 
     public Long getId() {

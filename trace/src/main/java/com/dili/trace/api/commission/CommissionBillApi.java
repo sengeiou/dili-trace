@@ -60,8 +60,8 @@ public class CommissionBillApi {
     /**
      * 通过小程序接口，用户创建委托单
      *
-     * @param createListBillParam
-     * @return
+     * @param createListBillParam 小程序创建委托单信息
+     * @return 创建结果
      */
     @RequestMapping(value = "/createCommissionBill.api", method = RequestMethod.POST)
     public BaseOutput<?> createCommissionBill(@RequestBody CreateListBillParam createListBillParam) {
@@ -117,8 +117,8 @@ public class CommissionBillApi {
     /**
      * 获取登记单列表
      *
-     * @param input
-     * @return
+     * @param input 查询条件
+     * @return 登记单列表
      * @throws Exception
      */
     @ApiOperation(value = "获取登记单列表")
@@ -156,15 +156,14 @@ public class CommissionBillApi {
     /**
      * 通过登记单ID获取登记单详细信息
      *
-     * @param input
-     * @return
+     * @param input 查询条件
+     * @return 登记单详细信息
      */
     @ApiOperation(value = "通过登记单ID获取登记单详细信息")
     @RequestMapping(value = "/detail.api", method = RequestMethod.POST)
     public BaseOutput<RegisterBillOutputDto> detail(@RequestBody CommissionBillInputDto input) {
 
         try {
-
             Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
             User user = userService.get(userId);
             if (!UserTypeEnum.COMMISSION_USER.equalsToCode(user.getUserType())) {
