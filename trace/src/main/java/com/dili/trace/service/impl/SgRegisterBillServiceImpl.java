@@ -1067,6 +1067,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     }
 
 
+    @Override
     public List<ImageCert> buildImageCertList(String detectReportUrl, String handleResultUrl, String originCertifiyUrl) {
 
         List<ImageCert> detectReport = this.imageCertService.stringToImageCertList(detectReportUrl, ImageCertTypeEnum.DETECT_REPORT, ImageCertBillTypeEnum.BILL_TYPE);

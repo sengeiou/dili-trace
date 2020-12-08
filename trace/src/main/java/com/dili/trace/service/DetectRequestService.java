@@ -1,15 +1,16 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectTypeEnum;
-import com.google.common.collect.Lists;
+import com.dili.trace.glossary.SampleSourceEnum;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         }
         Long detectRequestId=registerBill.getDetectRequestId();
         return Optional.ofNullable(this.get(detectRequestId));
-
     }
 
     /**
@@ -97,8 +97,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         return detectRequestId;
     }
 
-
-
     /**
      * 根据报备单创建检测请求数据
      *
@@ -111,13 +109,10 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
             throw new TraceBizException("报备单不存在");
         }
 
-
         DetectRequest detectRequest = new DetectRequest();
         detectRequest.setDetectType(detectTypeEnum.getCode());
         detectRequest.setDetectSource(SampleSourceEnum.NONE.getCode());
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
-
-
 
         detectRequest.setBillId(billItem.getBillId());
         detectRequest.setCreated(new Date());
@@ -138,8 +133,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         return detectRequest;
     }
 
-
-
     /**
      * 根据id集合查询
      *
@@ -155,4 +148,22 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         example.and().andIn("id", detectRequestIdList);
         return StreamEx.of(this.detectRequestMapper.selectByExample(example)).toMap(DetectRequest::getId, Function.identity());
     }
+
+    /**
+     * 分页查询数据
+     * @param dto 查询条件
+     * @return
+     * @throws Exception
+     */
+    public EasyuiPageOutput listEasyuiPageByExample(DetectRequestDto dto) throws Exception {
+        EasyuiPageOutput out = this.listEasyuiPageByExample(dto, true);
+
+        // 查询报备单信息
+        List<DetectRequestDto> requests = out.getRows();
+
+        out.setRows(requests);
+
+        return out;
+    }
+
 }

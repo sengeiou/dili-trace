@@ -14,10 +14,25 @@ import java.util.Optional;
  */
 public enum SampleSourceEnum {
 
+    /**
+     * 初始状态
+     */
     NONE(0, ""),
+    /**
+     * 采样检测
+     */
     SAMPLE_CHECK(1, "采样检测"),
+    /**
+     * 主动送检
+     */
     AUTO_CHECK(2, "主动送检"),
+    /**
+     * 抽检
+     */
     SPOT_CHECK(3, "抽检"),
+    /**
+     * 其他
+     */
     OTHERS(9999, "其他"),
     ;
 

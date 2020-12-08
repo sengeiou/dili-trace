@@ -1,0 +1,149 @@
+<#bs4Body>
+
+<div class="container-fluid">
+    <form id="queryForm" role="form" >
+        <div class="row row-cols-6">
+
+            <div class="form-group col-auto">
+                <label for="createdStart">创建时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="createdStart" id="createdStart" class="form-control laydatetime laystart" value="${createdStart}"/>
+                        <div class="input-group-append">
+                            <label for="createdStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="createdEnd" id="createdEnd" class="form-control laydatetime layend" value="${createdEnd}"/>
+                        <div class="input-group-append">
+                            <label for="createdEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group col" style="display: none">
+                <label for="likeBillCode">报备单号</label>
+                <input type="text" class="form-control" name="likeBillCode" id="likeBillCode"/>
+            </div>
+
+            <div class="form-group col">
+                <label for="likeCreatorName">创建人</label>
+                <input type="text" class="form-control" name="likeCreatorName" id="likeCreatorName"/>
+            </div>
+
+            <div class="form-group col">
+                <label for="likeDesignatedName">指定检测员</label>
+                <input type="text" class="form-control" name="likeDesignatedName" id="likeDesignatedName"/>
+            </div>
+
+            <div class="form-group col">
+                <label for="likeDetectorName">检测员</label>
+                <input type="text" class="form-control" name="likeDetectorName" id="likeDetectorName"/>
+            </div>
+
+            <div class="form-group col">
+                <label for="detectType">检测类型</label>
+                <select id="detectType" name="detectType" class="form-control"></select>
+                <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
+
+            <div class="form-group col">
+                <label for="detectSource">采样来源</label>
+                <select id="detectSource" name="detectSource" class="form-control"></select>
+                <#bcomboProvider _id="detectSource" _provider="sampleSourceProvider" _value="" _onLoadSuccess=""/>
+            </div>
+
+            <div class="col-auto align-self-center mt-3">
+                <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
+                <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <div>
+        <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+            <button id="assign-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 指派检测员</button>
+            <button id="confirm-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 接单</button>
+        </div>
+        <table id="detectRequestGrid" data-toggle="table" data-title="检测请求列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
+               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="false" data-detail-view="false">
+            <thead>
+            <tr>
+                <th data-checkbox="true"></th>
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    创建时间
+                </th>
+                <th data-field="billId" data-sortable="true" data-align="center">
+                    报备单ID
+                </th>
+                <th data-field="creatorId" data-sortable="true" data-align="center">
+                    创建人ID
+                </th>
+                <th data-field="creatorName" data-sortable="true" data-align="center">
+                    创建人姓名
+                </th>
+                <th data-field="designatedId" data-sortable="true" data-align="center">
+                    指定检测员ID
+                </th>
+                <th data-field="designatedName" data-sortable="true" data-align="center">
+                    指定检测员姓名
+                </th>
+                <th data-field="detectType" data-sortable="true" data-align="center" data-provider="detectTypeEnumProvider">
+                    检测类型
+                </th>
+                <th data-field="detectorId" data-sortable="true" data-align="center">
+                    检测员ID
+                </th>
+                <th data-field="detectorName" data-sortable="true" data-align="center">
+                    检测员姓名
+                </th>
+                <th data-field="detectResult" data-sortable="true" data-align="center" data-provider="detectResultEnumProvider">
+                    检测结果
+                </th>
+                <th data-field="detectSource" data-sortable="true" data-align="center" data-provider="sampleSourceProvider">
+                    采样来源
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+</#bs4Body>
+<#webGlobalConfig/>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/detectRequest.index.js"></script>
+<script src="${contextPath!}/resources/js/bs4popWrapper.js"></script>
+<script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
+
+<script type="text/javascript">
+    lay('.laydatetime').each(function(){
+        laydate.render({
+            elem: this
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+    });
+    $(function () {
+        $('#detectRequestGrid').bootstrapTable('refreshOptions', {
+            url: '/detectRequest/listPage.action'
+        });
+        new DetectRequestGridGrid($('#detectRequestGrid'),$('#queryForm'));
+    });
+
+    //基础查询参数设置
+    function queryParams(params) {
+        let temp = {
+            rows: params.limit,   //页面大小
+            page: ((params.offset / params.limit) + 1) || 1, //页码
+            sort: params.sort,
+            order: params.order
+        };
+        return $.extend(temp, bui.util.bindGridMeta2Form('detectRequestGrid', 'queryForm'));
+    }
+</script>

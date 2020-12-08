@@ -1,8 +1,8 @@
 package com.dili.trace.domain;
 
-import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.glossary.SampleSourceEnum;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -47,7 +47,6 @@ public class DetectRequest extends BaseDomain {
     @Column(name = "`designated_name`")
     private String designatedName;
 
-
     /**
      * 检测员ID
      */
@@ -59,7 +58,6 @@ public class DetectRequest extends BaseDomain {
      */
     @Column(name = "`detector_name`")
     private String detectorName;
-
 
     /**
      * 检测类型
@@ -80,10 +78,6 @@ public class DetectRequest extends BaseDomain {
      */
     @Column(name = "`detect_result`")
     private Integer detectResult;
-
-
-
-
 
     @Column(name = "`created`")
     private Date created;
