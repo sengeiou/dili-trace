@@ -167,7 +167,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("商品产地不能为空");
             throw new TraceBizException("商品产地不能为空");
         }
-        if (registerHead.getPieceWeight() == null && registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode()) ) {
+        if (registerHead.getPieceWeight() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
             logger.error("商品件重不能为空");
             throw new TraceBizException("商品件重不能为空");
         }

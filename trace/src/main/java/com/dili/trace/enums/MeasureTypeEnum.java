@@ -29,6 +29,9 @@ public enum  MeasureTypeEnum {
         return StreamEx.of(MeasureTypeEnum.values()).filterBy(MeasureTypeEnum::getCode, code).findFirst();
     }
 
+    public Boolean equalsCode(Integer  code){
+        return this.code.equals(code);
+    }
     public String getName() {
         return name;
     }
