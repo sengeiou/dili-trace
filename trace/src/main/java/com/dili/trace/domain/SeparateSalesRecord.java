@@ -20,72 +20,126 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Table(name = "`separate_sales_record`")
 public class SeparateSalesRecord extends BaseDomain {
+	/**
+	 * ID
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "`id`")
 	private Long id;
 
+	/**
+	 * 分销用户ID
+	 */
 	@ApiModelProperty(value = "分销用户ID")
 	@Column(name = "`sales_user_id`")
 	private Long salesUserId;
 
+	/**
+	 * 分销用户
+	 */
 	@ApiModelProperty(value = "分销用户")
 	@Column(name = "`sales_user_name`")
 	private String salesUserName;
 
+	/**
+	 * 交易单号
+	 */
 	@ApiModelProperty(value = "交易单号")
 	@Column(name = "`trade_no`")
 	private String tradeNo;
 
+	/**
+	 * 分销城市ID
+	 */
 	@ApiModelProperty(value = "分销城市ID")
 	@Column(name = "`sales_city_id`")
 	private Long salesCityId;
 
+	/**
+	 * 分销城市
+	 */
 	@ApiModelProperty(value = "分销城市")
 	@Column(name = "`sales_city_name`")
 	private String salesCityName;
 
+	/**
+	 * 分销重量KG
+	 */
 	@ApiModelProperty(value = "分销重量KG")
 	@Column(name = "`sales_weight`")
 	private BigDecimal salesWeight;
 
+	/**
+	 * 车牌号
+	 */
 	@ApiModelProperty(value = "车牌号")
 	@Column(name = "`sales_plate`")
 	private String salesPlate;
 
+	/**
+	 * 被分销的登记单
+	 */
 	@ApiModelProperty(value = "被分销的登记单")
 	@Column(name = "`register_bill_code`")
 	private String registerBillCode;
 
+	/**
+	 * 最初登记单ID
+	 */
 	@ApiModelProperty(value = "最初登记单ID")
 	@Column(name = "`bill_id`")
 	private Long billId;
 
+	/**
+	 * 销售类型 {@link com.dili.sg.trace.glossary.SalesTypeEnum}
+	 */
 	@Column(name = "`sales_type`")
 	private Integer salesType;
 
+	/**
+	 * 创建时间
+	 */
 	@Column(name = "`created`")
 	private Date created;
 
+	/**
+	 * 修改时间
+	 */
 	@Column(name = "`modified`")
 	Date modified;
 
+	/**
+	 * 分销自
+	 */
 	@ApiModelProperty(value = "分销自")
 	@Column(name = "`parent_id`")
 	private Long parentId;
 
+	/**
+	 * 总重量
+	 */
 	@ApiModelProperty(value = "总重量")
 	@Column(name = "`store_weight`")
 	private BigDecimal storeWeight;
 
+	/**
+	 * 进场审核ID
+	 */
 	@ApiModelProperty(value = "进场审核ID")
 	@Column(name = "`checkin_record_id`")
 	private Long checkinRecordId;
 
+	/**
+	 * 出场审核ID
+	 */
 	@ApiModelProperty(value = "出场审核ID")
 	@Column(name = "`checkout_record_id`")
 	private Long checkoutRecordId;
 
+	/**
+	 * 理货区号
+	 */
 	@ApiModelProperty(value = "理货区号")
 	@Column(name = "`tally_area_no`")
 	private String tallyAreaNo;

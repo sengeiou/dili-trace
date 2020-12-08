@@ -10,7 +10,13 @@ package com.dili.sg.trace.glossary;
  */
 public enum SalesTypeEnum {
 
+    /**
+     * 分销
+     */
     SEPARATE_SALES(1, "分销"),
+    /**
+     * 一次全销
+     */
     ONE_SALES(2, "一次全销"),
     ;
 

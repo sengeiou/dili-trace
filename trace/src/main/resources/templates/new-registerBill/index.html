@@ -293,8 +293,15 @@
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/newregisterbill.index.js"></script>
 <script src="${contextPath!}/resources/js/bs4popWrapper.js"></script>
+<script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 
 <script type="text/javascript">
+    lay('.laydatetime').each(function(){
+        laydate.render({
+            elem: this
+            ,trigger: 'click'
+        });
+    });
     $(function () {
         new NewRegisterBillGrid($('#registerBillGrid'),$('#queryForm'));
     });
