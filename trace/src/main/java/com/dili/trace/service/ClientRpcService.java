@@ -97,6 +97,7 @@ public class ClientRpcService {
         user.setMarketId(8L);
         user.setId(31L);
         user.setName("悟空");
+        user.setPhone("13000000000");
         user.setIsDelete(0L);
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
         return user;

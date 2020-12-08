@@ -64,7 +64,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
 
     @Override
     public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long userId,
-                                             Optional<OperatorUser> operatorUser) {
+                                             Optional<OperatorUser> operatorUser,Long marketId) {
 
         User user=this.clientRpcService.findUserInfoById(userId);
         if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
@@ -74,7 +74,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
             RegisterHead registerHead = dto.build(user);
-            registerHead.setMarketId(user.getMarketId());
+            registerHead.setMarketId(marketId);
             return this.createRegisterHead(registerHead, dto.getImageCertList(), operatorUser);
         }).toList();
     }
@@ -167,11 +167,11 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
             logger.error("商品产地不能为空");
             throw new TraceBizException("商品产地不能为空");
         }
-        if (registerHead.getPieceWeight() == null && registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode()) ) {
+        if (registerHead.getPieceWeight() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
             logger.error("商品件重不能为空");
             throw new TraceBizException("商品件重不能为空");
         }
-        if (registerHead.getPieceNum() == null && registerHead.getMeasureType().equals(MeasureTypeEnum.COUNT_UNIT.getCode())) {
+        if (registerHead.getPieceNum() == null && MeasureTypeEnum.COUNT_UNIT.equalsCode(registerHead.getMeasureType())) {
             logger.error("商品件数不能为空");
             throw new TraceBizException("商品件数不能为空");
         }

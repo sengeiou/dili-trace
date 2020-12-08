@@ -36,7 +36,7 @@ public interface RegisterHeadService extends BaseService<RegisterHead, Long> {
 	 * @return
 	 */
 	public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long userId,
-											 Optional<OperatorUser> operatorUser);
+											 Optional<OperatorUser> operatorUser,Long marketId);
 
 	/**
 	 * 创建单个进门主台账单

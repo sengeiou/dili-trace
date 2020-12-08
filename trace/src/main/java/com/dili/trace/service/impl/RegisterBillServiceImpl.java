@@ -79,6 +79,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Autowired
     RegisterHeadService registerHeadService;
+    @Autowired
+    ClientRpcService clientRpcService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -112,8 +114,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+    public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long userId,
                                      Optional<OperatorUser> operatorUser) {
+        User user=this.clientRpcService.findUserInfoById(userId);
         if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
             throw new TraceBizException("用户未审核通过不能创建报备单");
         }

@@ -147,6 +147,7 @@ public class ClientRegisterHeadApi {
 		try {
 			Long userId=sessionContext.getAccountId();
 			String userName=sessionContext.getUserName();
+
 			List<CreateRegisterHeadInputDto> registerHeads = StreamEx.of(createListRegisterHeadParam.getRegisterBills())
 					.nonNull().toList();
 			if (registerHeads == null) {
@@ -154,7 +155,7 @@ public class ClientRegisterHeadApi {
 			}
 			logger.info("保存多个进门主台账单操作用户:{}，{}", userId, userName);
 			List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads,
-					userId, Optional.empty());
+					userId, Optional.empty(),sessionContext.getSessionData().getMarketId());
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
