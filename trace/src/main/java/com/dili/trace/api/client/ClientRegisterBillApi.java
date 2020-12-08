@@ -80,7 +80,7 @@ public class ClientRegisterBillApi {
 			}
 			logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
 			List<Long> idList = this.registerBillService.createBillList(registerBills,
-					userService.get(sessionData.getUserId()), Optional.empty());
+					sessionData.getUserId(), Optional.empty());
 			return BaseOutput.success().setData(idList);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());

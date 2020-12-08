@@ -21,6 +21,9 @@ import org.springframework.stereotype.Service;
 
 import one.util.streamex.StreamEx;
 
+/**
+ * SB
+ */
 @Service
 public class BillTraceService {
     @Autowired
@@ -42,6 +45,12 @@ public class BillTraceService {
     @Autowired
     ImageCertService imageCertService;
 
+    /**
+     * SB
+     * @param tradeRequestid
+     * @param userId
+     * @return
+     */
     public TraceDetailOutputDto viewBillTrace(Long tradeRequestid, Long userId) {
         TradeRequest tradeRequestItem = this.tradeRequestService.get(tradeRequestid);
         if (tradeRequestItem == null) {
@@ -152,6 +161,12 @@ public class BillTraceService {
 
     }
 
+    /**
+     * SB
+     * @param tradeRequestId
+     * @param userId
+     * @return
+     */
     public List<TradeDetail> viewTradeDetailList(Long tradeRequestId, Long userId) {
 
         TradeRequest tradeRequestItem = this.tradeRequestService.get(tradeRequestId);

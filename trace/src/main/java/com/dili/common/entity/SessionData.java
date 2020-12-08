@@ -85,7 +85,7 @@ public class SessionData {
 
     }
 
-    private SessionData() {
+    public SessionData() {
 
     }
 

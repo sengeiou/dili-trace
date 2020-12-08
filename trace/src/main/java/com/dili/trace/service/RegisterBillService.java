@@ -98,7 +98,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * @param operatorUser
      * @return
      */
-    public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+    public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long userId,
                                      Optional<OperatorUser> operatorUser);
 
     /**

@@ -19,6 +19,12 @@ import java.util.Optional;
  */
 public interface RegisterHeadService extends BaseService<RegisterHead, Long> {
 
+	/**
+	 * SB
+	 * @param dto
+	 * @return
+	 * @throws Exception
+	 */
 	public String listPage(RegisterHeadDto dto) throws Exception;
 
 	/**
@@ -30,7 +36,7 @@ public interface RegisterHeadService extends BaseService<RegisterHead, Long> {
 	 * @return
 	 */
 	public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long userId,
-											 Optional<OperatorUser> operatorUser);
+											 Optional<OperatorUser> operatorUser,Long marketId);
 
 	/**
 	 * 创建单个进门主台账单
