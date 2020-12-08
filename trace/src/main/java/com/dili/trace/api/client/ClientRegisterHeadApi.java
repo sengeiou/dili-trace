@@ -188,10 +188,7 @@ public class ClientRegisterHeadApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-            if (operatorUser == null) {
-                return BaseOutput.failure("未登陆用户");
-            }
+            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             CustomerExtendDto customer = this.customerRpcService.findCustomerByIdOrEx(sessionData.getUserId(), sessionData.getMarketId());
 
 
@@ -221,11 +218,9 @@ public class ClientRegisterHeadApi {
             return BaseOutput.failure("参数错误");
         }
         try {
-            OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+            SessionData sessionData = this.sessionContext.getSessionData();
 
-            if (operatorUser == null) {
-                return BaseOutput.failure("未登陆用户");
-            }
+            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             logger.info("作废进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
             this.registerHeadService.doDelete(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
         } catch (TraceBizException e) {
@@ -251,10 +246,9 @@ public class ClientRegisterHeadApi {
             return BaseOutput.failure("参数错误");
         }
         try {
-            OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-            if (operatorUser == null) {
-                return BaseOutput.failure("未登陆用户");
-            }
+            SessionData sessionData = this.sessionContext.getSessionData();
+
+            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
             this.registerHeadService.doUpdateActive(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
         } catch (TraceBizException e) {

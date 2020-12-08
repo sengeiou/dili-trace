@@ -5,6 +5,7 @@ import java.util.List;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
@@ -16,6 +17,7 @@ import com.dili.trace.api.output.CheckInApiDetailOutput;
 import com.dili.trace.api.output.TradeRequestOutputDto;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.*;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.TradeOrderStatusEnum;
 import com.dili.trace.enums.TradeReturnStatusEnum;
 import com.dili.trace.service.*;
@@ -112,7 +114,9 @@ public class ClientTradeRequestApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			Long userId = sessionData.getUserId();
 
 			TradeRequest tradeRequestItem = this.tradeRequestService.get(inputDto.getTradeRequestId());
 			if (tradeRequestItem == null) {
@@ -149,7 +153,9 @@ public class ClientTradeRequestApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long buyerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			Long buyerId = sessionData.getUserId();
 			List<TradeRequest> list = this.tradeRequestService.createBuyRequest(buyerId, inputDto);
 			return BaseOutput.success();
 		} catch (TraceBizException e) {
@@ -175,7 +181,9 @@ public class ClientTradeRequestApi {
 		}
 
 		try {
-			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			Long sellerId = sessionData.getUserId();
 			logger.info("seller id in session:{}",sellerId);
 			List<TradeRequest> list = this.tradeRequestService.createSellRequest(sellerId, inputDto.getBuyerId(),
 					inputDto.getBatchStockList());
@@ -201,7 +209,10 @@ public class ClientTradeRequestApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			Long sellerId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			Long sellerId = sessionData.getUserId();
+
 			TradeRequest request=new TradeRequest();
 			request.setTradeOrderId(inputDto.getTraderOrderId());
 			return BaseOutput.success().setData(this.tradeRequestService.listPageByExample(request));
@@ -223,7 +234,10 @@ public class ClientTradeRequestApi {
 	@RequestMapping(value = "/createReturning.api", method = { RequestMethod.POST })
 	public BaseOutput<Long> createReturning(@RequestBody TradeRequestInputDto inputDto) {
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			Long userId = sessionData.getUserId();
+
 			Long id = this.tradeRequestService.createReturning(inputDto.getTradeRequestId(), userId);
 			return BaseOutput.success().setData(id);
 		} catch (TraceBizException e) {
@@ -249,7 +263,9 @@ public class ClientTradeRequestApi {
 			if (returnStatus == null || inputDto.getTradeRequestId() == null) {
 				return BaseOutput.failure("参数错误");
 			}
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			Long userId = sessionData.getUserId();
 			Long id = this.tradeRequestService.handleReturning(inputDto.getTradeRequestId(), userId, returnStatus,
 					inputDto.getReason());
 			return BaseOutput.success().setData(id);
@@ -306,7 +322,9 @@ public class ClientTradeRequestApi {
 	@RequestMapping(value = "/listSeller.api", method = { RequestMethod.GET })
 	public BaseOutput<List<UserOutput>> listSeller(@RequestParam String queryCondition, @RequestParam Long marketId) {
 		try {
-			Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			Long userId = sessionData.getUserId();
 			List<UserOutput> list = StreamEx.of(this.userService.listUserByStoreName(userId,"%"+queryCondition+"%", marketId)).nonNull().toList();
 			return BaseOutput.success().setData(list);
 		} catch (TraceBizException e) {

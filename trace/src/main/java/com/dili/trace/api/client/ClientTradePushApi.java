@@ -5,6 +5,7 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
@@ -12,6 +13,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.*;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.enums.PushTypeEnum;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
@@ -108,7 +110,9 @@ public class ClientTradePushApi {
     public BaseOutput doTradePush(@RequestBody TradePushLog pushLog) {
         try {
             logger.info("上下架，参数:{}", JSON.toJSON(pushLog));
-            pushLog.setUserId(this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId());
+            SessionData sessionData = this.sessionContext.getSessionData();
+
+            pushLog.setUserId(sessionData.getUserId());
             tradePushService.tradePush(pushLog);
             return BaseOutput.success();
         } catch (TraceBizException e) {

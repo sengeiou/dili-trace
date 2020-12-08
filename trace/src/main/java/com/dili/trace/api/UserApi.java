@@ -9,6 +9,7 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.PatternConstants;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.VerificationCodeUtil;
@@ -103,7 +104,8 @@ public class UserApi {
     @RequestMapping(value = "/realNameCertificationReq.api", method = RequestMethod.POST)
     public BaseOutput<Long> realNameCertificationReq(@RequestBody User user) {
         try {
-            Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
+//            Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
             // User currentUser = userService.get(id);
             // if (ValidateStateEnum.PASSED.equalsToCode(currentUser.getValidateState()))
             // {// 已通过
@@ -111,7 +113,7 @@ public class UserApi {
             // }
 
             checkRealNameCertificationParams(user);
-            user.setId(id);
+            user.setId(sessionData.getUserId());
             user.setCardNo(StringUtils.upperCase(user.getCardNo()));
             user.setLicense(StringUtils.upperCase(user.getLicense()));
             user.setValidateState(ValidateStateEnum.UNCERT.getCode());
@@ -486,7 +488,9 @@ public class UserApi {
     @InterceptConfiguration
     public BaseOutput<UserQrOutput> getUserQrCode(UserListDto input) {
         try {
-            Long loginUserId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
+
+            Long loginUserId = sessionData.getUserId();//this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
             if (input == null || input.getUserId() == null) {
                 return BaseOutput.failure("参数错误");
             }

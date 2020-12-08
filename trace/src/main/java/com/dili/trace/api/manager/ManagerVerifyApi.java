@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -59,7 +60,8 @@ public class ManagerVerifyApi {
     public BaseOutput<BasePage<RegisterBill>> listPage(@RequestBody RegisterBillDto query) {
 
         try {
-            OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             query.setSort("created");
             query.setOrder("desc");
 
@@ -84,7 +86,8 @@ public class ManagerVerifyApi {
     public BaseOutput<List<VerifyStatusCountOutputDto>> countByVerifyStatus(@RequestBody RegisterBillDto query) {
 
         try {
-            OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             query.setBillType(BillTypeEnum.NONE.getCode());
             List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
             return BaseOutput.success().setData(list);
@@ -113,7 +116,8 @@ public class ManagerVerifyApi {
             if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
                 return BaseOutput.failure("参数错误");
             }
-            OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             RegisterBill input = new RegisterBill();
             input.setId(inputDto.getBillId());
             input.setVerifyStatus(inputDto.getVerifyStatus());

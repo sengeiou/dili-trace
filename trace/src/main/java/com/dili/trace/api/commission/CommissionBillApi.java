@@ -2,6 +2,7 @@ package com.dili.trace.api.commission;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -9,6 +10,7 @@ import com.dili.trace.api.input.CommissionBillInputDto;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.sg.trace.glossary.UserTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -67,7 +69,9 @@ public class CommissionBillApi {
     public BaseOutput<?> createCommissionBill(@RequestBody CreateListBillParam createListBillParam) {
 
         try {
-            Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
+
+            Long userId = sessionData.getUserId();
             if (!UserTypeEnum.COMMISSION_USER.equalsToCode(this.userService.get(userId).getUserType())) {
                 return BaseOutput.failure("您不是场外用户");
             }
@@ -130,8 +134,9 @@ public class CommissionBillApi {
 
             RegisterBillDto registerBill = BeanMapUtil.trimBean(input);
             logger.info("获取登记单列表:{}", JSON.toJSON(registerBill).toString());
+            SessionData sessionData = this.sessionContext.getSessionData();
 
-            Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            Long userId = sessionData.getUserId();
             if (!UserTypeEnum.COMMISSION_USER.equalsToCode(this.userService.get(userId).getUserType())) {
                 return BaseOutput.failure("您不是场外用户");
             }
@@ -164,7 +169,9 @@ public class CommissionBillApi {
     public BaseOutput<RegisterBillOutputDto> detail(@RequestBody CommissionBillInputDto input) {
 
         try {
-            Long userId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
+
+            Long userId = sessionData.getUserId();
             User user = userService.get(userId);
             if (!UserTypeEnum.COMMISSION_USER.equalsToCode(user.getUserType())) {
                 return BaseOutput.failure("您不是场外用户");

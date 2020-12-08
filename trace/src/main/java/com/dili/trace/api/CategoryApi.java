@@ -6,10 +6,12 @@ import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.RUserCategory;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.RUserCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +51,11 @@ public class CategoryApi {
      * @return
      */
     @ApiOperation(value = "品类接口查询【接口已通】", notes = "品类接口查询")
-    @RequestMapping(value = "/listCategoryByCondition", method = RequestMethod.POST)
+    @RequestMapping(value = "/listCategoryByCondition.api", method = RequestMethod.POST)
     public BaseOutput<List<CusCategoryDTO>> listCategoryByCondition(@RequestBody CusCategoryQuery category) {
         try {
-            List<CusCategoryDTO> list = this.categoryService.listCusCategory(category);
+            Long marketId = sessionContext.getSessionData().getMarketId();
+            List<CusCategoryDTO> list = this.categoryService.listCusCategory(category, marketId);
             return BaseOutput.success().setData(list);
         } catch (Exception e) {
             LOGGER.error("listCityByCondition", e);
@@ -67,7 +70,8 @@ public class CategoryApi {
     @RequestMapping(value = "/addUserCategory.api", method = RequestMethod.POST)
     public BaseOutput addUserCategory(@RequestBody List<RUserCategory> input) {
         try {
-            Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
+            Long id = sessionData.getUserId();
             return rUserCategoryService.dealBatchAdd(input, id);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -83,7 +87,7 @@ public class CategoryApi {
     @RequestMapping(value = "/delUserCategory.api", method = RequestMethod.POST)
     public BaseOutput delUserCategory(@RequestBody List<Long> input) {
         try {
-            this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
             int rows = rUserCategoryService.delete(input);
             return rows > 0 ? BaseOutput.success() : BaseOutput.failure();
         } catch (TraceBizException e) {
@@ -108,9 +112,9 @@ public class CategoryApi {
             rUserCategory = new RUserCategory();
         }
         try {
-            Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
             if (rUserCategory.getUserId() == null) {
-                rUserCategory.setUserId(id);
+                rUserCategory.setUserId(sessionData.getUserId());
             }
             rUserCategory.setSort("create_time");
             rUserCategory.setOrder("desc");

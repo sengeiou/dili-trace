@@ -220,7 +220,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
 //TODO
             //            category.setLevel(fruitsBigCategory);
             category.setMarketId(marketId);
-            List<CusCategoryDTO> categories = categoryService.listCusCategory(null);
+            List<CusCategoryDTO> categories = categoryService.listCusCategory(null,null);
 
             List<CategoryDto> categoryDtos = StreamEx.of(categories).nonNull().map(c -> {
                 CategoryDto categoryDto = new CategoryDto();
@@ -259,7 +259,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //TODO
 //        category.setLevel(level);
         category.setMarketId(marketId);
-        List<CusCategoryDTO> categories = categoryService.listCusCategory(category);
+        List<CusCategoryDTO> categories = categoryService.listCusCategory(category,null);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);
@@ -337,7 +337,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         //TODO
 //        category.setLevel(level);
         category.setMarketId(marketId);
-        List<CusCategoryDTO> categories = categoryService.listCusCategory(category);
+        List<CusCategoryDTO> categories = categoryService.listCusCategory(category,null);
         ThirdPartyPushData pushData = new ThirdPartyPushData();
         pushData.setTableName(tableName);
         pushData.setInterfaceName(interfaceName);

@@ -4,6 +4,7 @@ import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.service.AssetsRpcService;
+import com.dili.trace.service.UapRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,8 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     AssetsRpcService assetsRpcService;
+    @Autowired
+    UapRpcService uapRpcService;
 
     /**
      * 查询品类信息
@@ -30,7 +33,7 @@ public class CategoryController {
     @RequestMapping("/listCategories.action")
     @ResponseBody
     public BaseOutput listCategories(@RequestBody CusCategoryQuery query) {
-        List<CusCategoryDTO> categories = this.assetsRpcService.listCusCategory(query);
+        List<CusCategoryDTO> categories = this.assetsRpcService.listCusCategory(query, uapRpcService.getCurrentFirm().orElse(null).getId());
         return BaseOutput.successData(categories);
 //        if (categorys != null && !categorys.isEmpty()) {
 //            for (Category c : categorys) {

@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
@@ -72,7 +73,10 @@ public class ManagerCheckinOutRecordApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(), sessionData.getUserName());
+
 
 			RegisterBillDto query = new RegisterBillDto();
 			query.setIdList(billIdList);
@@ -102,7 +106,10 @@ public class ManagerCheckinOutRecordApi {
 	@RequestMapping(value = "/doCheckout.api", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseOutput doCheckout(@RequestBody CheckOutApiInput input) {
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(), sessionData.getUserName());
+
 			List<CheckinOutRecord> checkinRecordList = this.checkinOutRecordService
 					.doCheckout(new OperatorUser(sessionContext.getAccountId(), ""), input);
 			return BaseOutput.success();
@@ -124,7 +131,9 @@ public class ManagerCheckinOutRecordApi {
 			if (query == null || query.getUserId() == null) {
 				return BaseOutput.failure("参数错误");
 			}
-			Long operatorUserId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			Long operatorUserId = sessionData.getUserId();
 			Map<Integer, Map<String,List<RegisterBill>>> resultMap = this.registerBillService.listPageCheckInData(query);
 			return BaseOutput.success().setData(resultMap);
 		} catch (TraceBizException e) {

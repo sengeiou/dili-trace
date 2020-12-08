@@ -170,10 +170,9 @@ public class ClientRegisterFormBillApi {
 			return BaseOutput.failure("参数错误");
 		}
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			if (operatorUser == null) {
-				return BaseOutput.failure("未登陆用户");
-			}
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
 			logger.info("作废进门登记单:billId:{},userId:{}", dto.getBillId(), operatorUser.getId());
 			this.registerBillService.doDelete(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
 		} catch (TraceBizException e) {
@@ -198,10 +197,9 @@ public class ClientRegisterFormBillApi {
 			if (inputDto == null || inputDto.getVerifyStatus() == null || inputDto.getBillId() == null) {
 				return BaseOutput.failure("参数错误");
 			}
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			if (operatorUser == null) {
-				return BaseOutput.failure("未登陆用户");
-			}
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
 			RegisterBill input = new RegisterBill();
 			input.setId(inputDto.getBillId());
 			input.setVerifyStatus(inputDto.getVerifyStatus());
@@ -263,10 +261,9 @@ public class ClientRegisterFormBillApi {
 	public BaseOutput<List<VerifyStatusCountOutputDto>> countByVerifyStatus(@RequestBody RegisterBillDto query) {
 
 		try {
-			OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-			if (operatorUser == null) {
-				return BaseOutput.failure("未登陆用户");
-			}
+			SessionData sessionData = this.sessionContext.getSessionData();
+
+			OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
 			List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseFormBill(query);
 			return BaseOutput.success().setData(list);
 		} catch (TraceBizException e) {

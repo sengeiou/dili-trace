@@ -21,6 +21,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 // import cn.hutool.core.map.MapUtil;
 
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 
 public class SessionInterceptor extends HandlerInterceptorAdapter {
     private static final Logger logger = LoggerFactory.getLogger(SessionInterceptor.class);
@@ -52,29 +53,21 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         AppAccess access = findAnnotation((HandlerMethod) handler,
                 AppAccess.class);
         if (access == null) {
-            return true;
+            SessionData sessionData = this.loginAsClient().orElseGet(() -> {
+               return this.loginAsManager().orElse(null);
+            });
+            this.sessionContext.setSessionData(sessionData);
         }
         if (access.role() == Role.Client) {
             if (!this.customerRpcService.hasAccess(access)) {
                 throw new TraceBizException("没有权限访问");
             }
-            this.sessionContext.setSessionData(this.customerRpcService.getCurrentCustomer().get());
+            this.sessionContext.setSessionData(this.loginAsClient().get());
         } else if (access.role() == Role.Manager) {
             if (!this.uapRpcService.hasAccess(access)) {
                 throw new TraceBizException("没有权限访问");
             }
-            SessionData sessionData=new SessionData();
-            sessionData.setUserId(216L);
-            sessionData.setUserName("国锋");
-//                    SessionData sessionData= this.uapRpcService.getCurrentUserTicket().map(ut -> {
-//                return SessionData.fromUserTicket(ut);
-//            }).orElseGet(() -> {
-//                return null;
-//            });
-            if(sessionData==null){
-                throw new TraceBizException("没有权限访问");
-            }
-            this.sessionContext.setSessionData(sessionData);
+            this.sessionContext.setSessionData(this.loginAsManager().get());
         } else {
             throw new TraceBizException("参数错误");
         }
@@ -92,6 +85,20 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 //        checkDisableUsers(request, response);
 //        request.setAttribute(ATTRIBUTE_CONTEXT_INITIALIZED, Boolean.TRUE);
         return true;
+    }
+
+    private Optional<SessionData> loginAsManager() {
+
+        SessionData sessionData = this.uapRpcService.getCurrentUserTicket().map(ut -> {
+            return SessionData.fromUserTicket(ut);
+        }).orElseGet(() -> {
+            return null;
+        });
+        return Optional.ofNullable(sessionData);
+    }
+
+    private Optional<SessionData> loginAsClient() {
+        return this.customerRpcService.getCurrentCustomer();
     }
 
     private <T extends Annotation> T findAnnotation(HandlerMethod handler, Class<T> annotationType) {

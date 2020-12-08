@@ -8,44 +8,33 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.trace.dto.OperatorUser;
 
 public class LoginSessionContext implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private SessionData sessionData;
-//
-//	public void setInvalidate(boolean invalidate) {
-//		if (this.sessionData != null) {
-//			this.getSessionData().setInvalidate(invalidate);
-//		}
-//	}
+    private static final long serialVersionUID = 1L;
+    private SessionData sessionData;
 
-	public String getUserName() {
+    public String getUserName() {
 
-		return this.sessionData == null ? null : this.sessionData.getUserName();
-	}
+        return this.sessionData == null ? null : this.sessionData.getUserName();
+    }
 
-	public Long getAccountId() {
+    public Long getAccountId() {
 
-		return this.sessionData == null ? null : this.getSessionData().getUserId();
-	}
+        return this.sessionData == null ? null : this.getSessionData().getUserId();
+    }
+    /**
+     * @return SessionData return the sessionData
+     */
+    public SessionData getSessionData() {
 
-	public OperatorUser getLoginUserOrException(LoginIdentityTypeEnum identityType) {
-		if (this.getSessionData() != null && this.getSessionData().getUserId() != null) {
-			return new OperatorUser(this.getSessionData().getUserId(), this.getSessionData().getUserName());
-		}
-		throw new TraceBizException("你还未登录");
+        if (this.sessionData == null) {
+            throw new TraceBizException("你还未登录");
+        }
+        return sessionData;
+    }
 
-	}
-
-	/**
-	 * @return SessionData return the sessionData
-	 */
-	public SessionData getSessionData() {
-		return sessionData;
-	}
-
-	/**
-	 * @param sessionData the sessionData to set
-	 */
-	public void setSessionData(SessionData sessionData) {
-		this.sessionData = sessionData;
-	}
+    /**
+     * @param sessionData the sessionData to set
+     */
+    public void setSessionData(SessionData sessionData) {
+        this.sessionData = sessionData;
+    }
 }

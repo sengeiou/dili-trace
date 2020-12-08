@@ -3,6 +3,7 @@ package com.dili.trace.api.manager;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -52,8 +53,8 @@ public class ManagerCheckinRecordApi {
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody CheckinOutRecordQueryDto query) {
         try {
-            Long operatorUserId = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER).getId();
-            query.setOperatorId(operatorUserId);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            query.setOperatorId(sessionData.getUserId());
             query.setSort("created");
             query.setOrder("desc");
             BasePage<CheckinOutRecord> page = this.checkinOutRecordService.listPageByExample(query);

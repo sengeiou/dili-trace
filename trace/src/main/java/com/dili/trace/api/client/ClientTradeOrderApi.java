@@ -3,12 +3,14 @@ package com.dili.trace.api.client;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.TradeOrder;
+import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.service.TradeOrderService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +80,8 @@ public class ClientTradeOrderApi {
     @RequestMapping(value = "/viewTradeOrder.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<TradeOrder>> viewTradeOrder(@RequestBody TradeOrder inputDto) {
         try {
-            Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
+            Long userId = sessionData.getUserId();
             logger.info("订单列表 操作用户:{}", userId);
             inputDto.setBuyerId(userId);
             if (StringUtils.isBlank(inputDto.getOrder())) {

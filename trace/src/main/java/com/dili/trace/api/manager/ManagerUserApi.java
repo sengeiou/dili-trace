@@ -3,6 +3,7 @@ package com.dili.trace.api.manager;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
@@ -54,7 +55,7 @@ public class ManagerUserApi {
     @RequestMapping(value = "/userCertCount.api", method = RequestMethod.POST)
     public BaseOutput<List<UserOutput>> countGroupByValidateState(@RequestBody User user) {
         try {
-            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+//            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
             return userService.countGroupByValidateState(user);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -74,7 +75,7 @@ public class ManagerUserApi {
     @RequestMapping(value = "/listUserCertByQuery.api", method = RequestMethod.POST)
     public BaseOutput<BasePage<UserOutput>> listUserCertByQuery(@RequestBody UserInput user) {
         try {
-            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+//            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
             BasePage<UserOutput> data = userService.pageUserByQuery(user);
             return BaseOutput.success().setData(data);
         } catch (TraceBizException e) {
@@ -98,7 +99,7 @@ public class ManagerUserApi {
             return BaseOutput.failure("参数错误");
         }
         try {
-            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+//            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
             User data = userService.get(input.getId());
             data.setPassword(null);
             return BaseOutput.success().setData(data);
@@ -121,7 +122,8 @@ public class ManagerUserApi {
     @RequestMapping(value = "/verifyUserCert.api", method = RequestMethod.POST)
     public BaseOutput<Long> verifyUserCert(@RequestBody UserInput input) {
         try {
-            OperatorUser operatorUser = sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             return userService.verifyUserCert(input, operatorUser);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

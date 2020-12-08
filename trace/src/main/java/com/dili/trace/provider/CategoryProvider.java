@@ -42,7 +42,7 @@ public class CategoryProvider implements ValueProvider {
 //                buffer.add(new ValuePairImpl(o.getName(), o.getId().toString()));
 //            });
 //        }
-		this.categoryService.listCusCategory(categoryInput).forEach(o -> {
+		this.categoryService.listCusCategory(categoryInput,null).forEach(o -> {
 			buffer.add(new ValuePairImpl(o.getName(), o.getId().toString()));
 		});
 		return buffer;

@@ -166,7 +166,9 @@ public class ClientRegisterBillApi {
     public BaseOutput<BasePage<TradeDetailBillOutput>> listPage(@RequestBody RegisterBillDto input) {
         logger.info("获取登记单列表:{}", JSON.toJSONString(input));
         try {
-            Long userId = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
+
+            Long userId = sessionData.getUserId();
 
             logger.info("获取登记单列表 操作用户:{}", userId);
             input.setUserId(userId);

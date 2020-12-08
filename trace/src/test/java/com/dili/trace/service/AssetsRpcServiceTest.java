@@ -60,7 +60,7 @@ public class AssetsRpcServiceTest {
     public void listCusCategory() throws IOException {
         CusCategoryQuery query = new CusCategoryQuery();
         query.setKeyword("成都");
-        List<CusCategoryDTO> list = this.asetsRpcService.listCusCategory(query);
+        List<CusCategoryDTO> list = this.asetsRpcService.listCusCategory(query,null);
         System.out.println(list);
 
     }

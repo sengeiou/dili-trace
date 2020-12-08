@@ -2,6 +2,7 @@ package com.dili.trace.api;
 
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -86,7 +87,9 @@ public class EventMessageApi {
             eventMessage = new EventMessage();
         }
         try {
-            Long id = this.sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.USER).getId();
+            SessionData sessionData = this.sessionContext.getSessionData();
+            Long id = sessionData.getUserId();
+
             eventMessage.setReceiverId(id);
             eventMessage.setSort("create_time");
             eventMessage.setOrder("desc");
