@@ -1,12 +1,10 @@
 package com.dili.trace.api.client;
 
-import com.dili.common.annotation.Access;
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.domain.TallyAreaNo;
 import com.dili.trace.service.TallyAreaNoService;
 import io.swagger.annotations.Api;
@@ -32,7 +30,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/client/clientTallyAreaNo")
 @Api(value = "/api/client/clientTallyAreaNo", description = "区位相关接口")
-@Access(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "")
 public class ClientTallyAreaNoApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTallyAreaNoApi.class);
 	@Autowired

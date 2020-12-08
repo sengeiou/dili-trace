@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.DetectRequestMapper">
+  <resultMap id="BaseResultMap" type="com.dili.trace.domain.DetectRequest">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="detect_type" jdbcType="BIT" property="detectType" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+      id
+      ,bill_id
+      ,creator_id
+      ,creator_name
+      ,designated_id
+      ,designated_name
+      ,detect_type
+      ,created
+      ,modified
+      ,detector_id
+      ,detector_name
+      ,detect_result
+      ,detect_source
+  </sql>
+  <select id="selectRequestForDetect" resultType="com.dili.trace.domain.DetectRequest">
+    select * from detect_request where id in(
+        select id from (
+        select * from (
+        select detect_request.id,detect_request.detector_name,register_bill.detect_status from register_bill left join detect_request on register_bill.id=detect_request.bill_id
+        where register_bill.detect_status = 30  and register_bill.market_id=#{marketId} and detector_name is null
+        limit #{maxCount}
+        )a
+        union
+        select * from (
+        select detect_request.id,detect_request.detector_name,register_bill.detect_status  from register_bill left join detect_request on register_bill.id=detect_request.bill_id
+        where register_bill.detect_status = 40 and register_bill.market_id=#{marketId} and detector_name =#{detectorName}
+        limit #{maxCount}
+        )b where detect_status=30 limit #{maxCount}
+        )tmp
+    )for update
+  </select>
+
+    <select id="selectDetectRequest" resultType="com.dili.trace.domain.DetectRequest">
+        select detect_request.* from register_bill left join detect_request on register_bill.id=detect_request.bill_id
+        where register_bill.detect_status = #{detectStatus.code}
+        and register_bill.market_id=#{marketId}
+        and detector_name=#{detectorName}
+  </select>
+</mapper>

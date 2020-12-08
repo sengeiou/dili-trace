@@ -132,13 +132,7 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
         return this.billService.listByExample(dto).stream().findFirst().orElse(new RegisterBill());
     }
 
-    /**
-     * 当前用户
-     * @return
-     */
-    UserTicket getOptUser() {
-        return SessionContext.getSessionContext().getUserTicket();
-    }
+
     /**
      * 批量复检
      *
@@ -154,7 +148,6 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
                 .filter(bill -> DetectStatusEnum.FINISH_DETECT.equalsToCode(bill.getDetectStatus()))
                 .filter(bill -> DetectResultEnum.PASSED.equalsToCode(bill.getDetectRequest().getDetectResult()))
         .map(bill->{
-            UserTicket userTicket = getOptUser();
             DetectRequest detectRequest=bill.getDetectRequest();
 
             if(!DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())){
@@ -164,7 +157,7 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
             bill.setOperatorId(operatorUser.getId());
 //            item.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
 //            item.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-            DetectRequest item = this.detectRequestService.createByBillId(bill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(),userTicket.getRealName()), Optional.empty());
+            DetectRequest item = this.detectRequestService.createByBillId(bill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(operatorUser.getId(),operatorUser.getName()), Optional.empty());
 
             DetectRequest updatable = new DetectRequest();
             updatable.setId(item.getId());
@@ -210,14 +203,14 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
 
         bill.setOperatorId(operatorUser.getId());
         bill.setOperatorName(operatorUser.getName());
+        bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
         bill.setPlate("");
         this.billService.insertSelective(bill);
-        UserTicket userTicket = getOptUser();
-        DetectRequest item = this.detectRequestService.createByBillId(bill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(),userTicket.getRealName()), Optional.empty());
+        DetectRequest item =   this.detectRequestService.createDefault(bill.getBillId(),Optional.ofNullable(operatorUser));
 
         DetectRequest detectRequest = new DetectRequest();
         detectRequest.setId(item.getId());
-
+        detectRequest.setDetectType(DetectTypeEnum.INITIAL_CHECK.getCode());
         detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
         detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
         this.detectRequestService.updateSelective(detectRequest);

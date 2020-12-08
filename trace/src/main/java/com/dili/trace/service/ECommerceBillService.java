@@ -10,14 +10,13 @@ import java.util.function.Function;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
+import com.dili.trace.dto.*;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.RegisterBillDto;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,8 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.dto.ECommerceBillPrintOutput;
-import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.sg.trace.glossary.BillTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
@@ -157,7 +154,6 @@ public class ECommerceBillService {
 		if (item == null) {
 			throw new TraceBizException("没有找到数据，可能已经被删除");
 		}
-		DetectRequest detectRequest=this.detectRequestService.findDetectRequestByBillId(item.getBillId()).orElse(null);
 
 		if (!this.supportedBillType().equalsToCode(item.getBillType())) {
 			throw new TraceBizException("数据错误,登记单类型错误");
@@ -183,12 +179,13 @@ public class ECommerceBillService {
 				this.billService.updateHasImage(item.getId(),imageCertList);
 				this.billService.updateHasImage(item.getId(),imageCertList);
 				updatable.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
-				updatable.setDetectStatus(DetectStatusEnum.NONE.getCode());
-	//			updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
+				updatable.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+			//			updatable.setState(RegisterBillStateEnum.ALREADY_CHECK.getCode());
 	//				updatable.setDetectState(BillDetectStateEnum.PASS.getCode());
 				updatable.setLatestDetectOperator(operatorUser.getName());
 				updatable.setLatestDetectTime(new Date());
 				updatable.setLatestPdResult("100%");
+
 
 		} else if (DetectStatusEnum.NONE.equalsToCode(inputBill.getDetectStatus()) ) {
 			updatable.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());

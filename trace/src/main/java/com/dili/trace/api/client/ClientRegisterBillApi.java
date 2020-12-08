@@ -1,8 +1,7 @@
 package com.dili.trace.api.client;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.Access;
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
@@ -39,7 +38,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/client/clientRegisterBill")
 @Api(value = "/api/client/clientRegisterBill", description = "登记单相关接口")
-@Access(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "")
 public class ClientRegisterBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientRegisterBillApi.class);
 	@Autowired

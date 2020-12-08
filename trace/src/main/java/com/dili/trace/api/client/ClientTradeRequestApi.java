@@ -2,8 +2,7 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
-import com.dili.common.annotation.Access;
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
@@ -35,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeRequestApi")
 @RestController
-@Access(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "")
 @RequestMapping(value = "/api/client/clientTradeRequestApi")
 public class ClientTradeRequestApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Access {
+public @interface AppAccess {
     Role role() default  Role.Manager;
     String method() default "post";
     String url() default "";

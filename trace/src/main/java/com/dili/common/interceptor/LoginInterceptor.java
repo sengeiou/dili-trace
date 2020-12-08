@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dili.common.annotation.Access;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.entity.LoginSessionContext;
 
 import com.dili.trace.service.UapRpcService;
@@ -45,8 +45,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		if (!(handler instanceof HandlerMethod)) {
 			return true;
 		}
-		Access access = findAnnotation((HandlerMethod) handler,
-				Access.class);
+		AppAccess access = findAnnotation((HandlerMethod) handler,
+				AppAccess.class);
 		if (access == null) {
 			return true;
 		}

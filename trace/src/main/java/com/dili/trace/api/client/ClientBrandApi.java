@@ -2,20 +2,17 @@ package com.dili.trace.api.client;
 
 import java.util.List;
 
-import com.dili.common.annotation.Access;
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.BrandInputDto;
 import com.dili.trace.api.output.BrandOutputDto;
 import com.dili.trace.domain.Brand;
 import com.dili.trace.service.BrandService;
 
-import com.dili.trace.util.MarketUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +33,7 @@ import one.util.streamex.StreamEx;
 @RestController
 @RequestMapping(value = "/api/client/clientBrand")
 @Api(value = "/api/client/clientBrand", description = "品牌相关接口")
-@Access(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "")
 public class ClientBrandApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientBrandApi.class);
 	@Autowired

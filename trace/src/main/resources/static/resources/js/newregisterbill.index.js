@@ -30,7 +30,7 @@ class NewRegisterBillGrid extends WebConfig {
         $('#batch-sampling-btn').on('click', async () => await this.doBatchSamplingCheck());
         $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
-        this.grid.on('check.bs.table uncheck.bs.table', () => this.checkAndShowHideBtns());
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
         this.grid.bootstrapTable('refreshOptions', { url: '/newRegisterBill/listPage.action',
             'queryParams': (params) => this.buildQueryData(params),
             'ajaxOptions': {}
@@ -83,11 +83,11 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "审核", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
         catch (e) {
+            debugger;
             bs4pop.alert('远程访问失败', { type: 'error' });
         }
     }
@@ -105,7 +105,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "复检", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -127,7 +126,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "审核不检测", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -168,7 +166,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "审核不检测", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -196,7 +193,6 @@ class NewRegisterBillGrid extends WebConfig {
                     return;
                 }
                 await this.queryGridData();
-                TLOG.component.operateLog('登记单管理', "删除产地证明和报告", '【ID】:' + selected.id);
                 bs4pop.removeAll();
                 bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
             }
@@ -223,7 +219,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await cthis.queryGridData();
-            TLOG.component.operateLog('登记单管理', "主动送检", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -259,7 +254,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "批量主动送检", "【编号】:" + codeList.join(','));
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -281,7 +275,6 @@ class NewRegisterBillGrid extends WebConfig {
                 return;
             }
             await this.queryGridData();
-            TLOG.component.operateLog('登记单管理', "采样检测", "【编号】:" + selected.code);
             bs4pop.removeAll();
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
@@ -319,7 +312,6 @@ class NewRegisterBillGrid extends WebConfig {
                     return;
                 }
                 await cthis.queryGridData();
-                TLOG.component.operateLog('登记单管理', "撤销", "【编号】:" + selected.code);
                 bs4pop.removeAll();
                 bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
             }
@@ -378,7 +370,6 @@ class NewRegisterBillGrid extends WebConfig {
                         var failureList = ret.data.failureList;
                         if (failureList.length == 0) {
                             cthis.queryGridData();
-                            TLOG.component.operateLog('登记单管理', "批量审核", "【编号】:" + codeList.join(','));
                             layer.alert('操作成功：</br>' + ret.data.successList.join('</br>'), { title: '操作', time: 3000 });
                         }
                         else {
@@ -524,62 +515,26 @@ class NewRegisterBillGrid extends WebConfig {
             $('#' + btnId).hide();
         }
     }
-    checkAndShowHideBtns() {
+    async checkAndShowHideBtns() {
         this.resetButtons();
         var rows = this.rows;
         if (rows.length == 0) {
             return;
         }
         var createCheckSheet = _.chain(this.rows)
-            .filter(item => 1 == item ? .detectRequest ? .detectResult :  : )
+            .filter(v => !_.isUndefined(v.detectRequest))
+            .filter(item => 1 == item.detectRequest.detectResult)
             .filter(item => _.isUndefined(item.checkSheetId) || item.checkSheetId == null).value().length > 0;
         createCheckSheet ? $('#createsheet-btn').show() : $('#createsheet-btn').hide();
-        if (rows.length == 1) {
-            var selected = rows[0];
-            $('#copy-btn').show();
-            $('#detail-btn').show();
-            $('#upload-origincertifiy-btn').show();
-            $('#upload-handleresult-btn').show();
-            var waitAudit = this.waitAuditRows;
-            if (waitAudit.length == 1) {
-                $('#undo-btn').show();
-                $('#audit-btn').show();
-                $('#edit-btn').show();
-                $('#upload-detectreport-btn').show();
-            }
-            if (selected.hasOriginCertifiy != 0) {
-                $('#remove-reportAndcertifiy-btn').show();
-            }
-            if (selected.registerSource == 1) {
-                if (selected.hasOriginCertifiy != 0) {
-                    $('#audit-withoutDetect-btn').show();
-                }
-            }
-            if (selected.detectStatus == 20) {
-                $('#auto-btn').show();
-                $('#undo-btn').show();
-                $('#sampling-btn').show();
-            }
-            if (selected ? .detectRequest ? .detectResult == 2 :  : ) {
-                if (selected ? .detectRequest ? .detectType == 20 :  : ) {
-                    $('#review-btn').show();
-                }
-                else if (selected ? .detectRequest ? .detectType == 30 && selected.hasHandleResult == 0 :  : ) {
-                    $('#review-btn').show();
-                }
-            }
-            return;
+        try {
+            var billIdList = _.chain(rows).map(v => v.id).value();
+            var resp = await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'), billIdList);
+            console.info(resp);
+            resp.forEach(btnid => { $('#' + btnid).show(); });
         }
-        var batchAudit = this.filterByProp('verifyStatus', [0]).length > 0;
-        batchAudit ? $('#batch-audit-btn').show() : $('#batch-audit-btn').hide();
-        var batchSampling = this.batchSamplingRows.length > 0;
-        batchSampling ? $('#batch-sampling-btn').show() : $('#batch-sampling-btn').hide();
-        var batchAuto = batchSampling;
-        batchAuto ? $('#batch-auto-btn').show() : $('#batch-auto-btn').hide();
-        var batchUndo = _.chain(this.rows).filter(item => {
-            return (0 == item.verifyStatus) || (20 == item.detectStatus);
-        });
-        batchUndo ? $('#batch-undo-btn').show() : $('#batch-undo-btn').hide();
+        catch (e) {
+            console.error(e);
+        }
     }
     get waitAuditRows() {
         return this.filterByProp('verifyStatus', [0]);
@@ -668,7 +623,6 @@ class NewRegisterBillGrid extends WebConfig {
                 async: true,
                 success: function (data) {
                     if (data.code == "200") {
-                        TLOG.component.operateLog('登记单管理', "批量撤销", '【IDS】:' + JSON.stringify(idlist));
                         layer.alert('操作成功', {
                             title: '操作',
                             time: 600,
