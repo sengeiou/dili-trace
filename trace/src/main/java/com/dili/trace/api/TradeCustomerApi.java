@@ -1,7 +1,7 @@
 package com.dili.trace.api;
 
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.trace.service.CustomerService;
+import com.dili.trace.service.CustomerRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.service.UserService;
@@ -28,7 +28,7 @@ import javax.annotation.Resource;
 public class TradeCustomerApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(TradeCustomerApi.class);
     @Autowired
-    private CustomerService customerService;
+    private CustomerRpcService customerService;
     @Resource
     private UserService userService;
 

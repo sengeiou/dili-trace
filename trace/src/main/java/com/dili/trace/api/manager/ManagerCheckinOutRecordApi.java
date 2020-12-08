@@ -42,7 +42,7 @@ import one.util.streamex.StreamEx;
 @SuppressWarnings("deprecation")
 @Api(value = "/api/manager/managerCheckinRecordApi")
 @RestController
-@AppAccess(role = Role.Manager,url = "dili-trace-app-auth")
+@AppAccess(role = Role.Manager,url = "dili-trace-app-auth",subRoles = {})
 @RequestMapping(value = "/api/manager/managerCheckinRecord")
 public class ManagerCheckinOutRecordApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerCheckinOutRecordApi.class);

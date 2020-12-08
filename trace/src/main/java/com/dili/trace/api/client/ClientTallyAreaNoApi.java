@@ -4,6 +4,7 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.TallyAreaNo;
 import com.dili.trace.service.TallyAreaNoService;
@@ -30,7 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/client/clientTallyAreaNo")
 @Api(value = "/api/client/clientTallyAreaNo", description = "区位相关接口")
-@AppAccess(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 public class ClientTallyAreaNoApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTallyAreaNoApi.class);
 	@Autowired

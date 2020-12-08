@@ -6,6 +6,7 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
@@ -34,7 +35,7 @@ import io.swagger.annotations.ApiOperation;
 @SuppressWarnings("deprecation")
 @Api(value = "/api/client/clientTradeRequestApi")
 @RestController
-@AppAccess(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 @RequestMapping(value = "/api/client/clientTradeRequestApi")
 public class ClientTradeRequestApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientTradeDetailApi.class);

@@ -3,6 +3,7 @@ package com.dili.trace.api.input;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.dili.customer.sdk.domain.Customer;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
@@ -232,19 +233,19 @@ public class CreateRegisterBillInputDto {
      */
     private List<ImageCert> imageCertList;
 
-    public RegisterBill build(User user) {
+    public RegisterBill build(Customer user,Long marketId) {
         RegisterBill registerBill = new RegisterBill();
         registerBill.setId(this.getBillId());
         // registerBill.setOperatorName(user.getName());
         // registerBill.setOperatorId(user.getId());
         registerBill.setUserId(user.getId());
         registerBill.setName(user.getName());
-        registerBill.setMarketId(user.getMarketId());
-        registerBill.setTallyAreaNo(user.getTallyAreaNos());
-        registerBill.setAddr(user.getAddr());
-        registerBill.setIdCardNo(user.getCardNo());
-        registerBill.setPhone(user.getPhone());
-        registerBill.setThirdPartyCode(user.getThirdPartyCode());
+        registerBill.setMarketId(marketId);
+//        registerBill.setTallyAreaNo(user.getTallyAreaNos());
+//        registerBill.setAddr(user.getAddr());
+//        registerBill.setIdCardNo(user.getCardNo());
+//        registerBill.setPhone(user.getPhone());
+//        registerBill.setThirdPartyCode(user.getThirdPartyCode());
         registerBill.setWeight(this.getWeight());
         registerBill.setWeightUnit(this.getWeightUnit());
         registerBill.setOriginId(this.getOriginId());

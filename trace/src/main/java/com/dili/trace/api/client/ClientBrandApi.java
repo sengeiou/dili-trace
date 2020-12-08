@@ -7,6 +7,7 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.input.BrandInputDto;
 import com.dili.trace.api.output.BrandOutputDto;
@@ -33,7 +34,7 @@ import one.util.streamex.StreamEx;
 @RestController
 @RequestMapping(value = "/api/client/clientBrand")
 @Api(value = "/api/client/clientBrand", description = "品牌相关接口")
-@AppAccess(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 public class ClientBrandApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientBrandApi.class);
 	@Autowired

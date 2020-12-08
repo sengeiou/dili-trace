@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/manager/managerCheckinRecordApi")
 @Api(value = "/api/manager/managerCheckinRecordApi", description = "进门数据接口")
-@AppAccess(role = Role.Manager,url = "dili-trace-app-auth")
+@AppAccess(role = Role.Manager,url = "dili-trace-app-auth",subRoles = {})
 public class ManagerCheckinRecordApi {
     private static final Logger logger = LoggerFactory.getLogger(ManagerCheckinRecordApi.class);
     @Autowired

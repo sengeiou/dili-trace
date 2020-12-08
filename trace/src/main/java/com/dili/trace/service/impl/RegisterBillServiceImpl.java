@@ -4,6 +4,9 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BizNumberFunction;
+import com.dili.customer.sdk.domain.Customer;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -80,7 +83,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Autowired
     RegisterHeadService registerHeadService;
     @Autowired
-    ClientRpcService clientRpcService;
+    CustomerRpcService clientRpcService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -114,16 +117,20 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long userId,
-                                     Optional<OperatorUser> operatorUser) {
-        User user=this.clientRpcService.findUserInfoById(userId);
-        if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
+    public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
+                                     Optional<OperatorUser> operatorUser, Long marketId) {
+        CustomerExtendDto user = this.clientRpcService.findCustomerById(customerId, marketId).orElseThrow(() -> {
+
+            return new TraceBizException("客户不存在");
+        });
+
+        if (!CustomerEnum.ApprovalStatus.PASSED.getCode().equals(user.getCustomerMarket().getApprovalStatus())) {
             throw new TraceBizException("用户未审核通过不能创建报备单");
         }
 
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));
-            RegisterBill registerBill = dto.build(user);
+            RegisterBill registerBill = dto.build(user,marketId);
             return this.createRegisterBill(registerBill, dto.getImageCertList(), operatorUser);
         }).toList();
     }
@@ -724,6 +731,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     }
 
+
     @Override
     public RegisterBillOutputDto viewTradeDetailBill(Long billId, Long tradeDetailId) {
         if (billId == null && tradeDetailId == null) {
@@ -817,11 +825,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
-                                     Optional<OperatorUser> operatorUser, Long marketId) {
+    public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
+                                                         Optional<OperatorUser> operatorUser, Long marketId) {
+     CustomerExtendDto customer=   this.clientRpcService.findCustomerById(customerId,marketId).orElseThrow(()->{
+            return new TraceBizException("查询客户信息失败");
+        });
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存进门登记单:" + JSON.toJSONString(dto));
-            RegisterBill registerBill = dto.build(user);
+            RegisterBill registerBill = dto.build(customer,marketId);
             registerBill.setMarketId(marketId);
             registerBill.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
             return this.createRegisterFormBill(registerBill, dto.getImageCertList(), operatorUser);
@@ -904,8 +915,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (BillTypeEnum.PARTIAL.getCode().equals(registerBill.getBillType())) {
             RegisterHead registerHead = new RegisterHead();
             registerHead.setCode(registerBill.getRegisterHeadCode());
-            List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
-            if(CollectionUtils.isNotEmpty(registerHeadList)){
+            List<RegisterHead> registerHeadList = registerHeadService.listByExample(registerHead);
+            if (CollectionUtils.isNotEmpty(registerHeadList)) {
                 registerHead = registerHeadList.get(0);
             } else {
                 throw new TraceBizException("未找到主台账单");
@@ -1005,7 +1016,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     private void doVerifyForm(RegisterBill billItem, Integer verifyStatus, String reason,
-                          Optional<OperatorUser> operatorUser) {
+                              Optional<OperatorUser> operatorUser) {
         BillVerifyStatusEnum fromVerifyState = BillVerifyStatusEnum.fromCode(billItem.getVerifyStatus())
                 .orElseThrow(() -> new TraceBizException("数据错误"));
 
@@ -1054,11 +1065,11 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public BasePage<RegisterBill> listPageApi(RegisterBillDto input){
+    public BasePage<RegisterBill> listPageApi(RegisterBillDto input) {
 
         StringBuilder sql = new StringBuilder();
         buildFormLikeKeyword(input).ifPresent(sql::append);
-        if(sql.length() > 0){
+        if (sql.length() > 0) {
             input.setMetadata(IDTO.AND_CONDITION_EXPR, sql.toString());
         }
 
@@ -1072,7 +1083,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             String keyword = query.getKeyword().trim();
             sql = "( product_name like '%" + keyword + "%'  OR user_id in(select id from `user` u where u.name like '%"
                     + keyword + "%' OR legal_person like '%" + keyword + "%' OR phone like '%"
-                    + keyword + "%') OR third_party_code like '%"+keyword+"%' OR register_head_code LIKE '%"+keyword+"%' )";
+                    + keyword + "%') OR third_party_code like '%" + keyword + "%' OR register_head_code LIKE '%" + keyword + "%' )";
         }
         return Optional.ofNullable(sql);
     }
@@ -1123,7 +1134,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         List<RegisterBill> billList = this.listByExample(query);
         if (billList != null) {
             countList.stream().forEach(dto -> {
-                if (BillVerifyStatusEnum.DELETED.getCode().equals(dto.getVerifyStatus())){
+                if (BillVerifyStatusEnum.DELETED.getCode().equals(dto.getVerifyStatus())) {
                     dto.setNum(billList.size());
                 }
             });
@@ -1139,7 +1150,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         sqlList.add("(is_checkin=" + YnEnum.NO.getCode()
                 + " OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
                 + BillVerifyStatusEnum.PASSED.getCode() + ") OR (is_checkin=" + YnEnum.YES.getCode() + " and verify_status="
-                + BillVerifyStatusEnum.RETURNED.getCode() +" ))");
+                + BillVerifyStatusEnum.RETURNED.getCode() + " ))");
         return StreamEx.of(sqlList).joining(" AND ");
     }
 

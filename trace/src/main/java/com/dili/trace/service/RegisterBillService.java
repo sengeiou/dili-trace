@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.dili.customer.sdk.domain.Customer;
 import com.dili.ss.base.BaseService;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -94,12 +95,12 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * 创建多个报备单
      *
      * @param registerBills
-     * @param user
+     * @param customerId
      * @param operatorUser
      * @return
      */
-    public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long userId,
-                                     Optional<OperatorUser> operatorUser);
+    public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
+                                     Optional<OperatorUser> operatorUser,Long marketId);
 
     /**
      * 分页查询
@@ -182,7 +183,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
 	 * @param marketId
 	 * @return
 	 */
-	public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, User user,
+	public List<RegisterBill> createRegisterFormBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
 											 Optional<OperatorUser> operatorUser, Long marketId);
 
 	/**

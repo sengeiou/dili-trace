@@ -10,10 +10,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.service.ImageCertService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.trace.service.UpStreamService;
-import com.dili.trace.service.UserService;
+import com.dili.trace.service.*;
 
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
@@ -36,7 +33,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/manager/managerRegisterBill")
 @Api(value = "/api/manager/managerRegisterBill", description = "登记单相关接口")
-@AppAccess(role = Role.Manager,url = "dili-trace-app-auth")
+@AppAccess(role = Role.Manager,url = "dili-trace-app-auth",subRoles = {})
 public class ManagerRegisterBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerRegisterBillApi.class);
 	@Autowired
@@ -44,7 +41,7 @@ public class ManagerRegisterBillApi {
 	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired
-	UserService userService;
+	CustomerRpcService customerRpcService;
 	@Autowired
 	UpStreamService upStreamService;
 	@Autowired
@@ -93,8 +90,6 @@ public class ManagerRegisterBillApi {
 		 }
 		 try {
 			 SessionData sessionData=this.sessionContext.getSessionData();
-			 Long operatorId = sessionData.getUserId();
-			 createListBillParam.setMarketId(sessionData.getMarketId());
 			 List<CreateRegisterBillInputDto> registerBills = StreamEx.of(createListBillParam.getRegisterBills())
 					 .nonNull().toList();
 			 if (registerBills .isEmpty()) {
@@ -102,7 +97,7 @@ public class ManagerRegisterBillApi {
 			 }
 			 logger.info("保存多个登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
 			 List<Long> idList = this.registerBillService.createBillList(registerBills,createListBillParam.getUserId()
-					 , Optional.of(new OperatorUser(0L,"mock")));
+					 , Optional.of(new OperatorUser(sessionData.getUserId(),sessionData.getUserName())),sessionData.getMarketId());
 			 return BaseOutput.success().setData(idList);
 		 } catch (TraceBizException e) {
 			 return BaseOutput.failure(e.getMessage());

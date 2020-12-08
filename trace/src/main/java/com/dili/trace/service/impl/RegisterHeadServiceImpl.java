@@ -3,6 +3,8 @@ package com.dili.trace.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BizNumberFunction;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -56,24 +58,28 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     @Autowired
     UpStreamService upStreamService;
     @Autowired
-    ClientRpcService clientRpcService;
+    CustomerRpcService clientRpcService;
 
     public RegisterHeadMapper getActualDao() {
         return (RegisterHeadMapper) getDao();
     }
 
     @Override
-    public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long userId,
+    public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long customerId,
                                              Optional<OperatorUser> operatorUser,Long marketId) {
 
-        User user=this.clientRpcService.findUserInfoById(userId);
-        if (!ValidateStateEnum.PASSED.equalsToCode(user.getValidateState())) {
+        CustomerExtendDto customer=this.clientRpcService.findCustomerById(customerId,marketId).orElseThrow(()->{
+            return  new TraceBizException("未能查找到客户信息");
+
+
+        });
+        if (!CustomerEnum.ApprovalStatus.PASSED.getCode().equals(customer.getCustomerMarket().getApprovalStatus())) {
             throw new TraceBizException("用户未审核通过不能创建报备单");
         }
 
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
-            RegisterHead registerHead = dto.build(user);
+            RegisterHead registerHead = dto.build(customer);
             registerHead.setMarketId(marketId);
             return this.createRegisterHead(registerHead, dto.getImageCertList(), operatorUser);
         }).toList();

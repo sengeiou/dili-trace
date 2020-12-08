@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
@@ -59,7 +60,7 @@ public class SgRegisterBillController {
     @Autowired
     UserPlateService userPlateService;
     @Autowired
-    CustomerService customerService;
+    CustomerRpcService customerService;
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
     @Autowired
@@ -143,8 +144,8 @@ public class SgRegisterBillController {
         List<RegisterBill> billList = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity())
                 .nonNull()
                 .map(rbInputDto -> {
-                    User user = DTOUtils.newDTO(User.class);
-                    RegisterBill rb = rbInputDto.build(user);
+                    CustomerExtendDto  user = new CustomerExtendDto();
+                    RegisterBill rb = rbInputDto.build(user,this.uapRpcService.getCurrentFirm().orElse(null).getId());
                     List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
                             , rbInputDto.getHandleResultUrl(),
                             rbInputDto.getOriginCertifiyUrl());

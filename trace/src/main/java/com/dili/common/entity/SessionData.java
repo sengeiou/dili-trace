@@ -1,6 +1,7 @@
 package com.dili.common.entity;
 
 import com.dili.common.annotation.Role;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
@@ -26,6 +27,11 @@ public class SessionData {
      * 角色
      */
     private Role role;
+
+    /**
+     * 角色
+     */
+    private List<CustomerEnum.CharacterType> subRoles;
     /**
      * 用户id
      */
@@ -87,6 +93,14 @@ public class SessionData {
 
     public SessionData() {
 
+    }
+
+    public List<CustomerEnum.CharacterType> getSubRoles() {
+        return subRoles;
+    }
+
+    public void setSubRoles(List<CustomerEnum.CharacterType> subRoles) {
+        this.subRoles = subRoles;
     }
 
     public static SessionData mockClient() {

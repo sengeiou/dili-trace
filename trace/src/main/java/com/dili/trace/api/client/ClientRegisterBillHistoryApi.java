@@ -5,6 +5,7 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.IDTO;
 import com.dili.trace.domain.RegisterBillHistory;
@@ -31,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/client/clientRegisterBillHistoryApi")
 @Api(value = "/api/client/clientRegisterBillHistoryApi", description = "历史相关接口")
-@AppAccess(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 public class ClientRegisterBillHistoryApi {
     private static final Logger logger = LoggerFactory.getLogger(ClientRegisterBillHistoryApi.class);
 

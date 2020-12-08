@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping(value = "/api/manager/managerVerifyApi")
 @Api(value = "/api/manager/managerVerifyApi", description = "登记单相关接口")
-@AppAccess(role = Role.Manager,url = "dili-trace-app-auth")
+@AppAccess(role = Role.Manager,url = "dili-trace-app-auth",subRoles = {})
 public class ManagerVerifyApi {
     private static final Logger logger = LoggerFactory.getLogger(ManagerVerifyApi.class);
     @Autowired

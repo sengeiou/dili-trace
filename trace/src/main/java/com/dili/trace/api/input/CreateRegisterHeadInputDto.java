@@ -1,5 +1,6 @@
 package com.dili.trace.api.input;
 
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.RegisterHead;
@@ -141,15 +142,15 @@ public class CreateRegisterHeadInputDto {
 	 */
 	private List<ImageCert> imageCertList;
 
-	public RegisterHead build(User user) {
+	public RegisterHead build(CustomerExtendDto user) {
 		RegisterHead registerHead = new RegisterHead();
 		registerHead.setId(this.getId());
 		registerHead.setUserId(user.getId());
 		registerHead.setName(user.getName());
-		registerHead.setAddr(user.getAddr());
-		registerHead.setIdCardNo(user.getCardNo());
-		registerHead.setPhone(user.getPhone());
-		registerHead.setThirdPartyCode(user.getThirdPartyCode());
+//		registerHead.setAddr(user.getAddr());
+//		registerHead.setIdCardNo(user.getCardNo());
+//		registerHead.setPhone(user.getPhone());
+//		registerHead.setThirdPartyCode(user.getThirdPartyCode());
 		registerHead.setBillType(this.getBillType());
 		registerHead.setProductId(this.getProductId());
 		registerHead.setProductName(this.getProductName());

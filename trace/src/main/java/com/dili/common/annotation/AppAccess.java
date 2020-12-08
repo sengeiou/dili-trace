@@ -1,5 +1,8 @@
 package com.dili.common.annotation;
 
+
+import com.dili.customer.sdk.enums.CustomerEnum;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,6 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AppAccess {
     Role role() default  Role.Manager;
+    CustomerEnum.CharacterType[] subRoles();
     String method() default "post";
     String url() default "";
 }

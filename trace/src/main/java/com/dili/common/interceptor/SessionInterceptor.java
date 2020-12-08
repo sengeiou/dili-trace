@@ -10,7 +10,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.components.SessionRedisService;
-import com.dili.trace.service.ClientRpcService;
+import com.dili.trace.service.CustomerRpcService;
 import com.dili.trace.service.UapRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     UapRpcService uapRpcService;
     @Autowired
-    ClientRpcService clientRpcService;
+    CustomerRpcService customerRpcService;
 
 
     @Override
@@ -55,16 +55,14 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         if (access.role() == Role.Client) {
-            if (!this.clientRpcService.hasAccess(access)) {
+            if (!this.customerRpcService.hasAccess(access)) {
                 throw new TraceBizException("没有权限访问");
             }
-            this.sessionContext.setSessionData(SessionData.mockClient());
+            this.sessionContext.setSessionData(this.customerRpcService.getCurrentCustomer().get());
         } else if (access.role() == Role.Manager) {
-//            if (!this.uapRpcService.hasAccess(access)) {
-//                throw new TraceBizException("没有权限访问");
-//            }
-
-            //216,216
+            if (!this.uapRpcService.hasAccess(access)) {
+                throw new TraceBizException("没有权限访问");
+            }
             SessionData sessionData=new SessionData();
             sessionData.setUserId(216L);
             sessionData.setUserName("国锋");

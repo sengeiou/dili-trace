@@ -3,18 +3,19 @@ package com.dili.trace.api.manager;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.ss.domain.PageOutput;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.UserInput;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.service.ClientRpcService;
+import com.dili.trace.service.CustomerRpcService;
 import com.dili.trace.service.UserService;
-import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/manager/user")
 @Api(value = "/api/manager/user", description = "用户管理相关接口")
-@AppAccess(role = Role.Manager,url = "dili-trace-app-auth")
+@AppAccess(role = Role.Manager, url = "dili-trace-app-auth", subRoles = {})
 public class ManagerUserApi {
     private static final Logger logger = LoggerFactory.getLogger(ManagerUserApi.class);
     @Autowired
@@ -41,7 +42,7 @@ public class ManagerUserApi {
     @Autowired
     UserService userService;
     @Autowired
-    ClientRpcService clientRpcService;
+    CustomerRpcService customerRpcService;
 
     /**
      * 商户审核统计概览
@@ -86,6 +87,7 @@ public class ManagerUserApi {
 
     /**
      * 获得用户资料详情
+     *
      * @param input
      * @return
      */
@@ -111,6 +113,7 @@ public class ManagerUserApi {
 
     /**
      * 审核用户资料
+     *
      * @param input
      * @return
      */
@@ -131,20 +134,21 @@ public class ManagerUserApi {
 
     /**
      * 审核用户资料
+     *
      * @param input
      * @return
      */
     @ApiOperation(value = "查询经营户信息")
     @RequestMapping(value = "/listSeller.api", method = RequestMethod.POST)
-    public BaseOutput<List<User>> listSeller(@RequestBody UserInput input) {
+    public PageOutput<List<CustomerExtendDto>> listSeller(@RequestBody CustomerQueryInput input) {
         try {
-           User user= clientRpcService.findUserInfoById(31L);
-           return BaseOutput.successData(Lists.newArrayList(user));
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listPage(input);
+            return pageOutput;
         } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
+            return PageOutput.failure(e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return BaseOutput.failure("操作失败：服务端出错");
+            return PageOutput.failure("操作失败：服务端出错");
         }
 
     }

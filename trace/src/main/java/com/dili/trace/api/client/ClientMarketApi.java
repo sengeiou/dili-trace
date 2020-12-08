@@ -3,6 +3,7 @@ package com.dili.trace.api.client;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Market;
 import com.dili.trace.service.MarketService;
@@ -27,7 +28,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/client/market")
 @Api(value = "/api/client/market", description = "市场相关接口")
-@AppAccess(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 public class ClientMarketApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientMarketApi.class);
 

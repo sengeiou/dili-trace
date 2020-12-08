@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -59,7 +60,7 @@ public class NewRegisterBillController {
     TradeTypeService tradeTypeService;
 
     @Autowired
-    CustomerService customerService;
+    CustomerRpcService customerService;
     @Autowired
     DetectRecordService detectRecordService;
 
@@ -693,8 +694,8 @@ public class NewRegisterBillController {
         List<RegisterBill> billList = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity())
                 .nonNull()
                 .map(rbInputDto -> {
-                    User user = DTOUtils.newDTO(User.class);
-                    RegisterBill rb = rbInputDto.build(user);
+                    CustomerExtendDto customer=new CustomerExtendDto();
+                    RegisterBill rb = rbInputDto.build(customer,this.uapRpcService.getCurrentFirm().orElse(null).getId());
                     rb.setIdCardNo(input.getIdCardNo());
                     rb.setName(input.getName());
                     rb.setPhone(input.getPhone());

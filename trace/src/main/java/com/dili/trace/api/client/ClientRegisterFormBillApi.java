@@ -6,6 +6,8 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -43,7 +45,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/client/clientRegisterFormBill")
 @Api(value = "/api/client/clientRegisterFormBill", description = "进门登记单相关接口")
-@AppAccess(role = Role.Client,url = "")
+@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 public class ClientRegisterFormBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientRegisterFormBillApi.class);
 	@Autowired
@@ -53,7 +55,7 @@ public class ClientRegisterFormBillApi {
 	private LoginSessionContext sessionContext;
 
 	@Autowired
-	UserService userService;
+	CustomerRpcService customerRpcService;
 
 	@Autowired
 	ImageCertService imageCertService;
@@ -115,8 +117,7 @@ public class ClientRegisterFormBillApi {
 				return BaseOutput.failure("没有进门登记单");
 			}
 			logger.info("保存多个进门登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
-			List<RegisterBill> billList = this.registerBillService.createRegisterFormBillList(registerBills,
-					userService.get(createListBillParam.getUserId()), Optional.empty(), createListBillParam.getMarketId());
+			List<RegisterBill> billList = this.registerBillService.createRegisterFormBillList(registerBills,createListBillParam.getUserId(), Optional.empty(), createListBillParam.getMarketId());
 			List<String> codeList = StreamEx.of(billList).nonNull().map(RegisterBill::getCode).toList();
 			return BaseOutput.success().setData(codeList);
 		} catch (TraceBizException e) {
@@ -141,10 +142,10 @@ public class ClientRegisterFormBillApi {
 		}
 		try {
 			SessionData sessionData=this.sessionContext.getSessionData();
-			Long userId = sessionData.getUserId();
-
-			User user = userService.get(dto.getUserId());
-			RegisterBill registerBill = dto.build(user);
+			CustomerExtendDto customer = this.customerRpcService
+					.findCustomerByIdOrEx(sessionContext.getSessionData().getUserId()
+							, sessionContext.getSessionData().getMarketId());
+			RegisterBill registerBill = dto.build(customer,sessionData.getMarketId());
 			logger.info("保存进门登记单:{}", JSON.toJSONString(registerBill));
 			this.registerBillService.doEditFormBill(registerBill, dto.getImageCertList(), Optional.empty());
 		} catch (TraceBizException e) {
