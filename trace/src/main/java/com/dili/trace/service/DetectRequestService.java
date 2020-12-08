@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.validation.constraints.NotNull;
@@ -34,6 +35,12 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     @Autowired
     DetectRequestMapper detectRequestMapper;
 
+    /**
+     * 创建默认检测请求
+     * @param billId 报备单ID
+     * @param operatorUser 操作用户
+     * @return
+     */
     public DetectRequest createDefault(Long billId, Optional<OperatorUser> operatorUser) {
         DetectRequest detectRequest = new DetectRequest();
         detectRequest.setDetectType(DetectTypeEnum.NEW.getCode());
@@ -221,4 +228,36 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         return out;
     }
 
+    /**
+     * 检测请求分配检测员
+     * @param id 检测请求ID
+     * @param designatedId 检测员ID
+     * @param designatedName 检测员姓名
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void assignDetector(Long id, Long designatedId, String designatedName) {
+        DetectRequest detectRequest = this.get(id);
+        if (detectRequest == null) {
+            throw new RuntimeException("检测请求不存在。");
+        }
+        RegisterBill registerBill = billService.get(detectRequest.getBillId());
+        if (registerBill == null) {
+            throw new RuntimeException("检测请求关联的报备单据不存在。");
+        }
+        if (registerBill.getDetectStatus() >= DetectStatusEnum.WAIT_DESIGNATED.getCode()) {
+            throw new RuntimeException("检测请求已接单，不可再分配检测员。");
+        }
+        // 更新报备单检测状态
+        RegisterBill billParam = new RegisterBill();
+        billParam.setId(registerBill.getId());
+        billParam.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+        billService.updateSelective(billParam);
+        // 更新检测请求
+        DetectRequest updateParam = new DetectRequest();
+        updateParam.setId(id);
+        updateParam.setDesignatedId(designatedId);
+        updateParam.setDesignatedName(designatedName);
+        updateParam.setModified(new Date());
+        this.updateSelective(updateParam);
+    }
 }

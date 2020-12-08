@@ -2,6 +2,7 @@ package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.DetectResultEnum;
+import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 
 import javax.persistence.*;
@@ -89,6 +90,12 @@ public class DetectRequest extends BaseDomain {
     public String getDetectSourceName() {
         return SampleSourceEnum.name(this.detectSource);
     }
+
+    @Transient
+    public String getDetectTypeName() {
+        return DetectTypeEnum.name(this.detectType);
+    }
+
     public Integer getDetectSource() {
         return detectSource;
     }

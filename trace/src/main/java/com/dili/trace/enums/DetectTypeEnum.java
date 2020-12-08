@@ -59,4 +59,8 @@ public enum DetectTypeEnum {
     public String getName() {
         return name;
     }
+
+    public static String name(Integer code) {
+        return DetectTypeEnum.fromCode(code).map(DetectTypeEnum::getName).orElse("");
+    }
 }

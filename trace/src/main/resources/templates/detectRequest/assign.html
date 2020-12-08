@@ -1,0 +1,54 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+
+                <div class="form-group">
+                    <label class="label-title text-right">创建时间</label>
+                    <input type="text" class="form-control input-sm"  value="${detectRequest.created!,dateFormat='yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>创建人</label>
+                    <input type="text" class="form-control input-sm" value="${detectRequest.creatorName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">报备单ID</label>
+                    <input type="text" class="form-control input-sm"  value="${detectRequest.billId}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>指定检测员</label>
+                    <input type="text" class="form-control input-sm"  id="designatedName" name="designatedName" value="${detectRequest.designatedName}" required/>
+                    <input type="text" class="form-control input-sm hidden" id="designatedId" name="designatedId"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>检测类型</label>
+                    <input type="text" class="form-control input-sm" value="${detectRequest.detectTypeName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>采样来源</label>
+                    <input type="text" class="form-control input-sm"  value="${detectRequest.detectSourceName}" required readonly/>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30">
+        <button class="btn-main2 btn-sm" onclick="callDoAssign()">审核</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
+    </div>
+</div>
+</#bodyOrigin>
+<script type="text/javascript">
+    async function callDoAssign(){
+        let designatedId = $("#designatedId").val();
+        let designatedName = $("#designatedName").val();
+        await parent.window['DetectRequestGridObj'].doAssign('${detectRequest.id}', designatedId, designatedName);
+    }
+</script>
