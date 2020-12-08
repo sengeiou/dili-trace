@@ -826,15 +826,19 @@ public class NewRegisterBillController {
     @RequestMapping("/queryEvents.action")
     @ResponseBody
     public List<String> queryEvents(@RequestBody List<Long> billIdList) {
+        List<RegisterBillMessageEvent>list= Lists.newArrayList(RegisterBillMessageEvent.add);
         if (billIdList == null || billIdList.size()==0) {
-            return Lists.newArrayList();
+            return StreamEx.of(list).map(msg -> {
+                return msg.getCode();
+            }).nonNull().toList();
         }
+        list.add(RegisterBillMessageEvent.export);
         if(billIdList.size()==1){
-           return StreamEx.of(this.registerBillService.queryEvents(billIdList.get(0))).map(msg -> {
+           return StreamEx.of(this.registerBillService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
         }else{
-            return StreamEx.of(this.queryBatchEvents(billIdList)).map(msg -> {
+            return StreamEx.of(this.queryBatchEvents(billIdList)).append(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
         }
