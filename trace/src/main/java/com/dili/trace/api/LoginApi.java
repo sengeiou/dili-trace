@@ -23,9 +23,9 @@ import java.util.Map;
 /**
  * 账号相关api
  */
-@Api(value = "/api/loginApi", description = "有关于帐号相关的接口")
-@RestController
-@RequestMapping(value = "/api/loginApi")
+//@Api(value = "/api/loginApi", description = "有关于帐号相关的接口")
+//@RestController
+//@RequestMapping(value = "/api/loginApi")
 public class LoginApi {
     private static final Logger logger = LoggerFactory.getLogger(LoginApi.class);
 

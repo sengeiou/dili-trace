@@ -36,7 +36,7 @@ import com.dili.ss.dto.IDTO;
 import com.dili.trace.dto.CheckSheetInputDto;
 import com.dili.trace.dto.CheckSheetPrintOutput;
 import com.dili.trace.dto.CheckSheetQueryDto;
-import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.trace.enums.BillTypeEnum;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

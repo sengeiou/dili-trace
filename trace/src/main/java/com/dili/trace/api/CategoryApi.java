@@ -30,8 +30,8 @@ import io.swagger.annotations.ApiOperation;
 /**
  * 品类查询接口
  */
-@RestController
-@RequestMapping(value = "/api/categoryApi")
+//@RestController
+//@RequestMapping(value = "/api/categoryApi")
 public class CategoryApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoryApi.class);
     @Autowired

@@ -1,7 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.DetectRecord;
@@ -143,6 +143,7 @@ public class CommissionBillController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(RegisterBillDto input) throws Exception {
+        input.setBillType(BillTypeEnum.COMMISSION_BILL.getCode());
         return this.commissionBillService.listEasyuiPageByExample(input,true).toString();
 
     }

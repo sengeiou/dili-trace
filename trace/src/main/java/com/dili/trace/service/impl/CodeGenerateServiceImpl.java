@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.sg.trace.glossary.CodeGenerateEnum;
 import com.dili.trace.service.BillService;
 import com.dili.ss.base.BaseServiceImpl;

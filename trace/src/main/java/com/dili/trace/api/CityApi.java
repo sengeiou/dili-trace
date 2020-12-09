@@ -21,8 +21,8 @@ import io.swagger.annotations.ApiOperation;
 /**
  * 城市查询接口
  */
-@RestController
-@RequestMapping(value = "/api/cityApi")
+//@RestController
+//@RequestMapping(value = "/api/cityApi")
 public class CityApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(CityApi.class);
 

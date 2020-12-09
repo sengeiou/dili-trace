@@ -7,7 +7,7 @@ import com.dili.trace.service.QrCodeService;
 import com.dili.trace.dto.CheckSheetAliasInputDto;
 import com.dili.trace.dto.CheckSheetInputDto;
 import com.dili.trace.dto.CheckSheetPrintOutput;
-import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.dto.OperatorUser;
 import org.apache.commons.collections4.CollectionUtils;
@@ -253,7 +253,7 @@ public class CheckSheetService extends BaseServiceImpl<CheckSheet, Long> {
 			throw new TraceBizException("所选登记(委托)单不属于相同类型");
 		}
 		BillTypeEnum billType = registerBillList.stream()
-				.map(dto -> BillTypeEnum.getBillTypeEnum(dto.getBillType()).orElse(null)).filter(Objects::nonNull)
+				.map(dto -> BillTypeEnum.fromCode(dto.getBillType()).orElse(null)).filter(Objects::nonNull)
 				.findFirst().orElse(null);
 
 		List<String> nameList = registerBillList.stream().map(RegisterBill::getName).filter(StringUtils::isNotBlank)
