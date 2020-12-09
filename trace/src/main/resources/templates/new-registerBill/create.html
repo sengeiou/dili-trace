@@ -252,6 +252,9 @@
     function returnBack(){
         history.go(-1);
     }
+    function closeWin() {
+
+    }
     /* 登记来源 */
     $('[name="registerSource"]').on('change', function () {
         if ($(this).val() === '1') {
@@ -519,7 +522,6 @@
         }
     }
 
-    
     /**
      * 初始化自动完成框
      */
@@ -670,7 +672,6 @@
         var registerBills = buildTableData(registerSource);
         var data=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
         console.info(data);
-        debugger
         $.ajax({
             type: "POST",
             url: "${contextPath}/newRegisterBill/insert.action",
@@ -679,27 +680,25 @@
             async : true,
             contentType: "application/json; charset=utf-8",
             success: function (ret) {
-                if(ret.success){
-
+                if (ret.success) {
                     var paramStr = JSON.stringify(ret.data);
                     var registerSource = $("#registerSource").val();
                     localStorage.setItem('registerSource',$("#registerSource").val());
                     localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
                     cacheInputtedPlate("#plate");
                     layer.alert('登记成功',{
-                            type:0,
-                            time : 600,
-                            end :function(){
-                                postMsg('removeAllAndLoadData');
-                            }
-                        },
-
-                        function () {
-                            postMsg('removeAllAndLoadData');
+                        type:0,
+                        time : 600,
+                        end :function(){
+                            // postMsg('removeAllAndLoadData');
+                            parent.window['RegisterBillGridObj'].removeAllAndLoadData()
                         }
+                    },
+                    function () {
+                        postMsg('removeAllAndLoadData');
+                    }
                     );
-
-                }else{
+                } else {
                     resubmit=0;
                     swal(
                         '错误',

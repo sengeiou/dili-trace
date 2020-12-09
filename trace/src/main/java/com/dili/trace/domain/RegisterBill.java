@@ -439,6 +439,15 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`has_handle_result`")
     private Integer hasHandleResult;
 
+    @ApiModelProperty(value = "产地证明")
+    @Column(name = "`origin_certifiy_url`")
+    private String originCertifiyUrl;
+
+
+    @ApiModelProperty(value = "检测报告")
+    @Column(name = "`detect_report_url`")
+    private String detectReportUrl;
+
     public Integer getDetectStatus() {
         return detectStatus;
     }
@@ -1358,4 +1367,19 @@ public class RegisterBill extends BaseDomain {
         this.productAliasName = productAliasName;
     }
 
+    public String getOriginCertifiyUrl() {
+        return originCertifiyUrl;
+    }
+
+    public void setOriginCertifiyUrl(String originCertifiyUrl) {
+        this.originCertifiyUrl = originCertifiyUrl;
+    }
+
+    public String getDetectReportUrl() {
+        return detectReportUrl;
+    }
+
+    public void setDetectReportUrl(String detectReportUrl) {
+        this.detectReportUrl = detectReportUrl;
+    }
 }

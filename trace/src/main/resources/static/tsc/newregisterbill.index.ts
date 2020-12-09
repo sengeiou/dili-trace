@@ -53,14 +53,11 @@ class NewRegisterBillGrid extends WebConfig {
         $('#audit-withoutDetect-btn').on('click',async ()=>await this.doAuditWithoutDetect());
         $('#review-btn').on('click',async ()=>await this.doReviewCheck());
 
-
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
        // this.grid.bootstrapTable('refreshOptions', {url: '/chargeRule/listPage.action', pageSize: parseInt(size)});
 
         // this.grid.bootstrapTable({'query-params':(params)=>this.buildQueryData(params)});
         this.queryform.find('#query').click(async () => await this.queryGridData());
-
-
 
         window.addEventListener('message', function(e) {
             var data=JSON.parse(e.data);
