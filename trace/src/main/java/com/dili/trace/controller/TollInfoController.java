@@ -9,6 +9,7 @@ import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.trace.service.CityService;
+import com.dili.trace.util.MarketUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +49,10 @@ public class TollInfoController {
     @RequestMapping("/category")
     @ResponseBody
     public Map<String, ?> listByName(String name, boolean allFlag) {
-        SessionData sessionData = loginSessionContext.getSessionData();
-
+        Long marketId = MarketUtil.returnMarket();
         CusCategoryQuery cusCategoryQuery = new CusCategoryQuery();
         cusCategoryQuery.setKeyword(name);
-        List<CusCategoryDTO> categorys = this.categoryService.listCusCategory(cusCategoryQuery, sessionData.getMarketId());
+        List<CusCategoryDTO> categorys = this.categoryService.listCusCategory(cusCategoryQuery, marketId);
 
         List<Map<String, Object>> list = Lists.newArrayList();
         if (categorys != null && !categorys.isEmpty()) {

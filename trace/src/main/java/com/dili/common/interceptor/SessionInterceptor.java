@@ -9,12 +9,14 @@ import com.dili.common.entity.LoginSessionContext;
 
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.components.SessionRedisService;
 import com.dili.trace.service.CustomerRpcService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.redis.UserRedis;
 import com.dili.uap.sdk.redis.UserUrlRedis;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     UserRedis userRedis;
     @Autowired
     UserUrlRedis userUrlRedis;
-
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -60,42 +62,73 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         }
         AppAccess access = findAnnotation((HandlerMethod) handler,
                 AppAccess.class);
-        if (access == null) {
-            SessionData sessionData = this.loginAsClient(request).orElseGet(() -> {
-               return this.loginAsManager(request).orElse(null);
-            });
-            this.sessionContext.setSessionData(sessionData);
-        }
-        if (access.role() == Role.Client) {
-            if (!this.customerRpcService.hasAccess(access)) {
-                throw new TraceBizException("没有权限访问");
+
+        try {
+            if (access == null) {
+                SessionData sessionData = this.loginAsClient(request).orElseGet(() -> {
+                    return this.loginAsManager(request).orElse(null);
+                });
+                this.sessionContext.setSessionData(sessionData);
             }
-            this.sessionContext.setSessionData(this.loginAsClient(request).get());
-        } else if (access.role() == Role.Manager) {
-            if (!this.uapRpcService.hasAccess(access)) {
-                throw new TraceBizException("没有权限访问");
+            if (access.role() == Role.Client) {
+                if (!this.customerRpcService.hasAccess(access)) {
+                    throw new TraceBizException("没有权限访问");
+                }
+                this.sessionContext.setSessionData(this.loginAsClient(request).get());
+            } else if (access.role() == Role.Manager) {
+                if (!this.uapRpcService.hasAccess(access)) {
+                    throw new TraceBizException("没有权限访问");
+                }
+                this.sessionContext.setSessionData(this.loginAsManager(request).get());
+            } else {
+                throw new TraceBizException("参数错误");
             }
-            this.sessionContext.setSessionData(this.loginAsManager(request).get());
-        } else {
-            throw new TraceBizException("参数错误");
+        } catch (TraceBizException e) {
+            return this.write401(response,e.getMessage());
+        } catch (Exception e) {
+            return this.writeError(response,e.getMessage());
         }
+
         this.sessionContext.getSessionData().setRole(access.role());
 
         return true;
     }
+    private boolean writeError(HttpServletResponse resp, String msg) {
+        try {
+            BaseOutput out = BaseOutput.failure(msg);
+            byte[] bytes = mapper.writeValueAsBytes(out);
+            resp.getOutputStream().write(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+
+    }
+    private boolean write401(HttpServletResponse resp, String msg) {
+        try {
+            BaseOutput out = BaseOutput.failure("401",msg);
+            byte[] bytes = mapper.writeValueAsBytes(out);
+            resp.getOutputStream().write(bytes);
+            resp.flushBuffer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+
+    }
 
     private Optional<SessionData> loginAsManager(HttpServletRequest req) {
 
-        String sessionId=req.getHeader("UAP_SessionId");
-        if(StringUtils.isBlank(sessionId)){
+        String sessionId = req.getHeader("UAP_SessionId");
+        if (StringUtils.isBlank(sessionId)) {
             return Optional.empty();
         }
-        UserTicket ut=this.userRedis.getUser(sessionId);
-        if(ut==null){
+        UserTicket ut = this.userRedis.getUser(sessionId);
+        if (ut == null) {
             return Optional.empty();
         }
-        String url="app_auth";
-        if(!this.userUrlRedis.checkUserMenuUrlRight(ut.getId(),url)){
+        String url = "app_auth";
+        if (!this.userUrlRedis.checkUserMenuUrlRight(ut.getId(), url)) {
             return Optional.empty();
         }
         SessionData sessionData = SessionData.fromUserTicket(ut);

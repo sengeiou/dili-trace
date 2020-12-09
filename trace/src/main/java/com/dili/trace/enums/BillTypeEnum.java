@@ -15,14 +15,7 @@ public enum BillTypeEnum {
 	 * 正常进场
 	 */
 	NONE(10, "正常进场"),
-	/**
-	 * 补单
-	 */
-	SUPPLEMENT(20, "补单"),
-	/**
-	 * 外冷分批进场
-	 */
-	PARTIAL(30, "外冷分批进场"),
+
 
 	/**
 	 * 报备单
@@ -48,6 +41,28 @@ public enum BillTypeEnum {
 	 * 进门登记单
 	 */
 	REGISTER_FORM_BILL(5, "进门登记单"),
+
+	/**
+	 * 委托单
+	 */
+	COMMISSION_BILL(6, "委托单"),
+	/**
+	 * 商务单
+	 */
+	E_COMMERCE_BILL(7, "商务单"),
+
+
+
+
+	/**
+	 * 补单
+	 */
+	SUPPLEMENT(20, "补单"),
+	/**
+	 * 外冷分批进场
+	 */
+	PARTIAL(30, "外冷分批进场"),
+	;
 
 	;
 

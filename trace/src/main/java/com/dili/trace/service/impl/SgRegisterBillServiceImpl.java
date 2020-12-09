@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.*;

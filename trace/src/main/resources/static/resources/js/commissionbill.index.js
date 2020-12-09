@@ -1,10 +1,10 @@
 class CommissionBillGrid extends WebConfig {
-    constructor(grid, queryform, billStateEnums, billDetectStateEnums) {
+    constructor(grid, queryform, toolbar) {
         super();
         this.grid = grid;
         this.queryform = queryform;
-        this.billStateEnums = billStateEnums;
-        this.billDetectStateEnums = billDetectStateEnums;
+        this.toolbar = toolbar;
+        this.btns = this.toolbar.find('button');
         window['commissionBillGrid'] = this;
         $('#add-btn').on('click', async () => await this.openCreatePage());
         $('#detail-btn').on('click', async () => await this.doDetail());
@@ -13,6 +13,80 @@ class CommissionBillGrid extends WebConfig {
         $('#batch-reviewCheck-btn').on('click', async () => await this.doReviewCheck());
         this.initAutoComplete($("[name='productName']"), '/toll/category');
         this.initAutoComplete($("[name='originName']"), '/toll/city');
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
+        this.grid.bootstrapTable('refreshOptions', { url: '/commissionBill/listPage.action',
+            'queryParams': (params) => this.buildQueryData(params),
+            'ajaxOptions': {}
+        });
+        this.queryform.find('#query').click(async () => await this.queryGridData());
+    }
+    resetButtons() {
+        var btnArray = ['detail-btn', 'createsheet-btn', 'audit-btn', 'batch-reviewCheck-btn'];
+        $.each(btnArray, function (i, btnId) {
+            $('#' + btnId).hide();
+        });
+    }
+    async checkAndShowHideBtns() {
+        this.resetButtons();
+        var rows = this.rows;
+        if (rows.length == 0) {
+            return;
+        }
+        if (this.isReviewCheck()) {
+            $('#batch-reviewCheck-btn').show();
+        }
+        var exists_detectState_pass = _.chain(rows).filter(item => {
+            return 50 == item.detectStatus;
+        }).filter(item => {
+            return !_.isUndefined(item.checkSheetId);
+        }).filter(item => {
+            return !_.isNull(item.checkSheetId);
+        }).filter(item => {
+            return !_.isEmpty(item.checkSheetId);
+        }).value().length > 0;
+        var hasName = false;
+        var hasCorporateName = false;
+        var rowsArray = $.makeArray(rows);
+        var nameArray = _.chain(rows).map(item => item.name).filter(item => !_.isEmpty(item)).value();
+        if (exists_detectState_pass) {
+            var distinctNameArray = nameArray.reduce(function (accumulator, currentValue, index, array) {
+                if ($.inArray(currentValue, array, index + 1) == -1) {
+                    accumulator.push(currentValue);
+                }
+                return accumulator;
+            }, []);
+            var corporateNameArray = _.chain(rows).map(item => item.corporateName).filter(item => !_.isEmpty(item)).value();
+            var distinctCorporateNameArray = corporateNameArray.reduce(function (accumulator, currentValue, index, array) {
+                if ($.inArray(currentValue, array, index + 1) == -1) {
+                    accumulator.push(currentValue);
+                }
+                return accumulator;
+            }, []);
+            $('#createsheet-btn').hide();
+            if (rowsArray.length == corporateNameArray.length && distinctCorporateNameArray.length == 1) {
+                $('#createsheet-btn').show();
+            }
+            else if (rowsArray.length == nameArray.length && distinctCorporateNameArray.length == 0 && distinctNameArray.length == 1) {
+                $('#createsheet-btn').show();
+            }
+            else {
+                $('#createsheet-btn').hide();
+            }
+        }
+        else {
+            $('#createsheet-btn').hide();
+        }
+        if (rows.length > 1) {
+            return;
+        }
+        var selected = rows[0];
+        if (0 == selected.verifyStatus) {
+            $('#audit-btn').show();
+        }
+        else {
+            $('#audit-btn').hide();
+        }
+        $('#detail-btn').show();
     }
     doCreateCheckSheet() {
         let row = this.grid.bootstrapTable("getSelections");
@@ -132,29 +206,23 @@ class CommissionBillGrid extends WebConfig {
             }
         });
     }
+    buildQueryData(params) {
+        let temp = {
+            rows: params.limit,
+            page: ((params.offset / params.limit) + 1) || 1,
+            sort: params.sort,
+            order: params.order
+        };
+        let data = $.extend(temp, this.queryform.serializeJSON());
+        let jsonData = jq.removeEmptyProperty(data);
+        return JSON.stringify(jsonData);
+    }
     async queryGridData() {
-        console.log("queryGridData");
         if (!this.queryform.validate().form()) {
             bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
             return;
         }
-        await this.remoteQuery();
-    }
-    async remoteQuery() {
-        $('#toolbar button').attr('disabled', "disabled");
-        this.grid.bootstrapTable('showLoading');
-        this.highLightBill = await this.findHighLightBill();
-        try {
-            let url = this.toUrl("/commissionBill/listPage.action");
-            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
-            this.grid.bootstrapTable('load', resp);
-        }
-        catch (e) {
-            console.error(e);
-            this.grid.bootstrapTable('load', { rows: [], total: 0 });
-        }
-        this.grid.bootstrapTable('hideLoading');
-        $('#toolbar button').removeAttr('disabled');
+        this.grid.bootstrapTable('refresh');
     }
     async findHighLightBill() {
         try {
@@ -170,10 +238,11 @@ class CommissionBillGrid extends WebConfig {
         return this.grid.bootstrapTable("getSelections");
     }
     findReviewCheckData() {
-        var detectStateArr = [this.billDetectStateEnums.NO_PASS, this.billDetectStateEnums.REVIEW_NO_PASS];
-        var alreadyCheckArray = this.filterByProp('$_state', this.billStateEnums.ALREADY_CHECK);
-        let values = _.chain(alreadyCheckArray).filter(element => $.inArray(element['$_detectState'], detectStateArr) > -1).value();
-        return values;
+        return _.chain(this.rows).filter(item => {
+            return 50 == item.detectStatus;
+        }).filter(item => !_.isUndefined(item.detectRequest)).filter(item => {
+            return 2 == item.detectRequest.detectResult;
+        }).value();
     }
     isReviewCheck() {
         return this.findReviewCheckData().length > 0;

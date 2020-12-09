@@ -48,9 +48,9 @@ import java.util.*;
 /**
  * 账号相关api
  */
-@Api(value = "/api/userApi", description = "有关于帐号相关的接口")
-@RestController
-@RequestMapping(value = "/api/userApi")
+//@Api(value = "/api/userApi", description = "有关于帐号相关的接口")
+//@RestController
+//@RequestMapping(value = "/api/userApi")
 public class UserApi {
     private static final Logger logger = LoggerFactory.getLogger(UserApi.class);
     @Autowired

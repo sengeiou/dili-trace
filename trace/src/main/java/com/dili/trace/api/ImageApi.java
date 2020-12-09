@@ -26,12 +26,11 @@ public class ImageApi {
      * 上传图片
      *
      * @param file
-     * @param type
      * @param compress
      * @return
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam Integer type, @RequestParam(required = false) Boolean compress) {
+    @RequestMapping(value = "/upload.api", method = RequestMethod.POST)
+    public BaseOutput<String> upload(@RequestParam MultipartFile file, @RequestParam(required = false) Boolean compress) {
         try {
             return this.dfsRpcService.uploadImage(file);
         } catch (Exception e) {
