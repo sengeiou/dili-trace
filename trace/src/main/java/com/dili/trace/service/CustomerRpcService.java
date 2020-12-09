@@ -65,44 +65,49 @@ public class CustomerRpcService {
      * @return
      */
     public Optional<SessionData> getCurrentCustomer() {
-        try {
-            //两个方法在没有使用JSF的项目中是没有区别的
-            RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-            //RequestContextHolder.getRequestAttributes();
-            //从session里面获取对应的值
-            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-            HttpServletResponse response = ((ServletRequestAttributes) requestAttributes).getResponse();
-
-            try {
-                Long userId = Long.parseLong(request.getHeader("userId"));
-                Long marketId = Long.parseLong(request.getHeader("marketId"));
-                CustomerQueryInput query = new CustomerQueryInput();
-                query.setId(userId);
-                query.setMarketId(marketId);
-                BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
-                if (out.isSuccess()) {
-                    return StreamEx.ofNullable(out.getData()).flatCollection(Function.identity()).nonNull().map(c -> {
-                        SessionData sessionData = new SessionData();
-                        sessionData.setUserId(c.getId());
-                        sessionData.setUserName(c.getName());
-                        sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
-                        return sessionData;
-                    }).findFirst();
-
-                }
-
-
-            } catch (Exception e) {
-                throw new TraceBizException("还没有登录");
-            }
-        } catch (Exception e) {
+        //两个方法在没有使用JSF的项目中是没有区别的
+        RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+        if (requestAttributes == null) {
             throw new TraceBizException("当前运行环境不是web请求环境");
         }
+        //RequestContextHolder.getRequestAttributes();
+        //从session里面获取对应的值
+        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+        HttpServletResponse response = ((ServletRequestAttributes) requestAttributes).getResponse();
+        if (request == null) {
+            throw new TraceBizException("当前运行环境不是web请求环境");
+        }
+
+
+        try {
+            Long userId = Long.parseLong(request.getHeader("userId"));
+            Long marketId = Long.parseLong(request.getHeader("marketId"));
+            CustomerQueryInput query = new CustomerQueryInput();
+            query.setId(userId);
+            query.setMarketId(marketId);
+            BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
+            if (out.isSuccess()) {
+                return StreamEx.ofNullable(out.getData()).flatCollection(Function.identity()).nonNull().map(c -> {
+                    SessionData sessionData = new SessionData();
+                    sessionData.setUserId(c.getId());
+                    sessionData.setUserName(c.getName());
+                    sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
+                    return sessionData;
+                }).findFirst();
+
+            }
+
+
+        } catch (Exception e) {
+            throw new TraceBizException("还没有登录");
+        }
+
         return Optional.empty();
     }
 
     /**
      * 角色转换
+     *
      * @param characterTypeList
      * @return
      */
@@ -135,10 +140,11 @@ public class CustomerRpcService {
      */
     public CustomerExtendDto findCustomerByIdOrEx(Long customerId, Long marketId) {
 
-        return this.findCustomerById(customerId,marketId).orElseThrow(()->{
+        return this.findCustomerById(customerId, marketId).orElseThrow(() -> {
             return new TraceBizException("查询客户信息失败");
         });
     }
+
     /**
      * 查询客户
      *
@@ -165,7 +171,6 @@ public class CustomerRpcService {
         PageOutput<List<CustomerExtendDto>> page = this.customerRpc.listPage(queryInput);
         return page;
     }
-
 
 
     /**
