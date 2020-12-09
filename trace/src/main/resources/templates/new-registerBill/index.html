@@ -11,9 +11,10 @@
             </div>
 
             <div class="form-group col">
-                <label for="productId">商品</label>
-                <select id="productId" name="productId" class="form-control"></select>
+                <label for="productName">商品</label>
+                <input id="productName" name="productName" class="form-control" />
             </div>
+
             <div class="form-group col">
                 <label for="tradeTypeId">交易区</label>
                 <select id="tradeTypeId" name="tradeTypeId" class="form-control"></select>
@@ -21,8 +22,8 @@
             </div>
 
             <div class="form-group col">
-                <label for="originId">产地</label>
-                <select id="originId" name="originId" class="form-control"></select>
+                <label for="originName">产地</label>
+                <input id="originName" name="originName" class="form-control" />
             </div>
 
             <div class="form-group col">
@@ -49,17 +50,29 @@
 
             <div class="form-group col">
                 <label for="hasDetectReport">检测报告</label>
-                <select id="hasDetectReport" name="hasDetectReport" class="form-control"></select>
+                <select id="hasDetectReport" name="hasDetectReport" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
             </div>
 
             <div class="form-group col">
                 <label for="hasOriginCertifiy">产地证明</label>
-                <select id="hasOriginCertifiy" name="hasOriginCertifiy" class="form-control"></select>
+                <select id="hasOriginCertifiy" name="hasOriginCertifiy" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
             </div>
 
             <div class="form-group col">
                 <label for="hasHandleResult">处理结果</label>
-                <select id="hasHandleResult" name="hasHandleResult" class="form-control"></select>
+                <select id="hasHandleResult" name="hasHandleResult" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
             </div>
 
             <div class="form-group col">
@@ -71,15 +84,15 @@
             <div class="form-group col">
                 <label for="isDeleted">是否已删除</label>
                 <select id="isDeleted" name="isDeleted" class="form-control">
-                    <option value="">全部</option>
+                    <option value="">--请选择--</option>
                     <option value="1">是</option>
                     <option value="0">否</option>
                 </select>
             </div>
 
             <div class="form-group col">
-                <label for="likeUserName">业户姓名</label>
-                <input type="text" class="form-control" name="likeUserName" id="likeUserName"/>
+                <label for="likeName">业户姓名</label>
+                <input type="text" class="form-control" name="likeName" id="likeName"/>
             </div>
 
             <div class="form-group col">
@@ -175,7 +188,7 @@
             <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
         <table id="registerBillGrid" data-toggle="table" data-title="客户列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
-               data-side-pagination="server" data-method="POST" data-content-type="application/json" data-single-select="false"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
                data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
             <thead>
@@ -193,7 +206,7 @@
                 <th data-field="sampleCode" data-sortable="true" data-align="center">
                     采样编号
                 </th>
-                <th data-field="tallyAreaNo" data-sortable="true" data-align="center" data-provider="certificateTypeProvider">
+                <th data-field="tallyAreaNo" data-sortable="true" data-align="center">
                     理货区号
                 </th>
                 <th data-field="tradeTypeName" data-sortable="true" data-align="center">
@@ -235,13 +248,13 @@
                 <th data-field="pieceWeight" data-sortable="true" data-align="center">
                     件重
                 </th>
-                <th data-field="hasOriginCertifiy" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
+                <th data-field="hasOriginCertifiyName" data-sortable="true" data-align="center">
                     产地证明
                 </th>
-                <th data-field="hasDetectReport" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
+                <th data-field="hasDetectReportName" data-sortable="true" data-align="center">
                     检测报告
                 </th>
-                <th data-field="hasHandleResult" data-sortable="true" data-align="center" data-provider="enabledStateProvider">
+                <th data-field="hasHandleResultName" data-sortable="true" data-align="center">
                     处理结果
                 </th>
                 <th data-field="verifyStatusName" data-sortable="true" data-align="center" >
@@ -304,8 +317,21 @@
         });
     });
     $(function () {
+        $('#registerBillGrid').bootstrapTable('refreshOptions', {
+            url: '/newRegisterBill/listPage.action'
+        });
         new NewRegisterBillGrid($('#registerBillGrid'),$('#queryForm'),$('#toolbar'));
     });
+    //基础查询参数设置
+    function queryParams(params) {
+        let temp = {
+            rows: params.limit,   //页面大小
+            page: ((params.offset / params.limit) + 1) || 1, //页码
+            sort: params.sort,
+            order: params.order
+        };
+        return $.extend(temp, bui.util.bindGridMeta2Form('registerBillGrid', 'queryForm'));
+    }
 </script>
 
 

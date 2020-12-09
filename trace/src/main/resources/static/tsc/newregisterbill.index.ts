@@ -12,13 +12,14 @@ class NewRegisterBillGrid extends WebConfig {
 
     constructor(grid: any, queryform: any, toolbar: any) {
         super();
-
-
         this.grid = grid;
         this.queryform = queryform;
         this.toolbar=toolbar;
         this.btns=this.toolbar.find('button');
         this.uid=_.uniqueId("trace_id_");
+
+        this.initAutoComplete($("[name='productName']"),'/toll/category');
+        this.initAutoComplete($("[name='originName']"),'/toll/city');
 
         $(window).on('resize',()=> this.grid.bootstrapTable('resetView') );
 
@@ -51,11 +52,6 @@ class NewRegisterBillGrid extends WebConfig {
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
        // this.grid.bootstrapTable('refreshOptions', {url: '/chargeRule/listPage.action', pageSize: parseInt(size)});
 
-        this.grid.bootstrapTable('refreshOptions', {url: '/newRegisterBill/listPage.action'
-            ,'queryParams':(params)=>this.buildQueryData(params)
-            ,'ajaxOptions':{}
-
-        });
         // this.grid.bootstrapTable({'query-params':(params)=>this.buildQueryData(params)});
         this.queryform.find('#query').click(async () => await this.queryGridData());
 

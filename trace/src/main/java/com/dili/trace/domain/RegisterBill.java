@@ -1,20 +1,17 @@
 package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.trace.enums.*;
-import com.dili.trace.glossary.BillDetectStateEnum;
-import com.dili.trace.glossary.RegisterBillStateEnum;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.DetectStatusEnum;
+import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.TFEnum;
 import io.swagger.annotations.ApiModelProperty;
-import one.util.streamex.StreamEx;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -685,6 +682,21 @@ public class RegisterBill extends BaseDomain {
     @Transient
     public String getBillTypeName() {
         return BillTypeEnum.fromCode(this.getBillType()).map(BillTypeEnum::getName).orElse("");
+    }
+
+    @Transient
+    public String getHasOriginCertifiyName() {
+        return this.getHasOriginCertifiy() == 1 ? "有" : "无";
+    }
+
+    @Transient
+    public String getHasDetectReportName() {
+        return this.getHasDetectReport() == 1 ? "有" : "无";
+    }
+
+    @Transient
+    public String getHasHandleResultName() {
+        return this.getHasHandleResult() == 1 ? "有" : "无";
     }
 
     @Transient
