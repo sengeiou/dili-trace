@@ -1,7 +1,12 @@
 package com.dili.trace.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
-import com.dili.trace.enums.BillTypeEnum;
+import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.trace.domain.ImageCert;
+import com.dili.trace.dto.CreateListBillParam;
+import com.dili.trace.enums.*;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.domain.DetectRecord;
@@ -10,6 +15,7 @@ import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
@@ -142,40 +148,68 @@ public class CommissionBillController {
             @ApiImplicitParam(name = "CommissionBill", paramType = "form", value = "CommissionBill的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody  RegisterBillDto input) throws Exception {
-        return this.commissionBillService.listPage(input);
+    Object listPage(@RequestBody  RegisterBillDto input) throws Exception {
+        return JSON.parse(this.commissionBillService.listPage(input));
 
     }
 
     /**
      * 新增CommissionBill
      *
-     * @param inputBillList
+     * @param input
      * @return
      */
     @ApiOperation("新增CommissionBill")
     @RequestMapping(value = "/insert.action", method = RequestMethod.POST)
     public @ResponseBody
-    BaseOutput insert(@RequestBody List<RegisterBill> inputBillList) {
-        List<RegisterBill> billList = ListUtils.emptyIfNull(inputBillList).stream().filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        LOGGER.info("保存委托单数据:" + billList.size());
-        if (billList.isEmpty()) {
-            return BaseOutput.failure("没有提交数据");
+    BaseOutput insert(@RequestBody CreateListBillParam input) {
+
+        if (input == null) {
+            return BaseOutput.failure("参数错误");
         }
 
-        for (RegisterBill bill : billList) {
-            bill.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
-        }
+        List<RegisterBill> billList = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity())
+                .nonNull()
+                .map(rbInputDto -> {
+                    CustomerExtendDto customer=new CustomerExtendDto();
+                    RegisterBill rb = rbInputDto.build(customer,this.uapRpcService.getCurrentFirm().orElse(null).getId());
+                    rb.setIdCardNo(input.getIdCardNo());
+                    rb.setName(input.getName());
+                    rb.setCorporateName(input.getCorporateName());
+                    rb.setPhone(input.getPhone());
+                    rb.setPlate(input.getPlate());
+                    rb.setAddr(input.getAddr());
+                    rb.setUserId(input.getUserId());
+                    List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
+                            , rbInputDto.getHandleResultUrl(), rbInputDto.getOriginCertifiyUrl());
+                    rb.setImageCerts(imageList);
+                    rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
+                    rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
+                    rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
+                    rb.setTallyAreaNo(input.getTallyAreaNo());
+                    rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
+                    rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
+                    rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
+                    rb.setTruckType(TruckTypeEnum.FULL.getCode());
+                    rb.setIsCheckin(YesOrNoEnum.NO.getCode());
+                    rb.setIsDeleted(YesOrNoEnum.NO.getCode());
+                    rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
+                    // 理货类型为交易区时才保存交易区号和id
+                    if (RegisterSourceEnum.TRADE_AREA.getCode().equals(input.getRegisterSource())) {
+                        rb.setTradeTypeId(input.getTradeTypeId());
+                        rb.setTradeTypeName(input.getTradeTypeName());
+                    }
+                    return rb;
+                }).toList();
         try {
             this.commissionBillService.createCommissionBillByManager(billList, this.uapRpcService.getCurrentOperator().get());
-            return BaseOutput.success("新增成功");
+            return BaseOutput.success("新增成功").setData(billList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-            return BaseOutput.failure("服务器出错，请重试");
+            return BaseOutput.failure("服务器出错,请重试");
         }
+
 
     }
 

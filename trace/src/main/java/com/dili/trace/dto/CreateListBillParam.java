@@ -70,6 +70,7 @@ public class CreateListBillParam {
      */
     private String detectReportUrl;
 
+    private String corporateName;
     public String getTradeTypeName() {
         return tradeTypeName;
     }
@@ -190,5 +191,13 @@ public class CreateListBillParam {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getCorporateName() {
+        return corporateName;
+    }
+
+    public void setCorporateName(String corporateName) {
+        this.corporateName = corporateName;
     }
 }

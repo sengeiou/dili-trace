@@ -108,6 +108,13 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/jqueryWrapper.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/CityController.js"></script>
+<script src="${contextPath!}/resources/js/CategoryController.js"></script>
+
 <script type="text/javascript">
     //初始化控件
     var ed = $('.editableSelect').editableSelect({
@@ -123,14 +130,25 @@
 
 
     let goodsItemCount = 0;
+    function createAndAppendTemplate(){
+        var tempHtml=template('goodsItem', {index: goodsItemCount++});
+        var tempId=$(tempHtml).attr('id');
+        $('#goodsTable tbody').append(tempHtml);
+        var tempEl=$('#'+tempId);
+        var productNameEl=tempEl.find('input[name*="productName"]');
+        var originNameEl=tempEl.find('input[name*="originName"]');
+        var originCertifiyUrlEl=tempEl.find('input[id*="originCertifiyUrl"]');
+        initAutoComplete(productNameEl,'/toll/category');
+        initAutoComplete(originNameEl,'/toll/city')
+
+        initFileUpload1(originCertifiyUrlEl);
+
+
+    }
+
     $(function () {
         $('#registerSource').focus();
-        $('#goodsTable tbody').append(template('goodsItem', {index: ++goodsItemCount}));
-        initFileUpload('#detectReportUrlFile');
-        initFileUpload1('#originCertifiyUrl_'+goodsItemCount);
-        initAutoComplete('#productName_'+goodsItemCount,'/toll/category');
-        initAutoComplete('#originName_'+goodsItemCount,'/toll/city');
-
+        createAndAppendTemplate();
         if(typeof(initWithLocalStorage)=='undefined'||initWithLocalStorage==true){
             if(!location.hash){
                 var registerSource = localStorage.getItem('registerSource');
@@ -479,35 +497,7 @@
 
 
     function buildTableData(registerSource){
-        var registerBills = new Array();
 
-        let index = 0;
-        $("#goodsTable").find("tbody").find("tr").each(function(){
-            var registerBill = new Object();
-            registerBill.registerSource=registerSource;
-            if(registerBill.registerSource==1){
-                registerBill.tallyAreaNo=$("#tallyAreaNo").val();
-                registerBill.userId = $("#userId").val();
-            }else{
-                registerBill.tradeAccount=$("#tradeAccount").val();
-                registerBill.tradePrintingCard=$("#tradePrintingCard").val();
-                // registerBill.tradeTypeName=$("#tradeTypeName").val();
-                registerBill.tradeTypeId=$("#tradeTypeId").val();
-            }
-            registerBill.plate=$("input[name='plate']").val();
-            registerBill.name=$("#name").val();
-            registerBill.idCardNo=$("#idCardNo").val();
-            registerBill.addr=$("#addr").val();
-            registerBill.detectReportUrl = $("#detectReportUrl").val();
-            registerBill.phone = $("#phone").val();
-            registerBill.corporateName = $("#corporateName").val();
-            $(this).find("input").each(function(t,el){
-                let fieldName = $(this).attr("name").split('_')[0];
-                registerBill[fieldName] = $(this).val();
-            });
-            registerBills.push(registerBill);
-        });
-        return registerBills;
     }
     function cachePlate(plate){
         if(jQuery.type(plate) === "string"&&plate.trim().length>0){
@@ -559,6 +549,7 @@
             );
             return;
         }
+        debugger
         if($.trim($("#name").val())==''&&$.trim($("#corporateName").val())==''){
             swal(
                 '错误',
@@ -576,12 +567,12 @@
         // console.log("参数:"+$('#createRecordForm').serialize());
 
         var registerSource = $("#registerSource").val();
-        var registerBills = buildTableData(registerSource);
-
+        var data=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        console.info(data);
         $.ajax({
             type: "POST",
             url: "${contextPath}/commissionBill/insert.action",
-            data :  JSON.stringify(registerBills),
+            data :  JSON.stringify(data),
             dataType: "json",
             async : true,
             contentType: "application/json; charset=utf-8",
@@ -765,31 +756,27 @@
     }
 </script>
 
-<script type="text/javascript">
-
-
-</script>
-
 
 <script id="goodsItem" type="text/html">
-    <tr>
+    <tr id="goodsItem_{{index}}">
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm isSelected" name="productName_{{index}}" id="productName_{{index}}" required />
-                <input type="text" name="productId_{{index}}" hidden value="" />
+                <input type="text" class="form-control input-sm isSelected" name="registerBills[{{index}}][productName]" id="registerBills[{{index}}][productName]" required />
+                <input type="text" name="registerBills[{{index}}][productId]" hidden value=""/>
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text" name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}" required />
-                <input type="text" name="originId_{{index}}" hidden value="" />
+                <input type="text"   name="registerBills[{{index}}][originName]" class="form-control input-sm isSelected originaNameInput" id="registerBills[{{index}}][originName]" required />
+                <input type="text" name="registerBills[{{index}}][originId]" hidden value="" />
             </div>
         </td>
         <td>
             <div class="form-group">
-                <input type="text" class="form-control input-sm isInt" name="weight_{{index}}" maxlength="6" range="0 999999" value="0" />
+                <input type="text" class="form-control input-sm isInt" name="registerBills[{{index}}][weight]" maxlength="6"  range="0 999999" value="0" />
             </div>
         </td>
+
         <td><a href="javascript:;" class="split-minus-btn">删除</a></td>
     </tr>
 

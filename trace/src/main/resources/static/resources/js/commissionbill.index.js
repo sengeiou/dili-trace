@@ -15,7 +15,7 @@ class CommissionBillGrid extends WebConfig {
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
         this.grid.bootstrapTable('refreshOptions', { url: '/commissionBill/listPage.action',
             'queryParams': (params) => this.buildQueryData(params),
-            'ajaxOptions': {}
+            'ajaxOptions': { contentType: 'application/json', dataType: 'json' }
         });
         this.queryform.find('#query').click(async () => await this.queryGridData());
     }

@@ -26,17 +26,13 @@ class CommissionBillGrid extends WebConfig{
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
         this.grid.bootstrapTable('refreshOptions', {url: '/commissionBill/listPage.action'
             ,'queryParams':(params)=>this.buildQueryData(params)
-            ,'ajaxOptions':{}
+            ,'ajaxOptions':{contentType:'application/json',dataType:'json'}
 
         });
         // this.grid.bootstrapTable({'query-params':(params)=>this.buildQueryData(params)});
         this.queryform.find('#query').click(async () => await this.queryGridData());
 
 
-        //load data
-        /*(async ()=>{
-            await this.queryGridData();
-        })();*/
     }
     private resetButtons(){
         var btnArray=['detail-btn','createsheet-btn','audit-btn','batch-reviewCheck-btn'];
