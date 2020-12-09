@@ -10,16 +10,19 @@ class CommissionBillGrid extends WebConfig{
         this.grid = grid;
         this.queryform = queryform;
         this.toolbar=toolbar;
-        //this.btns=this.toolbar.find('button');
+        this.btns=this.toolbar.find('button');
         window['commissionBillGrid']=this;
         $('#add-btn').on('click',async ()=>await this.openCreatePage());
         $('#detail-btn').on('click',async ()=>await this.doDetail());
-        $('#audit-btn').on('click',async ()=>await this.audit());
-        $('#createsheet-btn').on('click',async ()=>await this.doCreateCheckSheet());
-        $('#batch-reviewCheck-btn').on('click',async ()=>await this.doReviewCheck());
 
-        this.initAutoComplete($("[name='productName']"),'/toll/category');
-        this.initAutoComplete($("[name='originName']"),'/toll/city');
+        let categoryController:CategoryController=new CategoryController();
+        let cityController:CityController=new CityController();
+
+
+        this.initAutoComplete($("[name='productName']"), function (query, done){ categoryController.lookupCategories(query,done)});
+        this.initAutoComplete($("[name='originName']"), function (query, done){ cityController.lookupCities(query,done)});
+
+
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
         this.grid.bootstrapTable('refreshOptions', {url: '/commissionBill/listPage.action'
             ,'queryParams':(params)=>this.buildQueryData(params)
@@ -35,92 +38,6 @@ class CommissionBillGrid extends WebConfig{
             await this.queryGridData();
         })();*/
     }
-
-    private doCreateCheckSheet(){
-        let  row= this.grid.bootstrapTable("getSelections");
-        if (row.length == 0) {
-            //@ts-ignore
-            bs4pop.alert("请选择一条数据", {type: 'warning'});
-            return;
-        }
-
-        var idList=row.map(function(v,i){return v.id});
-        let param = $.param({idList:idList},true);
-        let url = this.toUrl("/checkSheet/edit.html?" + param);
-        //@ts-ignore
-        var audit_dia = bs4pop.dialog({
-            title: '创建打印报告单',
-            content: url,
-            isIframe: true,
-            closeBtn: true,
-            backdrop: 'static',
-            width: '50%',
-            height: '70%',
-            btns: [],
-            onShowEnd:function(){
-            }
-        });
-    }
-
-    private  audit(){
-        let  row= this.grid.bootstrapTable("getSelections");
-        if (row.length == 0) {
-            //@ts-ignore
-            bs4pop.alert("请选择一条数据", {type: 'warning'});
-            return;
-        }
-        if (row.length > 1) {
-            //@ts-ignore
-            bs4pop.alert("请选择数据过多", {type: 'warning'});
-            return;
-        }
-        console.log(row);
-        let url = this.toUrl("/commissionBill/audit.html?billId=" + row[0].id);
-        //@ts-ignore
-        var audit_dia = bs4pop.dialog({
-            title: '审核',
-            content: url,
-            isIframe: true,
-            closeBtn: true,
-            backdrop: 'static',
-            width: '50%',
-            height: '51%',
-            btns: [],
-            onShowEnd:function(){
-                //dia.$el.find('iframe')[0].contentWindow['RegisterBillGridObj']=cthis;
-            }
-        });
-
-    }
-    public doAudit(id){
-        let url = this.toUrl("/commissionBill/doAuditCommissionBillByManager.action");
-        $.ajax({
-            type: "POST",
-            data:{billId:id},
-            url: url,
-            processData:true,
-            dataType: "json",
-            async : true,
-            success: function (ret) {
-                if(ret.success){
-                    //TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
-                    // layer.alert('操作成功',{title:'操作',time : 3000});
-                    // @ts-ignore
-                    bs4pop.alert("操作成功", {type: 'success'}, function () {
-                            window['commissionBillGrid'].removeAllAndLoadData();
-                        });
-                }else{
-                    //@ts-ignore
-                    bs4pop.alert("操作失败", {type: 'warning'});
-                }
-            },
-            error: function(){
-                //@ts-ignore
-                bs4pop.alert("操作失败", {type: 'error'});
-            }
-        });
-    }
-
     private resetButtons(){
         var btnArray=['detail-btn','createsheet-btn','audit-btn','batch-reviewCheck-btn'];
         $.each(btnArray,function(i,btnId){
@@ -128,7 +45,6 @@ class CommissionBillGrid extends WebConfig{
         })
 
     }
-
 
     private async checkAndShowHideBtns() {
 
@@ -229,12 +145,11 @@ class CommissionBillGrid extends WebConfig{
     }
 
     private doDetail(){
-        let  row= this.grid.bootstrapTable("getSelections");
+        let  row= this.rows();
         if (row.length == 0) {
-            //@ts-ignore
-            bs4pop.alert("请选择一条数据", {type: 'warning'});
             return;
         }
+        console.log(row);
         let selected_id=row[0].id;
         let url = this.toUrl('/commissionBill/view/' + selected_id +'/true');
         //@ts-ignore
@@ -244,7 +159,7 @@ class CommissionBillGrid extends WebConfig{
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '78%',
+            width: '98%',
             height: '98%',
             btns: [],
             onShowEnd:function(){

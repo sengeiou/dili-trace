@@ -5,8 +5,10 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.domain.CharacterType;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.PageOutput;
@@ -144,7 +146,7 @@ public class ManagerUserApi {
     @RequestMapping(value = "/listSeller.api", method = RequestMethod.POST)
     public PageOutput<List<CustomerExtendDto>> listSeller(@RequestBody CustomerQueryInput input) {
         try {
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listPage(input);
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.customerRpcService.listSeller(input,this.sessionContext.getSessionData().getMarketId());
             return pageOutput;
         } catch (TraceBizException e) {
             return PageOutput.failure(e.getMessage());

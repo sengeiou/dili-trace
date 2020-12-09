@@ -10,7 +10,18 @@ class WebConfig {
     toUrl(url) {
         return this.contextPath + url;
     }
-    initAutoComplete(selector, url) {
+    onselectFun(suggestion) {
+        var self = this;
+        var forId = $(self).attr("for");
+        if (!_.isEmpty(forId)) {
+            var idField = $('#' + forId);
+            idField.val(suggestion.id);
+        }
+        $(self).val(suggestion.value.trim());
+        $(self).data('oldvalue', suggestion.value);
+        var v = $(self).valid();
+    }
+    initAutoComplete(selector, lookupFun, onSelect = this.onselectFun) {
         $(selector).keydown(function (e) {
             if (e.keyCode == 13) {
             }
@@ -25,7 +36,7 @@ class WebConfig {
         });
         $(selector).devbridgeAutocomplete({
             noCache: 1,
-            serviceUrl: url,
+            lookup: lookupFun,
             dataType: 'json',
             onSearchComplete: function (query, suggestions) {
             },
@@ -33,15 +44,7 @@ class WebConfig {
             noSuggestionNotice: "不存在，请重输！",
             autoSelectFirst: true,
             autoFocus: true,
-            onSelect: function (suggestion) {
-                console.info('onSelect');
-                var self = this;
-                var idField = $(self).siblings('input');
-                idField.val(suggestion.id);
-                $(self).val(suggestion.value.trim());
-                $(selector).data('oldvalue', suggestion.value);
-                var v = $(self).valid();
-            }
+            onSelect: onSelect
         });
     }
 }

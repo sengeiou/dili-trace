@@ -76,10 +76,11 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
                 }
                 this.sessionContext.setSessionData(this.loginAsClient(request).get());
             } else if (access.role() == Role.Manager) {
-                if (!this.uapRpcService.hasAccess(access)) {
+                SessionData sessionData=this.loginAsManager(request).orElse(null);
+                if (sessionData==null) {
                     throw new TraceBizException("没有权限访问");
                 }
-                this.sessionContext.setSessionData(this.loginAsManager(request).get());
+                this.sessionContext.setSessionData(sessionData);
             } else {
                 throw new TraceBizException("参数错误");
             }
@@ -118,19 +119,20 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     }
 
     private Optional<SessionData> loginAsManager(HttpServletRequest req) {
-
-        String sessionId = req.getHeader("UAP_SessionId");
-        if (StringUtils.isBlank(sessionId)) {
+        System.out.println(req.getHeaderNames());
+        String userToken = req.getHeader("UAP_Token");
+        if (StringUtils.isBlank(userToken)) {
             return Optional.empty();
         }
-        UserTicket ut = this.userRedis.getUser(sessionId);
+
+        UserTicket ut = this.userRedis.getTokenUser(userToken);
         if (ut == null) {
             return Optional.empty();
         }
-        String url = "app_auth";
-        if (!this.userUrlRedis.checkUserMenuUrlRight(ut.getId(), url)) {
-            return Optional.empty();
-        }
+//        String url = "app_auth";
+//        if (!this.userUrlRedis.checkUserMenuUrlRight(ut.getId(), url)) {
+//            return Optional.empty();
+//        }
         SessionData sessionData = SessionData.fromUserTicket(ut);
         return Optional.ofNullable(sessionData);
     }

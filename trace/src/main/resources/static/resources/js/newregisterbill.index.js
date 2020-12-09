@@ -8,8 +8,10 @@ class NewRegisterBillGrid extends WebConfig {
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
         this.uid = _.uniqueId("trace_id_");
-        this.initAutoComplete($("[name='productName']"), '/toll/category');
-        this.initAutoComplete($("[name='originName']"), '/toll/city');
+        let categoryController = new CategoryController();
+        let cityController = new CityController();
+        this.initAutoComplete($("[name='productName']"), function (query, done) { categoryController.lookupCategories(query, done); });
+        this.initAutoComplete($("[name='originName']"), function (query, done) { cityController.lookupCities(query, done); });
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['RegisterBillGridObj'] = this;
