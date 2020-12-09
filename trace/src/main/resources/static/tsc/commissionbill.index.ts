@@ -10,7 +10,7 @@ class CommissionBillGrid extends WebConfig{
         this.grid = grid;
         this.queryform = queryform;
         this.toolbar=toolbar;
-        this.btns=this.toolbar.find('button');
+        //this.btns=this.toolbar.find('button');
         window['commissionBillGrid']=this;
         $('#add-btn').on('click',async ()=>await this.openCreatePage());
         $('#detail-btn').on('click',async ()=>await this.doDetail());
@@ -229,11 +229,12 @@ class CommissionBillGrid extends WebConfig{
     }
 
     private doDetail(){
-        let  row= this.rows();
+        let  row= this.grid.bootstrapTable("getSelections");
         if (row.length == 0) {
+            //@ts-ignore
+            bs4pop.alert("请选择一条数据", {type: 'warning'});
             return;
         }
-        console.log(row);
         let selected_id=row[0].id;
         let url = this.toUrl('/commissionBill/view/' + selected_id +'/true');
         //@ts-ignore
@@ -243,7 +244,7 @@ class CommissionBillGrid extends WebConfig{
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '98%',
+            width: '78%',
             height: '98%',
             btns: [],
             onShowEnd:function(){
