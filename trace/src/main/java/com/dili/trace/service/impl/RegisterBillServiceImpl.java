@@ -119,14 +119,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     @Override
     public List<Long> createBillList(List<CreateRegisterBillInputDto> registerBills, Long customerId,
                                      Optional<OperatorUser> operatorUser, Long marketId) {
-        CustomerExtendDto user = this.clientRpcService.findCustomerById(customerId, marketId).orElseThrow(() -> {
-
-            return new TraceBizException("客户不存在");
-        });
-
-        if (!CustomerEnum.ApprovalStatus.PASSED.getCode().equals(user.getCustomerMarket().getApprovalStatus())) {
-            throw new TraceBizException("用户未审核通过不能创建报备单");
-        }
+        CustomerExtendDto user = this.clientRpcService.findApprovedCustomerByIdOrEx(customerId, marketId);
 
         return StreamEx.of(registerBills).nonNull().map(dto -> {
             logger.info("循环保存登记单:" + JSON.toJSONString(dto));

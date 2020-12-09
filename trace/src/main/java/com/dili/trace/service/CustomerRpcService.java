@@ -112,10 +112,11 @@ public class CustomerRpcService {
      * @return
      */
     private List<CustomerEnum.CharacterType> convert(List<CharacterType> characterTypeList) {
-        List<CustomerEnum.CharacterType> subRoles = new ArrayList<>();
-        subRoles.add(CustomerEnum.CharacterType.经营户);
-        subRoles.add(CustomerEnum.CharacterType.买家);
-        subRoles.add(CustomerEnum.CharacterType.其他类型);
+        List<CustomerEnum.CharacterType> subRoles = StreamEx.ofNullable(characterTypeList)
+                .flatCollection(Function.identity()).nonNull()
+                .map(CharacterType::getCharacterType)
+                .filter(StringUtils::isNotBlank)
+                .map(CustomerEnum.CharacterType::getInstance).nonNull().toList();
         return subRoles;
     }
 
@@ -162,6 +163,22 @@ public class CustomerRpcService {
     }
 
     /**
+     * 查询客户
+     *
+     * @param customerId
+     * @return
+     */
+    public CustomerExtendDto findApprovedCustomerByIdOrEx(Long customerId, Long marketId) {
+        CustomerExtendDto customer = this.findCustomerByIdOrEx(customerId, marketId);
+        if (!CustomerEnum.ApprovalStatus.PASSED.getCode().equals(customer.getCustomerMarket().getApprovalStatus())) {
+            throw new TraceBizException("用户未审核通过不能创建报备单");
+        }
+        return customer;
+    }
+
+    /**
+     * return Optional.empty();
+     * }
      * 分页查询
      *
      * @param queryInput
@@ -174,18 +191,19 @@ public class CustomerRpcService {
 
     /**
      * 查询经营户
+     *
      * @param queryInput
      * @param marketId
      * @return
      */
-    public PageOutput<List<CustomerExtendDto>> listSeller(CustomerQueryInput queryInput,Long marketId){
+    public PageOutput<List<CustomerExtendDto>> listSeller(CustomerQueryInput queryInput, Long marketId) {
 
-            CharacterType seller=new CharacterType();
-            seller.setCharacterType(CustomerEnum.CharacterType.经营户.getCode());
-            queryInput.setCharacterType(seller);
-            queryInput.setMarketId(marketId);
-            PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
-            return pageOutput;
+        CharacterType seller = new CharacterType();
+        seller.setCharacterType(CustomerEnum.CharacterType.经营户.getCode());
+        queryInput.setCharacterType(seller);
+        queryInput.setMarketId(marketId);
+        PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
+        return pageOutput;
     }
 
     /**

@@ -44,10 +44,7 @@ public class SessionData {
      * 摊位号
      */
     private String tallyAreaNos;
-    /**
-     * 验证状态
-     */
-    private Integer validateState;
+
     /**
      * 二维码状态
      */
@@ -56,14 +53,7 @@ public class SessionData {
      * 市场名称
      */
     private String marketName;
-    /**
-     * 登录时间
-     */
-    private Date loginDateTime;
-    /**
-     * 过期
-     */
-    private boolean invalidate;
+
     /**
      * sessionid
      */
@@ -76,6 +66,9 @@ public class SessionData {
      * 用户微信菜单
      */
     private Set<String> userWeChatMenus;
+    public boolean hasSubRole(CustomerEnum.CharacterType role){
+        return this.subRoles==null?false:this.subRoles.contains(role);
+    }
 
     public <T extends AbstraceIdName> Optional<T> to() {
         if (Role.Manager == this.role) {
@@ -158,7 +151,6 @@ public class SessionData {
         data.userId = user.getId();
         data.userName = user.getName();
         data.tallyAreaNos = user.getTallyAreaNos();
-        data.validateState = -1;
         data.qrStatus = -1;
         data.marketId = user.getMarketId();
         data.marketName = user.getMarketName();
@@ -230,12 +222,6 @@ public class SessionData {
         this.tallyAreaNos = tallyAreaNos;
     }
 
-    /**
-     * @param validateState the validateState to set
-     */
-    public void setValidateState(Integer validateState) {
-        this.validateState = validateState;
-    }
 
     /**
      * @param qrStatus the qrStatus to set
@@ -249,34 +235,6 @@ public class SessionData {
      */
     public void setMarketName(String marketName) {
         this.marketName = marketName;
-    }
-
-    /**
-     * @return Date return the loginDateTime
-     */
-    public Date getLoginDateTime() {
-        return loginDateTime;
-    }
-
-    /**
-     * @param loginDateTime the loginDateTime to set
-     */
-    public void setLoginDateTime(Date loginDateTime) {
-        this.loginDateTime = loginDateTime;
-    }
-
-    /**
-     * @return boolean return the invalidate
-     */
-    public boolean isInvalidate() {
-        return invalidate;
-    }
-
-    /**
-     * @param invalidate the invalidate to set
-     */
-    public void setInvalidate(boolean invalidate) {
-        this.invalidate = invalidate;
     }
 
     /**
@@ -300,12 +258,6 @@ public class SessionData {
         return tallyAreaNos;
     }
 
-    /**
-     * @return the validateState
-     */
-    public Integer getValidateState() {
-        return validateState;
-    }
 
     /**
      * @return the qrStatus

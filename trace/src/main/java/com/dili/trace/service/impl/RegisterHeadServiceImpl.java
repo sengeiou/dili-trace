@@ -68,14 +68,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     public List<Long> createRegisterHeadList(List<CreateRegisterHeadInputDto> registerHeads, Long customerId,
                                              Optional<OperatorUser> operatorUser,Long marketId) {
 
-        CustomerExtendDto customer=this.clientRpcService.findCustomerById(customerId,marketId).orElseThrow(()->{
-            return  new TraceBizException("未能查找到客户信息");
-
-
-        });
-        if (!CustomerEnum.ApprovalStatus.PASSED.getCode().equals(customer.getCustomerMarket().getApprovalStatus())) {
-            throw new TraceBizException("用户未审核通过不能创建报备单");
-        }
+        CustomerExtendDto customer=this.clientRpcService.findApprovedCustomerByIdOrEx(customerId,marketId);
 
         return StreamEx.of(registerHeads).nonNull().map(dto -> {
             logger.info("循环保存进门主台账单:" + JSON.toJSONString(dto));
