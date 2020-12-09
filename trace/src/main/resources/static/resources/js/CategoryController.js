@@ -1,6 +1,7 @@
-class CategoryController {
-    static async listCategories(cusCategoryQuery) {
-        let resp = await jq.postJson('../../category/listCategories.action', cusCategoryQuery);
+class CategoryController extends WebConfig {
+    async listCategories(cusCategoryQuery) {
+        let url = this.toUrl("/category/listCategories.action");
+        let resp = await jq.postJson(url, cusCategoryQuery);
         if (resp.code == '200') {
             return resp.data;
         }
@@ -8,8 +9,9 @@ class CategoryController {
             throw new Error(resp.message);
         }
     }
-    static async listSuggestionsCategories(cusCategoryQuery) {
-        let resp = await jq.postJson('../../category/listCategories.action', cusCategoryQuery);
+    async listSuggestionsCategories(cusCategoryQuery) {
+        let url = this.toUrl("/category/listCategories.action");
+        let resp = await jq.postJson(url, cusCategoryQuery);
         if (resp.code == '200') {
             return _.chain(resp.data).map(item => {
                 return { "id": item.id, "value": item.name };
@@ -18,6 +20,13 @@ class CategoryController {
         else {
             throw new Error(resp.message);
         }
+    }
+    lookupCategories(query, done) {
+        (async () => {
+            let data = await this.listSuggestionsCategories({ 'keyword': query });
+            var result = { 'suggestions': data };
+            done(result);
+        })();
     }
 }
 //# sourceMappingURL=CategoryController.js.map

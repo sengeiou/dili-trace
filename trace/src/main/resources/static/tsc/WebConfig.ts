@@ -12,8 +12,21 @@ class WebConfig{
     public toUrl(url:string):string{
         return this.contextPath+url;
     }
+    private onselectFun(suggestion){
+        // console.info('onSelect')
+        var self = this;
+        var forId=$(self).attr("for");
+        if(!_.isEmpty(forId)){
+            var idField = $('#'+forId);
+            idField.val(suggestion.id);
+        }
+        $(self).val(suggestion.value.trim());
+        $(self).data('oldvalue',suggestion.value);
+        //@ts-ignore
+        var v=$(self).valid();
 
-    public initAutoComplete(selector,url){
+    }
+    public initAutoComplete(selector,lookupFun:Function,onSelect:Function=this.onselectFun){
         $(selector).keydown(function (e){
             if(e.keyCode == 13){
                 // $(selector).data('keycode',e.keyCode);
@@ -33,7 +46,8 @@ class WebConfig{
         // 联想输入
         $(selector).devbridgeAutocomplete({
             noCache: 1,
-            serviceUrl: url,  // 数据地址
+            //serviceUrl: url,  // 数据地址
+            lookup: lookupFun,
             dataType: 'json',
             onSearchComplete: function (query, suggestions) {
             },
@@ -41,17 +55,7 @@ class WebConfig{
             noSuggestionNotice: "不存在，请重输！",
             autoSelectFirst:true,
             autoFocus: true,
-            onSelect: function (suggestion) {
-                console.info('onSelect')
-                var self = this;
-                var idField = $(self).siblings('input');
-                idField.val(suggestion.id);
-                $(self).val(suggestion.value.trim());
-                $(selector).data('oldvalue',suggestion.value);
-
-                //@ts-ignore
-                var v=$(self).valid();
-            }
+            onSelect: onSelect
         });
     }
 
