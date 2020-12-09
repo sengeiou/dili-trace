@@ -11,6 +11,7 @@ class DetectRequestGridGrid extends WebConfig {
         $('#assign-btn').on('click', async () => await this.openAssignPage());
         $('#confirm-btn').on('click', async () => await this.openConfirmPage());
         this.queryform.find('#query').click(async () => await this.queryGridData());
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
     }
     async queryGridData() {
         if (!this.queryform.validate().form()) {
@@ -29,7 +30,7 @@ class DetectRequestGridGrid extends WebConfig {
         var row = this.rows[0];
         var url = this.toUrl('/detectRequest/assign.html?id=' + row.id);
         var dia = bs4pop.dialog({
-            title: '分配检测员',
+            title: '指派检测员',
             content: url,
             isIframe: true,
             closeBtn: true,
@@ -63,7 +64,6 @@ class DetectRequestGridGrid extends WebConfig {
             bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
         }
         catch (e) {
-            debugger;
             bs4pop.alert('远程访问失败', { type: 'error' });
         }
     }
@@ -71,6 +71,28 @@ class DetectRequestGridGrid extends WebConfig {
     }
     get rows() {
         return this.grid.bootstrapTable('getSelections');
+    }
+    resetButtons() {
+        var btnArray = this.btns;
+        _.chain(btnArray).each((btn) => {
+            $('#' + btn).hide();
+        });
+    }
+    async checkAndShowHideBtns() {
+        debugger;
+        this.resetButtons();
+        let rows = this.rows;
+        try {
+            if (rows.length > 0) {
+                let detectStatus = rows[0].detectStatus;
+                if (detectStatus == 0 || detectStatus == '') {
+                    $('#assign-btn').show();
+                }
+            }
+        }
+        catch (e) {
+            console.error(e);
+        }
     }
 }
 //# sourceMappingURL=detectRequest.index.js.map

@@ -227,18 +227,15 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         // 查询报备单信息
         List<Map<?,?>> requests = out.getRows();
         if (CollectionUtils.isNotEmpty(requests)) {
-
             for (Map r : requests) {
                 RegisterBill registerBill = billService.get((Long)r.get("billId"));
                 r.put("detectStatus", registerBill.getDetectStatus());
+                r.put("detectStatusName", registerBill.getDetectStatusName());
                 r.put("billCode", registerBill.getCode());
-//                r.setDetectStatus(registerBill.getDetectStatus());
-//                r.setBillCode(registerBill.getCode());
             }
         }
 
         out.setRows(requests);
-
         return out;
     }
 
@@ -258,13 +255,16 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         if (registerBill == null) {
             throw new RuntimeException("检测请求关联的报备单据不存在。");
         }
-        if (registerBill.getDetectStatus() >= DetectStatusEnum.WAIT_DESIGNATED.getCode()) {
+        if (registerBill.getDetectStatus() != null && registerBill.getDetectStatus() >= DetectStatusEnum.WAIT_DESIGNATED.getCode()) {
             throw new RuntimeException("检测请求已接单，不可再分配检测员。");
         }
         // 更新报备单检测状态
         RegisterBill billParam = new RegisterBill();
         billParam.setId(registerBill.getId());
         billParam.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+        billParam.setHasDetectReport(registerBill.getHasDetectReport());
+        billParam.setHasOriginCertifiy(registerBill.getHasOriginCertifiy());
+        billParam.setHasHandleResult(registerBill.getHasHandleResult());
         billService.updateSelective(billParam);
         // 更新检测请求
         DetectRequest updateParam = new DetectRequest();
