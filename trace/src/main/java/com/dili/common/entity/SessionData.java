@@ -177,6 +177,7 @@ public class SessionData {
         SessionData data = new SessionData();
         data.userId = ut.getId();
         data.userName = ut.getRealName();
+        data.marketId=ut.getFirmId();
         return data;
     }
 

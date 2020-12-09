@@ -97,7 +97,7 @@ public class MarketServiceImpl implements MarketService {
         Optional<List<Firm>> res = this.firmRpcService.getFirms(DTOUtils.newDTO(FirmDto.class));
         List<Firm> firms = res.orElse(new ArrayList<>());
         // 过滤掉非激活和集团市场
-        List<Market> filteredFirms = StreamEx.of(firms).filter(f -> f.getState() == 1 && !"group".equals(f.getCode())).map(f -> {
+        List<Market> filteredFirms = StreamEx.of(firms).filter(f -> f.getFirmState() == 1 && !"group".equals(f.getCode())).map(f -> {
             Market market = new Market();
             market.setId(f.getId());
             market.setCode(f.getCode());

@@ -119,12 +119,13 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     }
 
     private Optional<SessionData> loginAsManager(HttpServletRequest req) {
-
-        String sessionId = req.getHeader("UAP_Token");
-        if (StringUtils.isBlank(sessionId)) {
+        System.out.println(req.getHeaderNames());
+        String userToken = req.getHeader("UAP_Token");
+        if (StringUtils.isBlank(userToken)) {
             return Optional.empty();
         }
-        UserTicket ut = this.userRedis.getUser(sessionId);
+
+        UserTicket ut = this.userRedis.getTokenUser(userToken);
         if (ut == null) {
             return Optional.empty();
         }

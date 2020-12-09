@@ -172,6 +172,21 @@ public class CustomerRpcService {
         return page;
     }
 
+    /**
+     * 查询经营户
+     * @param queryInput
+     * @param marketId
+     * @return
+     */
+    public PageOutput<List<CustomerExtendDto>> listSeller(CustomerQueryInput queryInput,Long marketId){
+
+            CharacterType seller=new CharacterType();
+            seller.setCharacterType(CustomerEnum.CharacterType.经营户.getCode());
+        queryInput.setCharacterType(seller);
+        queryInput.setMarketId(marketId);
+            PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
+            return pageOutput;
+    }
 
     /**
      * 查询客户信息
