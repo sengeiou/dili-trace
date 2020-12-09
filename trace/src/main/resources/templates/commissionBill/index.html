@@ -92,7 +92,7 @@
 
             <div class="col-auto align-self-center mt-3">
                 <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
-                <button id="query" type="button" class="btn btn-outline-primary" onclick="search()"><i class="fa fa-search"></i> 查询</button>
+                <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
             </div>
         </div>
     </form>
@@ -100,14 +100,14 @@
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
             <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
-            <button id="audit-btn" type="button" class="btn btn-primary"><i class="fa  fa-user"></i> 进场审核</button>
-            <button id="batch-reviewCheck-btn" type="button" class="btn btn-primary"><i class="fa  fa-check-square-o"></i> 批量复检</button>
-            <button id="createsheet-btn" type="button" class="btn btn-primary"><i class="fa  fa-plus"></i> 创建打印报告</button>
-            <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa  fa-list"></i> 查看</button>
-            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('commissionBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <button id="audit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa  fa-user"></i> 进场审核</button>
+            <button id="batch-reviewCheck-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa  fa-check-square-o"></i> 批量复检</button>
+            <button id="createsheet-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa  fa-plus"></i> 创建打印报告</button>
+            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa  fa-list"></i> 查看</button>
+            <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('commissionBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
         <table id="commissionBillGrid" data-toggle="table" data-title="委托登记单列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
-               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/json" data-single-select="false"
                data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
             <thead>
@@ -192,43 +192,8 @@
         type: 'datetime'
     });
     $(function () {
-        var RegisterBillStateEnum={};
-    <%for (ss in @com.dili.trace.glossary.RegisterBillStateEnum.values()){%>
-            RegisterBillStateEnum['${ss}']=${ss.code};
-        <%}%>
-
-        var BillDetectStateEnum={};
-    <%for (ss in @com.dili.trace.glossary.BillDetectStateEnum.values()){%>
-            BillDetectStateEnum['${ss}']=${ss.code};
-        <%}%>
-
-        var commissionBillGrid=new CommissionBillGrid($('#commissionBillGrid'),$('#queryForm'),RegisterBillStateEnum,BillDetectStateEnum);
-
-        $('#commissionBillGrid').bootstrapTable('refreshOptions', {
-            url: '/commissionBill/listPage.action',
-            onCheck:onClickRow,
-            onUncheck:onClickRow
-        });
-        initBtnStatus();
+        var commissionBillGrid=new CommissionBillGrid($('#commissionBillGrid'),$('#queryForm'),$('#toolbar'));
     });
-
-    function search(){
-        $("#commissionBillGrid").bootstrapTable('refresh');
-    }
-    //基础查询参数设置,ts中调用不到bui.util
-    function queryParams(params) {
-        let temp = {
-            rows: params.limit,   //页面大小
-            page: ((params.offset / params.limit) + 1) || 1, //页码
-            sort: params.sort,
-            order: params.order
-        };
-        return $.extend(temp, bui.util.bindGridMeta2Form('commissionBillGrid', 'queryForm'));
-    }
-
-</script>
-
-<script type="text/javascript">
 
     window._commissionBillGrid = $('#commissionBillGrid');
     function onBeforeLoad(param) {
@@ -260,33 +225,6 @@
         }
     }
 
-    function queryPlatesByTallyAreaNo(tallyAreaNo){
-        //console.info(tallyAreaNo)
-        //console.info(tallyAreaNo)
-        $('#likePlate').combobox('loadData', [])
-        if(tallyAreaNo&&tallyAreaNo!=''){
-            $.ajax({
-                type: "POST",
-                url: "${contextPath}/user/findPlatesByTallyAreaNo.action",
-                processData: true,
-                dataType: "json",
-                data: { tallyAreaNo: tallyAreaNo },
-                async: true,
-                success: function (ret) {
-                    if (ret.success) {
-                        $('#likePlate').combobox('loadData', ret.data)
-                    } else {
-                        //$('#plate').combobox('loadData',[])
-                    }
-                },
-                error: function () {
-                    // $('#plate').combobox('loadData',[])
-                }
-            });
-
-        }
-    }
-
     function onPlateChange(v){
         if(v&&v!='全部'){
             queryCommissionBillGrid();
@@ -306,119 +244,8 @@
         });
     }
 
-    function initBtnStatus(){
-        var btnArray=['detail-btn','createsheet-btn','audit-btn','batch-reviewCheck-btn'];
-        $.each(btnArray,function(i,btnId){
-            //$('#' + btnId).linkbutton('enable');
-            $('#'+btnId).hide();
-        })
 
-    }
-
-    function onUnselectAll (){
-        onClickRow();
-    }
-    function onSelectAll(){
-        onClickRow();
-    }
-    function onUnselect(index,row){
-        onClickRow(index, row);
-    }
-
-    /**
-     * datagrid行点击事件
-     * 目前用于来判断 启禁用是否可点
-     */
-    function onClickRow(index,row) {
-
-        initBtnStatus();
-        var rows=_commissionBillGrid.bootstrapTable("getSelections");
-        console.log(rows);
-        if(rows.length==0){
-            return;
-        }
-        if(window['commissionBillGrid'].isReviewCheck()){
-            $('#batch-reviewCheck-btn').show();
-        }
-        var rows=_commissionBillGrid.bootstrapTable("getSelections");
-
-        var exists_detectState_pass=$.makeArray(rows).filter(function(v,i){
-            var detectState=v.$_detectState;
-            if(!_.isUndefined(detectState)){
-                return true;
-            }
-            return false;
-        }).filter(function(v,i){
-            if(v.$_checkSheetId&&v.$_checkSheetId!=null&&v.$_checkSheetId!=''){
-                return false;
-            }else{
-                return true;
-            }
-        }).length>0;
-
-        var hasName=false;
-        var hasCorporateName=false;
-        var rowsArray=$.makeArray(rows);
-
-        var nameArray=rowsArray.map(function(v,i){
-            return v.name;
-        }).filter(function(v,i){
-            return $.trim(v) != '';
-        });
-
-        if(exists_detectState_pass){
-            var distinctNameArray=nameArray.reduce(function(accumulator, currentValue, index, array ){
-                if($.inArray(currentValue,array,index+1)==-1){
-                    accumulator.push(currentValue);
-                }
-                return accumulator;
-            },[] );
-
-            var corporateNameArray=rowsArray.map(function(v,i){
-                return v.corporateName;
-            }).filter(function(v,i){
-                return $.trim(v) != '';
-            })
-
-            var distinctCorporateNameArray=corporateNameArray.reduce(function(accumulator, currentValue, index, array ){
-                if($.inArray(currentValue,array,index+1)==-1){
-                    accumulator.push(currentValue);
-                }
-                return accumulator;
-            },[] );
-
-            $('#createsheet-btn').hide();
-
-            if(rowsArray.length==corporateNameArray.length&&distinctCorporateNameArray.length==1){ //全部都有企业名称，且企业名称相同
-                $('#createsheet-btn').show();
-            }else if(rowsArray.length==nameArray.length&&distinctCorporateNameArray.length==0&&distinctNameArray.length==1){ //全部没有企业名称，且业户名称相同
-                $('#createsheet-btn').show();
-            }else{
-                $('#createsheet-btn').hide();
-            }
-        }else{
-            $('#createsheet-btn').hide();
-        }
-
-        if(rows.length>1){
-            //batch
-            return;
-        }
-        var selected = rows[0];
-        //console.info(selected)
-        if(selected.$_state=='${@com.dili.trace.glossary.RegisterBillStateEnum.WAIT_AUDIT.getCode()}'){
-            $('#audit-btn').show();
-        }else{
-            $('#audit-btn').hide();
-        }
-
-        $('#detail-btn').show();
-
-
-        var state = selected.$_state;
-        var detectState= selected.$_detectState;
-
-    } async function audit(){
+    async function audit(){
         var selected = _commissionBillGrid.datagrid("getSelected");
         if (null == selected) {
             swal({
