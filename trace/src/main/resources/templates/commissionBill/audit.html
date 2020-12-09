@@ -28,6 +28,10 @@
 
             </div>
         </form>
+        <div class="text-center mt30">
+            <button class="btn-main2 btn-sm" onclick="parent.window['commissionBillGrid'].doAudit('${item.id}')">通过</button>&nbsp;&nbsp;
+            <button class="btn-greyweak btn-sm" onclick="parent.window['commissionBillGrid'].removeAllAndLoadData()">取消</button>
+        </div>
     </div>
     <!--<div class="text-center mt30">
         <button class="btn-main2 btn-sm" onclick="audit()">通过</button>&nbsp;&nbsp;
@@ -35,5 +39,3 @@
     </div>-->
 </div>
 </#bodyOrigin>
-<script>
-</script>
