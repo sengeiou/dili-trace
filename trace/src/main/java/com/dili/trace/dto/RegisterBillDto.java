@@ -173,6 +173,13 @@ public class RegisterBillDto extends RegisterBill {
     @Like(value = "RIGHT")
     private String likePlate;
     /**
+     * 报备单号
+     */
+    @ApiModelProperty(value = "报备单号LIKE")
+    @Column(name = "code")
+    @Like
+    private String likeCode;
+    /**
      * 关键字
      */
     @Transient
@@ -449,5 +456,13 @@ public class RegisterBillDto extends RegisterBill {
 
     public void setHasCheckSheet(Boolean hasCheckSheet) {
         this.hasCheckSheet = hasCheckSheet;
+    }
+
+    public String getLikeCode() {
+        return likeCode;
+    }
+
+    public void setLikeCode(String likeCode) {
+        this.likeCode = likeCode;
     }
 }

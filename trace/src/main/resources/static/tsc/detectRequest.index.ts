@@ -24,6 +24,8 @@ class DetectRequestGridGrid extends WebConfig {
         // 绑定查询按钮事件
         this.queryform.find('#query').click(async () => await this.queryGridData());
 
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
+
         // ？？？
         // window.addEventListener('message', function(e) {
         //     var data=JSON.parse(e.data);
@@ -62,11 +64,12 @@ class DetectRequestGridGrid extends WebConfig {
      * 进入分配检测员页面
      */
     private async  openAssignPage(){
+
         var row=this.rows[0]
         var url=this.toUrl('/detectRequest/assign.html?id='+row.id);
         //@ts-ignore
         var dia = bs4pop.dialog({
-            title: '分配检测员',
+            title: '指派检测员',
             content: url,
             isIframe: true,
             closeBtn: true,
@@ -116,7 +119,6 @@ class DetectRequestGridGrid extends WebConfig {
             //@ts-ignore
             bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
         }catch (e){
-            debugger
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
         }
@@ -131,5 +133,27 @@ class DetectRequestGridGrid extends WebConfig {
 
     get rows() {
         return  this.grid.bootstrapTable('getSelections');
+    }
+
+    private resetButtons() {
+        var btnArray=this.btns;
+        _.chain(btnArray).each((btn)=> {
+            $('#'+btn).hide();
+        });
+    }
+    private async checkAndShowHideBtns(){
+        debugger
+        this.resetButtons();
+        let rows=this.rows;
+        try {
+            if (rows.length > 0) {
+                let detectStatus = rows[0].detectStatus;
+                if (detectStatus == 0 || detectStatus == '') {
+                    $('#assign-btn').show();
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
     }
 }

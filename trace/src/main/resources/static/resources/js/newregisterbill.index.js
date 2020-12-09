@@ -8,6 +8,8 @@ class NewRegisterBillGrid extends WebConfig {
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
         this.uid = _.uniqueId("trace_id_");
+        this.initAutoComplete($("[name='productName']"), '/toll/category');
+        this.initAutoComplete($("[name='originName']"), '/toll/city');
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['RegisterBillGridObj'] = this;
@@ -31,10 +33,6 @@ class NewRegisterBillGrid extends WebConfig {
         $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-        this.grid.bootstrapTable('refreshOptions', { url: '/newRegisterBill/listPage.action',
-            'queryParams': (params) => this.buildQueryData(params),
-            'ajaxOptions': {}
-        });
         this.queryform.find('#query').click(async () => await this.queryGridData());
         window.addEventListener('message', function (e) {
             var data = JSON.parse(e.data);
