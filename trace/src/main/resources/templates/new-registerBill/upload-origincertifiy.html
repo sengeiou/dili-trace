@@ -78,8 +78,12 @@
                 </div>
                 <br>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>状态</label>
-                    <input type="text" class="form-control input-sm"value="${registerBill.stateName}" required readonly/>
+                    <label class="label-title text-right"><span class="red">&lowast;</span>审核状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.verifyStatusName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.detectStatusName}" required readonly/>
                 </div>
                 <% if(registerBill.registerSource == 2){ %>
                 <div class="form-group">
@@ -100,10 +104,11 @@
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
                     <input class="form-control input-sm" value="${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
                 </div>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.detectStateName}" required readonly/>
-                </div>
+<!--                registerBill.detectResultName!-->
+<!--                <div class="form-group">-->
+<!--                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>-->
+<!--                    <input type="text" class="form-control input-sm"  value="${registerBill.latestPdResult!}" required readonly/>-->
+<!--                </div>-->
                 <div class="form-group" >
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测数值</label>
                     <input type="text" class="form-control input-sm"   value="${registerBill.latestPdResult!}" readonly/>
@@ -288,7 +293,7 @@
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
 
 <script>
-var currentUser={"depId":"${user.depId!}"
+var currentUser={"depId":"${user.departmentId!}"
 	,"id":"${user.id!}"
 	,"realName":"${user.realName!}"
 	,"userName":"${user.userName!}"
