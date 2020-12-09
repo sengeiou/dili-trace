@@ -182,8 +182,8 @@ public class CustomerRpcService {
 
             CharacterType seller=new CharacterType();
             seller.setCharacterType(CustomerEnum.CharacterType.经营户.getCode());
-        queryInput.setCharacterType(seller);
-        queryInput.setMarketId(marketId);
+            queryInput.setCharacterType(seller);
+            queryInput.setMarketId(marketId);
             PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
             return pageOutput;
     }
