@@ -9,6 +9,7 @@ import com.dili.common.annotation.AppAccess;
 import com.dili.common.entity.LoginSessionContext;
 
 import com.dili.trace.service.UapRpcService;
+import com.dili.uap.sdk.redis.UserRedis;
 import com.dili.uap.sdk.session.SessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 	private LoginSessionContext sessionContext;
 	@Autowired
 	UapRpcService uapRpcService;
+	@Autowired
+	UserRedis userRedis;
 
 
 

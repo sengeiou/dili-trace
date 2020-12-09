@@ -12,6 +12,10 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.components.SessionRedisService;
 import com.dili.trace.service.CustomerRpcService;
 import com.dili.trace.service.UapRpcService;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.redis.UserRedis;
+import com.dili.uap.sdk.redis.UserUrlRedis;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +46,10 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
     UapRpcService uapRpcService;
     @Autowired
     CustomerRpcService customerRpcService;
+    @Autowired
+    UserRedis userRedis;
+    @Autowired
+    UserUrlRedis userUrlRedis;
 
 
     @Override
@@ -53,8 +61,8 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         AppAccess access = findAnnotation((HandlerMethod) handler,
                 AppAccess.class);
         if (access == null) {
-            SessionData sessionData = this.loginAsClient().orElseGet(() -> {
-               return this.loginAsManager().orElse(null);
+            SessionData sessionData = this.loginAsClient(request).orElseGet(() -> {
+               return this.loginAsManager(request).orElse(null);
             });
             this.sessionContext.setSessionData(sessionData);
         }
@@ -62,42 +70,39 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             if (!this.customerRpcService.hasAccess(access)) {
                 throw new TraceBizException("没有权限访问");
             }
-            this.sessionContext.setSessionData(this.loginAsClient().get());
+            this.sessionContext.setSessionData(this.loginAsClient(request).get());
         } else if (access.role() == Role.Manager) {
             if (!this.uapRpcService.hasAccess(access)) {
                 throw new TraceBizException("没有权限访问");
             }
-            this.sessionContext.setSessionData(this.loginAsManager().get());
+            this.sessionContext.setSessionData(this.loginAsManager(request).get());
         } else {
             throw new TraceBizException("参数错误");
         }
         this.sessionContext.getSessionData().setRole(access.role());
-//        Boolean initialized = (Boolean) request.getAttribute(ATTRIBUTE_CONTEXT_INITIALIZED);
-//        if (Boolean.TRUE.equals(initialized)) {
-//            return true;
-//        }
-//        String sessionId = getSessionId(request);
-//        if (StringUtils.isBlank(sessionId)) {
-//            return true;
-//        }
-//        loadData(request, response, sessionId);
-        // 检车禁用用户
-//        checkDisableUsers(request, response);
-//        request.setAttribute(ATTRIBUTE_CONTEXT_INITIALIZED, Boolean.TRUE);
+
         return true;
     }
 
-    private Optional<SessionData> loginAsManager() {
+    private Optional<SessionData> loginAsManager(HttpServletRequest req) {
 
-        SessionData sessionData = this.uapRpcService.getCurrentUserTicket().map(ut -> {
-            return SessionData.fromUserTicket(ut);
-        }).orElseGet(() -> {
-            return null;
-        });
+        String sessionId=req.getHeader("UAP_SessionId");
+        if(StringUtils.isBlank(sessionId)){
+            return Optional.empty();
+        }
+        UserTicket ut=this.userRedis.getUser(sessionId);
+        if(ut==null){
+            return Optional.empty();
+        }
+        String url="app_auth";
+        if(!this.userUrlRedis.checkUserMenuUrlRight(ut.getId(),url)){
+            return Optional.empty();
+        }
+        SessionData sessionData = SessionData.fromUserTicket(ut);
         return Optional.ofNullable(sessionData);
     }
 
-    private Optional<SessionData> loginAsClient() {
+    private Optional<SessionData> loginAsClient(HttpServletRequest req) {
         return this.customerRpcService.getCurrentCustomer();
     }
 
@@ -107,38 +112,5 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             return annotation;
         return handler.getBeanType().getAnnotation(annotationType);
     }
-//
-//    /**
-//     * 检查禁用用户
-//     *
-//     * @param request
-//     * @param response
-//     */
-//    private void checkDisableUsers(HttpServletRequest request, HttpServletResponse response) {
-//        // if (redisService.sHasKey(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,
-//        // sessionContext.getAccountId())) {
-//        // deleteSession(response, request);
-//        // sessionContext.setInvalidate(true);
-//        // }
-//    }
-//
-//    @Override
-//    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-//                           ModelAndView modelAndView) throws Exception {
-//        this.sessionRedisService.refresh(this.sessionContext.getSessionData());
-//
-//    }
 
-//    private void loadData(HttpServletRequest request, HttpServletResponse response, String sessionId) {
-//        this.sessionRedisService.loadFromRedis(sessionId).ifPresent(sd -> {
-//            // sd.setToLoginSessionContext(this.sessionContext);
-//            this.sessionContext.setSessionData(sd);
-//        });
-//
-//    }
-//
-//    private String getSessionId(HttpServletRequest request) {
-//        return StrUtil.isNotBlank(request.getHeader("sessionId")) ? request.getHeader("sessionId")
-//                : request.getParameter("sessionId");
-//    }
 }
