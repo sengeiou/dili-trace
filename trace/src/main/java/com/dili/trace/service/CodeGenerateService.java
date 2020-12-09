@@ -1,6 +1,6 @@
 package com.dili.trace.service;
 
-import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.CodeGenerate;
 

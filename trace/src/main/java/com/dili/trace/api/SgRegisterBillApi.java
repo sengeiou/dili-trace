@@ -8,6 +8,7 @@ import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.sg.trace.glossary.*;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;

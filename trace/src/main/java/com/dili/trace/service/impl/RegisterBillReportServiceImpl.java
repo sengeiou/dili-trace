@@ -16,7 +16,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dto.GroupByProductReportDto;
 import com.dili.trace.dto.RegisterBillReportQueryDto;
-import com.dili.sg.trace.glossary.BillTypeEnum;
+import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.service.RegisterBillReportService;
 
 
