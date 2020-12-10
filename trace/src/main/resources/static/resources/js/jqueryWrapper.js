@@ -1,32 +1,31 @@
 class jq {
-    static async ajax(settings) {
-        const p = new Promise((resolve, reject) => {
+    static async ajax(settings, beforeStartFun = function () { }, alwaysFun = function () { }) {
+        beforeStartFun();
+        let p = new Promise((resolve, reject) => {
             $.ajax(settings).done((result) => {
                 resolve(result);
             }).fail((e) => {
                 reject(e);
+            }).always(() => {
+                alwaysFun();
             });
         });
-        return p;
+        let resp = await p;
+        return resp;
+    }
+    static defaultBeforeStart() {
+        return () => {
+            bui.loading.show('努力提交中，请稍候。。。');
+        };
+    }
+    static defaultAlwaysFun() {
+        return () => {
+            bui.loading.show('努力提交中，请稍候。。。');
+        };
     }
     static async ajaxWithProcessing(settings) {
-        bui.loading.show('努力提交中，请稍候。。。');
-        const p = new Promise((resolve, reject) => {
-            $.ajax(settings).done((result) => {
-                resolve(result);
-            }).fail((e) => {
-                reject(e);
-            });
-        });
-        try {
-            var resp = await p;
-            bui.loading.hide();
-            return resp;
-        }
-        catch (e) {
-            bui.loading.hide();
-            throw e;
-        }
+        let resp = await jq.ajax(settings, jq.defaultBeforeStart, jq.defaultAlwaysFun);
+        return resp;
     }
     static async postJson(url, data, settings = {}) {
         let jsonData = this.removeEmptyProperty(data);
@@ -37,20 +36,11 @@ class jq {
     static async postJsonWithProcessing(url, data, settings = {}) {
         let jsonData = this.removeEmptyProperty(data);
         _.extend(settings, { method: 'post', dataType: 'json', contentType: 'application/json', data: JSON.stringify(jsonData), url: url });
-        try {
-            bui.loading.show('努力提交中，请稍候。。。');
-            let resp = await jq.ajax(settings);
-            bui.loading.hide();
-            return resp;
-        }
-        catch (e) {
-            bui.loading.hide();
-            throw e;
-        }
+        return await this.ajaxWithProcessing(settings);
     }
     static removeEmptyProperty(data) {
         if (_.isArray(data)) {
-            var jsonData = _.chain(data).filter(item => !_.isNull(item)).value();
+            let jsonData = _.chain(data).filter(item => !_.isNull(item)).value();
             return jsonData;
         }
         else {
