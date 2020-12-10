@@ -6,6 +6,9 @@ import com.dili.ss.base.BaseService;
 import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 
+/**
+ * 常用地址接口
+ */
 public interface UsualAddressService extends BaseService<UsualAddress, Long> {
 	/**
 	 * 插入常用地址

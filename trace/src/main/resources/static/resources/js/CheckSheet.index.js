@@ -43,4 +43,3 @@ class CheckSheetIndex extends WebConfig {
         $('#toolbar button').removeAttr('disabled');
     }
 }
-//# sourceMappingURL=CheckSheet.index.js.map

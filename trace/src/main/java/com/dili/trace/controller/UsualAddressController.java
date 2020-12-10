@@ -63,7 +63,16 @@ public class UsualAddressController {
 		modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
 		return "usualAddress/index";
 	}
-
+	/**
+	 * 跳转到UserAddress页面
+	 * @param modelMap
+	 * @return
+	 */
+	@ApiOperation("跳转到UserAddress页面")
+	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
+	public String edit(ModelMap modelMap,Long id) {
+		return "usualAddress/edit";
+	}
 	/**
 	 * 分页查询
 	 * @param usualAddress

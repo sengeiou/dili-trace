@@ -95,4 +95,3 @@ class DetectRequestGridGrid extends WebConfig {
         }
     }
 }
-//# sourceMappingURL=detectRequest.index.js.map

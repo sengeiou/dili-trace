@@ -28,7 +28,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 	public int insertUsualAddress(UsualAddress input) {
 		
 		
-		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
+		UsualAddress example=new UsualAddress();
 		example.setAddressId(input.getAddressId());
 		example.setType(input.getType());
 		if( this.listByExample(example).stream().count()>0) {
@@ -56,7 +56,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 			throw new AppException("参数错误");
 		}
 		
-		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
+		UsualAddress example=new UsualAddress();
 		example.setAddressId(input.getAddressId());
 		example.setType(input.getType());
 		List<UsualAddress>list=this.listByExample(example);
@@ -97,7 +97,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 
 	@Override
 	public List<UsualAddress> findUsualAddressByType(UsualAddressTypeEnum usualAddressType) {
-		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
+		UsualAddress example=new UsualAddress();
 		example.setType(usualAddressType.getType());
 		return this.usualAddressMapper.findUsualAddressByType(example);
 	}
@@ -117,7 +117,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		if(item==null) {
 			return 0;
 		}
-		UsualAddress domain=DTOUtils.newDTO(UsualAddress.class);
+		UsualAddress domain=new UsualAddress();
 		domain.setTodayUsedCount(item.getTodayUsedCount()+1);
 		domain.setId(item.getId());
 		this.updateSelective(domain);
@@ -125,7 +125,7 @@ public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long>
 		return 1;
 	}
 	private UsualAddress findUsualAddressByTypeAndAddressId(Long addressId,UsualAddressTypeEnum type) {
-		UsualAddress example=DTOUtils.newDTO(UsualAddress.class);
+		UsualAddress example=new UsualAddress();
 		example.setAddressId(addressId);
 		example.setType(type.getType());
 		return this.listByExample(example).stream().findFirst().orElse(null);

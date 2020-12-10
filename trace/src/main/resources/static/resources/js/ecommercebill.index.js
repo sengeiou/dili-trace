@@ -342,4 +342,3 @@ class EcommerceBillGrid extends WebConfig {
         });
     }
 }
-//# sourceMappingURL=ecommercebill.index.js.map

@@ -1,7 +1,8 @@
 class CityController extends WebConfig {
 
     public async listCities(cusCategoryQuery: any): Promise<any> {
-        let url = this.toUrl("/city/listCities.action");
+
+        var url = await super.toUrl("/city/listCities.action");
         let resp = await jq.postJson(url, cusCategoryQuery);
         if (resp.code == '200') {
             return resp.data;

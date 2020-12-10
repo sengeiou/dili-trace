@@ -2,6 +2,8 @@ package com.dili.trace.glossary;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Optional;
+
 /**
  * <B>Description</B>
  * 本软件源代码版权归农丰时代及其团队所有,未经许可不得任意复制与传播
@@ -22,12 +24,12 @@ public enum UsualAddressTypeEnum {
     USER("user", "销地城市"),
     ;
 
-    private String name;
+    private String desc;
     private String type ;
 
-    UsualAddressTypeEnum(String type, String name){
+    UsualAddressTypeEnum(String type, String desc){
         this.type = type;
-        this.name = name;
+        this.desc = desc;
     }
     public boolean equalsTo(String type) {
     	return this.getType().equals(StringUtils.trim(type));
@@ -40,13 +42,16 @@ public enum UsualAddressTypeEnum {
         }
         return null;
     }
+    public static Optional<UsualAddressTypeEnum>fromType(String type){
 
+        return Optional.ofNullable(UsualAddressTypeEnum.getUsualAddressType(type));
+    }
 
     public String getType() {
 		return type;
 	}
 
-	public String getName() {
-        return name;
+    public String getDesc() {
+        return desc;
     }
 }

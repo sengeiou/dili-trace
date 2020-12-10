@@ -12,4 +12,3 @@ class DemoClass {
         console.info("bbb");
     }
 }
-//# sourceMappingURL=demo.js.map

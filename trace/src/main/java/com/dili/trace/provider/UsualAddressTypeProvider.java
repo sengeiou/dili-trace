@@ -30,7 +30,7 @@ public class UsualAddressTypeProvider implements ValueProvider {
 
 		List<ValuePair<?>> list = new ArrayList<>();
 		list.addAll(Stream.of(UsualAddressTypeEnum.values())
-				.map(e -> new ValuePairImpl<>(e.getName(), e.getType().toString())).collect(Collectors.toList()));
+				.map(e -> new ValuePairImpl<>(e.getDesc(), e.getType().toString())).collect(Collectors.toList()));
 		return list;
 	}
    

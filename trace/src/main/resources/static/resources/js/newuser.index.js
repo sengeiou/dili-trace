@@ -44,4 +44,3 @@ class UserIndex extends WebConfig {
         $('#toolbar button').removeAttr('disabled');
     }
 }
-//# sourceMappingURL=newuser.index.js.map
