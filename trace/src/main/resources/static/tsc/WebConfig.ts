@@ -12,27 +12,7 @@ class WebConfig{
     public toUrl(url:string):string{
         return this.contextPath+url;
     }
-    protected refreshOptions(url:string,grid:any,queryform:any){
-        let req_url=this.toUrl(url)
-        let buildQueryData=(params)=>{
-            let temp = {
-                rows: params.limit,   //页面大小
-                page: ((params.offset / params.limit) + 1) || 1, //页码
-                sort: params.sort,
-                order: params.order
-            }
-            let data = $.extend(temp, queryform.serializeJSON());
-            let jsonData = jq.removeEmptyProperty(data);
-            return JSON.stringify(jsonData);
-        }
-        grid.bootstrapTable('refreshOptions', {
-            url: req_url
-            , 'queryParams': (params) => buildQueryData(params)
-            ,'contentType':'application/json'
-            , 'ajaxOptions': {contentType: 'application/json', dataType: 'json'}
 
-        });
-    }
     private onselectFun(suggestion){
         // console.info('onSelect')
         var self = this;
@@ -79,5 +59,55 @@ class WebConfig{
             onSelect: onSelect
         });
     }
+
+}
+class ListPage extends WebConfig {
+    protected grid: any;
+    protected queryform: any;
+    protected  queryBtn: any;
+    protected listPageUrl: string;
+
+    constructor(grid: any, queryform: any, queryBtn: any, listPageUrl: string) {
+        super();
+        this.grid = grid;
+        this.queryform = queryform;
+        this.queryBtn = queryBtn;
+        this.listPageUrl = listPageUrl;
+        this.init();
+    }
+    private  init(){
+        this.refreshTableOptions();
+        this.queryform.find('#query').click(async () => await this.queryGridData());
+    }
+    protected async queryGridData() {
+        if (!this.queryform.validate().form()) {
+            //@ts-ignore
+            bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
+            return;
+        }
+        this.grid.bootstrapTable('refresh');
+    }
+    protected refreshTableOptions(){
+        let url=this.toUrl(this.listPageUrl)
+        let buildQueryData=(params)=>{
+            let temp = {
+                rows: params.limit,   //页面大小
+                page: ((params.offset / params.limit) + 1) || 1, //页码
+                sort: params.sort,
+                order: params.order
+            }
+            let data = $.extend(temp, this.queryform.serializeJSON());
+            let jsonData = jq.removeEmptyProperty(data);
+            return JSON.stringify(jsonData);
+        }
+        this.grid.bootstrapTable('refreshOptions', {
+            url: url
+            , 'queryParams': (params) => buildQueryData(params)
+            ,'contentType':'application/json'
+            , 'ajaxOptions': {contentType: 'application/json', dataType: 'json'}
+
+        });
+    }
+
 
 }

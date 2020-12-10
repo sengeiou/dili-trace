@@ -1,14 +1,10 @@
-class CommissionBillGrid extends WebConfig {
-    grid: any;
-    queryform: any;
+class CommissionBillGrid extends ListPage {
     toolbar: any;
     btns: any[];
     highLightBill: any;
 
     constructor(grid: any, queryform: any, toolbar: any) {
-        super();
-        this.grid = grid;
-        this.queryform = queryform;
+        super(grid,queryform,$('#query'),"/commissionBill/listPage.action");
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
         window['commissionBillGrid'] = this;
@@ -31,8 +27,6 @@ class CommissionBillGrid extends WebConfig {
 
 
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-        super.refreshOptions('/commissionBill/listPage.action',this.grid,this.queryform);
-        this.queryform.find('#query').click(async () => await this.queryGridData());
 
 
     }
@@ -205,7 +199,7 @@ class CommissionBillGrid extends WebConfig {
         //@ts-ignore
         bs4pop.removeAll();
         (async () => {
-            await this.queryGridData();
+            await super.queryGridData();
         })();
     }
 
@@ -257,26 +251,7 @@ class CommissionBillGrid extends WebConfig {
         });
     }
 
-    private buildQueryData(params) {
-        let temp = {
-            rows: params.limit,   //页面大小
-            page: ((params.offset / params.limit) + 1) || 1, //页码
-            sort: params.sort,
-            order: params.order
-        }
-        let data = $.extend(temp, this.queryform.serializeJSON());
-        let jsonData = jq.removeEmptyProperty(data);
-        return JSON.stringify(jsonData);
-    }
 
-    private async queryGridData() {
-        if (!this.queryform.validate().form()) {
-            //@ts-ignore
-            bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
-            return;
-        }
-        this.grid.bootstrapTable('refresh');
-    }
 
     private async findHighLightBill() {
         try {

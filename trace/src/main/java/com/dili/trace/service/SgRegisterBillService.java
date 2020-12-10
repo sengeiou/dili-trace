@@ -7,12 +7,8 @@ import java.util.Optional;
 import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ImageCert;
-import com.dili.trace.dto.BatchAuditDto;
+import com.dili.trace.dto.*;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillStaticsDto;
-import com.dili.trace.dto.QualityTraceTradeBillOutDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.ImageCertTypeEnum;
 
 /**
@@ -221,8 +217,15 @@ public interface SgRegisterBillService {
      * @param deleteType
      * @return
      */
-
     public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType);
+
+    /**
+     * 删除产地证明及检测报告
+     *
+     * @param removeDto
+     * @return
+     */
+    public BaseOutput doRemoveReportAndCertifiyNew(ReportAndCertifiyRemoveDto removeDto);
 
     /**
      * 通过采样单编号 查询登记单

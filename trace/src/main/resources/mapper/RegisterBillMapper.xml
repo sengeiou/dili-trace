@@ -851,6 +851,20 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+    <delete id="doRemoveReportAndCertifiyNew" parameterType="com.dili.trace.dto.ReportAndCertifiyRemoveDto">
+        DELETE FROM image_cert
+        WHERE bill_id = #{id}
+        <if test="deleteType ==  'all'">
+            and cert_type in (1,2)
+        </if>
+        <if test="deleteType ==  'originCertifiy'">
+            and cert_type = 2
+        </if>
+        <if test="deleteType ==  'detectReport'">
+            and cert_type = 1
+        </if>
+    </delete>
+
   <select id="listPageGroupByProductCount" parameterType="com.dili.trace.dto.RegisterBillReportQueryDto" resultType="java.lang.Long">
     select
     count(1) as cnt

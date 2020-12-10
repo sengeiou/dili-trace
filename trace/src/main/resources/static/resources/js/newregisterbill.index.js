@@ -1,10 +1,8 @@
-class NewRegisterBillGrid extends WebConfig {
+class NewRegisterBillGrid extends ListPage {
     constructor(grid, queryform, toolbar) {
-        super();
+        super(grid, queryform, $('#query'), "/newRegisterBill/listPage.action");
         this.handleTimeUpdateEvent = (event) => {
         };
-        this.grid = grid;
-        this.queryform = queryform;
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
         this.uid = _.uniqueId("trace_id_");
@@ -35,8 +33,6 @@ class NewRegisterBillGrid extends WebConfig {
         $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-        super.refreshOptions('/newRegisterBill/listPage.action', this.grid, this.queryform);
-        this.queryform.find('#query').click(async () => await this.queryGridData());
         window.addEventListener('message', function (e) {
             var data = JSON.parse(e.data);
             if (data.obj && data.fun) {
@@ -49,7 +45,7 @@ class NewRegisterBillGrid extends WebConfig {
     removeAllAndLoadData() {
         bs4pop.removeAll();
         (async () => {
-            await this.queryGridData();
+            await super.queryGridData();
         })();
     }
     async doAudit(billId, code) {
@@ -490,13 +486,6 @@ class NewRegisterBillGrid extends WebConfig {
             height: '98%',
             btns: []
         });
-    }
-    async queryGridData() {
-        if (!this.queryform.validate().form()) {
-            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
-            return;
-        }
-        this.grid.bootstrapTable('refresh');
     }
     resetButtons() {
         var btnArray = this.btns;

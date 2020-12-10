@@ -5,7 +5,7 @@ class jq {
      */
     public static async ajax(settings: JQuery.AjaxSettings,beforeStartFun:Function=function(){},alwaysFun:Function=function(){},):Promise<any> {
         beforeStartFun();
-         let p = new Promise<any>((resolve, reject) => {
+        let p = new Promise<any>((resolve, reject) => {
             $.ajax(settings).done((result)=>{
                 resolve(result);
             }).fail((e)=>{
@@ -76,18 +76,33 @@ class jq {
                         }
                     }
                     return true;})
-                 .mapObject(v=>{
-                     if(!_.isArray(v)){
-                         return v;
-                     }
-                     return _.chain(v).filter(v=>!_.isNull(v)).value();
+                .mapObject(v=>{
+                    if(!_.isArray(v)){
+                        return v;
+                    }
+                    return _.chain(v).filter(v=>!_.isNull(v)).value();
 
-                 })
+                })
                 .value();
             return jsonData;
         }
 
 
 
+    }
+}
+class popwrapper {
+    /**
+     * 对ajax异步请求转换为promise
+     * @param settings
+     */
+    public static async confirm(msg:string,config:any={} ):Promise<any> {
+        const p = new Promise<any>((resolve, reject) => {
+            //@ts-ignore
+            bs4pop.confirm(msg, config, async function (sure) {
+                resolve(sure);
+            })
+        })
+        return await p;
     }
 }
