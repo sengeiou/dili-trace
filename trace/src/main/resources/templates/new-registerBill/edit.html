@@ -10,7 +10,7 @@
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">修改登记单</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">返回</button>
         </div>
     </div>
     <div class="form-box border">
@@ -142,7 +142,7 @@
     <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
     <div class="text-center mt30">
         <button class="btn-main2 btn-sm" onclick="doEdit()">提交</button>&nbsp;&nbsp;
-        <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+        <button class="btn-greyweak btn-sm" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">取消</button>
     </div>
 </div>
 </#bodyOrigin>
@@ -158,7 +158,7 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 <script type="text/javascript">
-var currentUser={"depId":"${user.depId!}"
+var currentUser={"depId":"${user.departmentId!}"
 	,"id":"${user.id!}"
 	,"realName":"${user.realName!}"
 	,"userName":"${user.userName!}"
@@ -207,7 +207,7 @@ var currentUser={"depId":"${user.depId!}"
 			
 		});
 		TLOG.component.operateLog('登记单管理',"修改",content);
-		
+
 	}
    $(function () {
 	     $('#goodsTable').find('input[name="productName_1"]').val('${registerBill.productName!}');
@@ -267,12 +267,13 @@ var currentUser={"depId":"${user.depId!}"
                   							title:'操作',
                                            	time : 600,
                                            	end :function(){
-                                           		 parent.closeWin('view_win');
+                                           		 // parent.closeWin('view_win');
+                                                parent.window['RegisterBillGridObj'].removeAllAndLoadData()
                                            	}
                                           },
                                      	 function () {
-                                          	 parent.closeWin('view_win');
-                                             }
+                                            parent.closeWin('view_win');
+                                         }
                                      );
                                      
                                  }else{

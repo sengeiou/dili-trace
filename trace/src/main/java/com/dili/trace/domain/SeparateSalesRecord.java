@@ -3,11 +3,7 @@ package com.dili.trace.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.dili.ss.domain.BaseDomain;
 
@@ -88,13 +84,15 @@ public class SeparateSalesRecord extends BaseDomain {
 	 * 最初登记单ID
 	 */
 	@ApiModelProperty(value = "最初登记单ID")
-	@Column(name = "`bill_id`")
+	//@Column(name = "`bill_id`")
+	@Transient
 	private Long billId;
 
 	/**
 	 * 销售类型
 	 */
-	@Column(name = "`sales_type`")
+	//@Column(name = "`sales_type`")
+	@Transient
 	private Integer salesType;
 	/**
 	 * 创建时间
@@ -111,28 +109,32 @@ public class SeparateSalesRecord extends BaseDomain {
 	 * 分销自
 	 */
 	@ApiModelProperty(value = "分销自")
-	@Column(name = "`parent_id`")
+	//@Column(name = "`parent_id`")
+	@Transient
 	private Long parentId;
 
 	/**
 	 * 总重量
 	 */
 	@ApiModelProperty(value = "总重量")
-	@Column(name = "`store_weight`")
+	//@Column(name = "`store_weight`")
+	@Transient
 	private BigDecimal storeWeight;
 
 	/**
 	 * 进场审核ID
 	 */
 	@ApiModelProperty(value = "进场审核ID")
-	@Column(name = "`checkin_record_id`")
+	//@Column(name = "`checkin_record_id`")
+	@Transient
 	private Long checkinRecordId;
 
 	/**
 	 * 出场审核ID
 	 */
 	@ApiModelProperty(value = "出场审核ID")
-	@Column(name = "`checkout_record_id`")
+	//@Column(name = "`checkout_record_id`")
+	@Transient
 	private Long checkoutRecordId;
 
 	/**

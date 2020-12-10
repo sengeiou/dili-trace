@@ -39,7 +39,7 @@
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">进场货品登记</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">返回</button>
         </div>
     </div>
     <div class="form-box border">
@@ -169,7 +169,7 @@
     <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
     <div class="text-center mt30">
         <button class="btn-main2 btn-sm" onclick="create()">提交</button>&nbsp;&nbsp;
-        <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+        <button class="btn-greyweak btn-sm" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">取消</button>
     </div>
 </div>
 </#bodyOrigin>
@@ -183,6 +183,7 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
 
 <script id="goodsItem" type="text/html">
@@ -234,4 +235,45 @@ $(document).ready(function() {
     appendCachedPlate(userplateList,'#plate');
 })
 
+function tallyAreaNo() {
+    var tallyAreaNo = $("#tallyAreaNoInput").val();
+    if(tallyAreaNo == ""){
+        return;
+    }
+    if (tallyAreaNo.length > 0) {
+        $.ajax({
+            type: 'post',
+            url: '/trade/customer/tallyAreaNo/'+tallyAreaNo,
+            dataType: 'json',
+            async: false,
+            success: function (ret) {
+                if (ret.code == "200") {
+                    var customer = ret.data;
+                    $("#idCardNo").val(customer.cardNo).valid();
+                    $("#name").val(customer.name).valid();
+                    $("#addr").val(customer.addr).valid();
+                    $("#userId").val(customer.id).valid();
+                    $("#phone").val(customer.phone).valid();
+                    $("#tallyAreaNo").val(tallyAreaNo);
+                    findUserPlateByUserId(customer.id,'#plate');
+                } else {
+                    $("#idCardNo").val("");
+                    $("#name").val("");
+                    $("#addr").val("");
+                    $("#userId").val("");
+                    $("#phone").val("");
+                    $("#tallyAreaNo").val("");
+                }
+            },
+            error:function(){
+                $("#idCardNo").val("");
+                $("#name").val("");
+                $("#addr").val("");
+                $("#userId").val("");
+                $("#phone").val("");
+                $("#tallyAreaNo").val("");
+            }
+        });
+    }
+}
 </script>

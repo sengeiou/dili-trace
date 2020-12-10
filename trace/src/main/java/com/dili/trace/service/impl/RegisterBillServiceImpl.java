@@ -336,9 +336,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.registerBillHistoryService.createHistory(billItem.getBillId());
 
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-        if (imageCertList.isEmpty()) {
-            throw new TraceBizException("请上传凭证");
-        }
+//        if (imageCertList.isEmpty()) {
+//            throw new TraceBizException("请上传凭证");
+//        }
         // 保存图片
         imageCertService.insertImageCert(imageCertList, input.getId());
 

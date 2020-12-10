@@ -116,7 +116,7 @@ public class NewRegisterBillController {
             @ApiImplicitParam(name = "RegisterBill", paramType = "form", value = "RegisterBill的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(RegisterBillDto registerBill) throws Exception {
+    String listPage(@RequestBody RegisterBillDto registerBill) throws Exception {
         return registerBillService.listPage(registerBill);
     }
 
@@ -617,7 +617,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doRemoveReportAndCertifiy.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public BaseOutput<?> doRemoveReportAndCertifiy(Long id, String deleteType) {
+    public BaseOutput<?> doRemoveReportAndCertifiy(ModelMap modelMap, Long id, String deleteType) {
         try {
 //			Long id = this.registerBillService.doUploadDetectReport(input);
             return this.registerBillService.doRemoveReportAndCertifiy(id, deleteType);
