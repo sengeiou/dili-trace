@@ -1,8 +1,6 @@
-class CommissionBillGrid extends WebConfig {
+class CommissionBillGrid extends ListPage {
     constructor(grid, queryform, toolbar) {
-        super();
-        this.grid = grid;
-        this.queryform = queryform;
+        super(grid, queryform, $('#query'), "/commissionBill/listPage.action");
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
         window['commissionBillGrid'] = this;
@@ -20,8 +18,6 @@ class CommissionBillGrid extends WebConfig {
             cityController.lookupCities(query, done);
         });
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-        super.refreshOptions('/commissionBill/listPage.action', this.grid, this.queryform);
-        this.queryform.find('#query').click(async () => await this.queryGridData());
     }
     doCreateCheckSheet() {
         let row = this.grid.bootstrapTable("getSelections");
@@ -161,7 +157,7 @@ class CommissionBillGrid extends WebConfig {
     removeAllAndLoadData() {
         bs4pop.removeAll();
         (async () => {
-            await this.queryGridData();
+            await super.queryGridData();
         })();
     }
     openCreatePage() {
@@ -203,24 +199,6 @@ class CommissionBillGrid extends WebConfig {
             onShowEnd: function () {
             }
         });
-    }
-    buildQueryData(params) {
-        let temp = {
-            rows: params.limit,
-            page: ((params.offset / params.limit) + 1) || 1,
-            sort: params.sort,
-            order: params.order
-        };
-        let data = $.extend(temp, this.queryform.serializeJSON());
-        let jsonData = jq.removeEmptyProperty(data);
-        return JSON.stringify(jsonData);
-    }
-    async queryGridData() {
-        if (!this.queryform.validate().form()) {
-            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
-            return;
-        }
-        this.grid.bootstrapTable('refresh');
     }
     async findHighLightBill() {
         try {

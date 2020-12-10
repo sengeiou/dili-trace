@@ -10,26 +10,6 @@ class WebConfig {
     toUrl(url) {
         return this.contextPath + url;
     }
-    refreshOptions(url, grid, queryform) {
-        let req_url = this.toUrl(url);
-        let buildQueryData = (params) => {
-            let temp = {
-                rows: params.limit,
-                page: ((params.offset / params.limit) + 1) || 1,
-                sort: params.sort,
-                order: params.order
-            };
-            let data = $.extend(temp, queryform.serializeJSON());
-            let jsonData = jq.removeEmptyProperty(data);
-            return JSON.stringify(jsonData);
-        };
-        grid.bootstrapTable('refreshOptions', {
-            url: req_url,
-            'queryParams': (params) => buildQueryData(params),
-            'contentType': 'application/json',
-            'ajaxOptions': { contentType: 'application/json', dataType: 'json' }
-        });
-    }
     onselectFun(suggestion) {
         var self = this;
         var forId = $(self).attr("for");
@@ -65,6 +45,47 @@ class WebConfig {
             autoSelectFirst: true,
             autoFocus: true,
             onSelect: onSelect
+        });
+    }
+}
+class ListPage extends WebConfig {
+    constructor(grid, queryform, queryBtn, listPageUrl) {
+        super();
+        this.grid = grid;
+        this.queryform = queryform;
+        this.queryBtn = queryBtn;
+        this.listPageUrl = listPageUrl;
+        this.init();
+    }
+    init() {
+        this.refreshTableOptions();
+        this.queryform.find('#query').click(async () => await this.queryGridData());
+    }
+    async queryGridData() {
+        if (!this.queryform.validate().form()) {
+            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
+            return;
+        }
+        this.grid.bootstrapTable('refresh');
+    }
+    refreshTableOptions() {
+        let url = this.toUrl(this.listPageUrl);
+        let buildQueryData = (params) => {
+            let temp = {
+                rows: params.limit,
+                page: ((params.offset / params.limit) + 1) || 1,
+                sort: params.sort,
+                order: params.order
+            };
+            let data = $.extend(temp, this.queryform.serializeJSON());
+            let jsonData = jq.removeEmptyProperty(data);
+            return JSON.stringify(jsonData);
+        };
+        this.grid.bootstrapTable('refreshOptions', {
+            url: url,
+            'queryParams': (params) => buildQueryData(params),
+            'contentType': 'application/json',
+            'ajaxOptions': { contentType: 'application/json', dataType: 'json' }
         });
     }
 }
