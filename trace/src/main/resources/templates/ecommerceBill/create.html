@@ -506,7 +506,7 @@
         var data = buildTableData();
         $.ajax({
             type: "POST",
-            url: "${contextPath}/ecommerceBill/insert.action",
+            url: "/ecommerceBill/insert.action",
             data :  JSON.stringify(data),
             dataType: "json",
             async : true,
@@ -527,12 +527,12 @@
                     );
                 }else{
                     resubmit=0;
-                    bs4pop.alert("错误", {type: 'error'});
+                    layer.alert("错误"+ret.message);
                 }
             },
             error: function(){
                 resubmit=0;
-                bs4pop.alert("错误 远程访问失败", {type: 'error'});
+                layer.alert("错误:远程访问失败");
             }
         });
     }
