@@ -1,6 +1,6 @@
 <script type="text/javascript">
 
-var currentUser={"depId":"${user.depId!}"
+var currentUser={"depId":"${user.departmentId!}"
 		,"id":"${user.id!}"
 		,"realName":"${user.realName!}"
 		,"userName":"${user.userName!}"
