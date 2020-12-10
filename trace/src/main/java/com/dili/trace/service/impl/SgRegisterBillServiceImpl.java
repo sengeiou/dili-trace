@@ -864,6 +864,19 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         return BaseOutput.success();
     }
 
+    @Override
+    public BaseOutput doRemoveReportAndCertifiyNew(ReportAndCertifiyRemoveDto removeDto) {
+        RegisterBill item = this.billService.get(removeDto.getId());
+        if (item == null) {
+            throw new TraceBizException("数据错误");
+        }
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
+            throw new TraceBizException("状态错误,不能删除产地证明和检测报告");
+        }
+        this.billMapper.doRemoveReportAndCertifiyNew(removeDto);
+        return BaseOutput.success();
+    }
+
     private RegisterBillDto preBuildDTO(RegisterBillDto dto) {
         if (StringUtils.isNotBlank(dto.getAttrValue())) {
             switch (dto.getAttr()) {

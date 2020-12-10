@@ -611,16 +611,15 @@ public class NewRegisterBillController {
     /**
      * 删除检测报告及产地证明
      *
-     * @param id
-     * @param deleteType
+     * @param removeDto
      * @return
      */
     @RequestMapping(value = "/doRemoveReportAndCertifiy.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public BaseOutput<?> doRemoveReportAndCertifiy(ModelMap modelMap, Long id, String deleteType) {
+    public BaseOutput<?> doRemoveReportAndCertifiy(@RequestBody ReportAndCertifiyRemoveDto removeDto) {
         try {
 //			Long id = this.registerBillService.doUploadDetectReport(input);
-            return this.registerBillService.doRemoveReportAndCertifiy(id, deleteType);
+            return this.registerBillService.doRemoveReportAndCertifiyNew(removeDto);
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
             return BaseOutput.failure(e.getMessage());
