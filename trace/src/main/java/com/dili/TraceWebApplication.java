@@ -4,6 +4,7 @@ import com.dili.ss.metadata.provider.DatetimeProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -38,6 +39,7 @@ import tk.mybatis.spring.annotation.MapperScan;
         , "com.dili.trace.rpc"
         , "com.dili.bpmc.sdk.rpc"})
 @Import(FeignClientsConfiguration.class)
+@ServletComponentScan
 @EnableDiscoveryClient
 /**
  * 除了内嵌容器的部署模式，Spring Boot也支持将应用部署至已有的Tomcat容器, 或JBoss, WebLogic等传统Java EE应用服务器。

@@ -9,6 +9,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
@@ -40,8 +41,54 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     DetectRequestMapper detectRequestMapper;
 
     /**
+     * 创建检测请求
+     *
+     * @param billId       报备单ID
+     * @param operatorUser 操作用户
+     * @return
+     */
+    public DetectRequest createDetectRequestForBill(Long billId, Optional<OperatorUser> operatorUser) {
+        RegisterBill billItem = this.billService.get(billId);
+        if (billItem == null) {
+            throw new TraceBizException("登记单不存在");
+        }
+
+        boolean canCreateDetectRequest = StreamEx.of(BillVerifyStatusEnum.WAIT_AUDIT, BillVerifyStatusEnum.RETURNED)
+                .map(BillVerifyStatusEnum::getCode)
+                .toList()
+                .contains(billItem.getVerifyStatus());
+
+        if (!canCreateDetectRequest) {
+            throw new TraceBizException("当前状态不能创建检测");
+        }
+        DetectRequest detectRequest = new DetectRequest();
+        detectRequest.setDetectType(DetectTypeEnum.NEW.getCode());
+        detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
+        detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+
+        detectRequest.setBillId(billId);
+        detectRequest.setCreated(new Date());
+        detectRequest.setModified(new Date());
+        this.insert(detectRequest);
+
+
+        operatorUser.ifPresent(opt -> {
+            detectRequest.setCreatorId(opt.getId());
+            detectRequest.setCreatorName(opt.getName());
+        });
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setId(billId);
+        registerBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+        registerBill.setDetectRequestId(detectRequest.getId());
+        this.billService.updateSelective(registerBill);
+        return detectRequest;
+
+    }
+
+    /**
      * 创建默认检测请求
-     * @param billId 报备单ID
+     *
+     * @param billId       报备单ID
      * @param operatorUser 操作用户
      * @return
      */
@@ -58,7 +105,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         this.insert(detectRequest);
 
 
-        operatorUser.ifPresent(opt->{
+        operatorUser.ifPresent(opt -> {
             detectRequest.setCreatorId(opt.getId());
             detectRequest.setCreatorName(opt.getName());
         });
@@ -217,6 +264,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     /**
      * 分页查询数据
+     *
      * @param dto 查询条件
      * @return
      * @throws Exception
@@ -225,10 +273,10 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         EasyuiPageOutput out = this.listEasyuiPageByExample(dto, true);
 
         // 查询报备单信息
-        List<Map<?,?>> requests = out.getRows();
+        List<Map<?, ?>> requests = out.getRows();
         if (CollectionUtils.isNotEmpty(requests)) {
             for (Map r : requests) {
-                RegisterBill registerBill = billService.get((Long)r.get("billId"));
+                RegisterBill registerBill = billService.get((Long) r.get("billId"));
                 r.put("detectStatus", registerBill.getDetectStatus());
                 r.put("detectStatusName", registerBill.getDetectStatusName());
                 r.put("billCode", registerBill.getCode());
@@ -241,8 +289,9 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     /**
      * 检测请求分配检测员
-     * @param id 检测请求ID
-     * @param designatedId 检测员ID
+     *
+     * @param id             检测请求ID
+     * @param designatedId   检测员ID
      * @param designatedName 检测员姓名
      */
     @Transactional(rollbackFor = Exception.class)
