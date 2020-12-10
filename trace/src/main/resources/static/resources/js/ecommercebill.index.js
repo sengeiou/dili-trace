@@ -57,7 +57,8 @@ class EcommerceBillGrid extends WebConfig {
                             label: '合格', className: 'btn-primary', onClick(cb) {
                                 resolve({
                                     id: waitAuditRowArray[0].id, verifyStatus: 20,
-                                    detectState: this.BillDetectStateEnum.PASS
+                                    detectStatus: 50,
+                                    detectState: 1
                                 });
                             }
                         },
@@ -77,7 +78,11 @@ class EcommerceBillGrid extends WebConfig {
                         type: 'warning', btns: [
                             {
                                 label: '检测', className: 'btn-primary', onClick(cb) {
-                                    resolve({ id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.WAIT_CHECK });
+                                    resolve({
+                                        id: waitAuditRowArray[0].id, verifyStatus: 20,
+                                        detectStatus: 50,
+                                        detectState: 1
+                                    });
                                 }
                             },
                             {
@@ -85,7 +90,8 @@ class EcommerceBillGrid extends WebConfig {
                                     resolve({
                                         id: waitAuditRowArray[0].id,
                                         state: 20,
-                                        detectState: 40
+                                        detectState: 2,
+                                        detectStatus: 40
                                     });
                                 }
                             },
@@ -105,7 +111,11 @@ class EcommerceBillGrid extends WebConfig {
                         btns: [
                             {
                                 label: '检测', className: 'btn-primary', onClick(cb) {
-                                    resolve({ id: waitAuditRowArray[0].id, verifyStatus: 20 });
+                                    resolve({
+                                        id: waitAuditRowArray[0].id, verifyStatus: 20,
+                                        detectStatus: 50,
+                                        detectState: 1
+                                    });
                                 }
                             },
                             {

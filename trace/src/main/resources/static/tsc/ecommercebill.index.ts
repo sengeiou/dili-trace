@@ -77,7 +77,8 @@ class EcommerceBillGrid extends WebConfig {
                                     resolve({
                                         //@ts-ignore
                                         id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.PASSED,
-                                        detectState: this.BillDetectStateEnum.PASS
+                                        detectStatus: DetectStatusEnum.FINISH_DETECT,
+                                        detectState: DetectResultEnum.PASSED
                                     })
                                 }
                             },
@@ -101,8 +102,12 @@ class EcommerceBillGrid extends WebConfig {
                             type: 'warning', btns: [
                                 {
                                     label: '检测', className: 'btn-primary', onClick(cb) {
-                                        // @ts-ignore
-                                        resolve({id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.WAIT_CHECK});
+                                        resolve({
+                                            // @ts-ignore
+                                            id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.PASSED,
+                                            detectStatus: DetectStatusEnum.FINISH_DETECT,
+                                            detectState: DetectResultEnum.PASSED
+                                        });
                                     }
                                 },
                                 {
@@ -111,7 +116,8 @@ class EcommerceBillGrid extends WebConfig {
                                             //@ts-ignore
                                             id: waitAuditRowArray[0].id,
                                             state: BillVerifyStatusEnum.PASSED,
-                                            detectState: DetectStatusEnum.DETECTING
+                                            detectState: DetectResultEnum.FAILED,
+                                            detectStatus: DetectStatusEnum.DETECTING
                                         });
                                     }
                                 },
@@ -132,8 +138,12 @@ class EcommerceBillGrid extends WebConfig {
                         btns: [
                             {
                                 label: '检测', className: 'btn-primary', onClick(cb) {
-                                    // @ts-ignore
-                                    resolve({id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.PASSED});
+                                    resolve({
+                                        // @ts-ignore
+                                        id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.PASSED,
+                                        detectStatus: DetectStatusEnum.FINISH_DETECT,
+                                        detectState: DetectResultEnum.PASSED
+                                    });
                                 }
                             },
                             {
@@ -171,7 +181,7 @@ class EcommerceBillGrid extends WebConfig {
             if (result.code == '200') {
                 console.log(result);
                 // @ts-ignore
-                bs4pop.alert("操作成功",{type: 'success'}, function(){
+                bs4pop.alert("操作成功", {type: 'success'}, function () {
                         window['ECommerceBillGrid'].removeAllAndLoadData();
                     }
                 );
@@ -333,28 +343,28 @@ class EcommerceBillGrid extends WebConfig {
             return;
         }
 
-        var result={};
+        var result = {};
         $.ajax({
             type: "POST",
             url: '/ecommerceBill/prePrint.action',
-            data: JSON.stringify({id:row[0].id}),
-            processData:true,
+            data: JSON.stringify({id: row[0].id}),
+            processData: true,
             dataType: "json",
-            async : false,
+            async: false,
             contentType: "application/json; charset=utf-8",
             success: function (ret) {
-                result=ret;
+                result = ret;
             },
-            error: function(){
-                result={"code":"5000",result:"远程访问失败"}
+            error: function () {
+                result = {"code": "5000", result: "远程访问失败"}
             }
         });
         console.log(result);
         //@ts-ignore
-        if(typeof(callbackObj)!='undefined'&&callbackObj.printDirect){
+        if (typeof (callbackObj) != 'undefined' && callbackObj.printDirect) {
             //@ts-ignore
-            callbackObj.printDirect(JSON.stringify(result),"StickerDocument");
-        }else{
+            callbackObj.printDirect(JSON.stringify(result), "StickerDocument");
+        } else {
             //@ts-ignore
             bs4pop.alert("请升级客户端或者在客户端环境运行当前程序", {type: 'error'});
         }
@@ -373,7 +383,7 @@ class EcommerceBillGrid extends WebConfig {
             return;
         }
 
-        let url = this.toUrl("/ecommerceBill/prePrintSeperatePrintReport.html?billId="+row[0].id);
+        let url = this.toUrl("/ecommerceBill/prePrintSeperatePrintReport.html?billId=" + row[0].id);
         //@ts-ignore
         var dia = bs4pop.dialog({
             title: '打印分销报告',

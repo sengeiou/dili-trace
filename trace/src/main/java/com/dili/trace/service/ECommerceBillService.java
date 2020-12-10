@@ -174,13 +174,14 @@ public class ECommerceBillService {
 
 		if (BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
 
-			    List<ImageCert>imageCertList=StreamEx.ofNullable(inputBill.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+			//审核时没有上传图片
+			    /*List<ImageCert>imageCertList=StreamEx.ofNullable(inputBill.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
 
 				if (imageCertList.isEmpty()) {
 					throw new TraceBizException("参数错误");
 				}
 				this.billService.updateHasImage(item.getId(),imageCertList);
-				this.billService.updateHasImage(item.getId(),imageCertList);
+				this.billService.updateHasImage(item.getId(),imageCertList);*/
 				updatable.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
 				updatable.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
 				updatable.setLatestDetectOperator(operatorUser.getName());

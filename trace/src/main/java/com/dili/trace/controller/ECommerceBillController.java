@@ -124,7 +124,7 @@ public class ECommerceBillController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "CommissionBill", paramType = "form", value = "CommissionBill的form信息", required = false, dataType = "string") })
 	@RequestMapping(value = "/listPage.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody String listPage(RegisterBillDto input) throws Exception {
+	public @ResponseBody String listPage(@RequestBody  RegisterBillDto input) throws Exception {
 		return this.eCommerceBillService.listPage(input);
 
 	}
