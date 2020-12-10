@@ -20,11 +20,7 @@ class CommissionBillGrid extends WebConfig {
             cityController.lookupCities(query, done);
         });
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-        this.grid.bootstrapTable('refreshOptions', {
-            url: '/commissionBill/listPage.action',
-            'queryParams': (params) => this.buildQueryData(params),
-            'ajaxOptions': { contentType: 'application/json', dataType: 'json' }
-        });
+        super.refreshOptions('/commissionBill/listPage.action', this.grid, this.queryform);
         this.queryform.find('#query').click(async () => await this.queryGridData());
     }
     doCreateCheckSheet() {

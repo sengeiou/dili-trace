@@ -35,8 +35,7 @@ class NewRegisterBillGrid extends WebConfig {
         $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-        var url = this.toUrl('/newRegisterBill/listPage.action');
-        this.grid.bootstrapTable('refreshOptions', { url: url, pageSize: parseInt('10') });
+        super.refreshOptions('/newRegisterBill/listPage.action', this.grid, this.queryform);
         this.queryform.find('#query').click(async () => await this.queryGridData());
         window.addEventListener('message', function (e) {
             var data = JSON.parse(e.data);
@@ -46,17 +45,6 @@ class NewRegisterBillGrid extends WebConfig {
                 }
             }
         }, false);
-    }
-    buildQueryData(params) {
-        let temp = {
-            rows: params.limit,
-            page: ((params.offset / params.limit) + 1) || 1,
-            sort: params.sort,
-            order: params.order
-        };
-        let data = $.extend(temp, this.queryform.serializeJSON());
-        let jsonData = jq.removeEmptyProperty(data);
-        return JSON.stringify(jsonData);
     }
     removeAllAndLoadData() {
         bs4pop.removeAll();
