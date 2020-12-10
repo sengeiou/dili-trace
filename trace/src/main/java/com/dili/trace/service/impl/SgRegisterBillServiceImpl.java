@@ -303,7 +303,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 //                    registerBill.setState(RegisterBillStateEnum.ALREADY_AUDIT.getCode());
                     registerBill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
                     registerBill.setDetectStatus(DetectStatusEnum.FINISH_DETECT.getCode());
-                    this.detectRequestService.createOtherPassedRequest(registerBill.getBillId(), new IdNameDto(userTicket.getId(), userTicket.getRealName()));
                 }
                 if (!BillVerifyStatusEnum.PASSED.getCode().equals(registerBill.getVerifyStatus())) {
                     registerBill.setSampleCode(this.codeGenerateService.nextRegisterBillSampleCode());
@@ -354,16 +353,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             registerBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
             registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
-
-
-            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getRealName()), Optional.empty());
-
-            DetectRequest detectRequest = new DetectRequest();
-            detectRequest.setId(item.getId());
-
-            detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
-            detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
-            this.detectRequestService.updateSelective(detectRequest);
 
             return this.updateRegisterBillAsWaitCheck(registerBill);
 
@@ -502,15 +491,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 //            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
             registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
 
-
-            DetectRequest item = this.detectRequestService.createByBillId(registerBill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(userTicket.getId(), userTicket.getRealName()), Optional.empty());
-
-            DetectRequest detectRequest = new DetectRequest();
-            detectRequest.setId(item.getId());
-
-            detectRequest.setDetectSource(SampleSourceEnum.SAMPLE_CHECK.getCode());
-            detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
-            this.detectRequestService.updateSelective(detectRequest);
 
             return this.updateRegisterBillAsWaitCheck(registerBill);
         } else {
