@@ -65,35 +65,34 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
         try {
             if (access == null) {
-                SessionData sessionData = this.loginAsClient(request).orElseGet(() -> {
-                    return this.loginAsManager(request).orElse(null);
-                });
-                this.sessionContext.setSessionData(sessionData);
+                return this.write401(response, "没有权限访问");
             }
-            if (access.role() == Role.Client) {
-                if (!this.customerRpcService.hasAccess(access)) {
-                    throw new TraceBizException("没有权限访问");
-                }
-                this.sessionContext.setSessionData(this.loginAsClient(request).get());
+            Optional<SessionData> currentSessionData=Optional.empty();
+            if (access.role() == Role.ANY) {
+                currentSessionData=this.loginAsClient(request).map(sd->Optional.of(sd)).orElseGet(()->this.loginAsManager(request));
+            } else if (access.role() == Role.Client) {
+                currentSessionData=this.loginAsClient(request);
             } else if (access.role() == Role.Manager) {
-                SessionData sessionData=this.loginAsManager(request).orElse(null);
-                if (sessionData==null) {
-                    throw new TraceBizException("没有权限访问");
-                }
-                this.sessionContext.setSessionData(sessionData);
+                currentSessionData = this.loginAsManager(request);
             } else {
-                throw new TraceBizException("参数错误");
+                return this.writeError(response, "权限配置错误");
             }
+            if (!currentSessionData.isPresent()) {
+                return this.write401(response, "没有权限访问");
+            }
+            this.sessionContext.setSessionData(currentSessionData.get(),access);
+
         } catch (TraceBizException e) {
-            return this.write401(response,e.getMessage());
+            return this.writeError(response, e.getMessage());
         } catch (Exception e) {
-            return this.writeError(response,e.getMessage());
+            return this.writeError(response, "服务端出错");
         }
 
         this.sessionContext.getSessionData().setRole(access.role());
 
         return true;
     }
+
     private boolean writeError(HttpServletResponse resp, String msg) {
         try {
             BaseOutput out = BaseOutput.failure(msg);
@@ -105,9 +104,10 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
         return false;
 
     }
+
     private boolean write401(HttpServletResponse resp, String msg) {
         try {
-            BaseOutput out = BaseOutput.failure("401",msg);
+            BaseOutput out = BaseOutput.failure("401", msg);
             byte[] bytes = mapper.writeValueAsBytes(out);
             resp.getOutputStream().write(bytes);
             resp.flushBuffer();

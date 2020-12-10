@@ -99,7 +99,7 @@ public class CustomerRpcService {
 
 
         } catch (Exception e) {
-            throw new TraceBizException("还没有登录");
+            return Optional.empty();
         }
 
         return Optional.empty();

@@ -14,8 +14,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AppAccess {
-    Role role() default  Role.Manager;
-    CustomerEnum.CharacterType[] subRoles();
+    Role role() ;
+    CustomerEnum.CharacterType[] subRoles()default {};
     String method() default "post";
     String url() default "";
 }

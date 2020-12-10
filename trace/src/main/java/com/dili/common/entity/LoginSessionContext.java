@@ -2,6 +2,7 @@ package com.dili.common.entity;
 
 import java.io.Serializable;
 
+import com.dili.common.annotation.AppAccess;
 import com.dili.common.entity.SessionData;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.common.exception.TraceBizException;
@@ -34,7 +35,10 @@ public class LoginSessionContext implements Serializable {
     /**
      * @param sessionData the sessionData to set
      */
-    public void setSessionData(SessionData sessionData) {
+    public void setSessionData(SessionData sessionData, AppAccess access) {
+        if(sessionData!=null){
+            sessionData.setRole(access.role());
+        }
         this.sessionData = sessionData;
     }
 }

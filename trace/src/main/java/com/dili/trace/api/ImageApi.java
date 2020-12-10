@@ -1,5 +1,7 @@
 package com.dili.trace.api;
 
+import com.dili.common.annotation.AppAccess;
+import com.dili.common.annotation.Role;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.service.DfsRpcService;
 import org.slf4j.Logger;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping(value = "/api/imageApi")
+@AppAccess(role = Role.ANY)
 public class ImageApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageApi.class);
 
