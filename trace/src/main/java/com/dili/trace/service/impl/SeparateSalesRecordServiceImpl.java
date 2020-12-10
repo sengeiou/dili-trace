@@ -49,10 +49,12 @@ public class SeparateSalesRecordServiceImpl extends BaseServiceImpl<SeparateSale
 
 	@Override
 	public List<SeparateSalesRecord> findByRegisterBillCode(String registerBillCode) {
-		Example example = new Example(SeparateSalesRecord.class);
+		/*Example example = new Example(SeparateSalesRecord.class);
 		example.and().andEqualTo("registerBillCode", registerBillCode).andIn("salesType",
-				Arrays.asList(TradeTypeEnum.NONE.getCode(), TradeTypeEnum.SEPARATE_SALES.getCode()));
-		return this.getActualDao().selectByExample(example);
+				Arrays.asList(TradeTypeEnum.NONE.getCode(), TradeTypeEnum.SEPARATE_SALES.getCode()));*/
+		SeparateSalesRecord record = new SeparateSalesRecord();
+		record.setRegisterBillCode(registerBillCode);
+		return this.listByExample(record);
 	}
 
 	@Override

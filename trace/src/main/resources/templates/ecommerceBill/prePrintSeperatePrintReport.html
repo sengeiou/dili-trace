@@ -73,7 +73,7 @@
                     </div>
                    <div class="form-group">
                         <label class="label-title text-right">结果</label>
-                        <input type="text" class="form-control input-sm"   tabindex="-1"  maxlength="50" value="${item.detectStateName!}"  readonly="readonly"/>
+                        <input type="text" class="form-control input-sm"   tabindex="-1"  maxlength="50" value="${item.detectStatus!}"  readonly="readonly"/>
                     </div>
                     <div class="form-group">
                         <label class="label-title text-right">有效期</label>
@@ -137,7 +137,7 @@
         </div>
         <div class="text-center mt30">
             <button class="btn-main2 btn-sm" onclick="previewPrintableData()">打印</button>&nbsp;&nbsp;
-            <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+            <button class="btn-greyweak btn-sm" onclick="parent.window['ECommerceBillGrid'].removeAllAndLoadData()">取消</button>
         </div>
     </div>
 </#bodyOrigin>
@@ -147,7 +147,7 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
-<script src="${contextPath!}/resources/js/jquery-serializeForm.min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 
 <script type="text/javascript">
 function changeInputAttrs(needInput){
@@ -186,7 +186,7 @@ $('#seperateTable input[type="checkbox"]').on('change',function(n,o){
 		var checkedList=getCheckList().map(function(i,v){
 			return $(v).val();
 		});
-		var formData=$('#createRecordForm').serializeForm();
+        var formData=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
 		var seperatePrintReportList=formData.seperatePrintReportList.filter(function(v,i){
 			return $.inArray(v.seperateRecocrdId, checkedList ) >-1
 		})
