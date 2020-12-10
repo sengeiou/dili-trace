@@ -11,7 +11,6 @@ import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.VerifyBillInputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
@@ -20,6 +19,7 @@ import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -55,7 +55,7 @@ public class ClientRegisterFormBillApi {
 	private LoginSessionContext sessionContext;
 
 	@Autowired
-	CustomerRpcService customerRpcService;
+    CustomerRpcService customerRpcService;
 
 	@Autowired
 	ImageCertService imageCertService;

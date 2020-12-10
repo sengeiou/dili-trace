@@ -10,6 +10,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 
 import io.swagger.annotations.ApiOperation;

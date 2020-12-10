@@ -1,7 +1,7 @@
-package com.dili.trace.service;
+package com.dili.trace.rpc.service;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.rpc.DfsRpc;
+import com.dili.trace.rpc.api.DfsRpc;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.lang3.StringUtils;

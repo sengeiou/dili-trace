@@ -2,7 +2,7 @@ package com.dili.trace.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.rpc.MessageRpc;
+import com.dili.trace.rpc.api.MessageRpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

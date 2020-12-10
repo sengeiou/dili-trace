@@ -1,4 +1,4 @@
-package com.dili.trace.rpc;
+package com.dili.trace.rpc.api;
 
 import com.dili.ss.domain.BaseOutput;
 import feign.codec.Encoder;

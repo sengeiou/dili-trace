@@ -1,7 +1,7 @@
 package com.dili.trace.api;
 
 import com.dili.common.annotation.InterceptConfiguration;
-import com.dili.trace.service.CustomerRpcService;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.service.UserService;

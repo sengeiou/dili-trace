@@ -1,4 +1,4 @@
-package com.dili.trace.rpc;
+package com.dili.trace.rpc.dto;
 
 public class CardResultDto {
     private Integer cardType;
