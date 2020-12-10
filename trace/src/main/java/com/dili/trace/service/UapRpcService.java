@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;

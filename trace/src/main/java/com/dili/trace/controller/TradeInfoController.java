@@ -1,7 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.trace.domain.Customer;
-import com.dili.trace.service.CustomerRpcService;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.User;

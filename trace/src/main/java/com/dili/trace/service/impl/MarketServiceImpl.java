@@ -5,7 +5,7 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.component.RpcComponent;
 import com.dili.trace.domain.Market;
 import com.dili.trace.enums.MarketEnum;
-import com.dili.trace.service.FirmRpcService;
+import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.service.MarketService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.uap.sdk.domain.Firm;

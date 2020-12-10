@@ -1,9 +1,7 @@
-package com.dili.trace.service;
+package com.dili.trace.rpc.service;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.retrofitful.annotation.POST;
-import com.dili.ss.retrofitful.annotation.VOBody;
 import com.dili.uap.sdk.domain.Firm;
 import com.dili.uap.sdk.domain.dto.FirmDto;
 import com.dili.uap.sdk.rpc.FirmRpc;

@@ -1,7 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.service.DfsRpcService;
+import com.dili.trace.rpc.service.DfsRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 图片上传

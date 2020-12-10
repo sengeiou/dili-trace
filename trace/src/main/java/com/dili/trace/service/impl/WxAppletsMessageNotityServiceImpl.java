@@ -6,7 +6,7 @@ import com.dili.trace.dto.wx.*;
 import com.dili.trace.dto.wx.MessageConfig.AppletsMessageConfig;
 import com.dili.trace.dto.wx.MessageConfig.OfficeMessageConfig;
 import com.dili.trace.dto.wx.MessageConfig.OfficeMessageConfig.Content;
-import com.dili.trace.rpc.WxRpc;
+import com.dili.trace.rpc.api.WxRpc;
 import com.dili.trace.service.WxAppletsMessageNotityService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

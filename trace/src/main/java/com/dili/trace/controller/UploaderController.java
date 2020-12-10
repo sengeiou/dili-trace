@@ -1,7 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.service.DfsRpcService;
+import com.dili.trace.rpc.service.DfsRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

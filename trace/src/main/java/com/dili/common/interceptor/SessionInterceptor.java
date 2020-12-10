@@ -11,7 +11,7 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.components.SessionRedisService;
-import com.dili.trace.service.CustomerRpcService;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.UapRpcService;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.redis.UserRedis;

@@ -1,0 +1,9 @@
+{
+  "imports": {
+    "underscore": "http://trace.diligrp.com/resources/assets/dep/underscore/underscore-min.js"
+    ,"jquery": "http://trace.diligrp.com/resources/assets/dep/jquery/jquery-2.2.4.min.js"
+    ,"CityController": "http://trace.diligrp.com/resources/js/CityController.js"
+    ,"CategoryController": "http://trace.diligrp.com/resources/js/CategoryController.js"
+
+  }
+}
