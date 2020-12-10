@@ -3,7 +3,7 @@
     <div class="topicTop">
         <div class="toppic-title">
             <span class="topic-title-text maincolor">货品信息详情</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
+            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">返回</button>
         </div>
     </div>
     <div class="form-box border">
@@ -84,8 +84,12 @@
                     <input type="text" class="form-control input-sm"  value="${registerBill.operatorName!}"  readonly/>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>状态</label>
-                    <input type="text" class="form-control input-sm"value="${registerBill.stateName}" required readonly/>
+                    <label class="label-title text-right"><span class="red">&lowast;</span>审核状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.verifyStatusName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测状态</label>
+                    <input type="text" class="form-control input-sm"value="${registerBill.detectStatusName}" required readonly/>
                 </div>
                 <% if(registerBill.registerSource == 2){ %>
                 <div class="form-group">
@@ -128,7 +132,8 @@
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectState==1){%>合格<%}else{%>不合格<%}%>" required readonly />
+                                    <!--TODO:detectState 如何处理？-->
+                                    <input type="text"  class="form-control input-sm" value="<%if(detectRecord.detectStatus==1){%>合格<%}else{%>不合格<%}%>" required readonly />
                                 </div>
                             </td>
                             <td>
@@ -149,12 +154,12 @@
                 </div>
             </div>
             
-			 
+            <!--TODO:detectState 如何处理？-->
             <%
             if(registerBill.registerSource == 1){
                 if( registerBill.salesType == 2
-                        && !isEmpty(registerBill.detectState)
-                            && (registerBill.detectState == 1 || registerBill.detectState == 3)){
+                        && !isEmpty(registerBill.detectStatus)
+                            && (registerBill.detectStatus == 1 || registerBill.detectStatus == 3)){
             %>
                 <div class="form-item-group">
                     <h4 class="form-item-title">溯源二维码</h4>
@@ -266,26 +271,29 @@
                             </div>
                         </div>
                             <%} }  %>
+
             <div class="form-item-group">
             		<h4 class="form-item-title">产地证明</h4>
-                          <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY].~size!0)>0){
-                        	for(originCertifiy in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY]){
+                          <%if((registerBill.imageCerts.~size!0)>0){
+                        	for(img in registerBill.imageCerts){
+                            if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${originCertifiy.url!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="${img.uid!}" >
 							</div>
-                        <%	}
+                        <%	} }
                         }%>
             </div>
             <div class="form-item-group">
             		<h4 class="form-item-title">检测报告</h4>
-                          <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){
-                        	for(detectReport in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT]){
+                          <%if((registerBill.imageCerts.~size!0)>0){
+                        	for(img in registerBill.imageCerts){
+                            if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${detectReport.url!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="${img.uid!}" >
 							</div>
-                        <%	}
+                        <%	} }
                         }%>
             </div>
 
