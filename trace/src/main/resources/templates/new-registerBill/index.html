@@ -187,9 +187,9 @@
             <button id="remove-reportAndcertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>删除检测报告和产地证明</button>
             <button id="copy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>补录</button>
             <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>查看</button>
-            <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('registerBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
-        <table id="registerBillGrid" data-toggle="table" data-title="客户列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
+        <table id="registerBillGrid" data-toggle="table" data-title="进场报备列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
                data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
