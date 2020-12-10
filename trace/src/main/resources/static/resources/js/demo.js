@@ -7,19 +7,9 @@ const jquery_1 = __importDefault(require("jquery"));
 const underscore_1 = __importDefault(require("underscore"));
 class DemoClass {
     constructor(props) {
-    }
-}
-function demo() {
-    console.info("bbb");
-}
-class Ajax {
-    constructor(settings) {
-    }
-    postForm(formData) {
-        underscore_1.default.chain(jquery_1.default.makeArray("post")).value();
-    }
-    postJson(jsonObject) {
-        console.info(jquery_1.default.type(jsonObject));
+        jquery_1.default.makeArray("");
+        underscore_1.default.chain([]).value();
+        console.info("bbb");
     }
 }
 //# sourceMappingURL=demo.js.map

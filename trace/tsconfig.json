@@ -11,7 +11,7 @@
     "watch": true,
     "incremental": true,
     "plugins": [],
-    "module": "CommonJS",
+    "module": "None",
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,

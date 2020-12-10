@@ -1,23 +1,13 @@
+
 import $ from 'jquery'
 import _ from 'underscore'
-class DemoClass{
+
+class DemoClass {
+
     constructor(props) {
         // @ts-ignore
+        $.makeArray("");
+        _.chain([]).value();
+        console.info("bbb")
     }
-}
-function demo() {
-    console.info("bbb")
-}
-class Ajax{
-
-    constructor(settings) {
-        // @ts-ignore
-    }
-    public postForm(formData:any){
-        _.chain($.makeArray("post")).value();
-    }
-    public postJson(jsonObject:any){
-        console.info($.type(jsonObject));
-    }
-
 }
