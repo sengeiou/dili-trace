@@ -10,6 +10,26 @@ class WebConfig {
     toUrl(url) {
         return this.contextPath + url;
     }
+    refreshOptions(url, grid, queryform) {
+        let req_url = this.toUrl(url);
+        let buildQueryData = (params) => {
+            let temp = {
+                rows: params.limit,
+                page: ((params.offset / params.limit) + 1) || 1,
+                sort: params.sort,
+                order: params.order
+            };
+            let data = $.extend(temp, queryform.serializeJSON());
+            let jsonData = jq.removeEmptyProperty(data);
+            return JSON.stringify(jsonData);
+        };
+        grid.bootstrapTable('refreshOptions', {
+            url: req_url,
+            'queryParams': (params) => buildQueryData(params),
+            'contentType': 'application/json',
+            'ajaxOptions': { contentType: 'application/json', dataType: 'json' }
+        });
+    }
     onselectFun(suggestion) {
         var self = this;
         var forId = $(self).attr("for");

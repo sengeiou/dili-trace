@@ -12,6 +12,27 @@ class WebConfig{
     public toUrl(url:string):string{
         return this.contextPath+url;
     }
+    protected refreshOptions(url:string,grid:any,queryform:any){
+        let req_url=this.toUrl(url)
+        let buildQueryData=(params)=>{
+            let temp = {
+                rows: params.limit,   //页面大小
+                page: ((params.offset / params.limit) + 1) || 1, //页码
+                sort: params.sort,
+                order: params.order
+            }
+            let data = $.extend(temp, queryform.serializeJSON());
+            let jsonData = jq.removeEmptyProperty(data);
+            return JSON.stringify(jsonData);
+        }
+        grid.bootstrapTable('refreshOptions', {
+            url: req_url
+            , 'queryParams': (params) => buildQueryData(params)
+            ,'contentType':'application/json'
+            , 'ajaxOptions': {contentType: 'application/json', dataType: 'json'}
+
+        });
+    }
     private onselectFun(suggestion){
         // console.info('onSelect')
         var self = this;

@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
+/**
+ * 检测单接口
+ */
 @RestController()
 @RequestMapping("/api/client/clientDetectRequest")
 @AppAccess(role = Role.Client)

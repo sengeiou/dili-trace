@@ -54,10 +54,8 @@ class NewRegisterBillGrid extends WebConfig {
         $('#review-btn').on('click',async ()=>await this.doReviewCheck());
 
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-        var url=this.toUrl('/newRegisterBill/listPage.action')
-        this.grid.bootstrapTable('refreshOptions', {url: url, pageSize: parseInt('10')});
+        super.refreshOptions('/newRegisterBill/listPage.action',this.grid,this.queryform);
 
-        // this.grid.bootstrapTable({'query-params':(params)=>this.buildQueryData(params)});
         this.queryform.find('#query').click(async () => await this.queryGridData());
 
         window.addEventListener('message', function(e) {
@@ -70,17 +68,7 @@ class NewRegisterBillGrid extends WebConfig {
 
         }, false);
     }
-    private buildQueryData(params){
-        let temp = {
-            rows: params.limit,   //页面大小
-            page: ((params.offset / params.limit) + 1) || 1, //页码
-            sort: params.sort,
-            order: params.order
-        }
-        let data=$.extend(temp, this.queryform.serializeJSON());
-        let jsonData=jq.removeEmptyProperty(data);
-        return JSON.stringify(jsonData);
-    }
+
     public removeAllAndLoadData(){
         //@ts-ignore
         bs4pop.removeAll();
