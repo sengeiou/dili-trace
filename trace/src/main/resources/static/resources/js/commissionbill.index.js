@@ -8,16 +8,91 @@ class CommissionBillGrid extends WebConfig {
         window['commissionBillGrid'] = this;
         $('#add-btn').on('click', async () => await this.openCreatePage());
         $('#detail-btn').on('click', async () => await this.doDetail());
+        $('#audit-btn').on('click', async () => await this.audit());
+        $('#createsheet-btn').on('click', async () => await this.doCreateCheckSheet());
+        $('#batch-reviewCheck-btn').on('click', async () => await this.doReviewCheck());
         let categoryController = new CategoryController();
         let cityController = new CityController();
-        this.initAutoComplete($("[name='productName']"), function (query, done) { categoryController.lookupCategories(query, done); });
-        this.initAutoComplete($("[name='originName']"), function (query, done) { cityController.lookupCities(query, done); });
+        this.initAutoComplete($("[name='productName']"), function (query, done) {
+            categoryController.lookupCategories(query, done);
+        });
+        this.initAutoComplete($("[name='originName']"), function (query, done) {
+            cityController.lookupCities(query, done);
+        });
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-        this.grid.bootstrapTable('refreshOptions', { url: '/commissionBill/listPage.action',
+        this.grid.bootstrapTable('refreshOptions', {
+            url: '/commissionBill/listPage.action',
             'queryParams': (params) => this.buildQueryData(params),
             'ajaxOptions': { contentType: 'application/json', dataType: 'json' }
         });
         this.queryform.find('#query').click(async () => await this.queryGridData());
+    }
+    doCreateCheckSheet() {
+        let row = this.grid.bootstrapTable("getSelections");
+        if (row.length == 0) {
+            bs4pop.alert("请选择一条数据", { type: 'warning' });
+            return;
+        }
+        var idList = row.map(function (v, i) {
+            return v.id;
+        });
+        let param = $.param({ idList: idList }, true);
+        let url = this.toUrl("/checkSheet/edit.html?" + param);
+        var audit_dia = bs4pop.dialog({
+            title: '创建打印报告单',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '50%',
+            height: '70%',
+            btns: [],
+            onShowEnd: function () {
+            }
+        });
+    }
+    audit() {
+        let row = this.grid.bootstrapTable("getSelections");
+        if (row.length == 0) {
+            bs4pop.alert("请选择一条数据", { type: 'warning' });
+            return;
+        }
+        if (row.length > 1) {
+            bs4pop.alert("请选择数据过多", { type: 'warning' });
+            return;
+        }
+        console.log(row);
+        let url = this.toUrl("/commissionBill/audit.html?billId=" + row[0].id);
+        var audit_dia = bs4pop.dialog({
+            title: '审核',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '50%',
+            height: '51%',
+            btns: [],
+            onShowEnd: function () {
+            }
+        });
+    }
+    doAudit(id) {
+        let url = this.toUrl("/commissionBill/doAuditCommissionBillByManager.action");
+        $.ajax({
+            type: "POST",
+            data: { billId: id },
+            url: url,
+            processData: true,
+            dataType: "json",
+            async: true,
+            success: function (ret) {
+                if (ret.success) {
+                    bs4pop.alert("操作成功", { type: 'success' }, function () {
+                        window['commissionBillGrid'].removeAllAndLoadData();
+                    });
+                }
+            }
+        });
     }
     resetButtons() {
         var btnArray = ['detail-btn', 'createsheet-btn', 'audit-btn', 'batch-reviewCheck-btn'];
@@ -109,11 +184,15 @@ class CommissionBillGrid extends WebConfig {
         });
     }
     doDetail() {
-        let row = this.rows();
+        let row = this.grid.bootstrapTable("getSelections");
         if (row.length == 0) {
+            bs4pop.alert("请选择一条数据", { type: 'warning' });
             return;
         }
-        console.log(row);
+        if (row.length > 1) {
+            bs4pop.alert("请选择数据过多", { type: 'warning' });
+            return;
+        }
         let selected_id = row[0].id;
         let url = this.toUrl('/commissionBill/view/' + selected_id + '/true');
         var dia = bs4pop.dialog({
