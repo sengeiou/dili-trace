@@ -410,11 +410,12 @@ var currentUser={"depId":"${user.departmentId!}"
        
         var registerSource = $("#registerSource").val();
         var registerBills = buildTableData(registerSource);
+        var data=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
 
         $.ajax({
             type: "POST",
-            url: "${contextPath}/registerBill/insert.action",
-            data :  JSON.stringify(registerBills),
+            url: "${contextPath}/newRegisterBill/insert.action",
+            data :  JSON.stringify(data),
             dataType: "json",
             async : true,
             contentType: "application/json; charset=utf-8",
@@ -436,8 +437,8 @@ var currentUser={"depId":"${user.departmentId!}"
                            	 type:0,
                            	  time : 600,
                            	end :function(){
-                           		parent.closeWin('view_win');
-                           		
+                           		// parent.closeWin('view_win');
+                                parent.window['RegisterBillGridObj'].removeAllAndLoadData()
                            	}
                           },
                            	 
@@ -528,7 +529,8 @@ var currentUser={"depId":"${user.departmentId!}"
             formData: {type: 4, compress: true},
             done: function (e, res) {
                 if (res.result.code == 200) {
-                    var url = res.result.data;
+                    // var url = res.result.data;
+                    var url = "${imageViewPathPrefix}" + res.result.data;
                     $(this).siblings('.magnifying').attr('src', url).show();
                     $(this).siblings("input:hidden").val(url);
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
@@ -562,7 +564,8 @@ var currentUser={"depId":"${user.departmentId!}"
             formData: {type: 4, compress: true},
             done: function (e, res) {
                 if (res.result.code == 200) {
-                    var url = res.result.data;
+                    // var url = res.result.data;
+                    var url = "${imageViewPathPrefix}" + res.result.data;
                     $(this).siblings("input:hidden").val(url);
                     $(this).parent().parent().hide();
                     $(this).parent().parent().next().show();
