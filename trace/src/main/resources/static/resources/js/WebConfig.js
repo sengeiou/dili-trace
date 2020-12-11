@@ -6,6 +6,13 @@ class WebConfig {
         }
         this.contextPath = webGlobalConfig.contextPath;
         this.imageViewPathPrefix = webGlobalConfig.imageViewPathPrefix;
+        window.addEventListener('message', async (e) => this.handleMessage(e), false);
+    }
+    handleMessage(e) {
+        let data = JSON.parse(e.data);
+        if (data.fun && data.type == 'call') {
+            this[data.fun].call(this, data.args);
+        }
     }
     toUrl(url) {
         return this.contextPath + url;

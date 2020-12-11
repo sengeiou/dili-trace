@@ -33,6 +33,10 @@ class jq {
         let resp = await jq.ajax(settings);
         return resp;
     }
+    static async getWithProcessing(url, settings = {}) {
+        _.extend(settings, { method: 'get', url: url });
+        return await this.ajaxWithProcessing(settings);
+    }
     static async postJsonWithProcessing(url, data, settings = {}) {
         let jsonData = this.removeEmptyProperty(data);
         _.extend(settings, { method: 'post', dataType: 'json', contentType: 'application/json', data: JSON.stringify(jsonData), url: url });

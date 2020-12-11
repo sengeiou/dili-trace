@@ -49,7 +49,15 @@ class jq {
         let resp:any=await jq.ajax(settings);
         return resp;
     }
+    /**
+     * 对ajax异步请求转换为promise
+     * @param settings
+     */
 
+    public static async getWithProcessing(url:string,settings:JQuery.AjaxSettings={}):Promise<any> {
+        _.extend(settings,{method:'get',url:url})
+        return await this.ajaxWithProcessing(settings)
+    }
     /**
      * 对ajax异步请求转换为promise
      * @param settings

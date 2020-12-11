@@ -7,19 +7,9 @@ class UsualAddressIndex extends ListPage {
         $('#add-btn').on('click', async () => this.openAddPage());
         $('#edit-btn').on('click', async () => this.openEditPage());
         $('#delete-btn').on('click', async () => this.openDeletePage())
-        $('#export').on('click', async () => this.openExportPage());
-
-        window.addEventListener('message', async (e) => this.handleMessage(e), false);
-
+        // $('#export').on('click', async () => this.openExportPage());
     }
-
-    private handleMessage(e: MessageEvent) {
-        let data = JSON.parse(e.data);
-        if (data.fun) {
-            this[data.fun].call(this, data.args)
-        }
-    }
-
+    //在增加或修改成功结束时由子页面调用到此方法
     private async editSuccess() {
         //@ts-ignore
         bs4pop.removeAll();
@@ -69,12 +59,22 @@ class UsualAddressIndex extends ListPage {
     }
 
     private async openDeletePage() {
-
+        let sure=await  popwrapper.confirm("确定要删除当前选中数据吗?");
+        if(!sure){
+            return;
+        }
+        var url=this.toUrl("/usualAddress/delete.action?id="+this.rows[0].id);
+        let resp = await jq.getWithProcessing(url);
+        if(!resp.success){
+            //@ts-ignore
+            bs4pop.notice(resp.message, {type: 'warning', position: 'topleft'});
+            return;
+        }
+        await this.editSuccess();
     }
 
-    private async openExportPage() {
 
-    }
+
 
     private async rowClick() {
         this.resetButtons();

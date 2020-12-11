@@ -6,14 +6,6 @@ class UsualAddressIndex extends ListPage {
         $('#add-btn').on('click', async () => this.openAddPage());
         $('#edit-btn').on('click', async () => this.openEditPage());
         $('#delete-btn').on('click', async () => this.openDeletePage());
-        $('#export').on('click', async () => this.openExportPage());
-        window.addEventListener('message', async (e) => this.handleMessage(e), false);
-    }
-    handleMessage(e) {
-        let data = JSON.parse(e.data);
-        if (data.fun) {
-            this[data.fun].call(this, data.args);
-        }
     }
     async editSuccess() {
         bs4pop.removeAll();
@@ -52,8 +44,17 @@ class UsualAddressIndex extends ListPage {
         });
     }
     async openDeletePage() {
-    }
-    async openExportPage() {
+        let sure = await popwrapper.confirm("确定要删除当前选中数据吗?");
+        if (!sure) {
+            return;
+        }
+        var url = this.toUrl("/usualAddress/delete.action?id=" + this.rows[0].id);
+        let resp = await jq.getWithProcessing(url);
+        if (!resp.success) {
+            bs4pop.notice(resp.message, { type: 'warning', position: 'topleft' });
+            return;
+        }
+        await this.editSuccess();
     }
     async rowClick() {
         this.resetButtons();
