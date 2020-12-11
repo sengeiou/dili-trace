@@ -3,6 +3,7 @@ class UsualAddressEdit extends WebConfig {
         super();
         this.dataForm = dataForm;
         this.submitBtn = submitBtn;
+        this.pw = window.parent.window;
         let cityController = new CityController();
         super.initAutoComplete(this.dataForm.find('#addressInput'), function (query, done) {
             cityController.lookupCities(query, done);
@@ -15,15 +16,17 @@ class UsualAddressEdit extends WebConfig {
         this.submitBtn.on('click', async () => await this.ajaxSubmit());
     }
     async ajaxSubmit() {
-        let data = this.dataForm.serializeJSON();
-        var data_2 = jq.removeEmptyProperty(data);
-        debugger;
+        if (!this.dataForm.validate().form()) {
+            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
+            return;
+        }
+        var data = jq.removeEmptyProperty(this.dataForm.serializeJSON());
         let url = this.toUrl("/usualAddress/insert.action");
         let resp = await jq.postJsonWithProcessing(url, data);
         if (!resp.success) {
             bs4pop.notice(resp.message, { type: 'warning', position: 'topleft' });
             return;
         }
-        bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+        p.call("editSuccess");
     }
 }

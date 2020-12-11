@@ -105,4 +105,31 @@ class popwrapper {
         })
         return await p;
     }
+    public static async alert(msg:string,config:any={}){
+
+        const p = new Promise<any>((resolve, reject) => {
+            //@ts-ignore
+            var alertDialog=bs4pop.alert(msg, config,function(){
+                resolve(1)
+            });
+            if(config.autoClose){
+                setTimeout(function(){
+                    alertDialog.$el.siblings('.modal-backdrop').remove()
+                    alertDialog.$el.remove()
+                    resolve(2)
+                },parseInt(config.autoClose))
+            }else{
+                resolve(3)
+            }
+
+        })
+        return await p;
+    }
+}
+class p{
+    public static call(funName:string,args:any[]=[]){
+        let data={'fun':funName,'args':args};
+        // @ts-ignore
+        window.parent.postMessage(JSON.stringify(data));
+    }
 }
