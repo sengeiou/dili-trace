@@ -16,7 +16,7 @@
     "noImplicitAny": false,
     "noImplicitReturns": false,
     "removeComments": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "strictNullChecks": false,
     "moduleResolution": "classic",
     "target": "ESNext",

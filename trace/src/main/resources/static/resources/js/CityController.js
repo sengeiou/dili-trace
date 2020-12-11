@@ -1,6 +1,6 @@
 class CityController extends WebConfig {
     async listCities(cusCategoryQuery) {
-        let url = this.toUrl("/city/listCities.action");
+        var url = await super.toUrl("/city/listCities.action");
         let resp = await jq.postJson(url, cusCategoryQuery);
         if (resp.code == '200') {
             return resp.data;
@@ -29,4 +29,3 @@ class CityController extends WebConfig {
         })();
     }
 }
-//# sourceMappingURL=CityController.js.map

@@ -1,4 +1,4 @@
-package com.dili.sg.trace.jobs;
+package com.dili.trace.jobs;
 
 import java.util.Date;
 
@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import com.dili.ss.dto.DTOUtils;
 
 /**
  *
@@ -49,7 +47,7 @@ public class UsualAddressCountClearJob {
 	private boolean checkAndClearUsedCount() {
 
 		try {
-			UsualAddress input = DTOUtils.newDTO(UsualAddress.class);
+			UsualAddress input = new UsualAddress();
 			input.setClearTime(new Date());
 			Integer count = this.usualAddressMapper.checkAndUpdateCountData(input);
 			logger.info("共[{}]条常用地址统计数据被更新", count);

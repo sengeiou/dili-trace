@@ -82,6 +82,9 @@ public class NewRegisterBillController {
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
 
+    @Autowired
+    DetectRequestService detectRequestService;
+
 
     /**
      * 跳转到RegisterBill页面
@@ -286,7 +289,7 @@ public class NewRegisterBillController {
     }
 
     /**
-     * 上传产地证明
+     * 上传处理结果
      *
      * @param modelMap
      * @return
@@ -311,6 +314,13 @@ public class NewRegisterBillController {
             condition.setRegisterBillCode(registerBill.getCode());
             modelMap.put("qualityTraceTradeBills", qualityTraceTradeBillService.listByExample(condition));
         }
+
+        // 查询检测请求
+        if (registerBill.getDetectRequestId() != null) {
+            DetectRequest detectRequest = detectRequestService.get(registerBill.getDetectRequestId());
+            registerBill.setDetectRequest(detectRequest);
+        }
+
         modelMap.put("registerBill", this.maskRegisterBillOutputDto(registerBill));
 
         UserTicket user = SessionContext.getSessionContext().getUserTicket();
@@ -596,6 +606,31 @@ public class NewRegisterBillController {
     @ResponseBody
     public BaseOutput<?> doUploadDetectReport(@RequestBody RegisterBill input) {
         try {
+            List<ImageCert> imageCertList = new ArrayList<>();
+            if (StringUtils.isNotBlank(input.getOriginCertifiyUrl())) {
+                for (String s : input.getOriginCertifiyUrl().split(",")) {
+                    ImageCert imageCert = new ImageCert();
+                    imageCert.setBillId(input.getId());
+                    imageCert.setUrl(s);
+                    imageCert.setCertType(ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode());
+                    imageCert.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
+                    imageCert.setUid(s);
+                    imageCertList.add(imageCert);
+                }
+            }
+
+            if (StringUtils.isNotBlank(input.getDetectReportUrl())) {
+                for (String s : input.getDetectReportUrl().split(",")) {
+                    ImageCert imageCert = new ImageCert();
+                    imageCert.setBillId(input.getId());
+                    imageCert.setUrl(s);
+                    imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
+                    imageCert.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
+                    imageCert.setUid(s);
+                    imageCertList.add(imageCert);
+                }
+            }
+
             Long id = this.registerBillService.doUploadDetectReport(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {

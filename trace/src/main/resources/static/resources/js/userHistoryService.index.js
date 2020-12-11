@@ -49,4 +49,3 @@ class UserHistoryServiceIndex extends WebConfig {
         }
     }
 }
-//# sourceMappingURL=userHistoryService.index.js.map

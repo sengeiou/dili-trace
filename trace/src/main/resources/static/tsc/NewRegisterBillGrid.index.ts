@@ -9,7 +9,7 @@ class NewRegisterBillGrid extends ListPage {
     toolbar:any;
 
     constructor(grid: any, queryform: any, toolbar: any) {
-        super(grid,queryform,$('#query'),"/newRegisterBill/listPage.action");
+        super(grid,queryform,queryform.find('#query'),"/newRegisterBill/listPage.action");
         this.toolbar=toolbar;
         this.btns=this.toolbar.find('button');
         this.uid=_.uniqueId("trace_id_");
@@ -701,12 +701,6 @@ class NewRegisterBillGrid extends ListPage {
         return formdata;
     }
 
-
-
-    get rows() {
-        let rows = this.grid.bootstrapTable('getSelections');
-        return rows;
-    }
 
     private handleTimeUpdateEvent = (event) => {
         // Something

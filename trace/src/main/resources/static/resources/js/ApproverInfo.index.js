@@ -44,4 +44,3 @@ class ApproverInfoIndex extends WebConfig {
         $('#toolbar button').removeAttr('disabled');
     }
 }
-//# sourceMappingURL=ApproverInfo.index.js.map

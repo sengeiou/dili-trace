@@ -29,4 +29,3 @@ class CategoryController extends WebConfig {
         })();
     }
 }
-//# sourceMappingURL=CategoryController.js.map

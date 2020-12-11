@@ -1,15 +1,6 @@
-class UsualAddressIndex extends  WebConfig{
-    private grid: any;
-    private queryform: any;
+class UsualAddressIndex extends  ListPage{
     constructor(grid: any,queryform:any) {
-        super();
-        this.grid = grid;
-        this.queryform=queryform;
-        (async ()=>this.init())();
-    }
-    private async init(){
-        this.queryform.find('#query').click(async () => await this.queryGridData());
-
+        super(grid,queryform,queryform.find('#query'),"/usualAddress/listPage.action");
         this.grid.on('check.bs.table', async () => await this.rowClick());
         this.grid.on('uncheck.bs.table',async () => await this.rowClick());
 
@@ -17,14 +8,45 @@ class UsualAddressIndex extends  WebConfig{
         $('#edit-btn').on('click',async ()=>this.openEditPage());
         $('#delete-btn').on('click', async  ()=> this.openDeletePage())
         $('#export').on('click',async ()=>this.openExportPage());
-        await this.queryGridData();
     }
+
     private async openAddPage() {
 
+        let url = this.toUrl("/usualAddress/edit.html");
 
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '增加常用地址',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '30%',
+            height: '60%',
+            btns: []
+        });
     }
     private async openEditPage() {
 
+        if(this.rows.length==0){
+            //@ts-ignore
+            bs4pop.alert('请选择要修改的数据', {type: 'error'});
+            return;
+        }
+        var select=this.rows[0];
+        let url = this.toUrl("/usualAddress/edit.html?id="+select.id);
+
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '增加常用地址',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '60%',
+            height: '98%',
+            btns: []
+        });
     }
     private async openDeletePage() {
 
@@ -35,26 +57,5 @@ class UsualAddressIndex extends  WebConfig{
     private async rowClick() {
     debugger
     }
-    private async queryGridData() {
-        if (!this.queryform.validate().form()) {
-            //@ts-ignore
-            bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
-            return;
-        }
-        await this.remoteQuery();
-    }
-    private async remoteQuery() {
-        $('#toolbar button').attr('disabled', "disabled");
-        this.grid.bootstrapTable('showLoading');
-        try{
-            let url = this.toUrl( "/usualAddress/listPage.action");
-            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
-            this.grid.bootstrapTable('load',resp);
-        }catch (e){
-            console.error(e);
-            this.grid.bootstrapTable('load',{rows:[],total:0});
-        }
-        this.grid.bootstrapTable('hideLoading');
-        $('#toolbar button').removeAttr('disabled');
-    }
+
 }
