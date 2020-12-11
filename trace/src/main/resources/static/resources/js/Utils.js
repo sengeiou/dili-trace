@@ -97,7 +97,11 @@ class popwrapper {
 }
 class p {
     static call(funName, args = []) {
-        let data = { 'fun': funName, 'args': args };
+        let data = { 'type': 'call', 'fun': funName, 'args': args };
+        window.parent.postMessage(JSON.stringify(data));
+    }
+    static exec(fun) {
+        let data = { 'type': 'exec', 'fun': fun.toString() };
         window.parent.postMessage(JSON.stringify(data));
     }
 }

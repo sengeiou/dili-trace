@@ -128,7 +128,12 @@ class popwrapper {
 }
 class p{
     public static call(funName:string,args:any[]=[]){
-        let data={'fun':funName,'args':args};
+        let data={'type':'call','fun':funName,'args':args};
+        // @ts-ignore
+        window.parent.postMessage(JSON.stringify(data));
+    }
+    public static exec(fun:Function){
+        let data={'type':'exec','fun':fun.toString()};
         // @ts-ignore
         window.parent.postMessage(JSON.stringify(data));
     }
