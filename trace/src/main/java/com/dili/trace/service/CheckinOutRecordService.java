@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.trace.api.input.CheckOutApiInput;
 import com.dili.trace.domain.CheckinOutRecord;
@@ -16,7 +17,6 @@ import com.dili.trace.enums.CheckinOutTypeEnum;
 import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
-import com.dili.trace.glossary.YnEnum;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -220,9 +220,9 @@ public class CheckinOutRecordService extends BaseServiceImpl<CheckinOutRecord, L
 			RegisterBill bill = new RegisterBill();
 			bill.setId(billItem.getId());
 			if (CheckinStatusEnum.ALLOWED == checkinStatusEnum) {
-				bill.setIsCheckin(YnEnum.YES.getCode());
+				bill.setIsCheckin(YesOrNoEnum.YES.getCode());
 			} else {
-				bill.setIsCheckin(YnEnum.NO.getCode());
+				bill.setIsCheckin(YesOrNoEnum.NO.getCode());
 			}
 			this.registerBillService.updateSelective(bill);
 

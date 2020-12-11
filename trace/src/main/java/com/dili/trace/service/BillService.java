@@ -16,8 +16,6 @@ import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
-import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;

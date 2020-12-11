@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import org.springframework.stereotype.Component;
 
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
-import com.dili.trace.glossary.YnEnum;
 
 /**
  * <B>Description</B>
@@ -31,8 +31,8 @@ public class NullValueInReportProvider implements ValueProvider {
 	private static List<ValuePair<?>> buildValuePair(){
 		
 		List<ValuePair<?>> list = new ArrayList<>();
-		list.addAll(Stream.of(YnEnum.values())
-                .map(e -> new ValuePairImpl<>(e.getDesc(), e.getCode().toString()))
+		list.addAll(Stream.of(YesOrNoEnum.values())
+                .map(e -> new ValuePairImpl<>(e.getName(), e.getCode().toString()))
                 .collect(Collectors.toList()));
 		return list;
     }

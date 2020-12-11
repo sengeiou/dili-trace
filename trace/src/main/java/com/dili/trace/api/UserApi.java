@@ -13,6 +13,7 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
 import com.dili.common.util.VerificationCodeUtil;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -28,7 +29,6 @@ import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.ValidateStateEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.MessageRpcService;
 import com.dili.trace.service.SMSService;
 import com.dili.trace.service.UserPlateService;
@@ -256,7 +256,7 @@ public class UserApi {
             }
             User query = DTOUtils.newDTO(User.class);
             query.setPhone(user.getPhone());
-            query.setYn(YnEnum.YES.getCode());
+            query.setYn(YesOrNoEnum.YES.getCode());
             User userItem = StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(() -> {
                 return new TraceBizException("手机号码不存在");
             });

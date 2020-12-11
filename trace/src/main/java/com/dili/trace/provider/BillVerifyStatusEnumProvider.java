@@ -14,7 +14,6 @@ import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.TradeTypeEnum;
-import com.dili.trace.glossary.YnEnum;
 
 /**
  * <B>Description</B>

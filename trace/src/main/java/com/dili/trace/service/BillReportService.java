@@ -1,5 +1,6 @@
 package com.dili.trace.service;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -14,7 +15,6 @@ import com.dili.trace.dto.BillReportQueryDto;
 import com.dili.trace.enums.OrderTypeEnum;
 import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.enums.ValidateStateEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import one.util.streamex.StreamEx;
@@ -224,7 +224,7 @@ public class BillReportService {
             Long noDelte = new Long(0);
             user.setValidateState(ValidateStateEnum.PASSED.getCode());
             user.setIsDelete(noDelte);
-            user.setYn(YnEnum.YES.getCode());
+            user.setYn(YesOrNoEnum.YES.getCode());
             user.setState(normal);
             List<User> userList = userService.listByExample(user);
             resultCount = userList.size();

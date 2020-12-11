@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Optional;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.domain.ProductStock;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.TradeDetail;
@@ -13,7 +14,6 @@ import com.dili.trace.enums.CheckinStatusEnum;
 import com.dili.trace.enums.CheckoutStatusEnum;
 import com.dili.trace.enums.SaleStatusEnum;
 import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.glossary.YnEnum;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class TradeService {
     Optional<OperatorUser> operatorUser) {
         RegisterBill billItem = this.registerBillService.get(billId);
         BigDecimal weight=billItem.getWeight();
-        if (!YnEnum.YES.equalsToCode(billItem.getIsCheckin())) {
+        if (!YesOrNoEnum.YES.getCode().equals(billItem.getIsCheckin())) {
             // 还没有进门，不对TradeDetaile及BatchStock进行任何操作
             return billId;
         }

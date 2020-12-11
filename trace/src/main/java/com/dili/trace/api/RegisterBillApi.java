@@ -4,6 +4,7 @@ import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -12,7 +13,6 @@ import com.dili.trace.api.input.RegisterBillQueryInputDto;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.RegisterBillService;
 import com.dili.trace.service.UserService;
@@ -109,7 +109,7 @@ public class RegisterBillApi {
             // 根据经营户卡号查询经营户
             User user = DTOUtils.newDTO(User.class);
             user.setThirdPartyCode(inputDto.getSupplierId());
-            user.setYn(YnEnum.YES.getCode());
+            user.setYn(YesOrNoEnum.YES.getCode());
             List<User> userList = userService.listByExample(user);
             if (CollectionUtils.isEmpty(userList)) {
                 return BaseOutput.failure("supplierId没有匹配的经营户");

@@ -1,6 +1,7 @@
 package com.dili.trace.jobs;
 
 import com.alibaba.fastjson.JSON;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.RegisterBillMapper;
@@ -12,7 +13,6 @@ import com.dili.trace.enums.ReportInterfaceEnum;
 import com.dili.trace.enums.SysConfigTypeEnum;
 import com.dili.trace.enums.ThirdSourceTypeEnum;
 import com.dili.trace.glossary.EnabledStateEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.Firm;
 import one.util.streamex.StreamEx;
@@ -154,7 +154,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         User user = DTOUtils.newInstance(User.class);
         Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
         user.setMarketId(firm.getId());
-        user.setYn(YnEnum.YES.getCode());
+        user.setYn(YesOrNoEnum.YES.getCode());
         List<User> userList = userService.getUserByCredentialUrl(user);
 
         if (!CollectionUtils.isEmpty(userList)) {
@@ -179,7 +179,7 @@ public class HangGuoTraceabilityDataJob implements CommandLineRunner {
         User user = DTOUtils.newInstance(User.class);
         Firm firm = marketService.getMarketByCode(MarketEnum.HZSG);
         user.setMarketId(firm.getId());
-        user.setYn(YnEnum.YES.getCode());
+        user.setYn(YesOrNoEnum.YES.getCode());
         List<User> userList = userService.getUserByCredentialUrl(user);
         if (!CollectionUtils.isEmpty(userList)) {
             String memType = "M";

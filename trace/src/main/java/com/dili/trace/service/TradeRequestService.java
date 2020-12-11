@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
@@ -21,7 +22,6 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.TFEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import one.util.streamex.EntryStream;
@@ -41,6 +41,9 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * 交易请求
+ */
 @Service
 @Transactional
 public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
@@ -71,6 +74,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     @Autowired
     UserQrHistoryService userQrHistoryService;
 
+    /**
+     * 返回真实mapper
+     * @return
+     */
     public TradeRequestMapper getActualDao() {
         return (TradeRequestMapper) getDao();
     }
@@ -241,6 +248,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
     }
 
 
+    /**
+     * 查询下一个code
+     * @return
+     */
     private String getNextCode() {
         return this.codeGenerateService.nextTradeRequestCode();
 
@@ -560,6 +571,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return tradeRequest.getId();
     }
 
+    /**
+     * 创建上下游
+     * @param sellerId
+     * @param buyerId
+     */
     void createUpStreamAndDownStream(Long sellerId, Long buyerId) {
         User seller = this.userService.get(sellerId);
         if (seller == null) {
@@ -594,6 +610,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     }
 
+    /**
+     * 为用户增加上下游
+     * @param user
+     * @return
+     */
     private UpStreamDto createUpStreamDtoFromUser(User user) {
         UpStreamDto upStreamDto = new UpStreamDto();
         upStreamDto.setName(user.getName());
@@ -613,6 +634,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return upStreamDto;
     }
 
+    /**
+     * 查询分页数据
+     * @param dto
+     * @param userId
+     * @return
+     */
     public BasePage<TradeRequest> listPageForStatusOrder(TradeRequestInputDto dto, Long userId) {
         dto.setBuyerId(userId);
         dto.setOrderStatus(TradeOrderStatusEnum.FINISHED.getCode());
@@ -635,6 +662,12 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         return result;
     }
 
+    /**
+     * 增加查询条件
+     * @param tradeRequest
+     * @param userId
+     * @return
+     */
     public BasePage<TradeRequest> listPageTradeRequestByBuyerIdOrSellerId(TradeRequestInputDto tradeRequest,
                                                                           Long userId) {
         tradeRequest.setMetadata(IDTO.AND_CONDITION_EXPR, "(buyer_id=" + userId + " OR seller_id=" + userId + ")");
@@ -642,6 +675,10 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
 
     }
 
+    /**
+     * 处理购买请求
+     * @param handleDto
+     */
     @Transactional(rollbackFor = Exception.class)
     public void handleBuyerRequest(TradeRequestHandleDto handleDto) {
         Long tradeRequestId = handleDto.getTradeRequestId();
@@ -743,6 +780,11 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         messageService.addMessage(messageInputDto);
     }
 
+    /**
+     * 查询 历史数据
+     * @param buyerId
+     * @return
+     */
     public List<UserOutput> queryTradeSellerHistoryList(Long buyerId) {
         TradeRequest request = new TradeRequest();
         request.setBuyerId(buyerId);
@@ -755,7 +797,7 @@ public class TradeRequestService extends BaseServiceImpl<TradeRequest, Long> {
         StreamEx.of(sellerIds).nonNull().forEach(td -> {
             UserOutput outPutDto = new UserOutput();
             User user = this.userService.get(td);
-            if (user != null && user.getYn().equals(YnEnum.YES.getCode())) {
+            if (user != null && user.getYn().equals(YesOrNoEnum.YES.getCode())) {
                 outPutDto.setId(td);
                 UserStore userStore = new UserStore();
                 userStore.setUserId(td);

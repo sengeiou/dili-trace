@@ -2,6 +2,7 @@ package com.dili.trace.jobs;
 
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
@@ -14,7 +15,6 @@ import com.dili.trace.dto.thirdparty.report.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections.CollectionUtils;
@@ -477,7 +477,7 @@ public class HangGuoPushDataJob implements CommandLineRunner {
         User user = DTOUtils.newDTO(User.class);
         user.setMarketId(market.getId());
         user.setState(EnabledStateEnum.ENABLED.getCode());
-        user.setYn(YnEnum.YES.getCode());
+        user.setYn(YesOrNoEnum.YES.getCode());
         user.setValidateState(ValidateStateEnum.PASSED.getCode());
         String addQue = " phone <> '' and phone <> '''''' ";
         if (!newPushFlag) {

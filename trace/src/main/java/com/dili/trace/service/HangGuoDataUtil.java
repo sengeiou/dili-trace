@@ -13,7 +13,6 @@ import com.dili.trace.domain.hangguo.HangGuoUser;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
-import com.dili.trace.glossary.YnEnum;
 import com.dili.trace.glossary.hanguo.HangGuoGoodsLevelEnum;
 import com.dili.trace.glossary.hanguo.HangGuoVocationTypeEnum;
 import one.util.streamex.StreamEx;

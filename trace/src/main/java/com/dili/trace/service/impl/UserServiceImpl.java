@@ -7,6 +7,7 @@ import com.beust.jcommander.internal.Lists;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -110,7 +111,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         user.setState(EnabledStateEnum.ENABLED.getCode());
         user.setPassword(MD5Util.md5(originalPassword));
         user.setIsDelete(0L);
-        user.setYn(com.dili.trace.glossary.YnEnum.YES.getCode());
+        user.setYn(YesOrNoEnum.YES.getCode());
         user.setUserType(userType.getCode());
 
 //		// 验证验证码是否正确
@@ -259,7 +260,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (StringUtils.isNotBlank(user.getCardNo())) {
             User query = DTOUtils.newDTO(User.class);
             query.setCardNo(user.getCardNo());
-            query.setYn(YnEnum.YES.getCode());
+            query.setYn(YesOrNoEnum.YES.getCode());
             List<User> users = listByExample(query);
             if (CollectionUtils.isNotEmpty(users)) {
                 users.forEach(o -> {
@@ -271,7 +272,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 
         User userPO = get(user.getId());
-        if (!YnEnum.YES.getCode().equals(userPO.getYn())) {
+        if (!YesOrNoEnum.YES.getCode().equals(userPO.getYn())) {
             throw new TraceBizException("数据已被删除");
         }
 
@@ -363,7 +364,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public User login(String phone, String encryptedPassword) {
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(phone);
-        query.setYn(YnEnum.YES.getCode());
+        query.setYn(YesOrNoEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
             throw new TraceBizException("手机号未注册");
@@ -382,7 +383,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public void resetPassword(User user) {
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(user.getPhone());
-        query.setYn(YnEnum.YES.getCode());
+        query.setYn(YesOrNoEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
             throw new TraceBizException("用户不存在");
@@ -404,7 +405,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         this.sMSService.checkResetPasswordSmsCode(user.getPhone(), smscode);
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(user.getPhone());
-        query.setYn(YnEnum.YES.getCode());
+        query.setYn(YesOrNoEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
             throw new TraceBizException("用户不存在");
@@ -456,7 +457,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public List<User> getUserByExistsAccount(String phone) {
         User query = DTOUtils.newDTO(User.class);
         query.setPhone(phone);
-        query.setYn(YnEnum.YES.getCode());
+        query.setYn(YesOrNoEnum.YES.getCode());
         return listByExample(query);
     }
 
@@ -469,7 +470,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         if (user == null) {
             return BaseOutput.failure("数据不存在");
         }
-        if (!YnEnum.YES.getCode().equals(user.getYn())) {
+        if (!YesOrNoEnum.YES.getCode().equals(user.getYn())) {
             return BaseOutput.failure("数据已被删除");
         }
         Integer needPush = 1;
@@ -559,7 +560,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         List<String> tallyAreaNos = Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(","));
 
         user.setState(EnabledStateEnum.DISABLED.getCode());
-        user.setYn(YnEnum.NO.getCode());
+        user.setYn(YesOrNoEnum.NO.getCode());
         user.setIsDelete(user.getId());
         user.setOpenId("");
         user.setModified(new Date());
@@ -704,7 +705,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public User wxLogin(String openid) {
         User query = DTOUtils.newDTO(User.class);
         query.setOpenId(openid);
-        query.setYn(YnEnum.YES.getCode());
+        query.setYn(YesOrNoEnum.YES.getCode());
         User po = listByExample(query).stream().findFirst().orElse(null);
         if (po == null) {
             throw new TraceBizException("用户未注册");
@@ -782,7 +783,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
         User openuser = DTOUtils.newDTO(User.class);
         openuser.setOpenId(openid);
-        openuser.setYn(YnEnum.YES.getCode());
+        openuser.setYn(YesOrNoEnum.YES.getCode());
         return null != getActualDao().selectOne(openuser);
     }
 
@@ -941,8 +942,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 //                    .orLike("phone", "%" + input.getPhone().trim() + "%");
 
             e.and().andEqualTo("state", EnabledStateEnum.ENABLED.getCode());
-            e.and().andEqualTo("yn", YnEnum.YES.getCode());
-            // e.and().andEqualTo("isActive", YnEnum.YES.getCode());
+            e.and().andEqualTo("yn", YesOrNoEnum.YES.getCode());
+            // e.and().andEqualTo("isActive", YesOrNoEnum.YES.getCode());
             e.and().andEqualTo("marketId", input.getMarketId());
             userList =  this.getDao().selectByExample(e);
         }
@@ -1052,7 +1053,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public boolean existsCardNo(String cardNo) {
         User query = DTOUtils.newDTO(User.class);
         query.setCardNo(cardNo);
-        query.setYn(com.dili.trace.glossary.YnEnum.YES.getCode());
+        query.setYn(YesOrNoEnum.YES.getCode());
         return !CollUtil.isEmpty(listByExample(query));
     }
 
