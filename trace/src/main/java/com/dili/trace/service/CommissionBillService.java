@@ -297,6 +297,7 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
         RegisterBill bill = new RegisterBill();
         bill.setId(item.getBillId());
 //        bill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode());
+        bill.setVerifyStatus(BillVerifyStatusEnum.PASSED.getCode());
         bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
         bill.setSampleCode(this.codeGenerateService.nextCommissionBillSampleCode());
         bill.setModified(new Date());

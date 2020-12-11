@@ -71,6 +71,8 @@ public class UsualAddressController {
 	@ApiOperation("跳转到UserAddress页面")
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap,Long id) {
+		UsualAddress usualAddress=this.usualAddressService.get(id);
+		modelMap.put("usualAddress",usualAddress);
 		return "usualAddress/edit";
 	}
 	/**

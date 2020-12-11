@@ -1,11 +1,13 @@
 class UsualAddressEdit extends WebConfig {
     dataForm: any;
     submitBtn: any;
+    pw:Window;
 
     constructor(dataForm: any, submitBtn: any) {
         super();
         this.dataForm = dataForm;
         this.submitBtn = submitBtn;
+        this.pw=window.parent.window;
 
         let cityController: CityController = new CityController();
         super.initAutoComplete(this.dataForm.find('#addressInput'),
@@ -23,15 +25,13 @@ class UsualAddressEdit extends WebConfig {
     }
 
     private async ajaxSubmit() {
-        // if (!this.form.validate().form()) {
-        //     //@ts-ignore
-        //     bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
-        //     return;
-        // }
+         if (!this.dataForm.validate().form()) {
+             //@ts-ignore
+             bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
+             return;
+         }
 
-        let data = this.dataForm.serializeJSON();
-        var data_2=jq.removeEmptyProperty(data);
-        debugger
+        var data=jq.removeEmptyProperty(this.dataForm.serializeJSON());
         let url=this.toUrl("/usualAddress/insert.action");
         let resp =   await jq.postJsonWithProcessing(url, data);
         if(!resp.success){
@@ -39,8 +39,7 @@ class UsualAddressEdit extends WebConfig {
             bs4pop.notice(resp.message, {type: 'warning', position: 'topleft'});
             return;
         }
-        //@ts-ignore
-        bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+        p.call("editSuccess");
     }
 
 

@@ -4,9 +4,14 @@
     <form id="queryForm" role="form" >
         <div class="row row-cols-6">
             <div class="form-group col">
-                <label for="verifyStatus">状态</label>
+                <label for="detectStatus">检测状态</label>
+                <select id="detectStatus" name="detectStatus" class="form-control"></select>
+                <#bcomboProvider _id="detectStatus" _provider="detectStatusProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="verifyStatus">审核状态</label>
                 <select id="verifyStatus" name="verifyStatus" class="form-control"></select>
-                <#bcomboProvider _id="verifyStatus" _provider="registerBillStateProvider" _value="" _onLoadSuccess=""/>
+                <#bcomboProvider _id="verifyStatus" _provider="billVerifyStatusEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
             <div class="form-group col">
                 <label for="productId">商品</label>

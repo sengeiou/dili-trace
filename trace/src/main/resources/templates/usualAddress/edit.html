@@ -2,21 +2,21 @@
     <div class="container-fluid pb-2">
 <!--        <input type="hidden" id="_sourceChannel" value="<#config name='ia.source.channel.earnest_order'/>">-->
         <form id="saveForm" method="post" action="" class="pb-2">
-<!--            <input name="id" id="_id" type="hidden">-->
+            <input name="id" id="_id" value="${usualAddress.id!}" type="hidden">
 
             <div class="row row-cols-2 collapse show" id="baseInfo">
                 <div class="form-group col">
                     <label for="type">地址类型<i class="red">*</i></label>
                     <select id="type"  name="type" class="form-control" required></select>
-                    <#bcomboProvider _id="type" _provider="usualAddressTypeProvider"/>
+                    <#bcomboProvider _id="type" _provider="usualAddressTypeProvider" _value="${usualAddress.type!}"/>
                 </div>
 
                 <div class="form-group col">
                     <label for="addressInput" class="">地址<i class="red">*</i></label>
-                    <input type="hidden" name="addressId">
-                    <input type="hidden" name="mergedAddress">
-                    <input type="hidden" name="address">
-                    <input id="addressInput" name="addressInput" data-value-type="skip" type="text" class="form-control"  required />
+                    <input type="hidden" name="addressId" value="${usualAddress.type!}">
+                    <input type="hidden" name="mergedAddress" value="${usualAddress.mergedAddress!}">
+                    <input type="hidden" name="address" value="${usualAddress.address!}">
+                    <input id="addressInput" name="addressInput" data-value-type="skip" type="text" class="form-control"  value="${usualAddress.mergedAddress!}" required />
                 </div>
             </div>
 
@@ -33,10 +33,10 @@
 <#webGlobalConfig/>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
-<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js?v=${v}"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/CityController.js"></script>
-<script src="${contextPath!}/resources/js/UsualAddress.edit.js"></script>
+<script src="${contextPath!}/resources/js/UsualAddress.edit.js?v=${v}"></script>
 <script>
 $(function(){
     var usualAddressEdit=new UsualAddressEdit($('#saveForm'),$('#formSubmit'));

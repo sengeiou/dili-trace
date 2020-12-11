@@ -50,9 +50,9 @@
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
             <button id="detail-btn" type="button" class="btn btn-primary"><i class="fa fa-eye"></i> 查看</button>
             <button id="reprint-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 补打</button>
-            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('checkSheetGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
-        <table id="grid" data-toggle="table" data-title="检测列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
+        <table id="checkSheetGrid" data-toggle="table" data-title="检测列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
                data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
                data-show-refresh="true" data-show-fullscreen="true" data-show-columns="false" data-detail-view="false">
@@ -69,7 +69,7 @@
                 <th data-field="validPeriod" data-sortable="true" data-align="center">
                     有效天数
                 </th>
-                <th data-field="userName" data-sortable="true" data-align="center" data-provider="certificateTypeProvider">
+                <th data-field="userName" data-sortable="true" data-align="center">
                     提交人
                 </th>
                 <th data-field="detectOperatorName" data-sortable="true" data-align="center">
@@ -107,7 +107,7 @@
         type: 'datetime'
     });
     $(function () {
-        var checkSheetIndex=new CheckSheetIndex($('#grid'),$('#queryForm'));
+        var checkSheetIndex=new CheckSheetIndex($('#checkSheetGrid'),$('#queryForm'),$('#queryForm'),$('#toolbar'));
     });
 
 </script>

@@ -4,21 +4,26 @@
         <div class="row row-cols-6">
 
             <div class="form-group col">
-                <label for="state">状态</label>
-                <select id="state" name="state" class="form-control"></select>
-                <#bcomboProvider _id="state" _provider="registerBillStateProvider" _value="" _onLoadSuccess=""/>
+                <label for="detectStatus">检测状态</label>
+                <select id="detectStatus" name="detectStatus" class="form-control"></select>
+                <#bcomboProvider _id="detectStatus" _provider="detectStatusProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="verifyStatus">审核状态</label>
+                <select id="verifyStatus" name="verifyStatus" class="form-control"></select>
+                <#bcomboProvider _id="verifyStatus" _provider="billVerifyStatusEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
             <!--likeProductName-->
             <div class="form-group col">
                 <label for="productName">商品</label>
-                <input type="hidden" id="productId" name="productId"/>
+                <input type="hidden" class="form-control" id="productId" name="productId"/>
                 <input id="productName" name="productName" class="form-control" for="productId" />
                 <!--<select id="productId" name="productId" class="form-control"></select>-->
             </div>
             <!--_salesCityName-->
             <div class="form-group col">
                 <label for="originName">产地</label>
-                <input type="hidden" id="originId" name="originId"/>
+                <input type="hidden" class="form-control" id="originId" name="originId"/>
                 <input id="originName" name="originName" class="form-control" for="originId" />
             </div>
             <div class="form-group col">
@@ -146,10 +151,13 @@
                 <th data-field="checkSheetId" data-sortable="true" data-align="center" data-provider="hasOrNoneProvider">
                     打印报告
                 </th>
-                <th data-field="detectStatusName" data-sortable="true" data-align="center">
+                <th data-field="verifyStatusName" data-sort-name="verify_status" data-sortable="true" data-align="center">
+                    审核状态
+                </th>
+                <th data-field="detectStatusName"  data-sort-name="detect_status"  data-sortable="true" data-align="center">
                     检测状态
                 </th>
-                <th data-field="detectRequest.detectResultName" data-sortable="true" data-align="center">
+                <th data-field="detectRequest.detectResultName"   data-sort-name="detect_result" data-sortable="false" data-align="center">
                     检测结果
                 </th>
                 <th data-field="latestPdResult" data-sortable="true" data-align="center">

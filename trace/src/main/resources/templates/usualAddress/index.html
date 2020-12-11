@@ -26,7 +26,7 @@
             <button id="add-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 新增</button>
             <button id="edit-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 修改</button>
             <button id="delete-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>删除</button>
-            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('grid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
         <table id="grid" data-toggle="table" data-title="常用配置列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
@@ -53,52 +53,12 @@
     </div>
 </div>
 
-<!-- 隐藏编辑框 -->
-<div style="display: none" id="dlg" class="easyui-dialog" resizable="false" constrain="true" shadow="true" draggable="false" title="常用地址新增" style="padding:20px" modal="true" border="thin" closed="true"
-     data-options="
-				iconCls: 'icon-edit',
-				height: 350,
-				buttons: [{
-					text:'确认',
-					iconCls:'icon-ok',
-					handler:saveOrUpdate
-				},{
-					text:'取消',
-					iconCls:'icon-cancel',
-					handler:function(){
-						$('#dlg').dialog('close');
-					}
-				}]
-			">
-    <form id="_form" class="easyui-form" method="post" fit="true">
-        <input name="_id" id="_id" type="hidden">
-        <table width="430px">
-            <tr>
-                <td style="padding:5px;">
-                    <input  name="_type" id="_type" style="width:100%" data-options="label:'分类*:', validType:'length[2,20]',required:true,panelMaxHeight:'100',editable:false" />
-                    <#bcomboProvider _id="_type" _provider="usualAddressTypeProvider" _value="" _onLoadSuccess=""/>
-                </td>
-            </tr>
-            <tr>
-                <td style="padding:5px;">
-                    <select class="easyui-combobox" name="_addressId" id="_addressId" style="width:100%;"
-                            data-options="label:'城市*:',loader:cityLoader,
-                           mode: 'remote',valueField:'value' ,textField:'text',prompt:'请输入',
-                            panelWidth:'auto',panelMinWidth:'340', panelHeight:'auto',panelMaxHeight:'400',
-                           editable:true,validType:'comboBoxEditvalid[\'_addressId\']',required:true">
-                    </select>
-                </td>
-            </tr>
-        </table>
-    </form>
-</div>
-
 </#bs4Body>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
-<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js?v=${v}"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/usualAddress.index.js"></script>
+<script src="${contextPath!}/resources/js/usualAddress.index.js?v=${v}"></script>
 <#webGlobalConfig/>
 <script>
     $(function () {
