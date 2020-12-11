@@ -44,97 +44,97 @@ public class ManagerUserApi {
     @Autowired
     CustomerRpcService customerRpcService;
 
-    /**
-     * 商户审核统计概览
-     *
-     * @param user
-     * @return
-     */
-    @ApiOperation(value = "商户审核统计概览")
-    @RequestMapping(value = "/userCertCount.api", method = RequestMethod.POST)
-    public BaseOutput<List<UserOutput>> countGroupByValidateState(@RequestBody User user) {
-        try {
-//            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-            return userService.countGroupByValidateState(user);
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("操作失败：服务端出错");
-        }
-    }
+//    /**
+//     * 商户审核统计概览
+//     *
+//     * @param user
+//     * @return
+//     */
+//    @ApiOperation(value = "商户审核统计概览")
+//    @RequestMapping(value = "/userCertCount.api", method = RequestMethod.POST)
+//    public BaseOutput<List<UserOutput>> countGroupByValidateState(@RequestBody User user) {
+//        try {
+////            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+//            return userService.countGroupByValidateState(user);
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("操作失败：服务端出错");
+//        }
+//    }
+//
+//    /**
+//     * 获得用户审核列表
+//     *
+//     * @param user
+//     * @return
+//     */
+//    @ApiOperation(value = "获得用户审核列表")
+//    @RequestMapping(value = "/listUserCertByQuery.api", method = RequestMethod.POST)
+//    public BaseOutput<BasePage<UserOutput>> listUserCertByQuery(@RequestBody UserInput user) {
+//        try {
+////            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+//            BasePage<UserOutput> data = userService.pageUserByQuery(user);
+//            return BaseOutput.success().setData(data);
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("操作失败：服务端出错");
+//        }
+//    }
+//
+//    /**
+//     * 获得用户资料详情
+//     *
+//     * @param input
+//     * @return
+//     */
+//    @ApiOperation(value = "获得用户资料详情")
+//    @RequestMapping(value = "/userCertDetail.api", method = RequestMethod.POST)
+//    public BaseOutput<User> userCertDetail(@RequestBody UserInput input) {
+//        if (input == null || input.getId() == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
+//        try {
+////            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
+//            User data = userService.get(input.getId());
+//            data.setPassword(null);
+//            return BaseOutput.success().setData(data);
+//
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("操作失败：服务端出错");
+//        }
+//    }
+//
+//    /**
+//     * 审核用户资料
+//     *
+//     * @param input
+//     * @return
+//     */
+//    @ApiOperation(value = "审核用户资料")
+//    @RequestMapping(value = "/verifyUserCert.api", method = RequestMethod.POST)
+//    public BaseOutput<Long> verifyUserCert(@RequestBody UserInput input) {
+//        try {
+//            SessionData sessionData = this.sessionContext.getSessionData();
+//            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
+//            return userService.verifyUserCert(input, operatorUser);
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("操作失败：服务端出错");
+//        }
+//
+//    }
 
     /**
-     * 获得用户审核列表
-     *
-     * @param user
-     * @return
-     */
-    @ApiOperation(value = "获得用户审核列表")
-    @RequestMapping(value = "/listUserCertByQuery.api", method = RequestMethod.POST)
-    public BaseOutput<BasePage<UserOutput>> listUserCertByQuery(@RequestBody UserInput user) {
-        try {
-//            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-            BasePage<UserOutput> data = userService.pageUserByQuery(user);
-            return BaseOutput.success().setData(data);
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("操作失败：服务端出错");
-        }
-    }
-
-    /**
-     * 获得用户资料详情
-     *
-     * @param input
-     * @return
-     */
-    @ApiOperation(value = "获得用户资料详情")
-    @RequestMapping(value = "/userCertDetail.api", method = RequestMethod.POST)
-    public BaseOutput<User> userCertDetail(@RequestBody UserInput input) {
-        if (input == null || input.getId() == null) {
-            return BaseOutput.failure("参数错误");
-        }
-        try {
-//            sessionContext.getLoginUserOrException(LoginIdentityTypeEnum.SYS_MANAGER);
-            User data = userService.get(input.getId());
-            data.setPassword(null);
-            return BaseOutput.success().setData(data);
-
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("操作失败：服务端出错");
-        }
-    }
-
-    /**
-     * 审核用户资料
-     *
-     * @param input
-     * @return
-     */
-    @ApiOperation(value = "审核用户资料")
-    @RequestMapping(value = "/verifyUserCert.api", method = RequestMethod.POST)
-    public BaseOutput<Long> verifyUserCert(@RequestBody UserInput input) {
-        try {
-            SessionData sessionData = this.sessionContext.getSessionData();
-            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
-            return userService.verifyUserCert(input, operatorUser);
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("操作失败：服务端出错");
-        }
-
-    }
-
-    /**
-     * 审核用户资料
+     * 查询经营户信息
      *
      * @param input
      * @return
