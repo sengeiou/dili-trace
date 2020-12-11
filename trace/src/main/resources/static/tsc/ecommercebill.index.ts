@@ -50,6 +50,8 @@ class EcommerceBillGrid extends ListPage {
         });
 
         if (waitAuditRowArray.length != 1) {
+            //@ts-ignore
+            bs4pop.alert("请选择待审核数据", {type: "warning"});
             return;
         }
         var hasOriginCertifiyUrlRowArray = waitAuditRowArray.filter(function (v, i) {
@@ -75,9 +77,10 @@ class EcommerceBillGrid extends ListPage {
                                 label: '合格', className: 'btn-primary', onClick(cb) {
                                     resolve({
                                         //@ts-ignore
-                                        id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.PASSED,
-                                        detectStatus: DetectStatusEnum.FINISH_DETECT,
-                                        detectState: DetectResultEnum.PASSED
+                                        id: waitAuditRowArray[0].id,
+                                        verifyStatus: BillVerifyStatusEnum.PASSED,
+                                        detectState: DetectResultEnum.PASSED,
+                                        detectStatus: DetectStatusEnum.FINISH_DETECT
                                     })
                                 }
                             },
@@ -103,9 +106,9 @@ class EcommerceBillGrid extends ListPage {
                                     label: '检测', className: 'btn-primary', onClick(cb) {
                                         resolve({
                                             // @ts-ignore
-                                            id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.PASSED,
-                                            detectStatus: DetectStatusEnum.FINISH_DETECT,
-                                            detectState: DetectResultEnum.PASSED
+                                            id: waitAuditRowArray[0].id,
+                                            verifyStatus: BillVerifyStatusEnum.PASSED,
+                                            detectStatus: DetectStatusEnum.WAIT_DETECT
                                         });
                                     }
                                 },
@@ -114,9 +117,9 @@ class EcommerceBillGrid extends ListPage {
                                         resolve({
                                             //@ts-ignore
                                             id: waitAuditRowArray[0].id,
-                                            state: BillVerifyStatusEnum.PASSED,
-                                            detectState: DetectResultEnum.FAILED,
-                                            detectStatus: DetectStatusEnum.DETECTING
+                                            verifyStatus:BillVerifyStatusEnum.PASSED,
+                                            detectState: DetectResultEnum.PASSED,
+                                            detectStatus: DetectStatusEnum.FINISH_DETECT
                                         });
                                     }
                                 },
@@ -139,9 +142,9 @@ class EcommerceBillGrid extends ListPage {
                                 label: '检测', className: 'btn-primary', onClick(cb) {
                                     resolve({
                                         // @ts-ignore
-                                        id: waitAuditRowArray[0].id, verifyStatus: BillVerifyStatusEnum.PASSED,
-                                        detectStatus: DetectStatusEnum.FINISH_DETECT,
-                                        detectState: DetectResultEnum.PASSED
+                                        id: waitAuditRowArray[0].id,
+                                        verifyStatus: BillVerifyStatusEnum.PASSED,
+                                        detectStatus: DetectStatusEnum.WAIT_DETECT,
                                     });
                                 }
                             },

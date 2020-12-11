@@ -62,7 +62,7 @@ class ApproverInfoIndex extends ListPage {
         });
     }
     async rowClick() {
-        this.resetButtons();
+        await this.resetButtons();
         if (this.rows.length == 0) {
             return;
         }
@@ -71,7 +71,7 @@ class ApproverInfoIndex extends ListPage {
             $('#detail-btn').show();
         }
     }
-    resetButtons() {
+    async resetButtons() {
         $('#edit-btn').hide();
         $('#detail-btn').hide();
     }

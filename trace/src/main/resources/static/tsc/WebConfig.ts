@@ -114,12 +114,11 @@ class ListPage extends WebConfig {
         await this.resetButtons();
         this.grid.bootstrapTable('refresh');
     }
-    private removeAllDialog(){
+    protected removeAllDialog(){
         //@ts-ignore
         bs4pop.removeAll();
     }
-    private async notice(msg:string,cfg:any){
-        debugger
+    protected async alert(msg:string,cfg:any){
        await popwrapper.alert(msg,cfg);
     }
 
@@ -133,7 +132,7 @@ class ListPage extends WebConfig {
     // }
     private buildMetaData(){
         //@ts-ignore
-        let metadata=bui.util.bindGridMeta2Form(this.grid.attr('id'),this.queryform.attr('id'))?.metadata;
+        let metadata=bui.util.bindGridMeta2Form(this.grid.attr('id'),this.queryform.attr('id')).metadata;
         if(_.isUndefined(metadata)){
             return {}
         }

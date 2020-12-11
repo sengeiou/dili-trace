@@ -492,14 +492,14 @@ class NewRegisterBillGrid extends ListPage {
             btns: []
         });
     }
-    resetButtons() {
+    async resetButtons() {
         var btnArray = this.btns;
         _.chain(btnArray).each((btn) => {
             $(btn).hide();
         });
     }
     async checkAndShowHideBtns() {
-        this.resetButtons();
+        await this.resetButtons();
         var rows = this.rows;
         try {
             var billIdList = _.chain(rows).map(v => v.id).value();

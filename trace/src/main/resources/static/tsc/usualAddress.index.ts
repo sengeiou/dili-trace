@@ -11,8 +11,7 @@ class UsualAddressIndex extends ListPage {
     }
     //在增加或修改成功结束时由子页面调用到此方法
     private async editSuccess() {
-        //@ts-ignore
-        bs4pop.removeAll();
+        super.removeAllDialog();
         await popwrapper.alert('操作成功', {type: 'info', autoClose: 800});
         await this.queryGridData();
     }
@@ -87,7 +86,7 @@ class UsualAddressIndex extends ListPage {
          }
         $('#export').show();
     }
-    private resetButtons(){
+    public async resetButtons(){
         $('#edit-btn').hide();
         $('#delete-btn').hide();
         $('#export').hide();

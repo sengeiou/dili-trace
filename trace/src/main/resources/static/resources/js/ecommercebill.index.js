@@ -34,6 +34,7 @@ class EcommerceBillGrid extends ListPage {
             return v.verifyStatus == 0;
         });
         if (waitAuditRowArray.length != 1) {
+            bs4pop.alert("请选择待审核数据", { type: "warning" });
             return;
         }
         var hasOriginCertifiyUrlRowArray = waitAuditRowArray.filter(function (v, i) {
@@ -52,9 +53,10 @@ class EcommerceBillGrid extends ListPage {
                         {
                             label: '合格', className: 'btn-primary', onClick(cb) {
                                 resolve({
-                                    id: waitAuditRowArray[0].id, verifyStatus: 20,
-                                    detectStatus: 50,
-                                    detectState: 1
+                                    id: waitAuditRowArray[0].id,
+                                    verifyStatus: 20,
+                                    detectState: 1,
+                                    detectStatus: 50
                                 });
                             }
                         },
@@ -75,9 +77,9 @@ class EcommerceBillGrid extends ListPage {
                             {
                                 label: '检测', className: 'btn-primary', onClick(cb) {
                                     resolve({
-                                        id: waitAuditRowArray[0].id, verifyStatus: 20,
-                                        detectStatus: 50,
-                                        detectState: 1
+                                        id: waitAuditRowArray[0].id,
+                                        verifyStatus: 20,
+                                        detectStatus: 30
                                     });
                                 }
                             },
@@ -85,9 +87,9 @@ class EcommerceBillGrid extends ListPage {
                                 label: '合格不检测', className: 'btn-primary', onClick(cb) {
                                     resolve({
                                         id: waitAuditRowArray[0].id,
-                                        state: 20,
-                                        detectState: 2,
-                                        detectStatus: 40
+                                        verifyStatus: 20,
+                                        detectState: 1,
+                                        detectStatus: 50
                                     });
                                 }
                             },
@@ -108,9 +110,9 @@ class EcommerceBillGrid extends ListPage {
                             {
                                 label: '检测', className: 'btn-primary', onClick(cb) {
                                     resolve({
-                                        id: waitAuditRowArray[0].id, verifyStatus: 20,
-                                        detectStatus: 50,
-                                        detectState: 1
+                                        id: waitAuditRowArray[0].id,
+                                        verifyStatus: 20,
+                                        detectStatus: 30,
                                     });
                                 }
                             },
