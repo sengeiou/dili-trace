@@ -212,7 +212,6 @@ class NewRegisterBillGrid extends ListPage {
             //@ts-ignore
             bs4pop.alert('远程访问失败', {type: 'error'});
         }
-
     }
 
     private async  doRemoveReportAndCertifiy(){
