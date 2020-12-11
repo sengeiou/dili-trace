@@ -281,13 +281,8 @@ class CommissionBillGrid extends ListPage {
     public async doReviewCheck() {
 
         if (!this.isReviewCheck()) {
-            // @ts-ignore
-            swal({
-                title: '警告',
-                text: '没有数据可以进行批量撤销',
-                type: 'warning',
-                width: 300
-            });
+            //@ts-ignore
+            bs4pop.alert("没有数据可以进行批量复检", {type: 'warning'});
             return;
         }
         var arr = this.findReviewCheckData();
@@ -347,14 +342,13 @@ class CommissionBillGrid extends ListPage {
                         // @ts-ignore
                         layer.closeAll();
                         // @ts-ignore
-                        swal('错误', data.result, 'error');
+                        popwrapper.alert(data.result)
                     }
                 },
                 error: function () {
                     // @ts-ignore
                     layer.closeAll();
-                    // @ts-ignore
-                    swal('错误', '远程访问失败', 'error');
+                    popwrapper.alert("远程访问失败")
                 }
             });
         }
