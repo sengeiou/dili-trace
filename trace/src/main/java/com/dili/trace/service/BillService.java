@@ -2,6 +2,7 @@ package com.dili.trace.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -16,6 +17,7 @@ import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.ImageCertBillTypeEnum;
 import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.trace.glossary.TFEnum;
+import com.dili.trace.glossary.YnEnum;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -38,276 +40,309 @@ import java.util.stream.Collectors;
  */
 @Service
 public class BillService extends BaseServiceImpl<RegisterBill, Long> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(BillService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BillService.class);
 
-	@Autowired
-	QualityTraceTradeBillService qualityTraceTradeBillService;
-	@Autowired
-	SeparateSalesRecordService separateSalesRecordService;
-	@Autowired
-	DetectRecordService detectRecordService;
-	@Autowired
-	UserPlateService userPlateService;
-	@Autowired
-	CodeGenerateService codeGenerateService;
-	@Autowired
-	UsualAddressService usualAddressService;
-	@Autowired
-	DetectTaskService detectTaskService;
-	@Autowired
-	ImageCertService imageCertService;
-	@Autowired
-	DetectRequestService detectRequestService;
+    @Autowired
+    QualityTraceTradeBillService qualityTraceTradeBillService;
+    @Autowired
+    SeparateSalesRecordService separateSalesRecordService;
+    @Autowired
+    DetectRecordService detectRecordService;
+    @Autowired
+    UserPlateService userPlateService;
+    @Autowired
+    CodeGenerateService codeGenerateService;
+    @Autowired
+    UsualAddressService usualAddressService;
+    @Autowired
+    DetectTaskService detectTaskService;
+    @Autowired
+    ImageCertService imageCertService;
+    @Autowired
+    DetectRequestService detectRequestService;
 
-	/**
-	 * 返回mapper
-	 * @return
-	 */
-	public RegisterBillMapper getActualDao() {
-		return (RegisterBillMapper) getDao();
-	}
+    /**
+     * 根据id查询
+     * @param billId
+     * @return
+     */
+    public RegisterBill get(Long billId) {
+        return this.getBill(billId).orElse(null);
+    }
+    /**
+     * 根据id查询
+     * @param billId
+     * @return
+     */
+    public Optional<RegisterBill> getBill(Long billId) {
+        if (billId == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(this.get(billId)).filter(bill -> YesOrNoEnum.NO.equals(bill.getIsDeleted()));
+    }
 
-
-	@Override
-	public EasyuiPageOutput listEasyuiPageByExample(RegisterBill domain, boolean useProvider) throws Exception {
-		List<RegisterBill> list = listByExample(domain);
-		Map<Long, DetectRequest> idAndDetectRquestMap=this.detectRequestService.findDetectRequestByIdList(StreamEx.of(list).map(RegisterBill::getDetectRequestId).toList());
-		StreamEx.of(list).forEach(rb->{
-			rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
-		});
-
-		long total = list instanceof Page ? ( (Page) list).getTotal() : list.size();
-		List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
-		return new EasyuiPageOutput(total, results);
-	}
-
-
-	/**
-	 * 通过code查询登记单
-	 * @param code
-	 * @return
-	 */
-	public RegisterBill findByCode(String code) {
-		RegisterBill registerBill = new RegisterBill();
-		registerBill.setCode(code);
-		List<RegisterBill> list = list(registerBill);
-		if (list != null && list.size() > 0) {
-			return list.get(0);
-		}
-		return null;
-	}
-
-	/**
-	 * 通过idlist查询登记单
-	 * @param idList
-	 * @return
-	 */
-	public List<RegisterBill> findByIdList(Collection<Long> idList) {
-		  RegisterBillDto dto = new RegisterBillDto();
-	        dto.setIdList(CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList()));
-	        if (dto.getIdList().isEmpty()) {
-	            return Lists.newArrayList();
-	        }
-	        return this.listByExample(dto);
-	}
-
-	/**
-	 * 通过sampleCode查询登记单
-	 *
-	 * @param sampleCode
-	 * @return
-	 */
-	public RegisterBill findBySampleCode(String sampleCode) {
-		if (StringUtils.isBlank(sampleCode)) {
-			return null;
-		}
-		RegisterBill registerBill = new RegisterBill();
-		registerBill.setSampleCode(sampleCode.trim());
-		List<RegisterBill> list = list(registerBill);
-		if (list != null && list.size() > 0) {
-			return list.get(0);
-		}
-		return null;
-	}
+    /**
+     * 返回mapper
+     *
+     * @return
+     */
+    public RegisterBillMapper getActualDao() {
+        return (RegisterBillMapper) getDao();
+    }
 
 
-	/**
-	 * 查询登记单信息
-	 * @param tradeNo
-	 * @return
-	 */
-	public RegisterBillOutputDto findByTradeNo(String tradeNo) {
-		QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
-		if (qualityTraceTradeBill != null && StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
-			RegisterBill registerBill = new RegisterBill();
-			registerBill.setCode(qualityTraceTradeBill.getRegisterBillCode());
-			List<RegisterBill> list = this.listByExample(registerBill);
-			if (list != null && list.size() > 0) {
-				RegisterBillOutputDto target=new RegisterBillOutputDto();
-				BeanUtil.copyProperties(list.get(0), target);
-				return target;
-			}
-		}
-		return null;
-	}
+    @Override
+    public EasyuiPageOutput listEasyuiPageByExample(RegisterBill domain, boolean useProvider) throws Exception {
+        List<RegisterBill> list = listByExample(domain);
+        Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(list).map(RegisterBill::getDetectRequestId).toList());
+        StreamEx.of(list).forEach(rb -> {
+            rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
+        });
+
+        long total = list instanceof Page ? ((Page) list).getTotal() : list.size();
+        List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, list) : list;
+        return new EasyuiPageOutput(total, results);
+    }
 
 
-	/**
-	 * 获得当前登录用户信息
-	 * @return
-	 */
+    /**
+     * 通过code查询登记单
+     *
+     * @param code
+     * @return
+     */
+    public RegisterBill findByCode(String code) {
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setCode(code);
+        List<RegisterBill> list = list(registerBill);
+        if (list != null && list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
+    }
 
-	private UserTicket getOptUser() {
-		return SessionContext.getSessionContext().getUserTicket();
-	}
+    /**
+     * 通过idlist查询登记单
+     *
+     * @param idList
+     * @return
+     */
+    public List<RegisterBill> findByIdList(Collection<Long> idList) {
+        RegisterBillDto dto = new RegisterBillDto();
+        dto.setIdList(CollectionUtils.emptyIfNull(idList).stream().filter(Objects::nonNull).collect(Collectors.toList()));
+        if (dto.getIdList().isEmpty()) {
+            return Lists.newArrayList();
+        }
+        return this.listByExample(dto);
+    }
 
-	/**
-	 * 保存处理结果
-	 * @param input
-	 * @return
-	 */
-	public Long saveHandleResult(RegisterBill input) {
-		if (input == null || input.getId() == null||input.getImageCerts()==null
-				|| StringUtils.isBlank(input.getHandleResult())) {
-			throw new TraceBizException("参数错误");
-		}
-		List<ImageCert>imageCertList=StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
-		if (imageCertList.isEmpty()) {
-			throw new TraceBizException("参数错误");
-		}
-		if (input.getHandleResult().trim().length() > 1000) {
-			throw new TraceBizException("处理结果不能超过1000");
-		}
-		RegisterBill item = this.get(input.getId());
-		if (item == null) {
-			throw new TraceBizException("数据错误");
-		}
+    /**
+     * 通过sampleCode查询登记单
+     *
+     * @param sampleCode
+     * @return
+     */
+    public RegisterBill findBySampleCode(String sampleCode) {
+        if (StringUtils.isBlank(sampleCode)) {
+            return null;
+        }
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setSampleCode(sampleCode.trim());
+        List<RegisterBill> list = list(registerBill);
+        if (list != null && list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
+    }
 
-		RegisterBill example =  new RegisterBill();
-		example.setId(item.getId());
-		example.setHandleResult(input.getHandleResult());
-		this.updateSelective(example);
 
-		return example.getId();
+    /**
+     * 查询登记单信息
+     *
+     * @param tradeNo
+     * @return
+     */
+    public RegisterBillOutputDto findByTradeNo(String tradeNo) {
+        QualityTraceTradeBill qualityTraceTradeBill = qualityTraceTradeBillService.findByTradeNo(tradeNo);
+        if (qualityTraceTradeBill != null && StringUtils.isNotBlank(qualityTraceTradeBill.getRegisterBillCode())) {
+            RegisterBill registerBill = new RegisterBill();
+            registerBill.setCode(qualityTraceTradeBill.getRegisterBillCode());
+            List<RegisterBill> list = this.listByExample(registerBill);
+            if (list != null && list.size() > 0) {
+                RegisterBillOutputDto target = new RegisterBillOutputDto();
+                BeanUtil.copyProperties(list.get(0), target);
+                return target;
+            }
+        }
+        return null;
+    }
 
-	}
-	/**
-	 * 保存图片并更新与图片有关的属性
-	 * @param billId
-	 * @param imageList
-	 * @return
-	 */
-	public Long updateHasImage(Long billId, List<ImageCert> imageList) {
-		List<ImageCert> imageCertList = this.imageCertService.insertImageCert(imageList, billId);
-		Map<Integer, List<ImageCert>> imageCertMap = StreamEx.of(imageCertList).groupingBy(ImageCert::getCertType);
-		Integer hasDetectReport = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.DETECT_REPORT.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
-		Integer hasOriginCertify = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
-		Integer hasHandleResult = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.Handle_Result.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
 
-		RegisterBill item = new RegisterBill();
-		item.setId(billId);
-		item.setHasDetectReport(hasDetectReport);
-		item.setHasOriginCertifiy(hasOriginCertify);
-		item.setHasHandleResult(hasHandleResult);
-		this.updateSelective(item);
-		return billId;
-	}
+    /**
+     * 获得当前登录用户信息
+     *
+     * @return
+     */
 
-	/**
-	 * 查询图片
-	 * @param billId
-	 * @return
-	 */
+    private UserTicket getOptUser() {
+        return SessionContext.getSessionContext().getUserTicket();
+    }
 
-	public List<ImageCert> findImageCertListByBillId(Long billId) {
-		return this.imageCertService.findImageCertListByBillId(billId, ImageCertBillTypeEnum.BILL_TYPE);
-	}
+    /**
+     * 保存处理结果
+     *
+     * @param input
+     * @return
+     */
+    public Long saveHandleResult(RegisterBill input) {
+        if (input == null || input.getId() == null || input.getImageCerts() == null
+                || StringUtils.isBlank(input.getHandleResult())) {
+            throw new TraceBizException("参数错误");
+        }
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+        if (imageCertList.isEmpty()) {
+            throw new TraceBizException("参数错误");
+        }
+        if (input.getHandleResult().trim().length() > 1000) {
+            throw new TraceBizException("处理结果不能超过1000");
+        }
+        RegisterBill item = this.get(input.getId());
+        if (item == null) {
+            throw new TraceBizException("数据错误");
+        }
 
-	/**
-	 * 上传检测报告
-	 * @param input
-	 * @return
-	 */
-	public Long doUploadDetectReport(RegisterBill input) {
-		if (input == null || input.getId() == null) {
-			throw new TraceBizException("参数错误");
-		}
-		List<ImageCert>imageCertList=StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
-		if (imageCertList.isEmpty()) {
-			throw new TraceBizException("请上传报告");
-		}
-		RegisterBill item = this.get(input.getId());
-		if (item == null) {
-			throw new TraceBizException("数据错误");
-		}
-		if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
-			throw new TraceBizException("状态错误,不能上传检测报告");
-		}
+        RegisterBill example = new RegisterBill();
+        example.setId(item.getId());
+        example.setHandleResult(input.getHandleResult());
+        this.updateSelective(example);
 
-		List<ImageCert>imageCerts=StreamEx.ofNullable(this.findImageCertListByBillId(item.getBillId()))
-				.flatCollection(Function.identity()).filter(img->{
+        return example.getId();
 
-					return !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(img.getCertType());
-				}).append(imageCertList).toList();
+    }
 
-		this.updateHasImage(item.getBillId(),imageCerts);
-		return item.getId();
-	}
+    /**
+     * 保存图片并更新与图片有关的属性
+     *
+     * @param billId
+     * @param imageList
+     * @return
+     */
+    public Long updateHasImage(Long billId, List<ImageCert> imageList) {
+        List<ImageCert> imageCertList = this.imageCertService.insertImageCert(imageList, billId);
+        Map<Integer, List<ImageCert>> imageCertMap = StreamEx.of(imageCertList).groupingBy(ImageCert::getCertType);
+        Integer hasDetectReport = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.DETECT_REPORT.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
+        Integer hasOriginCertify = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
+        Integer hasHandleResult = Optional.ofNullable(imageCertMap.get(ImageCertTypeEnum.Handle_Result.getCode())).map(List::size).orElse(0) > 0 ? 1 : 0;
 
-	/**
-	 * 上传产地证明
-	 * @param input
-	 * @return
-	 */
-	public Long doUploadOrigincertifiy(RegisterBill input) {
-		if (input == null || input.getId() == null) {
-			throw new TraceBizException("参数错误");
-		}
-		List<ImageCert>imageCertList=StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+        RegisterBill item = new RegisterBill();
+        item.setId(billId);
+        item.setHasDetectReport(hasDetectReport);
+        item.setHasOriginCertifiy(hasOriginCertify);
+        item.setHasHandleResult(hasHandleResult);
+        this.updateSelective(item);
+        return billId;
+    }
 
-		if (imageCertList.isEmpty()) {
-			throw new TraceBizException("请上传报告");
-		}
-		RegisterBill item = this.get(input.getId());
-		if (item == null) {
-			throw new TraceBizException("数据错误");
-		}
+    /**
+     * 查询图片
+     *
+     * @param billId
+     * @return
+     */
 
-		List<ImageCert>imageCerts=StreamEx.ofNullable(this.findImageCertListByBillId(item.getBillId()))
-				.flatCollection(Function.identity()).filter(img->{
+    public List<ImageCert> findImageCertListByBillId(Long billId) {
+        return this.imageCertService.findImageCertListByBillId(billId, ImageCertBillTypeEnum.BILL_TYPE);
+    }
 
-					return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(img.getCertType());
-				}).append(imageCertList).toList();
+    /**
+     * 上传检测报告
+     *
+     * @param input
+     * @return
+     */
+    public Long doUploadDetectReport(RegisterBill input) {
+        if (input == null || input.getId() == null) {
+            throw new TraceBizException("参数错误");
+        }
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+        if (imageCertList.isEmpty()) {
+            throw new TraceBizException("请上传报告");
+        }
+        RegisterBill item = this.get(input.getId());
+        if (item == null) {
+            throw new TraceBizException("数据错误");
+        }
+        if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
+            throw new TraceBizException("状态错误,不能上传检测报告");
+        }
 
-		return item.getBillId();
-	}
+        List<ImageCert> imageCerts = StreamEx.ofNullable(this.findImageCertListByBillId(item.getBillId()))
+                .flatCollection(Function.identity()).filter(img -> {
 
-	/**
-	 * 查询登记单
-	 * @param sampleCodeList
-	 * @return
-	 */
-	public List<RegisterBill> findBySampleCodeList(List<String> sampleCodeList) {
+                    return !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(img.getCertType());
+                }).append(imageCertList).toList();
 
-		if (sampleCodeList == null || sampleCodeList.size() == 0) {
-			return Collections.emptyList();
-		}
-		Example example = new Example(RegisterBill.class);
-		example.createCriteria().andIn("sampleCode", sampleCodeList);
-		return this.getDao().selectByExample(example);
+        this.updateHasImage(item.getBillId(), imageCerts);
+        return item.getId();
+    }
 
-	}
+    /**
+     * 上传产地证明
+     *
+     * @param input
+     * @return
+     */
+    public Long doUploadOrigincertifiy(RegisterBill input) {
+        if (input == null || input.getId() == null) {
+            throw new TraceBizException("参数错误");
+        }
+        List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
 
-	/**
-	 * 查询并锁定登记单
-	 * @param id
-	 * @return
-	 */
+        if (imageCertList.isEmpty()) {
+            throw new TraceBizException("请上传报告");
+        }
+        RegisterBill item = this.get(input.getId());
+        if (item == null) {
+            throw new TraceBizException("数据错误");
+        }
 
-	public RegisterBill selectByIdForUpdate(Long id) {
-		return this.getActualDao().selectByIdForUpdate(id).orElseThrow(() -> {
-			return new TraceBizException("操作登记单失败");
-		});
-	}
+        List<ImageCert> imageCerts = StreamEx.ofNullable(this.findImageCertListByBillId(item.getBillId()))
+                .flatCollection(Function.identity()).filter(img -> {
+
+                    return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(img.getCertType());
+                }).append(imageCertList).toList();
+
+        return item.getBillId();
+    }
+
+    /**
+     * 查询登记单
+     *
+     * @param sampleCodeList
+     * @return
+     */
+    public List<RegisterBill> findBySampleCodeList(List<String> sampleCodeList) {
+
+        if (sampleCodeList == null || sampleCodeList.size() == 0) {
+            return Collections.emptyList();
+        }
+        Example example = new Example(RegisterBill.class);
+        example.createCriteria().andIn("sampleCode", sampleCodeList);
+        return this.getDao().selectByExample(example);
+
+    }
+
+    /**
+     * 查询并锁定登记单
+     *
+     * @param id
+     * @return
+     */
+
+    public RegisterBill selectByIdForUpdate(Long id) {
+        return this.getActualDao().selectByIdForUpdate(id).orElseThrow(() -> {
+            return new TraceBizException("操作登记单失败");
+        });
+    }
 
 }
