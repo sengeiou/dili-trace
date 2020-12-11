@@ -1,6 +1,7 @@
 package com.dili.trace.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,10 +130,11 @@ public class ApproverInfoService extends BaseServiceImpl<ApproverInfo, Long> {
             base64Signature.setBase64(base64);
             base64Signature.setApproverInfoId(approverInfoId);
             base64Signature.setOrderNum(base64SignatureList.size());
+            base64Signature.setCreated(new Date());
+            base64Signature.setModified(new Date());
             base64SignatureList.add(base64Signature);
         }
         return base64SignatureList;
-
     }
 
 }

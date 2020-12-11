@@ -42,11 +42,32 @@ public class ApproverInfoController {
 	 * @param modelMap
 	 * @return
 	 */
-	@ApiOperation("跳转到ApproverInfo页面")
+	@ApiOperation("跳转到ApproverInfo列表页面")
 	@RequestMapping(value = "/index.html", method = RequestMethod.GET)
 	public String index(ModelMap modelMap) {
-		
 		return "approverInfo/index";
+	}
+
+	/**
+	 * 跳转到ApproverInfo页面
+	 * @param modelMap
+	 * @return
+	 */
+	@ApiOperation("跳转到ApproverInfo修改页面")
+	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
+	public String edit(ModelMap modelMap, Long id) {
+		return "approverInfo/edit";
+	}
+
+	/**
+	 * 跳转到ApproverInfo页面
+	 * @param modelMap
+	 * @return
+	 */
+	@ApiOperation("跳转到ApproverInfo新增页面")
+	@RequestMapping(value = "/add.html", method = RequestMethod.GET)
+	public String add(ModelMap modelMap, Long id) {
+		return "approverInfo/edit";
 	}
 
 	/**
@@ -77,6 +98,8 @@ public class ApproverInfoController {
 		 String base64Image=this.base64SignatureService.findBase64SignatureByApproverInfoId(input.getId());
 		 return BaseOutput.success().setData(base64Image);
 	}
+
+
 
 	/**
 	 * 新增ApproverInfo

@@ -33,6 +33,10 @@ class jq {
         let resp = await jq.ajax(settings);
         return resp;
     }
+    static async getWithProcessing(url, settings = {}) {
+        _.extend(settings, { method: 'get', url: url });
+        return await this.ajaxWithProcessing(settings);
+    }
     static async postJsonWithProcessing(url, data, settings = {}) {
         let jsonData = this.removeEmptyProperty(data);
         _.extend(settings, { method: 'post', dataType: 'json', contentType: 'application/json', data: JSON.stringify(jsonData), url: url });
@@ -75,5 +79,33 @@ class popwrapper {
             });
         });
         return await p;
+    }
+    static async alert(msg, config = {}) {
+        const p = new Promise((resolve, reject) => {
+            var alertDialog = bs4pop.alert(msg, config, function () {
+                resolve(1);
+            });
+            if (config.autoClose) {
+                setTimeout(function () {
+                    alertDialog.$el.siblings('.modal-backdrop').remove();
+                    alertDialog.$el.remove();
+                    resolve(2);
+                }, parseInt(config.autoClose));
+            }
+            else {
+                resolve(3);
+            }
+        });
+        return await p;
+    }
+}
+class p {
+    static call(funName, args = []) {
+        let data = { 'type': 'call', 'fun': funName, 'args': args };
+        window.parent.postMessage(JSON.stringify(data));
+    }
+    static exec(fun) {
+        let data = { 'type': 'exec', 'fun': fun.toString() };
+        window.parent.postMessage(JSON.stringify(data));
     }
 }

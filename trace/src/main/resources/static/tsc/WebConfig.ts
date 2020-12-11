@@ -8,6 +8,14 @@ class WebConfig{
         }
         this.contextPath=webGlobalConfig.contextPath;
         this.imageViewPathPrefix=webGlobalConfig.imageViewPathPrefix;
+        window.addEventListener('message', async (e) => this.handleMessage(e), false);
+    }
+
+    private handleMessage(e: MessageEvent) {
+        let data = JSON.parse(e.data);
+        if (data.fun&&data.type=='call') {
+            this[data.fun].call(this, data.args)
+        }
     }
     public toUrl(url:string):string{
         return this.contextPath+url;

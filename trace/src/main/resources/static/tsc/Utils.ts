@@ -49,7 +49,15 @@ class jq {
         let resp:any=await jq.ajax(settings);
         return resp;
     }
+    /**
+     * 对ajax异步请求转换为promise
+     * @param settings
+     */
 
+    public static async getWithProcessing(url:string,settings:JQuery.AjaxSettings={}):Promise<any> {
+        _.extend(settings,{method:'get',url:url})
+        return await this.ajaxWithProcessing(settings)
+    }
     /**
      * 对ajax异步请求转换为promise
      * @param settings
@@ -104,5 +112,37 @@ class popwrapper {
             })
         })
         return await p;
+    }
+    public static async alert(msg:string,config:any={}){
+
+        const p = new Promise<any>((resolve, reject) => {
+            //@ts-ignore
+            var alertDialog=bs4pop.alert(msg, config,function(){
+                resolve(1)
+            });
+            if(config.autoClose){
+                setTimeout(function(){
+                    alertDialog.$el.siblings('.modal-backdrop').remove()
+                    alertDialog.$el.remove()
+                    resolve(2)
+                },parseInt(config.autoClose))
+            }else{
+                resolve(3)
+            }
+
+        })
+        return await p;
+    }
+}
+class p{
+    public static call(funName:string,args:any[]=[]){
+        let data={'type':'call','fun':funName,'args':args};
+        // @ts-ignore
+        window.parent.postMessage(JSON.stringify(data));
+    }
+    public static exec(fun:Function){
+        let data={'type':'exec','fun':fun.toString()};
+        // @ts-ignore
+        window.parent.postMessage(JSON.stringify(data));
     }
 }

@@ -6,18 +6,22 @@ class UsualAddressIndex extends ListPage {
         $('#add-btn').on('click', async () => this.openAddPage());
         $('#edit-btn').on('click', async () => this.openEditPage());
         $('#delete-btn').on('click', async () => this.openDeletePage());
-        $('#export').on('click', async () => this.openExportPage());
+    }
+    async editSuccess() {
+        bs4pop.removeAll();
+        await popwrapper.alert('操作成功', { type: 'info', autoClose: 800 });
+        await this.queryGridData();
     }
     async openAddPage() {
         let url = this.toUrl("/usualAddress/edit.html");
-        var dia = bs4pop.dialog({
+        window.dia = bs4pop.dialog({
             title: '增加常用地址',
             content: url,
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '30%',
-            height: '60%',
+            width: '40%',
+            height: '300',
             btns: []
         });
     }
@@ -28,22 +32,44 @@ class UsualAddressIndex extends ListPage {
         }
         var select = this.rows[0];
         let url = this.toUrl("/usualAddress/edit.html?id=" + select.id);
-        var dia = bs4pop.dialog({
+        window.dia = bs4pop.dialog({
             title: '增加常用地址',
             content: url,
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '60%',
-            height: '98%',
+            width: '40%',
+            height: '300',
             btns: []
         });
     }
     async openDeletePage() {
-    }
-    async openExportPage() {
+        let sure = await popwrapper.confirm("确定要删除当前选中数据吗?");
+        if (!sure) {
+            return;
+        }
+        var url = this.toUrl("/usualAddress/delete.action?id=" + this.rows[0].id);
+        let resp = await jq.getWithProcessing(url);
+        if (!resp.success) {
+            bs4pop.notice(resp.message, { type: 'warning', position: 'topleft' });
+            return;
+        }
+        await this.editSuccess();
     }
     async rowClick() {
-        debugger;
+        this.resetButtons();
+        if (this.rows.length == 0) {
+            return;
+        }
+        if (this.rows.length == 1) {
+            $('#edit-btn').show();
+            $('#delete-btn').show();
+        }
+        $('#export').show();
+    }
+    resetButtons() {
+        $('#edit-btn').hide();
+        $('#delete-btn').hide();
+        $('#export').hide();
     }
 }
