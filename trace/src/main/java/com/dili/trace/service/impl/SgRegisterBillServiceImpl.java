@@ -788,7 +788,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             //StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
             throw new TraceBizException("请上传报告");
         }
-        RegisterBill item = this.checkEvent(input.getId(), RegisterBillMessageEvent.upload_detectreport).orElse(null);
+        // TODO:流程引擎内容？
+        // RegisterBill item = this.checkEvent(input.getId(), RegisterBillMessageEvent.upload_detectreport).orElse(null);
+        RegisterBill item = this.billService.get(input.getId());
         if (item == null) {
             throw new TraceBizException("数据错误");
         }

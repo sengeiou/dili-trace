@@ -52,8 +52,8 @@
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" id="addr" class="form-control" cols="82" rows="1" required readonly>${registerBill.addr!}</textarea>
+                        身份证地址</label>
+                    <textarea name="addr" id="addr" class="form-control" cols="82" rows="1" readonly>${registerBill.addr!}</textarea>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -98,17 +98,21 @@
                 </div>
                 <% } %>
             </div>
+            <% if(registerBill.detectRequest != null) { %>
             <div class="form-item-group">
                 <h4 class="form-item-title">检测信息</h4>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测时间</label>
                     <input class="form-control input-sm" value="${registerBill.latestDetectTime,dateFormat='yyyy-MM-dd HH:mm:ss'}" readonly/>
                 </div>
-<!--                registerBill.detectResultName!-->
-<!--                <div class="form-group">-->
-<!--                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>-->
-<!--                    <input type="text" class="form-control input-sm"  value="${registerBill.latestPdResult!}" required readonly/>-->
-<!--                </div>-->
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测类型</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.detectRequest.detectTypeName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right"><span class="red">&lowast;</span>检测结果</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.detectRequest.detectResultName}" required readonly/>
+                </div>
                 <div class="form-group" >
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测数值</label>
                     <input type="text" class="form-control input-sm"   value="${registerBill.latestPdResult!}" readonly/>
@@ -119,10 +123,12 @@
                     <input type="text" class="form-control input-sm"   value="${registerBill.latestDetectOperator!}" readonly/>
                 </div>
             </div>
+            <% } %>
 
+            <!-- 原来的判断逻辑：registerBill.detectState == 1 || registerBill.detectState == 3-->
             <%
             if(registerBill.registerSource == 1){
-                if( registerBill.salesType == 2 && !isEmpty(registerBill.detectState) && (registerBill.detectState == 1 || registerBill.detectState == 3)){
+                if( registerBill.salesType == 2 && !isEmpty(registerBill.detectRequest) && (registerBill.detectRequest.detectResult == 1)){
             %>
             <div class="form-item-group">
                 <h4 class="form-item-title">溯源二维码</h4>
@@ -255,11 +261,10 @@
                     </div>
                 </div>
             </div>
-            
 
-            
-            
- 		<%if(registerBill.detectState == 4&&isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
+        <!--原来逻辑：registerBill.detectState == 4 复检不合格-->
+        <%if(isNotEmpty(registerBill.detectRequest) && registerBill.detectRequest.detectType == 30 &&  registerBill.detectRequest.detectResult == 2
+            &&isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
                 <div class="form-item-group">
 					<div class="imageUploadWrap">
 	                    <div class="form-group">
@@ -317,7 +322,7 @@ var currentUser={"depId":"${user.departmentId!}"
 
         $.ajax({
             type: "POST",
-            url: "${contextPath}/registerBill/doUploadOrigincertifiy.action",
+            url: "${contextPath}/newRegisterBill/doUploadOrigincertifiy.action",
             data : JSON.stringify(formData),
             dataType: "json",
             async : true,
@@ -327,7 +332,8 @@ var currentUser={"depId":"${user.departmentId!}"
                     //TLOG.component.operateLog(TLOG.operates.add, "登记单管理", ret.data, ret.data);
                     //location.href = '/registerBill/index.html';
                     //var paramStr = JSON.stringify(ret.data);
-                    parent.closeWin('view_win')
+                    //parent.closeWin('view_win')
+                    parent.window['RegisterBillGridObj'].removeAllAndLoadData()
                 }else{
                     swal(
                             '错误',
@@ -420,7 +426,7 @@ var currentUser={"depId":"${user.departmentId!}"
             formData: {type: 4, compress: true},
             done: function (e, res) {
                 if (res.result.code == 200) {
-                    var url = res.result.data;
+                    var url = "${imageViewPathPrefix}" + res.result.data;
                     $(this).siblings('.magnifying').attr('src', url).show();
                     $(this).siblings("input:hidden").val(url);
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
@@ -472,7 +478,7 @@ var currentUser={"depId":"${user.departmentId!}"
             formData: {type:5,compress:true},
             done : function(e, res) {
                 if (res.result.code == 200) {
-                	var url = res.result.data;
+                    var url = "${imageViewPathPrefix}" + res.result.data;
                 	var fileInputObj=$(e.target);
                 	afterUpload(url,fileInputObj);
                 }

@@ -342,7 +342,8 @@ var currentUser={"depId":"${user.departmentId!}"
                     //TLOG.component.operateLog(TLOG.operates.add, "登记单管理", ret.data, ret.data);
                     //location.href = '/registerBill/index.html';
                     //var paramStr = JSON.stringify(ret.data);
-                    parent.closeWin('view_win')
+                    // parent.closeWin('view_win')
+                    parent.window['RegisterBillGridObj'].removeAllAndLoadData()
                 }else{
                     swal(
                             '错误',
