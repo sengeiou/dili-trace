@@ -1,46 +1,67 @@
-class ApproverInfoIndex extends WebConfig {
+class ApproverInfoIndex extends ListPage {
     constructor(grid, queryform) {
-        super();
-        this.grid = grid;
-        this.queryform = queryform;
-        (async () => this.init())();
-    }
-    async init() {
-        this.queryform.find('#query').click(async () => await this.queryGridData());
-        this.grid.on('check.bs.table', async () => await this.rowClick());
-        this.grid.on('uncheck.bs.table', async () => await this.rowClick());
-        $('#add-btn').on('click', async () => this.openEditPage());
+        super(grid, queryform, queryform.find('#query'), "/approverInfo/listPage.action");
+        var cthis = this;
+        window['ApproverInfoGridObj'] = this;
+        $('#add-btn').on('click', async () => this.openAddPage());
         $('#edit-btn').on('click', async () => this.openEditPage());
         $('#detail-btn').on('click', async () => this.openDetailPage());
-        await this.queryGridData();
+        window.addEventListener('message', function (e) {
+            var data = JSON.parse(e.data);
+            if (data.obj && data.fun) {
+                if (data.obj == 'ApproverInfoGridObj') {
+                    cthis[data.fun].call(cthis, data.args);
+                }
+            }
+        }, false);
     }
-    async openDetailPage() {
+    async openAddPage() {
+        let url = this.toUrl("/approverInfo/edit.html");
+        var dia = bs4pop.dialog({
+            title: '增加签名',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '40%',
+            height: '80%',
+            btns: []
+        });
     }
     async openEditPage() {
-    }
-    async rowClick() {
-        debugger;
-    }
-    async queryGridData() {
-        if (!this.queryform.validate().form()) {
-            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
+        if (this.rows.length == 0) {
+            bs4pop.alert('请选择要修改的数据', { type: 'error' });
             return;
         }
-        await this.remoteQuery();
+        var select = this.rows[0];
+        let url = this.toUrl("/approverInfo/edit.html?id=" + select.id);
+        var dia = bs4pop.dialog({
+            title: '修改签名',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '40%',
+            height: '80%',
+            btns: []
+        });
     }
-    async remoteQuery() {
-        $('#toolbar button').attr('disabled', "disabled");
-        this.grid.bootstrapTable('showLoading');
-        try {
-            let url = this.toUrl("/approverInfo/listPage.action");
-            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
-            this.grid.bootstrapTable('load', resp);
+    async openDetailPage() {
+        if (this.rows.length == 0) {
+            bs4pop.alert('请选择要查看的数据', { type: 'error' });
+            return;
         }
-        catch (e) {
-            console.error(e);
-            this.grid.bootstrapTable('load', { rows: [], total: 0 });
-        }
-        this.grid.bootstrapTable('hideLoading');
-        $('#toolbar button').removeAttr('disabled');
+        var select = this.rows[0];
+        let url = this.toUrl("/approverInfo/view.html?id=" + select.id);
+        var dia = bs4pop.dialog({
+            title: '查看签名详情',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '40%',
+            height: '80%',
+            btns: []
+        });
     }
 }

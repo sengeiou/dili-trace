@@ -1,0 +1,119 @@
+<#bs4Body>
+    <div class="container-fluid pb-2">
+        <form id="saveForm" method="post" action="" class="pb-2">
+            <input name="_id" id="_id" type="hidden">
+            <div class="row row-cols-2 collapse show" id="baseInfo">
+                <div class="form-group col">
+                    <label for="userName">姓名<i class="red">*</i></label>
+                    <input id="userName" name="userName" type="text" class="form-control input-sm" required/>
+                    <input name="userId" id="userId" type="hidden">
+                </div>
+
+                <div class="form-group col">
+                    <label for="phone" class="">手机号<i class="red">*</i></label>
+                    <input id="phone" name="phone" type="text" class="form-control input-sm"/>
+                </div>
+            </div>
+
+            <div class="fileimg-box" style="margin: 0 auto;">
+                <span class="fileimg-plus-icon">+</span>
+                <span class="fileimg-des">上传签名</span>
+                <input type="file" name="file" id="signBase64" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                <input type="hidden" name="signBase64">
+                <img class="magnifying">
+                <div class="fileimg-cover" style="display: none;"></div>
+                <div class="fileimg-edit" style="display: none;">
+                    <span class="fileimg-view">查看</span>
+                </div>
+            </div>
+
+            <div class="modal-footer-wrap">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary px-5" onclick="parent.window['ApproverInfoGridObj'].removeAllAndLoadData()">取消</button>
+                    <button type="button" class="btn btn-primary px-5"  id="formSubmit">确定</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</#bs4Body>
+
+
+<#webGlobalConfig/>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/common.css">
+<script src="${contextPath!}/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/ApproverInfo.edit.js"></script>
+<script>
+    $(function(){
+        var approverInfoEdit=new ApproverInfoEdit($('#saveForm'),$('#formSubmit'));
+        initFileUpload();
+    })
+
+    $('.fileimg-view').on('click', function () {
+        var url = $(this).parent().siblings(".magnifying").attr('src');
+        if(url){
+            layer.open({
+                title:'图片',
+                type: 1,
+                skin: 'layui-layer-rim',
+                closeBtn: 2,
+                area: ['90%', '90%'], //宽高
+                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+            });
+        }
+    });
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+    function initFileUpload(){
+        $(":file").fileupload({
+            dataType : 'json',
+            formData: {type:4,compress:true},
+            done : function(e, res) {
+
+                /* if (res.result.code == 200) {
+                     var url = res.result.data;
+                     $(this).siblings(".magnifying").attr('src', url).show();
+                     $(this).siblings("input:hidden").val(url);
+                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                 }*/
+            },
+            add: function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".")+1;
+                var fileType = name.substring(index,name.length);
+                if(!acceptFileTypes.test(fileType)){
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return ;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if(size > (1024*10*1024)){
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return ;
+                }
+
+                toBase64(data.originalFiles[0]).then((base64) => {
+
+                    $(this).siblings(".magnifying").attr('src', base64).show();
+                    $(this).siblings("input:hidden").val(base64);
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                });
+                //  console.log(await toBase64(data.originalFiles[0]));
+                //data.submit();
+            }
+        });
+    }
+</script>
