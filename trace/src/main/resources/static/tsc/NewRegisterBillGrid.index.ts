@@ -51,6 +51,12 @@ class NewRegisterBillGrid extends ListPage {
 
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
 
+        this.grid.bootstrapTable({
+            onLoadSuccess: async  ()=> {
+                await cthis.findHighLightBill()
+            }
+        });
+
         window.addEventListener('message', function(e) {
             var data=JSON.parse(e.data);
             if(data.obj&&data.fun){
@@ -677,7 +683,7 @@ class NewRegisterBillGrid extends ListPage {
 
     private async findHighLightBill() {
         try {
-            var url=this.toUrl("/newRegisterBill/findHighLightBill.action");
+            let url=this.toUrl("/newRegisterBill/findHighLightBill.action");
             return await jq.postJson(url, {}, {});
         } catch (e) {
             console.log(e);

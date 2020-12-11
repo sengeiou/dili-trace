@@ -1,14 +1,8 @@
-class UserIndex extends  WebConfig{
-    private grid: any;
-    private queryform: any;
+class UserIndex extends  ListPage{
     constructor(grid: any,queryform:any) {
-        super();
-        this.grid = grid;
-        this.queryform=queryform;
-        (async ()=>this.init())();
-    }
-    private async init(){
-        this.queryform.find('#query').click(async () => await this.queryGridData());
+        super(grid,queryform,queryform.find('#query'),"/ecommerceBill/listPage.action");
+
+        // this.queryform.find('#query').click(async () => await this.queryGridData());
 
         this.grid.on('check.bs.table', async () => await this.rowClick());
         this.grid.on('uncheck.bs.table',async () => await this.rowClick());
@@ -18,7 +12,7 @@ class UserIndex extends  WebConfig{
         $('#detail-btn').on('click',async ()=>this.openDetailPage());
 
         //load data
-        await this.queryGridData();
+        // await this.queryGridData();
     }
     private async openDetailPage(){
 
@@ -30,26 +24,26 @@ class UserIndex extends  WebConfig{
     private async rowClick(){
         debugger
     }
-    private async queryGridData(){
-        if (!this.queryform.validate().form()) {
-            //@ts-ignore
-            bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
-            return;
-        }
-        await this.remoteQuery();
-    }
-    private async remoteQuery() {
-        $('#toolbar button').attr('disabled', "disabled");
-        this.grid.bootstrapTable('showLoading');
-        try{
-            let url = this.toUrl( "/user/listPage.action");
-            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
-            this.grid.bootstrapTable('load',resp);
-        }catch (e){
-            console.error(e);
-            this.grid.bootstrapTable('load',{rows:[],total:0});
-        }
-        this.grid.bootstrapTable('hideLoading');
-        $('#toolbar button').removeAttr('disabled');
-    }
+    // private async queryGridData(){
+    //     if (!this.queryform.validate().form()) {
+    //         //@ts-ignore
+    //         bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
+    //         return;
+    //     }
+    //     await this.remoteQuery();
+    // }
+    // private async remoteQuery() {
+    //     $('#toolbar button').attr('disabled', "disabled");
+    //     this.grid.bootstrapTable('showLoading');
+    //     try{
+    //         let url = this.toUrl( "/user/listPage.action");
+    //         let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
+    //         this.grid.bootstrapTable('load',resp);
+    //     }catch (e){
+    //         console.error(e);
+    //         this.grid.bootstrapTable('load',{rows:[],total:0});
+    //     }
+    //     this.grid.bootstrapTable('hideLoading');
+    //     $('#toolbar button').removeAttr('disabled');
+    // }
 }

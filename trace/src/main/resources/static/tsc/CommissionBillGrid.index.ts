@@ -25,9 +25,14 @@ class CommissionBillGrid extends ListPage {
             cityController.lookupCities(query, done)
         });
 
-
+        let cthis=this;
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
 
+        this.grid.bootstrapTable({
+            onLoadSuccess: async  ()=> {
+                await cthis.findHighLightBill()
+            }
+        });
 
     }
 

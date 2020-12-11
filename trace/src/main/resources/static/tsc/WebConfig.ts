@@ -99,17 +99,38 @@ class ListPage extends WebConfig {
         }
         this.grid.bootstrapTable('refresh');
     }
+    // private get columns(){
+    //     var cols=this.grid.bootstrapTable('getOptions')?.columns;
+    //     if(_.isUndefined(cols)){
+    //         return [];
+    //     }
+    //     return cols;
+    //
+    // }
+    private buildMetaData(){
+        //@ts-ignore
+        let metadata=bui.util.bindGridMeta2Form(this.grid.attr('id'),this.queryform.attr('id'))?.metadata;
+        if(_.isUndefined(metadata)){
+            return {}
+        }
+        return metadata;
+    }
     protected refreshTableOptions(){
         let url=this.toUrl(this.listPageUrl)
+        let metadata=this.buildMetaData();
+
         let buildQueryData=(params)=>{
             let temp = {
                 rows: params.limit,   //页面大小
                 page: ((params.offset / params.limit) + 1) || 1, //页码
                 sort: params.sort,
-                order: params.order
+                order: params.order,
+                metadata:metadata
             }
+
             let data = $.extend(temp, this.queryform.serializeJSON());
             let jsonData = jq.removeEmptyProperty(data);
+
             return JSON.stringify(jsonData);
         }
         this.grid.bootstrapTable('refreshOptions', {

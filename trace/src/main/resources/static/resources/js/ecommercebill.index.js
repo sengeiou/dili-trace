@@ -287,7 +287,7 @@ class EcommerceBillGrid extends ListPage {
         }
         let url = this.toUrl("/ecommerceBill/prePrintSeperatePrintReport.html?billId=" + row[0].id);
         var dia = bs4pop.dialog({
-            title: '打印分销报告',
+            title: '打印分销记录',
             content: url,
             isIframe: true,
             closeBtn: true,

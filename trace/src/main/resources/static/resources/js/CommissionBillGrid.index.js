@@ -17,7 +17,13 @@ class CommissionBillGrid extends ListPage {
         this.initAutoComplete($("[name='originName']"), function (query, done) {
             cityController.lookupCities(query, done);
         });
+        let cthis = this;
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
+        this.grid.bootstrapTable({
+            onLoadSuccess: async () => {
+                await cthis.findHighLightBill();
+            }
+        });
     }
     doCreateCheckSheet() {
         let row = this.grid.bootstrapTable("getSelections");
