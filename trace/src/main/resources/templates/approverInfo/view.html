@@ -1,64 +1,42 @@
-<#bodyOrigin>
-<div class="main-container">
-    <div class="topicTop">
-        <div class="toppic-title">
-            <span class="topic-title-text maincolor">签名详情</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
-        </div>
-    </div>
-    <div class="form-box border">
-        <form id="createRecordForm" class="form-inline" role="form">
-            <div class="form-item-group">
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>姓名</label>
-                    <input class="form-control input-sm" value="${item.userName}" readonly/>
-                </div>
-                <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>手机号</label>
-                    <input type="text" class="form-control input-sm"  value="${item.phone}"  readonly/>
-                </div>
+<#bs4Body>
+<div class="container-fluid pb-2">
+    <form id="saveForm" method="post" action="" class="pb-2">
+        <input name="_id" id="_id" type="hidden">
+        <div class="row row-cols-2 collapse show" id="baseInfo">
+            <div class="form-group col">
+                <label for="userName">姓名<i class="red">*</i></label>
+                <input id="userName" name="userName" type="text" class="form-control input-sm" value="${item.userName!}" readonly/>
+            </div>
 
-                <br/>
-              
-            
-	<table width="430px">
-            <tr>
-                <td style="padding:5px;">
-                    <div class="fileimg-box" style="margin: 0 auto;">
-                        <span class="fileimg-plus-icon">+</span>
-                        <span class="fileimg-des">签名</span>
-                        <img class="magnifying" src="${item.signBase64}">
-                        <div class="fileimg-cover" style="display:  block;"></div>
-                        <div class="fileimg-edit" style="display: block;">
-                            <span class="fileimg-view">查看</span>
-                        </div>
-                    </div>
-                </td>
-                
-            </tr>
-        </table>
+            <div class="form-group col">
+                <label for="phone" class="">手机号<i class="red">*</i></label>
+                <input id="phone" name="phone" type="text" class="form-control input-sm" value="${item.phone!}" readonly/>
+            </div>
         </div>
-        </form>
-        
-    </div>
 
+        <div class="fileimg-box" style="margin: 0 auto;">
+            <span class="fileimg-plus-icon">+</span>
+            <span class="fileimg-des">签名</span>
+            <img class="magnifying" src="${item.signBase64!}">
+            <div class="fileimg-cover" style="display: none;"></div>
+            <div class="fileimg-edit" style="display: none;">
+                <span class="fileimg-view">查看</span>
+            </div>
+        </div>
+
+        <div class="modal-footer-wrap">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary px-5" onclick="javascript: parent.dia.hide()">取消</button>
+            </div>
+        </div>
+    </form>
 </div>
-</#bodyOrigin>
-<script type="text/javascript">
-<!--
-$('.fileimg-view').on('click', function () {
-    var url = $(this).parent().siblings(".magnifying").attr('src');
-    if(url){
-        layer.open({
-            title:'图片',
-            type: 1,
-            skin: 'layui-layer-rim',
-            closeBtn: 2,
-            area: ['90%', '90%'], //宽高
-            content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-        });
-    }
-});
-//-->
-</script>
+</#bs4Body>
+<#webGlobalConfig/>
 
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/common.css">
+<script src="${contextPath!}/resources/assets/dep/jquery/layer/layer.js"></script>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>

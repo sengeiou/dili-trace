@@ -17,7 +17,13 @@ class CommissionBillGrid extends ListPage {
         this.initAutoComplete($("[name='originName']"), function (query, done) {
             cityController.lookupCities(query, done);
         });
+        let cthis = this;
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
+        this.grid.bootstrapTable({
+            onLoadSuccess: async () => {
+                await cthis.findHighLightBill();
+            }
+        });
     }
     doCreateCheckSheet() {
         let row = this.grid.bootstrapTable("getSelections");
@@ -86,7 +92,7 @@ class CommissionBillGrid extends ListPage {
             }
         });
     }
-    resetButtons() {
+    async resetButtons() {
         var btnArray = ['detail-btn', 'createsheet-btn', 'audit-btn', 'batch-reviewCheck-btn'];
         $.each(btnArray, function (i, btnId) {
             $('#' + btnId).hide();
@@ -279,11 +285,5 @@ class CommissionBillGrid extends ListPage {
             });
         }
         layer.closeAll();
-    }
-    filterByProp(prop, propValues) {
-        let arrayData = $.makeArray(this.rows);
-        let arrayValue = $.makeArray(propValues);
-        let values = _.chain(arrayData).filter(element => $.inArray(element[prop], arrayValue) > -1).value();
-        return values;
     }
 }

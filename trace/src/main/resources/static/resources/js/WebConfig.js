@@ -9,9 +9,21 @@ class WebConfig {
         window.addEventListener('message', async (e) => this.handleMessage(e), false);
     }
     handleMessage(e) {
+        let cthis = this;
         let data = JSON.parse(e.data);
-        if (data.fun && data.type == 'call') {
-            this[data.fun].call(this, data.args);
+        if (data.type == 'call' && data.calls) {
+            _.chain(data.calls).each(async (item) => {
+                let fun = item.funName;
+                let args = item.args;
+                await cthis[fun].call(cthis, args);
+            });
+        }
+        if (data.type == 'apply' && data.calls) {
+            _.chain(data.calls).each(async (item) => {
+                let fun = item.funName;
+                let args = item.args;
+                await cthis[fun].apply(cthis, args);
+            });
         }
     }
     toUrl(url) {
@@ -64,6 +76,7 @@ class ListPage extends WebConfig {
         this.listPageUrl = listPageUrl;
         this.init();
     }
+    async resetButtons() { }
     get rows() {
         let rows = this.grid.bootstrapTable('getSelections');
         return rows;
@@ -77,16 +90,33 @@ class ListPage extends WebConfig {
             bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
             return;
         }
+        await this.resetButtons();
         this.grid.bootstrapTable('refresh');
+    }
+    removeAllDialog() {
+        bs4pop.removeAll();
+    }
+    async notice(msg, cfg) {
+        debugger;
+        await popwrapper.alert(msg, cfg);
+    }
+    buildMetaData() {
+        let metadata = bui.util.bindGridMeta2Form(this.grid.attr('id'), this.queryform.attr('id'))?.metadata;
+        if (_.isUndefined(metadata)) {
+            return {};
+        }
+        return metadata;
     }
     refreshTableOptions() {
         let url = this.toUrl(this.listPageUrl);
+        let metadata = this.buildMetaData();
         let buildQueryData = (params) => {
             let temp = {
                 rows: params.limit,
                 page: ((params.offset / params.limit) + 1) || 1,
                 sort: params.sort,
-                order: params.order
+                order: params.order,
+                metadata: metadata
             };
             let data = $.extend(temp, this.queryform.serializeJSON());
             let jsonData = jq.removeEmptyProperty(data);

@@ -25,9 +25,14 @@ class CommissionBillGrid extends ListPage {
             cityController.lookupCities(query, done)
         });
 
-
+        let cthis=this;
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
 
+        this.grid.bootstrapTable({
+            onLoadSuccess: async  ()=> {
+                await cthis.findHighLightBill()
+            }
+        });
 
     }
 
@@ -115,7 +120,7 @@ class CommissionBillGrid extends ListPage {
     })
     }
 
-    private resetButtons() {
+    public async resetButtons() {
         var btnArray = ['detail-btn', 'createsheet-btn', 'audit-btn', 'batch-reviewCheck-btn'];
         $.each(btnArray, function (i, btnId) {
             $('#' + btnId).hide();
@@ -355,13 +360,6 @@ class CommissionBillGrid extends ListPage {
         // @ts-ignore
         layer.closeAll();
 
-    }
-
-    private filterByProp(prop: string, propValues: any[]) {
-        let arrayData = $.makeArray(this.rows);
-        let arrayValue = $.makeArray(propValues);
-        let values: any[] = _.chain(arrayData).filter(element => $.inArray(element[prop], arrayValue) > -1).value();
-        return values;
     }
 
 }

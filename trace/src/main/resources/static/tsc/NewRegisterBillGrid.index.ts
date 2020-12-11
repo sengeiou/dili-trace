@@ -51,6 +51,12 @@ class NewRegisterBillGrid extends ListPage {
 
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
 
+        this.grid.bootstrapTable({
+            onLoadSuccess: async  ()=> {
+                await cthis.findHighLightBill()
+            }
+        });
+
         window.addEventListener('message', function(e) {
             var data=JSON.parse(e.data);
             if(data.obj&&data.fun){
@@ -61,7 +67,6 @@ class NewRegisterBillGrid extends ListPage {
 
         }, false);
     }
-
     public removeAllAndLoadData(){
         //@ts-ignore
         bs4pop.removeAll();
@@ -635,14 +640,14 @@ class NewRegisterBillGrid extends ListPage {
     }
 
 
-    private resetButtons() {
+    public async resetButtons() {
         var btnArray=this.btns;
         _.chain(btnArray).each((btn)=> {
             $(btn).hide();
         });
     }
     private async checkAndShowHideBtns(){
-        this.resetButtons();
+        await this.resetButtons();
         var rows=this.rows;
             try{
                 var billIdList=_.chain(rows).map(v=>v.id).value();
@@ -677,7 +682,7 @@ class NewRegisterBillGrid extends ListPage {
 
     private async findHighLightBill() {
         try {
-            var url=this.toUrl("/newRegisterBill/findHighLightBill.action");
+            let url=this.toUrl("/newRegisterBill/findHighLightBill.action");
             return await jq.postJson(url, {}, {});
         } catch (e) {
             console.log(e);

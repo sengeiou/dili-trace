@@ -134,14 +134,24 @@ class popwrapper {
         return await p;
     }
 }
+interface Call{
+    funName:string;
+    args:any[];
+}
 class p{
     public static call(funName:string,args:any[]=[]){
-        let data={'type':'call','fun':funName,'args':args};
-        // @ts-ignore
-        window.parent.postMessage(JSON.stringify(data));
+        p.multi('call',[{funName:funName,args:args}]);
     }
     public static exec(fun:Function){
         let data={'type':'exec','fun':fun.toString()};
+        // @ts-ignore
+        window.parent.postMessage(JSON.stringify(data));
+    }
+    public static applies(calls:Call[]){
+        p.multi('call',calls);
+    }
+    private static multi(type:string,calls:Call[]){
+        let data={'type':type,'calls':calls};
         // @ts-ignore
         window.parent.postMessage(JSON.stringify(data));
     }
