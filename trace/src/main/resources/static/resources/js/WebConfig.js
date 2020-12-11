@@ -96,12 +96,11 @@ class ListPage extends WebConfig {
     removeAllDialog() {
         bs4pop.removeAll();
     }
-    async notice(msg, cfg) {
-        debugger;
+    async alert(msg, cfg) {
         await popwrapper.alert(msg, cfg);
     }
     buildMetaData() {
-        let metadata = bui.util.bindGridMeta2Form(this.grid.attr('id'), this.queryform.attr('id'))?.metadata;
+        let metadata = bui.util.bindGridMeta2Form(this.grid.attr('id'), this.queryform.attr('id')).metadata;
         if (_.isUndefined(metadata)) {
             return {};
         }

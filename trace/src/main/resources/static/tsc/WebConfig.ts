@@ -132,7 +132,7 @@ class ListPage extends WebConfig {
     // }
     private buildMetaData(){
         //@ts-ignore
-        let metadata=bui.util.bindGridMeta2Form(this.grid.attr('id'),this.queryform.attr('id'))?.metadata;
+        let metadata=bui.util.bindGridMeta2Form(this.grid.attr('id'),this.queryform.attr('id')).metadata;
         if(_.isUndefined(metadata)){
             return {}
         }
