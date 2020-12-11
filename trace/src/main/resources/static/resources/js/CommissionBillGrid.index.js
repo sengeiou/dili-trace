@@ -92,7 +92,7 @@ class CommissionBillGrid extends ListPage {
             }
         });
     }
-    resetButtons() {
+    async resetButtons() {
         var btnArray = ['detail-btn', 'createsheet-btn', 'audit-btn', 'batch-reviewCheck-btn'];
         $.each(btnArray, function (i, btnId) {
             $('#' + btnId).hide();
@@ -285,11 +285,5 @@ class CommissionBillGrid extends ListPage {
             });
         }
         layer.closeAll();
-    }
-    filterByProp(prop, propValues) {
-        let arrayData = $.makeArray(this.rows);
-        let arrayValue = $.makeArray(propValues);
-        let values = _.chain(arrayData).filter(element => $.inArray(element[prop], arrayValue) > -1).value();
-        return values;
     }
 }

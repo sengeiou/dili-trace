@@ -31,7 +31,6 @@ class EcommerceBillGrid extends ListPage {
             await this.queryGridData();
         })();*/
     }
-
     private async openAudit() {
         var rows = this.grid.bootstrapTable("getSelections");
         if (rows.length == 0) {

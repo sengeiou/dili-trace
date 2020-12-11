@@ -67,7 +67,6 @@ class NewRegisterBillGrid extends ListPage {
 
         }, false);
     }
-
     public removeAllAndLoadData(){
         //@ts-ignore
         bs4pop.removeAll();
@@ -641,14 +640,14 @@ class NewRegisterBillGrid extends ListPage {
     }
 
 
-    private resetButtons() {
+    public async resetButtons() {
         var btnArray=this.btns;
         _.chain(btnArray).each((btn)=> {
             $(btn).hide();
         });
     }
     private async checkAndShowHideBtns(){
-        this.resetButtons();
+        await this.resetButtons();
         var rows=this.rows;
             try{
                 var billIdList=_.chain(rows).map(v=>v.id).value();

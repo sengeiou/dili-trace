@@ -87,7 +87,7 @@ class ApproverInfoIndex extends  ListPage{
         }
     }
 
-    private resetButtons(){
+    public async resetButtons(){
         $('#edit-btn').hide();
         $('#detail-btn').hide();
     }

@@ -11,10 +11,23 @@ class WebConfig{
         window.addEventListener('message', async (e) => this.handleMessage(e), false);
     }
 
-    private handleMessage(e: MessageEvent) {
+    protected handleMessage(e: MessageEvent) {
+        let cthis=this;
         let data = JSON.parse(e.data);
-        if (data.fun&&data.type=='call') {
-            this[data.fun].call(this, data.args)
+        if (data.type=='call'&&data.calls) {
+            _.chain(data.calls).each(async (item)=>{
+                let fun=item.funName;
+                let args=item.args;
+                await cthis[fun].call(cthis, args)
+            });
+
+        }if (data.type=='apply'&&data.calls) {
+            _.chain(data.calls).each(async (item)=>{
+                let fun=item.funName;
+                let args=item.args;
+                await cthis[fun].apply(cthis, args)
+            });
+
         }
     }
     public toUrl(url:string):string{
@@ -83,6 +96,7 @@ class ListPage extends WebConfig {
         this.listPageUrl = listPageUrl;
         this.init();
     }
+    protected async resetButtons() {}
     get rows() {
         let rows = this.grid.bootstrapTable('getSelections');
         return rows;
@@ -97,8 +111,18 @@ class ListPage extends WebConfig {
             bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
             return;
         }
+        await this.resetButtons();
         this.grid.bootstrapTable('refresh');
     }
+    private removeAllDialog(){
+        //@ts-ignore
+        bs4pop.removeAll();
+    }
+    private async notice(msg:string,cfg:any){
+        debugger
+       await popwrapper.alert(msg,cfg);
+    }
+
     // private get columns(){
     //     var cols=this.grid.bootstrapTable('getOptions')?.columns;
     //     if(_.isUndefined(cols)){
