@@ -56,17 +56,12 @@ public class ApproverInfoController {
 	@ApiOperation("跳转到ApproverInfo修改页面")
 	@RequestMapping(value = "/edit.html", method = RequestMethod.GET)
 	public String edit(ModelMap modelMap, Long id) {
-		return "approverInfo/edit";
-	}
-
-	/**
-	 * 跳转到ApproverInfo页面
-	 * @param modelMap
-	 * @return
-	 */
-	@ApiOperation("跳转到ApproverInfo新增页面")
-	@RequestMapping(value = "/add.html", method = RequestMethod.GET)
-	public String add(ModelMap modelMap, Long id) {
+		if (id != null) {
+			ApproverInfo item=this.approverInfoService.get(id);
+			String base64Signature=this.base64SignatureService.findBase64SignatureByApproverInfoId(item.getId());
+			item.setSignBase64(base64Signature);
+			modelMap.put("item", item);
+		}
 		return "approverInfo/edit";
 	}
 
@@ -168,8 +163,8 @@ public class ApproverInfoController {
 	 * @return
 	 */
 	@ApiOperation("跳转到ApproverInfo页面")
-	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
-	public String view(ModelMap modelMap,@PathVariable Long id) {
+	@RequestMapping(value = "/view.html", method = RequestMethod.GET)
+	public String view(ModelMap modelMap, Long id) {
 		ApproverInfo item=this.approverInfoService.get(id);
 		String base64Signature=this.base64SignatureService.findBase64SignatureByApproverInfoId(item.getId());
 		

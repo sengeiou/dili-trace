@@ -1,17 +1,17 @@
 <#bs4Body>
     <div class="container-fluid pb-2">
         <form id="saveForm" method="post" action="" class="pb-2">
-            <input name="_id" id="_id" type="hidden">
+            <input name="id" id="id" type="hidden" value="${item.id!}">
             <div class="row row-cols-2 collapse show" id="baseInfo">
                 <div class="form-group col">
                     <label for="userName">姓名<i class="red">*</i></label>
-                    <input id="userName" name="userName" type="text" class="form-control input-sm" required/>
-                    <input name="userId" id="userId" type="hidden">
+                    <input id="userName" name="userName" type="text" class="form-control input-sm" value="${item.userName!}" required/>
+                    <input name="userId" id="userId" type="hidden" value="${item.userId!}">
                 </div>
 
                 <div class="form-group col">
                     <label for="phone" class="">手机号<i class="red">*</i></label>
-                    <input id="phone" name="phone" type="text" class="form-control input-sm"/>
+                    <input id="phone" name="phone" type="text" class="form-control input-sm" value="${item.phone!}" required/>
                 </div>
             </div>
 
@@ -19,8 +19,8 @@
                 <span class="fileimg-plus-icon">+</span>
                 <span class="fileimg-des">上传签名</span>
                 <input type="file" name="file" id="signBase64" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                <input type="hidden" name="signBase64">
-                <img class="magnifying">
+                <input type="hidden" name="signBase64" value="${item.signBase64!}" required>
+                <img class="magnifying" src="${item.signBase64!}">
                 <div class="fileimg-cover" style="display: none;"></div>
                 <div class="fileimg-edit" style="display: none;">
                     <span class="fileimg-view">查看</span>
@@ -29,16 +29,15 @@
 
             <div class="modal-footer-wrap">
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary px-5" onclick="parent.window['ApproverInfoGridObj'].removeAllAndLoadData()">取消</button>
+                    <button type="button" class="btn btn-secondary px-5" onclick="javascript: parent.dia.hide()">取消</button>
                     <button type="button" class="btn btn-primary px-5"  id="formSubmit">确定</button>
                 </div>
             </div>
         </form>
     </div>
 </#bs4Body>
-
-
 <#webGlobalConfig/>
+
 <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
 <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/common.css">
 <script src="${contextPath!}/resources/assets/dep/jquery/layer/layer.js"></script>
@@ -48,9 +47,9 @@
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
-<script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/ApproverInfo.edit.js"></script>
+<script src="${contextPath!}/resources/js/ApproverInfo.edit.js?v=${v}"></script>
+<script src="${contextPath!}/resources/js/Utils.js?v=${v}"></script>
 <script>
     $(function(){
         var approverInfoEdit=new ApproverInfoEdit($('#saveForm'),$('#formSubmit'));
