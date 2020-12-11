@@ -114,12 +114,11 @@ class ListPage extends WebConfig {
         await this.resetButtons();
         this.grid.bootstrapTable('refresh');
     }
-    private removeAllDialog(){
+    protected removeAllDialog(){
         //@ts-ignore
         bs4pop.removeAll();
     }
-    private async notice(msg:string,cfg:any){
-        debugger
+    protected async alert(msg:string,cfg:any){
        await popwrapper.alert(msg,cfg);
     }
 

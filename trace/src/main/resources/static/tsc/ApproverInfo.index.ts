@@ -77,7 +77,7 @@ class ApproverInfoIndex extends  ListPage{
     }
 
     private async rowClick() {
-        this.resetButtons();
+        await this.resetButtons();
         if(this.rows.length==0){
             return;
         }

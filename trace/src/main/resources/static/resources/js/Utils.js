@@ -101,11 +101,17 @@ class popwrapper {
 }
 class p {
     static call(funName, args = []) {
-        let data = { 'type': 'call', 'fun': funName, 'args': args };
-        window.parent.postMessage(JSON.stringify(data));
+        p.multi('call', [{ funName: funName, args: args }]);
     }
     static exec(fun) {
         let data = { 'type': 'exec', 'fun': fun.toString() };
+        window.parent.postMessage(JSON.stringify(data));
+    }
+    static applies(calls) {
+        p.multi('call', calls);
+    }
+    static multi(type, calls) {
+        let data = { 'type': type, 'calls': calls };
         window.parent.postMessage(JSON.stringify(data));
     }
 }
