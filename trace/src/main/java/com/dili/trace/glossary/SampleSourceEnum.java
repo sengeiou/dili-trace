@@ -30,6 +30,11 @@ public enum SampleSourceEnum {
      * 抽检
      */
     SPOT_CHECK(3, "抽检"),
+
+    /**
+     * 人工
+     */
+    MANUALLY(4, "人工"),
     /**
      * 其他
      */

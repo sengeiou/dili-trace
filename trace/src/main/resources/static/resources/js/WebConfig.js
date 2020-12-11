@@ -96,8 +96,7 @@ class ListPage extends WebConfig {
     removeAllDialog() {
         bs4pop.removeAll();
     }
-    async notice(msg, cfg) {
-        debugger;
+    async alert(msg, cfg) {
         await popwrapper.alert(msg, cfg);
     }
     buildMetaData() {
