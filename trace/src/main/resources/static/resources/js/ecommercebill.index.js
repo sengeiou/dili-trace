@@ -1,6 +1,6 @@
-class EcommerceBillGrid extends WebConfig {
+class EcommerceBillGrid extends ListPage {
     constructor(grid, queryform) {
-        super();
+        super(grid, queryform, queryform.find('#query'), "/ecommerceBill/listPage.action");
         this.grid = grid;
         this.queryform = queryform;
         let categoryController = new CategoryController();
@@ -18,10 +18,6 @@ class EcommerceBillGrid extends WebConfig {
         this.initAutoComplete($("[name='originName']"), function (query, done) {
             cityController.lookupCities(query, done);
         });
-        this.queryform.find('#query').click(async () => await this.queryGridData());
-        (async () => {
-            await this.queryGridData();
-        })();
     }
     async openAudit() {
         var rows = this.grid.bootstrapTable("getSelections");
@@ -177,29 +173,6 @@ class EcommerceBillGrid extends WebConfig {
             onShowEnd: function () {
             }
         });
-    }
-    async queryGridData() {
-        if (!this.queryform.validate().form()) {
-            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
-            return;
-        }
-        await this.remoteQuery();
-    }
-    async remoteQuery() {
-        $('#toolbar button').attr('disabled', "disabled");
-        this.grid.bootstrapTable('showLoading');
-        this.highLightBill = await this.findHighLightBill();
-        try {
-            let url = this.toUrl("/ecommerceBill/listPage.action");
-            let resp = await jq.postJson(url, this.queryform.serializeJSON(), {});
-            this.grid.bootstrapTable('load', resp);
-        }
-        catch (e) {
-            console.error(e);
-            this.grid.bootstrapTable('load', { rows: [], total: 0 });
-        }
-        this.grid.bootstrapTable('hideLoading');
-        $('#toolbar button').removeAttr('disabled');
     }
     async findHighLightBill() {
         try {

@@ -242,8 +242,8 @@ class CommissionBillGrid extends ListPage {
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '98%',
-            height: '98%',
+            width: '78%',
+            height: '88%',
             btns: [],
             onShowEnd: function () {
                 //dia.$el.find('iframe')[0].contentWindow['RegisterBillGridObj']=cthis;
