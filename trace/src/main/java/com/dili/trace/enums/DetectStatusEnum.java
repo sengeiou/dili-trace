@@ -8,7 +8,7 @@ public enum DetectStatusEnum {
     /**
      * 初始状态
      */
-    NONE(0, "待分配"),
+    NONE(0, ""),
 
     /**
      * 待接单

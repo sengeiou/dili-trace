@@ -20,7 +20,11 @@
                 <span class="fileimg-des">上传签名</span>
                 <input type="file" name="file" id="signBase64" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
                 <input type="hidden" name="signBase64" value="${item.signBase64!}" required>
-                <img class="magnifying" src="${item.signBase64!}">
+                <% if(!isEmpty(item) && item.id != null && item.id != '') { %>
+                    <img class="magnifying" src="${item.signBase64!}">
+                <% } else { %>
+                    <img class="magnifying">
+                <% } %>
                 <div class="fileimg-cover" style="display: none;"></div>
                 <div class="fileimg-edit" style="display: none;">
                     <span class="fileimg-view">查看</span>
@@ -80,7 +84,6 @@
             dataType : 'json',
             formData: {type:4,compress:true},
             done : function(e, res) {
-
                 /* if (res.result.code == 200) {
                      var url = res.result.data;
                      $(this).siblings(".magnifying").attr('src', url).show();
@@ -105,13 +108,10 @@
                 }
 
                 toBase64(data.originalFiles[0]).then((base64) => {
-
                     $(this).siblings(".magnifying").attr('src', base64).show();
                     $(this).siblings("input:hidden").val(base64);
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
                 });
-                //  console.log(await toBase64(data.originalFiles[0]));
-                //data.submit();
             }
         });
     }
