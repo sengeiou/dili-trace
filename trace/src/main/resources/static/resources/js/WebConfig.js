@@ -100,7 +100,7 @@ class ListPage extends WebConfig {
         await popwrapper.alert(msg, cfg);
     }
     buildMetaData() {
-        let metadata = bui.util.bindGridMeta2Form(this.grid.attr('id'), this.queryform.attr('id'))?.metadata;
+        let metadata = bui.util.bindGridMeta2Form(this.grid.attr('id'), this.queryform.attr('id')).metadata;
         if (_.isUndefined(metadata)) {
             return {};
         }

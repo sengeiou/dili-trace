@@ -106,7 +106,6 @@ public class NewRegisterBillController {
         return "new-registerBill/index";
     }
 
-
     /**
      * 分页查询RegisterBill
      *
@@ -136,11 +135,9 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/findHighLightBill.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     Object findHighLightBill(RegisterBillDto dto) throws Exception {
-
         RegisterBill registerBill = registerBillService.findHighLightBill(dto);
         return BaseOutput.success().setData(registerBill);
     }
-
 
     /**
      * 登记单录入页面
