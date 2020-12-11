@@ -1,11 +1,5 @@
 <#bodyOrigin>
 <div class="main-container">
-    <div class="topicTop">
-        <div class="toppic-title">
-            <span class="topic-title-text maincolor">登记单信息详情</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
-        </div>
-    </div>
     <div class="form-box border">
         <form id="createRecordForm" class="form-inline" role="form">
             <div class="form-item-group"  style="width: 1200px">
@@ -73,8 +67,12 @@
                 </div>
           
                 <div class="form-group">
-                    <label class="label-title text-right">状态</label>
-                    <input type="text" class="form-control input-sm"value="${item.stateName!}" required readonly/>
+                    <label class="label-title text-right">审核状态</label>
+                    <input type="text" class="form-control input-sm"value="${item.verifyStatusName!}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">检测状态</label>
+                    <input type="text" class="form-control input-sm"value="${item.detectStatusName!}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">操作人</label>
