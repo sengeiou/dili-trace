@@ -12,10 +12,10 @@ class EcommerceBillGrid extends WebConfig {
         $('#print-btn').on('click', async () => await this.openPrint());
         $('#printSeperatePrintReport-btn').on('click', async () => await this.openPrintSeperatePrintReport());
         $('#detail-btn').on('click', async () => await this.doDetail());
-        this.initAutoComplete($("[name='productId']"), function (query, done) {
+        this.initAutoComplete($("[name='productName']"), function (query, done) {
             categoryController.lookupCategories(query, done);
         });
-        this.initAutoComplete($("[name='originId']"), function (query, done) {
+        this.initAutoComplete($("[name='originName']"), function (query, done) {
             cityController.lookupCities(query, done);
         });
         this.queryform.find('#query').click(async () => await this.queryGridData());
