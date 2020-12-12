@@ -22,6 +22,11 @@ public class DetectRequestQueryDto extends DetectRequest {
      */
     private Integer isDeleted;
 
+    /**
+     * 采样来源过滤条件 {@link com.dili.trace.glossary.SampleSourceEnum}
+     */
+    private Integer sampleSource;
+
     public String getLikeProductNameOrUserName() {
         return likeProductNameOrUserName;
     }
@@ -44,5 +49,13 @@ public class DetectRequestQueryDto extends DetectRequest {
 
     public void setIsDeleted(Integer isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public Integer getSampleSource() {
+        return sampleSource;
+    }
+
+    public void setSampleSource(Integer sampleSource) {
+        this.sampleSource = sampleSource;
     }
 }

@@ -94,22 +94,16 @@
     </select>
 
   <select id="countBySampleSource" parameterType="com.dili.trace.api.input.DetectRequestQueryDto" resultType="com.dili.trace.api.output.SampleSourceCountOutputDto">
-      <!--
-        WARNING - @mbg.generated
-      -->
       select r.detect_source as sampleSource,count(1) as num
       from detect_request r
       join register_bill b on (r.id = b.detect_request_id)
       where 1=1
-      <if test="metadata != null">
-          <foreach collection="metadata.entrySet()" item="value" index="key">
-              <if test="key =='_andConditionExpr'">
-                  AND  (${value})
-              </if>
-          </foreach>
+      <if test="likeProductNameOrUserName != null">
+          <![CDATA[ AND (b.product_name like CONCAT('%',#{likeProductNameOrUserName},'%')
+            OR b.name like CONCAT('%',#{likeProductNameOrUserName},'%')) ]]>
       </if>
-      <if test="created != null  and created != ''">
-          <![CDATA[ AND r.created = to_date(#{created}, 'yyyy-MM-dd') ]]>
+      <if test="created != null">
+          <![CDATA[ AND date(r.created) = #{created} ]]>
       </if>
       <if test="isDeleted != null">
           AND b.is_deleted = #{isDeleted}
@@ -118,5 +112,28 @@
           AND b.market_id =#{marketId}
       </if>
       group by r.detect_source
+  </select>
+
+  <select id="queryListBySampleSource" parameterType="com.dili.trace.api.input.DetectRequestQueryDto" resultType="com.dili.trace.api.output.SampleSourceListOutputDto">
+      SELECT b.id billId,b.name,b.tally_area_no,b.created,b.product_id,b.product_name,b.detect_request_id,b.has_detect_report,b.has_origin_certifiy,b.has_handle_result,b.weight,b.weight_unit,r.detect_Type sampleSource
+      FROM detect_request r
+      JOIN register_bill b ON (r.id = b.detect_request_id)
+      WHERE 1=1
+      <if test="likeProductNameOrUserName != null">
+          <![CDATA[ AND (b.product_name like CONCAT('%',#{likeProductNameOrUserName},'%')
+            OR b.name like CONCAT('%',#{likeProductNameOrUserName},'%')) ]]>
+      </if>
+      <if test="created != null">
+          <![CDATA[ AND date(r.created) = #{created} ]]>
+      </if>
+      <if test="isDeleted != null">
+          AND b.is_deleted = #{isDeleted}
+      </if>
+      <if test="marketId != null">
+          AND b.market_id =#{marketId}
+      </if>
+      <if test="sampleSource != null">
+          AND r.detect_source =#{sampleSource}
+      </if>
   </select>
 </mapper>

@@ -3,11 +3,12 @@ package com.dili.trace.service;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.IDTO;
 import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
+import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
@@ -19,6 +20,7 @@ import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
@@ -30,7 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -334,17 +339,27 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @param domain
      * @return
      */
-    public List<DetectRequestDto> listPageByUserCategory(DetectRequestDto domain) {
-        if (domain.getRows() != null && domain.getRows() >= 1) {
-            PageHelper.startPage(domain.getPage(), domain.getRows());
+    public BasePage<DetectRequestDto> listPageByUserCategory(DetectRequestDto domain) {
+        if (domain.getPage() == null || domain.getPage() < 0) {
+            domain.setPage(1);
+        }
+        if (domain.getRows() == null || domain.getRows() <= 0) {
+            domain.setRows(10);
         }
         if (StringUtils.isNotBlank(domain.getSort())) {
             domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
         }
-        //List<CheckOrderDispose> checkOrderDispose = detectRequestMapper.selectListPageByUserCategory(domain);
-        //long total = checkOrderDispose instanceof Page ? ((Page) checkOrderDispose).getTotal() : (long) checkOrderDispose.size();
-        //List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, checkOrderDispose) : checkOrderDispose;
-        return detectRequestMapper.selectListPageByUserCategory(domain);
+        PageHelper.startPage(domain.getPage(), domain.getRows());
+        List<DetectRequestDto> list = this.detectRequestMapper.selectListPageByUserCategory(domain);
+        Page<DetectRequestDto> page = (Page) list;
+        BasePage<DetectRequestDto> result = new BasePage<DetectRequestDto>();
+        result.setDatas(list);
+        result.setPage(page.getPageNum());
+        result.setRows(page.getPageSize());
+        result.setTotalItem(page.getTotal());
+        result.setTotalPage(page.getPages());
+        result.setStartIndex(page.getStartRow());
+        return result;
     }
 
     /**
@@ -380,37 +395,9 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         if (query == null) {
             throw new TraceBizException("参数错误");
         }
-        query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
         query.setIsDeleted(YesOrNoEnum.NO.getCode());
         List<SampleSourceCountOutputDto> countList = this.doCountBySampleSource(query);
         return countList;
-    }
-
-    /**
-     *
-     * @param query
-     * @return
-     */
-    private String dynamicSQLFormBill(DetectRequestQueryDto query) {
-        List<String> sqlList = new ArrayList<>();
-        this.buildFormLikeKeyword(query).ifPresent(sql -> {
-            sqlList.add(sql);
-        });
-        return StreamEx.of(sqlList).joining(" AND ");
-    }
-
-    /**
-     *
-     * @param query
-     * @return
-     */
-    private Optional<String> buildFormLikeKeyword(DetectRequestQueryDto query) {
-        String sql = null;
-        if (StringUtils.isNotBlank(query.getLikeProductNameOrUserName())) {
-            String keyword = query.getLikeProductNameOrUserName().trim();
-            sql = "( b.product_name like '%" + keyword + "%'  OR b.name like '%"+ keyword +"%')";
-        }
-        return Optional.ofNullable(sql);
     }
 
     /**
@@ -431,4 +418,28 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         }).toList();
     }
 
+    /**
+     * 分页查询采样检测列表
+     * @param query
+     * @return
+     */
+    public BasePage<SampleSourceListOutputDto> listPagedSampleSourceDetect(DetectRequestQueryDto query) {
+        if (query.getPage() == null || query.getPage() < 0) {
+            query.setPage(1);
+        }
+        if (query.getRows() == null || query.getRows() <= 0) {
+            query.setRows(10);
+        }
+        PageHelper.startPage(query.getPage(), query.getRows());
+        List<SampleSourceListOutputDto> list = this.detectRequestMapper.queryListBySampleSource(query);
+        Page<SampleSourceListOutputDto> page = (Page) list;
+        BasePage<SampleSourceListOutputDto> result = new BasePage<SampleSourceListOutputDto>();
+        result.setDatas(list);
+        result.setPage(page.getPageNum());
+        result.setRows(page.getPageSize());
+        result.setTotalItem(page.getTotal());
+        result.setTotalPage(page.getPages());
+        result.setStartIndex(page.getStartRow());
+        return result;
+    }
 }

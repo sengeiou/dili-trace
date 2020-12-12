@@ -1,18 +1,17 @@
 package com.dili.trace.domain;
 
 import com.dili.ss.domain.BaseDomain;
-import com.dili.trace.enums.*;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.DetectStatusEnum;
+import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.TFEnum;
 import io.swagger.annotations.ApiModelProperty;
-import one.util.streamex.StreamEx;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * 由MyBatis Generator工具自动生成
