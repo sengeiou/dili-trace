@@ -15,9 +15,9 @@ import java.util.Optional;
 public enum SampleSourceEnum {
 
     /**
-     * 初始状态
+     * 待处理
      */
-    NONE(0, ""),
+    NONE(0, "待处理"),
     /**
      * 采样检测
      */

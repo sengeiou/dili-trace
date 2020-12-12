@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
         import one.util.streamex.StreamEx;
 
 /**
- * Created by wangguofeng
+ * 品牌接口
  */
 @RestController
 @RequestMapping(value = "/api/brandApi")

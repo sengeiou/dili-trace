@@ -31,6 +31,11 @@ public enum DetectStatusEnum {
      * 已检测
      */
     FINISH_DETECT(50, "已检测"),
+
+    /**
+     * 已退回
+     */
+    RETURN_DETECT(60, "已退回"),
     ;
 
 

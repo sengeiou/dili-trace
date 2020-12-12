@@ -54,13 +54,13 @@ public class ManagerDetectRquestApi {
     }
 
     /**
-     * 查询检测请求列表
+     * 处理检测请求列表
      *
      * @param input
      * @return
      */
-    @RequestMapping("/createDetectRequest.api")
-    public BaseOutput createDetectRequest(@RequestBody CreateDetectRequestInputDto input) {
+    @RequestMapping("/handleDetectRequest.api")
+    public BaseOutput handleDetectRequest(@RequestBody CreateDetectRequestInputDto input) {
         if (input == null || input.getDetectRequest() == null) {
             return BaseOutput.failure("参数错误");
         }
