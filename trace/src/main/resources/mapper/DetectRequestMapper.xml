@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dili.trace.dao.DetectRequestMapper">
-  <resultMap id="BaseResultMap" type="com.dili.trace.domain.DetectRequest">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="detect_type" jdbcType="BIT" property="detectType" />
-    <result column="created" jdbcType="TIMESTAMP" property="created" />
-    <result column="modified" jdbcType="TIMESTAMP" property="modified" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--
-      WARNING - @mbg.generated
-    -->
-      id
-      ,bill_id
-      ,creator_id
-      ,creator_name
-      ,designated_id
-      ,designated_name
-      ,detect_type
-      ,created
-      ,modified
-      ,detector_id
-      ,detector_name
-      ,detect_result
-      ,detect_source
-  </sql>
-  <select id="selectRequestForDetect" resultType="com.dili.trace.domain.DetectRequest">
+    <resultMap id="BaseResultMap" type="com.dili.trace.domain.DetectRequest">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="detect_type" jdbcType="BIT" property="detectType"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        id
+        ,bill_id
+        ,creator_id
+        ,creator_name
+        ,designated_id
+        ,designated_name
+        ,detect_type
+        ,created
+        ,modified
+        ,detector_id
+        ,detector_name
+        ,detect_result
+        ,detect_source
+    </sql>
+    <select id="selectRequestForDetect" resultType="com.dili.trace.domain.DetectRequest">
     select * from detect_request where id in(
         select id from (
         select * from (
@@ -52,4 +52,44 @@
         and register_bill.market_id=#{marketId}
         and detector_name=#{detectorName}
   </select>
+
+    <select id="selectListPageByUserCategory" resultType="com.dili.trace.dto.DetectRequestDto">
+        SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.tally_area_no
+        tallyAreaNo,b.weight,b.weight_unit weightUnit,d.*
+        FROM detect_request d
+        JOIN register_bill b ON d.id=b.detect_request_id
+        WHERE b.detect_status=#{detectStatus}
+        <if test="queryName != null and queryName != ''">
+            AND (b.product_name LIKE CONCAT('%',#{queryName},'%')
+            OR b.name LIKE CONCAT('%',#{queryName},'%'))
+        </if>
+    </select>
+
+    <select id="getDetectRequestDetail" resultType="com.dili.trace.dto.DetectRequestDto">
+       SELECT 
+          b.code billCode,
+          b.created billCreated,
+          b.operation_time operationTime,
+          b.modified billModified,
+          b.operator_name operatorName,
+          b.detect_status detectStatus,
+          b.product_name productName,
+          b.name,
+          b.tally_area_no tallyAreaNo,
+          b.weight,
+          b.weight_unit weightUnit,
+          b.origin_name originName,
+          b.verify_status verifyStatus,
+          b.plate,
+          b.origin_certifiy_url originCertifiyUrl,
+          up.name upStreamName,
+          d.* 
+        FROM
+          detect_request d 
+          JOIN register_bill b 
+            ON d.id = b.detect_request_id 
+          LEFT JOIN upstream up 
+            ON up.id = b.upstream_id
+        where d.id=#{id}
+    </select>
 </mapper>

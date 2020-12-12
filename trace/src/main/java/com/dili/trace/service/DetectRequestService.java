@@ -3,7 +3,10 @@ package com.dili.trace.service;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.ss.util.POJOUtils;
 import com.dili.trace.dao.DetectRequestMapper;
+import com.dili.trace.domain.CheckOrderDispose;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestDto;
@@ -14,9 +17,12 @@ import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -322,5 +328,48 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         updateParam.setDesignatedName(designatedName);
         updateParam.setModified(new Date());
         this.updateSelective(updateParam);
+    }
+
+    /**
+     * 查询检测请i去
+     *
+     * @param domain
+     * @return
+     */
+    public List<DetectRequestDto> listPageByUserCategory(DetectRequestDto domain) {
+        if (domain.getRows() != null && domain.getRows() >= 1) {
+            PageHelper.startPage(domain.getPage(), domain.getRows());
+        }
+        if (StringUtils.isNotBlank(domain.getSort())) {
+            domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
+        }
+        //List<CheckOrderDispose> checkOrderDispose = detectRequestMapper.selectListPageByUserCategory(domain);
+        //long total = checkOrderDispose instanceof Page ? ((Page) checkOrderDispose).getTotal() : (long) checkOrderDispose.size();
+        //List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, checkOrderDispose) : checkOrderDispose;
+        return detectRequestMapper.selectListPageByUserCategory(domain);
+    }
+
+    /**
+     * 查询检测详情
+     *
+     * @param detectRequestDto
+     * @return
+     */
+    public DetectRequestDto getDetectRequestDetail(DetectRequestDto detectRequestDto) {
+        return detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+    }
+
+    /**
+     * 检测请求接单
+     *
+     * @param detectRequestDto
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void receiveDetectRequest(Long billId, DetectRequest detectRequestDto) {
+        this.updateSelective(detectRequestDto);
+        RegisterBill upBill = new RegisterBill();
+        upBill.setId(billId);
+        upBill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
+        billService.updateSelective(upBill);
     }
 }

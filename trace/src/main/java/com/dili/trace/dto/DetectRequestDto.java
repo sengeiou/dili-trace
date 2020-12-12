@@ -6,6 +6,7 @@ import com.dili.trace.domain.DetectRequest;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -65,6 +66,216 @@ public class DetectRequestDto extends DetectRequest {
      */
     @Transient
     private Integer detectStatus;
+
+    /**
+     * 商品名称
+     */
+    @Transient
+    private String productName;
+
+    /**
+     * 业户名称
+     */
+    @Transient
+    private String name;
+
+    /**
+     * 业户名称/商品名称（查询条件 OR Like）
+     */
+    @Transient
+    private String queryName;
+
+    /**
+     * 摊位号
+     */
+    @Transient
+    private String tallyAreaNo;
+
+    /**
+     * 重量
+     */
+    @Transient
+    private BigDecimal weight;
+
+    /**
+     * 重量单位
+     */
+    @Transient
+    private Integer weightUnit;
+
+    /**
+     * 审核人
+     */
+    @Transient
+    private String operatorName;
+
+    /**
+     * 报备时间
+     */
+    @Transient
+    private Date billCreated;
+
+    /**
+     * 审核时间
+     */
+    @Transient
+    private Date billOperationTime;
+
+    /**
+     * 报备单修改时间
+     */
+    @Transient
+    private Date billModified;
+
+    /**
+     * 产地
+     */
+    @Transient
+    private String originName;
+
+    /**
+     * 报备单审核状态
+     */
+    @Transient
+    private Integer verifyStatus;
+
+    /**
+     * 车牌号
+     */
+    @Transient
+    private String plate;
+
+    /**
+     * 产地证明图片地址
+     */
+    @Transient
+    private String originCertifiyUrl;
+
+    /**
+     * 上游企业名称
+     */
+    @Transient
+    private String upStreamName;
+
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public void setOperatorName(String operatorName) {
+        this.operatorName = operatorName;
+    }
+
+    public Date getBillCreated() {
+        return billCreated;
+    }
+
+    public void setBillCreated(Date billCreated) {
+        this.billCreated = billCreated;
+    }
+
+    public Date getBillOperationTime() {
+        return billOperationTime;
+    }
+
+    public void setBillOperationTime(Date billOperationTime) {
+        this.billOperationTime = billOperationTime;
+    }
+
+    public Date getBillModified() {
+        return billModified;
+    }
+
+    public void setBillModified(Date billModified) {
+        this.billModified = billModified;
+    }
+
+    public String getOriginName() {
+        return originName;
+    }
+
+    public void setOriginName(String originName) {
+        this.originName = originName;
+    }
+
+    public Integer getVerifyStatus() {
+        return verifyStatus;
+    }
+
+    public void setVerifyStatus(Integer verifyStatus) {
+        this.verifyStatus = verifyStatus;
+    }
+
+    public String getPlate() {
+        return plate;
+    }
+
+    public void setPlate(String plate) {
+        this.plate = plate;
+    }
+
+    public String getOriginCertifiyUrl() {
+        return originCertifiyUrl;
+    }
+
+    public void setOriginCertifiyUrl(String originCertifiyUrl) {
+        this.originCertifiyUrl = originCertifiyUrl;
+    }
+
+    public String getUpStreamName() {
+        return upStreamName;
+    }
+
+    public void setUpStreamName(String upStreamName) {
+        this.upStreamName = upStreamName;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getQueryName() {
+        return queryName;
+    }
+
+    public void setQueryName(String queryName) {
+        this.queryName = queryName;
+    }
+
+    public String getTallyAreaNo() {
+        return tallyAreaNo;
+    }
+
+    public void setTallyAreaNo(String tallyAreaNo) {
+        this.tallyAreaNo = tallyAreaNo;
+    }
+
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
+    }
+
+    public Integer getWeightUnit() {
+        return weightUnit;
+    }
+
+    public void setWeightUnit(Integer weightUnit) {
+        this.weightUnit = weightUnit;
+    }
 
     public Date getCreatedStart() {
         return createdStart;

@@ -6,6 +6,7 @@ import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -80,11 +81,45 @@ public class DetectRequest extends BaseDomain {
     @Column(name = "`detect_result`")
     private Integer detectResult;
 
+    /**
+     * 检测请求创建时间
+     */
     @Column(name = "`created`")
     private Date created;
 
+    /**
+     * 检测请求修改时间
+     */
     @Column(name = "`modified`")
     private Date modified;
+
+    /**
+     * 检测时间
+     */
+    @Column(name = "`detect_time`")
+    private Date detectTime;
+
+    /**
+     * 检测费用
+     */
+    @Column(name = "`detect_fee`")
+    private BigDecimal detectFee;
+
+    public Date getDetectTime() {
+        return detectTime;
+    }
+
+    public void setDetectTime(Date detectTime) {
+        this.detectTime = detectTime;
+    }
+
+    public BigDecimal getDetectFee() {
+        return detectFee;
+    }
+
+    public void setDetectFee(BigDecimal detectFee) {
+        this.detectFee = detectFee;
+    }
 
     @Transient
     public String getDetectSourceName() {
@@ -194,10 +229,12 @@ public class DetectRequest extends BaseDomain {
     public void setDetectorName(String detectorName) {
         this.detectorName = detectorName;
     }
+
     @Transient
     public String getDetectResultName() {
         return DetectResultEnum.name(this.detectResult);
     }
+
     public Integer getDetectResult() {
         return detectResult;
     }
