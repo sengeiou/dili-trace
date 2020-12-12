@@ -247,7 +247,7 @@ public class ManagerDetectRquestApi {
     public BaseOutput<RegisterBill> getSampleSourceDetectDetail(@RequestParam(name = "id", required = true) Long id) {
         try {
             DetectRequest detectRequest = this.detectRequestService.get(id);
-            RegisterBill registerBill = this.billService.getById(detectRequest.getBillId());
+            RegisterBill registerBill = this.billService.getAvaiableBill(detectRequest.getBillId()).orElse(null);
             return BaseOutput.success().setData(registerBill);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
