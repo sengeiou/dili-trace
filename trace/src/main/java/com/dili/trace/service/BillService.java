@@ -64,7 +64,7 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
      * @param billId
      * @return
      */
-    public RegisterBill get(Long billId) {
+    public RegisterBill getById(Long billId) {
         return this.getBill(billId).orElse(null);
     }
     /**
@@ -76,7 +76,7 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
         if (billId == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(this.get(billId)).filter(bill -> YesOrNoEnum.NO.equals(bill.getIsDeleted()));
+        return Optional.ofNullable(this.get(billId)).filter(bill -> YesOrNoEnum.NO.getCode().equals(bill.getIsDeleted()));
     }
 
     /**

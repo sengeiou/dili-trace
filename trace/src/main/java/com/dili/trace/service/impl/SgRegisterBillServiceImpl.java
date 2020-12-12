@@ -285,7 +285,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int auditRegisterBill(Long id, Boolean pass) {
-        RegisterBill registerBill = this.billService.get(id);
+        RegisterBill registerBill = this.billService.getById(id);
         return auditRegisterBill(pass, registerBill);
     }
 
@@ -322,7 +322,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int undoRegisterBill(Long id) {
-        return Optional.ofNullable(this.billService.get(id)).map(item -> {
+        return Optional.ofNullable(this.billService.getById(id)).map(item -> {
 
             if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus()) ||
                     BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
@@ -342,7 +342,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int autoCheckRegisterBill(Long id) {
-        RegisterBill registerBill = this.billService.get(id);
+        RegisterBill registerBill = this.billService.getById(id);
         return autoCheckRegisterBill(registerBill);
     }
 
@@ -365,7 +365,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     public BaseOutput doBatchAutoCheck(List<Long> idList) {
         BatchResultDto<String> dto = new BatchResultDto<>();
         for (Long id : idList) {
-            RegisterBill registerBill = this.billService.get(id);
+            RegisterBill registerBill = this.billService.getById(id);
             if (registerBill == null) {
                 continue;
             }
@@ -400,7 +400,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     public BaseOutput doBatchSamplingCheck(List<Long> idList) {
         BatchResultDto<String> dto = new BatchResultDto<>();
         for (Long id : idList) {
-            RegisterBill registerBill = this.billService.get(id);
+            RegisterBill registerBill = this.billService.getById(id);
             if (registerBill == null) {
                 continue;
             }
@@ -423,7 +423,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         // id转换为RegisterBill,并通过条件判断partition(true:只有产地证明，且需要进行批量处理,false:其他)
         Map<Boolean, List<RegisterBill>> partitionedMap = CollectionUtils
                 .emptyIfNull(batchAuditDto.getRegisterBillIdList()).stream().filter(Objects::nonNull).map(id -> {
-                    RegisterBill registerBill = this.billService.get(id);
+                    RegisterBill registerBill = this.billService.getById(id);
                     return registerBill;
                 }).filter(Objects::nonNull).filter(registerBill -> {
                     if (Boolean.FALSE.equals(batchAuditDto.getPassWithOriginCertifiyUrl())) {
@@ -479,7 +479,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int samplingCheckRegisterBill(Long id) {
-        RegisterBill registerBill = this.billService.get(id);
+        RegisterBill registerBill = this.billService.getById(id);
         return samplingCheckRegisterBill(registerBill);
     }
 
@@ -501,7 +501,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Transactional
     @Override
     public int reviewCheckRegisterBill(Long id) {
-        RegisterBill registerBill = this.billService.get(id);
+        RegisterBill registerBill = this.billService.getById(id);
         if (!DetectStatusEnum.FINISH_DETECT.equalsToCode(registerBill.getDetectStatus())) {
             throw new TraceBizException("操作失败，数据状态已改变");
         }
@@ -675,7 +675,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (input.getHandleResult().trim().length() > 1000) {
             throw new TraceBizException("处理结果不能超过1000");
         }
-        RegisterBill item = this.billService.get(input.getId());
+        RegisterBill item = this.billService.getById(input.getId());
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
@@ -718,7 +718,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
-        RegisterBill registerBill = this.billService.get(input.getId());
+        RegisterBill registerBill = this.billService.getById(input.getId());
         if (registerBill == null) {
             throw new TraceBizException("数据错误");
         }
@@ -745,7 +745,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (input == null || input.getId() == null) {
             throw new TraceBizException("参数错误");
         }
-        RegisterBill registerBill = this.billService.get(input.getId());
+        RegisterBill registerBill = this.billService.getById(input.getId());
         if (registerBill == null) {
             throw new TraceBizException("数据错误");
         }
@@ -790,7 +790,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         }
         // TODO:流程引擎内容？
         // RegisterBill item = this.checkEvent(input.getId(), RegisterBillMessageEvent.upload_detectreport).orElse(null);
-        RegisterBill item = this.billService.get(input.getId());
+        RegisterBill item = this.billService.getById(input.getId());
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
@@ -817,7 +817,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (imageCertList.isEmpty()) {
             throw new TraceBizException("请上传报告");
         }
-        RegisterBill item = this.billService.get(input.getId());
+        RegisterBill item = this.billService.getById(input.getId());
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
@@ -833,7 +833,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Override
     public BaseOutput doRemoveReportAndCertifiy(Long id, String deleteType) {
-        RegisterBill item = this.billService.get(id);
+        RegisterBill item = this.billService.getById(id);
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
@@ -868,7 +868,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Override
     public BaseOutput doRemoveReportAndCertifiyNew(ReportAndCertifiyRemoveDto removeDto) {
-        RegisterBill item = this.billService.get(removeDto.getId());
+        RegisterBill item = this.billService.getById(removeDto.getId());
         if (item == null) {
             throw new TraceBizException("数据错误");
         }
@@ -1089,7 +1089,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         if (billId == null) {
             return Lists.newArrayList();
         }
-        RegisterBill item = this.billService.get(billId);
+        RegisterBill item = this.billService.getById(billId);
         if (item == null) {
             return Lists.newArrayList();
         }

@@ -192,7 +192,6 @@
     group by verify_status
   </select>
 
-
   <select id="selectUserIdWithouBill" parameterType="com.dili.trace.dto.UserListDto" resultType="java.lang.Long">
     select id from `user` where id not in(
     select user_id from register_bill where is_deleted=0

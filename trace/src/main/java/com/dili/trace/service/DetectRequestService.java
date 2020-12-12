@@ -1,32 +1,34 @@
 package com.dili.trace.service;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.IDTO;
+import com.dili.trace.api.input.DetectRequestQueryDto;
+import com.dili.trace.api.output.SampleSourceCountOutputDto;
+import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.DetectResultEnum;
-import com.dili.trace.enums.DetectStatusEnum;
-import com.dili.trace.enums.DetectTypeEnum;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.glossary.TFEnum;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -323,4 +325,65 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         updateParam.setModified(new Date());
         this.updateSelective(updateParam);
     }
+
+    /**
+     *
+     * @param query
+     * @return
+     */
+    public List<SampleSourceCountOutputDto> countBySampleSource(DetectRequestQueryDto query) {
+        if (query == null) {
+            throw new TraceBizException("参数错误");
+        }
+        query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
+        List<SampleSourceCountOutputDto> countList = this.doCountBySampleSource(query);
+        return countList;
+    }
+
+    /**
+     *
+     * @param query
+     * @return
+     */
+    private String dynamicSQLFormBill(DetectRequestQueryDto query) {
+        List<String> sqlList = new ArrayList<>();
+        this.buildFormLikeKeyword(query).ifPresent(sql -> {
+            sqlList.add(sql);
+        });
+        return StreamEx.of(sqlList).joining(" AND ");
+    }
+
+    /**
+     *
+     * @param query
+     * @return
+     */
+    private Optional<String> buildFormLikeKeyword(DetectRequestQueryDto query) {
+        String sql = null;
+        if (StringUtils.isNotBlank(query.getLikeProductNameOrUserName())) {
+            String keyword = query.getLikeProductNameOrUserName().trim();
+            sql = "( b.product_name like '%" + keyword + "%'  OR b.name like '%"+ keyword +"%')";
+        }
+        return Optional.ofNullable(sql);
+    }
+
+    /**
+     *
+     * @param query
+     * @return
+     */
+    private List<SampleSourceCountOutputDto> doCountBySampleSource(DetectRequestQueryDto query) {
+        List<SampleSourceCountOutputDto> dtoList = this.detectRequestMapper.countBySampleSource(query);
+        Map<Integer, Integer> sampleSourceNumMap = StreamEx.of(dtoList)
+                .toMap(SampleSourceCountOutputDto::getSampleSource, SampleSourceCountOutputDto::getNum);
+        return StreamEx.of(SampleSourceEnum.values()).map(e -> {
+            SampleSourceCountOutputDto dto = SampleSourceCountOutputDto.buildDefault(e);
+            if (sampleSourceNumMap.containsKey(dto.getSampleSource())) {
+                dto.setNum(sampleSourceNumMap.get(dto.getSampleSource()));
+            }
+            return dto;
+        }).toList();
+    }
+
 }
