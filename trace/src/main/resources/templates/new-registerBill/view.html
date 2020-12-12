@@ -14,7 +14,7 @@
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记时间</label>
 
-                    <input class="form-control input-sm" value="<%if(null!= registerBill.created){%>${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
+                    <input class="form-control input-sm" value="<%if(null!= registerBill.created!){%>${registerBill.created,dateFormat='yyyy-MM-dd HH:mm:ss'}<%}else{%>-<%}%>" readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记编号</label>
@@ -26,13 +26,13 @@
                 </div>
 
                 <br>
-                <% if(registerBill.registerSource == 1){ %>
+                <% if(registerBill.registerSource! == 1){ %>
                     <div class="form-group">
                         <label class="label-title text-right">
                             <span class="red">&lowast;</span>理货区号</label>
                         <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo!}" required readonly/>
                     </div>
-                <% }else if(registerBill.registerSource == 2){ %>
+                <% }else if(registerBill.registerSource! == 2){ %>
                     <div class="form-group">
                         <label class="label-title text-right">
                             <span class="red">&lowast;</span>交易区号</label>
@@ -47,7 +47,7 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>身份证号</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.idCardNo}" required readonly/>
+                    <input type="text" class="form-control input-sm" value="${registerBill.idCardNo!}" required readonly/>
                 </div>
                 <br>
                 <div class="form-group">
@@ -58,24 +58,24 @@
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.plate}" required readonly/>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.plate!}" required readonly/>
                 </div>
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>商品名称</label>
-                    <input type="text" class="form-control input-sm"  value="${registerBill.productName}" required readonly/>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.productName!}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>产地</label>
-                    <input type="text" class="form-control input-sm" value="${registerBill.originName}" required readonly/>
+                    <input type="text" class="form-control input-sm" value="${registerBill.originName!}" required readonly/>
                 </div>
                 
                  <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>重量/KG</label>
-                    <input type="text" class="form-control input-sm"  value=" <% if(displayWeight == true){ %>${registerBill.weight}<%}else{%>---<%}%>" required readonly/>
+                    <input type="text" class="form-control input-sm"  value=" <% if(displayWeight! == true){ %>${registerBill.weight!}<%}else{%>---<%}%>" required readonly/>
                 </div>
                  
                 <br>
@@ -85,13 +85,13 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>审核状态</label>
-                    <input type="text" class="form-control input-sm"value="${registerBill.verifyStatusName}" required readonly/>
+                    <input type="text" class="form-control input-sm"value="${registerBill.verifyStatusName!}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>检测状态</label>
-                    <input type="text" class="form-control input-sm"value="${registerBill.detectStatusName}" required readonly/>
+                    <input type="text" class="form-control input-sm"value="${registerBill.detectStatusName!}" required readonly/>
                 </div>
-                <% if(registerBill.registerSource == 2){ %>
+                <% if(registerBill.registerSource! == 2){ %>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>交易账号</label>
@@ -123,7 +123,7 @@
  							<th><span class="red">&lowast;</span>检测人员</th>
                         </tr>
                         </thead>
-                       <% for(detectRecord in detectRecordList){%>
+                       <% for(detectRecord in detectRecordList!){%>
                         <tr>
                             <td>
                                 <div class="input-group">
@@ -156,10 +156,10 @@
             
             <!--TODO:detectState 如何处理？-->
             <%
-            if(registerBill.registerSource == 1){
-                if( registerBill.salesType == 2
-                        && !isEmpty(registerBill.detectStatus)
-                            && (registerBill.detectStatus == 1 || registerBill.detectStatus == 3)){
+            if(registerBill.registerSource! == 1){
+                if( registerBill.salesType! == 2
+                        && !isEmpty(registerBill.detectStatus!)
+                            && (registerBill.detectStatus! == 1 || registerBill.detectStatus! == 3)){
             %>
                 <div class="form-item-group">
                     <h4 class="form-item-title">溯源二维码</h4>
@@ -279,7 +279,7 @@
                             if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="${img.uid!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
 							</div>
                         <%	} }
                         }%>
@@ -291,7 +291,7 @@
                             if(img.certType == @com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()){
                         	%>
                         	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-                    				<img class="magnifying show-image"   style="width: 100%" src="${img.uid!}" >
+                    				<img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
 							</div>
                         <%	} }
                         }%>
@@ -300,10 +300,10 @@
 			<%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result].~size!0)>0){%>
 				<div class="form-item-group">
 	            		<h4 class="form-item-title">处理结果图片</h4>
-	                          <%for(handleResult in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result]){
+	                          <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result]){
 	                        	%>
 	                        	  <div class="fileimg-box"  style="display:inline-block;margin: 5px;width:8%;">
-	                    				<img class="magnifying show-image"   style="width: 100%" src="http://trace.nong12.com${handleResult.url!}" >
+	                    				<img class="magnifying show-image"   style="width: 100%" src="${imageViewPathPrefix}/${img.uid!}" >
 								</div>
 	                        <%}%>
 	            </div>

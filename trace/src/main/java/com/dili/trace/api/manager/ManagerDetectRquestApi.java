@@ -181,7 +181,7 @@ public class ManagerDetectRquestApi {
             }
         }
         try {
-            RegisterBill billItem = this.billService.getBill(detectRequest.getBillId()).orElseThrow(() -> {
+            RegisterBill billItem = this.billService.getAvaiableBill(detectRequest.getBillId()).orElseThrow(() -> {
                 throw new TraceBizException("数据不存在");
             });
 

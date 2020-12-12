@@ -49,7 +49,7 @@ class NewRegisterBillGrid extends ListPage {
         $('#audit-withoutDetect-btn').on('click',async ()=>await this.doAuditWithoutDetect());
         $('#review-btn').on('click',async ()=>await this.doReviewCheck());
 
-        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
         this.grid.bootstrapTable({
             onLoadSuccess: async  ()=> {
@@ -645,20 +645,22 @@ class NewRegisterBillGrid extends ListPage {
         _.chain(btnArray).each((btn)=> {
             $(btn).hide();
         });
-    }
-    private async checkAndShowHideBtns(){
-        await this.resetButtons();
-        var rows=this.rows;
-            try{
-                var billIdList=_.chain(rows).map(v=>v.id).value();
-                var resp=await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'),billIdList);
-                // console.info(resp)
-                resp.forEach(btnid=>{ $('#'+btnid).show();})
-            }catch (e){
-                console.error(e);
-            }
+        await this.queryEventAndSetBtn();
 
     }
+    private async queryEventAndSetBtn(){
+        var rows=this.rows;
+        try{
+            var billIdList=_.chain(rows).map(v=>v.id).value();
+            var resp=await jq.postJson(this.toUrl('/newRegisterBill/queryEvents.action'),billIdList);
+            // console.info(resp)
+            resp.forEach(btnid=>{ $('#'+btnid).show();})
+        }catch (e){
+            console.error(e);
+        }
+
+    }
+
     get waitAuditRows(){
         return  this.filterByProp('verifyStatus', [BillVerifyStatusEnum.WAIT_AUDIT]);
     }

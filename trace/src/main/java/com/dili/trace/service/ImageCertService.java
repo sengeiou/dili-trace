@@ -59,7 +59,9 @@ public class ImageCertService extends BaseServiceImpl<ImageCert, Long> {
             this.deleteByExample(deleteConditon);
 
             // 增加新的图片
-            return StreamEx.ofNullable(imageCertList).flatCollection(Function.identity()).map(cert -> {
+            return StreamEx.ofNullable(imageCertList).flatCollection(Function.identity()).nonNull()
+                    .filter(cert->cert.getCertType()!=null)
+                    .filter(cert->StringUtils.isNotBlank(cert.getUid())).map(cert -> {
                 cert.setBillId(billId);
                 cert.setId(null);
                 cert.setBillType(BillTypeEnum.REGISTER_BILL.getCode());

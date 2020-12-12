@@ -3,6 +3,7 @@ package com.dili.trace.dto;
 import java.util.List;
 
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.domain.ImageCert;
 
 public class CreateListBillParam {
     /**
@@ -70,7 +71,19 @@ public class CreateListBillParam {
      */
     private String detectReportUrl;
 
+    private List<ImageCert>globalImageCertList;
+
+
     private String corporateName;
+
+    public List<ImageCert> getGlobalImageCertList() {
+        return globalImageCertList;
+    }
+
+    public void setGlobalImageCertList(List<ImageCert> globalImageCertList) {
+        this.globalImageCertList = globalImageCertList;
+    }
+
     public String getTradeTypeName() {
         return tradeTypeName;
     }

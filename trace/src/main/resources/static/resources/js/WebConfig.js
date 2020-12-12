@@ -74,15 +74,18 @@ class ListPage extends WebConfig {
         this.queryform = queryform;
         this.queryBtn = queryBtn;
         this.listPageUrl = listPageUrl;
-        this.init();
+        (async () => {
+            await this.init();
+        })();
     }
     async resetButtons() { }
     get rows() {
         let rows = this.grid.bootstrapTable('getSelections');
         return rows;
     }
-    init() {
+    async init() {
         this.refreshTableOptions();
+        await this.resetButtons();
         this.queryBtn.click(async () => await this.queryGridData());
     }
     async queryGridData() {

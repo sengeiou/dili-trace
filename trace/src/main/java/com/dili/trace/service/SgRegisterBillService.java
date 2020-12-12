@@ -144,7 +144,7 @@ public interface SgRegisterBillService {
      * @param input
      * @return
      */
-    public Long saveHandleResult(RegisterBill input);
+    public Long doUploadHandleResult(RegisterBill input);
 
     /**
      * 保存修改数据

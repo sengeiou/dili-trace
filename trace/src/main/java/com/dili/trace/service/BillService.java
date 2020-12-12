@@ -59,24 +59,18 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
     @Autowired
     DetectRequestService detectRequestService;
 
+
     /**
      * 根据id查询
      * @param billId
      * @return
      */
-    public RegisterBill get(Long billId) {
-        return this.getBill(billId).orElse(null);
-    }
-    /**
-     * 根据id查询
-     * @param billId
-     * @return
-     */
-    public Optional<RegisterBill> getBill(Long billId) {
+    public Optional<RegisterBill> getAvaiableBill(Long billId) {
         if (billId == null) {
             return Optional.empty();
         }
-        return Optional.ofNullable(this.get(billId)).filter(bill -> YesOrNoEnum.NO.equals(bill.getIsDeleted()));
+        RegisterBill item=super.get(billId);
+        return Optional.ofNullable(item).filter(bill -> YesOrNoEnum.NO.getCode().equals(bill.getIsDeleted()));
     }
 
     /**

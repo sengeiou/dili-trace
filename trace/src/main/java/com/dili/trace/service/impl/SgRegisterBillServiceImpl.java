@@ -662,7 +662,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     }
 
     @Override
-    public Long saveHandleResult(RegisterBill input) {
+    public Long doUploadHandleResult(RegisterBill input) {
         if (input == null || input.getId() == null
                 || StringUtils.isAnyBlank(input.getHandleResult())) {
             throw new TraceBizException("参数错误");
