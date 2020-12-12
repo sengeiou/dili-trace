@@ -5,10 +5,12 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
+import com.dili.trace.api.input.DetectRequestQueryDto;
+import com.dili.trace.api.output.SampleSourceCountOutputDto;
+import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
@@ -20,16 +22,14 @@ import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.BillService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectRequestService;
+import com.dili.trace.service.SgRegisterBillService;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -51,6 +51,8 @@ public class ManagerDetectRquestApi {
     BillService billService;
     @Autowired
     DetectRecordService detectRecordService;
+    @Autowired
+    SgRegisterBillService registerBillService;
     @Autowired
     private LoginSessionContext sessionContext;
 
@@ -209,4 +211,143 @@ public class ManagerDetectRquestApi {
 
 
     }
+
+    /**
+     * 查询采样检测列表
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping("/listPagedSampleSourceDetect.api")
+    public BaseOutput listPagedSampleSourceDetect(@RequestBody Object input) {
+
+        return BaseOutput.success();
+    }
+
+    /**
+     * 采样检测-采样来源数量统计
+     */
+    @RequestMapping(value = "/countBySampleSource.api", method = { RequestMethod.POST })
+    public BaseOutput<List<VerifyStatusCountOutputDto>> countBySampleSource(@RequestBody DetectRequestQueryDto query) {
+        try {
+            List<SampleSourceCountOutputDto> list = this.detectRequestService.countBySampleSource(query);
+            return BaseOutput.success().setData(list);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("操作失败：服务端出错");
+        }
+    }
+
+    /**
+     * 采样检测-查看详情
+     */
+    @RequestMapping(value = "/getSampleSourceDetectDetail.api", method = { RequestMethod.GET })
+    public BaseOutput<RegisterBill> getSampleSourceDetectDetail(@RequestParam(name = "id", required = true) Long id) {
+        try {
+            DetectRequest detectRequest = this.detectRequestService.get(id);
+            RegisterBill registerBill = this.billService.getById(detectRequest.getBillId());
+            return BaseOutput.success().setData(registerBill);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("操作失败：服务端出错");
+        }
+    }
+
+    /**
+     * 采样检测-手动填写检测结果
+     */
+    @RequestMapping(value = "/createDetectRecord.api", method = { RequestMethod.POST })
+    public BaseOutput<Long> createDetectRecord(@RequestBody DetectRecord detectRecord) {
+        try {
+            if (StringUtils.isBlank(detectRecord.getRegisterBillCode())) {
+                logger.error("上传检测任务结果失败无编号");
+                return BaseOutput.failure("没有对应的登记单");
+            }
+            if (StringUtils.isBlank(detectRecord.getDetectOperator())) {
+                logger.error("上传检测任务结果失败无检测人员");
+                return BaseOutput.failure("没有对应的检测人员");
+            }
+            if (detectRecord.getDetectState() == null) {
+                logger.error("上传检测任务结果失败无检测状态");
+                return BaseOutput.failure("没有对应的检测状态");
+            } else if (detectRecord.getDetectState() > 2 || detectRecord.getDetectState() < 1) {
+                logger.error("上传检测任务结果失败无,检测状态异常" + detectRecord.getDetectState());
+                return BaseOutput.failure("没有对应的检测状态");
+            }
+            if (detectRecord.getDetectTime() == null) {
+                logger.error("上传检测任务结果失败无检测时间");
+                return BaseOutput.failure("没有对应的检测时间");
+            }
+            if (StringUtils.isBlank(detectRecord.getPdResult())) {
+                logger.error("上传检测任务结果失败无检测值");
+                return BaseOutput.failure("没有对应的检测值");
+            }
+            if (detectRecord.getDetectRequestId() == null) {
+                logger.error("上传检测任务结果失败无检测任务");
+                return BaseOutput.failure("没有对应的检测检测任务");
+            }
+            detectRecord.setCreated(new Date());
+            detectRecord.setModified(new Date());
+            int i = this.detectRecordService.saveDetectRecord(detectRecord);
+            return BaseOutput.success().setData(i);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("操作失败：服务端出错");
+        }
+    }
+
+    /**
+     * 采样检测-主动送检
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/doAutoCheck.api", method = RequestMethod.GET)
+    public BaseOutput doAutoCheck(@RequestParam(name = "id", required = true) Long id) {
+        try {
+            registerBillService.autoCheckRegisterBill(id);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 采样检测-采样检测
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/doSamplingCheck.api", method = RequestMethod.GET)
+    public BaseOutput doSamplingCheck(@RequestParam(name = "id", required = true) Long id) {
+        try {
+            registerBillService.samplingCheckRegisterBill(id);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 采样检测-抽检
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/doSpotCheck.api", method = RequestMethod.GET)
+    public BaseOutput doSpotCheck(@RequestParam(name = "id", required = true) Long id) {
+        try {
+            registerBillService.samplingCheckRegisterBill(id);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
 }

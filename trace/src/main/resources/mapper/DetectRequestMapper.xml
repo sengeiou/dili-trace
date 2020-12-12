@@ -66,7 +66,7 @@
     </select>
 
     <select id="getDetectRequestDetail" resultType="com.dili.trace.dto.DetectRequestDto">
-       SELECT 
+       SELECT
           b.code billCode,
           b.created billCreated,
           b.operation_time operationTime,
@@ -83,13 +83,40 @@
           b.plate,
           b.origin_certifiy_url originCertifiyUrl,
           up.name upStreamName,
-          d.* 
+          d.*
         FROM
-          detect_request d 
-          JOIN register_bill b 
-            ON d.id = b.detect_request_id 
-          LEFT JOIN upstream up 
+          detect_request d
+          JOIN register_bill b
+            ON d.id = b.detect_request_id
+          LEFT JOIN upstream up
             ON up.id = b.upstream_id
         where d.id=#{id}
     </select>
+
+  <select id="countBySampleSource" parameterType="com.dili.trace.api.input.DetectRequestQueryDto" resultType="com.dili.trace.api.output.SampleSourceCountOutputDto">
+      <!--
+        WARNING - @mbg.generated
+      -->
+      select r.detect_source as sampleSource,count(1) as num
+      from detect_request r
+      join register_bill b on (r.id = b.detect_request_id)
+      where 1=1
+      <if test="metadata != null">
+          <foreach collection="metadata.entrySet()" item="value" index="key">
+              <if test="key =='_andConditionExpr'">
+                  AND  (${value})
+              </if>
+          </foreach>
+      </if>
+      <if test="created != null  and created != ''">
+          <![CDATA[ AND r.created = to_date(#{created}, 'yyyy-MM-dd') ]]>
+      </if>
+      <if test="isDeleted != null">
+          AND b.is_deleted = #{isDeleted}
+      </if>
+      <if test="marketId != null">
+          AND b.market_id =#{marketId}
+      </if>
+      group by r.detect_source
+  </select>
 </mapper>

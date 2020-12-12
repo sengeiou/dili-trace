@@ -20,6 +20,7 @@ import javax.persistence.Id;
  */
 @Table(name = "`detect_record`")
 public interface DetectRecord extends IBaseDomain {
+
     /**
      * 检测记录ID
      *
@@ -130,4 +131,53 @@ public interface DetectRecord extends IBaseDomain {
     Date getModified();
 
     void setModified(Date modified);
+
+    /**
+     * 检测批号
+     *
+     * @return
+     */
+    @Column(name = "`detect_batch_no`")
+    @FieldDef(label = "detectBatchNo", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getDetectBatchNo();
+
+    void setDetectBatchNo(String detectBatchNo);
+
+    /**
+     * 标准值
+     *
+     * @return
+     */
+    @Column(name = "`normal_result`")
+    @FieldDef(label = "normalResult", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getNormalResult();
+
+    void setNormalResult(String normalResult);
+
+    /**
+     * 检测批号
+     *
+     * @return
+     */
+    @Column(name = "`detect_company`")
+    @FieldDef(label = "detectCompany", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    String getDetectCompany();
+
+    void setDetectCompany(String detectCompany);
+
+    /**
+     * 检测批号
+     *
+     * @return
+     */
+    @Column(name = "`detect_request_id`")
+    @FieldDef(label = "detectRequestId", maxLength = 20)
+    @EditMode(editor = FieldEditor.Text, required = true)
+    Long getDetectRequestId();
+
+    void setDetectRequestId(Long detectRequestId);
+
 }
