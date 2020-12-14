@@ -39,13 +39,12 @@ public class UserRpcService {
      *
      * @return
      */
-    public Optional<List<User>> findDetectDepartmentUsers(String likeUserName) {
-        Long firmId = MarketUtil.returnMarket();
-        if (firmId == null) {
+    public Optional<List<User>> findDetectDepartmentUsers(String likeUserName, Long marketId) {
+        if (marketId == null) {
             return Optional.empty();
         }
         try {
-            Department department = departmentRpcService.findDetectDepartment(firmId).orElseThrow(() -> {
+            Department department = departmentRpcService.findDetectDepartment(marketId).orElseThrow(() -> {
                 return new TraceBizException("当前登录用户所属市场没有检测部门。");
             });
 

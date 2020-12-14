@@ -6,6 +6,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.service.DetectRequestService;
 import com.dili.trace.service.UserRpcService;
+import com.dili.trace.util.MarketUtil;
 import com.dili.uap.sdk.domain.User;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -117,8 +118,8 @@ public class DetectRequestController {
     @RequestMapping("/detector")
     @ResponseBody
     public Map<String, ?> listByName(String name) {
-
-        List<User> detectorUsers = userRpcService.findDetectDepartmentUsers(name).orElse(Lists.newArrayList());
+        Long marketId = MarketUtil.returnMarket();
+        List<User> detectorUsers = userRpcService.findDetectDepartmentUsers(name, marketId).orElse(Lists.newArrayList());
         List<Map<String, Object>> list = Lists.newArrayList();
         for (User c : detectorUsers) {
             Map<String, Object> obj = Maps.newHashMap();
