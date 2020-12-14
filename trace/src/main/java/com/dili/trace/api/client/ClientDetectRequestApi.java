@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,6 +92,7 @@ public class ClientDetectRequestApi {
             Long userId = loginSessionContext.getSessionData().getUserId();
             String userName = loginSessionContext.getSessionData().getUserName();
             Long marketId = loginSessionContext.getSessionData().getMarketId();
+            
             if (null == userId) {
                 return BaseOutput.failure("未登录或登录过期");
             }

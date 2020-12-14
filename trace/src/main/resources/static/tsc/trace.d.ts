@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.27.744 on 2020-12-09 17:10:57.
+// Generated using typescript-generator version 2.27.744 on 2020-12-14 11:01:26.
 
 interface Market {
     id: number;
@@ -33,6 +33,7 @@ declare const enum DetectStatusEnum {
     WAIT_DETECT = 30,
     DETECTING = 40,
     FINISH_DETECT = 50,
+    RETURN_DETECT = 60,
 }
 
 declare const enum DetectResultEnum {
