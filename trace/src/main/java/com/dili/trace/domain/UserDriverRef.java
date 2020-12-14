@@ -1,53 +1,45 @@
-package com.dili.trace.api.driver;
+package com.dili.trace.domain;
 
+import com.dili.ss.domain.BaseDomain;
+
+import javax.persistence.*;
 import java.util.Date;
 
 /**
- * @version 1.0
- * @ClassName
- * @Description todo
- * @createTime 2020年12月01日 17:34:00
+ * @author asa.lee
  */
-public class UserDriverDto {
-    /**
-     * ID
-     */
+@Table(name = "`user_driver_ref`")
+public class UserDriverRef extends BaseDomain {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "`id`")
     private Long id;
 
-    /**
-     * 司机ID
-     */
+    @Column(name = "driver_id")
     private Long driverId;
 
-    /**
-     * 司机名称
-     */
+    @Column(name = "driver_name")
     private String driverName;
 
-    /**
-     * 卖家ID
-     */
+    @Column(name = "seller_id")
     private Long sellerId;
 
-    /**
-     * 卖家名称
-     */
+    @Column(name = "seller_name")
     private String sellerName;
 
-    /**
-     * 卖家分享时间
-     */
+    @Column(name = "share_time")
     private Date shareTime;
 
-    /**
-     * 卖家摊位号
-     */
+    @Column(name = "tally_area_nos")
     private String tallyAreaNos;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
