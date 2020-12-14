@@ -5,16 +5,20 @@ import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.exception.AppException;
 import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
 import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.User;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
@@ -32,10 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -49,6 +50,12 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     @Autowired
     DetectRequestMapper detectRequestMapper;
 
+    @Autowired
+    UserService userService;
+    @Autowired
+    UpStreamService upStreamService;
+    @Autowired
+    RegisterBillService registerBillService;
     /**
      * 创建检测请求
      *
@@ -441,5 +448,82 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         result.setTotalPage(page.getPages());
         result.setStartIndex(page.getStartRow());
         return result;
+    }
+
+    /**
+     * 创建场外委托单
+     *
+     * @param input
+     * @param empty
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public DetectRequest createOffSiteDetectRequest(DetectRequestDto input, Optional<OperatorUser> empty) {
+
+        DetectRequest resultDetectRequest = new DetectRequest();
+        //创建报备单
+        User user = userService.get(input.getCreatorId());
+        if (user == null) {
+            throw new AppException("用户不存在");
+        }
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setName(user.getName());
+        registerBill.setIdCardNo(user.getCardNo());
+        registerBill.setAddr(user.getAddr());
+        registerBill.setUserId(user.getId());
+        registerBill.setProductAliasName(input.getProductAliasName());
+        try {
+            //创建上游企业
+            if (StringUtils.isNotBlank(input.getUpStreamName())) {
+                Integer upCode = 10;
+                OperatorUser operatorUser = new OperatorUser(input.getCreatorId(), input.getCreatorName());
+                UpStreamDto upStreamDto = new UpStreamDto();
+                upStreamDto.setName(input.getUpStreamName());
+                upStreamDto.setUpORdown(upCode);
+                upStreamDto.setSourceUserId(input.getCreatorId());
+                upStreamService.addUpstream(upStreamDto, operatorUser);
+            }
+            Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
+                    Optional.ofNullable(new OperatorUser(input.getCreatorId(), input.getCreatorName())));
+            //创建检测请求
+            resultDetectRequest = createDetectRequest(input, billId, empty);
+        } catch (AppException e) {
+            throw new AppException(e.getMessage());
+
+        } catch (Exception e) {
+            throw new AppException("服务端出错");
+
+        }
+        return resultDetectRequest;
+    }
+
+    /**
+     * 创建委托请求单并修改报备单状态
+     *
+     * @param input
+     * @param billId
+     * @param operatorUser
+     */
+    private DetectRequest createDetectRequest(DetectRequestDto input, Long billId, Optional<OperatorUser> operatorUser) {
+        DetectRequest detectRequest = new DetectRequest();
+        detectRequest.setDetectType(DetectTypeEnum.NEW.getCode());
+        detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
+        detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
+
+        detectRequest.setBillId(billId);
+        detectRequest.setCreated(new Date());
+        detectRequest.setModified(new Date());
+        this.insert(detectRequest);
+
+        operatorUser.ifPresent(opt -> {
+            detectRequest.setCreatorId(opt.getId());
+            detectRequest.setCreatorName(opt.getName());
+        });
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setId(billId);
+        registerBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+        registerBill.setDetectRequestId(detectRequest.getId());
+        this.billService.updateSelective(registerBill);
+        return detectRequest;
     }
 }
