@@ -55,10 +55,10 @@
             <thead>
             <tr>
 
-                <th data-field="plate" data-sortable="true" data-align="center">
+                <th data-field="truckPlate" data-sortable="true" data-align="center">
                     车牌
                 </th>
-                <th data-field="plate" data-sortable="true" data-align="center">
+                <th data-field="truckTypeName" data-sortable="true" data-align="center">
                     车型
                 </th>
                 <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
@@ -74,12 +74,12 @@
 
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
-<script src="${contextPath!}/resources/js/Utils.js"></script>
-<script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/CategoryController.js"></script>
-<script src="${contextPath!}/resources/js/CityController.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js?v=${v}"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js?v=${v}"></script>
+<script src="${contextPath!}/resources/js/CategoryController.js?v=${v}"></script>
+<script src="${contextPath!}/resources/js/CityController.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
-<script src="${contextPath!}/resources/js/TruckEnterRecordGrid.index.js"></script>
+<script src="${contextPath!}/resources/js/TruckEnterRecordGrid.index.js?v=${v}"></script>
 <script type="text/javascript">
     lay('.laydatetime').each(function(){
         laydate.render({

@@ -1,19 +1,18 @@
-// import $ from 'jquery';
-// import _ from 'underscore';
-
 
 class PurchaseIntentionRecordGrid extends ListPage {
     btns: any[];
     toolbar: any;
 
     constructor(grid: any, queryform: any, toolbar: any) {
-        super(grid, queryform, queryform.find('#query'), "/newRegisterBill/listPage.action");
+        super(grid, queryform, queryform.find('#query'), "/purchaseIntentionRecord/listPage.action");
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
         //
-        // let categoryController:CategoryController=new CategoryController();
+        let categoryController: CategoryController = new CategoryController();
         // let cityController:CityController=new CityController();
-
+        this.initAutoComplete($("[name='productName']"), function (query, done) {
+            categoryController.lookupCategories(query, done)
+        });
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
 
     }

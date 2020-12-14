@@ -2,21 +2,15 @@
 <div class="container-fluid">
     <form id="queryForm" role="form" >
         <div class="row row-cols-6">
+
             <div class="form-group col">
-                <label for="driverName">车牌号</label>
+                <label for="likeBuyerName">买家姓名</label>
+                <input type="text" class="form-control" name="likeBuyerName" id="likeBuyerName"/>
+            </div>
+            <div class="form-group col">
+                <label for="driverName">商品</label>
                 <input type="text" class="form-control" name="driverName" id="driverName"/>
             </div>
-            <div class="form-group col">
-                <label for="likeTruckPlate">车牌号</label>
-                <input type="text" class="form-control" name="likeTruckPlate" id="likeTruckPlate"/>
-            </div>
-
-            <div class="form-group col">
-                <label for="truckTypeId">车型</label>
-                <select id="truckTypeId" name="truckTypeId" class="form-control"></select>
-                <#bcomboProvider _id="truckTypeId" _provider="detectStatusProvider" _value="" _onLoadSuccess=""/>
-            </div>
-
             <div class="form-group col-auto">
                 <label for="createdStart">登记时间</label>
                 <div class="form-inline">
@@ -55,10 +49,10 @@
             <thead>
             <tr>
 
-                <th data-field="plate" data-sortable="true" data-align="center">
+                <th data-field="buyerName" data-sortable="true" data-align="center">
                     买家姓名
                 </th>
-                <th data-field="plate" data-sortable="true" data-align="center">
+                <th data-field="productName" data-sortable="true" data-align="center">
                     商品
                 </th>
                 <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
@@ -76,8 +70,7 @@
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/CategoryController.js"></script>
-<script src="${contextPath!}/resources/js/CityController.js"></script>
+<script src="${contextPath!}/resources/js/CategoryController.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <script src="${contextPath!}/resources/js/PurchaseIntentionRecordGrid.index.js"></script>
 <script type="text/javascript">
