@@ -241,7 +241,7 @@
             </div>
             <%} } %>
             <%
-            var imageCount = registerBill.imageCerts.~size!0;
+            var imageCount = 0;
             %>
             <div class="form-item-group" id="originCertifiyDiv">
                 <h4 class="form-item-title">产地证明</h4>
@@ -253,7 +253,7 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
+                    <input type="hidden" name="globalImageCertList[${imageCount++}][uid]">
                     <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
@@ -276,7 +276,7 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
+                    <input type="hidden" name="globalImageCertList[${imageCount++}][uid]">
                     <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
@@ -302,7 +302,7 @@
                         <span class="fileimg-plus-icon" style="display: none" >+</span>
                         <span class="fileimg-des" style="display: none" >点击上传</span>
                         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                        <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
+                        <input type="hidden" name="globalImageCertList[${imageCount++}][uid]">
                         <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
                         <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                         <div class="fileimg-cover" style="display: block;"></div>
