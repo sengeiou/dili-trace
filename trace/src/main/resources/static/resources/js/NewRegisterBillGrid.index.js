@@ -1,8 +1,6 @@
 class NewRegisterBillGrid extends ListPage {
     constructor(grid, queryform, toolbar) {
         super(grid, queryform, queryform.find('#query'), "/newRegisterBill/listPage.action");
-        this.handleTimeUpdateEvent = (event) => {
-        };
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
         this.uid = _.uniqueId("trace_id_");
@@ -277,7 +275,7 @@ class NewRegisterBillGrid extends ListPage {
         var rows = this.rows;
         var idList = rows.map(function (v, i) { return v.id; });
         let url = this.toUrl('/checkSheet/edit.html?' + $.param({ idList: idList }, true));
-        var dia = bs4pop.dialog({
+        window.dia = bs4pop.dialog({
             title: '打印检测报告',
             content: url,
             isIframe: true,
@@ -535,17 +533,6 @@ class NewRegisterBillGrid extends ListPage {
             console.log(e);
             return {};
         }
-    }
-    buildGridQueryData() {
-        var formdata = bindGridMeta2Form("registerBillGrid", "queryForm");
-        delete formdata['productCombobox'];
-        var rows = this.grid.datagrid("getRows");
-        var options = this.grid.datagrid("options");
-        formdata['rows'] = options.pageSize;
-        formdata['page'] = options.pageNumber;
-        formdata['sort'] = options.sortName;
-        formdata['order'] = options.sortOrder;
-        return formdata;
     }
     static queryProduct(param, success, error) {
         var productName = $('#productCombobox').combotree('getText');

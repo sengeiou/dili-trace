@@ -371,7 +371,7 @@ class NewRegisterBillGrid extends ListPage {
         var idList=rows.map(function(v,i){return v.id});
         let url=this.toUrl('/checkSheet/edit.html?'+$.param({idList:idList},true));
         //@ts-ignore
-        var dia = bs4pop.dialog({
+        window.dia = bs4pop.dialog({
             title: '打印检测报告',
             content: url,
             isIframe: true,
@@ -692,25 +692,6 @@ class NewRegisterBillGrid extends ListPage {
         }
     }
 
-    private buildGridQueryData(): any {
-        //@ts-ignore
-        var formdata = bindGridMeta2Form("registerBillGrid", "queryForm");
-        delete formdata['productCombobox'];
-        var rows = this.grid.datagrid("getRows");
-        var options = this.grid.datagrid("options");
-        formdata['rows'] = options.pageSize;
-        formdata['page'] = options.pageNumber;
-
-        formdata['sort'] = options.sortName;
-        formdata['order'] = options.sortOrder;
-
-        return formdata;
-    }
-
-
-    private handleTimeUpdateEvent = (event) => {
-        // Something
-    }
 
     public static queryProduct(param, success, error) {
         // @ts-ignore

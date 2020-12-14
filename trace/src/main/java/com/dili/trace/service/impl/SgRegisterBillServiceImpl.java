@@ -1198,11 +1198,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                     } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType()) && item.getHasHandleResult() == 0) {
                         msgStream.add(RegisterBillMessageEvent.review);
                     }
-
-                    if (DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult())) {
-                        if (item.getCheckSheetId() == null) {
-                            msgStream.add(RegisterBillMessageEvent.createsheet);
-                        }
+                }  else if (DetectResultEnum.PASSED.equalsToCode(detectRequest.getDetectResult())) {
+                    if (item.getCheckSheetId() == null) {
+                        msgStream.add(RegisterBillMessageEvent.createsheet);
                     }
                 }
             }

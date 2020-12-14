@@ -1,11 +1,5 @@
 <#bodyOrigin>
-<div class="main-container">
-    <div class="topicTop">
-        <div class="toppic-title">
-            <span class="topic-title-text maincolor">创建打印报告</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.closeWin('view_win')">返回</button>
-        </div>
-    </div>
+<div class="main-container" style="margin: 0;padding: 0;">
     <div class="form-box border">
         <form id="createCheckSheetForm" class="form-inline" role="form">
             <div class="form-item-group">
@@ -85,12 +79,11 @@
     </div>
     <div class="text-center mt30" style="width: 60%">
 	    <button class="btn-main2 btn-sm"  style="display: none;" onclick="prePrint()">预览</button>&nbsp;&nbsp;
-        <button class="btn-greyweak btn-sm" onclick="parent.closeWin('view_win')">取消</button>
+        <button class="btn-greyweak btn-sm" onclick="parent.dia.hide()">取消</button>
     </div>
 </div>
 </#bodyOrigin>
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
-<script src="${contextPath!}/resources/js/jquery-serializeForm.min.js"></script>
 <script type="text/javascript">
 
 <!--
@@ -111,7 +104,7 @@ function prePrint(){
 	if($('#createCheckSheetForm').validate().form()==false){
 		return null;
 	}
-	var formData=$('#createCheckSheetForm').serializeForm();
+    var data=$('#createCheckSheetForm').serializeJSON({useIntKeysAsArrayIndex:true});
 	$.ajax({
 	    type: "POST",
 	    url: '${contextPath!}/checkSheet/prePrint.action',
