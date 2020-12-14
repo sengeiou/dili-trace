@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dili.trace.dao.DriverUserMapper">
+  <select id="getDriverUserList" parameterType="com.dili.trace.domain.UserDriverRef" resultType="com.dili.trace.domain.UserDriverRef">
+      SELECT ref.`id`,ref.`driver_id`,ref.`driver_name`,ref.`seller_id`,ref.`seller_name`,ref.`tally_area_nos`,ref.`share_time` FROM   user_driver_ref ref
+      JOIN `register_bill` b ON ref.`seller_id`=b.`user_id`
+      WHERE b.`verify_status`=20
+      AND b.is_checkin=-1
+      AND b.`is_deleted`=0
+      AND b.`bill_type`=10
+      <if test="driverId != null">
+        <![CDATA[ AND ref.driver_id=#{driverId} ]]>
+      </if>
+      <if test="sellerId != null">
+        <![CDATA[ AND ref.seller_id=#{sellerId}]]>
+      </if>
+       GROUP BY ref.driver_id
+  </select>
+
+    <update id="updateUserDriverRefByIDParam" parameterType="com.dili.trace.domain.UserDriverRef" >
+        update  user_driver_ref
+        <set>
+            <if test="sellerName != null">
+                seller_name = #{sellerName,jdbcType=VARCHAR},
+            </if>
+
+            <if test="tallyAreaNos != null">
+                tally_area_nos = #{tallyAreaNos,jdbcType=VARCHAR},
+            </if>
+            <if test="shareTime != null">
+                share_time = #{shareTime},
+            </if>
+        </set>
+        where seller_id=#{sellerId}
+        and driver_id=#{driverId}
+    </update>
+</mapper>

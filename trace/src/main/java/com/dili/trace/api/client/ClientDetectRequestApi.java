@@ -1,28 +1,18 @@
 package com.dili.trace.api.client;
 
-import com.dili.common.annotation.AppAccess;
-import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.AppException;
-import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestDto;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.enums.DetectResultEnum;
-import com.dili.trace.enums.DetectStatusEnum;
-import com.dili.trace.enums.DetectTypeEnum;
-import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.BillService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectRequestService;
-import com.dili.trace.service.RegisterBillService;
-import com.dili.uap.sdk.domain.UserTicket;
-import com.dili.uap.sdk.session.SessionContext;
+import com.dili.trace.service.UserRpcService;
+import com.dili.uap.sdk.domain.User;
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.weaver.tools.Trace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +42,10 @@ public class ClientDetectRequestApi {
     BillService billService;
     @Autowired
     DetectRecordService detectRecordService;
+    @Autowired
+    UserRpcService userRpcService;
+    @Autowired
+    private LoginSessionContext sessionContext;
 
 
     /**
@@ -156,4 +150,25 @@ public class ClientDetectRequestApi {
             return BaseOutput.failure("服务端出错");
         }
     }
+
+    /**
+     * 查询市场检测人员
+     *
+     * @param likeUserName
+     * @return
+     */
+    @RequestMapping(value = "/getDetectUsers.action", method = RequestMethod.GET)
+    public BaseOutput<List<User>> getDetectUsers(String likeUserName) {
+        try {
+            Long marketId = this.sessionContext.getSessionData().getMarketId();
+            List<User> users = userRpcService.findDetectDepartmentUsers(likeUserName, marketId).orElse(new ArrayList<>());
+            return BaseOutput.successData(users);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+    }
+
 }

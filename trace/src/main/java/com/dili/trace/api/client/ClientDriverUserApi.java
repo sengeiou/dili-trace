@@ -1,17 +1,26 @@
-package com.dili.trace.api.driver;
+package com.dili.trace.api.client;
 
+import com.dili.common.annotation.AppAccess;
+import com.dili.common.annotation.Role;
+import com.dili.common.exception.TraceBizException;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.domain.User;
+import com.dili.trace.domain.UserDriverRef;
+import com.dili.trace.service.DriverUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @version 1.0
@@ -22,7 +31,13 @@ import java.util.Collections;
 @Api(value = "/api/driverUserApi")
 @RestController
 @RequestMapping(value = "/api/driverUserApi")
-public class DriverUserApi {
+@AppAccess(role = Role.Client, url = "", subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.其他类型})
+public class ClientDriverUserApi {
+
+    private static final Logger logger = LoggerFactory.getLogger(ClientDriverUserApi.class);
+
+    @Autowired
+    DriverUserService driverUserService;
 
     /**
      *是否需要注册
@@ -31,6 +46,7 @@ public class DriverUserApi {
      */
     @ApiOperation(value = "是否需要注册", notes = "是否需要注册")
     @RequestMapping(value = "/needRegister", method = RequestMethod.POST)
+    @Deprecated
     public BaseOutput needRegister(@RequestBody User user) {
 
         return BaseOutput.success().setData("need");
@@ -43,11 +59,16 @@ public class DriverUserApi {
      */
     @ApiOperation(value = "获取司机用户列表", notes = "获取司机用户列表")
     @RequestMapping(value = "/getDriverUserList", method = RequestMethod.POST)
-    public BaseOutput getDriverUserList(@RequestBody UserDriverDto user) {
-        UserDriverDto driverDto = new UserDriverDto();
-        driverDto.setDriverName("测试司机");
-        driverDto.setDriverId(1L);
-        return BaseOutput.success().setData(Collections.singletonList(driverDto));
+    public BaseOutput getDriverUserList(@RequestBody UserDriverRef user) {
+        try {
+            List<UserDriverRef> userList = driverUserService.getDriverUserList(user);
+            return BaseOutput.success().setData(userList);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error("getDriverUserList", e);
+            return BaseOutput.failure(e.getMessage());
+        }
     }
 
     /**
@@ -56,6 +77,7 @@ public class DriverUserApi {
      */
     @ApiOperation(value = "获取司机列表", notes = "获取司机列表")
     @RequestMapping(value = "/getDriverList", method = RequestMethod.POST)
+    @Deprecated
     public BaseOutput getDriverList() {
 
         User user = DTOUtils.newDTO(User.class);
@@ -72,11 +94,16 @@ public class DriverUserApi {
      */
     @ApiOperation(value = "新增司机与卖家关联关系", notes = "新增司机与卖家关联关系")
     @RequestMapping(value = "/updateDriverUserRef", method = RequestMethod.POST)
-    public BaseOutput updateDriverUserRef(@RequestBody UserDriverDto userRef) {
-        return BaseOutput.success();
+    public BaseOutput updateDriverUserRef(@RequestBody UserDriverRef userRef) {
+        try {
+            driverUserService.updateDriverUserRef(userRef);
+            return BaseOutput.success();
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error("register", e);
+            return BaseOutput.failure(e.getMessage());
+        }
     }
-
-
-
 
 }
