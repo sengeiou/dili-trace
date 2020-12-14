@@ -148,35 +148,35 @@ public class RegisterBill extends BaseDomain {
     private Integer detectState;*/
 
     /**
-     *检测记录ID
+     * 检测记录ID
      */
     @ApiModelProperty(value = "检测记录ID")
     @Column(name = "`latest_detect_record_id`")
     private Long latestDetectRecordId;
 
     /**
-     *检测记录时间
+     * 检测记录时间
      */
     @ApiModelProperty(value = "检测记录时间")
     @Column(name = "`latest_detect_time`")
     private Date latestDetectTime;
 
     /**
-     *检测人员
+     * 检测人员
      */
     @ApiModelProperty(value = "检测人员")
     @Column(name = "`latest_detect_operator`")
     private String latestDetectOperator;
 
     /**
-     *检测值结果
+     * 检测值结果
      */
     @ApiModelProperty(value = "检测值结果")
     @Column(name = "`latest_pd_result`")
     private String latestPdResult;
 
     /**
-     *版本
+     * 版本
      */
     @ApiModelProperty(value = "版本")
     @Column(name = "`version`")
@@ -195,14 +195,14 @@ public class RegisterBill extends BaseDomain {
     private Date modified;
 
     /**
-     *操作人
+     * 操作人
      */
     @ApiModelProperty(value = "操作人")
     @Column(name = "`operator_name`")
     private String operatorName;
 
     /**
-     *操作人ID
+     * 操作人ID
      */
     @ApiModelProperty(value = "操作人ID")
     @Column(name = "`operator_id`")
@@ -215,7 +215,7 @@ public class RegisterBill extends BaseDomain {
     private Date operationTime;
 
     /**
-     *上游信息ID
+     * 上游信息ID
      */
     @ApiModelProperty(value = "上游信息ID")
     @Column(name = "`upstream_id`")
@@ -228,28 +228,28 @@ public class RegisterBill extends BaseDomain {
     private String upStreamName;
 
     /**
-     *数据是否完整
+     * 数据是否完整
      */
     @ApiModelProperty(value = "数据是否完整")
     @Column(name = "`complete`")
     private Integer complete;
 
     /**
-     *    /**查验状态值
+     * /**查验状态值
      */
     @ApiModelProperty(value = "查验状态值")
     @Column(name = "`verify_status`")
     private Integer verifyStatus;
 
     /**
-     *保存类型
+     * 保存类型
      */
     @ApiModelProperty(value = "保存类型")
     @Column(name = "`preserve_type`")
     private Integer preserveType;
 
     /**
-     *检测状态
+     * 检测状态
      */
     @ApiModelProperty(value = "检测状态")
     @Column(name = "`detect_status`")
@@ -257,174 +257,174 @@ public class RegisterBill extends BaseDomain {
 
 
     /**
-     *查验类型
+     * 查验类型
      */
     @ApiModelProperty(value = "查验类型")
     @Column(name = "`verify_type`")
     private Integer verifyType;
 
     /**
-     *规格名称
+     * 规格名称
      */
     @ApiModelProperty(value = "规格名称")
     @Column(name = "`spec_name`")
     private String specName;
 
     /**
-     *报备类型
+     * 报备类型
      */
     @ApiModelProperty(value = "报备类型")
     @Column(name = "`bill_type`")
     private Integer billType;
     /**
-     *拼车类型
+     * 拼车类型
      */
     @ApiModelProperty(value = "拼车类型")
     @Column(name = "`truck_type`")
     private Integer truckType;
 
     /**
-     *品牌名称
+     * 品牌名称
      */
     @ApiModelProperty(value = "品牌名称")
     @Column(name = "`brand_name`")
     private String brandName;
 
     /**
-     *品牌ID
+     * 品牌ID
      */
     @ApiModelProperty(value = "品牌ID")
     @Column(name = "`brand_id`")
     private Long brandId;
 
     /**
-     *是否进门
+     * 是否进门
      */
     @ApiModelProperty(value = "是否进门")
     @Column(name = "`is_checkin`")
     private Integer isCheckin;
 
     /**
-     *原因
+     * 原因
      */
     @ApiModelProperty(value = "原因")
     @Column(name = "`reason`")
     private String reason;
 
     /**
-     *是否被删除
+     * 是否被删除
      */
     @ApiModelProperty(value = "是否被删除")
     @Column(name = "`is_deleted`")
     private Integer isDeleted;
 
     /**
-     *市场ID
+     * 市场ID
      */
     @ApiModelProperty(value = "市场ID")
     @Column(name = "market_id")
     private Long marketId;
 
     /**
-     *主台账编号
+     * 主台账编号
      */
     @ApiModelProperty(value = "主台账编号")
     @Column(name = "register_head_code")
     private String registerHeadCode;
 
     /**
-     *经营户卡号
+     * 经营户卡号
      */
     @ApiModelProperty(value = "经营户卡号")
     @Column(name = "`third_party_code`")
     private String thirdPartyCode;
 
     /**
-     *区号
+     * 区号
      */
     @ApiModelProperty(value = "区号")
     @Column(name = "`area`")
     private String area;
 
     /**
-     *计量类型（10-计件 20-计重。默认计件。）
+     * 计量类型（10-计件 20-计重。默认计件。）
      */
     @ApiModelProperty(value = "计量类型。10-计件 20-计重。默认计件。")
     @Column(name = "`measure_type`")
     private Integer measureType;
 
     /**
-     *件数
+     * 件数
      */
     @ApiModelProperty(value = "件数")
     @Column(name = "`piece_num`")
     private BigDecimal pieceNum;
 
     /**
-     *件重
+     * 件重
      */
     @ApiModelProperty(value = "件重")
     @Column(name = "`piece_weight`")
     private BigDecimal pieceWeight;
 
     /**
-     *备注
+     * 备注
      */
     @ApiModelProperty(value = "备注")
     @Column(name = "`remark`")
     private String remark;
 
     /**
-     *创建人
+     * 创建人
      */
     @ApiModelProperty(value = "创建人")
     @Column(name = "`create_user`")
     private String createUser;
 
     /**
-     *作废人
+     * 作废人
      */
     @ApiModelProperty(value = "作废人")
     @Column(name = "`delete_user`")
     private String deleteUser;
 
     /**
-     *作废时间
+     * 作废时间
      */
     @ApiModelProperty(value = "作废时间")
     @Column(name = "`delete_time`")
     private Date deleteTime;
 
     /**
-     *包装
+     * 包装
      */
     @ApiModelProperty(value = "包装")
     @Column(name = "`packaging`")
     private String packaging;
 
     /**
-     *订单类型 1.报备单 2.进门登记单
+     * 订单类型 1.报备单 2.进门登记单
      */
     @ApiModelProperty(value = "订单类型 1.报备单 2.进门登记单")
     @Column(name = "`order_type`")
     private Integer orderType;
 
     /**
-     *销售类型1.分销 2.全销
+     * 销售类型1.分销 2.全销
      */
     @ApiModelProperty(value = "1.分销 2.全销")
     @Column(name = "`sales_type`")
     private Integer salesType;
 
     /**
-     *检测报告 0：无,1:有
+     * 检测报告 0：无,1:有
      */
     @ApiModelProperty(value = "检测报告 0：无,1:有")
     @Column(name = "`has_detect_report`")
     private Integer hasDetectReport;
 
     /**
-     *产地证明 0：无,1:有
+     * 产地证明 0：无,1:有
      * {@link com.dili.trace.glossary.TFEnum}
      */
     @ApiModelProperty(value = "产地证明 0：无,1:有")
@@ -1382,4 +1382,5 @@ public class RegisterBill extends BaseDomain {
     public void setDetectReportUrl(String detectReportUrl) {
         this.detectReportUrl = detectReportUrl;
     }
+
 }

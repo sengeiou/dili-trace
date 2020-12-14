@@ -52,9 +52,9 @@ public class RegisterBillOutputDto extends RegisterBill {
                         .collect(Collectors.joining(","));
     }
 
-    public Map<Integer, List<ImageCert>> getGroupedImageCertList() {
-        return StreamEx.ofNullable(this.getImageCerts()).flatCollection(Function.identity())
-                .mapToEntry(item -> item.getCertType(), Function.identity())
+    public Map<ImageCertTypeEnum, List<ImageCert>> getGroupedImageCertList() {
+        return StreamEx.ofNullable(this.getImageCerts()).flatCollection(Function.identity()).filter(item->item.getCertType()!=null)
+                .mapToEntry(item -> ImageCertTypeEnum.fromCode(item.getCertType()).orElse(null), Function.identity())
                 .grouping();
     }
 

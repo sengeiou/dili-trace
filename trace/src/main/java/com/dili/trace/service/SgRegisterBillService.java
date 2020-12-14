@@ -99,6 +99,14 @@ public interface SgRegisterBillService {
     int samplingCheckRegisterBill(Long id);
 
     /**
+     * 抽检标记
+     *
+     * @param id
+     * @return
+     */
+    int spotCheckRegisterBill(Long id);
+
+    /**
      * 复检标记
      *
      * @param id
@@ -144,7 +152,7 @@ public interface SgRegisterBillService {
      * @param input
      * @return
      */
-    public Long saveHandleResult(RegisterBill input);
+    public Long doUploadHandleResult(RegisterBill input);
 
     /**
      * 保存修改数据

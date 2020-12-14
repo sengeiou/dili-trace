@@ -35,13 +35,7 @@
     }
     .es-list { max-height: 220px !important; }
     </style>
-<div class="main-container">
-    <div class="topicTop">
-        <div class="toppic-title">
-            <span class="topic-title-text maincolor">进场货品登记</span>
-            <button class="btn-greyweak btn-sm topic-back-btn" onclick="parent.window['RegisterBillGridObj'].removeAllAndLoadData()">返回</button>
-        </div>
-    </div>
+<div class="main-container" style="margin: 0;padding: 0;">
     <div class="form-box border">
 
         <form id="createRecordForm" class="form-inline" role="form">
@@ -145,23 +139,34 @@
             <div class="form-group">
                 <div class="table-showlist" style="width: 1200px">
                  常用产地: <% for(city in citys){%>
-                                                <a href="javascript:void(0)" onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"  title="${city.mergedAddress}">${city.address}</a>
+                       <a href="javascript:void(0)" onclick="selectCity(this,${city.addressId},'${city.mergedAddress}')"  title="${city.mergedAddress}">${city.address}</a>
                     <%}%>
                 </div>
             </div>
-            <div class="form-item-group">
+            <div class="form-item-group" id="detectReportDiv">
                 <h4 class="form-item-title">检测报告</h4>
-                <div class="fileimg-box" style="margin-left: 50px;">
-                    <span class="fileimg-plus-icon">+</span>
-                    <span class="fileimg-des">点击上传</span>
-                    <input id="detectReportUrlFile" type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                    <input type="hidden" name="detectReportUrl" id="detectReportUrl">
-                    <img class="magnifying">
-                    <div class="fileimg-cover" style="display: none;"></div>
-                    <div class="fileimg-edit" style="display: none;">
-                        <span class="fileimg-view">查看</span>
-                    </div>
-                </div>
+
+                <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){%>
+
+                    <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT]){
+                    %>
+                        <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                            <span class="fileimg-plus-icon" style="display: none" >+</span>
+                            <span class="fileimg-des" style="display: none" >点击上传${registerBill.imageCerts}</span>
+                            <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                            <input type="hidden" name="globalImageCertList[${imgLP.index-1}][uid]">
+                            <input type="hidden" name="globalImageCertList[${imgLP.index-1}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+                            <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                            <div class="fileimg-cover" style="display: block;"></div>
+                            <div class="fileimg-edit" style="display: block;">
+                                <span class="fileimg-view">查看</span>
+                                <span class="fileimg-delete">删除</span>
+                            </div>
+                        </div>
+                    <%}%>
+                <%}%>
+
+
             </div>
         </form>
 
@@ -176,7 +181,92 @@
 <script type="text/javascript">
    var initWithLocalStorage=false;
 </script>
-<#registerBill_createJs />
+<script>
+
+    let imageItemCount = '${registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0}';
+    function getDetectReportCount(){
+        var count=$('#detectReportDiv').find('.fileimg-box').length;
+        return count;
+    }
+    function initImageBtns(selector){
+        var tempHtml=$(selector)
+        var deleteImg=tempHtml.find('.fileimg-delete');
+        var viewImg=tempHtml.find('.fileimg-view');
+        deleteImg.on('click', function () {
+            $(this).parents('.fileimg-box').remove();
+            if(getDetectReportCount()==0){
+                createDetectReportAndAppendTemplate();
+            }
+        });
+        viewImg.on('click',function () {
+            var url = $(this).parent().siblings(".magnifying").attr('src');
+            if(url){
+                layer.open({
+                    title:'图片',
+                    type: 1,
+                    skin: 'layui-layer-rim',
+                    closeBtn: 2,
+                    area: ['90%', '90%'], // 宽高
+                    content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+                });
+            }
+        });
+    }
+
+    function createDetectReportAndAppendTemplate(){
+        if(getDetectReportCount()==10){
+            return;
+        }
+        var tempHtml=$(template('imageCertItem', {index: imageItemCount++}));
+        $('#detectReportDiv').append(tempHtml);
+        var fileEl=tempHtml.find('input[type="file"]');
+        var deleteImg=tempHtml.find('.fileimg-delete');
+        var viewImg=tempHtml.find('.fileimg-view');
+        initFileUpload(fileEl,createDetectReportAndAppendTemplate);
+        initImageBtns(tempHtml);
+
+    }
+    // 文件上传组件初始化
+    function initFileUpload(selecter,success) {
+        $(selecter).fileupload({
+            dataType: 'json',
+            formData: {type: 4, compress: true},
+            done: function (e, res) {
+                if (res.result.code == 200) {
+                    var uid= res.result.data;
+                    $(this).siblings("input:hidden").val(uid);
+
+                    var url = "${imageViewPathPrefix}/" + uid;
+                    $(this).siblings('.magnifying').attr('src', url).show();
+                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                    success();
+                }
+            },
+            add: function (e, data) {// 判断文件类型 var acceptFileTypes =
+                // /\/(pdf|xml)$/i;
+                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+                var name = data.originalFiles[0]["name"];
+                var index = name.lastIndexOf(".") + 1;
+                var fileType = name.substring(index, name.length);
+                if (!acceptFileTypes.test(fileType)) {
+                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                    return;
+                }
+                var size = data.originalFiles[0]["size"];
+                // 10M
+                if (size > (1024 * 10 * 1024)) {
+                    swal('错误', '上传文件超过最大限制!', 'error');
+                    return;
+                }
+                data.submit();
+            }
+        });
+    }
+    $(function () {
+        initImageBtns($(document.body));
+        createDetectReportAndAppendTemplate();
+    });
+</script>
 <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
 <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
@@ -232,7 +322,7 @@ $(document).ready(function() {
     var userplateList=$.map($('#plate').siblings(".es-list" ).find('li'),function(v,i){
    	 return $(v).text();
     });
-    appendCachedPlate(userplateList,'#plate');
+    // appendCachedPlate(userplateList,'#plate');
 })
 
 function tallyAreaNo() {
@@ -276,4 +366,20 @@ function tallyAreaNo() {
         });
     }
 }
+</script>
+
+<script id="imageCertItem" type="text/html">
+    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+        <span class="fileimg-plus-icon">+</span>
+        <span class="fileimg-des">点击上传</span>
+        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+        <input type="hidden" name="globalImageCertList[{{index}}][uid]">
+        <input type="hidden" name="globalImageCertList[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+        <img class="magnifying">
+        <div class="fileimg-cover" style="display: none;"></div>
+        <div class="fileimg-edit" style="display: none;">
+            <span class="fileimg-view">查看</span>
+            <span class="fileimg-delete">删除</span>
+        </div>
+    </div>
 </script>

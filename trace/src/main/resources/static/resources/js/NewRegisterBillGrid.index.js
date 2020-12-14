@@ -32,7 +32,7 @@ class NewRegisterBillGrid extends ListPage {
         $('#batch-sampling-btn').on('click', async () => await this.doBatchSamplingCheck());
         $('#audit-withoutDetect-btn').on('click', async () => await this.doAuditWithoutDetect());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
-        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
         this.grid.bootstrapTable({
             onLoadSuccess: async () => {
                 await cthis.findHighLightBill();
@@ -497,9 +497,9 @@ class NewRegisterBillGrid extends ListPage {
         _.chain(btnArray).each((btn) => {
             $(btn).hide();
         });
+        await this.queryEventAndSetBtn();
     }
-    async checkAndShowHideBtns() {
-        await this.resetButtons();
+    async queryEventAndSetBtn() {
         var rows = this.rows;
         try {
             var billIdList = _.chain(rows).map(v => v.id).value();

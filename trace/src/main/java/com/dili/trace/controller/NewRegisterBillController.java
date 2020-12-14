@@ -162,11 +162,11 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/copy.html", method = RequestMethod.GET)
     public String copy(Long id, ModelMap modelMap) {
-        RegisterBill registerBill = billService.get(id);
+        RegisterBillOutputDto registerBill = RegisterBillOutputDto.build(billService.get(id),Lists.newLinkedList());
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
         registerBill.setTallyAreaNo(firstTallyAreaNo);
-
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
         modelMap.put("tradeTypes", tradeTypeService.findAll());
@@ -193,7 +193,13 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/edit.html", method = RequestMethod.GET)
     public String edit(Long id, ModelMap modelMap) {
-        RegisterBill registerBill = billService.get(id);
+        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill->{
+            return RegisterBillOutputDto.build(bill,Lists.newLinkedList());
+        }).orElse(null);
+        if (registerBill == null) {
+            return "";
+        }
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
         registerBill.setTallyAreaNo(firstTallyAreaNo);
@@ -225,10 +231,13 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/uploadDetectReport.html", method = RequestMethod.GET)
     public String uploadDetectReport(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        RegisterBill registerBill = billService.get(id);
+        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill->{
+            return RegisterBillOutputDto.build(bill,Lists.newLinkedList());
+        }).orElse(null);
         if (registerBill == null) {
             return "";
         }
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
             if (registerBill.getSalesType() != null
@@ -259,10 +268,13 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/uploadOrigincertifiy.html", method = RequestMethod.GET)
     public String uploadOrigincertifiy(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        RegisterBill registerBill = billService.get(id);
+        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill->{
+            return RegisterBillOutputDto.build(bill,Lists.newLinkedList());
+        }).orElse(null);
         if (registerBill == null) {
             return "";
         }
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
             if (registerBill.getSalesType() != null
@@ -300,10 +312,13 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/uploadHandleResult.html", method = RequestMethod.GET)
     public String uploadHandleResult(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
-        RegisterBill registerBill = billService.get(id);
+        RegisterBillOutputDto registerBill = billService.getAvaiableBill(id).map(bill->{
+            return RegisterBillOutputDto.build(bill,Lists.newLinkedList());
+        }).orElse(null);
         if (registerBill == null) {
             return "";
         }
+        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
             if (registerBill.getSalesType() != null
@@ -467,9 +482,12 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/view.html", method = RequestMethod.GET)
     public String view(ModelMap modelMap, @RequestParam(required = true, name = "id") Long id
             , @RequestParam(required = false, name = "displayWeight") Boolean displayWeight) {
-        RegisterBill item = billService.get(id);
+        RegisterBill item = billService.getAvaiableBill(id).orElse(null);
         if (item == null) {
-            return "";
+
+            modelMap.put("registerBill", item);
+
+            return "new-registerBill/view";
         }
         if (displayWeight == null) {
             displayWeight = false;
@@ -567,9 +585,11 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doUploadHandleResult.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public BaseOutput<?> saveHandleResult(RegisterBill input) {
+    public BaseOutput<?> doUploadHandleResult(RegisterBill input) {
         try {
-            Long id = this.registerBillService.saveHandleResult(input);
+            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
+            input.setImageCerts(imageCertList);
+            Long id = this.registerBillService.doUploadHandleResult(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -588,17 +608,7 @@ public class NewRegisterBillController {
     @ResponseBody
     public BaseOutput<?> doUploadOrigincertifiy(@RequestBody RegisterBill input) {
         try {
-            List<ImageCert> imageCertList = new ArrayList<>();
-            if (StringUtils.isNotBlank(input.getOriginCertifiyUrl())) {
-                for (String s : input.getOriginCertifiyUrl().split(",")) {
-                    imageCertList.add(buildImageCert(input.getId(), s, ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()));
-                }
-            }
-            if (StringUtils.isNotBlank(input.getDetectReportUrl())) {
-                for (String s : input.getDetectReportUrl().split(",")) {
-                    imageCertList.add(buildImageCert(input.getId(), s, ImageCertTypeEnum.DETECT_REPORT.getCode()));
-                }
-            }
+            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
             input.setImageCerts(imageCertList);
             Long id = this.registerBillService.doUploadOrigincertifiy(input);
             return BaseOutput.success().setData(id);
@@ -622,19 +632,8 @@ public class NewRegisterBillController {
     @ResponseBody
     public BaseOutput<?> doUploadDetectReport(@RequestBody RegisterBill input) {
         try {
-            List<ImageCert> imageCertList = new ArrayList<>();
-            if (StringUtils.isNotBlank(input.getOriginCertifiyUrl())) {
-                for (String s : input.getOriginCertifiyUrl().split(",")) {
-                    imageCertList.add(buildImageCert(input.getId(), s, ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()));
-                }
-            }
-            if (StringUtils.isNotBlank(input.getDetectReportUrl())) {
-                for (String s : input.getDetectReportUrl().split(",")) {
-                    imageCertList.add(buildImageCert(input.getId(), s, ImageCertTypeEnum.DETECT_REPORT.getCode()));
-                }
-            }
+            List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
             input.setImageCerts(imageCertList);
-
             Long id = this.registerBillService.doUploadDetectReport(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
@@ -755,9 +754,8 @@ public class NewRegisterBillController {
                     rb.setPlate(input.getPlate());
                     rb.setAddr(input.getAddr());
                     rb.setUserId(input.getUserId());
-                    List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
-                            , rbInputDto.getHandleResultUrl(), rbInputDto.getOriginCertifiyUrl());
-                    rb.setImageCerts(imageList);
+
+                    rb.setImageCerts(input.getGlobalImageCertList());
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
@@ -887,6 +885,7 @@ public class NewRegisterBillController {
             }).nonNull().toList();
         }
         list.add(RegisterBillMessageEvent.export);
+        list.add(RegisterBillMessageEvent.DETAIL);
         if(billIdList.size()==1){
            return StreamEx.of(this.registerBillService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
                 return msg.getCode();

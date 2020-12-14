@@ -88,6 +88,7 @@ public class BrandApi {
                 inputDto.setMarketId(sessionData.getMarketId());
             }
             List<BrandOutputDto>list= StreamEx.of(brandService.listByExample(inputDto)).map(BrandOutputDto::build).toList();
+
             return BaseOutput.success().setData(list);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

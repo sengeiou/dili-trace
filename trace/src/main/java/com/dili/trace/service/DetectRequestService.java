@@ -3,26 +3,24 @@ package com.dili.trace.service;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.ss.dto.IDTO;
-import com.dili.ss.exception.AppException;
 import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
+import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
-import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.UpStreamDto;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
@@ -34,7 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -47,12 +48,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     BillService billService;
     @Autowired
     DetectRequestMapper detectRequestMapper;
-    @Autowired
-    UpStreamService upStreamService;
-    @Autowired
-    RegisterBillService registerBillService;
-    @Autowired
-    UserService userService;
 
     /**
      * 创建检测请求
@@ -344,17 +339,27 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @param domain
      * @return
      */
-    public List<DetectRequestDto> listPageByUserCategory(DetectRequestDto domain) {
-        if (domain.getRows() != null && domain.getRows() >= 1) {
-            PageHelper.startPage(domain.getPage(), domain.getRows());
+    public BasePage<DetectRequestDto> listPageByUserCategory(DetectRequestDto domain) {
+        if (domain.getPage() == null || domain.getPage() < 0) {
+            domain.setPage(1);
+        }
+        if (domain.getRows() == null || domain.getRows() <= 0) {
+            domain.setRows(10);
         }
         if (StringUtils.isNotBlank(domain.getSort())) {
             domain.setSort(POJOUtils.humpToLineFast(domain.getSort()));
         }
-        //List<CheckOrderDispose> checkOrderDispose = detectRequestMapper.selectListPageByUserCategory(domain);
-        //long total = checkOrderDispose instanceof Page ? ((Page) checkOrderDispose).getTotal() : (long) checkOrderDispose.size();
-        //List results = useProvider ? ValueProviderUtils.buildDataByProvider(domain, checkOrderDispose) : checkOrderDispose;
-        return detectRequestMapper.selectListPageByUserCategory(domain);
+        PageHelper.startPage(domain.getPage(), domain.getRows());
+        List<DetectRequestDto> list = this.detectRequestMapper.selectListPageByUserCategory(domain);
+        Page<DetectRequestDto> page = (Page) list;
+        BasePage<DetectRequestDto> result = new BasePage<DetectRequestDto>();
+        result.setDatas(list);
+        result.setPage(page.getPageNum());
+        result.setRows(page.getPageSize());
+        result.setTotalItem(page.getTotal());
+        result.setTotalPage(page.getPages());
+        result.setStartIndex(page.getStartRow());
+        return result;
     }
 
     /**
@@ -382,6 +387,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
     /**
+     *
      * @param query
      * @return
      */
@@ -389,38 +395,13 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         if (query == null) {
             throw new TraceBizException("参数错误");
         }
-        query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
         query.setIsDeleted(YesOrNoEnum.NO.getCode());
         List<SampleSourceCountOutputDto> countList = this.doCountBySampleSource(query);
         return countList;
     }
 
     /**
-     * @param query
-     * @return
-     */
-    private String dynamicSQLFormBill(DetectRequestQueryDto query) {
-        List<String> sqlList = new ArrayList<>();
-        this.buildFormLikeKeyword(query).ifPresent(sql -> {
-            sqlList.add(sql);
-        });
-        return StreamEx.of(sqlList).joining(" AND ");
-    }
-
-    /**
-     * @param query
-     * @return
-     */
-    private Optional<String> buildFormLikeKeyword(DetectRequestQueryDto query) {
-        String sql = null;
-        if (StringUtils.isNotBlank(query.getLikeProductNameOrUserName())) {
-            String keyword = query.getLikeProductNameOrUserName().trim();
-            sql = "( b.product_name like '%" + keyword + "%'  OR b.name like '%" + keyword + "%')";
-        }
-        return Optional.ofNullable(sql);
-    }
-
-    /**
+     *
      * @param query
      * @return
      */
@@ -438,80 +419,27 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
     /**
-     * 创建场外委托单
-     *
-     * @param input
-     * @param empty
+     * 分页查询采样检测列表
+     * @param query
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
-    public DetectRequest createOffSiteDetectRequest(DetectRequestDto input, Optional<OperatorUser> empty) {
-
-        DetectRequest resultDetectRequest = new DetectRequest();
-        //创建报备单
-        User user = userService.get(input.getCreatorId());
-        if (user == null) {
-            throw new AppException("用户不存在");
+    public BasePage<SampleSourceListOutputDto> listPagedSampleSourceDetect(DetectRequestQueryDto query) {
+        if (query.getPage() == null || query.getPage() < 0) {
+            query.setPage(1);
         }
-        RegisterBill registerBill = new RegisterBill();
-        registerBill.setName(user.getName());
-        registerBill.setIdCardNo(user.getCardNo());
-        registerBill.setAddr(user.getAddr());
-        registerBill.setUserId(user.getId());
-        registerBill.setProductAliasName(input.getProductAliasName());
-        try {
-            //创建上游企业
-            if (StringUtils.isNotBlank(input.getUpStreamName())) {
-                Integer upCode = 10;
-                OperatorUser operatorUser = new OperatorUser(input.getCreatorId(), input.getCreatorName());
-                UpStreamDto upStreamDto = new UpStreamDto();
-                upStreamDto.setName(input.getUpStreamName());
-                upStreamDto.setUpORdown(upCode);
-                upStreamDto.setSourceUserId(input.getCreatorId());
-                upStreamService.addUpstream(upStreamDto, operatorUser);
-            }
-            Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
-                    Optional.ofNullable(new OperatorUser(input.getCreatorId(), input.getCreatorName())));
-            //创建检测请求
-            resultDetectRequest = createDetectRequest(input, billId, empty);
-        } catch (AppException e) {
-            throw new AppException(e.getMessage());
-
-        } catch (Exception e) {
-            throw new AppException("服务端出错");
-
+        if (query.getRows() == null || query.getRows() <= 0) {
+            query.setRows(10);
         }
-        return resultDetectRequest;
+        PageHelper.startPage(query.getPage(), query.getRows());
+        List<SampleSourceListOutputDto> list = this.detectRequestMapper.queryListBySampleSource(query);
+        Page<SampleSourceListOutputDto> page = (Page) list;
+        BasePage<SampleSourceListOutputDto> result = new BasePage<SampleSourceListOutputDto>();
+        result.setDatas(list);
+        result.setPage(page.getPageNum());
+        result.setRows(page.getPageSize());
+        result.setTotalItem(page.getTotal());
+        result.setTotalPage(page.getPages());
+        result.setStartIndex(page.getStartRow());
+        return result;
     }
-
-    /**
-     * 创建委托请求单并修改报备单状态
-     *
-     * @param input
-     * @param billId
-     * @param operatorUser
-     */
-    private DetectRequest createDetectRequest(DetectRequestDto input, Long billId, Optional<OperatorUser> operatorUser) {
-        DetectRequest detectRequest = new DetectRequest();
-        detectRequest.setDetectType(DetectTypeEnum.NEW.getCode());
-        detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
-        detectRequest.setDetectResult(DetectResultEnum.NONE.getCode());
-
-        detectRequest.setBillId(billId);
-        detectRequest.setCreated(new Date());
-        detectRequest.setModified(new Date());
-        this.insert(detectRequest);
-
-        operatorUser.ifPresent(opt -> {
-            detectRequest.setCreatorId(opt.getId());
-            detectRequest.setCreatorName(opt.getName());
-        });
-        RegisterBill registerBill = new RegisterBill();
-        registerBill.setId(billId);
-        registerBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
-        registerBill.setDetectRequestId(detectRequest.getId());
-        this.billService.updateSelective(registerBill);
-        return detectRequest;
-    }
-
 }

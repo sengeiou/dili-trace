@@ -1,9 +1,9 @@
 <#bodyOrigin>
-<div class="main-container">
+<div class="main-container" style="margin: 0;padding: 0;">
 
     <div class="form-box border">
         <form id="modifyRegisterBillForm" class="form-inline" role="form">
-         <input type="hidden" name="id" value="${registerBill.id}"/>
+            <input type="hidden" name="id" value="${registerBill.id}"/>
             <div class="form-item-group">
                 <h4 class="form-item-title">基础信息</h4>
 
@@ -22,17 +22,17 @@
                 </div>
                 <br>
                 <% if(registerBill.registerSource == 1){ %>
-                    <div class="form-group">
-                        <label class="label-title text-right">
-                            <span class="red">&lowast;</span>理货区号</label>
-                        <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo!}" required readonly/>
-                    </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>理货区号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.tallyAreaNo!}" required readonly/>
+                </div>
                 <% }else if(registerBill.registerSource == 2){ %>
-                    <div class="form-group">
-                        <label class="label-title text-right">
-                            <span class="red">&lowast;</span>交易区号</label>
-                        <input type="text" class="form-control input-sm"  value="${registerBill.tradeTypeId!}" required readonly/>
-                    </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>交易区号</label>
+                    <input type="text" class="form-control input-sm"  value="${registerBill.tradeTypeId!}" required readonly/>
+                </div>
                 <% } %>
                 <div class="form-group">
                     <label class="label-title text-right">
@@ -123,7 +123,7 @@
             <!-- 原来的判断逻辑：registerBill.detectState == 1 || registerBill.detectState == 3-->
             <%
             if(registerBill.registerSource == 1){
-                if( registerBill.salesType == 2 && !isEmpty(registerBill.detectRequest) && (registerBill.detectRequest.detectResult == 1)){
+            if( registerBill.salesType == 2 && !isEmpty(registerBill.detectRequest) && (registerBill.detectRequest.detectResult == 1)){
             %>
             <div class="form-item-group">
                 <h4 class="form-item-title">溯源二维码</h4>
@@ -138,7 +138,7 @@
             </div>
             <% } %>
             <%
-                if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
+            if(isNotEmpty(separateSalesRecords) && separateSalesRecords.~size>0){%>
             <div class="form-item-group">
                 <h4 class="form-item-title">分销信息</h4>
                 <div class="table-showlist" style="width: 1200px">
@@ -240,63 +240,94 @@
                 </div>
             </div>
             <%} } %>
-
-           <div class="form-item-group" id="originCertifiyUrlDiv">
+            <%
+            var imageCount = registerBill.imageCerts.~size!0;
+            %>
+            <div class="form-item-group" id="originCertifiyDiv">
                 <h4 class="form-item-title">产地证明</h4>
-                <div class="fileimg-box"  style="display:inline-block;margin: 5px;padding: 10px;">
-                    <span class="fileimg-plus-icon">+</span>
-                    <span class="fileimg-des">点击上传</span>
-                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                    <input type="hidden" name="originCertifiy" id="originCertifiy">
-                    <img class="magnifying" >
-                    <div class="fileimg-cover" style="display: none;"></div>
-                    <div class="fileimg-edit"  style="display: none;">
+                <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY].~size!0)>0){%>
+
+                <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY]){
+                %>
+                <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                    <span class="fileimg-plus-icon" style="display: none" >+</span>
+                    <span class="fileimg-des" style="display: none" >点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                    <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
+                    <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
+                    <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                    <div class="fileimg-cover" style="display: block;"></div>
+                    <div class="fileimg-edit" style="display: block;">
                         <span class="fileimg-view">查看</span>
                         <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
+                <%}%>
+                <%}%>
             </div>
-            
-             <div class="form-item-group" id="detectReportUrlDiv">
+
+            <div class="form-item-group" id="detectReportDiv">
                 <h4 class="form-item-title">检测报告</h4>
-                <div class="fileimg-box"   style="display:inline-block;margin: 5px;padding: 10px;">
-                    <span class="fileimg-plus-icon">+</span>
-                    <span class="fileimg-des">点击上传</span>
-                    <input type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data"/>
-                    <input type="hidden" name="detectReport" id="detectReport">
-                    <img class="magnifying" >
-                    <div class="fileimg-cover" style="display: none;"></div>
-                    <div class="fileimg-edit"  style="display: none;">
+                <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){%>
+
+                <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT]){
+                %>
+                <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                    <span class="fileimg-plus-icon" style="display: none" >+</span>
+                    <span class="fileimg-des" style="display: none" >点击上传</span>
+                    <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                    <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
+                    <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
+                    <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                    <div class="fileimg-cover" style="display: block;"></div>
+                    <div class="fileimg-edit" style="display: block;">
                         <span class="fileimg-view">查看</span>
                         <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
+                <%}%>
+                <%}%>
             </div>
 
 
-            <!--原来逻辑：registerBill.detectState == 4 复检不合格-->
-            <%if(isNotEmpty(registerBill.detectRequest) && registerBill.detectRequest.detectType == 30 &&  registerBill.detectRequest.detectResult == 2
-              &&isNotEmpty(registerBill.handleResultUrl) &&isNotEmpty(registerBill.handleResult)){%>
-                <div class="form-item-group">
-					<div class="imageUploadWrap">
-	                    <div class="form-group">
-	                        <label class="label-title text-right"><span class="red">&lowast;</span>处理结果图片</label>
-	                        <div class="imageUpload rectangle">
-	                            <img <% if(isNotEmpty(registerBill.handleResultUrl)){ %>src="${contextPath!}${registerBill.handleResultUrl!}"<% } %> alt="产地证明" class="show-image">
-	                        </div>
-	                    </div>
-	                    
-		                 <div class="form-group">
-		                    <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
-		                    <input type="text" class="form-control input-sm"  value="${registerBill.handleResult}" required readonly/>
-	                	 </div>
-	                </div>
+
+            <div id="handleResultContainer">
+                <div class="form-item-group" id="handleResultDiv">
+                    <h4 class="form-item-title">处理结果图片</h4>
+                    <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result].~size!0)>0){%>
+
+                    <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result]){
+                    %>
+                    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+                        <span class="fileimg-plus-icon" style="display: none" >+</span>
+                        <span class="fileimg-des" style="display: none" >点击上传</span>
+                        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+                        <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
+                        <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
+                        <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
+                        <div class="fileimg-cover" style="display: block;"></div>
+                        <div class="fileimg-edit" style="display: block;">
+                            <span class="fileimg-view">查看</span>
+                            <span class="fileimg-delete">删除</span>
+                        </div>
+                    </div>
+                    <%}%>
+                    <%}%>
                 </div>
-               
-            <%}%>
+
+                <div class="form-item-group">
+                    <div class="imageUploadWrap">
+                        <div class="form-group">
+                            <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
+                            <input type="text" class="form-control input-sm"  value="${registerBill.handleResult}" required/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </form>
     </div>
-<!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
     <div class="text-center mt30" style="width: 50%">
         <button class="btn-main2 btn-sm" onclick="doModifyRegisterBill()">提交</button>&nbsp;&nbsp;
         <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
@@ -310,27 +341,27 @@
 <script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
 
 <script>
-var currentUser={"depId":"${user.departmentId!}"
-	,"id":"${user.id!}"
-	,"realName":"${user.realName!}"
-	,"userName":"${user.userName!}"
-	,"departmentName":"${department.name!}"};
-	function doModifyRegisterBill(){
-		if($('#modifyRegisterBillForm').validate().form() != true){
+    var currentUser={"depId":"${user.departmentId!}"
+        ,"id":"${user.id!}"
+        ,"realName":"${user.realName!}"
+        ,"userName":"${user.userName!}"
+        ,"departmentName":"${department.name!}"};
+    function doModifyRegisterBill(){
+        if($('#modifyRegisterBillForm').validate().form() != true){
             return;
         }
-		var   formData=$('#modifyRegisterBillForm').serializeObject();
-	    var  originCertifiyUrl=$.makeArray(formData.originCertifiy).filter(function(v,i){
-	        	return v!='';
-	        }).join(',');
-	   var  detectReportUrl=$.makeArray(formData.detectReport).filter(function(v,i){
-	        	return v!='';
-	        }).join(',');
-	       
-	   delete formData.originCertifiy
-	   delete formData.detectReport
-	   formData.originCertifiyUrl=originCertifiyUrl;
-	   formData.detectReportUrl=detectReportUrl;
+        var   formData=$('#modifyRegisterBillForm').serializeObject();
+        var  originCertifiyUrl=$.makeArray(formData.originCertifiy).filter(function(v,i){
+            return v!='';
+        }).join(',');
+        var  detectReportUrl=$.makeArray(formData.detectReport).filter(function(v,i){
+            return v!='';
+        }).join(',');
+
+        delete formData.originCertifiy
+        delete formData.detectReport
+        formData.originCertifiyUrl=originCertifiyUrl;
+        formData.detectReportUrl=detectReportUrl;
 
         $.ajax({
             type: "POST",
@@ -348,103 +379,83 @@ var currentUser={"depId":"${user.departmentId!}"
                     parent.window['RegisterBillGridObj'].removeAllAndLoadData()
                 }else{
                     swal(
-                            '错误',
-                            ret.result,
-                            'error'
+                        '错误',
+                        ret.result,
+                        'error'
                     );
                 }
             },
             error: function(){
                 swal(
-                        '错误',
-                        '远程访问失败',
-                        'error'
+                    '错误',
+                    '远程访问失败',
+                    'error'
                 );
             }
         });
-		
-		
-	}
-    $('.imageUpload,.show-img').on('click', function () {
-        var url = $(this).find("img").attr('src');
-        if(url){
-            layer.open({
-                title:'图片',
-                type: 1,
-                skin: 'layui-layer-rim',
-                closeBtn: 2,
-                area: ['50%', '50%'], //宽高
-                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-            });
-        }
-    });
 
-    $('.ssr-view').on('click', function () {
-        let tradeId = $(this).attr('data-trade-id');
-        layer.open({
-            type: 2,
-            area: ['820px', '450px'],
-            title: '分销记录',
-            scrollbar: true,
-            content: ['/sg/registerBill/tradeBillSsRecord.html?id='+tradeId], //iframe的url
-            yes: function (index, layero) {
+
+    }
+
+    let imageItemCount = '${registerBill.imageCerts.~size!0}';
+    function getDetectReportCount(selector){
+        var count=$(selector).find('.fileimg-box').length;
+        return count;
+    }
+    function initImageBtns(selector){
+        var tempHtml=$(selector)
+        var deleteImg=tempHtml.find('.fileimg-delete');
+        var viewImg=tempHtml.find('.fileimg-view');
+        deleteImg.on('click', function () {
+            $(this).parents('.fileimg-box').remove();
+            if(getDetectReportCount(selector)==0){
+                createDetectReportAndAppendTemplate(selector);
             }
         });
-    });
-    /*$('.main-container').on('click', '.imageUploadWrap .edit-zoom', function () {
-        layer.open({
-            type: 1,
-            skin: 'layui-layer-rim',
-            closeBtn: 2,
-            area: ['90%', '90%'], //宽高
-            content: '<p style="text-align:center"><img src="' + $(this).siblings('.show-image').attr('src') + '" alt="" class="show-image-zoom"></p>'
+        viewImg.on('click',function () {
+            var url = $(this).parent().siblings(".magnifying").attr('src');
+            if(url){
+                layer.open({
+                    title:'图片',
+                    type: 1,
+                    skin: 'layui-layer-rim',
+                    closeBtn: 2,
+                    area: ['90%', '90%'], // 宽高
+                    content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+                });
+            }
         });
-    })*/
-    function returnBack(){
-        history.go(-1);
     }
-    
-    $( document ).on( "click", ".fileimg-view",function () {
-        var url = $(this).parent().siblings(".magnifying").attr('src');
-        if(url){
-            layer.open({
-                title:'图片',
-                type: 1,
-                skin: 'layui-layer-rim',
-                closeBtn: 2,
-                area: ['90%', '90%'], //宽高
-                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-            });
-        }
-    });
 
-    $( document ).on( "click", ".img-view-a",function () {
-        var url = $('#originCertifiyUrl_'+$(this).attr('data-index')).siblings("input:hidden").val();
-        if(url){
-            layer.open({
-                title:'图片',
-                type: 1,
-                skin: 'layui-layer-rim',
-                closeBtn: 2,
-                area: ['90%', '90%'], //宽高
-                content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
-            });
+    function createDetectReportAndAppendTemplate(selector){
+        if(getDetectReportCount(selector)==10){
+            return;
         }
-    });
-    //文件上传组件初始化
-    function initFileUpload(selecter) {
+        var tempHtml=$(template('imageCertItem', {index: imageItemCount++}));
+        $(selector).append(tempHtml);
+        var fileEl=tempHtml.find('input[type="file"]');
+        initFileUpload(fileEl,function(){createDetectReportAndAppendTemplate(selector);});
+        initImageBtns(tempHtml);
+
+    }
+    // 文件上传组件初始化
+    function initFileUpload(selecter,success) {
         $(selecter).fileupload({
             dataType: 'json',
             formData: {type: 4, compress: true},
             done: function (e, res) {
                 if (res.result.code == 200) {
-                    var url = "${imageViewPathPrefix}" + res.result.data;
+                    var uid= res.result.data;
+                    $(this).siblings("input:hidden").val(uid);
+
+                    var url = "${imageViewPathPrefix}/" + uid;
                     $(this).siblings('.magnifying').attr('src', url).show();
-                    $(this).siblings("input:hidden").val(url);
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                    success();
                 }
             },
-            add: function (e, data) {//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
+            add: function (e, data) {// 判断文件类型 var acceptFileTypes =
+                // /\/(pdf|xml)$/i;
                 var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
                 var name = data.originalFiles[0]["name"];
                 var index = name.lastIndexOf(".") + 1;
@@ -463,106 +474,50 @@ var currentUser={"depId":"${user.departmentId!}"
             }
         });
     }
-    
-    
-    
-    function afterUpload(url,fileInputObj){
-    	var imgBox=fileInputObj.parent();
-    	var parent= imgBox.parent('div');
-    	 var newImgBox=imgBox.clone(true);
-    	 
-        imgBox.find(".magnifying").attr('src', url).show();
-        imgBox.find("input[type='hidden']").val(url);
-        imgBox.find('.fileimg-cover,.fileimg-edit').show();
-        console.info(url)
-        debugger
-        if(parent.find('.fileimg-box').length<10){
-        	newImgBox.find('input[type="file"]').remove();
-        	$('<input type="file" name="file"  data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data" />').insertAfter(newImgBox.find('.fileimg-des'))
-        	newImgBox.appendTo(parent);
-        	initFileInput(newImgBox.find('input[type="file"]'))
-        }
-    }
-    
-    function initFileInput(jqueryObj){
-    	jqueryObj.fileupload({
-            dataType : 'json',
-            formData: {type:5,compress:true},
-            done : function(e, res) {
-                if (res.result.code == 200) {
-                    var url = "${imageViewPathPrefix}" + res.result.data;
-                	var fileInputObj=$(e.target);
-                	afterUpload(url,fileInputObj);
-                }
-            },
-            add:function (e, data){//判断文件类型 var acceptFileTypes = /\/(pdf|xml)$/i;
-                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
-                var name = data.originalFiles[0]["name"];
-                var index = name.lastIndexOf(".")+1;
-                var fileType = name.substring(index,name.length);
-                if(!acceptFileTypes.test(fileType)){
-                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
-                    return ;
-                }
-                var size = data.originalFiles[0]["size"];
-                // 10M
-                if(size > (1024*10*1024)){
-                    swal('错误', '上传文件超过最大限制!', 'error');
-                    return ;
-                }
-                data.submit();
-            }
-        });
- 	
- 	
- }
-    
-    $.makeArray('${registerBill.originCertifiyUrl}'.split(",")).filter(function(v,i){
-      	return v!='';
-      }).forEach (function(url,i){
-    	 var fileInputObj=$('#originCertifiyUrlDiv .fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
-    	  afterUpload(url,fileInputObj);
-      });
-    
-    $.makeArray('${registerBill.detectReportUrl}'.split(",")).filter(function(v,i){
-      	return v!='';
-      }).forEach (function(url,i){
-    	 var fileInputObj=$('#detectReportUrlDiv .fileimg-box .fileimg-edit:not(:visible):first').parents('.fileimg-box:first').find('input[type="file"]');
-    	  afterUpload(url,fileInputObj);
-      });
-    
-    
     $(function () {
-    	initFileInput($('input[type="file"]'));
-    	//initFileInput($('#detectReportUrlFile'));
-    	
-    	//删除图片
-        $('.fileimg-delete').on('click', function () {
-        	
-        	var imgBox=$(this).parents('.fileimg-box:first');
-        	var parent= imgBox.parent('div');
-        	var imgBoxArr=parent.find('.fileimg-box');
-        	if(imgBoxArr.length==10){
-        		var lastImgBox=$(imgBoxArr[imgBoxArr.length-1]);
-        		if(lastImgBox.find("input:hidden").val()!=''){
+        initImageBtns($(document.body));
+        createDetectReportAndAppendTemplate($('#detectReportDiv'));
+        //$('#detectReportDiv').hide();
+        $('#handleResultContainer').hide();
+        //createDetectReportAndAppendTemplate($('#handleResultContainer').find('#handleResultDiv'));
+        // createDetectReportAndAppendTemplate($('#originCertifiyDiv'));
+        $('#originCertifiyDiv').hide();
+    });
 
-                	imgBox.find(".magnifying").attr('src', '').hide();
-                	imgBox.find("input:hidden").val('');
-                	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
-                	
-                	imgBox.appendTo(parent);
-        		}else{
-        			imgBox.remove();
-        		}
-        	}else if(imgBoxArr.length>1){
-        		imgBox.remove();
-        	}else{
-            	imgBox.find(".magnifying").attr('src', '').hide();
-            	imgBox.find("input:hidden").val('');
-            	imgBox.find('.fileimg-cover,.fileimg-edit').hide();
-        	}
 
+    $('.ssr-view').on('click', function () {
+        let tradeId = $(this).attr('data-trade-id');
+        layer.open({
+            type: 2,
+            area: ['820px', '450px'],
+            title: '分销记录',
+            scrollbar: true,
+            content: ['/sg/registerBill/tradeBillSsRecord.html?id='+tradeId], //iframe的url
+            yes: function (index, layero) {
+            }
         });
     });
 
+    function returnBack(){
+        history.go(-1);
+    }
+
+
+
+</script>
+
+<script id="imageCertItem" type="text/html">
+    <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
+        <span class="fileimg-plus-icon">+</span>
+        <span class="fileimg-des">点击上传</span>
+        <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
+        <input type="hidden" name="globalImageCertList[{{index}}][uid]">
+        <input type="hidden" name="globalImageCertList[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+        <img class="magnifying">
+        <div class="fileimg-cover" style="display: none;"></div>
+        <div class="fileimg-edit" style="display: none;">
+            <span class="fileimg-view">查看</span>
+            <span class="fileimg-delete">删除</span>
+        </div>
+    </div>
 </script>
