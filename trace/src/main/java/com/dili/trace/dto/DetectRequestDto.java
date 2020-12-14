@@ -168,6 +168,28 @@ public class DetectRequestDto extends DetectRequest {
     @Transient
     private String productAliasName;
 
+    @Transient
+    private Long productId;
+
+    @Transient
+    private Long originId;
+
+    public Long getOriginId() {
+        return originId;
+    }
+
+    public void setOriginId(Long originId) {
+        this.originId = originId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
     public String getProductAliasName() {
         return productAliasName;
     }

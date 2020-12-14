@@ -3,6 +3,7 @@ package com.dili.trace.service;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.exception.AppException;
@@ -14,16 +15,15 @@ import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.domain.User;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.dto.IdNameDto;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.DetectResultEnum;
-import com.dili.trace.enums.DetectStatusEnum;
-import com.dili.trace.enums.DetectTypeEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.glossary.UpStreamTypeEnum;
+import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.rpc.UserRpc;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Maps;
@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.function.Function;
@@ -47,15 +48,15 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     @Autowired
     BillService billService;
-    @Autowired
+    @Resource
     DetectRequestMapper detectRequestMapper;
 
-    @Autowired
-    UserService userService;
     @Autowired
     UpStreamService upStreamService;
     @Autowired
     RegisterBillService registerBillService;
+    @Autowired
+    UserRpcService userRpcService;
     /**
      * 创建检测请求
      *
@@ -461,18 +462,9 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     public DetectRequest createOffSiteDetectRequest(DetectRequestDto input, Optional<OperatorUser> empty) {
 
         DetectRequest resultDetectRequest = new DetectRequest();
-        //创建报备单
-        User user = userService.get(input.getCreatorId());
-        if (user == null) {
-            throw new AppException("用户不存在");
-        }
-        RegisterBill registerBill = new RegisterBill();
-        registerBill.setName(user.getName());
-        registerBill.setIdCardNo(user.getCardNo());
-        registerBill.setAddr(user.getAddr());
-        registerBill.setUserId(user.getId());
-        registerBill.setProductAliasName(input.getProductAliasName());
         try {
+            Long upStreamId =null;
+            String upName=null;
             //创建上游企业
             if (StringUtils.isNotBlank(input.getUpStreamName())) {
                 Integer upCode = 10;
@@ -481,9 +473,18 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
                 upStreamDto.setName(input.getUpStreamName());
                 upStreamDto.setUpORdown(upCode);
                 upStreamDto.setSourceUserId(input.getCreatorId());
+                upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
+                upStreamDto.setTelphone("00000000000");
                 upStreamService.addUpstream(upStreamDto, operatorUser);
+                upStreamId=upStreamDto.getId();
+                upName = upStreamDto.getName();
             }
-            Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
+            //创建报备单
+            RegisterBill registerBill = preCreateRegisterBill(input,upStreamId,upName);
+            ImageCert imageCert = new ImageCert();
+            List imageCerts= new ArrayList<ImageCert>();
+            imageCerts.add(imageCert);
+            Long billId = registerBillService.createRegisterBill(registerBill, imageCerts,
                     Optional.ofNullable(new OperatorUser(input.getCreatorId(), input.getCreatorName())));
             //创建检测请求
             resultDetectRequest = createDetectRequest(input, billId, empty);
@@ -491,10 +492,39 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
             throw new AppException(e.getMessage());
 
         } catch (Exception e) {
-            throw new AppException("服务端出错");
+            throw new AppException(e.getMessage());
 
         }
         return resultDetectRequest;
+    }
+
+    /**
+     * 初始化报备单参数-创建场外委托单
+     * @param input
+     * @param upStreamId
+     * @param upName
+     * @return
+     */
+    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId,String upName) {
+        User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
+        RegisterBill registerBill = new RegisterBill();
+        registerBill.setName(user.getUserName());
+        registerBill.setIdCardNo(user.getCardNumber());
+        registerBill.setUserId(input.getCreatorId());
+        registerBill.setBillType(BillTypeEnum.CHECK_ORDER.getCode());
+        registerBill.setTruckType(TruckTypeEnum.FULL.getCode());
+        registerBill.setUpStreamId(upStreamId);
+        registerBill.setUpStreamName(upName);
+        registerBill.setProductId(input.getProductId());
+        registerBill.setProductName(input.getProductName());
+        registerBill.setProductAliasName(input.getProductAliasName());
+        registerBill.setOriginId(input.getOriginId());
+        registerBill.setOriginName(input.getOriginName());
+        registerBill.setWeight(input.getWeight());
+        registerBill.setWeightUnit(input.getWeightUnit());
+        registerBill.setMarketId(input.getMarketId());
+        registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
+        return registerBill;
     }
 
     /**
