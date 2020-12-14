@@ -3,13 +3,16 @@ package com.dili.trace.api.manager;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
+import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
@@ -63,14 +66,13 @@ public class ManagerDetectRquestApi {
      * @return
      */
     @RequestMapping("/listPagedDetectRequest.api")
-    public BaseOutput listPagedDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
+    public BaseOutput<BasePage<DetectRequestDto>> listPagedDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
         if (null == detectRequestDto.getDetectStatus()) {
             return BaseOutput.failure("参数错误");
         }
 
-        List<DetectRequestDto> dtoList = detectRequestService.listPageByUserCategory(detectRequestDto);
-        return BaseOutput.success().setData(dtoList);
-
+        BasePage<DetectRequestDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
+        return BaseOutput.success().setData(basePage);
     }
 
     /**
@@ -213,15 +215,22 @@ public class ManagerDetectRquestApi {
     }
 
     /**
-     * 查询采样检测列表
+     * 采样检测-查询
      *
-     * @param input
+     * @param query
      * @return
      */
     @RequestMapping("/listPagedSampleSourceDetect.api")
-    public BaseOutput listPagedSampleSourceDetect(@RequestBody Object input) {
-
-        return BaseOutput.success();
+    public BaseOutput<BasePage<SampleSourceListOutputDto>> listPagedSampleSourceDetect(@RequestBody DetectRequestQueryDto query) {
+        try {
+            BasePage<SampleSourceListOutputDto> basePage = this.detectRequestService.listPagedSampleSourceDetect(query);
+            return BaseOutput.success().setData(basePage);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("操作失败：服务端出错");
+        }
     }
 
     /**
@@ -311,7 +320,11 @@ public class ManagerDetectRquestApi {
     @RequestMapping(value = "/doAutoCheck.api", method = RequestMethod.GET)
     public BaseOutput doAutoCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
-            registerBillService.autoCheckRegisterBill(id);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            if (sessionData == null) {
+                throw new TraceBizException("用户未登录");
+            }
+            registerBillService.autoCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -327,7 +340,11 @@ public class ManagerDetectRquestApi {
     @RequestMapping(value = "/doSamplingCheck.api", method = RequestMethod.GET)
     public BaseOutput doSamplingCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
-            registerBillService.samplingCheckRegisterBill(id);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            if (sessionData == null) {
+                throw new TraceBizException("用户未登录");
+            }
+            registerBillService.samplingCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -343,7 +360,11 @@ public class ManagerDetectRquestApi {
     @RequestMapping(value = "/doSpotCheck.api", method = RequestMethod.GET)
     public BaseOutput doSpotCheck(@RequestParam(name = "id", required = true) Long id) {
         try {
-            registerBillService.samplingCheckRegisterBill(id);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            if (sessionData == null) {
+                throw new TraceBizException("用户未登录");
+            }
+            registerBillService.spotCheckRegisterBillFromApp(id, sessionData);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }

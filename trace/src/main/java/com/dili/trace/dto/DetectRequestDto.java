@@ -2,12 +2,14 @@ package com.dili.trace.dto;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
+import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Alvin.Li
@@ -156,6 +158,39 @@ public class DetectRequestDto extends DetectRequest {
      */
     @Transient
     private String upStreamName;
+
+    @Transient
+    private Long marketId;
+
+    @Transient
+    private List<DetectRecord> detectRecordList;
+
+    @Transient
+    private String productAliasName;
+
+    public String getProductAliasName() {
+        return productAliasName;
+    }
+
+    public void setProductAliasName(String productAliasName) {
+        this.productAliasName = productAliasName;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public List<DetectRecord> getDetectRecordList() {
+        return detectRecordList;
+    }
+
+    public void setDetectRecordList(List<DetectRecord> detectRecordList) {
+        this.detectRecordList = detectRecordList;
+    }
 
     public String getOperatorName() {
         return operatorName;
