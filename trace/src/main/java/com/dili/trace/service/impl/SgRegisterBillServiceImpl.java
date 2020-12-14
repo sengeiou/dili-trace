@@ -3,6 +3,7 @@ package com.dili.trace.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.RegisterBillMessageEvent;
+import com.dili.common.entity.SessionData;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.dao.RegisterBillMapper;
@@ -343,12 +344,20 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public int autoCheckRegisterBill(Long id) {
         RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
-        return autoCheckRegisterBill(registerBill);
+        UserTicket userTicket = getOptUser();
+        return autoCheckRegisterBill(registerBill, userTicket);
     }
 
-    private int autoCheckRegisterBill(RegisterBill registerBill) {
+    @Transactional
+    @Override
+    public int autoCheckRegisterBillFromApp(Long id, SessionData sessionData) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        UserTicket userTicket = getOptUserFromApp(sessionData);
+        return autoCheckRegisterBill(registerBill, userTicket);
+    }
+
+    private int autoCheckRegisterBill(RegisterBill registerBill,  UserTicket userTicket) {
         if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
-            UserTicket userTicket = getOptUser();
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.AUTO_CHECK.getCode().intValue());
@@ -377,7 +386,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 continue;
             }
             try {
-                this.autoCheckRegisterBill(registerBill);
+                UserTicket userTicket = getOptUser();
+                this.autoCheckRegisterBill(registerBill, userTicket);
                 dto.getSuccessList().add(registerBill.getCode());
             } catch (Exception e) {
                 dto.getFailureList().add(registerBill.getCode());
@@ -412,7 +422,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 continue;
             }
             try {
-                this.samplingCheckRegisterBill(registerBill);
+                UserTicket userTicket = getOptUser();
+                this.samplingCheckRegisterBill(registerBill, userTicket);
                 dto.getSuccessList().add(registerBill.getCode());
             } catch (Exception e) {
                 dto.getFailureList().add(registerBill.getCode());
@@ -487,12 +498,20 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public int samplingCheckRegisterBill(Long id) {
         RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
-        return samplingCheckRegisterBill(registerBill);
+        UserTicket userTicket = getOptUser();
+        return samplingCheckRegisterBill(registerBill, userTicket);
     }
 
-    private int samplingCheckRegisterBill(RegisterBill registerBill) {
+    @Transactional
+    @Override
+    public int samplingCheckRegisterBillFromApp(Long id, SessionData sessionData) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        UserTicket userTicket = getOptUserFromApp(sessionData);
+        return samplingCheckRegisterBill(registerBill, userTicket);
+    }
+
+    private int samplingCheckRegisterBill(RegisterBill registerBill, UserTicket userTicket) {
         if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
-            UserTicket userTicket = getOptUser();
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
 //            registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
@@ -515,12 +534,20 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
     @Override
     public int spotCheckRegisterBill(Long id) {
         RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
-        return spotCheckRegisterBill(registerBill);
+        UserTicket userTicket = getOptUser();
+        return spotCheckRegisterBill(registerBill, userTicket);
     }
 
-    private int spotCheckRegisterBill(RegisterBill registerBill) {
+    @Transactional
+    @Override
+    public int spotCheckRegisterBillFromApp(Long id, SessionData sessionData) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(id).orElse(null);
+        UserTicket userTicket = getOptUserFromApp(sessionData);
+        return spotCheckRegisterBill(registerBill, userTicket);
+    }
+
+    private int spotCheckRegisterBill(RegisterBill registerBill, UserTicket userTicket) {
         if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus())) {
-            UserTicket userTicket = getOptUser();
             registerBill.setOperatorName(userTicket.getRealName());
             registerBill.setOperatorId(userTicket.getId());
             registerBill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
@@ -597,6 +624,13 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     UserTicket getOptUser() {
         return SessionContext.getSessionContext().getUserTicket();
+    }
+
+    UserTicket getOptUserFromApp(SessionData sessionData) {
+        UserTicket userTicket = DTOUtils.newInstance(UserTicket.class);
+        userTicket.setId(sessionData.getUserId());
+        userTicket.setUserName(sessionData.getUserName());
+        return userTicket;
     }
 
     @Override

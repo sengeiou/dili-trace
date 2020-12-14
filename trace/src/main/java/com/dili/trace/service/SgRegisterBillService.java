@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.dili.common.annotation.RegisterBillMessageEvent;
+import com.dili.common.entity.SessionData;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.*;
@@ -91,6 +92,14 @@ public interface SgRegisterBillService {
     int autoCheckRegisterBill(Long id);
 
     /**
+     * 自动送检标记-app
+     *
+     * @param id
+     * @return
+     */
+    int autoCheckRegisterBillFromApp(Long id, SessionData sessionData);
+
+    /**
      * 采样检测标记
      *
      * @param id
@@ -99,12 +108,28 @@ public interface SgRegisterBillService {
     int samplingCheckRegisterBill(Long id);
 
     /**
+     * 采样检测标记-app
+     *
+     * @param id
+     * @return
+     */
+    int samplingCheckRegisterBillFromApp(Long id, SessionData sessionData);
+
+    /**
      * 抽检标记
      *
      * @param id
      * @return
      */
     int spotCheckRegisterBill(Long id);
+
+    /**
+     * 抽检标记-app
+     *
+     * @param id
+     * @return
+     */
+    int spotCheckRegisterBillFromApp(Long id, SessionData sessionData);
 
     /**
      * 复检标记
