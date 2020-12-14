@@ -212,6 +212,19 @@ public class RegisterBillDto extends RegisterBill {
     @Transient
     private Date checkInDateEnd;
 
+
+    @Column(name = "`verify_status`")
+    @Operator(Operator.IN)
+    private List<Integer> verifyStatueList;
+
+    public List<Integer> getVerifyStatueList() {
+        return verifyStatueList;
+    }
+
+    public void setVerifyStatueList(List<Integer> verifyStatueList) {
+        this.verifyStatueList = verifyStatueList;
+    }
+
     public Date getCheckInDateStart() {
         return checkInDateStart;
     }

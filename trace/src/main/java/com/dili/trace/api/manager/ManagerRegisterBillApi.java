@@ -8,10 +8,10 @@ import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
-import com.dili.trace.api.input.RegisterBillQueryDto;
 import com.dili.trace.api.input.RegisterBillQueryInputDto;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
@@ -131,7 +131,7 @@ public class ManagerRegisterBillApi {
      * @return
      */
     @RequestMapping("/listPagedBill.api")
-    public BaseOutput listPagedBill(@RequestBody RegisterBillQueryDto query) {
+    public BaseOutput listPagedBill(@RequestBody RegisterBillDto query) {
         return BaseOutput.success();
     }
 
