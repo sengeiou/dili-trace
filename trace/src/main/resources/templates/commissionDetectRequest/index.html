@@ -19,34 +19,6 @@
                 <#bcomboProvider _id="detectStatus" _provider="detectStatusProvider" _value="" _onLoadSuccess=""/>
             </div>
             <div class="form-group col">
-                <label for="hasDetectReport">检测报告</label>
-                <select id="hasDetectReport" name="hasDetectReport" class="form-control">
-                    <option value="">--请选择--</option>
-                    <option value="1">有</option>
-                    <option value="0">无</option>
-                </select>
-            </div>
-            <div class="form-group col">
-                <label for="hasOriginCertifiy">产地证明</label>
-                <select id="hasOriginCertifiy" name="hasOriginCertifiy" class="form-control">
-                    <option value="">--请选择--</option>
-                    <option value="1">有</option>
-                    <option value="0">无</option>
-                </select>
-            </div>
-            <div class="form-group col">
-                <label for="hasHandleResult">处理结果</label>
-                <select id="hasHandleResult" name="hasHandleResult" class="form-control">
-                    <option value="">--请选择--</option>
-                    <option value="1">有</option>
-                    <option value="0">无</option>
-                </select>
-            </div>
-            <div class="form-group col">
-                <label for="likePlate">车牌号</label>
-                <input type="text" class="form-control" name="likePlate" id="likePlate"/>
-            </div>
-            <div class="form-group col">
                 <label for="likeName">经营户姓名</label>
                 <input type="text" class="form-control" name="likeName" id="likeName"/>
             </div>
@@ -55,13 +27,8 @@
                 <input type="text" class="form-control" name="likePhone" id="likePhone"/>
             </div>
             <div class="form-group col">
-                <label for="likeCode">报备单号</label>
+                <label for="likeCode">委托单号</label>
                 <input type="text" class="form-control" name="likeCode" id="likeCode"/>
-            </div>
-            <div class="form-group col">
-                <label for="detectType">检测类型</label>
-                <select id="detectType" name="detectType" class="form-control"></select>
-                <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
             <div class="form-group col">
                 <label for="detectResult">检测结果</label>
@@ -69,7 +36,7 @@
                 <#bcomboProvider _id="detectResult" _provider="detectResultEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
             <div class="form-group col-auto">
-                <label for="createdStart">报备时间</label>
+                <label for="createdStart">预约时间</label>
                 <div class="form-inline">
                     <div class="input-group">
                         <input type="text" name="createdStart" id="createdStart" class="form-control laydatetime laystart" value="${createdStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
@@ -86,18 +53,35 @@
                 </div>
             </div>
             <div class="form-group col-auto">
-                <label for="checkinCreatedStart">进门时间</label>
+                <label for="confirmTimeStart">接单时间</label>
                 <div class="form-inline">
                     <div class="input-group">
-                        <input type="text" name="checkinCreatedStart" id="checkinCreatedStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <input type="text" name="confirmTimeStart" id="confirmTimeStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
                         <div class="input-group-append">
-                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                            <label for="confirmTimeStart" class="input-group-text fa fa-calendar"></label>
                         </div>
                     </div>&nbsp;&nbsp;至&nbsp;&nbsp;
                     <div class="input-group">
-                        <input type="text" name="checkinCreatedEnd" id="checkinCreatedEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <input type="text" name="confirmTimeEnd" id="confirmTimeEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
                         <div class="input-group-append">
-                            <label for="checkinCreatedEnd" class="input-group-text fa fa-calendar"></label>
+                            <label for="confirmTimeEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <label for="sampleTimeStart">采样时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="sampleTimeStart" id="sampleTimeStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="sampleTimeStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="sampleTimeEnd" id="sampleTimeEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="sampleTimeEnd" class="input-group-text fa fa-calendar"></label>
                         </div>
                     </div>
                 </div>
@@ -108,7 +92,7 @@
                     <div class="input-group">
                         <input type="text" name="detectTimeStart" id="detectTimeStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
                         <div class="input-group-append">
-                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                            <label for="detectTimeStart" class="input-group-text fa fa-calendar"></label>
                         </div>
                     </div>&nbsp;&nbsp;至&nbsp;&nbsp;
                     <div class="input-group">
@@ -144,19 +128,16 @@
             <tr>
                 <th data-checkbox="true"></th>
                 <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
-                    报备时间
+                    预约时间
                 </th>
                 <th data-field="code" data-sortable="true" data-align="center">
-                    报备单号
+                    委托编号
                 </th>
                 <th data-field="verifyStatusName" data-sortable="true" data-align="center" >
                     审核状态
                 </th>
                 <th data-field="detectStatusName" data-sortable="true" data-align="center" >
                     检测状态
-                </th>
-                <th data-field="billTypeName" data-sortable="true" data-align="center">
-                    报备单类型
                 </th>
                 <th data-field="name" data-sortable="true" data-align="center">
                     业户姓名
@@ -182,6 +163,24 @@
                 <th data-field="originName" data-sortable="true" data-align="center">
                     产地
                 </th>
+                <th data-field="confirmTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    接单时间
+                </th>
+                <th data-field="sampleTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    采样时间
+                </th>
+                <th data-field="sampleCode" data-sortable="true" data-align="center">
+                    采样编号
+                </th>
+                <th data-field="detectTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    检测时间
+                </th>
+                <th data-field="detectResultName" data-sortable="true" data-align="center">
+                    检测结果
+                </th>
+                <th data-field="detectorName" data-sortable="true" data-align="center">
+                    检测员
+                </th>
                 <th data-field="hasOriginCertifiyName" data-sortable="true" data-align="center">
                     产地证明
                 </th>
@@ -190,24 +189,6 @@
                 </th>
                 <th data-field="hasHandleResultName" data-sortable="true" data-align="center">
                     处理结果
-                </th>
-                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
-                    接单时间
-                </th>
-                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
-                    采样时间
-                </th>
-                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
-                    检测时间
-                </th>
-                <th data-field="sampleCode" data-sortable="true" data-align="center">
-                    采样编号
-                </th>
-                <th data-field="detectResultName" data-sortable="true" data-align="center">
-                    检测结果
-                </th>
-                <th data-field="detectorName" data-sortable="true" data-align="center">
-                    检测员
                 </th>
                 <th data-field="isDeletedName" data-sortable="true" data-align="center">
                     是否删除
@@ -223,7 +204,7 @@
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
-<script src="${contextPath!}/resources/js/detectRequest.index.js"></script>
+<script src="${contextPath!}/resources/js/CommissionDetectRequestGrid.index.js"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 
 <script type="text/javascript">
@@ -235,7 +216,7 @@
         });
     });
     $(function () {
-        new DetectRequestGridGrid($('#detectRequestGrid'),$('#queryForm'),$('#toolbar'));
+        new CommissionDetectRequestGrid($('#detectRequestGrid'),$('#queryForm'),$('#toolbar'));
     });
 
 </script>

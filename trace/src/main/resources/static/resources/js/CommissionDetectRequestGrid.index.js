@@ -1,12 +1,12 @@
-class DetectRequestGridGrid extends ListPage {
+class CommissionDetectRequestGrid extends ListPage {
     constructor(grid, queryform, toolbar) {
-        super(grid, queryform, queryform.find('#query'), "/customerDetectRequest/listPage.action");
+        super(grid, queryform, queryform.find('#query'), "/commissionDetectRequest/listPage.action");
         this.toolbar = toolbar;
         this.btns = this.toolbar.find('button');
         this.uid = _.uniqueId("trace_id_");
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
-        window['DetectRequestGridObj'] = this;
+        window['CommissionDetectRequestGridObj'] = this;
         $('#assign-btn').on('click', async () => await this.openAssignPage());
         $('#sampling-btn').on('click', async () => await this.doSamplingCheck());
         $('#auto-btn').on('click', async () => await this.doAutoCheck());
@@ -23,7 +23,7 @@ class DetectRequestGridGrid extends ListPage {
     }
     async openAssignPage() {
         var row = this.rows[0];
-        var url = this.toUrl('/customerDetectRequest/confirm.html?id=' + row.id);
+        var url = this.toUrl('/commissionDetectRequest/confirm.html?id=' + row.id);
         var dia = bs4pop.dialog({
             title: '接单',
             content: url,
@@ -152,7 +152,7 @@ class DetectRequestGridGrid extends ListPage {
     }
     async openDetailPage() {
         var row = this.rows[0];
-        var url = this.toUrl('/customerDetectRequest/view.html?id=' + row.billId);
+        var url = this.toUrl('/commissionDetectRequest/view.html?id=' + row.billId);
         var dia = bs4pop.dialog({
             title: '报备单详情',
             content: url,

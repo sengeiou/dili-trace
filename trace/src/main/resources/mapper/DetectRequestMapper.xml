@@ -139,19 +139,25 @@
 
 
   <select id="queryListByExample" parameterType="com.dili.trace.dto.DetectRequestWithBillDto" resultType="com.dili.trace.dto.DetectRequestWithBillDto">
-      SELECT r.id, b.id billId, b.`created`, b.`code`, b.`verify_status`, b.`detect_status`,b.`bill_type`,b.`name`,b.`corporate_name`,
+      SELECT r.id, b.id billId, b.`created` billCreated, b.`code`, b.`verify_status`, b.`detect_status`,b.`bill_type`,b.`name`,b.`corporate_name`,
       b.`plate`, b.`product_id`,b.`product_name`,b.`product_alias_name`, b.`brand_id`, b.`brand_name`, b.`weight`, b.`weight_unit`, b.`origin_id`, b.`origin_name`,b.`has_detect_report`, b.`has_origin_certifiy`,
-      r.`created` confirmTime, r.`created` sampleTime, b.`sample_code`, r.`detect_time`, r.`detect_result`, r.`detector_id`, r.`detector_name`, b.`has_handle_result`, b.`is_deleted`
+      r.`created`, r.`confirm_time`, r.`sample_time`, b.`sample_code`, r.`detect_time`, r.`detect_result`, r.`detector_id`, r.`detector_name`, b.`has_handle_result`, b.`is_deleted`
       FROM detect_request r
       JOIN register_bill b ON (r.id = b.detect_request_id)
       left join trade_detail on b.id=trade_detail.bill_id
       left join checkinout_record on checkinout_record.id=trade_detail.checkin_record_id
       WHERE 1=1
+      <if test="billCreatedStart != null">
+          <![CDATA[ AND b.created >= #{billCreatedStart} ]]>
+      </if>
+      <if test="billCreatedEnd != null">
+          <![CDATA[ AND b.created <= #{billCreatedEnd} ]]>
+      </if>
       <if test="createdStart != null">
-          <![CDATA[ AND b.created >= #{createdStart} ]]>
+          <![CDATA[ AND r.created >= #{createdStart} ]]>
       </if>
       <if test="createdEnd != null">
-          <![CDATA[ AND b.created <= #{createdEnd} ]]>
+          <![CDATA[ AND r.created <= #{createdEnd} ]]>
       </if>
       <if test="checkinCreatedStart != null">
           <![CDATA[ AND checkinout_record.created >= #{checkinCreatedStart} ]]>

@@ -19,6 +19,11 @@ public class DetectRequestWithBillDto extends RegisterBill {
     private Long billId;
 
     /**
+     * 报备单创建时间
+     */
+    private Date billCreated;
+
+    /**
      * 创建人ID
      */
     private Long creatorId;
@@ -108,10 +113,20 @@ public class DetectRequestWithBillDto extends RegisterBill {
     /**
      * 报备时间-开始查询条件
      */
-    private Date createdStart;
+    private Date billCreatedStart;
 
     /**
      * 报备时间-结束查询条件
+     */
+    private Date billCreatedEnd;
+
+    /**
+     * 预约时间-开始查询条件
+     */
+    private Date createdStart;
+
+    /**
+     * 预约时间-结束查询条件
      */
     private Date createdEnd;
 
@@ -135,6 +150,25 @@ public class DetectRequestWithBillDto extends RegisterBill {
      */
     private Date detectTimeEnd;
 
+    /**
+     * 接单时间-开始查询条件
+     */
+    private Date confirmTimeStart;
+
+    /**
+     * 接单时间-结束查询条件
+     */
+    private Date confirmTimeEnd;
+
+    /**
+     * 采样时间-开始查询条件
+     */
+    private Date sampleTimeStart;
+
+    /**
+     * 采样时间-结束查询条件
+     */
+    private Date sampleTimeEnd;
 
     @Override
     public Long getId() {
@@ -337,5 +371,61 @@ public class DetectRequestWithBillDto extends RegisterBill {
 
     public void setLikePhone(String likePhone) {
         this.likePhone = likePhone;
+    }
+
+    public Date getBillCreatedStart() {
+        return billCreatedStart;
+    }
+
+    public void setBillCreatedStart(Date billCreatedStart) {
+        this.billCreatedStart = billCreatedStart;
+    }
+
+    public Date getBillCreatedEnd() {
+        return billCreatedEnd;
+    }
+
+    public void setBillCreatedEnd(Date billCreatedEnd) {
+        this.billCreatedEnd = billCreatedEnd;
+    }
+
+    public Date getConfirmTimeStart() {
+        return confirmTimeStart;
+    }
+
+    public void setConfirmTimeStart(Date confirmTimeStart) {
+        this.confirmTimeStart = confirmTimeStart;
+    }
+
+    public Date getConfirmTimeEnd() {
+        return confirmTimeEnd;
+    }
+
+    public void setConfirmTimeEnd(Date confirmTimeEnd) {
+        this.confirmTimeEnd = confirmTimeEnd;
+    }
+
+    public Date getSampleTimeStart() {
+        return sampleTimeStart;
+    }
+
+    public void setSampleTimeStart(Date sampleTimeStart) {
+        this.sampleTimeStart = sampleTimeStart;
+    }
+
+    public Date getSampleTimeEnd() {
+        return sampleTimeEnd;
+    }
+
+    public void setSampleTimeEnd(Date sampleTimeEnd) {
+        this.sampleTimeEnd = sampleTimeEnd;
+    }
+
+    public Date getBillCreated() {
+        return billCreated;
+    }
+
+    public void setBillCreated(Date billCreated) {
+        this.billCreated = billCreated;
     }
 }
