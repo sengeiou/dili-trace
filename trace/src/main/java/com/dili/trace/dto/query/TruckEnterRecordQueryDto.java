@@ -1,4 +1,4 @@
-package com.dili.trace.dto;
+package com.dili.trace.dto.query;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.trace.domain.TruckEnterRecord;
@@ -19,6 +19,18 @@ public class TruckEnterRecordQueryDto extends TruckEnterRecord {
     @Column(name = "`truck_plate`")
     @Like(Like.RIGHT)
     private String likeTruckPlate;
+
+    @Column(name = "`driver_name`")
+    @Like(Like.RIGHT)
+    private String likeDriverName;
+
+    public String getLikeDriverName() {
+        return likeDriverName;
+    }
+
+    public void setLikeDriverName(String likeDriverName) {
+        this.likeDriverName = likeDriverName;
+    }
 
     public LocalDate getCreatedStart() {
         return createdStart;

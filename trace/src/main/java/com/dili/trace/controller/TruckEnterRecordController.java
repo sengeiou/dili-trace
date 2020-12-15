@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.trace.domain.TruckEnterRecord;
+import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.TruckEnterRecordService;
 import com.dili.trace.service.UapRpcService;
@@ -42,7 +43,7 @@ public class TruckEnterRecordController {
     @ApiOperation("跳转到TruckEnterRecord页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap, HttpServletRequest req) {
-        List<CarTypeDTO> carTypeList = this.assetsRpcService.listCarType(new CarTypePublicDTO(),uapRpcService.getCurrentFirm().get().getId());
+        List<CarTypeDTO> carTypeList = this.assetsRpcService.listCarType(new CarTypePublicDTO(), uapRpcService.getCurrentFirm().get().getId());
         modelMap.put("carTypeList", carTypeList);
         return "truckEnterRecord/index";
     }
@@ -59,7 +60,7 @@ public class TruckEnterRecordController {
             @ApiImplicitParam(name = "TruckEnterRecord", paramType = "form", value = "TruckEnterRecord的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody TruckEnterRecord queryInput) throws Exception {
+    String listPage(@RequestBody TruckEnterRecordQueryDto queryInput) throws Exception {
         return this.truckEnterRecordService.listEasyuiPage(queryInput, true).toString();
 
     }

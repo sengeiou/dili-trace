@@ -3,8 +3,8 @@
     <form id="queryForm" role="form" >
         <div class="row row-cols-6">
             <div class="form-group col">
-                <label for="driverName">车牌号</label>
-                <input type="text" class="form-control" name="driverName" id="driverName"/>
+                <label for="likeDriverName">司机</label>
+                <input type="text" class="form-control" name="likeDriverName" id="likeDriverName"/>
             </div>
             <div class="form-group col">
                 <label for="likeTruckPlate">车牌号</label>
@@ -59,6 +59,9 @@
             <thead>
             <tr>
 
+                <th data-field="driverName" data-sortable="true" data-align="center">
+                    司机
+                </th>
                 <th data-field="truckPlate" data-sortable="true" data-align="center">
                     车牌
                 </th>
