@@ -5,10 +5,14 @@ import com.dili.common.annotation.Role;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserDriverRef;
+import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.service.DriverUserService;
+import com.dili.trace.service.TruckEnterRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -38,9 +42,25 @@ public class ClientDriverUserApi {
 
     @Autowired
     DriverUserService driverUserService;
+    @Autowired
+    TruckEnterRecordService truckEnterRecordService;
 
     /**
-     *是否需要注册
+     * 查询司机进门报备数据列表
+     * @param queryDto
+     * @return
+     */
+    @ApiOperation(value = "查询司机进门报备数据列表", notes = "查询司机进门报备数据列表")
+    @RequestMapping(value = "/listPagedEnterRecord.api",method = RequestMethod.POST)
+    public BaseOutput listPagedEnterRecord(@RequestBody TruckEnterRecordQueryDto queryDto) {
+        BasePage<TruckEnterRecord> page = this.truckEnterRecordService.listPageByExample(queryDto);
+        return BaseOutput.successData(page);
+
+    }
+
+    /**
+     * 是否需要注册
+     *
      * @param user 业户
      * @return
      */
@@ -54,6 +74,7 @@ public class ClientDriverUserApi {
 
     /**
      * 获取司机用户列表
+     *
      * @param user 查询条件
      * @return 司机用户列表
      */
@@ -73,6 +94,7 @@ public class ClientDriverUserApi {
 
     /**
      * 获取司机列表
+     *
      * @return 司机列表
      */
     @ApiOperation(value = "获取司机列表", notes = "获取司机列表")
@@ -89,6 +111,7 @@ public class ClientDriverUserApi {
 
     /**
      * 新增司机与卖家关联关系
+     *
      * @param userRef 司机与卖家关联关系信息
      * @return 新增结果
      */

@@ -1,4 +1,4 @@
-package com.dili.trace.dto;
+package com.dili.trace.dto.query;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.trace.domain.TruckEnterRecord;
@@ -10,15 +10,39 @@ import java.time.LocalDate;
 
 public class TruckEnterRecordQueryDto extends TruckEnterRecord {
     // 登记时间开始
+    /**
+     * 开始时间
+     */
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "yyyy-MM-dd")
     private LocalDate createdStart;
     // 登记时间结束
+    /**
+     * 结束时间
+     */
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "yyyy-MM-dd")
     private LocalDate createdEnd;
 
+    /**
+     * 车牌模糊查询
+     */
     @Column(name = "`truck_plate`")
     @Like(Like.RIGHT)
     private String likeTruckPlate;
+
+    /**
+     * 司机名字模糊查询
+     */
+    @Column(name = "`driver_name`")
+    @Like(Like.RIGHT)
+    private String likeDriverName;
+
+    public String getLikeDriverName() {
+        return likeDriverName;
+    }
+
+    public void setLikeDriverName(String likeDriverName) {
+        this.likeDriverName = likeDriverName;
+    }
 
     public LocalDate getCreatedStart() {
         return createdStart;

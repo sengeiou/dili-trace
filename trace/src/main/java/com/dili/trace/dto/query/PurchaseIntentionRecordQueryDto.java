@@ -1,4 +1,4 @@
-package com.dili.trace.dto;
+package com.dili.trace.dto.query;
 
 import com.dili.ss.domain.annotation.Like;
 import com.dili.trace.domain.PurchaseIntentionRecord;

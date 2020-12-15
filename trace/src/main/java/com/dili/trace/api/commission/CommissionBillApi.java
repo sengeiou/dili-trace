@@ -100,7 +100,8 @@ public class CommissionBillApi {
                     registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
                 }
                 if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-                    registerBill.setTallyAreaNo(user.getTallyAreaNos());
+//                    registerBill.setTallyAreaNo(user.getTallyAreaNos());
+                    registerBill.setSourceName(user.getTallyAreaNos());
                 }
                 registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
 

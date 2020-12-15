@@ -1,12 +1,13 @@
 package com.dili.trace.service;
 
+import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.exception.AppException;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
@@ -15,17 +16,14 @@ import com.dili.trace.dao.DetectRequestMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
-import com.dili.trace.dto.DetectRequestDto;
-import com.dili.trace.dto.IdNameDto;
-import com.dili.trace.dto.OperatorUser;
-import com.dili.trace.dto.UpStreamDto;
+import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.uap.sdk.domain.User;
-import com.dili.uap.sdk.rpc.UserRpc;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,6 +55,9 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     RegisterBillService registerBillService;
     @Autowired
     UserRpcService userRpcService;
+    @Autowired
+    ImageCertService imageCertService;
+
     /**
      * 创建检测请求
      *
@@ -305,14 +306,47 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
     /**
+     * 分页查询采样检测列表
+     *
+     * @param query
+     * @return
+     */
+    public EasyuiPageOutput listBasePageByExample(DetectRequestWithBillDto query) throws Exception {
+        if (query.getPage() == null || query.getPage() < 0) {
+            query.setPage(1);
+        }
+        if (query.getRows() == null || query.getRows() <= 0) {
+            query.setRows(10);
+        }
+        PageHelper.startPage(query.getPage(), query.getRows());
+        List<DetectRequestWithBillDto> list = this.detectRequestMapper.queryListByExample(query);
+        Page<DetectRequestWithBillDto> page = (Page) list;
+//        BasePage<DetectRequestDto> result = new BasePage<DetectRequestDto>();
+//        result.setDatas(list);
+//        result.setPage(page.getPageNum());
+//        result.setRows(page.getPageSize());
+//        result.setTotalItem(page.getTotal());
+//        result.setTotalPage(page.getPages());
+//        result.setStartIndex(page.getStartRow());
+
+        EasyuiPageOutput out = new EasyuiPageOutput();
+        List results = ValueProviderUtils.buildDataByProvider(query, list);
+        out.setRows(results);
+        out.setTotal(page.getTotal());
+
+        return out;
+    }
+
+    /**
      * 检测请求分配检测员
      *
      * @param id             检测请求ID
      * @param designatedId   检测员ID
      * @param designatedName 检测员姓名
+     * @param detectTime 检测时间
      */
     @Transactional(rollbackFor = Exception.class)
-    public void assignDetector(Long id, Long designatedId, String designatedName) {
+    public void assignDetector(Long id, Long designatedId, String designatedName, Date detectTime) {
         DetectRequest detectRequest = this.get(id);
         if (detectRequest == null) {
             throw new RuntimeException("检测请求不存在。");
@@ -322,7 +356,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
             throw new RuntimeException("检测请求关联的报备单据不存在。");
         }
         if (registerBill.getDetectStatus() != null && registerBill.getDetectStatus() >= DetectStatusEnum.WAIT_DESIGNATED.getCode()) {
-            throw new RuntimeException("检测请求已接单，不可再分配检测员。");
+            throw new RuntimeException("检测请求已接单。");
         }
         // 更新报备单检测状态
         RegisterBill billParam = new RegisterBill();
@@ -337,6 +371,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         updateParam.setId(id);
         updateParam.setDesignatedId(designatedId);
         updateParam.setDesignatedName(designatedName);
+        updateParam.setDetectTime(detectTime);
         updateParam.setModified(new Date());
         this.updateSelective(updateParam);
     }
@@ -377,7 +412,10 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @return
      */
     public DetectRequestDto getDetectRequestDetail(DetectRequestDto detectRequestDto) {
-        return detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+        DetectRequestDto dto = detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+        List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
+        dto.setImageCertList(imageCertList);
+        return dto;
     }
 
     /**
@@ -395,7 +433,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
     /**
-     *
      * @param query
      * @return
      */
@@ -409,7 +446,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
     /**
-     *
      * @param query
      * @return
      */
@@ -428,6 +464,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     /**
      * 分页查询采样检测列表
+     *
      * @param query
      * @return
      */
@@ -463,8 +500,8 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
         DetectRequest resultDetectRequest = new DetectRequest();
         try {
-            Long upStreamId =null;
-            String upName=null;
+            Long upStreamId = null;
+            String upName = null;
             //创建上游企业
             if (StringUtils.isNotBlank(input.getUpStreamName())) {
                 Integer upCode = 10;
@@ -476,13 +513,13 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
                 upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
                 upStreamDto.setTelphone("''");
                 upStreamService.addUpstream(upStreamDto, operatorUser);
-                upStreamId=upStreamDto.getId();
+                upStreamId = upStreamDto.getId();
                 upName = upStreamDto.getName();
             }
             //创建报备单
-            RegisterBill registerBill = preCreateRegisterBill(input,upStreamId,upName);
+            RegisterBill registerBill = preCreateRegisterBill(input, upStreamId, upName);
             ImageCert imageCert = new ImageCert();
-            List imageCerts= new ArrayList<ImageCert>();
+            List imageCerts = new ArrayList<ImageCert>();
             imageCerts.add(imageCert);
             Long billId = registerBillService.createRegisterBill(registerBill, imageCerts,
                     Optional.ofNullable(new OperatorUser(input.getCreatorId(), input.getCreatorName())));
@@ -500,12 +537,13 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     /**
      * 初始化报备单参数-创建场外委托单
+     *
      * @param input
      * @param upStreamId
      * @param upName
      * @return
      */
-    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId,String upName) {
+    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId, String upName) {
         User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
         RegisterBill registerBill = new RegisterBill();
         registerBill.setName(user.getUserName());
@@ -556,4 +594,68 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         this.billService.updateSelective(registerBill);
         return detectRequest;
     }
+
+    /**
+     * 查询可操作事件
+     * @param billId
+     * @return
+     */
+    public List<DetectRequestMessageEvent> queryEvents(Long billId) {
+        if (billId == null) {
+            return Lists.newArrayList();
+        }
+        RegisterBill item = this.billService.getAvaiableBill(billId).orElse(null);
+        if (item == null) {
+            return Lists.newArrayList();
+        }
+        List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
+        // 待接单：可以接单和撤回
+        if (DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(item.getDetectStatus())) {
+            msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.assign, DetectRequestMessageEvent.undo));
+        // 待采样：可以采样检测、主动送检
+        }else if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
+            msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.auto, DetectRequestMessageEvent.sampling));
+        }
+        if (item.getDetectRequestId() != null) {
+            DetectRequest detectRequest = this.get(item.getDetectRequestId());
+            if (detectRequest != null) {
+                // 检测不合格，可以复检
+                if (DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
+                    if (DetectTypeEnum.INITIAL_CHECK.equalsToCode(detectRequest.getDetectType())) {
+                        msgStream.add(DetectRequestMessageEvent.review);
+                    } else if (DetectTypeEnum.RECHECK.equalsToCode(detectRequest.getDetectType()) && item.getHasHandleResult() == 0) {
+                        msgStream.add(DetectRequestMessageEvent.review);
+                    }
+                }
+                // 检测合格，生成检测报告。
+            }
+        }
+        return msgStream;
+    }
+
+    /**
+     * 撤销检测请求
+     * @param id
+     */
+    public void undoDetectRequest(Long id) {
+        DetectRequest detectRequest = this.get(id);
+        if (Objects.isNull(detectRequest)) {
+            throw new TraceBizException("检测请求不存在");
+        }
+        RegisterBill registerBill = billService.get(detectRequest.getBillId());
+        if (Objects.isNull(registerBill)) {
+            throw new TraceBizException("检测请求对应的报备单不存在");
+        }
+        // 待接单才可退回
+        if (DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(registerBill.getDetectStatus())) {
+            RegisterBill bill = new RegisterBill();
+            bill.setId(registerBill.getId());
+            bill.setDetectStatus(DetectStatusEnum.RETURN_DETECT.getCode());
+            bill.setModified(new Date());
+            this.billService.updateSelective(bill);
+        } else {
+            throw new TraceBizException("操作失败，数据状态已改变");
+        }
+    }
+
 }

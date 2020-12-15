@@ -11,7 +11,7 @@
     "watch": true,
     "incremental": true,
     "plugins": [],
-    "module": "None",
+    "module": "System",
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,

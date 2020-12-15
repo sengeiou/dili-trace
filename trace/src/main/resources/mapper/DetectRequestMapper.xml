@@ -54,7 +54,7 @@
   </select>
 
     <select id="selectListPageByUserCategory" resultType="com.dili.trace.dto.DetectRequestDto">
-        SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.tally_area_no
+        SELECT b.detect_status detectStatus,b.product_name productName,b.name,b.tally_area_no,b.bill_type
         tallyAreaNo,b.weight,b.weight_unit weightUnit,d.*
         FROM detect_request d
         JOIN register_bill b ON d.id=b.detect_request_id
@@ -135,5 +135,75 @@
       <if test="sampleSource != null">
           AND r.detect_source =#{sampleSource}
       </if>
+  </select>
+
+
+  <select id="queryListByExample" parameterType="com.dili.trace.dto.DetectRequestWithBillDto" resultType="com.dili.trace.dto.DetectRequestWithBillDto">
+      SELECT r.id, b.id billId, b.`created`, b.`code`, b.`verify_status`, b.`detect_status`,b.`bill_type`,b.`name`,b.`corporate_name`,
+      b.`plate`, b.`product_id`,b.`product_name`,b.`product_alias_name`, b.`brand_id`, b.`brand_name`, b.`weight`, b.`weight_unit`, b.`origin_id`, b.`origin_name`,b.`has_detect_report`, b.`has_origin_certifiy`,
+      r.`created` confirmTime, r.`created` sampleTime, b.`sample_code`, r.`detect_time`, r.`detect_result`, r.`detector_id`, r.`detector_name`, b.`has_handle_result`, b.`is_deleted`
+      FROM detect_request r
+      JOIN register_bill b ON (r.id = b.detect_request_id)
+      left join trade_detail on b.id=trade_detail.bill_id
+      left join checkinout_record on checkinout_record.id=trade_detail.checkin_record_id
+      WHERE 1=1
+      <if test="createdStart != null">
+          <![CDATA[ AND b.created >= #{createdStart} ]]>
+      </if>
+      <if test="createdEnd != null">
+          <![CDATA[ AND b.created <= #{createdEnd} ]]>
+      </if>
+      <if test="checkinCreatedStart != null">
+          <![CDATA[ AND checkinout_record.created >= #{checkinCreatedStart} ]]>
+      </if>
+      <if test="checkinCreatedEnd != null">
+          <![CDATA[ AND checkinout_record.created <= #{checkinCreatedEnd} ]]>
+      </if>
+      <if test="detectTimeStart != null">
+          <![CDATA[ AND r.detect_time >= #{detectTimeStart} ]]>
+      </if>
+      <if test="detectTimeEnd != null">
+          <![CDATA[ AND r.detect_time <= #{detectTimeEnd} ]]>
+      </if>
+      <if test="registerSource != null">
+          AND b.register_source =#{registerSource}
+      </if>
+      <if test="verifyStatus != null">
+          AND b.verify_status =#{verifyStatus}
+      </if>
+      <if test="detectStatus != null">
+          AND b.detect_status =#{detectStatus}
+      </if>
+      <if test="hasDetectReport != null">
+          AND b.has_detect_report =#{hasDetectReport}
+      </if>
+      <if test="hasOriginCertifiy != null">
+          AND b.has_origin_certifiy =#{hasOriginCertifiy}
+      </if>
+      <if test="hasHandleResult != null">
+          AND b.has_handle_result =#{hasHandleResult}
+      </if>
+      <if test="likePlate != null">
+          AND b.plate like '%${likePlate}%'
+      </if>
+      <if test="likeName != null">
+          AND b.name like '%${likeName}%'
+      </if>
+      <if test="likeCode != null">
+          AND b.code like '%${likeCode}%'
+      </if>
+      <if test="likePhone != null">
+          AND b.phone like '%${likePhone}%'
+      </if>
+      <if test="detectType != null">
+          AND r.detect_type =#{detectType}
+      </if>
+      <if test="detectResult != null">
+          AND r.detect_result =#{detectResult}
+      </if>
+      <if test="marketId != null">
+          AND b.market_id =#{marketId}
+      </if>
+      order by  b.created desc
   </select>
 </mapper>
