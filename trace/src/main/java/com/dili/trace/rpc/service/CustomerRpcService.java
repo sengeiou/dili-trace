@@ -8,6 +8,7 @@ import com.dili.customer.sdk.domain.CharacterType;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.domain.dto.CustomerQueryInput;
 import com.dili.customer.sdk.enums.CustomerEnum;
+import com.dili.customer.sdk.rpc.CustomerMarketRpc;
 import com.dili.customer.sdk.rpc.CustomerRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.PageOutput;
@@ -48,6 +49,8 @@ public class CustomerRpcService {
     @Autowired
     CustomerRpc customerRpc;
     @Autowired
+    CustomerMarketRpc customerMarketRpc;
+    @Autowired
     FirmRpcService firmRpcService;
 
     @Autowired
@@ -78,21 +81,44 @@ public class CustomerRpcService {
 
         try {
             Long userId = Long.parseLong(request.getHeader("userId"));
-            Long marketId = Long.parseLong(request.getHeader("marketId"));
             CustomerQueryInput query = new CustomerQueryInput();
             query.setId(userId);
-            query.setMarketId(marketId);
-            BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
-            if (out.isSuccess()) {
-                return StreamEx.ofNullable(out.getData()).flatCollection(Function.identity()).nonNull().map(c -> {
-                    SessionData sessionData = new SessionData();
-                    sessionData.setUserId(c.getId());
-                    sessionData.setUserName(c.getName());
-                    sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
-                    return sessionData;
-                }).findFirst();
+
+            try{
+                Long marketId = Long.parseLong(request.getHeader("marketId"));
+                if(marketId!=null&&!marketId.equals(0)){
+                    query.setMarketId(marketId);
+                    BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
+                    if (out.isSuccess()) {
+                        return StreamEx.ofNullable(out.getData()).flatCollection(Function.identity()).nonNull().map(c -> {
+                            SessionData sessionData = new SessionData();
+                            sessionData.setUserId(c.getId());
+                            sessionData.setUserName(c.getName());
+                            sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
+                            return sessionData;
+                        }).findFirst();
+
+                    }
+                }else{
+                    BaseOutput<com.dili.customer.sdk.domain.Customer> out = this.customerRpc.getById(userId);
+                    if (out.isSuccess()) {
+                        return StreamEx.ofNullable(out.getData()).nonNull().map(c -> {
+                            SessionData sessionData = new SessionData();
+                            sessionData.setUserId(c.getId());
+                            sessionData.setUserName(c.getName());
+                            return sessionData;
+                        }).findFirst();
+
+                    }
+
+                }
+
+            }catch (Exception e){
 
             }
+
+
+
 
 
         } catch (Exception e) {

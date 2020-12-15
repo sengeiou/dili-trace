@@ -10,6 +10,7 @@ import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.POJOUtils;
 import com.dili.trace.api.input.DetectRequestQueryDto;
+import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
 import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.dao.DetectRequestMapper;
@@ -398,6 +399,16 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         return result;
     }
 
+    /**
+     * 根据检测状态统计
+     * @param queryDto
+     * @return
+     */
+    public List<CountDetectStatusDto>  countByDetectStatus(DetectRequestQueryDto queryDto){
+
+
+        return this.detectRequestMapper.countByDetectStatus(queryDto);
+    }
     /**
      * 查询检测详情
      *

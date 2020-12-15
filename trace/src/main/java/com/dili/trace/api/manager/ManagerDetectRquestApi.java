@@ -11,6 +11,8 @@ import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
+import com.dili.trace.api.input.RegisterBillQueryInputDto;
+import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
 import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.api.output.VerifyStatusCountOutputDto;
@@ -18,6 +20,8 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.DetectRequestDto;
+import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillInputDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
@@ -27,6 +31,7 @@ import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectRequestService;
 import com.dili.trace.service.SgRegisterBillService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
 
 /**
@@ -142,6 +148,18 @@ public class ManagerDetectRquestApi {
     }
 
     /**
+     * 统计不同状态数量
+     *
+     * @param queryInput
+     * @return
+     */
+    @RequestMapping("/countByDetectStatus.api")
+    public BaseOutput<List<CountDetectStatusDto>> countByDetectStatus(@RequestBody DetectRequestQueryDto queryInput) {
+        List<CountDetectStatusDto> list = this.detectRequestService.countByDetectStatus(queryInput);
+        return BaseOutput.successData(list);
+    }
+
+    /**
      * 根据检测请求获取报备单信息，并校验状态是否为待接单
      *
      * @param id
@@ -236,7 +254,7 @@ public class ManagerDetectRquestApi {
     /**
      * 采样检测-采样来源数量统计
      */
-    @RequestMapping(value = "/countBySampleSource.api", method = { RequestMethod.POST })
+    @RequestMapping(value = "/countBySampleSource.api", method = {RequestMethod.POST})
     public BaseOutput<List<VerifyStatusCountOutputDto>> countBySampleSource(@RequestBody DetectRequestQueryDto query) {
         try {
             List<SampleSourceCountOutputDto> list = this.detectRequestService.countBySampleSource(query);
@@ -252,7 +270,7 @@ public class ManagerDetectRquestApi {
     /**
      * 采样检测-查看详情
      */
-    @RequestMapping(value = "/getSampleSourceDetectDetail.api", method = { RequestMethod.GET })
+    @RequestMapping(value = "/getSampleSourceDetectDetail.api", method = {RequestMethod.GET})
     public BaseOutput<RegisterBill> getSampleSourceDetectDetail(@RequestParam(name = "id", required = true) Long id) {
         try {
             DetectRequest detectRequest = this.detectRequestService.get(id);
@@ -269,7 +287,7 @@ public class ManagerDetectRquestApi {
     /**
      * 采样检测-手动填写检测结果
      */
-    @RequestMapping(value = "/createDetectRecord.api", method = { RequestMethod.POST })
+    @RequestMapping(value = "/createDetectRecord.api", method = {RequestMethod.POST})
     public BaseOutput<Long> createDetectRecord(@RequestBody DetectRecord detectRecord) {
         try {
             if (StringUtils.isBlank(detectRecord.getRegisterBillCode())) {

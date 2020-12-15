@@ -2,16 +2,20 @@ package com.dili.trace.api.client;
 
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
+import com.dili.trace.domain.EventMessage;
 import com.dili.trace.domain.TruckEnterRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserDriverRef;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
+import com.dili.trace.enums.MessageReceiverEnum;
 import com.dili.trace.service.DriverUserService;
+import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.TruckEnterRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +48,10 @@ public class ClientDriverUserApi {
     DriverUserService driverUserService;
     @Autowired
     TruckEnterRecordService truckEnterRecordService;
+    @Autowired
+    EventMessageService eventMessageService;
+    @Autowired
+    LoginSessionContext sessionContext;
 
     /**
      * 查询司机进门报备数据列表
@@ -55,6 +63,33 @@ public class ClientDriverUserApi {
     public BaseOutput listPagedEnterRecord(@RequestBody TruckEnterRecordQueryDto queryDto) {
         BasePage<TruckEnterRecord> page = this.truckEnterRecordService.listPageByExample(queryDto);
         return BaseOutput.successData(page);
+
+    }
+
+    /**
+     * 查询司机消息数据列表
+     * @param queryDto
+     * @return
+     */
+    @ApiOperation(value = "查询司机消息数据列表", notes = "查询司机消息数据列表")
+    @RequestMapping(value = "/listPagedEventMessage.api",method = RequestMethod.POST)
+    public BaseOutput listPagedEventMessage(@RequestBody EventMessage queryDto) {
+
+        queryDto.setReceiverId(this.sessionContext.getSessionData().getUserId());
+        queryDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        BasePage<EventMessage> page = this.eventMessageService.listPageByExample(queryDto);
+        return BaseOutput.successData(page);
+
+    }
+    /**
+     * 查询司机未读取消息数量
+     * @param queryDto
+     * @return
+     */
+    @ApiOperation(value = "查询司机未读取消息数量", notes = "查询司机未读取消息数量")
+    @RequestMapping(value = "/countReadableEventMessage.api",method = RequestMethod.POST)
+    public BaseOutput<Integer> countReadableEventMessage(@RequestBody EventMessage queryDto) {
+        return BaseOutput.successData(100);
 
     }
 
