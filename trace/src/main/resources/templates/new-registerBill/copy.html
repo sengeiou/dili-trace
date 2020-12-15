@@ -48,27 +48,28 @@
                         <option value="2" <% if( registerBill.registerSource==2){%>selected<%}%>>交易区</option>
                     </select>
                 </div>
-                <div class="form-group"  <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>  >
-                    <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
-                    <div class="input-group">
-                        <input type="hidden" name="tallyAreaNo" id="tallyAreaNo" value="${registerBill.tallyAreaNo!}"/>
-                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;" value="${registerBill.tallyAreaNo!}"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
-                        
-                    </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>
+                        <span id="registerSourceNameSpan">${registerBill.registerSourceName}</span>号</label>
+                    <input type="hidden" name="sourceName" value="${registerBill.sourceName!}">
+                    <input type="hidden" name="sourceId" value="${registerBill.sourceId!}">
+
+                    <div class="input-group"  id="querySource"  <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
+                    <input type="text" class="form-control input-sm" data-value-type="skip" maxlength="6" style="width: 147px;"/>
+                    <span class="input-group-addon"> <span class="glyphicon"  id="queryTallyAreaNo">检索</span> </span>
                 </div>
 
-                <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>交易区号</label>
-                    <select class="form-control input-sm" name="tradeTypeId" id="tradeTypeId"  required>
-                        <option value="">请选择</option>
-                        <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
+                    <div class="input-group" id="selectSource" <% if( registerBill.registerSource==1){%>style="display:none"<%}%>>
+                        <select class="form-control input-sm" required>
+                            <option value="">请选择</option>
+                            <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
                             for(tradeType in tradeTypes){%>
-                        <option value="${tradeType.typeId}"  <% if( registerBill.tradeTypeId==tradeType.typeId){%>selected<%}%> >${tradeType.typeName}</option>
-                        <%}%>
-                    </select>
-                </div>
+                                <option value="${tradeType.typeId}" <% if( tradeType.typeId==registerBill.sourceId){%>selected<%}%>>${tradeType.typeName}</option>
+                            <%}%>
+                        </select>
+                    </div>
+
                 <div class="form-group" <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
@@ -78,42 +79,38 @@
 			                    <%}%>     
 						 </select>
                 </div>
-                <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
-                    <label class="label-title text-right">客户Code</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="tradeAccountInput" id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"  value="${userInfo.userId}" />
-                        <input type="hidden" name="tradeAccount" id="tradeAccount"  value="${userInfo.userId}"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
-                    </div>
-                </div>
+
                 <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
                     <label class="label-title text-right">园区卡号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="b2" id="printingCardInput" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"  value="${userInfo.printingCard}" />
-                        <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"  value="${userInfo.printingCard}" />
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="cardNo()">检索</span> </span>
+
+
+
+                        <input type="text" class="form-control input-sm" name="b2" <% if( registerBill.tradePrintingCard!=null){%>value="${registerBill.tradePrintingCard}"<%}else{%>value="888880"<%}%> data-value-type="skip"   id="printingCardInput" style="width: 147px;"/>
+                        <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" value="${registerBill.tradePrintingCard}" style="width: 147px;"/>
+                        <span class="input-group-addon"> <span class="glyphicon" id="queryByCardNoBtn">检索</span> </span>
                     </div>
                 </div>
                 <br>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户姓名</label>
-                    <input type="text" class="form-control input-sm" name="name" id="name"  value="${userInfo.name}" tabindex="-1" required readonly/>
-                    <input type="hidden"  name="userId" id="userId" value="${userInfo.userId}"  required readonly/>
+                    <input type="text" class="form-control input-sm" name="name" id="name"  value="${registerBill.name}" tabindex="-1" required readonly/>
+                    <input type="hidden"  name="userId" id="userId" value="${registerBill.userId}"  required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>身份证号</label>
-                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm" tabindex="-1" value="${userInfo.idCardNo}" required readonly/>
+                    <input name="idCardNo" id="idCardNo" type="text" class="form-control input-sm" tabindex="-1" value="${registerBill.idCardNo}" required readonly/>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>身份证地址</label>
-                    <textarea name="addr" id="addr" class="form-control"  rows="1" maxlength="50" tabindex="-1"  readonly style="width: 200px;">${userInfo.addr}</textarea>
+                    <textarea name="addr" id="addr" class="form-control"  rows="1" maxlength="50" tabindex="-1"  readonly style="width: 200px;">${registerBill.addr}</textarea>
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>业户手机号</label>
-                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"  value="${userInfo.phone}"  readonly/>
+                    <input name="phone" id="phone" type="text" class="form-control input-sm" tabindex="-1"  value="${registerBill.phone}"  readonly/>
                 </div>
             </div>
 
@@ -178,10 +175,89 @@
     </div>
 </div>
 </#bodyOrigin>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script type="text/javascript">
    var initWithLocalStorage=false;
-</script>
-<script>
+   $('#selectSource select').on('change',function(){
+       var opt=$(this).find('option:selected');
+       $('input[name="sourceId"]').val(opt.val());
+       $('input[name="sourceName"]').val(opt.text());
+   });
+
+
+   $('#printingCardInput').on('keyup',function(e){
+       debugger
+       if (e.keyCode == 13) {
+           $('#queryByCardNoBtn').trigger('click')
+       }
+   });
+   $('#queryByCardNoBtn').on('click',async()=>{
+       cleanInput();
+       let query=$('#printingCardInput').val();
+       if($.trim(query)==''){
+           return;
+       }
+       let url= '${contextPath!}/trade/customer/findCustomerByCardNo/'+$.trim(query)
+       try{
+           let ret=await jq.ajax({url:url,method:'post'});
+           if(ret.code!='200'){
+               console.error('请求错误:'+ret.message)
+               return;
+           }
+           var customer = ret.data;
+           $("#userId").val(customer.id);
+           $("#tradePrintingCard").val(customer.printingCard).valid();
+           $("#idCardNo").val(customer.idNo).valid();
+           $("#name").val(customer.name).valid();
+           $("#addr").val(customer.address).valid();
+           $("#phone").val(customer.phone).valid();
+
+       }catch (e){
+           console.error(e)
+       }
+   })
+
+   $('#querySource input').on('keyup',function(e){
+       if (e.keyCode == 13) {
+           $('#querySource #queryTallyAreaNo').trigger('click')
+       }
+   });
+   function cleanInput(){
+       $("#idCardNo").val("");
+       $("#name").val("");
+       $("#addr").val("");
+       $("#userId").val("");
+       $("#phone").val("");
+       $("#tradeAccount").val('')
+       $("#printingCard").val('')
+
+   }
+   $('#querySource #queryTallyAreaNo').on('click',async()=>{
+       cleanInput();
+       let query=$('#querySource').find('input').val();
+       if($.trim(query)==''){
+           return;
+       }
+       let url= '${contextPath!}/trade/customer/tallyAreaNo/'+$.trim(query);
+       try{
+           let ret=await jq.ajax({url:url,method:'get'});
+           if(ret.code!='200'){
+               console.error('请求错误:'+ret.message)
+               return;
+           }
+           var customer = ret.data;
+           $("#idCardNo").val(customer.cardNo).valid();
+           $("#name").val(customer.name).valid();
+           $("#addr").val(customer.addr).valid();
+           $("#userId").val(customer.id).valid();
+           $("#phone").val(customer.phone).valid();
+           findUserPlateByUserId(customer.id,'#plate');
+       }catch (e){
+           console.error(e)
+       }
+
+   })
 
     let imageItemCount = '${registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0}';
     function getDetectReportCount(){

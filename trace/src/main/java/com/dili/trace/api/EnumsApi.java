@@ -3,12 +3,10 @@ package com.dili.trace.api;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.dili.common.annotation.AppAccess;
+import com.dili.common.annotation.Role;
 import com.dili.ss.domain.BaseOutput;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.ImageCertTypeEnum;
-import com.dili.trace.enums.PreserveTypeEnum;
-import com.dili.trace.enums.TruckTypeEnum;
+import com.dili.trace.enums.*;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,7 +19,21 @@ import one.util.streamex.StreamEx;
  */
 @RestController
 @RequestMapping(value = "/api/enums")
+@AppAccess(role = Role.ANY)
 public class EnumsApi {
+	/**
+	 * 检测状态枚举查询
+	 */
+	@RequestMapping(value = "/listDetectStatusEnum.api", method = RequestMethod.POST)
+	public BaseOutput<List<Entry<Integer, String>>> listDetectStatusEnum() {
+		try {
+			List<Entry<Integer, String>> list = StreamEx.of(DetectStatusEnum.values())
+					.mapToEntry(DetectStatusEnum::getCode, DetectStatusEnum::getName).toList();
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
 	/**
 	 * 证明类型查询
 	 */

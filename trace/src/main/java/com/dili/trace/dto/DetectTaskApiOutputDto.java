@@ -101,6 +101,7 @@ public class DetectTaskApiOutputDto extends BaseDomain {
         output.setPlate(bill.getPlate());
         output.setProductName(bill.getProductName());
         output.setTallyAreaNo(bill.getTallyAreaNo());
+
         output.setTradeAccount(bill.getTradeAccount());
         output.setWeight(bill.getWeight().intValue());
         return output;

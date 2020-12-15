@@ -98,14 +98,17 @@ public class SgRegisterBillApi {
 			registerBill.setName(user.getName());
 			registerBill.setAddr(user.getAddr());
 			registerBill.setIdCardNo(user.getCardNo());
-			registerBill.setTradeTypeId(createListBillParam.getTradeTypeId());
-			registerBill.setTradeTypeName(createListBillParam.getTradeTypeName());
+			registerBill.setSourceId(createListBillParam.getSourceId());
+			registerBill.setSourceName(createListBillParam.getSourceName());
+//			registerBill.setTradeTypeId(createListBillParam.getTradeTypeId());
+//			registerBill.setTradeTypeName(createListBillParam.getTradeTypeName());
 			if (registerBill.getRegisterSource() == null) {
 				// 小程序默认理货区
 				registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
 			}
 			if(registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-				registerBill.setTallyAreaNo(user.getTallyAreaNos());
+//				registerBill.setTallyAreaNo(user.getTallyAreaNos());
+				registerBill.setSourceName(user.getTallyAreaNos());
 			}
 			registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
 			billList.add(registerBill);

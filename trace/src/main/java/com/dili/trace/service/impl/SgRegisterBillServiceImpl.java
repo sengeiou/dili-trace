@@ -105,7 +105,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
         if (inputBill.getRegisterSource().intValue() == RegisterSourceEnum.TRADE_AREA.getCode().intValue()) {
             // 交易区没有理货区号
-            inputBill.setTallyAreaNo(null);
             // 交易区数据直接进行待检测状态
             // registerBill.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
             // registerBill.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());

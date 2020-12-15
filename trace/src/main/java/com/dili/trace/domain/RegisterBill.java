@@ -5,8 +5,10 @@ import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.TFEnum;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -531,6 +533,20 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`register_source`")
     private Integer registerSource;
 
+
+    @Column(name = "`source_id`")
+    private String sourceId;
+
+    @Column(name = "`source_name`")
+    private String sourceName;
+
+
+    @Column(name = "`trade_type_id`")
+    private String tradeTypeId;
+
+    @Column(name = "`trade_type_name`")
+    private String tradeTypeName;
+
     /**
      *
      */
@@ -545,11 +561,6 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`trade_printing_card`")
     private String tradePrintingCard;
 
-    @Column(name = "`trade_type_id`")
-    private String tradeTypeId;
-
-    @Column(name = "`trade_type_name`")
-    private String tradeTypeName;
 
     /**
      *
@@ -1072,16 +1083,20 @@ public class RegisterBill extends BaseDomain {
     /**
      * @return String return the tallyAreaNo
      */
+    @Transient
     public String getTallyAreaNo() {
-        return tallyAreaNo;
+        if(RegisterSourceEnum.TALLY_AREA.equalsToCode(this.registerSource)){
+            return this.getSourceName();
+        }
+        return "";
     }
-
-    /**
-     * @param tallyAreaNo the tallyAreaNo to set
-     */
-    public void setTallyAreaNo(String tallyAreaNo) {
-        this.tallyAreaNo = tallyAreaNo;
-    }
+//
+//    /**
+//     * @param tallyAreaNo the tallyAreaNo to set
+//     */
+//    public void setTallyAreaNo(String tallyAreaNo) {
+//        this.tallyAreaNo = tallyAreaNo;
+//    }
 
     /**
      * @return String return the reason
@@ -1281,6 +1296,14 @@ public class RegisterBill extends BaseDomain {
         return registerSource;
     }
 
+    @Transient
+    public String getRegisterSourceName() {
+        return RegisterSourceEnum.getRegisterSourceEnum(this.registerSource).map(RegisterSourceEnum::getName).orElse("");
+    }
+    @Transient
+    public String getSourceDesc() {
+        return this.getRegisterSourceName()+ (StringUtils.isBlank(this.sourceName)?"":(":"+this.sourceName));
+    }
     public void setRegisterSource(Integer registerSource) {
         this.registerSource = registerSource;
     }
@@ -1301,21 +1324,21 @@ public class RegisterBill extends BaseDomain {
         this.tradePrintingCard = tradePrintingCard;
     }
 
-    public String getTradeTypeId() {
-        return tradeTypeId;
-    }
-
-    public void setTradeTypeId(String tradeTypeId) {
-        this.tradeTypeId = tradeTypeId;
-    }
-
-    public String getTradeTypeName() {
-        return tradeTypeName;
-    }
-
-    public void setTradeTypeName(String tradeTypeName) {
-        this.tradeTypeName = tradeTypeName;
-    }
+//    public String getTradeTypeId() {
+//        return tradeTypeId;
+//    }
+//
+//    public void setTradeTypeId(String tradeTypeId) {
+//        this.tradeTypeId = tradeTypeId;
+//    }
+//
+//    public String getTradeTypeName() {
+//        return tradeTypeName;
+//    }
+//
+//    public void setTradeTypeName(String tradeTypeName) {
+//        this.tradeTypeName = tradeTypeName;
+//    }
 
 
     public String getExeMachineNo() {
@@ -1383,4 +1406,19 @@ public class RegisterBill extends BaseDomain {
         this.detectReportUrl = detectReportUrl;
     }
 
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
 }
