@@ -8,7 +8,7 @@ public class CountDetectStatusDto {
     /**
      * 统计数量
      */
-    private Integer count;
+    private Integer cnt;
 
     public Integer getDetectStatus() {
         return detectStatus;
@@ -16,5 +16,13 @@ public class CountDetectStatusDto {
 
     public void setDetectStatus(Integer detectStatus) {
         this.detectStatus = detectStatus;
+    }
+
+    public Integer getCnt() {
+        return cnt;
+    }
+
+    public void setCnt(Integer cnt) {
+        this.cnt = cnt;
     }
 }
