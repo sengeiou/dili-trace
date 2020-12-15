@@ -145,6 +145,8 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`weight_unit`")
     private Integer weightUnit;
 
+
+
      /* @ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
     @Column(name = "`detect_state`")
     private Integer detectState;*/
@@ -273,11 +275,19 @@ public class RegisterBill extends BaseDomain {
     private String specName;
 
     /**
-     * 报备类型
+     * 登记单类型
      */
-    @ApiModelProperty(value = "报备类型")
+    @ApiModelProperty(value = "登记单类型")
     @Column(name = "`bill_type`")
     private Integer billType;
+
+
+    /**
+     * 报备方式
+     */
+    @ApiModelProperty(value = "报备方式")
+    @Column(name = "`regist_type`")
+    private Integer registType;
     /**
      * 拼车类型
      */
@@ -1420,5 +1430,13 @@ public class RegisterBill extends BaseDomain {
 
     public void setSourceName(String sourceName) {
         this.sourceName = sourceName;
+    }
+
+    public Integer getRegistType() {
+        return registType;
+    }
+
+    public void setRegistType(Integer registType) {
+        this.registType = registType;
     }
 }

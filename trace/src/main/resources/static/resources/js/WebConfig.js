@@ -112,7 +112,6 @@ class ListPage extends WebConfig {
     refreshTableOptions() {
         let url = this.toUrl(this.listPageUrl);
         let metadata = this.buildMetaData();
-        console.log("metadata===>", metadata);
         let buildQueryData = (params) => {
             let temp = {
                 rows: params.limit,

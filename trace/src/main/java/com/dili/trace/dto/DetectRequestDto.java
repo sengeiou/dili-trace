@@ -6,6 +6,8 @@ import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.BillVerifyStatusEnum;
+import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 
 import javax.persistence.Column;
@@ -439,6 +441,13 @@ public class DetectRequestDto extends DetectRequest {
     public String getBillTypeName() {
         return BillTypeEnum.fromCode(this.billType).map(BillTypeEnum::getName).orElse("");
     }
-
+    @Transient
+    public String getDetectStatusName() {
+        return DetectStatusEnum.name(this.getDetectStatus());
+    }
+    @Transient
+    public String getVerifyStatusName() {
+        return BillVerifyStatusEnum.name(this.getVerifyStatus());
+    }
 }
 

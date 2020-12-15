@@ -1,5 +1,9 @@
 package com.dili.trace.api.output;
 
+import com.dili.trace.enums.DetectStatusEnum;
+
+import javax.persistence.Transient;
+
 public class CountDetectStatusDto {
     /**
      * 检测状态
@@ -24,5 +28,9 @@ public class CountDetectStatusDto {
 
     public void setCnt(Integer cnt) {
         this.cnt = cnt;
+    }
+    @Transient
+    public String getDetectStatusName() {
+        return DetectStatusEnum.name(this.getDetectStatus());
     }
 }
