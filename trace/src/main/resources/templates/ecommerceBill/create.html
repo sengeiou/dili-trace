@@ -231,7 +231,7 @@
         var index=seperateItemCount;
         $('#seperateTable tbody').append(template('seperateItem', {index: index}));
         //查询逻辑调整，user信息需要从uap过来
-        //tallyAreaNoAutoComplete('#tallyAreaNo_'+index,'${contextPath}/user/queryByTallyAreaNo.action');
+        tallyAreaNoAutoComplete('#tallyAreaNo_'+index,'${contextPath}/user/queryByTallyAreaNo.action');
         seperateItemCount++;
     });
 
