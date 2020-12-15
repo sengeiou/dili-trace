@@ -128,8 +128,13 @@
     <hr>
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
-            <button id="assign-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
-            <button id="confirm-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 接单</button>
+            <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
+            <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 采样检测</button>
+            <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 主动送检</button>
+            <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 复检</button>
+            <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 撤销</button>
+            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>查看</button>
+            <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('detectRequestGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
         <table id="detectRequestGrid" data-toggle="table" data-title="检测请求列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"

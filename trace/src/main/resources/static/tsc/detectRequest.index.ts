@@ -16,7 +16,11 @@ class DetectRequestGridGrid extends ListPage {
 
         // 绑定按钮事件
         $('#assign-btn').on('click',async ()=>await this.openAssignPage());
-        $('#confirm-btn').on('click',async ()=>await this.openConfirmPage());
+        $('#sampling-btn').on('click',async ()=>await this.doSamplingCheck());
+        $('#auto-btn').on('click',async ()=>await this.doAutoCheck());
+        $('#review-btn').on('click',async ()=>await this.doReviewCheck());
+        $('#undo-btn').on('click',async ()=>await this.doUndo());
+        $('#detail-btn').on('click',async ()=>await this.openDetailPage());
 
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
     }
@@ -40,7 +44,7 @@ class DetectRequestGridGrid extends ListPage {
         var url=this.toUrl('/detectRequest/assign.html?id='+row.id);
         //@ts-ignore
         var dia = bs4pop.dialog({
-            title: '指派检测员',
+            title: '接单',
             content: url,
             isIframe: true,
             closeBtn: true,
@@ -58,11 +62,12 @@ class DetectRequestGridGrid extends ListPage {
      * @param designatedName
      */
     public async doAssign(id:string, designatedId:string, designatedName:string){
+        let detectTime;
         //@ts-ignore
         bs4pop.removeAll();
         let promise = new Promise((resolve, reject) => {
             //@ts-ignore
-            bs4pop.confirm('是否把当前检测单分配给检测员【'+designatedName+'】？<br/>',
+            bs4pop.confirm('是否确认接单？<br/>',
                 {type: 'warning',btns: [
                         {label: '是', className: 'btn-primary',onClick(cb){  resolve("true");}},
                         {label: '否', className: 'btn-cancel',onClick(cb){resolve("cancel");}},
@@ -74,7 +79,7 @@ class DetectRequestGridGrid extends ListPage {
             return;
         }
 
-        let url= this.toUrl("/detectRequest/doAssignDetector.action?id="+id+"&designatedId="+designatedId+"&designatedName="+designatedName);
+        let url= this.toUrl("/detectRequest/doAssignDetector.action?id="+id+"&designatedId="+designatedId+"&designatedName="+designatedName+"&detectTime="+detectTime);
         try{
             var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
             if(!resp.success){
@@ -94,10 +99,147 @@ class DetectRequestGridGrid extends ListPage {
     }
 
     /**
-     * 检测员确认接单
+     * 采样检测
      */
-    private openConfirmPage() {
+    private async  doSamplingCheck() {
+        var selected = this.rows[0];
+        var url= this.toUrl( "/newRegisterBill/doSamplingCheck.action?id="+ selected.billId);
+        let sure=await popwrapper.confirm('请确认是否采样检测？',undefined);
+        if(!sure){
+            return;
+        }
+        try{
+            var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+            if(!resp.success){
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+            await this.queryGridData();
+            //@ts-ignore
+            bs4pop.removeAll()
+            //@ts-ignore
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+        }catch (e){
+            //@ts-ignore
+            bs4pop.alert('远程访问失败', {type: 'error'});
+        }
+    }
 
+    /**
+     * 主动送检
+     */
+    private async doAutoCheck() {
+        var selected = this.rows[0];
+        let cthis=this;
+        var url= this.toUrl( "/newRegisterBill/doAutoCheck.action?id="+ selected.billId);
+        let sure=await popwrapper.confirm('请确认是否主动送检？',undefined);
+        if(!sure){
+            return;
+        }
+
+        try{
+            var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+            if(!resp.success){
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+            await cthis.queryGridData();
+            //@ts-ignore
+            //TLOG.component.operateLog('登记单管理',"主动送检","【编号】:"+selected.code);
+            //@ts-ignore
+            bs4pop.removeAll()
+            //@ts-ignore
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+        }catch (e){
+            //@ts-ignore
+            bs4pop.alert('远程访问失败', {type: 'error'});
+        }
+    }
+
+    /**
+     * 复检
+     */
+    private async  doReviewCheck() {
+        var selected = this.rows[0];
+        let url= this.toUrl("/newRegisterBill/doReviewCheck.action?id="+ selected.billId);
+        let sure=await popwrapper.confirm('请确认是否复检？',undefined);
+        if(!sure){
+            return;
+        }
+
+        try{
+            var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+            if(!resp.success){
+                //@ts-ignore
+                bs4pop.alert(resp.message, {type: 'error'});
+                return;
+            }
+            await this.queryGridData();
+            //@ts-ignore
+            //TLOG.component.operateLog('登记单管理',"复检","【编号】:"+selected.code);
+            //@ts-ignore
+            bs4pop.removeAll()
+            //@ts-ignore
+            bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+        }catch (e){
+            //@ts-ignore
+            bs4pop.alert('远程访问失败', {type: 'error'});
+        }
+    }
+
+    /**
+     * 撤销检测请求
+     */
+    private async doUndo(){
+        let selected = this.rows[0];
+        let cthis=this;
+        let url= this.toUrl( "/detectRequest/doUndo.action?id="+ selected.id);
+        //@ts-ignore
+        bs4pop.confirm('请确认是否撤销？', undefined, async function (sure) {
+            if(!sure){
+                return;
+            }
+            try{
+                var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
+
+                if(!resp.success){
+                    //@ts-ignore
+                    bs4pop.alert(resp.message, {type: 'error'});
+                    return;
+                }
+                await cthis.queryGridData();
+                //@ts-ignore
+                //TLOG.component.operateLog('登记单管理',"撤销","【编号】:"+selected.code);
+                //@ts-ignore
+                bs4pop.removeAll()
+                //@ts-ignore
+                bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+            }catch (e){
+                //@ts-ignore
+                bs4pop.alert('远程访问失败', {type: 'error'});
+            }
+        });
+    }
+
+    /**
+     * 查看详情
+     */
+    private async  openDetailPage(){
+        var row=this.rows[0]
+        var url=this.toUrl('/detectRequest/view.html?id='+row.billId);
+        //@ts-ignore
+        var dia = bs4pop.dialog({
+            title: '报备单详情',
+            content: url,
+            isIframe: true,
+            closeBtn: true,
+            backdrop: 'static',
+            width: '98%',
+            height: '98%',
+            btns: []
+        });
     }
 
     get rows() {
@@ -106,10 +248,26 @@ class DetectRequestGridGrid extends ListPage {
 
     public async resetButtons() {
         var btnArray=this.btns;
+        _.chain(btnArray).each((btn)=> {
+            $(btn).hide();
+        });
         // _.chain(btnArray).each((btn)=> {
-        //     $(btn).hide();
+        //     $(btn).show();
         // });
-        // await this.queryEventAndSetBtn();
+        await this.queryEventAndSetBtn();
+    }
+
+    private async queryEventAndSetBtn(){
+        var rows=this.rows;
+        try{
+            var billIdList=_.chain(rows).map(v=>v.billId).value();
+            var resp=await jq.postJson(this.toUrl('/detectRequest/queryEvents.action'),billIdList);
+            // console.info(resp)
+            resp.forEach(btnid=>{ $('#'+btnid).show();})
+        }catch (e){
+            console.error(e);
+        }
+
     }
 
 }
