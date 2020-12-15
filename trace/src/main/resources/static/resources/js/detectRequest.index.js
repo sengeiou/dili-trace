@@ -1,24 +1,15 @@
-class DetectRequestGridGrid extends WebConfig {
-    constructor(grid, queryform) {
-        super();
-        this.grid = grid;
-        this.queryform = queryform;
+class DetectRequestGridGrid extends ListPage {
+    constructor(grid, queryform, toolbar) {
+        super(grid, queryform, queryform.find('#query'), "/detectRequest/listPage.action");
+        this.toolbar = toolbar;
+        this.btns = this.toolbar.find('button');
         this.uid = _.uniqueId("trace_id_");
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['DetectRequestGridObj'] = this;
-        this.btns = ['assign-btn', 'confirm-btn'];
         $('#assign-btn').on('click', async () => await this.openAssignPage());
         $('#confirm-btn').on('click', async () => await this.openConfirmPage());
-        this.queryform.find('#query').click(async () => await this.queryGridData());
-        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-    }
-    async queryGridData() {
-        if (!this.queryform.validate().form()) {
-            bs4pop.notice("请完善必填项", { type: 'warning', position: 'topleft' });
-            return;
-        }
-        this.grid.bootstrapTable('refresh');
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
     }
     removeAllAndLoadData() {
         bs4pop.removeAll();
@@ -72,26 +63,7 @@ class DetectRequestGridGrid extends WebConfig {
     get rows() {
         return this.grid.bootstrapTable('getSelections');
     }
-    resetButtons() {
+    async resetButtons() {
         var btnArray = this.btns;
-        _.chain(btnArray).each((btn) => {
-            $('#' + btn).hide();
-        });
-    }
-    async checkAndShowHideBtns() {
-        debugger;
-        this.resetButtons();
-        let rows = this.rows;
-        try {
-            if (rows.length > 0) {
-                let detectStatus = rows[0].detectStatus;
-                if (detectStatus == 0 || detectStatus == '') {
-                    $('#assign-btn').show();
-                }
-            }
-        }
-        catch (e) {
-            console.error(e);
-        }
     }
 }
