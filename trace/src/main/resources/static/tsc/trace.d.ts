@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.27.744 on 2020-12-14 11:01:26.
+// Generated using typescript-generator version 2.27.744 on 2020-12-15 16:53:00.
 
 interface Market {
     id: number;

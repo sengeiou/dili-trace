@@ -2,6 +2,7 @@ package com.dili.trace.dao;
 
 import com.dili.ss.base.MyMapper;
 import com.dili.trace.api.input.DetectRequestQueryDto;
+import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
 import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.domain.DetectRequest;
@@ -36,6 +37,7 @@ public interface DetectRequestMapper extends MyMapper<DetectRequest> {
 
     /**
      * 采样检测-统计查询
+     *
      * @param query
      * @return
      */
@@ -43,6 +45,7 @@ public interface DetectRequestMapper extends MyMapper<DetectRequest> {
 
     /**
      * 采样检测-列表查询
+     *
      * @param query
      * @return
      */
@@ -50,8 +53,17 @@ public interface DetectRequestMapper extends MyMapper<DetectRequest> {
 
     /**
      * PC端检测请求-列表查询
+     *
      * @param query
      * @return
      */
     List<DetectRequestWithBillDto> queryListByExample(DetectRequestWithBillDto query);
+
+
+    /**
+     * 根据检测状态统计
+     * @param query
+     * @return
+     */
+    List<CountDetectStatusDto> countByDetectStatus(DetectRequestQueryDto query);
 }
