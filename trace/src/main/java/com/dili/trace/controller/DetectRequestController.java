@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -14,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -92,10 +95,28 @@ public class DetectRequestController {
     @RequestMapping(value = "/doAssignDetector.action", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput doAssign(@RequestParam(name = "id", required = true) Long id,
-                        @RequestParam(name = "designatedId", required = true) Long designatedId,
-                        @RequestParam(name = "designatedName", required = true) String designatedName) {
+                        @RequestParam(name = "designatedId", required = false) Long designatedId,
+                        @RequestParam(name = "designatedName", required = false) String designatedName,
+                        @RequestParam(name = "detectTime", required = false) Date detectTime) {
         try {
-            this.detectRequestService.assignDetector(id, designatedId, designatedName);
+            this.detectRequestService.assignDetector(id, designatedId, designatedName, detectTime);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 撤销
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/doUndo.action", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput doUndo(@RequestParam(name = "id", required = true) Long id) {
+        try {
+            this.detectRequestService.undoDetectRequest(id);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
@@ -125,5 +146,34 @@ public class DetectRequestController {
         Map map = Maps.newHashMap();
         map.put("suggestions", list);
         return map;
+    }
+
+    /**
+     * 查询当前controller可用事件
+     *
+     * @param billIdList
+     * @return
+     */
+    @RequestMapping("/queryEvents.action")
+    @ResponseBody
+    public List<String> queryEvents(@RequestBody List<Long> billIdList) {
+        List<DetectRequestMessageEvent> list= Lists.newArrayList();
+        if (billIdList == null || billIdList.size()==0) {
+            return StreamEx.of(list).map(msg -> {
+                return msg.getCode();
+            }).nonNull().toList();
+        }
+        // 只要有记录，可以导出和查看详情
+        list.add(DetectRequestMessageEvent.export);
+        list.add(DetectRequestMessageEvent.detail);
+        if(billIdList.size()==1){
+            return StreamEx.of(this.detectRequestService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
+                return msg.getCode();
+            }).nonNull().toList();
+        }else{
+            return StreamEx.of(list).map(msg -> {
+                return msg.getCode();
+            }).nonNull().toList();
+        }
     }
 }
