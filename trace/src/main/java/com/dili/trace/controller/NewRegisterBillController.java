@@ -165,7 +165,7 @@ public class NewRegisterBillController {
         RegisterBillOutputDto registerBill = RegisterBillOutputDto.build(billService.get(id),Lists.newLinkedList());
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
-        registerBill.setTallyAreaNo(firstTallyAreaNo);
+        registerBill.setSourceName(firstTallyAreaNo);
         registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
@@ -202,7 +202,7 @@ public class NewRegisterBillController {
         registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
-        registerBill.setTallyAreaNo(firstTallyAreaNo);
+        registerBill.setSourceName(firstTallyAreaNo);
 
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
@@ -759,7 +759,8 @@ public class NewRegisterBillController {
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
-                    rb.setTallyAreaNo(input.getTallyAreaNo());
+                    rb.setSourceName(input.getSourceName());
+                    rb.setSourceId(input.getSourceId());
                     rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
                     rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
                     rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
@@ -767,11 +768,7 @@ public class NewRegisterBillController {
                     rb.setIsCheckin(YesOrNoEnum.NO.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
-                    // 理货类型为交易区时才保存交易区号和id
-                    if (RegisterSourceEnum.TRADE_AREA.getCode().equals(input.getRegisterSource())) {
-                        rb.setTradeTypeId(input.getTradeTypeId());
-                        rb.setTradeTypeName(input.getTradeTypeName());
-                    }
+
                     return rb;
                 }).toList();
         try {

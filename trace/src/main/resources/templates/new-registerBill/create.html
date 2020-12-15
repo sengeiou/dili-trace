@@ -45,31 +45,33 @@
                 <div class="form-group">
                     <label class="label-title text-right"><span class="red">&lowast;</span>登记来源</label>
                     <select class="form-control input-sm" name="registerSource" id="registerSource" required tabindex="0">
-                        <option value="1">理货区</option>
+                        <option value="1" selected>理货区</option>
                         <option value="2">交易区</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="label-title text-right"><span class="red">&lowast;</span>理货区号</label>
-                    <div class="input-group">
-                        <input type="hidden" name="tallyAreaNo" id="tallyAreaNo"/>
-                        <input type="text" class="form-control input-sm isInt" name="tallyAreaNoInput" data-value-type="skip"   id="tallyAreaNoInput" maxlength="6" onkeyup="onKeyUpEnter3(event)" style="width: 147px;"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="tallyAreaNo()">检索</span> </span>
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>
+                    <span id="registerSourceNameSpan">理货区</span>号</label>
+                    <input type="hidden" name="sourceName">
+                    <input type="hidden" name="sourceId">
+
+
+                    <div class="input-group"  id="querySource">
+                        <input type="text" class="form-control input-sm" data-value-type="skip" maxlength="6" style="width: 147px;"/>
+                        <span class="input-group-addon"> <span class="glyphicon"  id="queryTallyAreaNo">检索</span> </span>
+                    </div>
+                    <div class="input-group" id="selectSource" style="display: none">
+                        <select class="form-control input-sm" required>
+                            <option value="">请选择</option>
+                            <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
+                            for(tradeType in tradeTypes){%>
+                            <option value="${tradeType.typeId}">${tradeType.typeName}</option>
+                            <%}%>
+                        </select>
                     </div>
                 </div>
 
-                <div class="form-group" style="display: none;">
-                    <label class="label-title text-right">
-                        <span class="red">&lowast;</span>交易区号</label>
-                    <input type="hidden" name="tradeTypeName" id="tradeTypeName">
-                    <select class="form-control input-sm" name="tradeTypeId" id="tradeTypeId"  required>
-                        <option value="">请选择</option>
-                        <% if( isNotEmpty(tradeTypes) && tradeTypes.~size>0)
-                            for(tradeType in tradeTypes){%>
-                        <option value="${tradeType.typeId}">${tradeType.typeName}</option>
-                        <%}%>
-                    </select>
-                </div>
                 <div class="form-group">
                     <label class="label-title text-right">
                         <span class="red">&lowast;</span>车牌号</label>
@@ -77,23 +79,12 @@
 						 </select>
 
                 </div>
-               
-
-                <div class="form-group" style="display: none;">
-                    <label class="label-title text-right">客户Code</label>
-                    <div class="input-group">
-<!--                        <input type="hidden" name="userId" id="userId"/>-->
-                        <input type="text" class="form-control input-sm" name="tradeAccountInput"  data-value-type="skip"   id="tradeAccountInput" onkeyup="onKeyUpEnter(event)" style="width: 147px;"/>
-                        <input type="hidden" name="tradeAccount" id="tradeAccount"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="customerId()">检索</span> </span>
-                    </div>
-                </div>
                 <div class="form-group" style="display: none;">
                     <label class="label-title text-right">园区卡号</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" name="b2" value="888880" data-value-type="skip"   id="printingCardInput"  onkeyup="onKeyUpEnter2(event)" style="width: 147px;"/>
-                        <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" onkeyup="onKeyUpEnter2(event)" style="width: 147px;"/>
-                        <span class="input-group-addon"> <span class="glyphicon" onclick="cardNo()">检索</span> </span>
+                        <input type="text" class="form-control input-sm" name="b2" value="888880" data-value-type="skip"   id="printingCardInput" style="width: 147px;"/>
+                        <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" style="width: 147px;"/>
+                        <span class="input-group-addon"> <span class="glyphicon" id="queryByCardNoBtn">检索</span> </span>
                     </div>
                 </div>
                 <br>
@@ -160,27 +151,96 @@
 </#bodyOrigin>
 
 <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
 <script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/postmsg.js"></script>
 
 <script type="text/javascript">
- /*   function getTopWindow(winObj=undefined){
-        if(!winObj){
-            winObj=window;
+    $('#selectSource select').on('change',function(){
+        var opt=$(this).find('option:selected');
+        $('input[name="sourceId"]').val(opt.val());
+        $('input[name="sourceName"]').val(opt.text());
+    });
+
+
+    $('#printingCardInput').on('keyup',function(e){
+        debugger
+            if (e.keyCode == 13) {
+                $('#queryByCardNoBtn').trigger('click')
+            }
+    });
+    $('#queryByCardNoBtn').on('click',async()=>{
+        cleanInput();
+        let query=$('#printingCardInput').val();
+        if($.trim(query)==''){
+            return;
         }
-        if(winObj.top == winObj.self) {
-            // Top level window
-            return winObj;
-        } else {
-            return getTopWindow(winObj.parent.window);
+        let url= '${contextPath!}/trade/customer/findCustomerByCardNo/'+$.trim(query)
+        try{
+            let ret=await jq.ajax({url:url,method:'post'});
+            if(ret.code!='200'){
+                console.error('请求错误:'+ret.message)
+                return;
+            }
+            var customer = ret.data;
+            $("#userId").val(customer.id);
+            $("#tradePrintingCard").val(customer.printingCard).valid();
+            $("#idCardNo").val(customer.idNo).valid();
+            $("#name").val(customer.name).valid();
+            $("#addr").val(customer.address).valid();
+            $("#phone").val(customer.phone).valid();
+
+        }catch (e){
+            console.error(e)
         }
-    }*/
-    // console.info(getTopWindow().location.href)
+    })
+
+    $('#querySource input').on('keyup',function(e){
+        if (e.keyCode == 13) {
+            $('#querySource #queryTallyAreaNo').trigger('click')
+        }
+    });
+    function cleanInput(){
+        $("#idCardNo").val("");
+        $("#name").val("");
+        $("#addr").val("");
+        $("#userId").val("");
+        $("#phone").val("");
+        $("#tradeAccount").val('')
+        $("#printingCard").val('')
+
+    }
+    $('#querySource #queryTallyAreaNo').on('click',async()=>{
+        cleanInput();
+        let query=$('#querySource').find('input').val();
+        if($.trim(query)==''){
+            return;
+        }
+        let url= '${contextPath!}/trade/customer/tallyAreaNo/'+$.trim(query);
+        try{
+            let ret=await jq.ajax({url:url,method:'get'});
+            if(ret.code!='200'){
+                console.error('请求错误:'+ret.message)
+                return;
+            }
+            var customer = ret.data;
+            $("#idCardNo").val(customer.cardNo).valid();
+            $("#name").val(customer.name).valid();
+            $("#addr").val(customer.addr).valid();
+            $("#userId").val(customer.id).valid();
+            $("#phone").val(customer.phone).valid();
+            findUserPlateByUserId(customer.id,'#plate');
+        }catch (e){
+            console.error(e)
+        }
+
+    })
     var currentUser={"depId":"${user.departmentId!}"
         ,"id":"${user.id!}"
         ,"realName":"${user.realName!}"
@@ -249,22 +309,23 @@
             if(!location.hash){
                 var registerSource = localStorage.getItem('registerSource');
                 var tradeTypeId = localStorage.getItem('tradeTypeId');
-                if(registerSource){
-                    $('#registerSource').val(registerSource);
-                    $('[name="registerSource"]').trigger('change');
-                }
-                if(tradeTypeId){
-                    $('#tradeTypeId').val(tradeTypeId);
-                }
+
+
+                _.chain($('#registerSource option')).each(item=>{
+                    if(item.value==registerSource){
+                        $('#registerSource').val(registerSource);
+                        $('[name="registerSource"]').trigger('change');
+                    }
+                })
             }
         }else if(initWithLocalStorage==false){
             console.info('disable init')
         }
 
-        $('#tradeTypeId').on('change',function(){
+        $('#sourceId').on('change',function(){
             $('#tradeTypeName').val($(this).find('option:selected').text());
         });
-        $('#tradeTypeId').trigger('change')
+        $('#sourceId').trigger('change')
     });
 
     function returnBack(){
@@ -275,14 +336,20 @@
     }
     /* 登记来源 */
     $('[name="registerSource"]').on('change', function () {
+        $('#registerSourceNameSpan').text($(this).find('option:selected').text())
         if ($(this).val() === '1') {
-            $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').show();
+
+            $('[name="plate"]').closest('.form-group').show();
             //$('[name="tradeAccount"], [name="b2"], [name="tradeTypeId"]').closest('.form-group').hide();
-            $('[name="b2"], [name="tradeTypeId"]').closest('.form-group').hide();
+            $('[name="b2"]').closest('.form-group').hide();
+            $('#selectSource').hide();
+            $('#querySource').show();
         } else {
-            $('[name="tallyAreaNo"], [name="plate"]').closest('.form-group').hide();
+            $('[name="plate"]').closest('.form-group').hide();
             //$('[name="tradeAccount"], [name="b2"], [name="tradeTypeId"]').closest('.form-group').show();
-            $('[name="b2"], [name="tradeTypeId"]').closest('.form-group').show();
+            $('[name="b2"]').closest('.form-group').show();
+            $('#selectSource').show();
+            $('#querySource').hide();
         }
         $('#plateList').empty();
         $("#idCardNo").val("");
@@ -332,21 +399,6 @@
     })
 
 
-    function onKeyUpEnter(e) {
-        if (e.keyCode == 13) {
-            customerId();
-        }
-    }
-    function onKeyUpEnter2(e) {
-        if (e.keyCode == 13) {
-            cardNo();
-        }
-    }
-    function onKeyUpEnter3(e) {
-        if (e.keyCode == 13) {
-            tallyAreaNo();
-        }
-    }
     function appendCachedPlate(userplateList,editableSelector){
 
         var cachedPlateArray=getCachedPlateArray()
@@ -403,143 +455,6 @@
             }
         });
     }
-    function tallyAreaNo() {
-        var tallyAreaNo = $("#tallyAreaNoInput").val();
-        if(tallyAreaNo == ""){
-            return;
-        }
-        if (tallyAreaNo.length > 0) {
-            $.ajax({
-                type: 'post',
-                url: '/trade/customer/tallyAreaNo/'+tallyAreaNo,
-                dataType: 'json',
-                async: false,
-                success: function (ret) {
-                    if (ret.code == "200") {
-                        var customer = ret.data;
-                        $("#idCardNo").val(customer.cardNo).valid();
-                        $("#name").val(customer.name).valid();
-                        $("#addr").val(customer.addr).valid();
-                        $("#userId").val(customer.id).valid();
-                        $("#phone").val(customer.phone).valid();
-                        $("#tallyAreaNo").val(tallyAreaNo);
-                        findUserPlateByUserId(customer.id,'#plate');
-                    } else {
-                        $("#idCardNo").val("");
-                        $("#name").val("");
-                        $("#addr").val("");
-                        $("#userId").val("");
-                        $("#phone").val("");
-                        $("#tallyAreaNo").val("");
-                    }
-                },
-                error:function(){
-                    $("#idCardNo").val("");
-                    $("#name").val("");
-                    $("#addr").val("");
-                    $("#userId").val("");
-                    $("#phone").val("");
-                    $("#tallyAreaNo").val("");
-                }
-            });
-        }
-    }
-    function customerId() {
-        var customerId = $("#tradeAccountInput").val();
-        if(customerId == ""){
-            return;
-        }
-        if (customerId.length > 0) {
-            $.ajax({
-                type: 'post',
-                url: '/trade/customer/findCustomerByCode/'+customerId,
-                dataType: 'json',
-                async: false,
-                success: function (ret) {
-                    if (ret.code == "200") {
-                        var customer = ret.data;
-
-                        $("#tradeAccount").val(customer.customerId).valid();
-
-
-                        $("#printingCardInput").val(customer.printingCard).valid();
-                        $("#tradePrintingCard").val(customer.printingCard).valid();
-
-                        $("#idCardNo").val(customer.idNo).valid();
-                        $("#name").val(customer.name).valid();
-                        $("#userId").val(customer.id).valid();
-                        $("#addr").val(customer.address).valid();
-                        $("#phone").val(customer.phone).valid();
-                    } else {
-                        $("#printingCardInput").val('')
-                        $("#tradePrintingCard").val('')
-                        $("#tradeAccount").val('')
-                        $("#idCardNo").val("");
-                        $("#name").val("");
-                        $("#userId").val("");
-                        $("#addr").val("");
-                        $("#phone").val("");
-                    }
-                },
-                error:function(){
-                    $("#printingCardInput").val('')
-                    $("#tradePrintingCard").val('')
-                    $("#tradeAccount").val('')
-                    $("#idCardNo").val("");
-                    $("#name").val("");
-                    $("#addr").val("");
-                    $("#phone").val("");
-                }
-            });
-        }
-
-    }
-    function cardNo() {
-        var cardNo = $("#printingCardInput").val();
-        if(cardNo == ""){
-            return;
-        }
-        if (cardNo.length > 0) {
-            $.ajax({
-                type: 'post',
-                url: '/trade/customer/findCustomerByCardNo/'+cardNo,
-                dataType: 'json',
-                async: false,
-                success: function (ret) {
-                    if (ret.code == "200") {
-                        var customer = ret.data;
-                        $("#tradeAccountInput").val(customer.customerId).valid();
-                        $("#tradeAccount").val(customer.customerId).valid();
-                        $("#tradePrintingCard").val(customer.printingCard).valid();
-                        $("#idCardNo").val(customer.idNo).valid();
-                        $("#name").val(customer.name).valid();
-                        $("#addr").val(customer.address).valid();
-                        $("#phone").val(customer.phone).valid();
-                    } else {
-                        $("#tradeAccountInput").val('')
-                        $("#tradeAccount").val('')
-                        $("#printingCard").val('')
-                        $("#idCardNo").val("");
-                        $("#name").val("");
-                        $("#addr").val("");
-                        $("#tradeAccount").val("");
-                        $("#phone").val("");
-                    }
-                },
-                error:function(){
-                    $("#tradeAccountInput").val('')
-                    $("#tradeAccount").val('')
-                    $("#tradePrintingCard").val('')
-                    $("#idCardNo").val("");
-                    $("#name").val("");
-                    $("#addr").val("");
-                    $("#tradeAccount").val("");
-                    $("#phone").val("");
-                }
-            });
-        }
-    }
-
     /**
      * 初始化自动完成框
      */

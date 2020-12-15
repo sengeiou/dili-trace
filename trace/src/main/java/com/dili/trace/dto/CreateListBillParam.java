@@ -18,18 +18,18 @@ public class CreateListBillParam {
      * 登记来源
      */
     private Integer registerSource;
-    /**
-     * 理货区编号
-     */
-    private String tallyAreaNo;
+//    /**
+//     * 理货区编号
+//     */
+//    private String tallyAreaNo;
     /**
      * 交易类型id
      */
-    private String tradeTypeId;
+    private String sourceId;
     /**
      * 交易类型描述
      */
-    private String tradeTypeName;
+    private String sourceName;
 
     /**
      * 车牌
@@ -84,13 +84,7 @@ public class CreateListBillParam {
         this.globalImageCertList = globalImageCertList;
     }
 
-    public String getTradeTypeName() {
-        return tradeTypeName;
-    }
 
-    public void setTradeTypeName(String tradeTypeName) {
-        this.tradeTypeName = tradeTypeName;
-    }
 
     public String getDetectReportUrl() {
         return detectReportUrl;
@@ -134,20 +128,28 @@ public class CreateListBillParam {
         this.registerSource = registerSource;
     }
 
-    public String getTallyAreaNo() {
-        return tallyAreaNo;
+//    public String getTallyAreaNo() {
+//        return tallyAreaNo;
+//    }
+//
+//    public void setTallyAreaNo(String tallyAreaNo) {
+//        this.tallyAreaNo = tallyAreaNo;
+//    }
+
+    public String getSourceId() {
+        return sourceId;
     }
 
-    public void setTallyAreaNo(String tallyAreaNo) {
-        this.tallyAreaNo = tallyAreaNo;
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 
-    public String getTradeTypeId() {
-        return tradeTypeId;
+    public String getSourceName() {
+        return sourceName;
     }
 
-    public void setTradeTypeId(String tradeTypeId) {
-        this.tradeTypeId = tradeTypeId;
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
     }
 
     public String getPlate() {

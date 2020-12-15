@@ -186,7 +186,8 @@ public class CommissionBillController {
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
-                    rb.setTallyAreaNo(input.getTallyAreaNo());
+                    rb.setSourceName(input.getSourceName());
+                    rb.setSourceId(input.getSourceId());
                     rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
                     rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
                     rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
@@ -196,8 +197,10 @@ public class CommissionBillController {
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
                     // 理货类型为交易区时才保存交易区号和id
                     if (RegisterSourceEnum.TRADE_AREA.getCode().equals(input.getRegisterSource())) {
-                        rb.setTradeTypeId(input.getTradeTypeId());
-                        rb.setTradeTypeName(input.getTradeTypeName());
+//                        rb.setTradeTypeId(input.getTradeTypeId());
+                        rb.setSourceName(input.getSourceName());
+                        rb.setSourceId(input.getSourceId());
+//                        rb.setTradeTypeName(input.getTradeTypeName());
                     }
                     return rb;
                 }).toList();

@@ -231,7 +231,7 @@ public class CustomerRpcService {
             customer.setCustomerId(customerCode);
             customer.setName(card.getCustomerName());
             customer.setIdNo(card.getCustomerCertificateNumber());
-
+            customer.setId(card.getCustomerId());
             Long customerId = card.getCustomerId();
             this.findCustomerById(customerId).ifPresent(cust -> {
                 customer.setPhone(cust.getContactsPhone());
