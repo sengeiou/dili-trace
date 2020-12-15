@@ -86,23 +86,39 @@ public class CustomerRpcService {
 
             try{
                 Long marketId = Long.parseLong(request.getHeader("marketId"));
-                query.setMarketId(marketId);
+                if(marketId!=null&&!marketId.equals(0)){
+                    query.setMarketId(marketId);
+                    BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
+                    if (out.isSuccess()) {
+                        return StreamEx.ofNullable(out.getData()).flatCollection(Function.identity()).nonNull().map(c -> {
+                            SessionData sessionData = new SessionData();
+                            sessionData.setUserId(c.getId());
+                            sessionData.setUserName(c.getName());
+                            sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
+                            return sessionData;
+                        }).findFirst();
+
+                    }
+                }else{
+                    BaseOutput<com.dili.customer.sdk.domain.Customer> out = this.customerRpc.getById(userId);
+                    if (out.isSuccess()) {
+                        return StreamEx.ofNullable(out.getData()).nonNull().map(c -> {
+                            SessionData sessionData = new SessionData();
+                            sessionData.setUserId(c.getId());
+                            sessionData.setUserName(c.getName());
+                            return sessionData;
+                        }).findFirst();
+
+                    }
+
+                }
+
             }catch (Exception e){
 
             }
 
 
-            BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
-            if (out.isSuccess()) {
-                return StreamEx.ofNullable(out.getData()).flatCollection(Function.identity()).nonNull().map(c -> {
-                    SessionData sessionData = new SessionData();
-                    sessionData.setUserId(c.getId());
-                    sessionData.setUserName(c.getName());
-                    sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
-                    return sessionData;
-                }).findFirst();
 
-            }
 
 
         } catch (Exception e) {
