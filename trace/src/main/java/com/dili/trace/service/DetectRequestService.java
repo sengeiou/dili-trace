@@ -53,6 +53,9 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     RegisterBillService registerBillService;
     @Autowired
     UserRpcService userRpcService;
+    @Autowired
+    ImageCertService imageCertService;
+
     /**
      * 创建检测请求
      *
@@ -302,6 +305,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     /**
      * 分页查询采样检测列表
+     *
      * @param query
      * @return
      */
@@ -324,7 +328,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 //        result.setStartIndex(page.getStartRow());
 
         EasyuiPageOutput out = new EasyuiPageOutput();
-        List results =ValueProviderUtils.buildDataByProvider(query, list);
+        List results = ValueProviderUtils.buildDataByProvider(query, list);
         out.setRows(results);
         out.setTotal(page.getTotal());
 
@@ -404,7 +408,10 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @return
      */
     public DetectRequestDto getDetectRequestDetail(DetectRequestDto detectRequestDto) {
-        return detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+        DetectRequestDto dto = detectRequestMapper.getDetectRequestDetail(detectRequestDto);
+        List<ImageCert> imageCertList = this.imageCertService.findImageCertListByBillId(dto.getBillId(), ImageCertBillTypeEnum.BILL_TYPE);
+        dto.setImageCertList(imageCertList);
+        return dto;
     }
 
     /**
@@ -422,7 +429,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
     /**
-     *
      * @param query
      * @return
      */
@@ -436,7 +442,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
     /**
-     *
      * @param query
      * @return
      */
@@ -455,6 +460,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     /**
      * 分页查询采样检测列表
+     *
      * @param query
      * @return
      */
@@ -490,8 +496,8 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
         DetectRequest resultDetectRequest = new DetectRequest();
         try {
-            Long upStreamId =null;
-            String upName=null;
+            Long upStreamId = null;
+            String upName = null;
             //创建上游企业
             if (StringUtils.isNotBlank(input.getUpStreamName())) {
                 Integer upCode = 10;
@@ -503,13 +509,13 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
                 upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
                 upStreamDto.setTelphone("''");
                 upStreamService.addUpstream(upStreamDto, operatorUser);
-                upStreamId=upStreamDto.getId();
+                upStreamId = upStreamDto.getId();
                 upName = upStreamDto.getName();
             }
             //创建报备单
-            RegisterBill registerBill = preCreateRegisterBill(input,upStreamId,upName);
+            RegisterBill registerBill = preCreateRegisterBill(input, upStreamId, upName);
             ImageCert imageCert = new ImageCert();
-            List imageCerts= new ArrayList<ImageCert>();
+            List imageCerts = new ArrayList<ImageCert>();
             imageCerts.add(imageCert);
             Long billId = registerBillService.createRegisterBill(registerBill, imageCerts,
                     Optional.ofNullable(new OperatorUser(input.getCreatorId(), input.getCreatorName())));
@@ -527,12 +533,13 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
 
     /**
      * 初始化报备单参数-创建场外委托单
+     *
      * @param input
      * @param upStreamId
      * @param upName
      * @return
      */
-    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId,String upName) {
+    private RegisterBill preCreateRegisterBill(DetectRequestDto input, Long upStreamId, String upName) {
         User user = userRpcService.userRpc.findUserById(input.getCreatorId()).getData();
         RegisterBill registerBill = new RegisterBill();
         registerBill.setName(user.getUserName());

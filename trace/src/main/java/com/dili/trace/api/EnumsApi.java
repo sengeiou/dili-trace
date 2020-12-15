@@ -35,6 +35,19 @@ public class EnumsApi {
 		}
 	}
 	/**
+	 * 检测类型枚举查询
+	 */
+	@RequestMapping(value = "/listDetectTypeEnum.api", method = RequestMethod.POST)
+	public BaseOutput<List<Entry<Integer, String>>> listDetectTypeEnum() {
+		try {
+			List<Entry<Integer, String>> list = StreamEx.of(DetectTypeEnum.values())
+					.mapToEntry(DetectTypeEnum::getCode, DetectTypeEnum::getName).toList();
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	/**
 	 * 证明类型查询
 	 */
 	@RequestMapping(value = "/listImageCertType.api", method = RequestMethod.POST)

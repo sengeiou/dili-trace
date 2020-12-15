@@ -4,6 +4,9 @@ import com.dili.ss.domain.annotation.Like;
 import com.dili.ss.domain.annotation.Operator;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
+import com.dili.trace.domain.ImageCert;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.WeightUnitEnum;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
@@ -173,6 +176,34 @@ public class DetectRequestDto extends DetectRequest {
 
     @Transient
     private Long originId;
+
+    /**
+     * 报备单类型
+     */
+    @Transient
+    private Integer billType;
+
+    /**
+     * 所有图片列表
+     */
+    @Transient
+    private List<ImageCert> imageCertList;
+
+    public List<ImageCert> getImageCertList() {
+        return imageCertList;
+    }
+
+    public void setImageCertList(List<ImageCert> imageCertList) {
+        this.imageCertList = imageCertList;
+    }
+
+    public Integer getBillType() {
+        return billType;
+    }
+
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+    }
 
     public Long getOriginId() {
         return originId;
@@ -397,4 +428,17 @@ public class DetectRequestDto extends DetectRequest {
     public void setDetectStatus(Integer detectStatus) {
         this.detectStatus = detectStatus;
     }
+
+
+    @Transient
+    public String getWeightUnitName() {
+        return WeightUnitEnum.fromCode(this.weightUnit).map(WeightUnitEnum::getName).orElse("");
+    }
+
+    @Transient
+    public String getBillTypeName() {
+        return BillTypeEnum.fromCode(this.billType).map(BillTypeEnum::getName).orElse("");
+    }
+
 }
+

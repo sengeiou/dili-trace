@@ -45,7 +45,7 @@ public enum BillTypeEnum {
 	/**
 	 * 委托单
 	 */
-	COMMISSION_BILL(6, "委托单"),
+	COMMISSION_BILL(6, "场外委托"),
 	/**
 	 * 商务单
 	 */
