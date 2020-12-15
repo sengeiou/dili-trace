@@ -86,7 +86,7 @@ public class ClientDetectRequestApi {
             Long userId = loginSessionContext.getSessionData().getUserId();
             String userName = loginSessionContext.getSessionData().getUserName();
             Long marketId = loginSessionContext.getSessionData().getMarketId();
-            
+
             if (null == userId) {
                 return BaseOutput.failure("未登录或登录过期");
             }
