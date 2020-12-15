@@ -159,7 +159,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
 
         // 补单直接进门状态
-        if (BillTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getBillType())) {
+        if (RegistTypeEnum.SUPPLEMENT.equalsToCode(registerBill.getRegistType())) {
             registerBill.setIsCheckin(YesOrNoEnum.YES.getCode());
         } else {
             registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
@@ -201,7 +201,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         //报备单新增消息
         Integer businessType = MessageStateEnum.BUSINESS_TYPE_BILL.getCode();
-        if (BillTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getBillType())) {
+        if (RegistTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getRegistType())) {
             businessType = MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
         }
         addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
@@ -322,7 +322,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         });
         if (tradeDetailItem == null) {
             // 补单直接进门状态
-            if (BillTypeEnum.SUPPLEMENT.equalsToCode(input.getBillType())) {
+            if (RegistTypeEnum.SUPPLEMENT.equalsToCode(input.getRegistType())) {
                 input.setIsCheckin(YesOrNoEnum.YES.getCode());
             } else {
                 input.setIsCheckin(YesOrNoEnum.NO.getCode());
@@ -462,7 +462,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 .orElseThrow(() -> new TraceBizException("数据不存在"));
 
         if (YesOrNoEnum.YES.getCode().equals(billItem.getIsCheckin())
-                || BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
+                || RegistTypeEnum.SUPPLEMENT.equalsToCode(billItem.getRegistType())) {
             throw new TraceBizException("补单或已进门报备单,只能场内审核");
         }
 
@@ -483,7 +483,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         RegisterBill billItem = this.getAndCheckById(billId).orElseThrow(() -> new TraceBizException("数据不存在"));
 
         if (!YesOrNoEnum.YES.getCode().equals(billItem.getIsCheckin())
-                && !BillTypeEnum.SUPPLEMENT.equalsToCode(billItem.getBillType())) {
+                && !RegistTypeEnum.SUPPLEMENT.equalsToCode(billItem.getRegistType())) {
             throw new TraceBizException("补单或已进门报备单,才能场内审核");
         }
         if (BillVerifyStatusEnum.PASSED.equalsToCode(verifyStatus)) {
@@ -681,7 +681,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public Map<Integer, Map<String, List<RegisterBill>>> listPageCheckInData(RegisterBillDto query) {
-        String dynaWhere = " is_checkin=" + YesOrNoEnum.NO.getCode() + " and bill_type =" + BillTypeEnum.NONE.getCode();
+        String dynaWhere = " is_checkin=" + YesOrNoEnum.NO.getCode() + " and regist_type =" + RegistTypeEnum.NONE.getCode();
 
         query.setSort("created");
         query.setOrder("desc");
@@ -783,7 +783,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.buildLikeKeyword(query).ifPresent(sql -> {
             sqlList.add(sql);
         });
-        sqlList.add("( bill_type=" + BillTypeEnum.NONE.getCode() + " and (is_checkin=" + YesOrNoEnum.NO.getCode()
+        sqlList.add("( regist_type=" + RegistTypeEnum.NONE.getCode() + " and (is_checkin=" + YesOrNoEnum.NO.getCode()
                 + " OR (is_checkin=" + YesOrNoEnum.YES.getCode() + " and verify_status="
                 + BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
                 + VerifyTypeEnum.PASSED_BEFORE_CHECKIN.getCode() + " ) ) )");
@@ -796,7 +796,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.buildLikeKeyword(query).ifPresent(sql -> {
             sqlList.add(sql);
         });
-        sqlList.add("( bill_type=" + BillTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YesOrNoEnum.YES.getCode()
+        sqlList.add("( regist_type=" + RegistTypeEnum.SUPPLEMENT.getCode() + " OR  (is_checkin=" + YesOrNoEnum.YES.getCode()
                 + " AND verify_status<>" + BillVerifyStatusEnum.PASSED.getCode() + ") OR(verify_status="
                 + BillVerifyStatusEnum.PASSED.getCode() + " and verify_type="
                 + VerifyTypeEnum.PASSED_AFTER_CHECKIN.getCode() + ") )");
@@ -905,7 +905,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.updateUserQrStatusByUserId(registerBill.getBillId(), registerBill.getUserId());
 
         //更新主台账单剩余重量
-        if (BillTypeEnum.PARTIAL.getCode().equals(registerBill.getBillType())) {
+        if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
             RegisterHead registerHead = new RegisterHead();
             registerHead.setCode(registerBill.getRegisterHeadCode());
             List<RegisterHead> registerHeadList = registerHeadService.listByExample(registerHead);

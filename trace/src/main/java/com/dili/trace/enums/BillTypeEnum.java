@@ -14,7 +14,7 @@ public enum BillTypeEnum {
 	/**
 	 * 正常进场
 	 */
-	NONE(10, "正常进场"),
+//	NONE(10, "正常进场"),
 
 
 	/**
@@ -57,11 +57,11 @@ public enum BillTypeEnum {
 	/**
 	 * 补单
 	 */
-	SUPPLEMENT(20, "补单"),
+//	SUPPLEMENT(20, "补单"),
 	/**
 	 * 外冷分批进场
 	 */
-	PARTIAL(30, "外冷分批进场"),
+//	PARTIAL(30, "外冷分批进场"),
 	;
 
 	;

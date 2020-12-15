@@ -88,7 +88,7 @@ public class ManagerVerifyApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
             OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
-            query.setBillType(BillTypeEnum.NONE.getCode());
+            query.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
             List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
             return BaseOutput.success().setData(list);
 

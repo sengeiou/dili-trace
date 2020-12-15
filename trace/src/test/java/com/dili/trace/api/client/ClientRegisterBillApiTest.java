@@ -88,7 +88,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.setProductName(billItem.getProductName());
 		rb.setOriginId(billItem.getOriginId());
 		rb.setOriginName(billItem.getOriginName());
-		rb.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
+//		rb.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
 		rb.setTruckType(TruckTypeEnum.FULL.getCode());
 		rb.setImageCertList(new ArrayList<ImageCert>());
 		ImageCert imageCert = new ImageCert();
@@ -123,7 +123,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.setProductName(item.getProductName());
 		rb.setOriginId(item.getOriginId());
 		rb.setOriginName(item.getOriginName());
-		rb.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
+//		rb.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
 		rb.setImageCertList(new ArrayList<ImageCert>());
 		ImageCert imageCert = new ImageCert();
 		imageCert.setUrl("imageurl");

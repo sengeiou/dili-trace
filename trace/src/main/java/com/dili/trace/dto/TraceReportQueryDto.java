@@ -5,6 +5,7 @@ import java.util.List;
 
 public class TraceReportQueryDto {
     private Integer billType;
+    private Integer registType;
     private Date createdStart;
     private Date createdEnd;
     private Boolean readonly;
@@ -14,6 +15,14 @@ public class TraceReportQueryDto {
     private List<Integer> noneVerifyStatus;
     private Integer isUserActive;
     private Long marketId;
+
+    public Integer getRegistType() {
+        return registType;
+    }
+
+    public void setRegistType(Integer registType) {
+        this.registType = registType;
+    }
 
     public Integer getIsUserActive() {
         return isUserActive;

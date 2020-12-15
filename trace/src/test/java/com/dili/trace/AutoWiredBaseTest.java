@@ -116,7 +116,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 		User userItem = this.findUser();
 //		Category categoryItem = this.findCategory();
 		RegisterBill bill = new RegisterBill();
-		bill.setBillType(BillTypeEnum.NONE.getCode());
+//		bill.setBillType(BillTypeEnum.NONE.getCode());
 		bill.setVerifyType(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
 		bill.setPreserveType(PreserveTypeEnum.FRESH.getCode());
 		bill.setWeight(BigDecimal.valueOf(100L));

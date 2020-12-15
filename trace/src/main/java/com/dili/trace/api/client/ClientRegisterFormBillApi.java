@@ -19,6 +19,7 @@ import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.RegistTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
@@ -233,7 +234,7 @@ public class ClientRegisterFormBillApi {
 			registerBill.setUpStreamName(upStream.getName());
 
 			//获取主台账单的总重量与剩余总重量
-			if (BillTypeEnum.PARTIAL.getCode().equals(registerBill.getBillType())) {
+			if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
 				RegisterHead registerHead = new RegisterHead();
 				registerHead.setCode(registerBill.getRegisterHeadCode());
 				List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);

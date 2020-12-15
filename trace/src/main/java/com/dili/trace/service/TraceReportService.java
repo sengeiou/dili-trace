@@ -5,10 +5,7 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.SysConfig;
 import com.dili.trace.dto.TraceReportDto;
 import com.dili.trace.dto.TraceReportQueryDto;
-import com.dili.trace.enums.BillTypeEnum;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.MarketEnum;
-import com.dili.trace.enums.SysConfigTypeEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.util.MarketUtil;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
@@ -124,7 +121,7 @@ public class TraceReportService {
      * @param query
      */
     public Map<String,TraceReportDto> getCommonCheckinReportData(TraceReportQueryDto query) {
-        query.setBillType(BillTypeEnum.NONE.getCode());
+        query.setRegistType(RegistTypeEnum.NONE.getCode());
         List<TraceReportDto>list=this.checkinOutRecordMapper.groupCountCommonBillByColor(query);
         Map<String,TraceReportDto>mapData= StreamEx.ofNullable(list).nonNull().flatCollection(Function.identity()).toMap(TraceReportDto::getGroupKey, Function.identity());
         TraceReportDto total = StreamEx.of(list).map(item -> {
@@ -142,7 +139,7 @@ public class TraceReportService {
      * @param query
      */
     public TraceReportDto getSupplementCheckinReportData(TraceReportQueryDto query) {
-        query.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
+        query.setRegistType(RegistTypeEnum.SUPPLEMENT.getCode());
         return StreamEx.ofNullable(this.checkinOutRecordMapper.groupCountSupplementBillByColor(query)).nonNull()
                 .flatCollection(Function.identity()).nonNull().findFirst().orElseGet(() -> {
 
@@ -152,7 +149,6 @@ public class TraceReportService {
     }
     /**
      * 我也不知道
-     * @param query
      */
     private TraceReportDto defaultReportDTO() {
         TraceReportDto dto = new TraceReportDto();
