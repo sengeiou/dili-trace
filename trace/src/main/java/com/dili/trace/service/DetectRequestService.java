@@ -501,7 +501,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
                 upStreamDto.setUpORdown(upCode);
                 upStreamDto.setSourceUserId(input.getCreatorId());
                 upStreamDto.setUpstreamType(UpStreamTypeEnum.USER.getCode());
-                upStreamDto.setTelphone("00000000000");
+                upStreamDto.setTelphone("''");
                 upStreamService.addUpstream(upStreamDto, operatorUser);
                 upStreamId=upStreamDto.getId();
                 upName = upStreamDto.getName();

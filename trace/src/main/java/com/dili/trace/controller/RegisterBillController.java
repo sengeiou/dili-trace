@@ -1,8 +1,10 @@
 package com.dili.trace.controller;
 
 import com.dili.bpmc.sdk.rpc.EventRpc;
+import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.service.BaseInfoRpcService;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
@@ -14,6 +16,7 @@ import com.dili.trace.enums.TruckTypeEnum;
 import com.dili.trace.glossary.RegisterBillStateEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
@@ -34,6 +37,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.security.auth.login.LoginContext;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,10 +56,7 @@ public class RegisterBillController {
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
     @Autowired
-    UserService userService;
-    @Autowired
     UserPlateService userPlateService;
-
     @Autowired
     BaseInfoRpcService baseInfoRpcService;
     @Autowired
@@ -69,8 +71,10 @@ public class RegisterBillController {
     EventRpc eventRpc;
     @Autowired
     UapRpcService uapRpcService;
-
-
+    @Autowired
+    CustomerRpcService customerRpcService;
+    @Autowired
+    private LoginSessionContext loginSessionContext;
     /**
      * 跳转到RegisterBill页面
      *
@@ -164,14 +168,14 @@ public class RegisterBillController {
         UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
         for (RegisterBill registerBill : registerBills) {
 
-            User user = userService.get(registerBill.getUserId());
-            if (user == null) {
+            CustomerExtendDto customer = customerRpcService.findCustomerByIdOrEx(registerBill.getUserId(), loginSessionContext.getSessionData().getMarketId());
+            if (customer == null) {
                 return BaseOutput.failure("用户不存在");
             }
-            registerBill.setName(user.getName());
-            registerBill.setIdCardNo(user.getCardNo());
-            registerBill.setAddr(user.getAddr());
-            registerBill.setUserId(user.getId());
+            registerBill.setName(customer.getName());
+            registerBill.setIdCardNo(customer.getCertificateNumber());
+            registerBill.setAddr(customer.getCertificateAddr());
+            registerBill.setUserId(customer.getId());
             try {
                 Long billId = registerBillService.createRegisterBill(registerBill, new ArrayList<ImageCert>(),
                         Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
@@ -426,14 +430,14 @@ public class RegisterBillController {
         UserInfoDto userInfoDto = new UserInfoDto();
 
         // 理货区
-        User user = userService.get(registerBill.getUserId());
-
-        if (user != null) {
-            userInfoDto.setUserId(String.valueOf(user.getId()));
-            userInfoDto.setName(user.getName());
-            userInfoDto.setIdCardNo(user.getCardNo());
-            userInfoDto.setPhone(user.getPhone());
-            userInfoDto.setAddr(user.getAddr());
+        //User user = userService.get(registerBill.getUserId());
+        CustomerExtendDto customer = customerRpcService.findCustomerByIdOrEx(registerBill.getUserId(), loginSessionContext.getSessionData().getMarketId());
+        if (customer != null) {
+            userInfoDto.setUserId(String.valueOf(customer.getId()));
+            userInfoDto.setName(customer.getName());
+            userInfoDto.setIdCardNo(customer.getCertificateNumber());
+            userInfoDto.setPhone(customer.getContactsPhone());
+            userInfoDto.setAddr(customer.getCertificateAddr());
 
         }
 
