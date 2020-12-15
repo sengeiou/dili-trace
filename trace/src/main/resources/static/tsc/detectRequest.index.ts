@@ -1,14 +1,12 @@
-class DetectRequestGridGrid extends WebConfig {
-    grid: any;
+class DetectRequestGridGrid extends ListPage {
     uid:string;
-    queryform: any;
-    // highLightBill: any;
     btns:string[];
+    toolbar:any;
 
-    constructor(grid: any, queryform: any) {
-        super();
-        this.grid = grid;
-        this.queryform = queryform;
+    constructor(grid: any, queryform: any, toolbar: any) {
+        super(grid,queryform,queryform.find('#query'),"/detectRequest/listPage.action");
+        this.toolbar=toolbar;
+        this.btns=this.toolbar.find('button');
         this.uid=_.uniqueId("trace_id_");
 
         $(window).on('resize',()=> this.grid.bootstrapTable('resetView') );
@@ -17,36 +15,10 @@ class DetectRequestGridGrid extends WebConfig {
         window['DetectRequestGridObj']=this;
 
         // 绑定按钮事件
-        this.btns= ['assign-btn', 'confirm-btn'];
         $('#assign-btn').on('click',async ()=>await this.openAssignPage());
         $('#confirm-btn').on('click',async ()=>await this.openConfirmPage());
 
-        // 绑定查询按钮事件
-        this.queryform.find('#query').click(async () => await this.queryGridData());
-
-        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.checkAndShowHideBtns());
-
-        // ？？？
-        // window.addEventListener('message', function(e) {
-        //     var data=JSON.parse(e.data);
-        //     if(data.obj&&data.fun){
-        //         if(data.obj=='DetectRequestGridObj'){
-        //             cthis[data.fun].call(cthis,data.args)
-        //         }
-        //     }
-        // }, false);
-    }
-
-    /**
-     * 查询表格数据
-     */
-    private async queryGridData(){
-        if (!this.queryform.validate().form()) {
-            //@ts-ignore
-            bs4pop.notice("请完善必填项", {type: 'warning', position: 'topleft'});
-            return;
-        }
-        this.grid.bootstrapTable('refresh');
+        this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
     }
 
     /**
@@ -64,7 +36,6 @@ class DetectRequestGridGrid extends WebConfig {
      * 进入分配检测员页面
      */
     private async  openAssignPage(){
-
         var row=this.rows[0]
         var url=this.toUrl('/detectRequest/assign.html?id='+row.id);
         //@ts-ignore
@@ -113,8 +84,6 @@ class DetectRequestGridGrid extends WebConfig {
             }
             await this.queryGridData();
             //@ts-ignore
-            //TLOG.component.operateLog('登记单管理',"审核","【编号】:"+selected.code);
-            //@ts-ignore
             bs4pop.removeAll()
             //@ts-ignore
             bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
@@ -135,25 +104,12 @@ class DetectRequestGridGrid extends WebConfig {
         return  this.grid.bootstrapTable('getSelections');
     }
 
-    private resetButtons() {
+    public async resetButtons() {
         var btnArray=this.btns;
-        _.chain(btnArray).each((btn)=> {
-            $('#'+btn).hide();
-        });
+        // _.chain(btnArray).each((btn)=> {
+        //     $(btn).hide();
+        // });
+        // await this.queryEventAndSetBtn();
     }
-    private async checkAndShowHideBtns(){
-        debugger
-        this.resetButtons();
-        let rows=this.rows;
-        try {
-            if (rows.length > 0) {
-                let detectStatus = rows[0].detectStatus;
-                if (detectStatus == 0 || detectStatus == '') {
-                    $('#assign-btn').show();
-                }
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
+
 }

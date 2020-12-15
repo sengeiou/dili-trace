@@ -3,57 +3,122 @@
 <div class="container-fluid">
     <form id="queryForm" role="form" >
         <div class="row row-cols-6">
-
+            <div class="form-group col">
+                <label for="registerSource">登记来源</label>
+                <select id="registerSource" name="registerSource" class="form-control"></select>
+                <#bcomboProvider _id="registerSource" _provider="registerSourceProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="verifyStatus">审核状态</label>
+                <select id="verifyStatus" name="verifyStatus" class="form-control"></select>
+                <#bcomboProvider _id="verifyStatus" _provider="billVerifyStatusEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="detectStatus">检测状态</label>
+                <select id="detectStatus" name="detectStatus" class="form-control"></select>
+                <#bcomboProvider _id="detectStatus" _provider="detectStatusProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="hasDetectReport">检测报告</label>
+                <select id="hasDetectReport" name="hasDetectReport" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label for="hasOriginCertifiy">产地证明</label>
+                <select id="hasOriginCertifiy" name="hasOriginCertifiy" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label for="hasHandleResult">处理结果</label>
+                <select id="hasHandleResult" name="hasHandleResult" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label for="likePlate">车牌号</label>
+                <input type="text" class="form-control" name="likePlate" id="likePlate"/>
+            </div>
+            <div class="form-group col">
+                <label for="likeName">经营户姓名</label>
+                <input type="text" class="form-control" name="likeName" id="likeName"/>
+            </div>
+            <div class="form-group col">
+                <label for="likePhone">手机号</label>
+                <input type="text" class="form-control" name="likePhone" id="likePhone"/>
+            </div>
+            <div class="form-group col">
+                <label for="likeCode">报备单号</label>
+                <input type="text" class="form-control" name="likeCode" id="likeCode"/>
+            </div>
+            <div class="form-group col">
+                <label for="detectType">检测类型</label>
+                <select id="detectType" name="detectType" class="form-control"></select>
+                <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="detectResult">检测结果</label>
+                <select id="detectResult" name="detectResult" class="form-control"></select>
+                <#bcomboProvider _id="detectResult" _provider="detectResultEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
             <div class="form-group col-auto">
-                <label for="createdStart">创建时间</label>
+                <label for="createdStart">报备时间</label>
                 <div class="form-inline">
                     <div class="input-group">
-                        <input type="text" name="createdStart" id="createdStart" class="form-control laydatetime laystart" value="${createdStart}"/>
+                        <input type="text" name="createdStart" id="createdStart" class="form-control laydatetime laystart" value="${createdStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
                         <div class="input-group-append">
                             <label for="createdStart" class="input-group-text fa fa-calendar"></label>
                         </div>
                     </div>&nbsp;&nbsp;至&nbsp;&nbsp;
                     <div class="input-group">
-                        <input type="text" name="createdEnd" id="createdEnd" class="form-control laydatetime layend" value="${createdEnd}"/>
+                        <input type="text" name="createdEnd" id="createdEnd" class="form-control laydatetime layend" value="${createdEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
                         <div class="input-group-append">
                             <label for="createdEnd" class="input-group-text fa fa-calendar"></label>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="form-group col" style="display: none">
-                <label for="likeBillCode">报备单号</label>
-                <input type="text" class="form-control" name="likeBillCode" id="likeBillCode"/>
+            <div class="form-group col-auto">
+                <label for="checkinCreatedStart">进门时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="checkinCreatedStart" id="checkinCreatedStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="checkinCreatedEnd" id="checkinCreatedEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group col">
-                <label for="likeCreatorName">创建人</label>
-                <input type="text" class="form-control" name="likeCreatorName" id="likeCreatorName"/>
+            <div class="form-group col-auto">
+                <label for="detectTimeStart">检测时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="detectTimeStart" id="detectTimeStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="detectTimeEnd" id="detectTimeEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="detectTimeEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group col">
-                <label for="likeDesignatedName">指定检测员</label>
-                <input type="text" class="form-control" name="likeDesignatedName" id="likeDesignatedName"/>
-            </div>
-
-            <div class="form-group col">
-                <label for="likeDetectorName">检测员</label>
-                <input type="text" class="form-control" name="likeDetectorName" id="likeDetectorName"/>
-            </div>
-
-            <div class="form-group col">
-                <label for="detectType">检测类型</label>
-                <select id="detectType" name="detectType" class="form-control"></select>
-                <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
-            </div>
-
-            <div class="form-group col">
-                <label for="detectSource">采样来源</label>
-                <select id="detectSource" name="detectSource" class="form-control"></select>
-                <#bcomboProvider _id="detectSource" _provider="sampleSourceProvider" _value="" _onLoadSuccess=""/>
-            </div>
-
             <div class="col-auto align-self-center mt-3">
                 <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
                 <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
@@ -63,7 +128,7 @@
     <hr>
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
-            <button id="assign-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 指派检测员</button>
+            <button id="assign-btn" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
             <button id="confirm-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 接单</button>
         </div>
         <table id="detectRequestGrid" data-toggle="table" data-title="检测请求列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
@@ -74,40 +139,73 @@
             <tr>
                 <th data-checkbox="true"></th>
                 <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
-                    创建时间
+                    报备时间
                 </th>
-                <th data-field="billCode" data-sortable="true" data-align="center">
+                <th data-field="code" data-sortable="true" data-align="center">
                     报备单号
                 </th>
-                <th data-field="creatorId" data-sortable="true" data-align="center">
-                    创建人ID
+                <th data-field="verifyStatusName" data-sortable="true" data-align="center" >
+                    审核状态
                 </th>
-                <th data-field="creatorName" data-sortable="true" data-align="center">
-                    创建人姓名
-                </th>
-                <th data-field="designatedId" data-sortable="true" data-align="center">
-                    指定检测员ID
-                </th>
-                <th data-field="designatedName" data-sortable="true" data-align="center">
-                    指定检测员姓名
-                </th>
-                <th data-field="detectStatusName" data-sortable="true" data-align="center" data-provider="detectStatusProvider">
+                <th data-field="detectStatusName" data-sortable="true" data-align="center" >
                     检测状态
                 </th>
-                <th data-field="detectType" data-sortable="true" data-align="center" data-provider="detectTypeEnumProvider">
-                    检测类型
+                <th data-field="billTypeName" data-sortable="true" data-align="center">
+                    报备单类型
                 </th>
-                <th data-field="detectorId" data-sortable="true" data-align="center">
-                    检测员ID
+                <th data-field="name" data-sortable="true" data-align="center">
+                    业户姓名
                 </th>
-                <th data-field="detectorName" data-sortable="true" data-align="center">
-                    检测员姓名
+                <th data-field="corporateName" data-sortable="true" data-align="center">
+                    企业姓名
                 </th>
-                <th data-field="detectResult" data-sortable="true" data-align="center" data-provider="detectResultEnumProvider">
+                <th data-field="plate" data-sortable="true" data-align="center">
+                    车牌
+                </th>
+                <th data-field="productName" data-sortable="true" data-align="center">
+                    商品名称
+                </th>
+                <th data-field="brandName" data-sortable="true" data-align="center">
+                    品牌
+                </th>
+                <th data-field="weight" data-sortable="true" data-align="center">
+                    重量
+                </th>
+                <th data-field="weightUnitName" data-sortable="true" data-align="center">
+                    重量单位
+                </th>
+                <th data-field="originName" data-sortable="true" data-align="center">
+                    产地
+                </th>
+                <th data-field="hasOriginCertifiyName" data-sortable="true" data-align="center">
+                    产地证明
+                </th>
+                <th data-field="hasDetectReportName" data-sortable="true" data-align="center">
+                    检测报告
+                </th>
+                <th data-field="hasHandleResultName" data-sortable="true" data-align="center">
+                    处理结果
+                </th>
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    接单时间
+                </th>
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    采样时间
+                </th>
+                <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    检测时间
+                </th>
+                <th data-field="sampleCode" data-sortable="true" data-align="center">
+                    采样编号
+                </th>
+                <th data-field="detectResultName" data-sortable="true" data-align="center">
                     检测结果
                 </th>
-                <th data-field="detectSource" data-sortable="true" data-align="center" data-provider="sampleSourceProvider">
-                    采样来源
+                <th data-field="detectorName" data-sortable="true" data-align="center">
+                    检测员
+                </th>
+                <th data-field="isDeletedName" data-sortable="true" data-align="center">
+                    是否删除
                 </th>
             </tr>
             </thead>
@@ -132,21 +230,7 @@
         });
     });
     $(function () {
-        $('#assign-btn').hide();
-        $('#detectRequestGrid').bootstrapTable('refreshOptions', {
-            url: '/detectRequest/listPage.action'
-        });
-        new DetectRequestGridGrid($('#detectRequestGrid'),$('#queryForm'));
+        new DetectRequestGridGrid($('#detectRequestGrid'),$('#queryForm'),$('#toolbar'));
     });
 
-    //基础查询参数设置
-    function queryParams(params) {
-        let temp = {
-            rows: params.limit,   //页面大小
-            page: ((params.offset / params.limit) + 1) || 1, //页码
-            sort: params.sort,
-            order: params.order
-        };
-        return $.extend(temp, bui.util.bindGridMeta2Form('detectRequestGrid', 'queryForm'));
-    }
 </script>

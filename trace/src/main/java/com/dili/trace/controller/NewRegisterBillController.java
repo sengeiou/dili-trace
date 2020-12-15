@@ -1,6 +1,8 @@
 package com.dili.trace.controller;
 
 import com.dili.common.annotation.RegisterBillMessageEvent;
+import com.dili.common.entity.LoginSessionContext;
+import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -17,6 +19,7 @@ import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
+import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -36,6 +39,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.function.Function;
@@ -78,14 +82,10 @@ public class NewRegisterBillController {
     ImageCertService imageCertService;
     @Autowired
     UapRpcService uapRpcService;
-
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
-
     @Autowired
     DetectRequestService detectRequestService;
-
-
     /**
      * 跳转到RegisterBill页面
      *
@@ -805,7 +805,7 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = new UserInfoDto();
         if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
             // 理货区
-            User user = userService.findByTallyAreaNo(firstTallyAreaNo);
+            User user = userService.findByTallyAreaNo(firstTallyAreaNo,MarketUtil.returnMarket());
 
             if (user != null) {
                 userInfoDto.setUserId(String.valueOf(user.getId()));

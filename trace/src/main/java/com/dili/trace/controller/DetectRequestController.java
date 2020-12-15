@@ -3,7 +3,7 @@ package com.dili.trace.controller;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
-import com.dili.trace.dto.DetectRequestDto;
+import com.dili.trace.dto.DetectRequestWithBillDto;
 import com.dili.trace.service.DetectRequestService;
 import com.dili.trace.service.UserRpcService;
 import com.dili.trace.util.MarketUtil;
@@ -19,14 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -54,9 +49,6 @@ public class DetectRequestController {
     @ApiOperation("跳转到DetectRequest页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap, HttpServletRequest req) {
-        LocalDateTime now = LocalDateTime.now();
-        modelMap.put("createdStart", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
-        modelMap.put("createdEnd", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
         return "detectRequest/index";
     }
 
@@ -71,8 +63,9 @@ public class DetectRequestController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "DetectRequest", paramType = "form", value = "DetectRequest的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody String listPage(DetectRequestDto detectRequestDto) throws Exception {
-        EasyuiPageOutput out = this.detectRequestService.listEasyuiPageByExample(detectRequestDto);
+    public @ResponseBody String listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
+        // detectRequestDto.setMarketId(MarketUtil.returnMarket());
+        EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
         return out.toString();
     }
 

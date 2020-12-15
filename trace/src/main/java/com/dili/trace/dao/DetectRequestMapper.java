@@ -6,6 +6,7 @@ import com.dili.trace.api.output.SampleSourceCountOutputDto;
 import com.dili.trace.api.output.SampleSourceListOutputDto;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.dto.DetectRequestDto;
+import com.dili.trace.dto.DetectRequestWithBillDto;
 import com.dili.trace.enums.DetectStatusEnum;
 import org.apache.ibatis.annotations.Param;
 
@@ -46,4 +47,11 @@ public interface DetectRequestMapper extends MyMapper<DetectRequest> {
      * @return
      */
     List<SampleSourceListOutputDto> queryListBySampleSource(DetectRequestQueryDto query);
+
+    /**
+     * PC端检测请求-列表查询
+     * @param query
+     * @return
+     */
+    List<DetectRequestWithBillDto> queryListByExample(DetectRequestWithBillDto query);
 }

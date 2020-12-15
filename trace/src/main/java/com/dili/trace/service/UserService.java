@@ -240,9 +240,10 @@ public interface UserService extends BaseService<User, Long> {
     /**
      * 查询用户
      * @param tallyAreaNo
+     * @param marketId
      * @return
      */
-    User findByTallyAreaNo(String tallyAreaNo);
+    User findByTallyAreaNo(String tallyAreaNo, Long marketId);
 
     /**
      * 通过理货区号查询用户及车牌信息

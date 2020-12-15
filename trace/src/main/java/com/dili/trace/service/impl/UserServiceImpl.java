@@ -8,6 +8,9 @@ import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.util.MD5Util;
 import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.customer.sdk.domain.TallyingArea;
+import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
+import com.dili.customer.sdk.rpc.TallyingAreaRpc;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
@@ -28,6 +31,8 @@ import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.*;
+import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.rpc.service.TallyingAreaRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.QRCodeUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -104,6 +109,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Resource
     UserHistoryService userHistoryService;
+
+    @Autowired
+    CustomerRpcService customerRpcService;
+    @Autowired
+    TallyingAreaRpcService tallyingAreaRpcService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -534,10 +544,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             if (userPlateMap.containsKey(userId)) {
                 String plates = userPlateMap.get(userId).stream().map(UserPlate::getPlate)
                         .collect(Collectors.joining(","));
-               // u.put("plates", plates);
+                // u.put("plates", plates);
                 u.setPlates(plates);
             } else {
-              //  u.put("plates", "");
+                //  u.put("plates", "");
                 u.setPlates("");
             }
             return u;
@@ -920,7 +930,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public BasePage<User>  findUserByKeyword(UserListDto input) {
+    public BasePage<User> findUserByKeyword(UserListDto input) {
         PageHelper.startPage(input.getPage(), input.getRows());
         List<User> userList = new ArrayList<User>();
         if (StringUtils.isBlank(input.getThirdPartyCode()) && StringUtils.isBlank(input.getPhone()) && StringUtils.isBlank(input.getName())) {
@@ -945,7 +955,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
             e.and().andEqualTo("yn", YesOrNoEnum.YES.getCode());
             // e.and().andEqualTo("isActive", YesOrNoEnum.YES.getCode());
             e.and().andEqualTo("marketId", input.getMarketId());
-            userList =  this.getDao().selectByExample(e);
+            userList = this.getDao().selectByExample(e);
         }
 
         Page<User> page = (Page) userList;
@@ -960,18 +970,22 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     }
 
     @Override
-    public User findByTallyAreaNo(String tallyAreaNo) {
+    public User findByTallyAreaNo(String tallyAreaNo, Long marketId) {
         UserTallyArea query = DTOUtils.newDTO(UserTallyArea.class);
         query.setTallyAreaNo(tallyAreaNo);
-        UserTallyArea userTallyArea = userTallyAreaService.list(query).stream().findFirst().orElse(null);
-        if (null == userTallyArea) {
+        TallyingArea tallyingArea = tallyingAreaRpcService.findCustomerByIdOrEx(tallyAreaNo, marketId);
+
+        if (null == tallyingArea) {
             return null;
         }
-
-        User userQuery = DTOUtils.newDTO(User.class);
-        userQuery.setId(userTallyArea.getUserId());
-        userQuery.setState(EnabledStateEnum.ENABLED.getCode());
-        return list(userQuery).stream().findFirst().orElse(null);
+        CustomerExtendDto customer = customerRpcService.findCustomerByIdOrEx(tallyingArea.getCustomerId(), marketId);
+        User user = DTOUtils.newDTO(User.class);
+        user.setId(customer.getId());
+        user.setName(customer.getName());
+        user.setCardNo(customer.getCertificateNumber());
+        user.setPhone(customer.getContactsPhone());
+        user.setAddr(customer.getCertificateAddr());
+        return user;
     }
 
     @Override
@@ -1086,6 +1100,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     /**
      * 获取无照片的经营户
+     *
      * @return
      */
     @Override
