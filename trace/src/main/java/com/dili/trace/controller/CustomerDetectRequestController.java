@@ -31,11 +31,11 @@ import java.util.Map;
 /**
  * 检测请求业务类
  */
-@Api("/detectRequest")
+@Api("/customerDetectRequest")
 @Controller
-@RequestMapping("/detectRequest")
-public class DetectRequestController {
-    private static final Logger logger = LoggerFactory.getLogger(DetectRequestController.class);
+@RequestMapping("/customerDetectRequest")
+public class CustomerDetectRequestController {
+    private static final Logger logger = LoggerFactory.getLogger(CustomerDetectRequestController.class);
 
     @Autowired
     DetectRequestService detectRequestService;
@@ -52,7 +52,7 @@ public class DetectRequestController {
     @ApiOperation("跳转到DetectRequest页面")
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap, HttpServletRequest req) {
-        return "detectRequest/index";
+        return "customerDetectRequest/index";
     }
 
     /**
@@ -73,33 +73,33 @@ public class DetectRequestController {
     }
 
     /**
-     * 指派检测员页面
+     * 接单页面
      *
      * @param modelMap
      * @param id
      * @return
      */
-    @RequestMapping(value = "/assign.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/confirm.html", method = RequestMethod.GET)
     public String assign(ModelMap modelMap, @RequestParam(name = "id", required = true) Long id) {
         modelMap.put("detectRequest", this.detectRequestService.get(id));
-        return "detectRequest/assign";
+        return "customerDetectRequest/confirm";
     }
 
     /**
-     * 指派检测员
+     * 接单
      * @param id 检测请求ID
      * @param designatedId 检测员ID
      * @param designatedName 检测员姓名
      * @return 指派结果
      */
-    @RequestMapping(value = "/doAssignDetector.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/doConfirm.action", method = RequestMethod.GET)
     public @ResponseBody
     BaseOutput doAssign(@RequestParam(name = "id", required = true) Long id,
                         @RequestParam(name = "designatedId", required = false) Long designatedId,
                         @RequestParam(name = "designatedName", required = false) String designatedName,
                         @RequestParam(name = "detectTime", required = false) Date detectTime) {
         try {
-            this.detectRequestService.assignDetector(id, designatedId, designatedName, detectTime);
+            this.detectRequestService.confirm(id, designatedId, designatedName, detectTime);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }

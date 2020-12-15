@@ -1,0 +1,246 @@
+<#bs4Body>
+
+<div class="container-fluid">
+    <form id="queryForm" role="form" >
+        <div class="row row-cols-6">
+            <div class="form-group col">
+                <label for="billType">报备单类型</label>
+                <select id="billType" name="billType" class="form-control"></select>
+                <#bcomboProvider _id="registerSource" _provider="registerSourceProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="registerSource">登记来源</label>
+                <select id="registerSource" name="registerSource" class="form-control"></select>
+                <#bcomboProvider _id="registerSource" _provider="registerSourceProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="verifyStatus">审核状态</label>
+                <select id="verifyStatus" name="verifyStatus" class="form-control"></select>
+                <#bcomboProvider _id="verifyStatus" _provider="billVerifyStatusEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="detectStatus">检测状态</label>
+                <select id="detectStatus" name="detectStatus" class="form-control"></select>
+                <#bcomboProvider _id="detectStatus" _provider="detectStatusProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="hasDetectReport">检测报告</label>
+                <select id="hasDetectReport" name="hasDetectReport" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label for="hasOriginCertifiy">产地证明</label>
+                <select id="hasOriginCertifiy" name="hasOriginCertifiy" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label for="hasHandleResult">处理结果</label>
+                <select id="hasHandleResult" name="hasHandleResult" class="form-control">
+                    <option value="">--请选择--</option>
+                    <option value="1">有</option>
+                    <option value="0">无</option>
+                </select>
+            </div>
+            <div class="form-group col">
+                <label for="likeName">经营户姓名</label>
+                <input type="text" class="form-control" name="likeName" id="likeName"/>
+            </div>
+            <div class="form-group col">
+                <label for="likePhone">手机号</label>
+                <input type="text" class="form-control" name="likePhone" id="likePhone"/>
+            </div>
+            <div class="form-group col">
+                <label for="likeCode">报备单号</label>
+                <input type="text" class="form-control" name="likeCode" id="likeCode"/>
+            </div>
+            <div class="form-group col">
+                <label for="likePlate">车牌号</label>
+                <input type="text" class="form-control" name="likePlate" id="likePlate"/>
+            </div>
+            <div class="form-group col">
+                <label for="detectType">检测类型</label>
+                <select id="detectType" name="detectType" class="form-control"></select>
+                <#bcomboProvider _id="detectType" _provider="detectTypeEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col">
+                <label for="detectResult">检测结果</label>
+                <select id="detectResult" name="detectResult" class="form-control"></select>
+                <#bcomboProvider _id="detectResult" _provider="detectResultEnumProvider" _value="" _onLoadSuccess=""/>
+            </div>
+            <div class="form-group col-auto">
+                <label for="billCreatedStart">报备时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="billCreatedStart" id="billCreatedStart" class="form-control laydatetime laystart" value="${createdStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="billCreatedStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="billCreatedEnd" id="billCreatedEnd" class="form-control laydatetime layend" value="${createdEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="billCreatedEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <label for="checkinCreatedStart">进门时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="checkinCreatedStart" id="checkinCreatedStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="checkinCreatedEnd" id="checkinCreatedEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-auto">
+                <label for="detectTimeStart">检测时间</label>
+                <div class="form-inline">
+                    <div class="input-group">
+                        <input type="text" name="detectTimeStart" id="detectTimeStart" class="form-control laydatetime laystart" value="${checkinCreatedStart!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="checkinCreatedStart" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>&nbsp;&nbsp;至&nbsp;&nbsp;
+                    <div class="input-group">
+                        <input type="text" name="detectTimeEnd" id="detectTimeEnd" class="form-control laydatetime layend" value="${checkinCreatedEnd!,dateFormat='yyyy-MM-dd HH:mm:ss'}"/>
+                        <div class="input-group-append">
+                            <label for="detectTimeEnd" class="input-group-text fa fa-calendar"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto align-self-center mt-3">
+                <button id="clear" type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
+                <button id="query" type="button" class="btn btn-outline-primary"><i class="fa fa-search"></i> 查询</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <div>
+        <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+            <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
+            <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 采样检测</button>
+            <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 主动送检</button>
+            <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 复检</button>
+            <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 撤销</button>
+            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>查看</button>
+            <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('detectRequestGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+        </div>
+        <table id="detectRequestGrid" data-toggle="table" data-title="检测请求列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
+               data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="true"
+               data-click-to-select="true"  data-checkbox-header="true" data-unique-id="id" data-sort-name="id" data-sort-order="desc"  data-icons="bui.variable.icons" data-buttons-class="primary"
+               data-show-refresh="true" data-show-fullscreen="true" data-show-columns="true" data-detail-view="false">
+            <thead>
+            <tr>
+                <th data-checkbox="true"></th>
+                <th data-field="billCreated" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    报备时间
+                </th>
+                <th data-field="code" data-sortable="true" data-align="center">
+                    报备单号
+                </th>
+                <th data-field="verifyStatusName" data-sortable="true" data-align="center" >
+                    审核状态
+                </th>
+                <th data-field="detectStatusName" data-sortable="true" data-align="center" >
+                    检测状态
+                </th>
+                <th data-field="billTypeName" data-sortable="true" data-align="center">
+                    报备单类型
+                </th>
+                <th data-field="name" data-sortable="true" data-align="center">
+                    业户姓名
+                </th>
+                <th data-field="corporateName" data-sortable="true" data-align="center">
+                    企业姓名
+                </th>
+                <th data-field="plate" data-sortable="true" data-align="center">
+                    车牌
+                </th>
+                <th data-field="productName" data-sortable="true" data-align="center">
+                    商品名称
+                </th>
+                <th data-field="brandName" data-sortable="true" data-align="center">
+                    品牌
+                </th>
+                <th data-field="weight" data-sortable="true" data-align="center">
+                    重量
+                </th>
+                <th data-field="weightUnitName" data-sortable="true" data-align="center">
+                    重量单位
+                </th>
+                <th data-field="originName" data-sortable="true" data-align="center">
+                    产地
+                </th>
+                <th data-field="hasOriginCertifiyName" data-sortable="true" data-align="center">
+                    产地证明
+                </th>
+                <th data-field="hasDetectReportName" data-sortable="true" data-align="center">
+                    检测报告
+                </th>
+                <th data-field="hasHandleResultName" data-sortable="true" data-align="center">
+                    处理结果
+                </th>
+                <th data-field="confirmTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    接单时间
+                </th>
+                <th data-field="sampleTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    采样时间
+                </th>
+                <th data-field="sampleCode" data-sortable="true" data-align="center">
+                    采样编号
+                </th>
+                <th data-field="detectTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                    检测时间
+                </th>
+                <th data-field="detectResultName" data-sortable="true" data-align="center">
+                    检测结果
+                </th>
+                <th data-field="detectorName" data-sortable="true" data-align="center">
+                    检测员
+                </th>
+                <th data-field="isDeletedName" data-sortable="true" data-align="center">
+                    是否删除
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+</#bs4Body>
+<#webGlobalConfig/>
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/js/WebConfig.js"></script>
+<script src="${contextPath!}/resources/js/CustomerDetectRequestGrid.index.js"></script>
+<script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
+
+<script type="text/javascript">
+    lay('.laydatetime').each(function(){
+        laydate.render({
+            elem: this
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+    });
+    $(function () {
+        new CustomerDetectRequestGrid($('#detectRequestGrid'),$('#queryForm'),$('#toolbar'));
+    });
+
+</script>

@@ -322,13 +322,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         PageHelper.startPage(query.getPage(), query.getRows());
         List<DetectRequestWithBillDto> list = this.detectRequestMapper.queryListByExample(query);
         Page<DetectRequestWithBillDto> page = (Page) list;
-//        BasePage<DetectRequestDto> result = new BasePage<DetectRequestDto>();
-//        result.setDatas(list);
-//        result.setPage(page.getPageNum());
-//        result.setRows(page.getPageSize());
-//        result.setTotalItem(page.getTotal());
-//        result.setTotalPage(page.getPages());
-//        result.setStartIndex(page.getStartRow());
 
         EasyuiPageOutput out = new EasyuiPageOutput();
         List results = ValueProviderUtils.buildDataByProvider(query, list);
@@ -339,7 +332,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     }
 
     /**
-     * 检测请求分配检测员
+     * 检测请求-接单
      *
      * @param id             检测请求ID
      * @param designatedId   检测员ID
@@ -347,7 +340,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
      * @param detectTime 检测时间
      */
     @Transactional(rollbackFor = Exception.class)
-    public void assignDetector(Long id, Long designatedId, String designatedName, Date detectTime) {
+    public void confirm(Long id, Long designatedId, String designatedName, Date detectTime) {
         DetectRequest detectRequest = this.get(id);
         if (detectRequest == null) {
             throw new RuntimeException("检测请求不存在。");
@@ -356,13 +349,13 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         if (registerBill == null) {
             throw new RuntimeException("检测请求关联的报备单据不存在。");
         }
-        if (registerBill.getDetectStatus() != null && registerBill.getDetectStatus() >= DetectStatusEnum.WAIT_DESIGNATED.getCode()) {
+        if (registerBill.getDetectStatus() != null && registerBill.getDetectStatus() >= DetectStatusEnum.WAIT_SAMPLE.getCode()) {
             throw new RuntimeException("检测请求已接单。");
         }
         // 更新报备单检测状态
         RegisterBill billParam = new RegisterBill();
         billParam.setId(registerBill.getId());
-        billParam.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+        billParam.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
         billParam.setHasDetectReport(registerBill.getHasDetectReport());
         billParam.setHasOriginCertifiy(registerBill.getHasOriginCertifiy());
         billParam.setHasHandleResult(registerBill.getHasHandleResult());

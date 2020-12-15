@@ -1,10 +1,10 @@
-class DetectRequestGridGrid extends ListPage {
+class CommissionDetectRequestGrid extends ListPage {
     uid:string;
     btns:string[];
     toolbar:any;
 
     constructor(grid: any, queryform: any, toolbar: any) {
-        super(grid,queryform,queryform.find('#query'),"/detectRequest/listPage.action");
+        super(grid,queryform,queryform.find('#query'),"/commissionDetectRequest/listPage.action");
         this.toolbar=toolbar;
         this.btns=this.toolbar.find('button');
         this.uid=_.uniqueId("trace_id_");
@@ -12,7 +12,7 @@ class DetectRequestGridGrid extends ListPage {
         $(window).on('resize',()=> this.grid.bootstrapTable('resetView') );
 
         var cthis=this;
-        window['DetectRequestGridObj']=this;
+        window['CommissionDetectRequestGridObj']=this;
 
         // 绑定按钮事件
         $('#assign-btn').on('click',async ()=>await this.openAssignPage());
@@ -41,7 +41,7 @@ class DetectRequestGridGrid extends ListPage {
      */
     private async  openAssignPage(){
         var row=this.rows[0]
-        var url=this.toUrl('/detectRequest/assign.html?id='+row.id);
+        var url=this.toUrl('/commissionDetectRequest/confirm.html?id='+row.id);
         //@ts-ignore
         var dia = bs4pop.dialog({
             title: '接单',
@@ -56,7 +56,7 @@ class DetectRequestGridGrid extends ListPage {
     }
 
     /**
-     * 分配检测员
+     * 检测接单
      * @param id
      * @param designatedId
      * @param designatedName
@@ -79,7 +79,7 @@ class DetectRequestGridGrid extends ListPage {
             return;
         }
 
-        let url= this.toUrl("/detectRequest/doAssignDetector.action?id="+id+"&designatedId="+designatedId+"&designatedName="+designatedName+"&detectTime="+detectTime);
+        let url= this.toUrl("/customerDetectRequest/doConfirm.action?id="+id+"&designatedId="+designatedId+"&designatedName="+designatedName+"&detectTime="+detectTime);
         try{
             var resp=await jq.ajaxWithProcessing({type: "GET",url: url,processData:true,dataType: "json"});
             if(!resp.success){
@@ -195,7 +195,7 @@ class DetectRequestGridGrid extends ListPage {
     private async doUndo(){
         let selected = this.rows[0];
         let cthis=this;
-        let url= this.toUrl( "/detectRequest/doUndo.action?id="+ selected.id);
+        let url= this.toUrl( "/customerDetectRequest/doUndo.action?id="+ selected.id);
         //@ts-ignore
         bs4pop.confirm('请确认是否撤销？', undefined, async function (sure) {
             if(!sure){
@@ -228,7 +228,7 @@ class DetectRequestGridGrid extends ListPage {
      */
     private async  openDetailPage(){
         var row=this.rows[0]
-        var url=this.toUrl('/detectRequest/view.html?id='+row.billId);
+        var url=this.toUrl('/commissionDetectRequest/view.html?id='+row.billId);
         //@ts-ignore
         var dia = bs4pop.dialog({
             title: '报备单详情',
@@ -261,7 +261,7 @@ class DetectRequestGridGrid extends ListPage {
         var rows=this.rows;
         try{
             var billIdList=_.chain(rows).map(v=>v.billId).value();
-            var resp=await jq.postJson(this.toUrl('/detectRequest/queryEvents.action'),billIdList);
+            var resp=await jq.postJson(this.toUrl('/customerDetectRequest/queryEvents.action'),billIdList);
             // console.info(resp)
             resp.forEach(btnid=>{ $('#'+btnid).show();})
         }catch (e){

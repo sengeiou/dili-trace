@@ -1,0 +1,104 @@
+<#bodyOrigin>
+<div class="main-container">
+    <div class="form-box border">
+        <form id="createRecordForm" class="form-inline" role="form">
+            <div class="form-item-group">
+
+                <div class="form-group">
+                    <label class="label-title text-right">创建时间</label>
+                    <input type="text" class="form-control input-sm"  value="${detectRequest.created!,dateFormat='yyyy-MM-dd HH:mm:ss'}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>创建人</label>
+                    <input type="text" class="form-control input-sm" value="${detectRequest.creatorName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">报备单ID</label>
+                    <input type="text" class="form-control input-sm"  value="${detectRequest.billId}" required readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>指定检测员</label>
+                    <input type="text" class="form-control input-sm"  id="designatedName" name="designatedName" value="${detectRequest.designatedName}" required/>
+                    <input type="text" class="form-control input-sm hidden" id="designatedId" name="designatedId"/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>检测类型</label>
+                    <input type="text" class="form-control input-sm" value="${detectRequest.detectTypeName}" required readonly/>
+                </div>
+                <div class="form-group">
+                    <label class="label-title text-right">
+                        <span class="red">&lowast;</span>采样来源</label>
+                    <input type="text" class="form-control input-sm"  value="${detectRequest.detectSourceName}" required readonly/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--<h5 class="mt10 red">操作员：陈良芳</h5>-->
+    <div class="text-center mt30">
+        <button class="btn-main2 btn-sm" onclick="callDoAssign()">审核</button>&nbsp;&nbsp;
+        <button class="btn-greyweak btn-sm" onclick="parent.bs4pop.removeAll()">取消</button>
+    </div>
+</div>
+</#bodyOrigin>
+
+<script type="text/javascript">
+
+    $(function () {
+        initAutoComplete('#designatedName','/customerDetectRequest/detector');
+    });
+
+    async function callDoAssign(){
+        let designatedId = $("#designatedId").val();
+        let designatedName = $("#designatedName").val();
+        await parent.window['DetectRequestGridObj'].doAssign('${detectRequest.id}', designatedId, designatedName);
+    }
+
+    /**
+     * 初始化自动完成框
+     */
+    function initAutoComplete(selector,url){
+        $(selector).keydown(function (e){
+            if(e.keyCode == 13){
+                // $(selector).data('keycode',e.keyCode);
+                // console.info('keydown')
+            }
+        });
+        $(selector).data('oldvalue','');
+        // $(selector).data('keycode','');
+        $(selector).on('change',function () {
+            var oldvalue=$(selector).data('oldvalue');
+            var val=$(this).val();
+            if(oldvalue!=val){
+                $(this).siblings('input').val('');
+            }
+        });
+        $(selector).devbridgeAutocomplete({
+            noCache: 1,
+            serviceUrl: url,  // 数据地址
+            // lookup: countries, 本地测试模拟数据使用结合上面的var countries
+            dataType: 'json',
+            onSearchComplete: function (query, suggestions) {
+                // console.info(2)
+            },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: "不存在，请重输！",
+            autoSelectFirst:true,
+            autoFocus: true,
+            onSelect: function (suggestion) {
+                console.info('onSelect')
+                var self = this;
+                var idField = $(self).siblings('input');
+                idField.val(suggestion.id);
+                $(self).val(suggestion.value.trim());
+                // var keycode=$(selector).data('keycode');
+                // console.info(keycode)
+                $(selector).data('oldvalue',suggestion.value);
+                var v=$(self).valid();
+            }
+        });
+    }
+</script>

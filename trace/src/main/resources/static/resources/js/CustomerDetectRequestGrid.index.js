@@ -1,4 +1,4 @@
-class DetectRequestGridGrid extends ListPage {
+class CustomerDetectRequestGrid extends ListPage {
     constructor(grid, queryform, toolbar) {
         super(grid, queryform, queryform.find('#query'), "/customerDetectRequest/listPage.action");
         this.toolbar = toolbar;
@@ -6,7 +6,7 @@ class DetectRequestGridGrid extends ListPage {
         this.uid = _.uniqueId("trace_id_");
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
-        window['DetectRequestGridObj'] = this;
+        window['CustomerDetectRequestGrid'] = this;
         $('#assign-btn').on('click', async () => await this.openAssignPage());
         $('#sampling-btn').on('click', async () => await this.doSamplingCheck());
         $('#auto-btn').on('click', async () => await this.doAutoCheck());

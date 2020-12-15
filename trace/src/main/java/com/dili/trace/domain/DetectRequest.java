@@ -105,6 +105,18 @@ public class DetectRequest extends BaseDomain {
     @Column(name = "`detect_fee`")
     private BigDecimal detectFee;
 
+    /**
+     * 接单时间
+     */
+    @Column(name = "`confirm_time`")
+    private Date confirmTime;
+
+    /**
+     * 采样时间
+     */
+    @Column(name = "`sample_time`")
+    private Date sampleTime;
+
     public Date getDetectTime() {
         return detectTime;
     }
@@ -241,5 +253,21 @@ public class DetectRequest extends BaseDomain {
 
     public void setDetectResult(Integer detectResult) {
         this.detectResult = detectResult;
+    }
+
+    public Date getConfirmTime() {
+        return confirmTime;
+    }
+
+    public void setConfirmTime(Date confirmTime) {
+        this.confirmTime = confirmTime;
+    }
+
+    public Date getSampleTime() {
+        return sampleTime;
+    }
+
+    public void setSampleTime(Date sampleTime) {
+        this.sampleTime = sampleTime;
     }
 }
