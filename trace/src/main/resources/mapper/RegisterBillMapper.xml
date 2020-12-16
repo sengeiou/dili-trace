@@ -1366,6 +1366,7 @@
   <select id="queryListByExample" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.RegisterBillDto">
     SELECT
     b.id,
+    b.id billId,
     b.`created`,
     b.`bill_type`,
     b.`code`,

@@ -315,7 +315,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         public int undoRegisterBill (Long id){
             return billService.getAvaiableBill(id).map(item -> {
 
-                if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus()) ||
+                // 待审核、已退回 可以撤销
+                if (BillVerifyStatusEnum.RETURNED.equalsToCode(item.getVerifyStatus()) ||
                         BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
                     UserTicket userTicket = getOptUser();
 
