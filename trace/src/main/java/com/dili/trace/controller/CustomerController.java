@@ -9,6 +9,7 @@ import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * 客户
@@ -28,6 +29,7 @@ public class CustomerController {
      * @return
      */
     @RequestMapping("/queryUserByTallyAreaNo.action")
+    @ResponseBody
     public BaseOutput queryUserByTallyAreaNo(String tallyAreaNo) {
         Long marketId = this.uapRpcService.getCurrentFirm().get().getId();
         CustomerQueryInput queryInput = new CustomerQueryInput();
