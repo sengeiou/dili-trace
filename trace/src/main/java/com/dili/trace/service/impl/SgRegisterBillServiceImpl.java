@@ -82,7 +82,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
     @Transactional
     @Override
-    public int createRegisterBill(RegisterBill inputBill) {
+    public Long createRegisterBill(RegisterBill inputBill) {
 //        BaseOutput recheck = checkBill(registerBill);
 //        if (!recheck.isSuccess()) {
 //            throw new TraceBizException(recheck.getMessage());
@@ -140,7 +140,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             LOGGER.error("新增登记单数据库执行失败" + JSON.toJSONString(inputBill));
             throw new TraceBizException("创建失败");
         }
-        return result;
+        return inputBill.getId();
     }
 
 
@@ -366,6 +366,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         private int autoCheckDetectRequest (Long id){
             DetectRequest detectRequest = this.detectRequestService.get(id);
             detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
+            // 维护采样时间
+            detectRequest.setSampleTime(new Date());
             return this.detectRequestService.updateSelective(detectRequest);
         }
 
@@ -519,6 +521,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         private int samplingCheckDetectRequest (Long id){
             DetectRequest detectRequest = this.detectRequestService.get(id);
             detectRequest.setDetectSource(SampleSourceEnum.SAMPLE_CHECK.getCode());
+            // 维护采样时间
+            detectRequest.setSampleTime(new Date());
             return this.detectRequestService.updateSelective(detectRequest);
         }
 
@@ -1114,12 +1118,27 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             });
         }
 
-        @Override
-        public int createRegisterBillList (List < RegisterBill > registerBillList) {
-            return StreamEx.ofNullable(registerBillList).flatCollection(Function.identity()).nonNull().map(rb -> {
-                return this.createRegisterBill(rb);
-            }).mapToInt(Integer::valueOf).sum();
-        }
+    @Override
+    public int createRegisterBillList(List<RegisterBill> registerBillList, OperatorUser operatorUser) {
+        return StreamEx.ofNullable(registerBillList).flatCollection(Function.identity()).nonNull().map(rb -> {
+            Long registerBillId = this.createRegisterBill(rb);
+            // 寿光管理端，新增完报备单的同时新增检测请求
+            DetectRequest item = this.detectRequestService.createByBillId(registerBillId, DetectTypeEnum.NEW, new IdNameDto(operatorUser.getId(),operatorUser.getName()), Optional.empty());
+
+            DetectRequest updatable = new DetectRequest();
+            updatable.setId(item.getId());
+            // 维护接单时间
+            updatable.setConfirmTime(new Date());
+            this.detectRequestService.updateSelective(updatable);
+
+            RegisterBill bill = this.billService.get(item.getBillId());
+            bill.setOperatorName(operatorUser.getName());
+            bill.setOperatorId(operatorUser.getId());
+            bill.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode()); // 新增完为：待采样
+            this.billService.update(bill);
+            return 1;
+        }).mapToInt(Integer::valueOf).sum();
+    }
 
 
         @Override

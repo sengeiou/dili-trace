@@ -158,7 +158,8 @@ public class SgRegisterBillController {
                     return rb;
                 }).toList();
         try {
-            this.registerBillService.createRegisterBillList(billList);
+            OperatorUser operatorUser = this.uapRpcService.getCurrentOperator().get();
+            this.registerBillService.createRegisterBillList(billList, operatorUser);
             return BaseOutput.success("新增成功").setData(billList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

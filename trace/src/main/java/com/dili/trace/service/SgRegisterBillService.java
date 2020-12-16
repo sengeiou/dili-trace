@@ -64,7 +64,7 @@ public interface SgRegisterBillService {
      * @param registerBill
      * @return
      */
-    int createRegisterBill(RegisterBill registerBill);
+    Long createRegisterBill(RegisterBill registerBill);
 
     /**
      * 审核登记单
@@ -281,7 +281,7 @@ public interface SgRegisterBillService {
      * @param registerBillList
      * @return
      */
-    int createRegisterBillList(List<RegisterBill> registerBillList);
+    int createRegisterBillList(List<RegisterBill> registerBillList, OperatorUser operatorUser);
 
 
     /**

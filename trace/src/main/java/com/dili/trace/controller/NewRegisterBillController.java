@@ -756,6 +756,15 @@ public class NewRegisterBillController {
                     rb.setUserId(input.getUserId());
 
                     rb.setImageCerts(input.getGlobalImageCertList());
+                    // 保存产地证明
+                    if (StringUtils.isNotBlank(rbInputDto.getOriginCertifiyUrl())) {
+                        List<ImageCert> imageCerts = rb.getImageCerts();
+                        ImageCert imageCert = new ImageCert();
+                        imageCert.setUid(rbInputDto.getOriginCertifiyUrl());
+                        imageCert.setCertType(ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode());
+                        imageCerts.add(imageCert);
+                        rb.setImageCerts(imageCerts);
+                    }
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
@@ -773,7 +782,8 @@ public class NewRegisterBillController {
                     return rb;
                 }).toList();
         try {
-            this.registerBillService.createRegisterBillList(billList);
+            OperatorUser operatorUser = this.uapRpcService.getCurrentOperator().get();
+            this.registerBillService.createRegisterBillList(billList, operatorUser);
             return BaseOutput.success("新增成功").setData(billList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
