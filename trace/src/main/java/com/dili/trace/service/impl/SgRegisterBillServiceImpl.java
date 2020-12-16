@@ -148,7 +148,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
 
         if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
 
-            List<Long> userIdList = StreamEx.of(this.customerRpcService.findCustomerByPlate(registerBill.getPlate()))
+            List<Long> userIdList = StreamEx.of(this.customerRpcService.findCustomerByPlate(registerBill.getPlate(),registerBill.getMarketId()))
                     .map(CustomerExtendDto::getId).distinct().toList();
             if (!userIdList.isEmpty() && !userIdList.contains(registerBill.getUserId())) {
                 throw new TraceBizException("当前车牌号已经与其他用户绑定,请使用其他牌号");

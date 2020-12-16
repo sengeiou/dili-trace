@@ -340,15 +340,33 @@ public class CustomerRpcService {
      * @param plate
      * @return
      */
-    public List<CustomerExtendDto> findCustomerByPlate(String plate) {
+    public List<CustomerExtendDto> findCustomerByPlate(String plate, Long marketId) {
         CustomerQueryInput queryInput = new CustomerQueryInput();
         queryInput.setVehicleNumber(plate);
+        queryInput.setMarketId(marketId);
         PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
 
         return StreamEx.ofNullable(pageOutput).filter(PageOutput::isSuccess)
                 .map(PageOutput::getData).nonNull()
                 .flatCollection(Function.identity()).nonNull()
                 .toList();
+
+    }
+
+    /**
+     * list查询
+     *
+     * @param customer
+     * @return
+     */
+    public List<CustomerExtendDto> list(CustomerQueryInput customer) {
+        BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(customer);
+        return StreamEx.ofNullable(out)
+                .filter(BaseOutput::isSuccess)
+                .map(BaseOutput::getData)
+                .nonNull()
+                .flatCollection(Function.identity())
+                .nonNull().toList();
 
     }
 }

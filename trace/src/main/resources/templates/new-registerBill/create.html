@@ -222,13 +222,14 @@
         if($.trim(query)==''){
             return;
         }
-        let url= '${contextPath!}/trade/customer/tallyAreaNo/'+$.trim(query);
+        let url= '${contextPath!}/customer/queryUserByTallyAreaNo.action?tallyAreaNo='+$.trim(query);
         try{
             let ret=await jq.ajax({url:url,method:'get'});
             if(ret.code!='200'){
                 console.error('请求错误:'+ret.message)
                 return;
             }
+            debugger
             var customer = ret.data;
             $("#idCardNo").val(customer.cardNo).valid();
             $("#name").val(customer.name).valid();
