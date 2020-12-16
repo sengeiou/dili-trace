@@ -30,8 +30,10 @@ import com.dili.trace.service.BillService;
 import com.dili.trace.service.DetectRecordService;
 import com.dili.trace.service.DetectRequestService;
 import com.dili.trace.service.SgRegisterBillService;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,6 +44,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * 检测请求接口
@@ -155,7 +159,16 @@ public class ManagerDetectRquestApi {
      */
     @RequestMapping("/countByDetectStatus.api")
     public BaseOutput<List<CountDetectStatusDto>> countByDetectStatus(@RequestBody DetectRequestQueryDto queryInput) {
-        List<CountDetectStatusDto> list = this.detectRequestService.countByDetectStatus(queryInput);
+        Map<Integer,Integer>statusCntMap= StreamEx.of(this.detectRequestService.countByDetectStatus(queryInput))
+                .toMap(CountDetectStatusDto::getDetectStatus, CountDetectStatusDto::getCnt);
+
+        List<CountDetectStatusDto> list = StreamEx.of(DetectStatusEnum.values()).map(e->{
+            CountDetectStatusDto dto=new CountDetectStatusDto();
+            dto.setCnt(statusCntMap.getOrDefault(e.getCode(),0));
+            dto.setDetectStatus(e.getCode());
+            return dto;
+        }).toList();
+
         return BaseOutput.successData(list);
     }
 
