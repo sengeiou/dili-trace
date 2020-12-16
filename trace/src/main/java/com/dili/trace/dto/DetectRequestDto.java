@@ -90,7 +90,7 @@ public class DetectRequestDto extends DetectRequest {
      * 业户名称/商品名称（查询条件 OR Like）
      */
     @Transient
-    private String queryName;
+    private String keyword;
 
     /**
      * 摊位号
@@ -184,6 +184,37 @@ public class DetectRequestDto extends DetectRequest {
      */
     @Transient
     private Integer billType;
+
+    @Transient
+    private List<Integer>detectStatusList;
+    @Transient
+    private List<Integer>detectTypeList;
+    @Transient
+    private List<Integer>detectResultList;
+
+    public List<Integer> getDetectStatusList() {
+        return detectStatusList;
+    }
+
+    public void setDetectStatusList(List<Integer> detectStatusList) {
+        this.detectStatusList = detectStatusList;
+    }
+
+    public List<Integer> getDetectTypeList() {
+        return detectTypeList;
+    }
+
+    public void setDetectTypeList(List<Integer> detectTypeList) {
+        this.detectTypeList = detectTypeList;
+    }
+
+    public List<Integer> getDetectResultList() {
+        return detectResultList;
+    }
+
+    public void setDetectResultList(List<Integer> detectResultList) {
+        this.detectResultList = detectResultList;
+    }
 
     /**
      * 所有图片列表
@@ -335,12 +366,12 @@ public class DetectRequestDto extends DetectRequest {
         this.name = name;
     }
 
-    public String getQueryName() {
-        return queryName;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setQueryName(String queryName) {
-        this.queryName = queryName;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getTallyAreaNo() {
