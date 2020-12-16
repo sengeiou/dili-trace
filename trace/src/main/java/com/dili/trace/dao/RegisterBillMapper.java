@@ -100,4 +100,5 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
 
     Long listPageGroupByProductCount(RegisterBillReportQueryDto dto);
 
+    List<RegisterBill> queryListByExample(RegisterBillDto query);
 }
