@@ -6,7 +6,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.domain.DetectRequest;
-import com.dili.trace.dto.CreateListBillParam;
+import com.dili.trace.dto.*;
 import com.dili.sg.trace.glossary.*;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
@@ -21,10 +21,6 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
-import com.dili.trace.dto.QualityTraceTradeBillOutDto;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
-import com.dili.trace.dto.SeparateSalesRecordDTO;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -116,7 +112,8 @@ public class SgRegisterBillApi {
 
 		}
 		try {
-			this.registerBillService.createRegisterBillList(billList);
+			OperatorUser operatorUser = new OperatorUser(user.getId(), user.getName());
+			this.registerBillService.createRegisterBillList(billList, operatorUser);
 			return BaseOutput.success("新增成功").setData(billList);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());
