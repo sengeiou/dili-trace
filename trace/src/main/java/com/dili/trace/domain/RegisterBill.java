@@ -503,9 +503,6 @@ public class RegisterBill extends BaseDomain {
     }
 
     public Integer getHasDetectReport() {
-        if (handleResult == null) {
-            return 0;
-        }
         return hasDetectReport;
     }
 
@@ -514,9 +511,6 @@ public class RegisterBill extends BaseDomain {
     }
 
     public Integer getHasOriginCertifiy() {
-        if (hasOriginCertifiy == null) {
-            return 0;
-        }
         return hasOriginCertifiy;
     }
 
@@ -525,9 +519,6 @@ public class RegisterBill extends BaseDomain {
     }
 
     public Integer getHasHandleResult() {
-        if (hasHandleResult == null) {
-            return 0;
-        }
         return hasHandleResult;
     }
 
@@ -745,17 +736,17 @@ public class RegisterBill extends BaseDomain {
 
     @Transient
     public String getHasOriginCertifiyName() {
-        return this.getHasOriginCertifiy() == 1 ? "有" : "无";
+        return this.getHasOriginCertifiy() == null || this.getHasOriginCertifiy() == 0 ? "无" : "有";
     }
 
     @Transient
     public String getHasDetectReportName() {
-        return this.getHasDetectReport() == 1 ? "有" : "无";
+        return this.getHasDetectReport() == null || this.getHasDetectReport() == 0 ? "无" : "有";
     }
 
     @Transient
     public String getHasHandleResultName() {
-        return this.getHasHandleResult() == 1 ? "有" : "无";
+        return this.getHasHandleResult() == null || this.getHasHandleResult() == 0 ? "无" : "有";
     }
 
     @Transient

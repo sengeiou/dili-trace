@@ -437,7 +437,7 @@
             done: function (e, res) {
                 if (res.result.code == 200) {
                     var uid= res.result.data;
-                    $(this).siblings("input:hidden").val(uid);
+                    $(this).siblings("input:hidden:first").val(uid);
 
                     var url = "${imageViewPathPrefix}/" + uid;
                     $(this).siblings('.magnifying').attr('src', url).show();
