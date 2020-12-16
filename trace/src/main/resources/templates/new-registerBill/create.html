@@ -679,7 +679,7 @@
 
     $( document ).on( "click", ".img-view-a",function () {
         var url = $('#registerBills\\['+$(this).attr('data-index')+'\\]\\[originCertifiyUrl\\]').siblings("input:hidden").val();
-        // url = "${imageViewPathPrefix}" + url;
+        url = "${imageViewPathPrefix}/" + url;
         debugger
         if(url){
             layer.open({
@@ -701,11 +701,15 @@
             done: function (e, res) {
                 if (res.result.code == 200) {
                     var uid= res.result.data;
-                    $(this).siblings("input:hidden").val(uid);
+                    $(this).siblings("input:hidden:first").val(uid);
 
                     var url = "${imageViewPathPrefix}/" + uid;
                     $(this).siblings('.magnifying').attr('src', url).show();
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                    // 向上查找第一个 class="upload-div"的元素隐藏
+                    $(this).parents(".upload-div:first").hide();
+                    // 显示下一个元素
+                    $(this).parents(".upload-div:first").next().show();
                     success();
                 }
             },
@@ -776,7 +780,7 @@
             <div class="view-div" style="display: none;">
                 <span>已上传</span>
                 <a href="javascript:;" data-index="{{index}}" class="img-view-a">查看图片</a>
-                <a href="javascript:$('#registerBills[{{index}}][originCertifiyUrl]').trigger('click')">重新上传</a>
+                <a href="javascript:$('#registerBills\\[{{index}}\\]\\[originCertifiyUrl\\]').trigger('click')">重新上传</a>
             </div>
         </td>
         <td><a href="javascript:;" class="split-minus-btn">删除</a></td>
