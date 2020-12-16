@@ -244,8 +244,8 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="globalImageCertList[${imageCount++}][uid]">
-                    <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
+                    <input type="hidden" name="imageCerts[${imageCount++}][uid]">
+                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
                     <div class="fileimg-edit" style="display: block;">
@@ -267,8 +267,8 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="globalImageCertList[${imageCount++}][uid]">
-                    <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
+                    <input type="hidden" name="imageCerts[${imageCount++}][uid]">
+                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
                     <div class="fileimg-edit" style="display: block;">
@@ -293,8 +293,8 @@
                         <span class="fileimg-plus-icon" style="display: none" >+</span>
                         <span class="fileimg-des" style="display: none" >点击上传</span>
                         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                        <input type="hidden" name="globalImageCertList[${imageCount++}][uid]">
-                        <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
+                        <input type="hidden" name="imageCerts[${imageCount++}][uid]">
+                        <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
                         <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                         <div class="fileimg-cover" style="display: block;"></div>
                         <div class="fileimg-edit" style="display: block;">
@@ -329,7 +329,7 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-<script src="${contextPath!}/resources/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 
 <script>
     var currentUser={"depId":"${user.departmentId!}"
@@ -341,22 +341,23 @@
         if($('#modifyRegisterBillForm').validate().form() != true){
             return;
         }
-        var   formData=$('#modifyRegisterBillForm').serializeObject();
-        var  originCertifiyUrl=$.makeArray(formData.originCertifiy).filter(function(v,i){
-            return v!='';
-        }).join(',');
-        var  detectReportUrl=$.makeArray(formData.detectReport).filter(function(v,i){
-            return v!='';
-        }).join(',');
-
-        delete formData.originCertifiy
-        delete formData.detectReport
-        formData.originCertifiyUrl=originCertifiyUrl;
-        formData.detectReportUrl=detectReportUrl;
+        var formData=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        // var   formData=$('#modifyRegisterBillForm').serializeObject();
+        // var  originCertifiyUrl=$.makeArray(formData.originCertifiy).filter(function(v,i){
+        //     return v!='';
+        // }).join(',');
+        // var  detectReportUrl=$.makeArray(formData.detectReport).filter(function(v,i){
+        //     return v!='';
+        // }).join(',');
+        //
+        // delete formData.originCertifiy
+        // delete formData.detectReport
+        // formData.originCertifiyUrl=originCertifiyUrl;
+        // formData.detectReportUrl=detectReportUrl;
 
         $.ajax({
             type: "POST",
-            url: "${contextPath}/newRegisterBill/doUploadDetectReport.action",
+            url: "${contextPath}/newRegisterBill/doUploadOrigincertifiy.action",
             data : JSON.stringify(formData),
             dataType: "json",
             async : true,
