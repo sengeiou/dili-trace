@@ -25,7 +25,7 @@
             </div>
             <div class="form-group col">
                 <label for="detectState">检测结果</label>
-                <select id="detectState" name="detectState" class="form-control"></select>
+                <select id="detectState" name="detectStat" class="form-control"></select>
                 <#bcomboProvider _id="detectState" _provider="billDetectStateProvider" _value="" _onLoadSuccess=""/>
             </div>
             <div class="form-group col-auto">
@@ -126,13 +126,13 @@
                 <th data-field="originName" data-sortable="true" data-align="center">
                     产地
                 </th>
-                <th data-field="verifyStatusName" data-sort-name="verify_status" data-sortable="true" data-align="center" data-provider="billVerifyStatusEnumProvider">
+                <th data-field="verifyStatusName" data-sort-name="verify_status" data-sortable="true" data-align="center" >
                     审核状态
                 </th>
-                <th data-field="detectStatusName"  data-sort-name="detect_status" data-sortable="true" data-align="center" data-provider="detectStatusProvider">
+                <th data-field="detectStatusName"  data-sort-name="detect_status" data-sortable="true" data-align="center"  >
                     检测状态
                 </th>
-                <th data-field="detectRequest.modified" data-sortable="false" data-align="center" data-provider="datetimeProvider">
+                <th data-field="detectRequest.detectTime" data-sortable="false" data-align="center" data-provider="datetimeProvider">
                     检测时间
                 </th>
                 <th data-field="detectRequest.detectResultName"   data-sortable="false" data-align="center" data-provider="billDetectStateProvider">
