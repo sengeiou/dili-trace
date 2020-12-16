@@ -326,6 +326,7 @@ public class NewRegisterBillController {
             return "";
         }
         registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
+
         if (RegisterSourceEnum.TALLY_AREA.getCode().equals(registerBill.getRegisterSource())) {
             // 分销信息
             if (registerBill.getSalesType() != null
@@ -592,7 +593,7 @@ public class NewRegisterBillController {
      */
     @RequestMapping(value = "/doUploadHandleResult.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public BaseOutput<?> doUploadHandleResult(RegisterBill input) {
+    public BaseOutput<?> doUploadHandleResult(@RequestBody RegisterBill input) {
         try {
             List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity()).nonNull().toList();
             input.setImageCerts(imageCertList);
