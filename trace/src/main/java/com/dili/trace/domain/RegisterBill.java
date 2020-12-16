@@ -460,6 +460,35 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`detect_report_url`")
     private String detectReportUrl;
 
+
+    /**
+     * 车辆皮重
+     */
+    @Column(name = "`truck_tare_weight`")
+    private  BigDecimal truckTareWeight;
+
+    /**
+     * 单价
+     */
+    @Column(name = "`unit_price`")
+    private  BigDecimal unitPrice;
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getTruckTareWeight() {
+        return truckTareWeight;
+    }
+
+    public void setTruckTareWeight(BigDecimal truckTareWeight) {
+        this.truckTareWeight = truckTareWeight;
+    }
+
     public Integer getDetectStatus() {
         return detectStatus;
     }
