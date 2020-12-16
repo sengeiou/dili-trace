@@ -222,20 +222,29 @@
         if($.trim(query)==''){
             return;
         }
-        let url= '${contextPath!}/trade/customer/tallyAreaNo/'+$.trim(query);
+        let url= '${contextPath!}/customer/queryUserByTallyAreaNo.action?tallyAreaNo='+$.trim(query);
         try{
+            appendCachedPlate([],'#plate');
             let ret=await jq.ajax({url:url,method:'get'});
             if(ret.code!='200'){
                 console.error('请求错误:'+ret.message)
                 return;
             }
+
             var customer = ret.data;
-            $("#idCardNo").val(customer.cardNo).valid();
+            $("#idCardNo").val(customer.certificateNumber).valid();
             $("#name").val(customer.name).valid();
-            $("#addr").val(customer.addr).valid();
+            $("#addr").val(customer.certificateAddr).valid();
             $("#userId").val(customer.id).valid();
-            $("#phone").val(customer.phone).valid();
-            findUserPlateByUserId(customer.id,'#plate');
+            $("#phone").val(customer.contactsPhone).valid();
+            var vehicleInfoList=customer?.vehicleInfoList;
+            if(_.isUndefined(vehicleInfoList)){
+                return;
+            }
+            var plateList=_.chain(vehicleInfoList).map(item=>{
+                return item.registrationNumber
+            }).value();
+            appendCachedPlate(plateList,'#plate');
         }catch (e){
             console.error(e)
         }
