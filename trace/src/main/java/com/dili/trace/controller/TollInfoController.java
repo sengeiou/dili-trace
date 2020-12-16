@@ -7,8 +7,7 @@ import com.dili.assets.sdk.dto.CityDto;
 import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.entity.SessionData;
-import com.dili.trace.service.CityService;
+import com.dili.trace.rpc.service.CityRpcService;
 import com.dili.trace.util.MarketUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,7 +31,7 @@ public class TollInfoController {
     private static final Logger logger = LoggerFactory.getLogger(TollInfoController.class);
 
     @Autowired
-    CityService cityService;
+    CityRpcService cityService;
 
     @Autowired
     AssetsRpcService categoryService;

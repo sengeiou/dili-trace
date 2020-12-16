@@ -1,23 +1,16 @@
 package com.dili.trace.controller;
 
 import com.dili.assets.sdk.dto.CityDto;
-import com.dili.assets.sdk.dto.CusCategoryDTO;
-import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.entity.SessionData;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.service.AssetsRpcService;
-import com.dili.trace.service.CityService;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
+import com.dili.trace.rpc.service.CityRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 神农系统中相关基础信息
@@ -28,7 +21,7 @@ public class CityController {
     private static final Logger logger = LoggerFactory.getLogger(CityController.class);
 
     @Autowired
-    CityService cityService;
+    CityRpcService cityService;
 
     @Autowired
     AssetsRpcService categoryService;

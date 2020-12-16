@@ -12,6 +12,7 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
+import com.dili.trace.rpc.service.CityRpcService;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MaskUserInfo;
@@ -59,7 +60,7 @@ public class SgRegisterBillController {
     @Autowired
     QualityTraceTradeBillService qualityTraceTradeBillService;
     @Autowired
-    CityService cityService;
+    CityRpcService cityService;
     @Autowired
     UsualAddressService usualAddressService;
 

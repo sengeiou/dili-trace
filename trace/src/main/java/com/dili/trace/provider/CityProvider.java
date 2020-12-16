@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.dili.assets.sdk.dto.CityDto;
-import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
 
-import com.dili.trace.service.CityService;
+import com.dili.trace.rpc.service.CityRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class CityProvider implements ValueProvider {
 
     @Autowired
-    CityService cityService;
+    CityRpcService cityService;
 
     @Override
     public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) { CityDto cityListInput = new CityDto();

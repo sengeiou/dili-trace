@@ -1,4 +1,4 @@
-package com.dili.trace.service;
+package com.dili.trace.rpc.service;
 
 import com.dili.assets.sdk.dto.CityDto;
 import com.dili.assets.sdk.rpc.CityRpc;
@@ -18,8 +18,8 @@ import java.util.function.Function;
  * 查询城市信息
  */
 @Service
-public class CityService {
-    private static final Logger logger = LoggerFactory.getLogger(CityService.class);
+public class CityRpcService {
+    private static final Logger logger = LoggerFactory.getLogger(CityRpcService.class);
 
     @Autowired(required = false)
     CityRpc cityRpc;
