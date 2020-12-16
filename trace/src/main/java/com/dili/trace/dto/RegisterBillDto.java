@@ -217,6 +217,56 @@ public class RegisterBillDto extends RegisterBill {
     @Operator(Operator.IN)
     private List<Integer> verifyStatueList;
 
+    /**
+     * 进门开始时间-查询条件
+     */
+    @Transient
+    private Date checkinCreatedStart;
+
+    /**
+     * 进门结束时间-查询条件
+     */
+    @Transient
+    private Date checkinCreatedEnd;
+
+    /**
+     * 检测类型-查询条件
+     */
+    @Transient
+    private Integer detectType;
+
+    /**
+     * 检测结果-查询条件
+     */
+    @Transient
+    private Integer detectResult;
+
+    /**
+     * 检测来源
+     */
+    @Transient
+    private Integer detectSource;
+
+    /**
+     * 检测时间-查询条件
+     */
+    @Transient
+    private Date detectTime;
+
+    /**
+     * 检测员
+     */
+    @Transient
+    private String detectorName;
+
+    /**
+     * 单据类型集合
+     */
+    @Transient
+    private List<Integer> billTypes;
+
+
+
     public List<Integer> getVerifyStatueList() {
         return verifyStatueList;
     }
@@ -477,5 +527,69 @@ public class RegisterBillDto extends RegisterBill {
 
     public void setLikeCode(String likeCode) {
         this.likeCode = likeCode;
+    }
+
+    public Date getCheckinCreatedStart() {
+        return checkinCreatedStart;
+    }
+
+    public void setCheckinCreatedStart(Date checkinCreatedStart) {
+        this.checkinCreatedStart = checkinCreatedStart;
+    }
+
+    public Date getCheckinCreatedEnd() {
+        return checkinCreatedEnd;
+    }
+
+    public void setCheckinCreatedEnd(Date checkinCreatedEnd) {
+        this.checkinCreatedEnd = checkinCreatedEnd;
+    }
+
+    public Integer getDetectType() {
+        return detectType;
+    }
+
+    public void setDetectType(Integer detectType) {
+        this.detectType = detectType;
+    }
+
+    public Integer getDetectResult() {
+        return detectResult;
+    }
+
+    public void setDetectResult(Integer detectResult) {
+        this.detectResult = detectResult;
+    }
+
+    public List<Integer> getBillTypes() {
+        return billTypes;
+    }
+
+    public void setBillTypes(List<Integer> billTypes) {
+        this.billTypes = billTypes;
+    }
+
+    public String getDetectorName() {
+        return detectorName;
+    }
+
+    public void setDetectorName(String detectorName) {
+        this.detectorName = detectorName;
+    }
+
+    public Integer getDetectSource() {
+        return detectSource;
+    }
+
+    public void setDetectSource(Integer detectSource) {
+        this.detectSource = detectSource;
+    }
+
+    public Date getDetectTime() {
+        return detectTime;
+    }
+
+    public void setDetectTime(Date detectTime) {
+        this.detectTime = detectTime;
     }
 }

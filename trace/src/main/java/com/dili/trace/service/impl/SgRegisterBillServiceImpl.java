@@ -4,34 +4,33 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.RegisterBillMessageEvent;
 import com.dili.common.entity.SessionData;
+import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
-import com.dili.trace.enums.BillTypeEnum;
+import com.dili.sg.trace.glossary.SalesTypeEnum;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.dto.IDTO;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.RegisterBillMapper;
-import com.dili.trace.domain.*;
+import com.dili.trace.domain.DetectRequest;
+import com.dili.trace.domain.ImageCert;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.*;
-import com.dili.common.exception.TraceBizException;
-import com.dili.sg.trace.glossary.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.TFEnum;
-import com.dili.trace.rpc.service.CustomerRpcService;
-import com.dili.trace.service.SgRegisterBillService;
-import com.dili.trace.dto.RegisterBillDto;
-import com.dili.trace.dto.RegisterBillStaticsDto;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.UserPlateService;
-import com.dili.trace.service.UsualAddressService;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.ss.dto.IDTO;
-import com.dili.trace.domain.sg.QualityTraceTradeBill;
-import com.dili.trace.dto.QualityTraceTradeBillOutDto;
-import com.dili.trace.dto.RegisterBillOutputDto;
+import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,7 +46,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 由MyBatis Generator工具自动生成 This file was generated on 2019-07-26 09:20:34.
@@ -317,7 +315,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         public int undoRegisterBill (Long id){
             return billService.getAvaiableBill(id).map(item -> {
 
-                if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus()) ||
+                // 待审核、已退回 可以撤销
+                if (BillVerifyStatusEnum.RETURNED.equalsToCode(item.getVerifyStatus()) ||
                         BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
                     UserTicket userTicket = getOptUser();
 
@@ -1011,6 +1010,33 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             dto.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
 
             return this.billService.listEasyuiPageByExample(dto, true).toString();
+        }
+
+        /**
+         * 分页查询采样检测列表
+         *
+         * @param query
+         * @return
+         */
+        @Override
+        public String listBasePageByExample(RegisterBillDto query) throws Exception {
+            if (query.getPage() == null || query.getPage() < 0) {
+                query.setPage(1);
+            }
+            if (query.getRows() == null || query.getRows() <= 0) {
+                query.setRows(10);
+            }
+            PageHelper.startPage(query.getPage(), query.getRows());
+            PageHelper.orderBy(query.getSort() + " " + query.getOrder());
+            List<RegisterBill> list = this.billMapper.queryListByExample(query);
+            Page<RegisterBill> page = (Page) list;
+
+            EasyuiPageOutput out = new EasyuiPageOutput();
+            List results = ValueProviderUtils.buildDataByProvider(query, list);
+            out.setRows(results);
+            out.setTotal(page.getTotal());
+
+            return out.toString();
         }
 
         @Override

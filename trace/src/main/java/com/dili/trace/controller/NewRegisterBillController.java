@@ -119,7 +119,14 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(@RequestBody RegisterBillDto registerBill) throws Exception {
-        return registerBillService.listPage(registerBill);
+        registerBill.setMarketId(MarketUtil.returnMarket());
+        List<Integer> billTypes = new ArrayList<>();
+        billTypes.add(BillTypeEnum.REGISTER_BILL.getCode());
+        billTypes.add(BillTypeEnum.CHECK_ORDER.getCode());
+        billTypes.add(BillTypeEnum.CHECK_DISPOSE.getCode());
+        registerBill.setBillTypes(billTypes);
+        return registerBillService.listBasePageByExample(registerBill);
+        // return registerBillService.listPage(registerBill);
     }
 
     /**

@@ -28,6 +28,12 @@ public interface SgRegisterBillService {
     public String listPage(RegisterBillDto dto) throws Exception;
 
     /**
+     *
+     * 分页查询数据
+     */
+    public String listBasePageByExample(RegisterBillDto query) throws Exception;
+
+    /**
      * 查询统计页面分页数据
      */
     public String listStaticsPage(RegisterBillDto dto) throws Exception;

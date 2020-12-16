@@ -1354,11 +1354,6 @@
         AND check_sheet_id  IS NULL
       </if>
     </if>
-
-
-
-
-
     <if test="productIdList != null and productIdList.size()>0">
       AND product_id IN
       <foreach collection="productIdList" open="(" separator=","
@@ -1367,4 +1362,129 @@
       </foreach>
     </if>
   </sql>
+
+  <select id="queryListByExample" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.RegisterBillDto">
+    SELECT
+    b.id,
+    b.id billId,
+    b.`created`,
+    b.`bill_type`,
+    b.`code`,
+    b.`sample_code`,
+    b.`register_source`,
+    b.`name`,
+    b.`plate`,
+    b.`brand_id`,
+    b.`brand_name`,
+    b.`preserve_type`,
+    b.`product_id`,
+    b.`product_name`,
+    b.`product_alias_name`,
+    b.`origin_id`,
+    b.`origin_name`,
+    b.`weight`,
+    b.`weight_unit`,
+    b.`measure_type`,
+    b.`piece_num`,
+    b.`piece_weight`,
+    b.`has_detect_report`,
+    b.`has_origin_certifiy`,
+    b.`has_handle_result`,
+    b.`verify_status`,
+    b.`detect_status`,
+    b.`detect_request_id`,
+    r.`detect_source`,
+    r.`detect_time`,
+    r.`detect_result`,
+    r.`detector_name`,
+    b.`check_sheet_id`,
+    b.`checkin_status`,
+    checkinout_record.`created` checkinCreated,
+    b.`is_deleted`
+    FROM register_bill b
+    left join detect_request r ON (r.id = b.detect_request_id)
+    left join trade_detail on b.id = trade_detail.bill_id
+    left join checkinout_record on checkinout_record.id = trade_detail.checkin_record_id
+    WHERE 1 = 1
+    <if test="createdStart != null">
+      <![CDATA[ AND b.created >= #{createdStart} ]]>
+    </if>
+    <if test="createdEnd != null">
+      <![CDATA[ AND b.created <= #{createdEnd} ]]>
+    </if>
+    <if test="checkinCreatedStart != null">
+      <![CDATA[ AND checkinout_record.created >= #{checkinCreatedStart} ]]>
+    </if>
+    <if test="checkinCreatedEnd != null">
+      <![CDATA[ AND checkinout_record.created <= #{checkinCreatedEnd} ]]>
+    </if>
+    <if test="latestDetectTimeTimeStart != null">
+      <![CDATA[ AND r.detect_time >= #{latestDetectTimeTimeStart} ]]>
+    </if>
+    <if test="latestDetectTimeTimeEnd != null">
+      <![CDATA[ AND r.detect_time <= #{latestDetectTimeTimeEnd} ]]>
+    </if>
+    <if test="registerSource != null">
+      AND b.register_source =#{registerSource}
+    </if>
+    <if test="verifyStatus != null">
+      AND b.verify_status =#{verifyStatus}
+    </if>
+    <if test="detectStatus != null">
+      AND b.detect_status =#{detectStatus}
+    </if>
+    <if test="hasDetectReport != null">
+      AND b.has_detect_report =#{hasDetectReport}
+    </if>
+    <if test="hasOriginCertifiy != null">
+      AND b.has_origin_certifiy =#{hasOriginCertifiy}
+    </if>
+    <if test="hasHandleResult != null">
+      AND b.has_handle_result =#{hasHandleResult}
+    </if>
+    <if test="likePlate != null">
+      AND b.plate like '%${likePlate}%'
+    </if>
+    <if test="likeName != null">
+      AND b.name like '%${likeName}%'
+    </if>
+    <if test="likeCode != null">
+      AND b.code like '%${likeCode}%'
+    </if>
+    <if test="likeProductName != null">
+      AND b.product_name like '%${likeProductName}%'
+    </if>
+    <if test="originName != null">
+      AND b.origin_name like '%${originName}%'
+    </if>
+    <if test="likeTallyAreaNo != null">
+      AND b.tally_area_no like '%${likeTallyAreaNo}%'
+    </if>
+    <if test="isDeleted != null">
+      AND b.is_deleted =#{isDeleted}
+    </if>
+    <if test="detectType != null">
+      AND r.detect_type =#{detectType}
+    </if>
+    <if test="detectResult != null">
+      AND r.detect_result =#{detectResult}
+    </if>
+    <if test="marketId != null">
+      AND b.market_id =#{marketId}
+    </if>
+    <if test="registType != null">
+      AND b.regist_type =#{registType}
+    </if>
+    <if test="billType != null">
+      AND b.bill_type =#{billType}
+    </if>
+    <if test="billTypes != null">
+      AND b.bill_type
+      <foreach collection="billTypes" open=" IN (" close=")" item="billType" separator=",">
+        #{billType}
+      </foreach>
+    </if>
+    order by  b.created desc
+  </select>
+
 </mapper>
