@@ -1,7 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.trace.glossary.RegisterSourceEnum;
-import com.dili.trace.service.CityService;
+import com.dili.trace.rpc.service.CityRpcService;
 import com.dili.trace.service.RegisterBillReportService;
 import com.dili.trace.service.SgRegisterBillService;
 import com.dili.trace.service.TradeTypeService;
@@ -69,7 +69,7 @@ public class RegisterBillReportController {
 	@Autowired
 	QualityTraceTradeBillService qualityTraceTradeBillService;
 	@Autowired
-    CityService cityService;
+	CityRpcService cityService;
 	@Autowired
 	UsualAddressService usualAddressService;
 

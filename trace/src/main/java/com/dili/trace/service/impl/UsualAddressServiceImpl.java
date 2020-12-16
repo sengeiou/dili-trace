@@ -4,14 +4,12 @@ import java.util.Date;
 import java.util.List;
 
 import com.dili.assets.sdk.dto.CityDto;
-import com.dili.common.service.BaseInfoRpcService;
 import com.dili.ss.base.BaseServiceImpl;
-import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.exception.AppException;
 import com.dili.trace.dao.UsualAddressMapper;
 import com.dili.trace.domain.UsualAddress;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
-import com.dili.trace.service.CityService;
+import com.dili.trace.rpc.service.CityRpcService;
 import com.dili.trace.service.UsualAddressService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UsualAddressServiceImpl extends BaseServiceImpl<UsualAddress, Long> implements UsualAddressService {
     @Autowired
-	CityService cityService;
+    CityRpcService cityService;
     @Autowired
     UsualAddressMapper usualAddressMapper;
 	@Override

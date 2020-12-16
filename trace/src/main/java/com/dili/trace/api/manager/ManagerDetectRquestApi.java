@@ -77,9 +77,13 @@ public class ManagerDetectRquestApi {
      */
     @RequestMapping("/listPagedDetectRequest.api")
     public BaseOutput<BasePage<DetectRequestDto>> listPagedDetectRequest(@RequestBody DetectRequestDto detectRequestDto) {
-        if (null == detectRequestDto.getDetectStatus()) {
+
+        List<Integer>detectStatusList=StreamEx.ofNullable(detectRequestDto.getDetectStatusList())
+                .flatCollection(Function.identity()).nonNull().toList();
+        if (null == detectRequestDto.getDetectStatus()&&detectStatusList.isEmpty()) {
             return BaseOutput.failure("参数错误");
         }
+        detectRequestDto.setDetectStatusList(detectStatusList);
 
         BasePage<DetectRequestDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
         return BaseOutput.success().setData(basePage);

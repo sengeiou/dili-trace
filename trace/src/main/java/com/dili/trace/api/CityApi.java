@@ -6,7 +6,7 @@ import com.dili.assets.sdk.dto.CityDto;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.domain.Countries;
 
-import com.dili.trace.service.CityService;
+import com.dili.trace.rpc.service.CityRpcService;
 import com.dili.trace.service.CountriesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -27,7 +26,7 @@ public class CityApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(CityApi.class);
 
     @Autowired
-    private CityService cityService;
+    private CityRpcService cityService;
 
     @Autowired
     private CountriesService countriesService;
