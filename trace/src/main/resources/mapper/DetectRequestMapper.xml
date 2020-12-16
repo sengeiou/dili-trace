@@ -243,6 +243,15 @@
       <if test="marketId != null">
           AND b.market_id =#{marketId}
       </if>
+      <if test="billType != null">
+          AND b.bill_type =#{billType}
+      </if>
+      <if test="billTypes != null">
+          AND b.bill_type
+          <foreach collection="billTypes" open=" IN (" close=")" item="billType" separator=",">
+              #{billType}
+          </foreach>
+      </if>
       order by  b.created desc
   </select>
 </mapper>
