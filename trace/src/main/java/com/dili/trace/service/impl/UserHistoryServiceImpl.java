@@ -16,6 +16,7 @@ import com.dili.trace.service.UserHistoryService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.service.UserTallyAreaService;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -123,7 +124,7 @@ public class UserHistoryServiceImpl extends BaseServiceImpl<UserHistory, Long> i
 		condition.setUserId(userId);
 
 		List<UserTallyArea> tallyAreaList = this.tallyAreaService.listByExample(condition);
-		List<UserPlate> userPlateList = this.userPlateService.findUserPlateByUserId(userId);
+		List<UserPlate> userPlateList = Lists.newArrayList();//this.userPlateService.findUserPlateByUserId(userId);
 		return Optional.of(this.buildUserHistory(item, userPlateList, tallyAreaList));
 
 	}

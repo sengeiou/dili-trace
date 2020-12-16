@@ -26,14 +26,14 @@ public interface UserService extends BaseService<User, Long> {
      * @param user 用户信息
      * @param originalPassword 原始密码
      */
-    void register(User user, UserTypeEnum userType, String originalPassword);
+//    void register(User user, UserTypeEnum userType, String originalPassword);
 
     /**
      * 注册 flag 是否有验证码
      *
      * @param user
      */
-    void register(User user, Boolean flag);
+//    void register(User user, Boolean flag);
 
     /**
      * 修改用户信息
@@ -56,14 +56,14 @@ public interface UserService extends BaseService<User, Long> {
      *
      * @param user
      */
-    void resetPassword(User user);
+//    void resetPassword(User user);
 
     /**
      * 修改密码
      *
      * @param user
      */
-    void changePassword(User user);
+//    void changePassword(User user);
 
     /**
      * 判断手机号是否存在
@@ -88,7 +88,7 @@ public interface UserService extends BaseService<User, Long> {
      * @param enable 是否启用(true-启用，false-禁用)
      * @return
      */
-    BaseOutput updateEnable(Long id, Boolean enable);
+//    BaseOutput updateEnable(Long id, Boolean enable);
 
     /**
      *
@@ -103,7 +103,7 @@ public interface UserService extends BaseService<User, Long> {
      *
      * @param id
      */
-    BaseOutput deleteUser(Long id);
+//    BaseOutput deleteUser(Long id);
 
     /**
      *
@@ -125,7 +125,7 @@ public interface UserService extends BaseService<User, Long> {
      * @param operatorUser
      * @return
      */
-    BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser);
+//    BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser);
 
     /**
      *
@@ -154,7 +154,7 @@ public interface UserService extends BaseService<User, Long> {
      * @param user
      * @param smscode
      */
-    public void renewPassword(User user, String smscode);
+//    public void renewPassword(User user, String smscode);
 
     /**
      *

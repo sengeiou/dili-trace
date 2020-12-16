@@ -84,9 +84,9 @@ public class CustomerRpcService {
             CustomerQueryInput query = new CustomerQueryInput();
             query.setId(userId);
 
-            try{
+            try {
                 Long marketId = Long.parseLong(request.getHeader("marketId"));
-                if(marketId!=null&&!marketId.equals(0L)){
+                if (marketId != null && !marketId.equals(0L)) {
                     query.setMarketId(marketId);
                     BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
                     if (out.isSuccess()) {
@@ -99,7 +99,7 @@ public class CustomerRpcService {
                         }).findFirst();
 
                     }
-                }else{
+                } else {
                     BaseOutput<com.dili.customer.sdk.domain.Customer> out = this.customerRpc.getById(userId);
                     if (out.isSuccess()) {
                         return StreamEx.ofNullable(out.getData()).nonNull().map(c -> {
@@ -114,16 +114,13 @@ public class CustomerRpcService {
 
                 }
 
-            }catch (Exception e){
-
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
             }
 
 
-
-
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return Optional.empty();
         }
 
@@ -335,5 +332,23 @@ public class CustomerRpcService {
             logger.error(e.getMessage(), e);
         }
         return Optional.empty();
+    }
+
+    /**
+     * 根据车牌查询绑定的客户
+     *
+     * @param plate
+     * @return
+     */
+    public List<CustomerExtendDto> findCustomerByPlate(String plate) {
+        CustomerQueryInput queryInput = new CustomerQueryInput();
+        queryInput.setVehicleNumber(plate);
+        PageOutput<List<CustomerExtendDto>> pageOutput = this.listPage(queryInput);
+
+        return StreamEx.ofNullable(pageOutput).filter(PageOutput::isSuccess)
+                .map(PageOutput::getData).nonNull()
+                .flatCollection(Function.identity()).nonNull()
+                .toList();
+
     }
 }

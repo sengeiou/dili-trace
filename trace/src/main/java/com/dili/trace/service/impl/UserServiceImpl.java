@@ -115,113 +115,113 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Autowired
     TallyingAreaRpcService tallyingAreaRpcService;
 
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void register(User user, UserTypeEnum userType, String originalPassword) {
-        user.setState(EnabledStateEnum.ENABLED.getCode());
-        user.setPassword(MD5Util.md5(originalPassword));
-        user.setIsDelete(0L);
-        user.setYn(YesOrNoEnum.YES.getCode());
-        user.setUserType(userType.getCode());
+//    @Transactional(rollbackFor = Exception.class)
+//    @Override
+//    public void register(User user, UserTypeEnum userType, String originalPassword) {
+//        user.setState(EnabledStateEnum.ENABLED.getCode());
+//        user.setPassword(MD5Util.md5(originalPassword));
+//        user.setIsDelete(0L);
+//        user.setYn(YesOrNoEnum.YES.getCode());
+//        user.setUserType(userType.getCode());
+//
+////		// 验证验证码是否正确
+////		if (flag) {
+////			checkVerificationCode(user.getPhone(), user.getCheckCode());
+////		}
+//
+//        // 验证理货区号是否已注册
+//        if (StringUtils.isNotBlank(user.getTallyAreaNos())) {
+//            existsTallyAreaNo(null, Arrays.asList(user.getTallyAreaNos().split(",")));
+//        }
+//        // 验证手机号是否已注册
+//        if (existsAccount(user.getPhone())) {
+//            throw new TraceBizException("手机号已注册");
+//        }
+//        // 验证身份证号是否已注册
+//        if (StringUtils.isNotBlank(user.getCardNo()) && existsCardNo(user.getCardNo())) {
+//            throw new TraceBizException("身份证号已注册");
+//        }
+//        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
+//        insertSelective(user);
+//        // 更新用户理货区
+//        updateUserTallyArea(user.getId(), Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")));
+//        // 增加车牌信息
+////        LOGGER.info("输入车牌:{}",user.getPlates());
+//        List<String> plateList = this.parsePlate(user.getPlates());
+////        LOGGER.info("解析车牌:{}",plateList.toString());
+//        if (!plateList.isEmpty()) {
+//            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
+//            if (up != null) {
+//                throw new TraceBizException("车牌[" + up.getPlate() + "]已被其他用户使用");
+//            }
+//            this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
+//        }
+//        this.userHistoryService.insertUserHistoryForNewUser(user.getId());
+//    }
 
-//		// 验证验证码是否正确
-//		if (flag) {
-//			checkVerificationCode(user.getPhone(), user.getCheckCode());
-//		}
-
-        // 验证理货区号是否已注册
-        if (StringUtils.isNotBlank(user.getTallyAreaNos())) {
-            existsTallyAreaNo(null, Arrays.asList(user.getTallyAreaNos().split(",")));
-        }
-        // 验证手机号是否已注册
-        if (existsAccount(user.getPhone())) {
-            throw new TraceBizException("手机号已注册");
-        }
-        // 验证身份证号是否已注册
-        if (StringUtils.isNotBlank(user.getCardNo()) && existsCardNo(user.getCardNo())) {
-            throw new TraceBizException("身份证号已注册");
-        }
-        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, user.getSalesCityId());
-        insertSelective(user);
-        // 更新用户理货区
-        updateUserTallyArea(user.getId(), Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(",")));
-        // 增加车牌信息
-//        LOGGER.info("输入车牌:{}",user.getPlates());
-        List<String> plateList = this.parsePlate(user.getPlates());
-//        LOGGER.info("解析车牌:{}",plateList.toString());
-        if (!plateList.isEmpty()) {
-            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
-            if (up != null) {
-                throw new TraceBizException("车牌[" + up.getPlate() + "]已被其他用户使用");
-            }
-            this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
-        }
-        this.userHistoryService.insertUserHistoryForNewUser(user.getId());
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void register(User user, Boolean flag) {
-        // 验证验证码是否正确
-        if (flag) {
-            user.setSource(UpStreamSourceEnum.REGISTER.getCode());
-            this.sMSService.checkVerificationCode(user.getPhone(), user.getCheckCode());
-        } else {
-            user.setSource(UpStreamSourceEnum.DOWN.getCode());
-        }
-
-        // 验证手机号是否已注册
-        if (existsAccount(user.getPhone())) {
-            throw new TraceBizException("手机号已注册");
-            // return;
-        }
-
-        if (StringUtils.isEmpty(user.getPassword())) {
-            user.setPassword(this.defaultConfiguration.getPassword());// TODO 默认密码
-        }
-        user.setPassword(MD5Util.md5(user.getPassword()));
-
-        if (StringUtils.isEmpty(user.getCardNo())) {
-            user.setCardNo("");
-        }
-
-        if (StringUtils.isEmpty(user.getAddr())) {
-            user.setAddr("");
-        }
-        user.setValidateState(ValidateStateEnum.CERTREQ.getCode());
-
-        // // 验证身份证号是否已注册
-        // if (existsCardNo(user.getCardNo())) {
-        // throw new TraceBusinessException("身份证号已注册");
-        // }
-        // this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER,
-        // user.getSalesCityId());
-        String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
-        user.setTallyAreaNos(tallyAreaNos);
-        if (StringUtils.isBlank(user.getMarketName()) || Objects.isNull(user.getMarketId())) {
-            throw new TraceBizException("用户市场为空");
-//            user.setMarketId(Long.valueOf(MarketEnum.AQUATIC_TYPE.getCode()));
-//            user.setMarketName("杭州水产");
-        }
-        insertSelective(user);
-        this.tallyAreaNoService.saveOrUpdateTallyAreaNo(user.getId(), tallyAreaNos);
-        // // 增加车牌信息
-        // // LOGGER.info("输入车牌:{}",user.getPlates());
-        // List<String> plateList = this.parsePlate(user.getPlates());
-        // // LOGGER.info("解析车牌:{}",plateList.toString());
-        // if (!plateList.isEmpty()) {
-        // UserPlate up =
-        // this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
-        // if (up != null) {
-        // throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
-        // }
-        // this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
-        // }
-        // this.userHistoryService.insertUserHistoryForNewUser(user.getId());
-        // 新增用户店铺信息
-        addUserStore(user);
-        this.updateUserQrItem(user.getId());
-    }
+//    @Transactional(rollbackFor = Exception.class)
+//    @Override
+//    public void register(User user, Boolean flag) {
+//        // 验证验证码是否正确
+//        if (flag) {
+//            user.setSource(UpStreamSourceEnum.REGISTER.getCode());
+//            this.sMSService.checkVerificationCode(user.getPhone(), user.getCheckCode());
+//        } else {
+//            user.setSource(UpStreamSourceEnum.DOWN.getCode());
+//        }
+//
+//        // 验证手机号是否已注册
+//        if (existsAccount(user.getPhone())) {
+//            throw new TraceBizException("手机号已注册");
+//            // return;
+//        }
+//
+//        if (StringUtils.isEmpty(user.getPassword())) {
+//            user.setPassword(this.defaultConfiguration.getPassword());// TODO 默认密码
+//        }
+//        user.setPassword(MD5Util.md5(user.getPassword()));
+//
+//        if (StringUtils.isEmpty(user.getCardNo())) {
+//            user.setCardNo("");
+//        }
+//
+//        if (StringUtils.isEmpty(user.getAddr())) {
+//            user.setAddr("");
+//        }
+//        user.setValidateState(ValidateStateEnum.CERTREQ.getCode());
+//
+//        // // 验证身份证号是否已注册
+//        // if (existsCardNo(user.getCardNo())) {
+//        // throw new TraceBusinessException("身份证号已注册");
+//        // }
+//        // this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER,
+//        // user.getSalesCityId());
+//        String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
+//        user.setTallyAreaNos(tallyAreaNos);
+//        if (StringUtils.isBlank(user.getMarketName()) || Objects.isNull(user.getMarketId())) {
+//            throw new TraceBizException("用户市场为空");
+////            user.setMarketId(Long.valueOf(MarketEnum.AQUATIC_TYPE.getCode()));
+////            user.setMarketName("杭州水产");
+//        }
+//        insertSelective(user);
+//        this.tallyAreaNoService.saveOrUpdateTallyAreaNo(user.getId(), tallyAreaNos);
+//        // // 增加车牌信息
+//        // // LOGGER.info("输入车牌:{}",user.getPlates());
+//        // List<String> plateList = this.parsePlate(user.getPlates());
+//        // // LOGGER.info("解析车牌:{}",plateList.toString());
+//        // if (!plateList.isEmpty()) {
+//        // UserPlate up =
+//        // this.userPlateService.findUserPlateByPlates(plateList).stream().findFirst().orElse(null);
+//        // if (up != null) {
+//        // throw new TraceBusinessException("车牌[" + up.getPlate() + "]已被其他用户使用");
+//        // }
+//        // this.userPlateService.deleteAndInsertUserPlate(user.getId(), plateList);
+//        // }
+//        // this.userHistoryService.insertUserHistoryForNewUser(user.getId());
+//        // 新增用户店铺信息
+//        addUserStore(user);
+//        this.updateUserQrItem(user.getId());
+//    }
 
     private void addUserStore(User user) {
         UserStore userStore = new UserStore();
@@ -255,71 +255,71 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Override
     public void updateUser(User user) {
         // 手机号验重
-        if (StringUtils.isNotBlank(user.getPhone())) {
-            List<User> users = getUserByExistsAccount(user.getPhone());
-            if (CollectionUtils.isNotEmpty(users)) {
-                users.forEach(o -> {
-                    if (!o.getId().equals(user.getId()) && o.getPhone().equals(user.getPhone())) {
-                        throw new TraceBizException("手机号已注册");
-                    }
-                });
-            }
-        }
-
-        // 验证身份证号是否已注册
-        if (StringUtils.isNotBlank(user.getCardNo())) {
-            User query = DTOUtils.newDTO(User.class);
-            query.setCardNo(user.getCardNo());
-            query.setYn(YesOrNoEnum.YES.getCode());
-            List<User> users = listByExample(query);
-            if (CollectionUtils.isNotEmpty(users)) {
-                users.forEach(o -> {
-                    if (!o.getId().equals(user.getId()) && o.getCardNo().equals(user.getCardNo())) {
-                        throw new TraceBizException("身份证号已注册");
-                    }
-                });
-            }
-        }
-
-        User userPO = get(user.getId());
-        if (!YesOrNoEnum.YES.getCode().equals(userPO.getYn())) {
-            throw new TraceBizException("数据已被删除");
-        }
-
-        // LOGGER.info("输入车牌:{}",user.getPlates());
-        List<String> plateList = this.parsePlate(user.getPlates());
-        // LOGGER.info("解析车牌:{}",plateList.toString());
-        if (!plateList.isEmpty()) {
-            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().filter(p -> {
-                return !p.getUserId().equals(userPO.getId());
-            }).findFirst().orElse(null);
-            if (up != null) {
-                throw new TraceBizException("车牌[" + up.getPlate() + "]已被其他用户使用");
-            }
-        }
-        if (StringUtils.isBlank(user.getMarketName())) {
-            user.setMarketName(userPO.getMarketName());
-        }
-        Integer validateAllow = 40;
-        Integer needPush = 1;
-        String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
-        user.setTallyAreaNos(tallyAreaNos);
-        this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
-        user.setModified(new Date());
-        if (validateAllow.equals(userPO.getValidateState())) {
-            user.setIsPush(needPush);
-        }
-        updateSelective(user);
-        this.tallyAreaNoService.saveOrUpdateTallyAreaNo(userPO.getId(), tallyAreaNos);
-        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
-                user.getSalesCityId());
-
-        this.sessionRedisService.updateUser(this.get(user.getId()));
-
-        //发送消息
-        if (!validateAllow.equals(user.getValidateState())) {
-            sendMessageByManage(user.getName(), user.getId(), user.getMarketId());
-        }
+//        if (StringUtils.isNotBlank(user.getPhone())) {
+//            List<User> users = getUserByExistsAccount(user.getPhone());
+//            if (CollectionUtils.isNotEmpty(users)) {
+//                users.forEach(o -> {
+//                    if (!o.getId().equals(user.getId()) && o.getPhone().equals(user.getPhone())) {
+//                        throw new TraceBizException("手机号已注册");
+//                    }
+//                });
+//            }
+//        }
+//
+//        // 验证身份证号是否已注册
+//        if (StringUtils.isNotBlank(user.getCardNo())) {
+//            User query = DTOUtils.newDTO(User.class);
+//            query.setCardNo(user.getCardNo());
+//            query.setYn(YesOrNoEnum.YES.getCode());
+//            List<User> users = listByExample(query);
+//            if (CollectionUtils.isNotEmpty(users)) {
+//                users.forEach(o -> {
+//                    if (!o.getId().equals(user.getId()) && o.getCardNo().equals(user.getCardNo())) {
+//                        throw new TraceBizException("身份证号已注册");
+//                    }
+//                });
+//            }
+//        }
+//
+//        User userPO = get(user.getId());
+//        if (!YesOrNoEnum.YES.getCode().equals(userPO.getYn())) {
+//            throw new TraceBizException("数据已被删除");
+//        }
+//
+//        // LOGGER.info("输入车牌:{}",user.getPlates());
+//        List<String> plateList = this.parsePlate(user.getPlates());
+//        // LOGGER.info("解析车牌:{}",plateList.toString());
+//        if (!plateList.isEmpty()) {
+//            UserPlate up = this.userPlateService.findUserPlateByPlates(plateList).stream().filter(p -> {
+//                return !p.getUserId().equals(userPO.getId());
+//            }).findFirst().orElse(null);
+//            if (up != null) {
+//                throw new TraceBizException("车牌[" + up.getPlate() + "]已被其他用户使用");
+//            }
+//        }
+//        if (StringUtils.isBlank(user.getMarketName())) {
+//            user.setMarketName(userPO.getMarketName());
+//        }
+//        Integer validateAllow = 40;
+//        Integer needPush = 1;
+//        String tallyAreaNos = this.tallyAreaNoService.parseAndConvertTallyAreaNos(user.getTallyAreaNos());
+//        user.setTallyAreaNos(tallyAreaNos);
+//        this.userPlateService.deleteAndInsertUserPlate(userPO.getId(), plateList);
+//        user.setModified(new Date());
+//        if (validateAllow.equals(userPO.getValidateState())) {
+//            user.setIsPush(needPush);
+//        }
+//        updateSelective(user);
+//        this.tallyAreaNoService.saveOrUpdateTallyAreaNo(userPO.getId(), tallyAreaNos);
+//        this.usualAddressService.increaseUsualAddressTodayCount(UsualAddressTypeEnum.USER, userPO.getSalesCityId(),
+//                user.getSalesCityId());
+//
+//        this.sessionRedisService.updateUser(this.get(user.getId()));
+//
+//        //发送消息
+//        if (!validateAllow.equals(user.getValidateState())) {
+//            sendMessageByManage(user.getName(), user.getId(), user.getMarketId());
+//        }
         // this.updateUserQrItem(user.getId());
 
     }
@@ -372,85 +372,87 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 
     @Override
     public User login(String phone, String encryptedPassword) {
-        User query = DTOUtils.newDTO(User.class);
-        query.setPhone(phone);
-        query.setYn(YesOrNoEnum.YES.getCode());
-        User po = listByExample(query).stream().findFirst().orElse(null);
-        if (po == null) {
-            throw new TraceBizException("手机号未注册");
-        }
-        if (EnabledStateEnum.DISABLED.getCode().equals(po.getState())) {
-            throw new TraceBizException("手机号已禁用");
-        }
-        if (!po.getPassword().equals(encryptedPassword)) {
-            throw new TraceBizException("密码错误");
-        }
-        return po;
+//        User query = DTOUtils.newDTO(User.class);
+//        query.setPhone(phone);
+//        query.setYn(YesOrNoEnum.YES.getCode());
+//        User po = listByExample(query).stream().findFirst().orElse(null);
+//        if (po == null) {
+//            throw new TraceBizException("手机号未注册");
+//        }
+//        if (EnabledStateEnum.DISABLED.getCode().equals(po.getState())) {
+//            throw new TraceBizException("手机号已禁用");
+//        }
+//        if (!po.getPassword().equals(encryptedPassword)) {
+//            throw new TraceBizException("密码错误");
+//        }
+//        return po;
+        return null;
     }
 
-    @Transactional
-    @Override
-    public void resetPassword(User user) {
-        User query = DTOUtils.newDTO(User.class);
-        query.setPhone(user.getPhone());
-        query.setYn(YesOrNoEnum.YES.getCode());
-        User po = listByExample(query).stream().findFirst().orElse(null);
-        if (po == null) {
-            throw new TraceBizException("用户不存在");
-        }
-        User condition = DTOUtils.newDTO(User.class);
-        condition.setId(po.getId());
-        condition.setVersion(po.getVersion());
-        po.setPassword(user.getPassword());
-        po.setVersion(po.getVersion() + 1);
-        int i = updateSelectiveByExample(po, condition);
-        if (i != 1) {
-            throw new TraceBizException("数据已变更,请稍后重试");
-        }
-    }
 
-    @Transactional
-    @Override
-    public void renewPassword(User user, String smscode) {
-        this.sMSService.checkResetPasswordSmsCode(user.getPhone(), smscode);
-        User query = DTOUtils.newDTO(User.class);
-        query.setPhone(user.getPhone());
-        query.setYn(YesOrNoEnum.YES.getCode());
-        User po = listByExample(query).stream().findFirst().orElse(null);
-        if (po == null) {
-            throw new TraceBizException("用户不存在");
-        }
-        User condition = DTOUtils.newDTO(User.class);
-        condition.setId(po.getId());
-        condition.setVersion(po.getVersion());
-        po.setPassword(MD5Util.md5(user.getPassword()));
-        po.setVersion(po.getVersion() + 1);
-        int i = updateSelectiveByExample(po, condition);
-        if (i != 1) {
-            throw new TraceBizException("数据已变更,请稍后重试");
-        }
-    }
+//    @Transactional
+//    @Override
+//    public void resetPassword(User user) {
+//        User query = DTOUtils.newDTO(User.class);
+//        query.setPhone(user.getPhone());
+//        query.setYn(YesOrNoEnum.YES.getCode());
+//        User po = listByExample(query).stream().findFirst().orElse(null);
+//        if (po == null) {
+//            throw new TraceBizException("用户不存在");
+//        }
+//        User condition = DTOUtils.newDTO(User.class);
+//        condition.setId(po.getId());
+//        condition.setVersion(po.getVersion());
+//        po.setPassword(user.getPassword());
+//        po.setVersion(po.getVersion() + 1);
+//        int i = updateSelectiveByExample(po, condition);
+//        if (i != 1) {
+//            throw new TraceBizException("数据已变更,请稍后重试");
+//        }
+//    }
 
-    @Transactional
-    @Override
-    public void changePassword(User user) {
-        User po = get(user.getId());
-        if (po == null) {
-            throw new TraceBizException("用户不存在");
-        }
-        if (!po.getPassword().equals(user.getOldPassword())) {
-            throw new TraceBizException("原密码错误");
-        }
-        User condition = DTOUtils.newDTO(User.class);
-        condition.setId(po.getId());
-        condition.setVersion(po.getVersion());
-        po.setPassword(user.getPassword());
-        po.setVersion(po.getVersion() + 1);
-        int i = updateSelectiveByExample(po, condition);
-        if (i != 1) {
-            throw new TraceBizException("数据已变更,请稍后重试");
-        }
-    }
+//    @Transactional
+//    @Override
+//    public void renewPassword(User user, String smscode) {
+//        this.sMSService.checkResetPasswordSmsCode(user.getPhone(), smscode);
+//        User query = DTOUtils.newDTO(User.class);
+//        query.setPhone(user.getPhone());
+//        query.setYn(YesOrNoEnum.YES.getCode());
+//        User po = listByExample(query).stream().findFirst().orElse(null);
+//        if (po == null) {
+//            throw new TraceBizException("用户不存在");
+//        }
+//        User condition = DTOUtils.newDTO(User.class);
+//        condition.setId(po.getId());
+//        condition.setVersion(po.getVersion());
+//        po.setPassword(MD5Util.md5(user.getPassword()));
+//        po.setVersion(po.getVersion() + 1);
+//        int i = updateSelectiveByExample(po, condition);
+//        if (i != 1) {
+//            throw new TraceBizException("数据已变更,请稍后重试");
+//        }
+//    }
+
+//    @Transactional
+//    @Override
+//    public void changePassword(User user) {
+//        User po = get(user.getId());
+//        if (po == null) {
+//            throw new TraceBizException("用户不存在");
+//        }
+//        if (!po.getPassword().equals(user.getOldPassword())) {
+//            throw new TraceBizException("原密码错误");
+//        }
+//        User condition = DTOUtils.newDTO(User.class);
+//        condition.setId(po.getId());
+//        condition.setVersion(po.getVersion());
+//        po.setPassword(user.getPassword());
+//        po.setVersion(po.getVersion() + 1);
+//        int i = updateSelectiveByExample(po, condition);
+//        if (i != 1) {
+//            throw new TraceBizException("数据已变更,请稍后重试");
+//        }
+//    }
 
     /**
      * 检测手机号是否存在
@@ -471,36 +473,36 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         return listByExample(query);
     }
 
-    @Override
-    @Transactional
-    public BaseOutput updateEnable(Long id, Boolean enable) {
-        // long tt =
-        // this.redisUtil.getRedisTemplate().getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
-        User user = get(id);
-        if (user == null) {
-            return BaseOutput.failure("数据不存在");
-        }
-        if (!YesOrNoEnum.YES.getCode().equals(user.getYn())) {
-            return BaseOutput.failure("数据已被删除");
-        }
-        Integer needPush = 1;
-        user.setModified(new Date());
-        user.setIsPush(needPush);
-        if (enable) {
-            user.setState(EnabledStateEnum.ENABLED.getCode());
-            this.updateSelective(user);
-            this.sessionRedisService.updateUser(this.get(user.getId()));
-            // this.redisUtil.getRedisTemplate().opsForSet().remove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,
-            // id);
-        } else {
-            user.setState(EnabledStateEnum.DISABLED.getCode());
-            this.updateSelective(user);
-            this.sessionRedisService.removeUser(this.get(user.getId()));
-            // this.redisUtil.getRedisTemplate().opsForSet().add(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,
-            // id);
-        }
-        return BaseOutput.success("操作成功");
-    }
+//    @Override
+//    @Transactional
+//    public BaseOutput updateEnable(Long id, Boolean enable) {
+//        // long tt =
+//        // this.redisUtil.getRedisTemplate().getExpire(ExecutionConstants.WAITING_DISABLED_USER_PREFIX);
+//        User user = get(id);
+//        if (user == null) {
+//            return BaseOutput.failure("数据不存在");
+//        }
+//        if (!YesOrNoEnum.YES.getCode().equals(user.getYn())) {
+//            return BaseOutput.failure("数据已被删除");
+//        }
+//        Integer needPush = 1;
+//        user.setModified(new Date());
+//        user.setIsPush(needPush);
+//        if (enable) {
+//            user.setState(EnabledStateEnum.ENABLED.getCode());
+//            this.updateSelective(user);
+//            this.sessionRedisService.updateUser(this.get(user.getId()));
+//            // this.redisUtil.getRedisTemplate().opsForSet().remove(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,
+//            // id);
+//        } else {
+//            user.setState(EnabledStateEnum.DISABLED.getCode());
+//            this.updateSelective(user);
+//            this.sessionRedisService.removeUser(this.get(user.getId()));
+//            // this.redisUtil.getRedisTemplate().opsForSet().add(ExecutionConstants.WAITING_DISABLED_USER_PREFIX,
+//            // id);
+//        }
+//        return BaseOutput.success("操作成功");
+//    }
 
     private Optional<String> andCondition(UserListDto dto) {
         List<String> strList = new ArrayList<String>();
@@ -537,19 +539,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         List<Long> userIdList = users.stream().map(o -> {
             return o.getId();
         }).collect(toList());
-        Map<Long, List<UserPlate>> userPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
+//        Map<Long, List<UserPlate>> userPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
         List<User> userList = users.stream().map(u -> {
             // Long userId = (Long) u.get("id");
             Long userId = u.getId();
-            if (userPlateMap.containsKey(userId)) {
-                String plates = userPlateMap.get(userId).stream().map(UserPlate::getPlate)
-                        .collect(Collectors.joining(","));
-                // u.put("plates", plates);
-                u.setPlates(plates);
-            } else {
+//            if (userPlateMap.containsKey(userId)) {
+//                String plates = userPlateMap.get(userId).stream().map(UserPlate::getPlate)
+//                        .collect(Collectors.joining(","));
+//                // u.put("plates", plates);
+//                u.setPlates(plates);
+//            } else {
                 //  u.put("plates", "");
                 u.setPlates("");
-            }
+//            }
             return u;
         }).collect(toList());
         out.setRows(userList);
@@ -557,40 +559,40 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         return out;
     }
 
-    @Override
-    public BaseOutput deleteUser(Long id) {
-        if (id == null) {
-            return BaseOutput.failure("参数错误");
-        }
-        User user = this.get(id);
-        if (user == null) {
-            return BaseOutput.failure("数据不存在");
-        }
-
-        List<String> tallyAreaNos = Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(","));
-
-        user.setState(EnabledStateEnum.DISABLED.getCode());
-        user.setYn(YesOrNoEnum.NO.getCode());
-        user.setIsDelete(user.getId());
-        user.setOpenId("");
-        user.setModified(new Date());
-        this.updateSelective(user);
-
-        // 删除用户车牌信息
-        UserPlate up = DTOUtils.newDTO(UserPlate.class);
-        up.setUserId(user.getId());
-        this.userPlateService.deleteByExample(up);
-        this.sessionRedisService.removeUser(this.get(user.getId()));
-        return BaseOutput.success("操作成功");
-
-        // UserTallyArea example=DTOUtils.newDTO(UserTallyArea.class);
-        // example.setUserId(user.getId());
-        // this.userTallyAreaService.deleteByExample(example);
-        // user.setTallyAreaNos(null);
-        // user.setState(EnabledStateEnum.DISABLED.getCode());
-        // this.updateExact(user);
-
-    }
+//    @Override
+//    public BaseOutput deleteUser(Long id) {
+//        if (id == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
+//        User user = this.get(id);
+//        if (user == null) {
+//            return BaseOutput.failure("数据不存在");
+//        }
+//
+//        List<String> tallyAreaNos = Arrays.asList(StringUtils.trimToEmpty(user.getTallyAreaNos()).split(","));
+//
+//        user.setState(EnabledStateEnum.DISABLED.getCode());
+//        user.setYn(YesOrNoEnum.NO.getCode());
+//        user.setIsDelete(user.getId());
+//        user.setOpenId("");
+//        user.setModified(new Date());
+//        this.updateSelective(user);
+//
+//        // 删除用户车牌信息
+//        UserPlate up = DTOUtils.newDTO(UserPlate.class);
+//        up.setUserId(user.getId());
+//        this.userPlateService.deleteByExample(up);
+//        this.sessionRedisService.removeUser(this.get(user.getId()));
+//        return BaseOutput.success("操作成功");
+//
+//        // UserTallyArea example=DTOUtils.newDTO(UserTallyArea.class);
+//        // example.setUserId(user.getId());
+//        // this.userTallyAreaService.deleteByExample(example);
+//        // user.setTallyAreaNos(null);
+//        // user.setState(EnabledStateEnum.DISABLED.getCode());
+//        // this.updateExact(user);
+//
+//    }
 
     @Override
     public BaseOutput<List<UserOutput>> countGroupByValidateState(User user) {
@@ -615,38 +617,38 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         return result;
     }
 
-    @Override
-    public BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser) {
-        if (input == null || input.getId() == null) {
-            return BaseOutput.failure("参数错误");
-        }
-        User user = get(input.getId());
-        if (ValidateStateEnum.UNCERT.getCode() != user.getValidateState()) {
-            return BaseOutput.failure("当前状态不能审核");
-        }
-        Integer needPush = 1;
-        // 审核通过
-        if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {
-            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(), null, operatorUser);
-            user.setIsPush(needPush);
-            user.setIsActive(needPush);
-        } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {
-            // 审核不通过
-            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(), input.getRefuseReason(), operatorUser);
-        } else {
-            String message = "系统出现异常";
-            return BaseOutput.failure(message);
-        }
-
-        user.setValidateState(input.getValidateState());
-        user.setModified(new Date());
-        int retRows = update(user);
-        if (retRows > 0) {
-            return BaseOutput.success("用户资料审核申请已通过");
-        } else {
-            return BaseOutput.failure();
-        }
-    }
+//    @Override
+//    public BaseOutput verifyUserCert(UserInput input, OperatorUser operatorUser) {
+//        if (input == null || input.getId() == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
+//        User user = get(input.getId());
+//        if (ValidateStateEnum.UNCERT.getCode() != user.getValidateState()) {
+//            return BaseOutput.failure("当前状态不能审核");
+//        }
+//        Integer needPush = 1;
+//        // 审核通过
+//        if (ValidateStateEnum.PASSED.getCode() == input.getValidateState()) {
+//            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERPASS.getCode(), null, operatorUser);
+//            user.setIsPush(needPush);
+//            user.setIsActive(needPush);
+//        } else if (ValidateStateEnum.NOPASS.getCode() == input.getValidateState()) {
+//            // 审核不通过
+//            sendVerifyCertMessage(user, MessageTypeEnum.REGISTERFAILURE.getCode(), input.getRefuseReason(), operatorUser);
+//        } else {
+//            String message = "系统出现异常";
+//            return BaseOutput.failure(message);
+//        }
+//
+//        user.setValidateState(input.getValidateState());
+//        user.setModified(new Date());
+//        int retRows = update(user);
+//        if (retRows > 0) {
+//            return BaseOutput.success("用户资料审核申请已通过");
+//        } else {
+//            return BaseOutput.failure();
+//        }
+//    }
 
     private void sendVerifyCertMessage(User user, Integer messageType, String operateReason, OperatorUser operatorUser) {
         // 审核通过增加消息
@@ -1002,23 +1004,23 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         Map<Long, String> userIdNameMap = StreamEx.of(userItemList).toMap(User::getId, User::getName);
 
         List<Long> userIdList = StreamEx.ofKeys(userIdMap).toList();
-        Map<Long, List<UserPlate>> userIdPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
+//        Map<Long, List<UserPlate>> userIdPlateMap = this.userPlateService.findUserPlateByUserIdList(userIdList);
 
-        List<DTO> data = StreamEx.ofValues(userIdPlateMap).flatMap(List::stream).flatMap(up -> {
+//        List<DTO> data = StreamEx.ofValues(userIdPlateMap).flatMap(List::stream).flatMap(up -> {
+//
+//            return userIdMap.getOrDefault(up.getUserId(), Collections.emptyList()).stream().map(tno -> {
+//
+//                DTO dto = new DTO();
+//                dto.put("userName", userIdNameMap.getOrDefault(up.getUserId(), ""));
+//                dto.put("plate", up.getPlate());
+//                dto.put("tallyAreaNo", tno);
+//                return dto;
+//
+//            });
+//        }).toList();
 
-            return userIdMap.getOrDefault(up.getUserId(), Collections.emptyList()).stream().map(tno -> {
-
-                DTO dto = new DTO();
-                dto.put("userName", userIdNameMap.getOrDefault(up.getUserId(), ""));
-                dto.put("plate", up.getPlate());
-                dto.put("tallyAreaNo", tno);
-                return dto;
-
-            });
-        }).toList();
-
-        return data;
-
+//        return data;
+        return null;
     }
 
     /**
@@ -1037,7 +1039,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
         }
 //		user.setPlates(null);
 //		user.setTallyAreaNos(null);
-        this.register(user, UserTypeEnum.COMMISSION_USER, user.getPassword());
+//        this.register(user, UserTypeEnum.COMMISSION_USER, user.getPassword());
         return user;
     }
 

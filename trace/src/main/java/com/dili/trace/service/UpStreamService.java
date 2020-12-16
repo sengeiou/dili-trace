@@ -175,7 +175,7 @@ public class UpStreamService extends BaseServiceImpl<UpStream, Long> {
 			}
 
 			User user = JSONObject.parseObject(object.toJSONString(), User.class);
-			userService.register(user, false);
+//			userService.register(user, false);
 			return user.getId();
 		}
 		return users.get(0).getId();

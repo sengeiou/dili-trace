@@ -78,21 +78,21 @@ public class UserApi {
      * @param user
      * @return
      */
-    @ApiOperation(value = "注册", notes = "注册")
-    @RequestMapping(value = "/register.api", method = RequestMethod.POST)
-    public BaseOutput<Long> register(@RequestBody User user) {
-        try {
-            checkRegisterParams(user);
-            user.setState(EnabledStateEnum.ENABLED.getCode());
-            userService.register(user, true);
-            return BaseOutput.success().setData(user.getId());
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error("register", e);
-            return BaseOutput.failure(e.getMessage());
-        }
-    }
+//    @ApiOperation(value = "注册", notes = "注册")
+//    @RequestMapping(value = "/register.api", method = RequestMethod.POST)
+//    public BaseOutput<Long> register(@RequestBody User user) {
+//        try {
+//            checkRegisterParams(user);
+//            user.setState(EnabledStateEnum.ENABLED.getCode());
+//            userService.register(user, true);
+//            return BaseOutput.success().setData(user.getId());
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error("register", e);
+//            return BaseOutput.failure(e.getMessage());
+//        }
+//    }
 
     /**
      * 请求实名认证
@@ -209,35 +209,35 @@ public class UserApi {
      * @param user
      * @return
      */
-    @ApiOperation(value = "修改密码【接口已通】", notes = "修改密码")
-    @RequestMapping(value = "/changePassword.api", method = RequestMethod.POST)
-    @InterceptConfiguration
-    public BaseOutput<String> changePassword(@RequestBody User user) {
-        try {
-            if (StrUtil.isBlank(user.getOldPassword())) {
-                return BaseOutput.failure("原密码为空");
-            }
-            if (StrUtil.isBlank(user.getPassword())) {
-                return BaseOutput.failure("密码为空");
-            }
-            if (StrUtil.isBlank(user.getAckPassword())) {
-                return BaseOutput.failure("确认密码为空");
-            }
-            if (!user.getPassword().equals(user.getAckPassword())) {
-                throw new TraceBizException("密码与确认密码不同");
-            }
-            user.setPassword(MD5Util.md5(user.getPassword()));
-            user.setOldPassword(MD5Util.md5(user.getOldPassword()));
-            user.setId(sessionContext.getAccountId());
-            userService.changePassword(user);
-            return BaseOutput.success();
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error("changePassword", e);
-            return BaseOutput.failure();
-        }
-    }
+//    @ApiOperation(value = "修改密码【接口已通】", notes = "修改密码")
+//    @RequestMapping(value = "/changePassword.api", method = RequestMethod.POST)
+//    @InterceptConfiguration
+//    public BaseOutput<String> changePassword(@RequestBody User user) {
+//        try {
+//            if (StrUtil.isBlank(user.getOldPassword())) {
+//                return BaseOutput.failure("原密码为空");
+//            }
+//            if (StrUtil.isBlank(user.getPassword())) {
+//                return BaseOutput.failure("密码为空");
+//            }
+//            if (StrUtil.isBlank(user.getAckPassword())) {
+//                return BaseOutput.failure("确认密码为空");
+//            }
+//            if (!user.getPassword().equals(user.getAckPassword())) {
+//                throw new TraceBizException("密码与确认密码不同");
+//            }
+//            user.setPassword(MD5Util.md5(user.getPassword()));
+//            user.setOldPassword(MD5Util.md5(user.getOldPassword()));
+//            user.setId(sessionContext.getAccountId());
+//            userService.changePassword(user);
+//            return BaseOutput.success();
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error("changePassword", e);
+//            return BaseOutput.failure();
+//        }
+//    }
 
 
     /**
@@ -288,29 +288,29 @@ public class UserApi {
      * @param user
      * @return
      */
-    @ApiOperation(value = "重置密码【接口已通】", notes = "重置密码")
-    @RequestMapping(value = "/renewPassword.api", method = RequestMethod.POST)
-    @InterceptConfiguration(loginRequired = false)
-    public BaseOutput<String> renewPassword(@RequestBody User user) {
-        try {
-            if (StringUtils.isBlank(user.getPhone())) {
-                return BaseOutput.failure("手机号码不能为空");
-            }
-            if (StringUtils.isBlank(user.getCheckCode())) {
-                return BaseOutput.failure("验证码不能为空");
-            }
-            if (StringUtils.isBlank(user.getPassword())) {
-                return BaseOutput.failure("密码不能为空");
-            }
-            this.userService.renewPassword(user, user.getCheckCode());
-            return BaseOutput.success();
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error("changePassword", e);
-            return BaseOutput.failure();
-        }
-    }
+//    @ApiOperation(value = "重置密码【接口已通】", notes = "重置密码")
+//    @RequestMapping(value = "/renewPassword.api", method = RequestMethod.POST)
+//    @InterceptConfiguration(loginRequired = false)
+//    public BaseOutput<String> renewPassword(@RequestBody User user) {
+//        try {
+//            if (StringUtils.isBlank(user.getPhone())) {
+//                return BaseOutput.failure("手机号码不能为空");
+//            }
+//            if (StringUtils.isBlank(user.getCheckCode())) {
+//                return BaseOutput.failure("验证码不能为空");
+//            }
+//            if (StringUtils.isBlank(user.getPassword())) {
+//                return BaseOutput.failure("密码不能为空");
+//            }
+//            this.userService.renewPassword(user, user.getCheckCode());
+//            return BaseOutput.success();
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error("changePassword", e);
+//            return BaseOutput.failure();
+//        }
+//    }
 
 
     /**
