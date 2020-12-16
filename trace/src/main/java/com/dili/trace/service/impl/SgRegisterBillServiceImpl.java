@@ -366,6 +366,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         private int autoCheckDetectRequest (Long id){
             DetectRequest detectRequest = this.detectRequestService.get(id);
             detectRequest.setDetectSource(SampleSourceEnum.AUTO_CHECK.getCode());
+            // 维护采样时间
+            detectRequest.setSampleTime(new Date());
             return this.detectRequestService.updateSelective(detectRequest);
         }
 
@@ -519,6 +521,8 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         private int samplingCheckDetectRequest (Long id){
             DetectRequest detectRequest = this.detectRequestService.get(id);
             detectRequest.setDetectSource(SampleSourceEnum.SAMPLE_CHECK.getCode());
+            // 维护采样时间
+            detectRequest.setSampleTime(new Date());
             return this.detectRequestService.updateSelective(detectRequest);
         }
 
@@ -1120,6 +1124,13 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             Long registerBillId = this.createRegisterBill(rb);
             // 寿光管理端，新增完报备单的同时新增检测请求
             DetectRequest item = this.detectRequestService.createByBillId(registerBillId, DetectTypeEnum.NEW, new IdNameDto(operatorUser.getId(),operatorUser.getName()), Optional.empty());
+
+            DetectRequest updatable = new DetectRequest();
+            updatable.setId(item.getId());
+            // 维护接单时间
+            updatable.setConfirmTime(new Date());
+            this.detectRequestService.updateSelective(updatable);
+
             RegisterBill bill = this.billService.get(item.getBillId());
             bill.setOperatorName(operatorUser.getName());
             bill.setOperatorId(operatorUser.getId());
