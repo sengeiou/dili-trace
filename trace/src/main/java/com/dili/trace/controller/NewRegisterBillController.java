@@ -768,6 +768,7 @@ public class NewRegisterBillController {
                     rb.setIsCheckin(YesOrNoEnum.NO.getCode());
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
+                    rb.setRegistType(RegistTypeEnum.NONE.getCode());
 
                     return rb;
                 }).toList();
