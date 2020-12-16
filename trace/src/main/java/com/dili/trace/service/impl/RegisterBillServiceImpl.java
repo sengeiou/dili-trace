@@ -166,7 +166,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
 
         // 保存车牌
-        this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
+//        this.userPlateService.checkAndInsertUserPlate(registerBill.getUserId(), plate);
 
         // 重构版本建单不允许没有市场
         if (Objects.isNull(registerBill.getMarketId())) {
@@ -307,7 +307,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 .findFirst().orElse(null);
         input.setPlate(plate);
         // 保存车牌
-        this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
+//        this.userPlateService.checkAndInsertUserPlate(input.getUserId(), plate);
         input.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         input.setModified(new Date());
 

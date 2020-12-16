@@ -89,13 +89,26 @@ public class EnumsApi {
 		}
 	}
 	/**
-	 * 报备单类型查询
+	 * 登记单类型查询
 	 */
 	@RequestMapping(value = "/listBillType.api", method = RequestMethod.POST)
 	public BaseOutput<List<Entry<Integer, String>>> listBillType() {
 		try {
 			List<Entry<Integer, String>> list = StreamEx.of(BillTypeEnum.values())
 					.mapToEntry(BillTypeEnum::getCode, BillTypeEnum::getName).toList();
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	/**
+	 * 登记类型查询
+	 */
+	@RequestMapping(value = "/listRegistType.api", method = RequestMethod.POST)
+	public BaseOutput<List<Entry<Integer, String>>> listRegistType() {
+		try {
+			List<Entry<Integer, String>> list = StreamEx.of(RegistTypeEnum.values())
+					.mapToEntry(RegistTypeEnum::getCode, RegistTypeEnum::getName).toList();
 			return BaseOutput.success().setData(list);
 		} catch (Exception e) {
 			return BaseOutput.failure(e.getMessage());

@@ -128,18 +128,18 @@ public class UserController {
     @RequestMapping(value = "/insert.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput<Long> insert(@RequestBody User user) {
-        try {
-            user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
-            user.setState(EnabledStateEnum.ENABLED.getCode());
-            userService.register(user, false);
-            return BaseOutput.success("新增成功").setData(user.getId());
-        } catch (TraceBizException e) {
-            LOGGER.error("register", e);
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("register", e);
+//        try {
+//            user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
+//            user.setState(EnabledStateEnum.ENABLED.getCode());
+//            userService.register(user, false);
+//            return BaseOutput.success("新增成功").setData(user.getId());
+//        } catch (TraceBizException e) {
+//            LOGGER.error("register", e);
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            LOGGER.error("register", e);
             return BaseOutput.failure();
-        }
+//        }
     }
 
     /**
@@ -173,14 +173,14 @@ public class UserController {
      * @param id
      * @return
      */
-    @ApiOperation("删除User")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long")})
-    @RequestMapping(value = "/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    BaseOutput delete(Long id) {
-        return userService.deleteUser(id);
-    }
+//    @ApiOperation("删除User")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long")})
+//    @RequestMapping(value = "/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
+//    public @ResponseBody
+//    BaseOutput delete(Long id) {
+//        return userService.deleteUser(id);
+//    }
 
     /**
      * 业户条件查询
@@ -214,16 +214,16 @@ public class UserController {
     @RequestMapping(value = "/doEnable.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput doEnable(Long id, Boolean enable) {
-        try {
-            userService.updateEnable(id, enable);
-            return BaseOutput.success("修改用户状态成功");
-        } catch (TraceBizException e) {
-            LOGGER.error("修改用户状态", e);
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("修改用户状态", e);
+//        try {
+//            userService.updateEnable(id, enable);
+//            return BaseOutput.success("修改用户状态成功");
+//        } catch (TraceBizException e) {
+//            LOGGER.error("修改用户状态", e);
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            LOGGER.error("修改用户状态", e);
             return BaseOutput.failure();
-        }
+//        }
 
     }
 

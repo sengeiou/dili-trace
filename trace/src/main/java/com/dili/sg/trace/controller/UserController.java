@@ -45,8 +45,8 @@ public class UserController {
 
 	@Autowired
 	UserService userService;
-	@Autowired
-	UserPlateService userPlateService;
+//	@Autowired
+//	UserPlateService userPlateService;
 	@Resource
 	DefaultConfiguration defaultConfiguration;
 	@Autowired
@@ -89,26 +89,26 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
-	@ApiOperation("新增User")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
-	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput<Long> insert(@RequestBody User user) {
-		try {
-			UserTypeEnum userTypeEnum= UserTypeEnum.fromCode(user.getUserType());
-			if(userTypeEnum==null) {
-				return BaseOutput.failure("用户类型错误");
-			}
-			userService.register(user,userTypeEnum,defaultConfiguration.getPassword());
-			return BaseOutput.success("新增成功").setData(user.getId());
-		} catch (TraceBizException e) {
-			LOGGER.error("register", e);
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			LOGGER.error("register", e);
-			return BaseOutput.failure();
-		}
-	}
+//	@ApiOperation("新增User")
+//	@ApiImplicitParams({
+//			@ApiImplicitParam(name = "User", paramType = "form", value = "User的form信息", required = true, dataType = "string") })
+//	@RequestMapping(value = "/insert.action", method = { RequestMethod.GET, RequestMethod.POST })
+//	public @ResponseBody BaseOutput<Long> insert(@RequestBody User user) {
+//		try {
+//			UserTypeEnum userTypeEnum= UserTypeEnum.fromCode(user.getUserType());
+//			if(userTypeEnum==null) {
+//				return BaseOutput.failure("用户类型错误");
+//			}
+//			userService.register(user,userTypeEnum,defaultConfiguration.getPassword());
+//			return BaseOutput.success("新增成功").setData(user.getId());
+//		} catch (TraceBizException e) {
+//			LOGGER.error("register", e);
+//			return BaseOutput.failure(e.getMessage());
+//		} catch (Exception e) {
+//			LOGGER.error("register", e);
+//			return BaseOutput.failure();
+//		}
+//	}
 
 	/**
 	 * 修改User
@@ -138,13 +138,13 @@ public class UserController {
 	 * @param id
 	 * @return
 	 */
-	@ApiOperation("删除User")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
-	@RequestMapping(value = "/delete.action", method = { RequestMethod.GET, RequestMethod.POST })
-	public @ResponseBody BaseOutput delete(Long id) {
-		return userService.deleteUser(id);
-	}
+//	@ApiOperation("删除User")
+//	@ApiImplicitParams({
+//			@ApiImplicitParam(name = "id", paramType = "form", value = "User的主键", required = true, dataType = "long") })
+//	@RequestMapping(value = "/delete.action", method = { RequestMethod.GET, RequestMethod.POST })
+//	public @ResponseBody BaseOutput delete(Long id) {
+//		return userService.deleteUser(id);
+//	}
 
 	/**
 	 *
@@ -155,16 +155,16 @@ public class UserController {
 	@RequestMapping(value = "/doEnable.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput doEnable(Long id, Boolean enable) {
-		try {
-			userService.updateEnable(id, enable);
-			return BaseOutput.success("修改用户状态成功");
-		} catch (TraceBizException e) {
-			LOGGER.error("修改用户状态", e);
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			LOGGER.error("修改用户状态", e);
+//		try {
+//			userService.updateEnable(id, enable);
+//			return BaseOutput.success("修改用户状态成功");
+//		} catch (TraceBizException e) {
+//			LOGGER.error("修改用户状态", e);
+//			return BaseOutput.failure(e.getMessage());
+//		} catch (Exception e) {
+//			LOGGER.error("修改用户状态", e);
 			return BaseOutput.failure();
-		}
+//		}
 
 	}
 
@@ -192,15 +192,15 @@ public class UserController {
 	@RequestMapping(value = "/findPlates.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput findPlates(Long userId) {
-		try {
-			List<String> plateList = this.userPlateService.findUserPlateByUserId(userId).stream().map(UserPlate::getPlate)
-					.collect(Collectors.toList());
-			return BaseOutput.success().setData(plateList);
-
-		} catch (Exception e) {
-			LOGGER.error("查询失败", e);
+//		try {
+//			List<String> plateList = this.userPlateService.findUserPlateByUserId(userId).stream().map(UserPlate::getPlate)
+//					.collect(Collectors.toList());
+//			return BaseOutput.success().setData(plateList);
+//
+//		} catch (Exception e) {
+//			LOGGER.error("查询失败", e);
 			return BaseOutput.failure();
-		}
+//		}
 
 	}
 
@@ -212,14 +212,14 @@ public class UserController {
 	@RequestMapping(value = "/findPlatesByTallyAreaNo.action", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public BaseOutput findPlatesByTallyAreaNo(String tallyAreaNo) {
-		try {
-			List<UserPlate>list=this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo);
-			return BaseOutput.success().setData(list);
-
-		} catch (Exception e) {
-			LOGGER.error("查询失败", e);
+//		try {
+//			List<UserPlate>list=this.userPlateService.findUserPlateByTallyAreaNo(tallyAreaNo);
+//			return BaseOutput.success().setData(list);
+//
+//		} catch (Exception e) {
+//			LOGGER.error("查询失败", e);
 			return BaseOutput.failure();
-		}
+//		}
 
 	}
 
@@ -252,15 +252,15 @@ public class UserController {
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
 	public String view(ModelMap modelMap,@PathVariable Long id) {
 		User userItem=this.userService.get(id);
-		String userPlateStr=this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate).collect(Collectors.joining(","));
-		if(userItem!=null) {
-			userItem.setAddr(MaskUserInfo.maskAddr(userItem.getAddr()));
-			userItem.setCardNo(MaskUserInfo.maskIdNo(userItem.getCardNo()));
-			userItem.setPhone(MaskUserInfo.maskPhone(userItem.getPhone()));
-		}
+//		String userPlateStr=this.userPlateService.findUserPlateByUserId(id).stream().map(UserPlate::getPlate).collect(Collectors.joining(","));
+//		if(userItem!=null) {
+//			userItem.setAddr(MaskUserInfo.maskAddr(userItem.getAddr()));
+//			userItem.setCardNo(MaskUserInfo.maskIdNo(userItem.getCardNo()));
+//			userItem.setPhone(MaskUserInfo.maskPhone(userItem.getPhone()));
+//		}
 		
 		modelMap.put("userItem", userItem);
-		modelMap.put("userPlates", userPlateStr);
+//		modelMap.put("userPlates", userPlateStr);
 		
 		return "user/view";
 	}

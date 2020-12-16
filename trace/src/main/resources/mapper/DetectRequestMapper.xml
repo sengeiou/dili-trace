@@ -59,10 +59,30 @@
         FROM detect_request d
         JOIN register_bill b ON d.id=b.detect_request_id
         WHERE b.detect_status=#{detectStatus}
-        <if test="queryName != null and queryName != ''">
-            AND (b.product_name LIKE CONCAT('%',#{queryName},'%')
-            OR b.name LIKE CONCAT('%',#{queryName},'%'))
+        <if test="keyword != null and keyword != ''">
+            AND (b.product_name LIKE CONCAT('%',#{keyword},'%')
+            OR b.name LIKE CONCAT('%',#{keyword},'%'))
         </if>
+
+        <if test="detectStatusList != null">
+            AND b.detect_status
+            <foreach collection="detectStatusList" open=" IN (" close=")" item="detectStatus" separator=",">
+                #{detectStatus}
+            </foreach>
+        </if>
+        <if test="detectTypeList != null">
+            AND d.detect_type
+            <foreach collection="detectTypeList" open=" IN (" close=")" item="detectType" separator=",">
+                #{detectType}
+            </foreach>
+        </if>
+        <if test="detectResultList != null">
+            AND d.detect_result
+            <foreach collection="detectResultList" open=" IN (" close=")" item="detectResult" separator=",">
+                #{detectResult}
+            </foreach>
+        </if>
+
     </select>
 
     <select id="getDetectRequestDetail" resultType="com.dili.trace.dto.DetectRequestDto">
