@@ -1027,6 +1027,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 query.setRows(10);
             }
             PageHelper.startPage(query.getPage(), query.getRows());
+            PageHelper.orderBy(query.getSort() + " " + query.getOrder());
             List<RegisterBill> list = this.billMapper.queryListByExample(query);
             Page<RegisterBill> page = (Page) list;
 
