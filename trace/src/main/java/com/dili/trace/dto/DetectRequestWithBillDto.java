@@ -5,6 +5,7 @@ import com.dili.trace.domain.RegisterBill;
 import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Alvin.Li
@@ -169,6 +170,11 @@ public class DetectRequestWithBillDto extends RegisterBill {
      * 采样时间-结束查询条件
      */
     private Date sampleTimeEnd;
+
+    /**
+     * 单据类型集合
+     */
+    private List<Integer> billTypes;
 
     @Override
     public Long getId() {
@@ -427,5 +433,13 @@ public class DetectRequestWithBillDto extends RegisterBill {
 
     public void setBillCreated(Date billCreated) {
         this.billCreated = billCreated;
+    }
+
+    public List<Integer> getBillTypes() {
+        return billTypes;
+    }
+
+    public void setBillTypes(List<Integer> billTypes) {
+        this.billTypes = billTypes;
     }
 }

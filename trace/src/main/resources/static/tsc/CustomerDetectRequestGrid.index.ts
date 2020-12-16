@@ -231,7 +231,7 @@ class CustomerDetectRequestGrid extends ListPage {
         var url=this.toUrl('/customerDetectRequest/view.html?id='+row.billId);
         //@ts-ignore
         var dia = bs4pop.dialog({
-            title: '报备单详情',
+            title: '检测单详情',
             content: url,
             isIframe: true,
             closeBtn: true,
