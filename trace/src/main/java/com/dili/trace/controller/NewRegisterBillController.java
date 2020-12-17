@@ -892,13 +892,12 @@ public class NewRegisterBillController {
     @RequestMapping("/queryEvents.action")
     @ResponseBody
     public List<String> queryEvents(@RequestBody List<Long> billIdList) {
-        List<RegisterBillMessageEvent>list= Lists.newArrayList(RegisterBillMessageEvent.add);
+        List<RegisterBillMessageEvent>list= Lists.newArrayList(RegisterBillMessageEvent.add,RegisterBillMessageEvent.export);
         if (billIdList == null || billIdList.size()==0) {
             return StreamEx.of(list).map(msg -> {
                 return msg.getCode();
             }).nonNull().toList();
         }
-        list.add(RegisterBillMessageEvent.export);
         list.add(RegisterBillMessageEvent.DETAIL);
         if(billIdList.size()==1){
            return StreamEx.of(this.registerBillService.queryEvents(billIdList.get(0))).append(list).map(msg -> {
