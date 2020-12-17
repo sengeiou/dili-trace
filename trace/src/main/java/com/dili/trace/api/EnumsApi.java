@@ -22,6 +22,19 @@ import one.util.streamex.StreamEx;
 @AppAccess(role = Role.ANY)
 public class EnumsApi {
 	/**
+	 * 客户类型枚举查询
+	 */
+	@RequestMapping(value = "/listClientTypeEnum.api", method = RequestMethod.POST)
+	public BaseOutput<List<Entry<Integer, String>>> listClientTypeEnum() {
+		try {
+			List<Entry<Integer, String>> list = StreamEx.of(ClientTypeEnum.values())
+					.mapToEntry(ClientTypeEnum::getCode, ClientTypeEnum::getDesc).toList();
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	/**
 	 * 检测状态枚举查询
 	 */
 	@RequestMapping(value = "/listDetectStatusEnum.api", method = RequestMethod.POST)
