@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
@@ -106,7 +105,7 @@ public class CategoryApi {
      */
     @ApiOperation(value = "查询个人经营品类列表", notes = "个人经营品类列表")
     @RequestMapping(value = "/userCategory.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<BasePage<RUserCategory>> userCategory(@RequestBody RUserCategory rUserCategory) {
         if (rUserCategory == null) {
             rUserCategory = new RUserCategory();

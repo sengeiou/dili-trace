@@ -2,7 +2,6 @@ package com.dili.trace.api.client;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.AppAccess;
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
@@ -132,7 +131,7 @@ public class ClientTradePushApi {
      */
     @ApiOperation(value = "查询上架商品列表", notes = "查询上架商品列表")
     @RequestMapping(value = "/shelvesProduct.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<BasePage<TradeDetail>> shelvesProduct(@RequestBody TradeDetail tradeDetail) {
         if (tradeDetail == null || null == tradeDetail.getBuyerId()) {
             return BaseOutput.failure("参数错误");
@@ -157,7 +156,7 @@ public class ClientTradePushApi {
      */
     @ApiOperation(value = "查询下架商品列表", notes = "查询下架商品列表")
     @RequestMapping(value = "/unavailableProduct.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<BasePage<TradeDetail>> unavailableProduct(@RequestBody TradeDetail tradeDetail) {
         if (tradeDetail == null || null == tradeDetail.getBuyerId()) {
             return BaseOutput.failure("参数错误");

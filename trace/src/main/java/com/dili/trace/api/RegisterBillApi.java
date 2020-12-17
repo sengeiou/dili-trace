@@ -1,7 +1,6 @@
 package com.dili.trace.api;
 
 import com.dili.assets.sdk.dto.CusCategoryDTO;
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
@@ -39,7 +38,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/api/registerBillApi")
 @Api(value = "/api/registerBillApi", description = "登记单相关接口")
-@InterceptConfiguration
+//@InterceptConfiguration
 public class RegisterBillApi {
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillApi.class);
 
@@ -92,7 +91,7 @@ public class RegisterBillApi {
      */
     @ApiOperation(value = "获取报备单列表")
     @RequestMapping(value = "/queryBillNo", method = RequestMethod.POST)
-    @InterceptConfiguration(loginRequired = false, signRequired = true, signValue = "cGFzczk4NzYyMDIw")
+//    @InterceptConfiguration(loginRequired = false, signRequired = true, signValue = "cGFzczk4NzYyMDIw")
     public BaseOutput<RegisterBillOutputDto> queryBillNo(@RequestBody RegisterBillQueryInputDto inputDto, HttpServletRequest request) {
         // 校验经营户卡号为必填参数
         boolean isValidate = inputDto == null || inputDto.getSupplierId() == null;

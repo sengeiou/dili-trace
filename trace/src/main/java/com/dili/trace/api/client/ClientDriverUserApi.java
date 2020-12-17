@@ -65,6 +65,7 @@ public class ClientDriverUserApi {
     @ApiOperation(value = "查询司机进门报备数据列表", notes = "查询司机进门报备数据列表")
     @RequestMapping(value = "/listPagedEnterRecord.api", method = RequestMethod.POST)
     public BaseOutput listPagedEnterRecord(@RequestBody TruckEnterRecordQueryDto queryDto) {
+        queryDto.setDriverId(this.sessionContext.getAccountId());
         BasePage<TruckEnterRecord> page = this.truckEnterRecordService.listPageByExample(queryDto);
         return BaseOutput.successData(page);
 

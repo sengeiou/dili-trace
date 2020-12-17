@@ -1,7 +1,6 @@
 package com.dili.common.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -23,22 +22,22 @@ public class SignInterceptor extends HandlerInterceptorAdapter {
 	        if(!(handler instanceof HandlerMethod)){
 	        	return true;
 			}
-			InterceptConfiguration interceptConfiguration = findAnnotation((HandlerMethod) handler, InterceptConfiguration.class);
-			if(interceptConfiguration!=null && interceptConfiguration.signRequired()){
-				String sign = request.getHeader("sign");
-				if(!interceptConfiguration.signValue().equals(sign)){
-					response.setContentType("application/json");
-					response.setCharacterEncoding("UTF-8");
-					BaseOutput baseOutput = BaseOutput.failure("签名不对");
-					Writer writer=response.getWriter();
-					writer.write(JSONObject.toJSONString(baseOutput));
-					writer.flush();
-					if(writer!=null){
-						writer.close();
-					}
-					return false;
-				}
-			}
+//			InterceptConfiguration interceptConfiguration = findAnnotation((HandlerMethod) handler, InterceptConfiguration.class);
+//			if(interceptConfiguration!=null && interceptConfiguration.signRequired()){
+//				String sign = request.getHeader("sign");
+//				if(!interceptConfiguration.signValue().equals(sign)){
+//					response.setContentType("application/json");
+//					response.setCharacterEncoding("UTF-8");
+//					BaseOutput baseOutput = BaseOutput.failure("签名不对");
+//					Writer writer=response.getWriter();
+//					writer.write(JSONObject.toJSONString(baseOutput));
+//					writer.flush();
+//					if(writer!=null){
+//						writer.close();
+//					}
+//					return false;
+//				}
+//			}
 
 			return true;
 	    }

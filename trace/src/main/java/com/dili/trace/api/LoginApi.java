@@ -1,6 +1,5 @@
 package com.dili.trace.api;
 
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
@@ -61,7 +60,7 @@ public class LoginApi {
      */
     @ApiOperation(value = "验证是否登录【接口已通】", notes = "验证是否登录")
     @RequestMapping(value = "/isLogin.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<String> isLogin() {
         try {
             if (this.loginSessionContext.getAccountId() == null) {

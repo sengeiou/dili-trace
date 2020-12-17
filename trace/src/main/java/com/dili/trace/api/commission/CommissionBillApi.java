@@ -1,10 +1,12 @@
 package com.dili.trace.api.commission;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
+import com.dili.common.annotation.Role;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.common.entity.LoginSessionContext;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.input.CommissionBillInputDto;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -46,7 +48,7 @@ import java.util.function.Function;
  */
 @RestController
 @RequestMapping(value = "/api/commission/commissionBillApi")
-@InterceptConfiguration
+@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 public class CommissionBillApi {
     private static final Logger logger = LoggerFactory.getLogger(CommissionBillApi.class);
     @Autowired
