@@ -149,7 +149,10 @@ public class ClientDriverUserApi {
     @ApiOperation(value = "查询司机未读取消息数量", notes = "查询司机未读取消息数量")
     @RequestMapping(value = "/countReadableEventMessage.api", method = RequestMethod.POST)
     public BaseOutput<Integer> countReadableEventMessage(@RequestBody EventMessage queryDto) {
-        return BaseOutput.successData(100);
+
+        Integer cnt=this.eventMessageService.countReadableEventMessage(queryDto.getReceiverId(),this.sessionContext.getSessionData().getMarketId());
+
+        return BaseOutput.successData(cnt);
 
     }
 

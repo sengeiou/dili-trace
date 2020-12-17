@@ -43,15 +43,50 @@ public enum ImageCertTypeEnum {
      */
     PURCHASE_AGREEMENT(6, "采购协议"),
 
-    /**
-     * 杭果用户证件照片
-     */
-    USER_PHOTO_HANGGUO(7, "杭果用户证件照片"),
+//    /**
+//     * 杭果用户证件照片
+//     */
+//    USER_PHOTO_HANGGUO(7, "杭果用户证件照片"),
 
     /**
      * 处理结果图片
      */
-    Handle_Result(8, "处理结果图片"),
+    Handle_Result(8, "处理结果"),
+
+
+    /**
+     * 服务证明
+     */
+    SERVICE_CERTIFICATE(9, "服务证明"),
+
+    /**
+     * 资产证明
+     */
+    ASSETS_CERTIFICATE(10, "资产证明"),
+
+    /**
+     * 销售证明
+     */
+    SALES_CERTIFICATE(11, "销售证明"),
+
+    /**
+     * 身份证明
+     */
+    ID_CERTIFICATE(12, "身份证明"),
+
+    /**
+     *爱好证明
+     */
+    HABIT_CERTIFICATE(13, "爱好证明"),
+
+    /**
+     * 星级证明
+     */
+    STAR_CERTIFICATE(14, "星级证明"),
+    /**
+     * 品牌证明
+     */
+    BRAND_CERTIFICATE(15, "品牌证明"),
 
 
     /**

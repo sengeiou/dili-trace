@@ -738,12 +738,15 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             }
             List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).flatCollection(Function.identity())
                     .nonNull().toList();
+            if (!imageCertList.isEmpty()) {
+                imageCertList = StreamEx.of(imageCertList).filter(img -> {
+                    // 只取uid不为空，并且类型为处理结果的照片
+                    return StringUtils.isNotBlank(img.getUid()) && ImageCertTypeEnum.Handle_Result.equalsToCode(img.getCertType());
+                }).toList();
+            }
             if (imageCertList.isEmpty()) {
                 throw new TraceBizException("请上传报告");
             }
-            imageCertList = StreamEx.of(imageCertList).filter(img -> {
-                return StringUtils.isNotBlank(img.getUid());
-            }).toList();
 
             if (input.getHandleResult().trim().length() > 1000) {
                 throw new TraceBizException("处理结果不能超过1000");
@@ -859,13 +862,16 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 throw new TraceBizException("参数错误");
             }
             List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).nonNull().flatCollection(Function.identity()).nonNull().toList();
+            if (!imageCertList.isEmpty()) {
+                imageCertList = StreamEx.of(imageCertList).filter(img -> {
+                    // 只取uid不为空，并且类型为处理结果的照片
+                    return StringUtils.isNotBlank(img.getUid()) && ImageCertTypeEnum.DETECT_REPORT.equalsToCode(img.getCertType());
+                }).toList();
+            }
             if (imageCertList.isEmpty()) {
                 //StringUtils.isBlank(input.getOriginCertifiyUrl()) && StringUtils.isBlank(input.getDetectReportUrl())) {
                 throw new TraceBizException("请上传报告");
             }
-            imageCertList = StreamEx.of(imageCertList).filter(img -> {
-                return StringUtils.isNotBlank(img.getUid());
-            }).toList();
 
             // TODO:流程引擎内容？
             // RegisterBill item = this.checkEvent(input.getId(), RegisterBillMessageEvent.upload_detectreport).orElse(null);
@@ -892,9 +898,16 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
                 throw new TraceBizException("参数错误");
             }
             List<ImageCert> imageCertList = StreamEx.ofNullable(input.getImageCerts()).nonNull().flatCollection(Function.identity()).nonNull().toList();
+            if (!imageCertList.isEmpty()) {
+                imageCertList = StreamEx.of(imageCertList).filter(img -> {
+                    // 只取uid不为空，并且类型为处理结果的照片
+                    return StringUtils.isNotBlank(img.getUid()) && ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(img.getCertType());
+                }).toList();
+            }
             if (imageCertList.isEmpty()) {
                 throw new TraceBizException("请上传报告");
             }
+
             RegisterBill item = this.billService.getAvaiableBill(input.getId()).orElse(null);
             if (item == null) {
                 throw new TraceBizException("数据错误");
@@ -902,8 +915,7 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             List<ImageCert> imageCerts =
                     StreamEx.of(this.findImageCertListByBillId(item.getBillId())).filter(img -> {
                         Integer cerType = img.getCertType();
-                        return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(cerType) && !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(cerType);
-
+                        return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(cerType);
                     }).append(imageCertList).toList();
             this.billService.updateHasImage(item.getBillId(), imageCerts);
             return item.getBillId();
