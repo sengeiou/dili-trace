@@ -478,14 +478,14 @@ public class RegisterBillController {
      * @param input
      * @return
      */
-    @RequestMapping(value = "/doEdit.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/doEdit.action", method = {RequestMethod.POST})
     @ResponseBody
-    public BaseOutput<?> doEdit(RegisterBill input) {
+    public BaseOutput<?> doEdit(@RequestBody RegisterBill input) {
         try {
 
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-
-            Long id = this.registerBillService.doEdit(input, Lists.newArrayList(), Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
+            List<ImageCert> imageCerts = input.getImageCerts();
+            Long id = this.registerBillService.doEdit(input, imageCerts, Optional.ofNullable(new OperatorUser(userTicket.getId(), userTicket.getRealName())));
             return BaseOutput.success().setData(id);
         } catch (AppException e) {
             logger.error(e.getMessage(), e);

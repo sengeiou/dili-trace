@@ -84,6 +84,8 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     RegisterHeadService registerHeadService;
     @Autowired
     CustomerRpcService clientRpcService;
+    @Autowired
+    BillService billService;
 
     public RegisterBillMapper getActualDao() {
         return (RegisterBillMapper) getDao();
@@ -337,11 +339,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         this.registerBillHistoryService.createHistory(billItem.getBillId());
 
         imageCertList = StreamEx.ofNullable(imageCertList).nonNull().flatCollection(Function.identity()).nonNull().toList();
-//        if (imageCertList.isEmpty()) {
-//            throw new TraceBizException("请上传凭证");
-//        }
+        if (imageCertList.isEmpty()) {
+            throw new TraceBizException("请上传凭证");
+        }
         // 保存图片
-        imageCertService.insertImageCert(imageCertList, input.getId());
+        // imageCertService.insertImageCert(imageCertList, input.getId());
+        this.billService.updateHasImage(input.getId(), imageCertList);
 
         this.tradeDetailService.findBilledTradeDetailByBillId(billItem.getBillId()).ifPresent(td -> {
             TradeDetail updatableRecord = new TradeDetail();

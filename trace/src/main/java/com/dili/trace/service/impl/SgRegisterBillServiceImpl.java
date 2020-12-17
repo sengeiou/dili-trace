@@ -930,28 +930,29 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
                 throw new TraceBizException("状态错误,不能删除产地证明和检测报告");
             }
+            // 查出所有照片
             List<ImageCert> imageCertList = this.findImageCertListByBillId(item.getBillId());
 
             if ("all".equalsIgnoreCase(deleteType)) {
-                List<ImageCert> imageCerts = StreamEx.of(imageCertList).filter(imageCert -> {
+                imageCertList = StreamEx.of(imageCertList).filter(imageCert -> {
                     return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(imageCert.getCertType())
                             && !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(imageCert.getCertType());
                 }).toList();
             } else if ("originCertifiy".equalsIgnoreCase(deleteType)) {
-                List<ImageCert> imageCerts = StreamEx.of(imageCertList).filter(imageCert -> {
+                imageCertList = StreamEx.of(imageCertList).filter(imageCert -> {
                     return !ImageCertTypeEnum.ORIGIN_CERTIFIY.equalsToCode(imageCert.getCertType());
                 }).toList();
-                item.setImageCerts(imageCerts);
             } else if ("detectReport".equalsIgnoreCase(deleteType)) {
-                List<ImageCert> imageCerts = StreamEx.of(imageCertList).filter(imageCert -> {
+                imageCertList = StreamEx.of(imageCertList).filter(imageCert -> {
                     return !ImageCertTypeEnum.DETECT_REPORT.equalsToCode(imageCert.getCertType());
                 }).toList();
-                item.setImageCerts(imageCerts);
             } else {
                 // do nothing
                 return BaseOutput.success();
             }
-            this.billMapper.doRemoveReportAndCertifiy(item);
+
+            // this.billMapper.doRemoveReportAndCertifiy(item);
+            this.billService.updateHasImage(item.getBillId(), imageCertList);
 
             return BaseOutput.success();
         }
@@ -965,7 +966,9 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
             if (!BillVerifyStatusEnum.WAIT_AUDIT.equalsToCode(item.getVerifyStatus())) {
                 throw new TraceBizException("状态错误,不能删除产地证明和检测报告");
             }
+
             this.billMapper.doRemoveReportAndCertifiyNew(removeDto);
+
             return BaseOutput.success();
         }
 
