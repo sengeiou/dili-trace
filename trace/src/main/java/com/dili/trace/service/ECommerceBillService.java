@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.RegisterBillMapper;
@@ -82,20 +83,10 @@ public class ECommerceBillService {
         RegisterBillDto dto = this.preBuildDTO(query);
         dto.setBillType(this.supportedBillType().getCode());
 
-        if (query.getPage() == null || query.getPage() < 0) {
-            query.setPage(1);
-        }
-        if (query.getRows() == null || query.getRows() <= 0) {
-            query.setRows(10);
-        }
-        PageHelper.startPage(query.getPage(), query.getRows());
-        PageHelper.orderBy(query.getSort() + " " + query.getOrder());
-        List<RegisterBillDto> list = this.billMapper.queryListByExample(query);
-        Page<RegisterBillDto> page = (Page) list;
-        EasyuiPageOutput out = new EasyuiPageOutput();
-        List results = ValueProviderUtils.buildDataByProvider(query, list);
-        out.setRows(results);
-        out.setTotal(page.getTotal());
+        BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
+
+        List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
+        EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(),results);
         return out.toString();
     }
 

@@ -14,8 +14,12 @@ import com.dili.trace.service.QrCodeService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -36,8 +40,8 @@ public class QrCodeApi {
      *
      * @return
      */
-    @RequestMapping("/getQrCode.api")
-    public BaseOutput<QrOutputDto> getQrCode() {
+    @RequestMapping(value = "/getMyQrCode.api", method = RequestMethod.GET)
+    public BaseOutput<QrOutputDto> getMyQrCode() {
         SessionData sessionData = this.sessionContext.getSessionData();
 
         QrOutputDto dto = new QrOutputDto();
@@ -70,6 +74,24 @@ public class QrCodeApi {
             String base64QrCode = this.qrCodeService.getBase64QrCode(JSONUtil.toJsonStr(dto), 200, 200);
             dto.setBase64QrCode(base64QrCode);
             return BaseOutput.successData(dto);
+        } catch (Exception e) {
+            return BaseOutput.failure("生成二维码出错");
+        }
+
+    }
+
+    /**
+     * 生成二维码
+     *
+     * @return
+     */
+    @RequestMapping(value = "/generateQrCode.api", method = RequestMethod.POST)
+    public BaseOutput<String> getMyQrCode(@RequestParam("content") String content) {
+        String str = URLDecoder.decode(content, StandardCharsets.UTF_8);
+
+        try {
+            String base64QrCode = this.qrCodeService.getBase64QrCode(str, 200, 200);
+            return BaseOutput.successData(base64QrCode);
         } catch (Exception e) {
             return BaseOutput.failure("生成二维码出错");
         }
