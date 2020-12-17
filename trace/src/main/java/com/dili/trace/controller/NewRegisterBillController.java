@@ -172,8 +172,8 @@ public class NewRegisterBillController {
         RegisterBillOutputDto registerBill = RegisterBillOutputDto.build(billService.get(id),Lists.newLinkedList());
         String firstTallyAreaNo = Stream.of(StringUtils.trimToEmpty(registerBill.getTallyAreaNo()).split(","))
                 .filter(StringUtils::isNotBlank).findFirst().orElse("");
-        registerBill.setSourceName(firstTallyAreaNo);
-        registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
+//        registerBill.setSourceName(firstTallyAreaNo);
+        // registerBill.setImageCerts(this.imageCertService.findImageCertListByBillId(id,ImageCertBillTypeEnum.BILL_TYPE));
         UserInfoDto userInfoDto = this.findUserInfoDto(registerBill, firstTallyAreaNo);
         modelMap.put("userInfo", this.maskUserInfoDto(userInfoDto));
         modelMap.put("tradeTypes", tradeTypeService.findAll());
@@ -753,11 +753,12 @@ public class NewRegisterBillController {
                 .map(rbInputDto -> {
                     CustomerExtendDto customer=new CustomerExtendDto();
                     RegisterBill rb = rbInputDto.build(customer,this.uapRpcService.getCurrentFirm().orElse(null).getId());
-                    rb.setIdCardNo(input.getIdCardNo());
+                    rb.setTradePrintingCard(input.getTradePrintingCard());
                     rb.setName(input.getName());
+                    rb.setIdCardNo(input.getIdCardNo());
+                    rb.setAddr(input.getAddr());
                     rb.setPhone(input.getPhone());
                     rb.setPlate(input.getPlate());
-                    rb.setAddr(input.getAddr());
                     rb.setUserId(input.getUserId());
 
                     rb.setImageCerts(input.getGlobalImageCertList());

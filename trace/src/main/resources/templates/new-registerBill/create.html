@@ -51,14 +51,14 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>
+                    <span class="red">&lowast;</span>
                     <span id="registerSourceNameSpan">理货区</span>号</label>
                     <input type="hidden" name="sourceName">
                     <input type="hidden" name="sourceId">
-
+                    <input type="hidden" id="tallyAreaNo" name="tallyAreaNo">
 
                     <div class="input-group"  id="querySource">
-                        <input type="text" class="form-control input-sm" data-value-type="skip" maxlength="6" style="width: 147px;"/>
+                        <input type="text" class="form-control input-sm" maxlength="6" style="width: 147px;"/>
                         <span class="input-group-addon"> <span class="glyphicon"  id="queryTallyAreaNo">检索</span> </span>
                     </div>
                     <div class="input-group" id="selectSource" style="display: none">
@@ -237,6 +237,7 @@
             $("#addr").val(customer.certificateAddr).valid();
             $("#userId").val(customer.id).valid();
             $("#phone").val(customer.contactsPhone).valid();
+            $("#tallyAreaNo").val(query).valid();
             var vehicleInfoList=customer?.vehicleInfoList;
             if(_.isUndefined(vehicleInfoList)){
                 return;
@@ -793,8 +794,8 @@
         </td>
         <td><a href="javascript:;" class="split-minus-btn">删除</a></td>
     </tr>
-
 </script>
+
 <script id="imageCertItem" type="text/html">
         <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
             <span class="fileimg-plus-icon">+</span>

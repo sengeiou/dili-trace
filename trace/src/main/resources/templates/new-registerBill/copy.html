@@ -50,15 +50,17 @@
                 </div>
                 <div class="form-group">
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>
-                        <span id="registerSourceNameSpan">${registerBill.registerSourceName}</span>号</label>
+                    <span class="red">&lowast;</span>
+                    <span id="registerSourceNameSpan">${registerBill.registerSourceName}</span>号</label>
                     <input type="hidden" name="sourceName" value="${registerBill.sourceName!}">
                     <input type="hidden" name="sourceId" value="${registerBill.sourceId!}">
 
                     <div class="input-group"  id="querySource"  <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
-                    <input type="text" class="form-control input-sm" data-value-type="skip" maxlength="6" style="width: 147px;"/>
-                    <span class="input-group-addon"> <span class="glyphicon"  id="queryTallyAreaNo">检索</span> </span>
-                </div>
+                        <input type="text" class="form-control input-sm" data-value-type="skip" maxlength="6" style="width: 147px;"/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon"  id="queryTallyAreaNo">检索</span>
+                        </span>
+                    </div>
 
                     <div class="input-group" id="selectSource" <% if( registerBill.registerSource==1){%>style="display:none"<%}%>>
                         <select class="form-control input-sm" required>
@@ -69,23 +71,21 @@
                             <%}%>
                         </select>
                     </div>
+                </div>
 
                 <div class="form-group" <% if( registerBill.registerSource!=1){%>style="display:none"<%}%>>
                     <label class="label-title text-right">
-                        <span class="red">&lowast;</span>车牌号</label>
-						 <select  class="form-control input-sm editableSelect  isPlate" id = "plate" name="plate"  value="${registerBill.plate!}"  required>
-						         <% for(up in userPlateList){%>
-			                        <option value="${up.plate}">${up.plate}</option>
-			                    <%}%>     
-						 </select>
+                    <span class="red">&lowast;</span>车牌号</label>
+                     <select  class="form-control input-sm editableSelect  isPlate" id = "plate" name="plate"  value="${registerBill.plate!}"  required>
+                             <% for(up in userPlateList){%>
+                                <option value="${up.plate}">${up.plate}</option>
+                            <%}%>
+                     </select>
                 </div>
 
                 <div class="form-group" <% if( registerBill.registerSource!=2){%>style="display:none"<%}%>>
                     <label class="label-title text-right">园区卡号</label>
                     <div class="input-group">
-
-
-
                         <input type="text" class="form-control input-sm" name="b2" <% if( registerBill.tradePrintingCard!=null){%>value="${registerBill.tradePrintingCard}"<%}else{%>value="888880"<%}%> data-value-type="skip"   id="printingCardInput" style="width: 147px;"/>
                         <input type="hidden"  name="tradePrintingCard" id="tradePrintingCard" value="${registerBill.tradePrintingCard}" style="width: 147px;"/>
                         <span class="input-group-addon"> <span class="glyphicon" id="queryByCardNoBtn">检索</span> </span>
@@ -144,7 +144,6 @@
                 <h4 class="form-item-title">检测报告</h4>
 
                 <%if((registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0)>0){%>
-
                     <%for(img in registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT]){
                     %>
                         <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
@@ -162,8 +161,6 @@
                         </div>
                     <%}%>
                 <%}%>
-
-
             </div>
         </form>
 
@@ -175,8 +172,7 @@
     </div>
 </div>
 </#bodyOrigin>
-<script src="${contextPath!}/resources/js/Utils.js"></script>
-<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+
 <script type="text/javascript">
    var initWithLocalStorage=false;
    $('#selectSource select').on('change',function(){
@@ -185,13 +181,12 @@
        $('input[name="sourceName"]').val(opt.text());
    });
 
-
    $('#printingCardInput').on('keyup',function(e){
-       debugger
        if (e.keyCode == 13) {
            $('#queryByCardNoBtn').trigger('click')
        }
    });
+
    $('#queryByCardNoBtn').on('click',async()=>{
        cleanInput();
        let query=$('#printingCardInput').val();
@@ -223,6 +218,7 @@
            $('#querySource #queryTallyAreaNo').trigger('click')
        }
    });
+
    function cleanInput(){
        $("#idCardNo").val("");
        $("#name").val("");
@@ -231,8 +227,8 @@
        $("#phone").val("");
        $("#tradeAccount").val('')
        $("#printingCard").val('')
-
    }
+
    $('#querySource #queryTallyAreaNo').on('click',async()=>{
        cleanInput();
        let query=$('#querySource').find('input').val();
@@ -256,8 +252,73 @@
        }catch (e){
            console.error(e)
        }
-
    })
+
+   /* 货品表格 */
+   $('.main-container').on('click', '#addGoodsItem', function () {
+       createAndAppendTemplate();
+   });
+
+   let goodsItemCount = 0;
+   function createAndAppendTemplate(){
+       var tempHtml=template('goodsItem', {index: goodsItemCount++});
+       var tempId=$(tempHtml).attr('id');
+       $('#goodsTable tbody').append(tempHtml);
+       var tempEl=$('#'+tempId);
+       var productNameEl=tempEl.find('input[name*="productName"]');
+       var originNameEl=tempEl.find('input[name*="originName"]');
+       var originCertifiyUrlEl=tempEl.find('input[id*="originCertifiyUrl"]');
+       initAutoComplete(productNameEl,'/toll/category');
+       initAutoComplete(originNameEl,'/toll/city')
+
+       initFileUpload(originCertifiyUrlEl,function(){});
+   }
+
+   /**
+    * 初始化自动完成框
+    */
+   function initAutoComplete(selector,url){
+       $(selector).keydown(function (e){
+           if(e.keyCode == 13){
+               // $(selector).data('keycode',e.keyCode);
+               // console.info('keydown')
+           }
+       });
+       $(selector).data('oldvalue','');
+       // $(selector).data('keycode','');
+       $(selector).on('change',function () {
+           var oldvalue=$(selector).data('oldvalue');
+           var val=$(this).val();
+           if(oldvalue!=val){
+               $(this).siblings('input').val('');
+           }
+       });
+       // 产地联系输入
+       $(selector).devbridgeAutocomplete({
+           noCache: 1,
+           serviceUrl: url,  // 数据地址
+           // lookup: countries, 本地测试模拟数据使用结合上面的var countries
+           dataType: 'json',
+           onSearchComplete: function (query, suggestions) {
+               // console.info(2)
+           },
+           showNoSuggestionNotice: true,
+           noSuggestionNotice: "不存在，请重输！",
+           autoSelectFirst:true,
+           autoFocus: true,
+           onSelect: function (suggestion) {
+               console.info('onSelect')
+               var self = this;
+               var idField = $(self).siblings('input');
+               idField.val(suggestion.id);
+               $(self).val(suggestion.value.trim());
+               // var keycode=$(selector).data('keycode');
+               // console.info(keycode)
+               $(selector).data('oldvalue',suggestion.value);
+               var v=$(self).valid();
+           }
+       });
+   }
 
     let imageItemCount = '${registerBill.groupedImageCertList[@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT].~size!0}';
     function getDetectReportCount(){
@@ -300,129 +361,223 @@
         var viewImg=tempHtml.find('.fileimg-view');
         initFileUpload(fileEl,createDetectReportAndAppendTemplate);
         initImageBtns(tempHtml);
-
     }
-    // 文件上传组件初始化
-    function initFileUpload(selecter,success) {
-        $(selecter).fileupload({
-            dataType: 'json',
-            formData: {type: 4, compress: true},
-            done: function (e, res) {
-                if (res.result.code == 200) {
-                    var uid= res.result.data;
-                    $(this).siblings("input:hidden").val(uid);
 
-                    var url = "${imageViewPathPrefix}/" + uid;
-                    $(this).siblings('.magnifying').attr('src', url).show();
-                    $(this).siblings('.fileimg-cover,.fileimg-edit').show();
-                    success();
-                }
-            },
-            add: function (e, data) {// 判断文件类型 var acceptFileTypes =
-                // /\/(pdf|xml)$/i;
-                var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
-                var name = data.originalFiles[0]["name"];
-                var index = name.lastIndexOf(".") + 1;
-                var fileType = name.substring(index, name.length);
-                if (!acceptFileTypes.test(fileType)) {
-                    swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
-                    return;
-                }
-                var size = data.originalFiles[0]["size"];
-                // 10M
-                if (size > (1024 * 10 * 1024)) {
-                    swal('错误', '上传文件超过最大限制!', 'error');
-                    return;
-                }
-                data.submit();
-            }
-        });
-    }
+   // 文件上传组件初始化
+   function initFileUpload(selecter,success) {
+       $(selecter).fileupload({
+           dataType: 'json',
+           formData: {type: 4, compress: true},
+           done: function (e, res) {
+               if (res.result.code == 200) {
+                   var uid= res.result.data;
+                   $(this).siblings("input:hidden:first").val(uid);
+
+                   var url = "${imageViewPathPrefix}/" + uid;
+                   $(this).siblings('.magnifying').attr('src', url).show();
+                   $(this).siblings('.fileimg-cover,.fileimg-edit').show();
+                   // 向上查找第一个 class="upload-div"的元素隐藏
+                   $(this).parents(".upload-div:first").hide();
+                   // 显示下一个元素
+                   $(this).parents(".upload-div:first").next().show();
+                   success();
+               }
+           },
+           add: function (e, data) {// 判断文件类型 var acceptFileTypes =
+               // /\/(pdf|xml)$/i;
+               var acceptFileTypes = /^gif|bmp|jpe?g|png$/i;
+               var name = data.originalFiles[0]["name"];
+               var index = name.lastIndexOf(".") + 1;
+               var fileType = name.substring(index, name.length);
+               if (!acceptFileTypes.test(fileType)) {
+                   swal('错误', '请您上传图片类文件jpe/jpg/png/bmp!', 'error');
+                   return;
+               }
+               var size = data.originalFiles[0]["size"];
+               // 10M
+               if (size > (1024 * 10 * 1024)) {
+                   swal('错误', '上传文件超过最大限制!', 'error');
+                   return;
+               }
+               data.submit();
+           }
+       });
+   }
+
+   // 查看产地证明事件
+   $( document ).on( "click", ".img-view-a",function () {
+       var url = $('#registerBills\\['+$(this).attr('data-index')+'\\]\\[originCertifiyUrl\\]').siblings("input:hidden").val();
+       url = "${imageViewPathPrefix}/" + url;
+       if(url){
+           layer.open({
+               title:'图片',
+               type: 1,
+               skin: 'layui-layer-rim',
+               closeBtn: 2,
+               area: ['90%', '90%'], // 宽高
+               content: '<p style="text-align:center"><img src="' + url + '" alt="" class="show-image-zoom"></p>'
+           });
+       }
+   });
+
+    // 删除商品事件
+   $('.main-container').on('click', '.split-minus-btn', function () {
+       if ($('#goodsTable tr').length > 2) {
+           $(this).closest('tr').remove();
+       }
+   });
+
+   // 提交事件
+   var resubmit = 0;
+   function create(){
+       if(resubmit==0){
+           resubmit=1;
+       }else{
+           resubmit=0;
+           swal(
+               '错误',
+               '重复提交',
+               'error'
+           );
+           return;
+       }
+       debugger
+       if($('#createRecordForm').validate().form() != true){
+           resubmit = 0;
+           return;
+       }
+
+       var data=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
+       $.ajax({
+           type: "POST",
+           url: "${contextPath}/newRegisterBill/insert.action",
+           data :  JSON.stringify(data),
+           dataType: "json",
+           async : true,
+           contentType: "application/json; charset=utf-8",
+           success: function (ret) {
+               if (ret.success) {
+                   var paramStr = JSON.stringify(ret.data);
+                   var registerSource = $("#registerSource").val();
+                   localStorage.setItem('registerSource',$("#registerSource").val());
+                   localStorage.setItem('tradeTypeId',$("#tradeTypeId").val());
+                   cacheInputtedPlate("#plate");
+                   layer.alert('登记成功',{
+                           type:0,
+                           time : 600,
+                           end :function(){
+                               // postMsg('removeAllAndLoadData');
+                               parent.window['RegisterBillGridObj'].removeAllAndLoadData()
+                           }
+                       },
+                       function () {
+                           postMsg('removeAllAndLoadData');
+                       }
+                   );
+               } else {
+                   resubmit=0;
+                   swal(
+                       '错误',
+                       ret.result,
+                       'error'
+                   );
+               }
+           },
+           error: function(){
+               resubmit=0;
+               swal(
+                   '错误',
+                   '远程访问失败',
+                   'error'
+               );
+           }
+       });
+   }
+
+   function cacheInputtedPlate(editableSelector){
+       var inList=false;
+       var plate=$(editableSelector).val();
+
+       $(editableSelector).siblings(".es-list" ).find('li').each(function(){
+           if(plate==$(this).text()){
+               inList=true;
+               return false;
+           }
+       })
+
+       if(inList==false){
+           cachePlate(plate);
+       }
+   }
+   function cachePlate(plate){
+       if(jQuery.type(plate) === "string"&&plate.trim().length>0){
+           var plateArray=getCachedPlateArray();
+           if(jQuery.inArray(plate.trim(), plateArray )==-1){
+               plateArray.push(plate.trim());
+               localStorage.setItem('plateArray',JSON.stringify(plateArray));
+           }
+       }
+   }
+   function getCachedPlateArray(){
+       var plateArray=localStorage.getItem('plateArray');
+       if(typeof(plateArray)!='undefined'&&plateArray!=null){
+           return $.makeArray(JSON.parse(plateArray));
+       }else{
+           localStorage.setItem('plateArray',JSON.stringify([]));
+       }
+       return []
+   }
+
     $(function () {
         initImageBtns($(document.body));
         createDetectReportAndAppendTemplate();
+        createAndAppendTemplate();
     });
 </script>
-<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
-<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
-<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
-<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
-<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
-<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
-<!--<script src="/resources/assets/dep/jquery/layer/layer.js"></script>-->
 
-<script id="goodsItem" type="text/html">
-    <tr>
-        <td>
-            <div class="form-group">
-                <input type="text" class="form-control input-sm isSelected" name="productName_{{index}}" id="productName_{{index}}" required />
-                <input type="text" name="productId_{{index}}" hidden value=""/>
-            </div>
-        </td>
-        <td>
-            <div class="form-group">
-                <input type="text"   name="originName_{{index}}" class="form-control input-sm isSelected originaNameInput" id="originName_{{index}}" required />
-                <input type="text" name="originId_{{index}}" hidden value="" />
-            </div>
-        </td>
-        <td>
-            <div class="form-group">
-                <input type="text" class="form-control input-sm isInt" name="weight_{{index}}" maxlength="6"  range="0 999999" value="0" />
-            </div>
-        </td>
-        <td>
-            <div class="upload-div">
-                <a href="javascript:;" class="a-upload" tabindex="-1">
-                    <input type="file" id="originCertifiyUrl_{{index}}"type="file" name="file" data-url="${contextPath!}/action/imageApi/upload" multiple="multipart/form-data">
-                    <span>上传</span>
-                    <input type="hidden" name="originCertifiyUrl_{{index}}">
-                </a>
-            </div>
-            <div class="view-div" style="display: none;">
-                <span>已上传</span>
-                <a href="javascript:;" data-index="{{index}}" class="img-view-a">查看图片</a>
-                <a href="javascript:$('#originCertifiyUrl_{{index}}').trigger('click')">重新上传</a>
-            </div>
-        </td>
-        <td><a href="javascript:;" class="split-minus-btn">删除</a></td>
-    </tr>
-
-</script>
 <script type="text/javascript">
-$(document).ready(function() { 
-    //初始化控件
-    $('#plate').editableSelect({ 
-        filter: false ,
-    });
-    var userplateList=$.map($('#plate').siblings(".es-list" ).find('li'),function(v,i){
-   	 return $(v).text();
-    });
-    // appendCachedPlate(userplateList,'#plate');
-})
+    $(document).ready(function() {
+        //初始化控件
+        $('#plate').editableSelect({
+            filter: false ,
+        });
+        var userplateList=$.map($('#plate').siblings(".es-list" ).find('li'),function(v,i){
+            return $(v).text();
+        });
+        // appendCachedPlate(userplateList,'#plate');
+    })
 
-function tallyAreaNo() {
-    var tallyAreaNo = $("#tallyAreaNoInput").val();
-    if(tallyAreaNo == ""){
-        return;
-    }
-    if (tallyAreaNo.length > 0) {
-        $.ajax({
-            type: 'post',
-            url: '/trade/customer/tallyAreaNo/'+tallyAreaNo,
-            dataType: 'json',
-            async: false,
-            success: function (ret) {
-                if (ret.code == "200") {
-                    var customer = ret.data;
-                    $("#idCardNo").val(customer.cardNo).valid();
-                    $("#name").val(customer.name).valid();
-                    $("#addr").val(customer.addr).valid();
-                    $("#userId").val(customer.id).valid();
-                    $("#phone").val(customer.phone).valid();
-                    $("#tallyAreaNo").val(tallyAreaNo);
-                    findUserPlateByUserId(customer.id,'#plate');
-                } else {
+    function tallyAreaNo() {
+        var tallyAreaNo = $("#tallyAreaNoInput").val();
+        if(tallyAreaNo == ""){
+            return;
+        }
+        if (tallyAreaNo.length > 0) {
+            $.ajax({
+                type: 'post',
+                url: '/trade/customer/tallyAreaNo/'+tallyAreaNo,
+                dataType: 'json',
+                async: false,
+                success: function (ret) {
+                    if (ret.code == "200") {
+                        var customer = ret.data;
+                        $("#idCardNo").val(customer.cardNo).valid();
+                        $("#name").val(customer.name).valid();
+                        $("#addr").val(customer.addr).valid();
+                        $("#userId").val(customer.id).valid();
+                        $("#phone").val(customer.phone).valid();
+                        $("#tallyAreaNo").val(tallyAreaNo);
+                        findUserPlateByUserId(customer.id,'#plate');
+                    } else {
+                        $("#idCardNo").val("");
+                        $("#name").val("");
+                        $("#addr").val("");
+                        $("#userId").val("");
+                        $("#phone").val("");
+                        $("#tallyAreaNo").val("");
+                    }
+                },
+                error:function(){
                     $("#idCardNo").val("");
                     $("#name").val("");
                     $("#addr").val("");
@@ -430,27 +585,69 @@ function tallyAreaNo() {
                     $("#phone").val("");
                     $("#tallyAreaNo").val("");
                 }
-            },
-            error:function(){
-                $("#idCardNo").val("");
-                $("#name").val("");
-                $("#addr").val("");
-                $("#userId").val("");
-                $("#phone").val("");
-                $("#tallyAreaNo").val("");
-            }
-        });
+            });
+        }
     }
-}
 </script>
 
+<!--第三方库引入-->
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/jquery-file-upload/css/jquery.fileupload.css">
+<script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextPath!}/resources/css/jquery-editable-select.min.css">
+<script src="${contextPath!}/resources/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
+<script src="${contextPath!}/resources/js/Utils.js"></script>
+<script src="${contextPath!}/resources/js/postmsg.js"></script>
+
+<!--商品模板-->
+<script id="goodsItem" type="text/html">
+    <tr id="goodsItem_{{index}}">
+        <td>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm isSelected" name="registerBills[{{index}}][productName]" id="registerBills[{{index}}][productName]" required />
+                <input type="text" name="registerBills[{{index}}][productId]" hidden value=""/>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <input type="text"   name="registerBills[{{index}}][originName]" class="form-control input-sm isSelected originaNameInput" id="registerBills[{{index}}][originName]" required />
+                <input type="text" name="registerBills[{{index}}][originId]" hidden value="" />
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <input type="text" class="form-control input-sm isInt" name="registerBills[{{index}}][weight]" maxlength="6"  range="0 999999" value="0" />
+            </div>
+        </td>
+        <td>
+            <div class="upload-div">
+                <a href="javascript:;" class="a-upload" tabindex="-1">
+                    <input type="file" id="registerBills[{{index}}][originCertifiyUrl]" type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data">
+                    <span>上传</span>
+                    <input type="hidden" name="registerBills[{{index}}][originCertifiyUrl]">
+                </a>
+            </div>
+            <div class="view-div" style="display: none;">
+                <span>已上传</span>
+                <a href="javascript:;" data-index="{{index}}" class="img-view-a">查看图片</a>
+                <a href="javascript:$('#registerBills\\[{{index}}\\]\\[originCertifiyUrl\\]').trigger('click')">重新上传</a>
+            </div>
+        </td>
+        <td><a href="javascript:;" class="split-minus-btn">删除</a></td>
+    </tr>
+</script>
+
+<!--检测报告模板-->
 <script id="imageCertItem" type="text/html">
     <div class="fileimg-box" style="margin-left: 10px; display: inline-block;vertical-align: middle;">
         <span class="fileimg-plus-icon">+</span>
         <span class="fileimg-des">点击上传</span>
         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
         <input type="hidden" name="globalImageCertList[{{index}}][uid]">
-        <input type="hidden" name="globalImageCertList[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+        <input type="hidden" name="globalImageCertList[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
         <img class="magnifying">
         <div class="fileimg-cover" style="display: none;"></div>
         <div class="fileimg-edit" style="display: none;">
