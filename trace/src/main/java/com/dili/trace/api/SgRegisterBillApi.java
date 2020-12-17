@@ -1,7 +1,6 @@
 package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -42,7 +41,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/bill")
 @Api(value = "/api/bill")
-@InterceptConfiguration
+//@InterceptConfiguration
 public class SgRegisterBillApi {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillApi.class);
 	@Autowired

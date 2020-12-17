@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.dili.common.annotation.InterceptConfiguration;
+import com.dili.common.annotation.AppAccess;
+import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
+import com.dili.customer.sdk.enums.CustomerEnum;
 import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.dto.ECommerceBillInputDto;
 import com.dili.trace.domain.RegisterBill;
@@ -43,7 +45,7 @@ import io.swagger.annotations.ApiOperation;
 @SuppressWarnings("deprecation")
 @RestController
 @RequestMapping(value = "/api/ecommerceBillApi")
-@InterceptConfiguration
+@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 public class ECommerceBillApi {
     private static final Logger logger = LoggerFactory.getLogger(ECommerceBillApi.class);
     @Autowired

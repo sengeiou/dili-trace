@@ -4,14 +4,12 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.common.entity.ExecutionConstants;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.PatternConstants;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
-import com.dili.common.util.MD5Util;
 import com.dili.common.util.VerificationCodeUtil;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.constant.ResultCode;
@@ -20,21 +18,18 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.redis.service.RedisUtil;
 import com.dili.ss.util.DateUtils;
-import com.dili.trace.api.enums.LoginIdentityTypeEnum;
 import com.dili.trace.api.output.UserOutput;
 import com.dili.trace.api.output.UserQrOutput;
 import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserPlate;
 import com.dili.trace.dto.UserListDto;
 import com.dili.trace.enums.ValidateStateEnum;
-import com.dili.trace.glossary.EnabledStateEnum;
 import com.dili.trace.glossary.UserTypeEnum;
 import com.dili.trace.service.MessageRpcService;
 import com.dili.trace.service.SMSService;
 import com.dili.trace.service.UserPlateService;
 import com.dili.trace.service.UserService;
 import com.dili.trace.util.BasePageUtil;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
@@ -163,7 +158,7 @@ public class UserApi {
      */
     @ApiOperation(value = "用户获取个人信息【接口已通】", notes = "用户获取个人信息")
     @RequestMapping(value = "/get.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<User> get() {
         try {
             User user = userService.get(sessionContext.getAccountId());
@@ -188,7 +183,7 @@ public class UserApi {
      */
     @ApiOperation(value = "查询车牌信息", notes = "用户获取个人信息")
     @RequestMapping(value = "/getUserPlate.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<List<UserPlate>> getUserPlate() {
         try {
             User user = userService.get(sessionContext.getAccountId());
@@ -248,7 +243,7 @@ public class UserApi {
      */
     @ApiOperation(value = "发送重置密码验证码【接口已通】", notes = "发送重置密码验证码")
     @RequestMapping(value = "/sendSmsCodeForRenewPassword.api", method = RequestMethod.POST)
-    @InterceptConfiguration(loginRequired = false)
+//    @InterceptConfiguration(loginRequired = false)
     public BaseOutput<String> sendSmsCodeForRenewPassword(@RequestBody User user) {
         try {
             if (StringUtils.isBlank(user.getPhone())) {
@@ -340,7 +335,7 @@ public class UserApi {
      */
     @ApiOperation(value = "验证是否登录【接口已通】", notes = "验证是否登录")
     @RequestMapping(value = "/isLogin.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<String> isLogin() {
         try {
             return BaseOutput.success();
@@ -485,7 +480,7 @@ public class UserApi {
      */
     @ApiOperation(value = "通过姓名关键字查询用户信息", notes = "通过姓名关键字查询用户信息")
     @RequestMapping(value = "/getUserQrCode.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<UserQrOutput> getUserQrCode(UserListDto input) {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
@@ -684,7 +679,7 @@ public class UserApi {
      */
     @ApiOperation(value = "用户获取个人信息【接口已通】", notes = "用户获取个人信息")
     @RequestMapping(value = "/getUserInfo.api", method = RequestMethod.GET)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<UserOutput> getUserInfoByUserId(@RequestParam Long userId) {
         try {
             UserOutput user = userService.getUserByUserId(userId);

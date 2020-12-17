@@ -184,6 +184,10 @@ public class DetectRequestDto extends DetectRequest {
      */
     @Transient
     private Integer billType;
+    /**
+     * 报备单是否删除过滤
+     */
+    private Integer isDeleted;
 
     @Transient
     private List<Integer>detectStatusList;
@@ -191,6 +195,14 @@ public class DetectRequestDto extends DetectRequest {
     private List<Integer>detectTypeList;
     @Transient
     private List<Integer>detectResultList;
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 
     public List<Integer> getDetectStatusList() {
         return detectStatusList;

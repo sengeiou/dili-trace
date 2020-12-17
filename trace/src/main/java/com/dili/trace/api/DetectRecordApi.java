@@ -1,7 +1,6 @@
 package com.dili.trace.api;
 
 import com.alibaba.fastjson.JSON;
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.config.DefaultConfiguration;
 import com.dili.trace.dto.DetectTaskApiOutputDto;
 import com.dili.trace.dto.TaskGetParam;
@@ -28,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/detect")
 @Api(value = "/api/detect", description = "检测任务相关接口")
-@InterceptConfiguration(loginRequired = false)
+//@InterceptConfiguration(loginRequired = false)
 public class DetectRecordApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(DetectRecordApi.class);
     @Autowired

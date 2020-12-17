@@ -45,7 +45,7 @@ import java.util.function.Function;
 @RequestMapping("/commissionBill")
 public class CommissionBillController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SgRegisterBillController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommissionBillController.class);
 
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
@@ -207,6 +207,7 @@ public class CommissionBillController {
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
+            LOGGER.error(e.getMessage(),e);
             return BaseOutput.failure("服务器出错,请重试");
         }
 

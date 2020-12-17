@@ -1,6 +1,5 @@
 package com.dili.trace.api;
 
-import com.dili.common.annotation.InterceptConfiguration;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
@@ -81,7 +80,7 @@ public class EventMessageApi {
     @Deprecated
     @ApiOperation(value = "查询消息列表", notes = "消息列表")
     @RequestMapping(value = "/pageMssage.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<BasePage<EventMessage>> pageMessage(@RequestBody EventMessage eventMessage) {
         if (eventMessage == null) {
             eventMessage = new EventMessage();
@@ -114,7 +113,7 @@ public class EventMessageApi {
      */
     @ApiOperation(value = "查询消息列表（新）", notes = "消息列表")
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-    @InterceptConfiguration
+//    @InterceptConfiguration
     public BaseOutput<BasePage<EventMessage>> listPage(@RequestBody EventMessage eventMessage) {
         if (eventMessage == null) {
             return BaseOutput.failure("param is null");

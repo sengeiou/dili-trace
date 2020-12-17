@@ -15,6 +15,7 @@ import com.dili.trace.domain.User;
 import com.dili.trace.domain.UserDriverRef;
 import com.dili.trace.dto.query.TruckEnterRecordQueryDto;
 import com.dili.trace.enums.MessageReceiverEnum;
+import com.dili.trace.enums.MessageStateEnum;
 import com.dili.trace.service.DriverUserService;
 import com.dili.trace.service.EventMessageService;
 import com.dili.trace.service.TruckEnterRecordService;
@@ -65,6 +66,7 @@ public class ClientDriverUserApi {
     @ApiOperation(value = "查询司机进门报备数据列表", notes = "查询司机进门报备数据列表")
     @RequestMapping(value = "/listPagedEnterRecord.api", method = RequestMethod.POST)
     public BaseOutput listPagedEnterRecord(@RequestBody TruckEnterRecordQueryDto queryDto) {
+        queryDto.setDriverId(this.sessionContext.getAccountId());
         BasePage<TruckEnterRecord> page = this.truckEnterRecordService.listPageByExample(queryDto);
         return BaseOutput.successData(page);
 
@@ -131,7 +133,7 @@ public class ClientDriverUserApi {
                 .findFirst().map(data -> {
                     EventMessage msg = new EventMessage();
                     msg.setId(data.getId());
-                    msg.setReadFlag(YesOrNoEnum.YES.getCode());
+                    msg.setReadFlag(MessageStateEnum.READ.getCode());
                     this.eventMessageService.updateSelective(msg);
                     return BaseOutput.successData(this.eventMessageService.get(data.getId()));
                 }).orElseGet(() -> {

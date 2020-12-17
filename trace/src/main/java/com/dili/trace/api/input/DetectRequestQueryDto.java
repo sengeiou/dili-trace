@@ -5,6 +5,7 @@ import com.dili.trace.domain.DetectRequest;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 import java.util.Date;
 
 /**
@@ -36,6 +37,20 @@ public class DetectRequestQueryDto extends DetectRequest {
      * 报备单是否删除过滤
      */
     private Integer isDeleted;
+
+    /**
+     * 业户名称/商品名称（查询条件 OR Like）
+     */
+    @Transient
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 
     /**
      * 采样来源过滤条件 {@link com.dili.trace.glossary.SampleSourceEnum}

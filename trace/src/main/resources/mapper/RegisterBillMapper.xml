@@ -1400,9 +1400,12 @@
     b.`check_sheet_id`,
     b.`checkin_status`,
     checkinout_record.`created` checkinCreated,
+    detect_record.`normal_result` normalResult,
+    detect_record.`pd_result` pdResult,
     b.`is_deleted`
     FROM register_bill b
     left join detect_request r ON (r.id = b.detect_request_id)
+    left join detect_record on detect_record.detect_request_id=r.id
     left join trade_detail on b.id = trade_detail.bill_id
     left join checkinout_record on checkinout_record.id = trade_detail.checkin_record_id
     WHERE 1 = 1
@@ -1486,5 +1489,4 @@
     </if>
     order by  b.created desc
   </select>
-
 </mapper>

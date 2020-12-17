@@ -198,7 +198,7 @@
             <button id="remove-reportAndcertifiy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>删除检测报告和产地证明</button>
             <button id="copy-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>补录</button>
             <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>查看</button>
-            <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('registerBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
+            <button id="export" type="button" class="btn btn-primary" onclick="bui.util.doExport('registerBillGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
         <table id="registerBillGrid" data-toggle="table" data-title="进场报备列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
                data-query-params="queryParams" data-side-pagination="server" data-method="POST" data-content-type="application/x-www-form-urlencoded" data-single-select="false"
@@ -210,16 +210,16 @@
                 <th data-field="created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     登记时间
                 </th>
-                <th data-field="billTypeName" data-sortable="true" data-align="center">
+                <th data-field="billTypeName" data-sort-name="bill_type" data-sortable="true" data-align="center">
                     登记类型
                 </th>
                 <th data-field="code" data-sortable="true" data-align="center">
                     编号
                 </th>
-                <th data-field="sampleCode" data-sortable="true" data-align="center">
+                <th data-field="sampleCode"  data-sort-name="sample_code" data-sortable="true" data-align="center">
                     采样编号
                 </th>
-                <th data-field="sourceDesc" data-sortable="true" data-align="center">
+                <th data-field="sourceDesc" data-sort-name="source_name" data-sortable="true" data-align="center">
                     报备区域
                 </th>
                 <th data-field="name" data-sortable="true" data-align="center">
@@ -228,76 +228,76 @@
                 <th data-field="plate" data-sortable="true" data-align="center">
                     车牌
                 </th>
-                <th data-field="brandName" data-sortable="true" data-align="center">
+                <th data-field="brandName"  data-sort-name="brand_name" data-sortable="true" data-align="center">
                     品牌
                 </th>
-                <th data-field="preserveTypeName" data-sortable="true" data-align="center">
+                <th data-field="preserveTypeName" data-sort-name="preserve_type" data-sortable="true" data-align="center">
                     商品类型
                 </th>
-                <th data-field="productName" data-sortable="true" data-align="center">
+                <th data-field="productName" data-sort-name="product_name" data-sortable="true" data-align="center">
                     商品名称
                 </th>
-                <th data-field="originName" data-sortable="true" data-align="center">
+                <th data-field="originName" data-sort-name="origin_name" data-sortable="true" data-align="center">
                     产地
                 </th>
                 <th data-field="weight" data-sortable="true" data-align="center">
                     重量
                 </th>
-                <th data-field="weightUnitName" data-sortable="true" data-align="center">
+                <th data-field="weightUnitName" data-sort-name="weight_unit" data-sortable="true" data-align="center">
                     重量单位
                 </th>
-                <th data-field="measureTypeName" data-sortable="true" data-align="center">
+                <th data-field="measureTypeName" data-sort-name="measure_type" data-sortable="true" data-align="center">
                     计量类型
                 </th>
-                <th data-field="pieceNum" data-sortable="true" data-align="center">
+                <th data-field="pieceNum"  data-sort-name="piece_num" data-sortable="true" data-align="center">
                     件数
                 </th>
-                <th data-field="pieceWeight" data-sortable="true" data-align="center">
+                <th data-field="pieceWeight"  data-sort-name="piece_weight" data-sortable="true" data-align="center">
                     件重
                 </th>
-                <th data-field="hasOriginCertifiyName" data-sortable="true" data-align="center">
+                <th data-field="hasOriginCertifiyName"  data-sort-name="has_origin_certifiy" data-sortable="true" data-align="center">
                     产地证明
                 </th>
-                <th data-field="hasDetectReportName" data-sortable="true" data-align="center">
+                <th data-field="hasDetectReportName" data-sort-name="has_detect_report" data-sortable="true" data-align="center">
                     检测报告
                 </th>
-                <th data-field="hasHandleResultName" data-sortable="true" data-align="center">
+                <th data-field="hasHandleResultName"  data-sort-name="has_handle_result" data-sortable="true" data-align="center">
                     处理结果
                 </th>
-                <th data-field="verifyStatusName" data-sortable="true" data-align="center" >
+                <th data-field="verifyStatusName"  data-sort-name="verify_status" data-sortable="true" data-align="center" >
                     审核状态
                 </th>
-                <th data-field="detectStatusName" data-sortable="true" data-align="center" >
+                <th data-field="detectStatusName" data-sort-name="detect_status" data-sortable="true" data-align="center" >
                     检测状态
                 </th>
 
-                <th data-field="detectRequestId" data-sortable="true" data-align="center">
+                <th data-field="detectRequestId" data-sort-name="detect_request_id" data-sortable="true" data-align="center">
                     检测请求ID
                 </th>
-                <th data-field="detectSource" data-sortable="true" data-align="center" data-provider="sampleSourceProvider">
+                <th data-field="detectSource"  data-sort-name="detect_source" data-sortable="true" data-align="center" data-provider="sampleSourceProvider">
                     检测请求来源
                 </th>
 
-                <th data-field="detectTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                <th data-field="detectTime"   data-sort-name="detect_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     检测时间
                 </th>
-                <th data-field="detectResultName" data-sortable="true" data-align="center">
+                <th data-field="detectResultName"  data-sort-name="detect_result" data-sortable="true" data-align="center">
                     检测结果
                 </th>
-                <th data-field="detectorName" data-sortable="true" data-align="center">
+                <th data-field="detectorName" data-sort-name="detector_name" data-sortable="true" data-align="center">
                     检测员
                 </th>
-                <th data-field="checkSheetId" data-sortable="true" data-align="center" data-provider="hasOrNoneProvider">
+                <th data-field="checkSheetId" data-sort-name="check_sheet_id" data-sortable="true" data-align="center" data-provider="hasOrNoneProvider">
                     检测已打印
                 </th>
 
-                <th data-field="checkinStatusName" data-sortable="true" data-align="center">
+                <th data-field="checkinStatusName" data-sort-name="checkin_status" data-sortable="true" data-align="center">
                     是否进门
                 </th>
-                <th data-field="checkinCreated" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                <th data-field="checkinCreated" data-sort-name="checkinout_record.created" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     进门时间
                 </th>
-                <th data-field="isDeletedName" data-sortable="true" data-align="center">
+                <th data-field="isDeletedName" data-sort-name="is_deleted" data-sortable="true" data-align="center">
                     是否删除
                 </th>
             </tr>
