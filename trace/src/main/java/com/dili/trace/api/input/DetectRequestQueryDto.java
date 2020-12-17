@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 检测请求查询实体
@@ -56,6 +57,46 @@ public class DetectRequestQueryDto extends DetectRequest {
      * 采样来源过滤条件 {@link com.dili.trace.glossary.SampleSourceEnum}
      */
     private Integer sampleSource;
+
+    private List<Integer>sampleSourceList;
+    @Transient
+    private List<Integer>detectStatusList;
+    @Transient
+    private List<Integer>detectTypeList;
+    @Transient
+    private List<Integer>detectResultList;
+
+    public List<Integer> getDetectStatusList() {
+        return detectStatusList;
+    }
+
+    public void setDetectStatusList(List<Integer> detectStatusList) {
+        this.detectStatusList = detectStatusList;
+    }
+
+    public List<Integer> getDetectTypeList() {
+        return detectTypeList;
+    }
+
+    public void setDetectTypeList(List<Integer> detectTypeList) {
+        this.detectTypeList = detectTypeList;
+    }
+
+    public List<Integer> getDetectResultList() {
+        return detectResultList;
+    }
+
+    public void setDetectResultList(List<Integer> detectResultList) {
+        this.detectResultList = detectResultList;
+    }
+
+    public List<Integer> getSampleSourceList() {
+        return sampleSourceList;
+    }
+
+    public void setSampleSourceList(List<Integer> sampleSourceList) {
+        this.sampleSourceList = sampleSourceList;
+    }
 
     public String getLikeProductNameOrUserName() {
         return likeProductNameOrUserName;

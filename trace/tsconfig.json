@@ -2,6 +2,7 @@
 {
   "compilerOptions": {
     "skipDefaultLibCheck": true,
+    "allowUmdGlobalAccess": true,
     "skipLibCheck": true,
     "baseUrl": ".",
     "declaration": false,

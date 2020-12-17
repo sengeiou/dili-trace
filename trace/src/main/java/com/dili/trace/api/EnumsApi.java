@@ -8,6 +8,7 @@ import com.dili.common.annotation.Role;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.trace.enums.*;
 
+import com.dili.trace.glossary.UpStreamTypeEnum;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,32 @@ import one.util.streamex.StreamEx;
 @RequestMapping(value = "/api/enums")
 @AppAccess(role = Role.ANY)
 public class EnumsApi {
+	/**
+	 * 上游类型枚举查询
+	 */
+	@RequestMapping(value = "/listUpStreamTypeEnum.api", method = RequestMethod.POST)
+	public BaseOutput<List<Entry<Integer, String>>> listUpStreamTypeEnum() {
+		try {
+			List<Entry<Integer, String>> list = StreamEx.of(UpStreamTypeEnum.values())
+					.mapToEntry(UpStreamTypeEnum::getCode, UpStreamTypeEnum::getName).toList();
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
+	/**
+	 * 客户类型枚举查询
+	 */
+	@RequestMapping(value = "/listClientTypeEnum.api", method = RequestMethod.POST)
+	public BaseOutput<List<Entry<Integer, String>>> listClientTypeEnum() {
+		try {
+			List<Entry<Integer, String>> list = StreamEx.of(ClientTypeEnum.values())
+					.mapToEntry(ClientTypeEnum::getCode, ClientTypeEnum::getDesc).toList();
+			return BaseOutput.success().setData(list);
+		} catch (Exception e) {
+			return BaseOutput.failure(e.getMessage());
+		}
+	}
 	/**
 	 * 检测状态枚举查询
 	 */

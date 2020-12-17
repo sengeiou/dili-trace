@@ -43,6 +43,7 @@ public class EventMessageServiceImpl extends BaseServiceImpl<EventMessage, Long>
         msg.setReceiverId(receiverId);
         msg.setReadFlag(MessageStateEnum.UNREAD.getCode());
         msg.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
-        return this.getDao().selectCountByExample(msg);
+       return this.getDao().selectCount(msg);
+//        return this.getDao().selectCountByExample(msg);
     }
 }
