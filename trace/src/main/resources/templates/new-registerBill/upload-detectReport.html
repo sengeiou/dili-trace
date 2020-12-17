@@ -245,7 +245,7 @@
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
                     <input type="hidden" name="imageCerts[${imageCount}][uid]" value="${img.uid}">
-                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
+                    <input type="hidden" name="imageCerts[${imageCount++}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
                     <div class="fileimg-edit" style="display: block;">
@@ -253,9 +253,6 @@
                         <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
-                <%
-                imageCount++;
-                }%>
                 <%}%>
             </div>
 
@@ -270,7 +267,7 @@
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
                     <input type="hidden" name="imageCerts[${imageCount}][uid]" value="${img.uid}">
-                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
+                    <input type="hidden" name="imageCerts[${imageCount++}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
                     <div class="fileimg-edit" style="display: block;">
@@ -278,9 +275,6 @@
                         <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
-                <%
-                imageCount++;
-                }%>
                 <%}%>
             </div>
 
@@ -298,7 +292,7 @@
                         <span class="fileimg-des" style="display: none" >点击上传</span>
                         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
                         <input type="hidden" name="imageCerts[${imageCount}][uid]" value="${img.uid}">
-                        <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
+                        <input type="hidden" name="imageCerts[${imageCount++}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
                         <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                         <div class="fileimg-cover" style="display: block;"></div>
                         <div class="fileimg-edit" style="display: block;">
@@ -306,9 +300,6 @@
                             <span class="fileimg-delete">删除</span>
                         </div>
                     </div>
-                    <%
-                    imageCount++;
-                    }%>
                     <%}%>
                 </div>
 

@@ -18,7 +18,6 @@ import java.util.Date;
 @EnableRetry
 public class EventMessageServiceImpl extends BaseServiceImpl<EventMessage, Long> implements EventMessageService {
 
-    @Autowired
 
     @Override
     public void readMessage(EventMessage message, MessageStateEnum readFlag) {
