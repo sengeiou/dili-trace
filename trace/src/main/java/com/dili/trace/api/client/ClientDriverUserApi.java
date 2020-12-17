@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
+ * 司机接口
+ *
  * @version 1.0
  * @ClassName DriverUserApi
  * @Description todo
@@ -152,7 +154,7 @@ public class ClientDriverUserApi {
     @RequestMapping(value = "/countReadableEventMessage.api", method = RequestMethod.POST)
     public BaseOutput<Integer> countReadableEventMessage(@RequestBody EventMessage queryDto) {
 
-        Integer cnt=this.eventMessageService.countReadableEventMessage(queryDto.getReceiverId(),this.sessionContext.getSessionData().getMarketId());
+        Integer cnt = this.eventMessageService.countReadableEventMessage(queryDto.getReceiverId(), this.sessionContext.getSessionData().getMarketId());
 
         return BaseOutput.successData(cnt);
 
@@ -165,7 +167,7 @@ public class ClientDriverUserApi {
      * @return
      */
     @ApiOperation(value = "是否需要注册", notes = "是否需要注册")
-    @RequestMapping(value = "/needRegister", method = RequestMethod.POST)
+    @RequestMapping(value = "/needRegister.api", method = RequestMethod.POST)
     @Deprecated
     public BaseOutput needRegister(@RequestBody User user) {
 
@@ -179,10 +181,10 @@ public class ClientDriverUserApi {
      * @return 司机用户列表
      */
     @ApiOperation(value = "获取司机用户列表", notes = "获取司机用户列表")
-    @RequestMapping(value = "/getDriverUserList", method = RequestMethod.POST)
-    public BaseOutput getDriverUserList(@RequestBody UserDriverRef user) {
+    @RequestMapping(value = "/getDriverUserList.api", method = RequestMethod.POST)
+    public BaseOutput<BasePage<UserDriverRef>> getDriverUserList(@RequestBody UserDriverRef user) {
         try {
-            List<UserDriverRef> userList = driverUserService.getDriverUserList(user);
+            BasePage<UserDriverRef> userList = driverUserService.getDriverUserList(user);
             return BaseOutput.success().setData(userList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -198,7 +200,7 @@ public class ClientDriverUserApi {
      * @return 司机列表
      */
     @ApiOperation(value = "获取司机列表", notes = "获取司机列表")
-    @RequestMapping(value = "/getDriverList", method = RequestMethod.POST)
+    @RequestMapping(value = "/getDriverList.api", method = RequestMethod.POST)
     @Deprecated
     public BaseOutput getDriverList() {
 
@@ -216,7 +218,7 @@ public class ClientDriverUserApi {
      * @return 新增结果
      */
     @ApiOperation(value = "新增司机与卖家关联关系", notes = "新增司机与卖家关联关系")
-    @RequestMapping(value = "/updateDriverUserRef", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateDriverUserRef.api", method = RequestMethod.POST)
     public BaseOutput updateDriverUserRef(@RequestBody UserDriverRef userRef) {
         try {
             driverUserService.updateDriverUserRef(userRef);
