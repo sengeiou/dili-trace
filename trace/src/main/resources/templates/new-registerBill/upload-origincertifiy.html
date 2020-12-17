@@ -310,7 +310,7 @@
                     <div class="imageUploadWrap">
                         <div class="form-group">
                             <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
-                            <input type="text" class="form-control input-sm"  value="${registerBill.handleResult}" required/>
+                            <input type="text" class="form-control input-sm" name="handleResult" value="${registerBill.handleResult}" required/>
                         </div>
                     </div>
                 </div>
@@ -503,8 +503,8 @@
         <span class="fileimg-plus-icon">+</span>
         <span class="fileimg-des">点击上传</span>
         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-        <input type="hidden" name="globalImageCertList[{{index}}][uid]">
-        <input type="hidden" name="globalImageCertList[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+        <input type="hidden" name="imageCerts[{{index}}][uid]">
+        <input type="hidden" name="imageCerts[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
         <img class="magnifying">
         <div class="fileimg-cover" style="display: none;"></div>
         <div class="fileimg-edit" style="display: none;">
