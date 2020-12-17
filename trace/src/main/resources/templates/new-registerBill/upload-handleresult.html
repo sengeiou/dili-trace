@@ -253,7 +253,7 @@
                         <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
-                <%}%>
+                <%}}%>
             </div>
 
             <div class="form-item-group" id="detectReportDiv">
@@ -275,7 +275,7 @@
                         <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
-                <%}%>
+                <%}}%>
             </div>
 
 
@@ -291,7 +291,7 @@
                         <span class="fileimg-plus-icon" style="display: none" >+</span>
                         <span class="fileimg-des" style="display: none" >点击上传</span>
                         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                        <input type="hidden" name="imageCerts[${imageCount}][uid]" value="${img.uid}">
+                        <input type="hidden" name="imageCerts[${imageCount}][uid]" value="${img.uid!}">
                         <input type="hidden" name="imageCerts[${imageCount++}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
                         <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                         <div class="fileimg-cover" style="display: block;"></div>
@@ -300,7 +300,7 @@
                             <span class="fileimg-delete">删除</span>
                         </div>
                     </div>
-                    <%}%>
+                    <%}}%>
                 </div>
 
                 <div class="form-item-group">
@@ -339,7 +339,6 @@
             return;
         }
         var formData=$('#modifyRegisterBillForm').serializeJSON({useIntKeysAsArrayIndex:true});
-        debugger;
         // var   formData=$('#modifyRegisterBillForm').serializeObject();
         // var  originCertifiyUrl=$.makeArray(formData.originCertifiy).filter(function(v,i){
         //     return v!='';
@@ -439,6 +438,7 @@
                     $(this).siblings("input:hidden:first").val(uid);
 
                     var url = "${imageViewPathPrefix}/" + uid;
+                    debugger
                     $(this).siblings('.magnifying').attr('src', url).show();
                     $(this).siblings('.fileimg-cover,.fileimg-edit').show();
                     success();
