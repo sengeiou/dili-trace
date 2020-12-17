@@ -679,7 +679,7 @@ public class NewRegisterBillController {
     public BaseOutput<?> doRemoveReportAndCertifiy(@RequestBody ReportAndCertifiyRemoveDto removeDto) {
         try {
 //			Long id = this.registerBillService.doUploadDetectReport(input);
-            return this.registerBillService.doRemoveReportAndCertifiyNew(removeDto);
+            return this.registerBillService.doRemoveReportAndCertifiy(removeDto.getId(), removeDto.getDeleteType());
         } catch (TraceBizException e) {
             logger.error(e.getMessage(), e);
             return BaseOutput.failure(e.getMessage());
