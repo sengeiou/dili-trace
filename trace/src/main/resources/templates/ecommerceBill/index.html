@@ -24,9 +24,9 @@
                 <input id="originName" name="originName" class="form-control" />
             </div>
             <div class="form-group col">
-                <label for="detectState">检测结果</label>
-                <select id="detectState" name="detectStat" class="form-control"></select>
-                <#bcomboProvider _id="detectState" _provider="billDetectStateProvider" _value="" _onLoadSuccess=""/>
+                <label for="detectResult">检测结果</label>
+                <select id="detectResult" name="detectResult" class="form-control"></select>
+                <#bcomboProvider _id="detectResult" _provider="detectResultEnumProvider" _value="" _onLoadSuccess=""/>
             </div>
             <div class="form-group col-auto">
                 <label for="latestDetectTimeTimeStart">检测时间</label>
@@ -135,7 +135,7 @@
                 <th data-field="detectTime" data-sort-name="detect_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     检测时间
                 </th>
-                <th data-field="detectResult"  data-sort-name="detect_result"  data-sortable="true" data-align="center" data-provider="billDetectStateProvider">
+                <th data-field="detectResult"  data-sort-name="detect_result"  data-sortable="true" data-align="center" data-provider="detectResultEnumProvider">
                     检测结果
                 </th>
                 <th data-field="detectorName" data-sort-name="creator_name" data-sortable="true" data-align="center">
