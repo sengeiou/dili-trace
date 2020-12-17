@@ -97,7 +97,7 @@ public class QrCodeApi {
 
         if (Role.Manager == sessionContext.getSessionData().getRole()) {
             input.setClientType(ClientTypeEnum.MANAGER.getCode());
-        } else if (Role.Client == sessionContext.getSessionData().getRole()) {
+        } else {
             List<CustomerEnum.CharacterType> subRoles = sessionData.getSubRoles();
             if (subRoles.size() == 1) {
                 CustomerEnum.CharacterType characterType = subRoles.get(0);

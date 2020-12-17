@@ -143,7 +143,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
     private Optional<SessionData> loginAsAny(HttpServletRequest req) {
         String userToken = req.getHeader("UAP_Token");
-        String userId = req.getHeader("UAP_Token");
+        String userId = req.getHeader("userId");
         if(StringUtils.isNotBlank(userToken)){
             return this.loginAsManager(req);
         }else if(StringUtils.isNotBlank(userId)){
