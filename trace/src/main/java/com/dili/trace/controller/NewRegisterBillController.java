@@ -602,9 +602,7 @@ public class NewRegisterBillController {
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         }
-
     }
-
 
     /**
      * 上传产地报告

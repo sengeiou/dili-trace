@@ -244,7 +244,7 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="imageCerts[${imageCount++}][uid]">
+                    <input type="hidden" name="imageCerts[${imageCount}][uid]" value="${img.uid}">
                     <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
@@ -253,7 +253,9 @@
                         <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
-                <%}%>
+                <%
+                imageCount++;
+                }%>
                 <%}%>
             </div>
 
@@ -267,7 +269,7 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="imageCerts[${imageCount++}][uid]">
+                    <input type="hidden" name="imageCerts[${imageCount}][uid]" value="${img.uid}">
                     <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
@@ -276,7 +278,9 @@
                         <span class="fileimg-delete">删除</span>
                     </div>
                 </div>
-                <%}%>
+                <%
+                imageCount++;
+                }%>
                 <%}%>
             </div>
 
@@ -293,7 +297,7 @@
                         <span class="fileimg-plus-icon" style="display: none" >+</span>
                         <span class="fileimg-des" style="display: none" >点击上传</span>
                         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                        <input type="hidden" name="imageCerts[${imageCount++}][uid]">
+                        <input type="hidden" name="imageCerts[${imageCount}][uid]" value="${img.uid}">
                         <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
                         <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                         <div class="fileimg-cover" style="display: block;"></div>
@@ -302,7 +306,9 @@
                             <span class="fileimg-delete">删除</span>
                         </div>
                     </div>
-                    <%}%>
+                    <%
+                    imageCount++;
+                    }%>
                     <%}%>
                 </div>
 
@@ -341,7 +347,7 @@
         if($('#modifyRegisterBillForm').validate().form() != true){
             return;
         }
-        var formData=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
+        var formData=$('#modifyRegisterBillForm').serializeJSON({useIntKeysAsArrayIndex:true});
         // var   formData=$('#modifyRegisterBillForm').serializeObject();
         // var  originCertifiyUrl=$.makeArray(formData.originCertifiy).filter(function(v,i){
         //     return v!='';
@@ -504,7 +510,7 @@
         <span class="fileimg-des">点击上传</span>
         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
         <input type="hidden" name="imageCerts[{{index}}][uid]">
-        <input type="hidden" name="imageCerts[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+        <input type="hidden" name="imageCerts[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
         <img class="magnifying">
         <div class="fileimg-cover" style="display: none;"></div>
         <div class="fileimg-edit" style="display: none;">
