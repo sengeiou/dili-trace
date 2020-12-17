@@ -87,7 +87,7 @@ public class QrCodeApi {
      *
      * @return
      */
-    @RequestMapping(value = "/getMyQrCode.api", method = RequestMethod.GET)
+    @RequestMapping(value = "/getMyQrCode.api", method = RequestMethod.POST)
     public BaseOutput<QrOutputDto> getMyQrCode() {
         SessionData sessionData = this.sessionContext.getSessionData();
         QrInputDto input = new QrInputDto();

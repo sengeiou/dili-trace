@@ -69,7 +69,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
             }
             Optional<SessionData> currentSessionData=Optional.empty();
             if (access.role() == Role.ANY) {
-                currentSessionData=this.loginAsClient(request).map(sd->Optional.of(sd)).orElseGet(()->this.loginAsManager(request));
+                currentSessionData=this.loginAsAny(request);
             } else if (access.role() == Role.Client) {
                 currentSessionData=this.loginAsClient(request);
             } else if (access.role() == Role.Manager) {
@@ -139,6 +139,18 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 
     private Optional<SessionData> loginAsClient(HttpServletRequest req) {
         return this.customerRpcService.getCurrentCustomer();
+    }
+
+    private Optional<SessionData> loginAsAny(HttpServletRequest req) {
+        String userToken = req.getHeader("UAP_Token");
+        String userId = req.getHeader("UAP_Token");
+        if(StringUtils.isNotBlank(userToken)){
+            return this.loginAsManager(req);
+        }else if(StringUtils.isNotBlank(userId)){
+            return this.loginAsClient(req);
+        }else{
+            return Optional.empty();
+        }
     }
 
     private <T extends Annotation> T findAnnotation(HandlerMethod handler, Class<T> annotationType) {

@@ -195,6 +195,13 @@
           OR b.name LIKE CONCAT('%',#{keyword},'%'))
       </if>
 
+      <if test="sampleSourceList != null  and sampleSourceList.size()>0">
+          AND r.detect_source
+          <foreach collection="sampleSourceList " open=" IN (" close=")" item="detect_source" separator=",">
+              #{detect_source}
+          </foreach>
+      </if>
+
       <if test="detectStatusList != null  and detectStatusList.size()>0">
           AND b.detect_status
           <foreach collection="detectStatusList" open=" IN (" close=")" item="detectStatus" separator=",">

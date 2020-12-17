@@ -1,4 +1,4 @@
-package com.dili.trace.api;
+package com.dili.trace.api.client;
 
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
@@ -6,6 +6,7 @@ import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
+import com.dili.trace.api.UserApi;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.UpStreamDto;
@@ -26,9 +27,9 @@ import java.util.Arrays;
  */
 @Api(value = "/api/upstreamApi")
 @RestController
-@AppAccess(role = Role.ANY)
+@AppAccess(role = Role.Client)
 @RequestMapping(value = "/api/upstreamApi")
-public class UpStreamApi {
+public class ClientUpStreamApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserApi.class);
 //    @Autowired
 //    private UserService userService;
