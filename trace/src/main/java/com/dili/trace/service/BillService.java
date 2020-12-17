@@ -7,6 +7,7 @@ import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.trace.dao.RegisterBillMapper;
+import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -19,16 +20,19 @@ import com.dili.trace.enums.ImageCertTypeEnum;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,7 +63,6 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
     @Autowired
     DetectRequestService detectRequestService;
 
-
     /**
      * 根据id查询
      * @param billId
@@ -87,6 +90,8 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
     public EasyuiPageOutput listEasyuiPageByExample(RegisterBill domain, boolean useProvider) throws Exception {
         List<RegisterBill> list = listByExample(domain);
         Map<Long, DetectRequest> idAndDetectRquestMap = this.detectRequestService.findDetectRequestByIdList(StreamEx.of(list).map(RegisterBill::getDetectRequestId).toList());
+        //检测值
+        Map<String, DetectRecord> recordMap = detectRecordService.findMapRegisterBillByIds(StreamEx.of(list).map(RegisterBill::getLatestDetectRecordId).toList());
         StreamEx.of(list).forEach(rb -> {
             rb.setDetectRequest(idAndDetectRquestMap.get(rb.getDetectRequestId()));
         });
@@ -336,5 +341,4 @@ public class BillService extends BaseServiceImpl<RegisterBill, Long> {
             return new TraceBizException("操作登记单失败");
         });
     }
-
 }

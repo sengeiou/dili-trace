@@ -4,7 +4,10 @@ import com.dili.common.exception.TraceBizException;
 import com.dili.sg.trace.glossary.*;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.IDTO;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.dto.IdNameDto;
@@ -16,6 +19,8 @@ import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +39,7 @@ import java.util.Optional;
  * 委托单
  */
 @Service
-public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> {
+public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
 
     @Autowired
     CodeGenerateService codeGenerateService;
@@ -41,18 +47,35 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
     BillService billService;
     @Autowired
     DetectRequestService detectRequestService;
+    @Resource
+    RegisterBillMapper billMapper;
 
     /**
      * 分页查询委托单
      *
-     * @param input
+     * @param query
      * @return
      * @throws Exception
      */
-    public String listPage(RegisterBillDto input) throws Exception {
-        RegisterBillDto dto = this.preBuildDTO(input);
+    public String listPage(RegisterBillDto query) throws Exception {
+        RegisterBillDto dto = this.preBuildDTO(query);
         dto.setBillType(this.supportedBillType().getCode());
-        return this.billService.listEasyuiPageByExample(dto, true).toString();
+
+        if (query.getPage() == null || query.getPage() < 0) {
+            query.setPage(1);
+        }
+        if (query.getRows() == null || query.getRows() <= 0) {
+            query.setRows(10);
+        }
+        PageHelper.startPage(query.getPage(), query.getRows());
+        PageHelper.orderBy(query.getSort() + " " + query.getOrder());
+        List<RegisterBillDto> list = this.billMapper.queryListByExample(query);
+        Page<RegisterBillDto> page = (Page) list;
+        EasyuiPageOutput out = new EasyuiPageOutput();
+        List results = ValueProviderUtils.buildDataByProvider(query, list);
+        out.setRows(results);
+        out.setTotal(page.getTotal());
+        return out.toString();
     }
 
     /**
@@ -144,31 +167,31 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
         }).filter(bill -> this.supportedBillType().equalsToCode(bill.getBillType()))
                 .filter(bill -> DetectStatusEnum.FINISH_DETECT.equalsToCode(bill.getDetectStatus()))
                 .filter(bill -> DetectResultEnum.PASSED.equalsToCode(bill.getDetectRequest().getDetectResult()))
-        .map(bill->{
-            DetectRequest detectRequest=bill.getDetectRequest();
+                .map(bill -> {
+                    DetectRequest detectRequest = bill.getDetectRequest();
 
-            if(!DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())){
-                throw new TraceBizException("操作失败，数据状态已改变");
-            }
-            bill.setOperatorName(operatorUser.getName());
-            bill.setOperatorId(operatorUser.getId());
+                    if (!DetectResultEnum.FAILED.equalsToCode(detectRequest.getDetectResult())) {
+                        throw new TraceBizException("操作失败，数据状态已改变");
+                    }
+                    bill.setOperatorName(operatorUser.getName());
+                    bill.setOperatorId(operatorUser.getId());
 //            item.setSampleSource(SampleSourceEnum.SAMPLE_CHECK.getCode().intValue());
 //            item.setState(RegisterBillStateEnum.WAIT_CHECK.getCode().intValue());
-            DetectRequest item = this.detectRequestService.createByBillId(bill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(operatorUser.getId(),operatorUser.getName()), Optional.empty());
+                    DetectRequest item = this.detectRequestService.createByBillId(bill.getBillId(), DetectTypeEnum.NEW, new IdNameDto(operatorUser.getId(), operatorUser.getName()), Optional.empty());
 
-            DetectRequest updatable = new DetectRequest();
-            updatable.setId(item.getId());
+                    DetectRequest updatable = new DetectRequest();
+                    updatable.setId(item.getId());
 
-            updatable.setDetectSource(detectRequest.getDetectSource());
-            updatable.setDetectResult(DetectResultEnum.NONE.getCode());
-            updatable.setDetectType(DetectTypeEnum.RECHECK.getCode());
-            this.detectRequestService.updateSelective(detectRequest);
+                    updatable.setDetectSource(detectRequest.getDetectSource());
+                    updatable.setDetectResult(DetectResultEnum.NONE.getCode());
+                    updatable.setDetectType(DetectTypeEnum.RECHECK.getCode());
+                    this.detectRequestService.updateSelective(detectRequest);
 
-            bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
+                    bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
 
-            this.billService.update(bill);
-            return bill.getCode();
-        }).toList();
+                    this.billService.update(bill);
+                    return bill.getCode();
+                }).toList();
     }
 
     /**
@@ -180,7 +203,7 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
      */
     @Transactional
     public BaseOutput createCommissionBillByManager(RegisterBill bill, OperatorUser operatorUser) {
-            if (bill.getWeight() == null || bill.getWeight() .compareTo(BigDecimal.ZERO)<= 0) {
+        if (bill.getWeight() == null || bill.getWeight().compareTo(BigDecimal.ZERO) <= 0) {
             throw new TraceBizException("重量不能小于零");
         }
         if (StringUtils.isAllBlank(bill.getName(), bill.getCorporateName())) {
@@ -203,7 +226,7 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
         bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
         bill.setPlate("");
         this.billService.insertSelective(bill);
-        DetectRequest item =   this.detectRequestService.createDefault(bill.getBillId(),Optional.ofNullable(operatorUser));
+        DetectRequest item = this.detectRequestService.createDefault(bill.getBillId(), Optional.ofNullable(operatorUser));
 
         DetectRequest detectRequest = new DetectRequest();
         detectRequest.setId(item.getId());
@@ -223,7 +246,7 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
      */
     @Transactional
     public RegisterBill createCommissionBillByUser(RegisterBill bill) {
-        if (bill.getWeight() == null || bill.getWeight() .compareTo(BigDecimal.ZERO)<= 0) {
+        if (bill.getWeight() == null || bill.getWeight().compareTo(BigDecimal.ZERO) <= 0) {
             throw new TraceBizException("重量不能小于零");
         }
         if (StringUtils.isAllBlank(bill.getName(), bill.getCorporateName())) {
@@ -278,6 +301,7 @@ public class CommissionBillService  extends BaseServiceImpl<RegisterBill, Long> 
 
     /**
      * PC管理员审核登记单
+     *
      * @param billId
      * @param operatorUser
      * @return
