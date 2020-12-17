@@ -126,8 +126,8 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
-                    <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
+                    <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
+                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
                     <div class="fileimg-edit" style="display: block;">
@@ -149,8 +149,8 @@
                     <span class="fileimg-plus-icon" style="display: none" >+</span>
                     <span class="fileimg-des" style="display: none" >点击上传</span>
                     <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                    <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
-                    <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
+                    <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
+                    <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.DETECT_REPORT.getCode()}">
                     <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                     <div class="fileimg-cover" style="display: block;"></div>
                     <div class="fileimg-edit" style="display: block;">
@@ -175,8 +175,8 @@
                         <span class="fileimg-plus-icon" style="display: none" >+</span>
                         <span class="fileimg-des" style="display: none" >点击上传</span>
                         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-                        <input type="hidden" name="globalImageCertList[${imageCount--}][uid]">
-                        <input type="hidden" name="globalImageCertList[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
+                        <input type="hidden" name="imageCerts[${--imageCount}][uid]" value="${img.uid}">
+                        <input type="hidden" name="imageCerts[${imageCount}][certType]" value="${@com.dili.trace.enums.ImageCertTypeEnum.Handle_Result.getCode()}">
                         <img class="magnifying" style="display: block" src="${imageViewPathPrefix}/${img.uid!}">
                         <div class="fileimg-cover" style="display: block;"></div>
                         <div class="fileimg-edit" style="display: block;">
@@ -192,7 +192,7 @@
                     <div class="imageUploadWrap">
                         <div class="form-group">
                             <label class="label-title text-right"><span class="red">&lowast;</span>处理结果备注</label>
-                            <input type="text" class="form-control input-sm"  value="${registerBill.handleResult}" required/>
+                            <input type="text" class="form-control input-sm" name="handleResult" value="${registerBill.handleResult}" required/>
                         </div>
                     </div>
                 </div>
@@ -218,20 +218,21 @@
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.iframe-transport.js"></script>
 <script src="${contextPath!}/resources/jquery-file-upload/js/jquery.fileupload.js"></script>
 <script src="${contextPath!}/resources/js/jquery-editable-select.min.js"></script>
+<script type="text/javascript" src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script type="text/javascript">
     let imageItemCount = '${registerBill.imageCerts.~size!0}';
     function getDetectReportCount(selector){
         var count=$(selector).find('.fileimg-box').length;
         return count;
     }
-    function initImageBtns(selector){
+    function initImageBtns(selector, certType){
         var tempHtml=$(selector)
         var deleteImg=tempHtml.find('.fileimg-delete');
         var viewImg=tempHtml.find('.fileimg-view');
         deleteImg.on('click', function () {
             $(this).parents('.fileimg-box').remove();
             if(getDetectReportCount(selector)==0){
-                createDetectReportAndAppendTemplate(selector);
+                createDetectReportAndAppendTemplate(selector, certType);
             }
         });
         viewImg.on('click',function () {
@@ -249,15 +250,17 @@
         });
     }
 
-    function createDetectReportAndAppendTemplate(selector){
+    function createDetectReportAndAppendTemplate(selector, certType){
         if(getDetectReportCount(selector)==10){
             return;
         }
+        // $("[href$='.jpg']")
+        selector.find("[name$='[certType]']").val(certType);
         var tempHtml=$(template('imageCertItem', {index: imageItemCount++}));
         $(selector).append(tempHtml);
         var fileEl=tempHtml.find('input[type="file"]');
-        initFileUpload(fileEl,function(){createDetectReportAndAppendTemplate(selector);});
-        initImageBtns(tempHtml);
+        initFileUpload(fileEl,function(){createDetectReportAndAppendTemplate(selector, certType);});
+        initImageBtns(tempHtml, certType);
 
     }
     // 文件上传组件初始化
@@ -268,7 +271,8 @@
             done: function (e, res) {
                 if (res.result.code == 200) {
                     var uid= res.result.data;
-                    $(this).siblings("input:hidden").val(uid);
+                    $(this).siblings("input:hidden:first").val(uid);
+
 
                     var url = "${imageViewPathPrefix}/" + uid;
                     $(this).siblings('.magnifying').attr('src', url).show();
@@ -350,9 +354,9 @@ var currentUser={"depId":"${user.departmentId!}"
 	}
    $(function () {
        initImageBtns($(document.body));
-       createDetectReportAndAppendTemplate($('#detectReportDiv'));
-       createDetectReportAndAppendTemplate($('#handleResultContainer').find('#handleResultDiv'));
-        createDetectReportAndAppendTemplate($('#originCertifiyDiv'));
+       createDetectReportAndAppendTemplate($('#detectReportDiv'), 1);
+       createDetectReportAndAppendTemplate($('#handleResultContainer').find('#handleResultDiv'), 8);
+       createDetectReportAndAppendTemplate($('#originCertifiyDiv'), 2);
 
 	     $('#goodsTable').find('input[name="productName_1"]').val('${registerBill.productName!}');
 	     $('#goodsTable').find('input[name="productId_1"]').val(${registerBill.productId});
@@ -385,6 +389,8 @@ var currentUser={"depId":"${user.departmentId!}"
        cacheInputtedPlate("#plate");
 	   var registerSource = $("#registerSource").val();
        var registerBills = buildTableData(registerSource);
+       var data=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
+       console.log("data===>",data)
        if(registerBills.length!=1){
     	   
        }
@@ -401,8 +407,9 @@ var currentUser={"depId":"${user.departmentId!}"
                              url: "${contextPath}/registerBill/doEdit.action",
                              processData:true,
                              dataType: "json",
-                             data:formData,
+                             data: JSON.stringify(data),
                              async : true,
+                             contentType: "application/json; charset=utf-8",
                              success: function (ret) {
                                  if(ret.success){
                                 	 cacheInputtedPlate("#plate");
@@ -522,8 +529,8 @@ var currentUser={"depId":"${user.departmentId!}"
         <span class="fileimg-plus-icon">+</span>
         <span class="fileimg-des">点击上传</span>
         <input type="file" name="file" data-url="${contextPath!}/uploader/uploadImage.action" multiple="multipart/form-data"/>
-        <input type="hidden" name="globalImageCertList[{{index}}][uid]">
-        <input type="hidden" name="globalImageCertList[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
+        <input type="hidden" name="imageCerts[{{index}}][uid]">
+        <input type="hidden" name="imageCerts[{{index}}][certType]" value="${@com.dili.trace.enums.ImageCertBillTypeEnum.BILL_TYPE.getCode()}">
         <img class="magnifying">
         <div class="fileimg-cover" style="display: none;"></div>
         <div class="fileimg-edit" style="display: none;">

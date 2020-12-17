@@ -613,7 +613,6 @@
         var registerSource = $("#registerSource").val();
         var registerBills = buildTableData(registerSource);
         var data=$('#createRecordForm').serializeJSON({useIntKeysAsArrayIndex:true});
-        console.info(data);
         $.ajax({
             type: "POST",
             url: "${contextPath}/newRegisterBill/insert.action",

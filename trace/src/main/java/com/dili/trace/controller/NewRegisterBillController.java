@@ -722,7 +722,6 @@ public class NewRegisterBillController {
     @ResponseBody
     public BaseOutput<?> doEdit(RegisterBill input) {
         try {
-
             Long id = this.registerBillService.doEdit(input);
             return BaseOutput.success().setData(id);
         } catch (TraceBizException e) {
