@@ -6,11 +6,16 @@ import com.dili.ss.dto.DTOUtils;
 import com.dili.trace.dao.DetectRecordMapper;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.service.DetectRecordService;
+import com.google.common.collect.Maps;
+import one.util.streamex.StreamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -49,4 +54,14 @@ public class DetectRecordServiceImpl extends BaseServiceImpl<DetectRecord, Long>
 	public List<DetectRecord> findTop2AndLatest(String registerBillCode) {
 		return this.getActualDao().findTop2AndLatest(registerBillCode);
 	}
+
+    @Override
+    public  Map<String, DetectRecord>  findMapRegisterBillByIds(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return Maps.newHashMap();
+        }
+        Example example = new Example(DetectRecord.class);
+        example.and().andIn("id", ids);
+        return StreamEx.of(selectByExample(example)).toMap(DetectRecord::getRegisterBillCode, Function.identity());
+    }
 }

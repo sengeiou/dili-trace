@@ -265,7 +265,48 @@ public class RegisterBillDto extends RegisterBill {
     @Transient
     private List<Integer> billTypes;
 
+    /**
+     * 进门时间
+     */
+    @Transient
+    private Date checkinCreated;
 
+    /**
+     * 标准值
+     */
+    @Transient
+    private String normalResult;
+
+    /**
+     * 检测值
+     */
+    @Transient
+    private String pdResult;
+
+
+    public Date getCheckinCreated() {
+        return checkinCreated;
+    }
+
+    public void setCheckinCreated(Date checkinCreated) {
+        this.checkinCreated = checkinCreated;
+    }
+
+    public String getNormalResult() {
+        return normalResult;
+    }
+
+    public void setNormalResult(String normalResult) {
+        this.normalResult = normalResult;
+    }
+
+    public String getPdResult() {
+        return pdResult;
+    }
+
+    public void setPdResult(String pdResult) {
+        this.pdResult = pdResult;
+    }
 
     public List<Integer> getVerifyStatueList() {
         return verifyStatueList;
