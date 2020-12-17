@@ -31,13 +31,13 @@ public class TraceBaseService<T extends IBaseDomain, K extends Serializable> ext
         private U domain;
 
         public ExampleQuery(U example) {
-            if (domain.getPage() == null || domain.getPage() < 0) {
-                domain.setPage(1);
+            if (example.getPage() == null || example.getPage() < 0) {
+                example.setPage(1);
             }
-            if (domain.getRows() == null || domain.getRows() <= 0) {
-                domain.setRows(10);
+            if (example.getRows() == null || example.getRows() <= 0) {
+                example.setRows(10);
             }
-            this.domain = domain;
+            this.domain = example;
         }
 
 
