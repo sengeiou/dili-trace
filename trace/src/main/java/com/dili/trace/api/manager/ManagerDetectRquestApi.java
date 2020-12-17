@@ -5,6 +5,7 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.exception.AppException;
@@ -83,6 +84,7 @@ public class ManagerDetectRquestApi {
         if (null == detectRequestDto.getDetectStatus()&&detectStatusList.isEmpty()) {
             return BaseOutput.failure("参数错误");
         }
+        detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setDetectStatusList(detectStatusList);
 
         BasePage<DetectRequestDto> basePage = detectRequestService.listPageByUserCategory(detectRequestDto);
@@ -258,6 +260,7 @@ public class ManagerDetectRquestApi {
     @RequestMapping("/listPagedSampleSourceDetect.api")
     public BaseOutput<BasePage<SampleSourceListOutputDto>> listPagedSampleSourceDetect(@RequestBody DetectRequestQueryDto query) {
         try {
+            query.setIsDeleted(YesOrNoEnum.NO.getCode());
             BasePage<SampleSourceListOutputDto> basePage = this.detectRequestService.listPagedSampleSourceDetect(query);
             return BaseOutput.success().setData(basePage);
         } catch (TraceBizException e) {
