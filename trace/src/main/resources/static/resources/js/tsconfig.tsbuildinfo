@@ -1,0 +1,412 @@
+{
+  "program": {
+    "fileInfos": {
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es5.d.ts": {
+        "version": "c9a1f03d6ba0fe3c871eb0dd81622e78fbb61ade70878b34d48a341a690c59e9",
+        "signature": "c9a1f03d6ba0fe3c871eb0dd81622e78fbb61ade70878b34d48a341a690c59e9",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.d.ts": {
+        "version": "dc47c4fa66b9b9890cf076304de2a9c5201e94b740cffdf09f87296d877d71f6",
+        "signature": "dc47c4fa66b9b9890cf076304de2a9c5201e94b740cffdf09f87296d877d71f6",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.dom.d.ts": {
+        "version": "38130cdd16bd2318b9362f9d60dd9670f7e38708bb6131cf11fc78a41b2c34a0",
+        "signature": "38130cdd16bd2318b9362f9d60dd9670f7e38708bb6131cf11fc78a41b2c34a0",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.core.d.ts": {
+        "version": "46ee15e9fefa913333b61eaf6b18885900b139867d89832a515059b62cf16a17",
+        "signature": "46ee15e9fefa913333b61eaf6b18885900b139867d89832a515059b62cf16a17",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.collection.d.ts": {
+        "version": "43fb1d932e4966a39a41b464a12a81899d9ae5f2c829063f5571b6b87e6d2f9c",
+        "signature": "43fb1d932e4966a39a41b464a12a81899d9ae5f2c829063f5571b6b87e6d2f9c",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.generator.d.ts": {
+        "version": "cdccba9a388c2ee3fd6ad4018c640a471a6c060e96f1232062223063b0a5ac6a",
+        "signature": "cdccba9a388c2ee3fd6ad4018c640a471a6c060e96f1232062223063b0a5ac6a",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.iterable.d.ts": {
+        "version": "42f5e41e5893da663dbf0394268f54f1da4b43dc0ddd2ea4bf471fe5361d6faf",
+        "signature": "42f5e41e5893da663dbf0394268f54f1da4b43dc0ddd2ea4bf471fe5361d6faf",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.promise.d.ts": {
+        "version": "0b7a905675e6cb4211c128f0a3aa47d414b275180a299a9aad5d3ec298abbfc4",
+        "signature": "0b7a905675e6cb4211c128f0a3aa47d414b275180a299a9aad5d3ec298abbfc4",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.proxy.d.ts": {
+        "version": "dfff68b3c34338f6b307a25d4566de15eed7973b0dc5d69f9fde2bcac1c25315",
+        "signature": "dfff68b3c34338f6b307a25d4566de15eed7973b0dc5d69f9fde2bcac1c25315",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.reflect.d.ts": {
+        "version": "cb609802a8698aa28b9c56331d4b53f590ca3c1c3a255350304ae3d06017779d",
+        "signature": "cb609802a8698aa28b9c56331d4b53f590ca3c1c3a255350304ae3d06017779d",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.symbol.d.ts": {
+        "version": "3013574108c36fd3aaca79764002b3717da09725a36a6fc02eac386593110f93",
+        "signature": "3013574108c36fd3aaca79764002b3717da09725a36a6fc02eac386593110f93",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts": {
+        "version": "4670208dd7da9d6c774ab1b75c1527a810388c7989c4905de6aaea8561cb9dce",
+        "signature": "4670208dd7da9d6c774ab1b75c1527a810388c7989c4905de6aaea8561cb9dce",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/approverinfo.edit.ts": {
+        "version": "b9d32f1af949d54c272e2949fe59734196af75c78675311277efbaba27f062d9",
+        "signature": "db3af198a1c462d9d4121b21a376fc863e2048bf2183a1f811cd4757222d433f",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/approverinfo.index.ts": {
+        "version": "0b3ae21740216260c9f060fb45239fd76fbdeda25be222f7877ba2a77e29c3ef",
+        "signature": "076f8c2a8b4d64d0a265d92e928bad92954d5c364ef073d524c2f70a6d9a8421",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/categorycontroller.ts": {
+        "version": "f3aaf766ec059987272760a3df5439b71d40c5df0fca0650a4b9d635e986f1ff",
+        "signature": "8671625dfefb972f1c27f6a3cf39fde5b7893adebb5c17f3be293a8a916d7f3f",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/checksheet.index.ts": {
+        "version": "47f1422c3cc6ce90b16ded677c461634103bbae631c00989e6e02919f809d5ed",
+        "signature": "40fbfc810ac6b54edd585801d81f3473a5a9baf29de32ff9ad8f7fda51fb1924",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/citycontroller.ts": {
+        "version": "0bc497c2da5138c94d4cdc3fff364a11e035696d0643a38512f68496b86f1e24",
+        "signature": "22731d644f92ce4663fa0226dd65875435cdccbd322a0107e89cfd3508d7c755",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/commissionbillgrid.index.ts": {
+        "version": "2474c98171cfb7eda42e163d5fa0fcec23629519dd9bc283f43de78f3d3bccb8",
+        "signature": "1747781569c0cb359708c8edb68d9390a6dd9ca2feea97b8e9e81f26b988f6ba",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/commissiondetectrequestgrid.index.ts": {
+        "version": "6daff06dde979d0bbfad36b087be2f488e5fc829305943b4542f1b1d581a88b6",
+        "signature": "7eea773bf7f94720d8baea7ead25db8555ded6b88ce996436be4fc3f84ae17f7",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/customerdetectrequestgrid.index.ts": {
+        "version": "a5d846448d03eeb0219760add09b4951549eb54f414801e96f7032e69ae7c20c",
+        "signature": "0605daa6b48fa59debd2a285ce34492348fb218d33ce9dbed9d2056ce74da1c7",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/newregisterbillgrid.index.ts": {
+        "version": "244e99f0fcf2a0f838ebf4a52076d68e1cbf834adc688750cbefdbdc7692e998",
+        "signature": "33be5d5408fa4125a406409ae177695fe496325d3c21dafa18118d42fe5caf5b",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/purchaseintentionrecordgrid.index.ts": {
+        "version": "f38d88b5c998193e35d8e96c9fe7fb0b355a2856497632d016ba48abd003fa91",
+        "signature": "f59746c8f6f2c9cc6b7b8f6c8e7ea84c87cc1ff9b7d656fc50d01c705e7aed41",
+        "affectsGlobalScope": false
+      },
+      "../../tsc/truckenterrecordgrid.index.ts": {
+        "version": "5c4229ef94a4263340e6a754167903bbe15809e2fba2869486c27ca31a1cab3b",
+        "signature": "79063462870f4cdae9f7b9991fb3673ef371aef0b9a2d452385ab0e97d625815",
+        "affectsGlobalScope": false
+      },
+      "../../tsc/usualaddress.edit.ts": {
+        "version": "8e77c3a361b7ddaa35ca9cbd1bd7b66afd1c00de4bd0d4ad3b275ccf55e77132",
+        "signature": "c14377a83ecfc5595d0ef09e11395dfa77e33ce60112be0223a6ce1f594979d1",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/utils.ts": {
+        "version": "20e6504043872c8a10068d50fad96f9221b586da50fdb976345be2d744e9111c",
+        "signature": "86dc214aa7a689b794bbf351382e7bd83bef8ac2d66bd32d5205f85317a7b847",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/webconfig.ts": {
+        "version": "c20fc27d0c13b3a22ed2dcb057db77f5e00bf5d02fe3154b7d5cbbc0245979d5",
+        "signature": "784b4facd070efdea783925b9e639546e6961a26bec86722c985f1055f1b6c66",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/demo.ts": {
+        "version": "f82291953c288f52152e0359c97fbbc79110ee5f8b8d878a27684f2e7787f3ca",
+        "signature": "8713b03f47869255910f8e425541ca8da1e027d2dc5d92f2b12271104466df91",
+        "affectsGlobalScope": false
+      },
+      "../../tsc/ecommercebill.index.ts": {
+        "version": "1755aa8dddb9f3ad092ceb34d032f448e30bb08580df25f19fe3bb1aa75b6073",
+        "signature": "e8259a608dc0d12837afea15ae883f3edfd056f1275517030c0f00fb17357e36",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/newuser.index.ts": {
+        "version": "467015328800e80f9706f19996e207eeeb25e0af36a80667c3ce228be8b6d90f",
+        "signature": "f2c17ccb43464f7f0715a9ba18a1e9289e4700bfd6034e7f587f7cf28b6b8d53",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/postmsg.ts": {
+        "version": "72f7fbbe3dc92415b145492cc02ea60f435d46553b57d087ef8228669f253fea",
+        "signature": "d1f649687efab915825196d156e1c03670f94bebd11fbf3a68c672fd2311acff",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/trace.d.ts": {
+        "version": "e5e74e30ea64032abf4e4dab2de75f5529f9ca1e1bfd6d7333220d13e7fcdcbc",
+        "signature": "e5e74e30ea64032abf4e4dab2de75f5529f9ca1e1bfd6d7333220d13e7fcdcbc",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/userhistoryservice.index.ts": {
+        "version": "20b084b13588c0addb909a649f1d3bd89ee7c59a04d68c061648a2b3e1cca23e",
+        "signature": "29adf9897f07c981851c0046df47f402d414e4b0839e34dcc31e29b94948b44e",
+        "affectsGlobalScope": true
+      },
+      "../../tsc/usualaddress.index.ts": {
+        "version": "c30a0873e2bae9c29afdb575b4a1223c30e36cb465e6e7ed4a72efd444965182",
+        "signature": "f4e3db6dd75fc0f8ef87f4a19b09220c92a06fcded3c187129b7f2ec07e74844",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../node_modules/@types/jquery/jquerystatic.d.ts": {
+        "version": "2a19c7dd007f71b9db87dba915e20d894dbdac8aa8fab5d1c3083a61f2316a5c",
+        "signature": "2a19c7dd007f71b9db87dba915e20d894dbdac8aa8fab5d1c3083a61f2316a5c",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../node_modules/@types/jquery/jquery.d.ts": {
+        "version": "eab1e3426e549678fa8243ff87e0214838de91eb638c28f7dce3f1b8d8b8f140",
+        "signature": "eab1e3426e549678fa8243ff87e0214838de91eb638c28f7dce3f1b8d8b8f140",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../node_modules/@types/jquery/misc.d.ts": {
+        "version": "127819f0fdf3c86bf3f733c2a369d166603278c73286231eb919d50663de2637",
+        "signature": "127819f0fdf3c86bf3f733c2a369d166603278c73286231eb919d50663de2637",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../node_modules/@types/jquery/legacy.d.ts": {
+        "version": "6f1f78e8c2a5c7cd2c38aa9cc5da26d9c039f2bbfa753f2a0a54ce41c4dff8d0",
+        "signature": "6f1f78e8c2a5c7cd2c38aa9cc5da26d9c039f2bbfa753f2a0a54ce41c4dff8d0",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../node_modules/@types/sizzle/index.d.ts": {
+        "version": "7ddac8a4ba398441cfd6d8a69380401378f122ee8cc2d848e6e32f4db2b6c876",
+        "signature": "7ddac8a4ba398441cfd6d8a69380401378f122ee8cc2d848e6e32f4db2b6c876",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../node_modules/@types/jquery/index.d.ts": {
+        "version": "83b41c4e728a2ebc360331cb09a235edf7fb3525ccabe8434ee0d9b61d4f4783",
+        "signature": "83b41c4e728a2ebc360331cb09a235edf7fb3525ccabe8434ee0d9b61d4f4783",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../node_modules/@types/systemjs/index.d.ts": {
+        "version": "011808d24583baaa13339d920b3339ca5f22e9d6d1049ca023d68d16c427c5ac",
+        "signature": "011808d24583baaa13339d920b3339ca5f22e9d6d1049ca023d68d16c427c5ac",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../node_modules/@types/underscore/index.d.ts": {
+        "version": "8704967735337a2869c99c82c617d56aa13edb6b766ec63509cd951b304b009d",
+        "signature": "8704967735337a2869c99c82c617d56aa13edb6b766ec63509cd951b304b009d",
+        "affectsGlobalScope": true
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/alert.d.ts": {
+        "version": "66ac104c318febbffb8184519dcf237f77637dffe146581634757479eae8de4c",
+        "signature": "66ac104c318febbffb8184519dcf237f77637dffe146581634757479eae8de4c",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/button.d.ts": {
+        "version": "12420b8f34c3a6e7625ddeb4089b219f936328c76548e615f659786150584f7e",
+        "signature": "12420b8f34c3a6e7625ddeb4089b219f936328c76548e615f659786150584f7e",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/carousel.d.ts": {
+        "version": "b7d08b186213a1fbccd962ae8b5a99f88ef6c922a0b1da412776c30959bbcfa6",
+        "signature": "b7d08b186213a1fbccd962ae8b5a99f88ef6c922a0b1da412776c30959bbcfa6",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/collapse.d.ts": {
+        "version": "632394c9d3c0bf3ab0a2cac18d4ff298bab18cb6890c9a739f6fe5ff09dbd4b5",
+        "signature": "632394c9d3c0bf3ab0a2cac18d4ff298bab18cb6890c9a739f6fe5ff09dbd4b5",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/dropdown.d.ts": {
+        "version": "faeaf81edc8c26b5c29b8362af5025fef852bdde32febdc877de17c3dcc5a950",
+        "signature": "faeaf81edc8c26b5c29b8362af5025fef852bdde32febdc877de17c3dcc5a950",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/tab.d.ts": {
+        "version": "3c211bfd0ace30b93102c62d315d8948dd4a2890a9ca556ecfafa35f657ccc77",
+        "signature": "3c211bfd0ace30b93102c62d315d8948dd4a2890a9ca556ecfafa35f657ccc77",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/modal.d.ts": {
+        "version": "b101d8332fe603eac039a9e4e5627ba8b3a0c52aa5c49ffe0173695f48b6b56f",
+        "signature": "b101d8332fe603eac039a9e4e5627ba8b3a0c52aa5c49ffe0173695f48b6b56f",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/popover.d.ts": {
+        "version": "758ddd6b59693c213fc2488a1e93c7e603f12b37431b41a1155280716c0fbe74",
+        "signature": "758ddd6b59693c213fc2488a1e93c7e603f12b37431b41a1155280716c0fbe74",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/scrollspy.d.ts": {
+        "version": "08605061c2b185f6c41ef49c03f7016e8f44f79f9bce0833ef53d48c38c6998b",
+        "signature": "08605061c2b185f6c41ef49c03f7016e8f44f79f9bce0833ef53d48c38c6998b",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/toast.d.ts": {
+        "version": "8f7a46e1eec800705f75593b92684a708cf8461668be8063fcca70a85b87c176",
+        "signature": "8f7a46e1eec800705f75593b92684a708cf8461668be8063fcca70a85b87c176",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/tooltip.d.ts": {
+        "version": "487be5a42660afaf30ea2acf9e90ca028989ed1dfdef381408c936c9b4297a34",
+        "signature": "487be5a42660afaf30ea2acf9e90ca028989ed1dfdef381408c936c9b4297a34",
+        "affectsGlobalScope": false
+      },
+      "../../../../../../../node_modules/@types/bootstrap/index.d.ts": {
+        "version": "289c1ae2cbb057511d8525007c6cddc8241d098f5f0f6ba24054b5594f8a161a",
+        "signature": "289c1ae2cbb057511d8525007c6cddc8241d098f5f0f6ba24054b5594f8a161a",
+        "affectsGlobalScope": false
+      }
+    },
+    "options": {
+      "skipDefaultLibCheck": true,
+      "allowUmdGlobalAccess": true,
+      "skipLibCheck": true,
+      "baseUrl": "../../../../../..",
+      "declaration": false,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "alwaysStrict": false,
+      "watch": true,
+      "incremental": true,
+      "plugins": [],
+      "module": 3,
+      "noFallthroughCasesInSwitch": false,
+      "noImplicitAny": false,
+      "noImplicitReturns": false,
+      "removeComments": true,
+      "sourceMap": false,
+      "strictNullChecks": false,
+      "moduleResolution": 1,
+      "target": 7,
+      "outDir": "./",
+      "lib": [
+        "lib.dom.d.ts",
+        "lib.es2015.d.ts"
+      ],
+      "rootDirs": [
+        "../../tsc"
+      ],
+      "allowSyntheticDefaultImports": true,
+      "listFiles": true,
+      "charset": "utf8",
+      "esModuleInterop": true,
+      "configFilePath": "../../../../../../tsconfig.json"
+    },
+    "referencedMap": {
+      "../../../../../../../node_modules/@types/bootstrap/index.d.ts": [
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/alert.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/button.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/carousel.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/collapse.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/dropdown.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/modal.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/popover.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/scrollspy.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/tab.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/toast.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/tooltip.d.ts"
+      ],
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/collapse.d.ts": [
+        "../../../../../../node_modules/@types/jquery/index.d.ts"
+      ],
+      "../../../../../../node_modules/@types/jquery/index.d.ts": [
+        "../../../../../../node_modules/@types/jquery/jquery.d.ts",
+        "../../../../../../node_modules/@types/jquery/jquerystatic.d.ts",
+        "../../../../../../node_modules/@types/jquery/legacy.d.ts",
+        "../../../../../../node_modules/@types/jquery/misc.d.ts",
+        "../../../../../../node_modules/@types/sizzle/index.d.ts"
+      ]
+    },
+    "exportedModulesMap": {
+      "../../../../../../../node_modules/@types/bootstrap/index.d.ts": [
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/alert.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/button.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/carousel.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/collapse.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/dropdown.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/modal.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/popover.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/scrollspy.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/tab.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/toast.d.ts",
+        "../../../../../../../node_modules/@types/bootstrap/js/dist/tooltip.d.ts"
+      ],
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/collapse.d.ts": [
+        "../../../../../../node_modules/@types/jquery/index.d.ts"
+      ],
+      "../../../../../../node_modules/@types/jquery/index.d.ts": [
+        "../../../../../../node_modules/@types/jquery/jquery.d.ts",
+        "../../../../../../node_modules/@types/jquery/jquerystatic.d.ts",
+        "../../../../../../node_modules/@types/jquery/legacy.d.ts",
+        "../../../../../../node_modules/@types/jquery/misc.d.ts",
+        "../../../../../../node_modules/@types/sizzle/index.d.ts"
+      ]
+    },
+    "semanticDiagnosticsPerFile": [
+      "../../../../../../../node_modules/@types/bootstrap/index.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/alert.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/button.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/carousel.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/collapse.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/dropdown.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/modal.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/popover.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/scrollspy.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/tab.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/toast.d.ts",
+      "../../../../../../../node_modules/@types/bootstrap/js/dist/tooltip.d.ts",
+      "../../../../../../node_modules/@types/jquery/index.d.ts",
+      "../../../../../../node_modules/@types/jquery/jquery.d.ts",
+      "../../../../../../node_modules/@types/jquery/jquerystatic.d.ts",
+      "../../../../../../node_modules/@types/jquery/legacy.d.ts",
+      "../../../../../../node_modules/@types/jquery/misc.d.ts",
+      "../../../../../../node_modules/@types/sizzle/index.d.ts",
+      "../../../../../../node_modules/@types/systemjs/index.d.ts",
+      "../../../../../../node_modules/@types/underscore/index.d.ts",
+      "../../tsc/approverinfo.edit.ts",
+      "../../tsc/approverinfo.index.ts",
+      "../../tsc/categorycontroller.ts",
+      "../../tsc/checksheet.index.ts",
+      "../../tsc/citycontroller.ts",
+      "../../tsc/commissionbillgrid.index.ts",
+      "../../tsc/commissiondetectrequestgrid.index.ts",
+      "../../tsc/customerdetectrequestgrid.index.ts",
+      "../../tsc/demo.ts",
+      "../../tsc/ecommercebill.index.ts",
+      "../../tsc/newregisterbillgrid.index.ts",
+      "../../tsc/newuser.index.ts",
+      "../../tsc/postmsg.ts",
+      "../../tsc/purchaseintentionrecordgrid.index.ts",
+      "../../tsc/trace.d.ts",
+      "../../tsc/truckenterrecordgrid.index.ts",
+      "../../tsc/userhistoryservice.index.ts",
+      "../../tsc/usualaddress.edit.ts",
+      "../../tsc/usualaddress.index.ts",
+      "../../tsc/utils.ts",
+      "../../tsc/webconfig.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.dom.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.collection.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.core.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.generator.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.iterable.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.promise.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.proxy.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.reflect.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.symbol.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
+      "../../../../../../../../../../npm/node_modules/typescript/lib/lib.es5.d.ts"
+    ]
+  },
+  "version": "4.0.5"
+}
