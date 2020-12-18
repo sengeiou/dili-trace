@@ -1,7 +1,4 @@
-// import $ from 'jquery';
-// import _ from 'underscore';
-
-class TruckEnterRecordGrid extends ListPage {
+export class TruckEnterRecordGrid extends ListPage {
     btns: any[];
     toolbar: any;
 

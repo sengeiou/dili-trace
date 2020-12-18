@@ -1,6 +1,7 @@
 package com.dili.trace.controller;
 
 import com.dili.trace.domain.PurchaseIntentionRecord;
+import com.dili.trace.dto.query.PurchaseIntentionRecordQueryDto;
 import com.dili.trace.service.PurchaseIntentionRecordService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -49,8 +50,8 @@ public class PurchaseIntentionRecordController {
             @ApiImplicitParam(name = "PurchaseIntentionRecord", paramType = "form", value = "PurchaseIntentionRecord的form信息", required = false, dataType = "string")})
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
-    String listPage(@RequestBody PurchaseIntentionRecord queryInput) throws Exception {
-        return this.purchaseIntentionRecordService.listEasyuiPage(queryInput, true).toString();
+    String listPage(@RequestBody PurchaseIntentionRecordQueryDto queryInput) throws Exception {
+        return this.purchaseIntentionRecordService.listEasyuiPageByExample(queryInput, true).toString();
 
     }
 }
