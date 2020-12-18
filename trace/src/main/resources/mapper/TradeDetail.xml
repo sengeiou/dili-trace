@@ -15,10 +15,10 @@
       from trade_detail 
       left join register_bill on trade_detail.bill_id =register_bill.id 
       where buyer_id=#{userId}
-      <if test="createdStart != null  and createdStart != ''">
+      <if test="createdStart != null">
         <![CDATA[ AND #{createdStart}<=trade_detail.created ]]>
       </if>
-      <if test="createdEnd != null  and createdEnd != ''">
+      <if test="createdEnd != null">
         <![CDATA[AND trade_detail.created <=#{createdEnd}]]>
       </if>
       <if test="likeProductName != null  and likeProductName != ''">
@@ -43,10 +43,10 @@
           select bill_id from trade_detail
         where buyer_id=#{userId}
       )
-      <if test="createdStart != null  and createdStart != ''">
+      <if test="createdStart != null">
         <![CDATA[ AND #{createdStart}<=register_bill.created ]]>
       </if>
-      <if test="createdEnd != null  and createdEnd != ''">
+      <if test="createdEnd != null">
         <![CDATA[AND register_bill.created <=#{createdEnd}]]>
       </if>
       <if test="likeProductName != null  and likeProductName != ''">
