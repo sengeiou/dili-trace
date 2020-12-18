@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * 经营户(卖家)报备接口
  * Created by wangguofeng
  */
 @RestController
