@@ -83,6 +83,26 @@ public class HangGuoTrade {
     private String handleRemark;
     @Column(name = "create_time")
     private Date createTime;
+    @Transient
+    private Date createdStart;
+    @Transient
+    private Date createdEnd;
+
+    public Date getCreatedStart() {
+        return createdStart;
+    }
+
+    public void setCreatedStart(Date createdStart) {
+        this.createdStart = createdStart;
+    }
+
+    public Date getCreatedEnd() {
+        return createdEnd;
+    }
+
+    public void setCreatedEnd(Date createdEnd) {
+        this.createdEnd = createdEnd;
+    }
 
     public Date getCreateTime() {
         return createTime;

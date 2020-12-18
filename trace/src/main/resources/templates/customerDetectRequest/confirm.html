@@ -54,7 +54,7 @@
     async function callDoAssign(){
         let designatedId = $("#designatedId").val();
         let designatedName = $("#designatedName").val();
-        await parent.window['DetectRequestGridObj'].doAssign('${detectRequest.id}', designatedId, designatedName);
+        await parent.window['CustomerDetectRequestGrid'].doAssign('${detectRequest.id}', designatedId, designatedName);
     }
 
     /**

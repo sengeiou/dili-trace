@@ -7,13 +7,67 @@ class CustomerDetectRequestGrid extends ListPage {
         $(window).on('resize', () => this.grid.bootstrapTable('resetView'));
         var cthis = this;
         window['CustomerDetectRequestGrid'] = this;
+        $('#booking-btn').on('click', async () => await this.doBookingRequest());
         $('#assign-btn').on('click', async () => await this.openAssignPage());
         $('#sampling-btn').on('click', async () => await this.doSamplingCheck());
         $('#auto-btn').on('click', async () => await this.doAutoCheck());
+        $('#manual-btn').on('click', async () => await this.doManualCheck());
         $('#review-btn').on('click', async () => await this.doReviewCheck());
         $('#undo-btn').on('click', async () => await this.doUndo());
         $('#detail-btn').on('click', async () => await this.openDetailPage());
         this.grid.on('check.bs.table uncheck.bs.table', async () => await this.resetButtons());
+    }
+    async doBookingRequest() {
+        debugger;
+        var selected = this.rows[0];
+        var url = this.toUrl("/customerDetectRequest/doBookingRequest.action?billId=" + selected.billId);
+        let sure = await popwrapper.confirm('请确认是否预约申请？', undefined);
+        if (!sure) {
+            return;
+        }
+        try {
+            var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
+            if (!resp.success) {
+                bs4pop.alert(resp.message, { type: 'error' });
+                return;
+            }
+            await this.queryGridData();
+            bs4pop.removeAll();
+            bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+        }
+        catch (e) {
+            bs4pop.alert('远程访问失败', { type: 'error' });
+        }
+    }
+    async doManualCheck() {
+        let selected = this.rows[0];
+        bs4pop.removeAll();
+        let promise = new Promise((resolve, reject) => {
+            bs4pop.confirm('是否人工检测通过当前登记单？<br/>' + selected.code, { type: 'warning', btns: [
+                    { label: '不通过', className: 'btn-primary', onClick(cb) { resolve("false"); } },
+                    { label: '通过', className: 'btn-primary', onClick(cb) { resolve("true"); } },
+                    { label: '取消', className: 'btn-cancel', onClick(cb) { resolve("cancel"); } },
+                ] });
+        });
+        let result = await promise;
+        if (result == 'cancel') {
+            return;
+        }
+        let url = this.toUrl("/customerDetectRequest/doManualCheck.action?billId=" + selected.billId + "&pass=" + result);
+        try {
+            var resp = await jq.ajaxWithProcessing({ type: "GET", url: url, processData: true, dataType: "json" });
+            if (!resp.success) {
+                bs4pop.alert(resp.message, { type: 'error' });
+                return;
+            }
+            await this.queryGridData();
+            bs4pop.removeAll();
+            bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+        }
+        catch (e) {
+            debugger;
+            bs4pop.alert('远程访问失败', { type: 'error' });
+        }
     }
     removeAllAndLoadData() {
         bs4pop.removeAll();

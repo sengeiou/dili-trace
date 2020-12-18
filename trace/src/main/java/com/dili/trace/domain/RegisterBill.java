@@ -473,6 +473,13 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`unit_price`")
     private  BigDecimal unitPrice;
 
+    /**
+     * 创建人角色。0-经营户 1-管理员
+     */
+    @ApiModelProperty(value = "创建人角色。0-经营户 1-管理员")
+    @Column(name = "`creator_role`")
+    private Integer creatorRole;
+
     public BigDecimal getUnitPrice() {
         return unitPrice;
     }
@@ -1458,5 +1465,13 @@ public class RegisterBill extends BaseDomain {
 
     public void setRegistType(Integer registType) {
         this.registType = registType;
+    }
+
+    public Integer getCreatorRole() {
+        return creatorRole;
+    }
+
+    public void setCreatorRole(Integer creatorRole) {
+        this.creatorRole = creatorRole;
     }
 }
