@@ -310,6 +310,9 @@
       <if test="sampleTimeEnd != null">
           <![CDATA[ AND r.sample_time <= #{sampleTimeEnd} ]]>
       </if>
+      <if test="registType != null">
+           AND r.regist_type = #{registType}
+      </if>
       <if test="billTypes != null">
           AND b.bill_type
           <foreach collection="billTypes" open=" IN (" close=")" item="billType" separator=",">
