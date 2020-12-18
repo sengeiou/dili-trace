@@ -134,7 +134,7 @@ class NewRegisterBillGrid extends ListPage {
             batchIdList.push(this.batchSamplingRows[i].id);
             codeList.push(this.batchSamplingRows[i].code);
         }
-        let sure = await popwrapper.confirm('批量采样检测' + codeList.join("<br\>"), undefined);
+        let sure = await popwrapper.confirm('批量采样检测<br\>' + codeList.join("<br\>"), undefined);
         if (!sure) {
             return;
         }
@@ -336,7 +336,7 @@ class NewRegisterBillGrid extends ListPage {
             var passWithOriginCertifiyUrl = null;
             if (onlyWithOriginCertifiyUrlIdList.length > 0) {
                 let reconfirmPromise = new Promise((resolve, reject) => {
-                    layer.confirm('只有产地证明登记单:<br/>' + onlyWithOriginCertifiyUrlIdList.join("<br\>"), { btn: ['不检测', '检测'], title: "是否不再进行检测" }, function () {
+                    bs4pop.confirm('只有产地证明登记单:<br/>' + onlyWithOriginCertifiyUrlIdList.join("<br\>"), { btn: ['不检测', '检测'], title: "是否不再进行检测" }, function () {
                         resolve(true);
                     }, function () {
                         resolve(false);
@@ -344,35 +344,23 @@ class NewRegisterBillGrid extends ListPage {
                 });
                 passWithOriginCertifiyUrl = await reconfirmPromise;
             }
-            layer.closeAll();
+            bs4pop.removeAll();
             var cthis = this;
-            $.ajax({
-                type: "POST",
-                url: "${contextPath}/newRegisterBill/doBatchAudit.action",
-                processData: true,
-                contentType: 'application/json;charset=utf-8',
-                data: JSON.stringify({ registerBillIdList: batchIdList, pass: true, passWithOriginCertifiyUrl: passWithOriginCertifiyUrl }),
-                dataType: "json",
-                async: true,
-                success: function (ret) {
-                    if (ret.success) {
-                        var failureList = ret.data.failureList;
-                        if (failureList.length == 0) {
-                            cthis.queryGridData();
-                            layer.alert('操作成功：</br>' + ret.data.successList.join('</br>'), { title: '操作', time: 3000 });
-                        }
-                        else {
-                            swal('操作', '成功:' + ret.data.successList.join('</br>') + '失败:' + ret.data.failureList.join('</br>'), 'info');
-                        }
-                    }
-                    else {
-                        swal('错误', ret.result, 'error');
-                    }
-                },
-                error: function () {
-                    swal('错误', '远程访问失败', 'error');
+            try {
+                let url = this.toUrl("/newRegisterBill/doBatchAudit.action");
+                let reqData = JSON.stringify({ registerBillIdList: batchIdList, pass: true, passWithOriginCertifiyUrl: passWithOriginCertifiyUrl });
+                var resp = await jq.ajaxWithProcessing({ type: "POST", data: reqData, url: url, processData: true, dataType: "json", contentType: 'application/json;charset=utf-8' });
+                if (!resp.success) {
+                    bs4pop.alert(resp.message, { type: 'error' });
+                    return;
                 }
-            });
+                await cthis.queryGridData();
+                bs4pop.removeAll();
+                bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+            }
+            catch (e) {
+                bs4pop.alert('远程访问失败', { type: 'error' });
+            }
         }
     }
     async openAuditPage() {
@@ -552,58 +540,34 @@ class NewRegisterBillGrid extends ListPage {
     async doBatchUndo() {
         var cthis = this;
         var waitAudit = this.waitAuditRows;
+        if (waitAudit.length == 0) {
+            bs4pop.alert('所选登记单不能进行撤销', { type: 'error' });
+            return;
+        }
         let promise = new Promise((resolve, reject) => {
-            layer.confirm('请确认是否撤销选中数据？<br/>' + arr.map(e => e.code).join("<br\>"), {
-                btn: ['确定', '取消'], title: "警告！！！",
-                btn1: function () {
-                    resolve(true);
-                    return false;
-                },
-                btn2: function () {
-                    resolve(false);
-                    return false;
-                }
+            bs4pop.confirm('请确认是否撤销选中数据？<br\>' + waitAudit.map(e => e.code).join("<br\>"), undefined, async function (sure) {
+                resolve(sure);
             });
-            $('.layui-layer').width('460px');
         });
         let result = await promise;
-        if (result) {
-            var _url = "/registerBill/doBatchUndo.action";
-            var idlist = waitAudit.map(e => e.id);
-            $.ajax({
-                type: "POST",
-                url: _url,
-                data: JSON.stringify(idlist),
-                processData: true,
-                dataType: "json",
-                contentType: 'application/json;charset=utf-8',
-                async: true,
-                success: function (data) {
-                    if (data.code == "200") {
-                        layer.alert('操作成功', {
-                            title: '操作',
-                            time: 600,
-                            end: async function () {
-                                layer.closeAll();
-                                await cthis.queryGridData();
-                            }
-                        }, async function () {
-                            layer.closeAll();
-                            await cthis.queryGridData();
-                        });
-                    }
-                    else {
-                        layer.closeAll();
-                        swal('错误', data.result, 'error');
-                    }
-                },
-                error: function () {
-                    layer.closeAll();
-                    swal('错误', '远程访问失败', 'error');
+        if (result == true) {
+            try {
+                bs4pop.removeAll();
+                let url = this.toUrl("/newRegisterBill/doBatchUndo.action");
+                var idlist = waitAudit.map(e => e.id);
+                var resp = await jq.ajaxWithProcessing({ type: "POST", data: JSON.stringify(idlist), url: url, processData: true, dataType: "json", contentType: 'application/json;charset=utf-8' });
+                if (!resp.success) {
+                    bs4pop.alert(resp.message, { type: 'error' });
+                    return;
                 }
-            });
+                await cthis.queryGridData();
+                bs4pop.removeAll();
+                bs4pop.alert('操作成功', { type: 'info', autoClose: 600 });
+            }
+            catch (e) {
+                bs4pop.alert('远程访问失败', { type: 'error' });
+            }
         }
-        layer.closeAll();
     }
     filterByProp(prop, propValues) {
         let arrayData = $.makeArray(this.rows);

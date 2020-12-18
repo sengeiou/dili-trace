@@ -1454,6 +1454,9 @@
     <if test="likeCode != null">
       AND b.code like '%${likeCode}%'
     </if>
+    <if test="productName != null">
+      AND b.product_name like '%${productName}%'
+    </if>
     <if test="likeProductName != null">
       AND b.product_name like '%${likeProductName}%'
     </if>
