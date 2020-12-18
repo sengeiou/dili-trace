@@ -1,4 +1,3 @@
-
 export class PurchaseIntentionRecordGrid extends ListPage {
     btns: any[];
     toolbar: any;

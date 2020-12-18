@@ -74,14 +74,7 @@
 <script src="${contextPath!}/resources/js/CategoryController.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <script src="${contextPath!}/resources/assets/dep/systemjs/extras/amd.min.js"></script>
-<script type="systemjs-importmap">
-{
-  "imports": {
-    "demo": "${contextPath!}/resources/js/demo.js",
-    "PurchaseIntentionRecordGrid":"${contextPath!}/resources/js/PurchaseIntentionRecordGrid.index.js"
-  }
-}
-</script>
+<#importmap/>
 <script type="text/javascript">
     lay('.laydatetime').each(function(){
         laydate.render({
