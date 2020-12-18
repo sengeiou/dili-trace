@@ -320,6 +320,8 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
             query.setRows(10);
         }
         PageHelper.startPage(query.getPage(), query.getRows());
+        PageHelper.orderBy(query.getSort() + " " + query.getOrder());
+
         List<DetectRequestWithBillDto> list = this.detectRequestMapper.queryListByExample(query);
         Page<DetectRequestWithBillDto> page = (Page) list;
 
