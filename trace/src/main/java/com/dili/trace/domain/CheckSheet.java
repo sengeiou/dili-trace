@@ -60,6 +60,17 @@ public class CheckSheet extends BaseDomain {
 	@ApiModelProperty(value = "修改时间")
 	@Column(name = "`modified`")
 	private Date modified;
+	@ApiModelProperty(value = "登记单类型")
+	@Column(name = "`bill_type`")
+	private Integer billType;
+
+	public Integer getBillType() {
+		return billType;
+	}
+
+	public void setBillType(Integer billType) {
+		this.billType = billType;
+	}
 
 	@Transient
 	private String approverBase64Sign;
