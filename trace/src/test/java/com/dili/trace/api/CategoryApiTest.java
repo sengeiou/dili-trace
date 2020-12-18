@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.AutoWiredBaseTest;
+import com.dili.trace.api.client.ClientUserCategoryApi;
 import com.dili.trace.domain.RUserCategory;
 import com.dili.trace.enums.PreserveTypeEnum;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import java.util.List;
 @Rollback(false)
 public class CategoryApiTest extends AutoWiredBaseTest {
     @Autowired
-    CategoryApi categoryApi;
+    ClientUserCategoryApi categoryApi;
 
 
 
@@ -46,7 +47,7 @@ public class CategoryApiTest extends AutoWiredBaseTest {
     public void listTest(){
         RUserCategory rUserCategory = new RUserCategory();
         rUserCategory.setPage(1);
-        BaseOutput<BasePage<RUserCategory>> out = categoryApi.userCategory(rUserCategory);
+        BaseOutput<BasePage<RUserCategory>> out = categoryApi.listUserCategory(rUserCategory);
         System.out.println(JSONObject.toJSONString(out));
     }
 

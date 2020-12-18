@@ -8,8 +8,9 @@
                 <input type="text" class="form-control" name="likeBuyerName" id="likeBuyerName"/>
             </div>
             <div class="form-group col">
-                <label for="driverName">商品</label>
-                <input type="text" class="form-control" name="driverName" id="driverName"/>
+                <label for="productName">商品</label>
+                <input type="hidden" name="productId" id="productId" />
+                <input type="text" class="form-control" name="productName" id="productName" for="productId"/>
             </div>
             <div class="form-group col-auto">
                 <label for="createdStart">登记时间</label>
@@ -66,14 +67,14 @@
 </#bs4Body>
 <#webGlobalConfig/>
 <script src="${contextPath!}/resources/assets/dep/systemjs/system.min.js"></script>
-<script src="${contextPath!}/resources/assets/dep/systemjs/extras/amd.min.js"></script>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
 <script src="${contextPath!}/resources/js/WebConfig.js"></script>
 <script src="${contextPath!}/resources/js/CategoryController.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
-<script src="${contextPath!}/resources/js/PurchaseIntentionRecordGrid.index.js"></script>
+<script src="${contextPath!}/resources/assets/dep/systemjs/extras/amd.min.js"></script>
+<#importmap/>
 <script type="text/javascript">
     lay('.laydatetime').each(function(){
         laydate.render({
@@ -82,9 +83,15 @@
             ,trigger: 'click'
         });
     });
-    $(function () {
-        new PurchaseIntentionRecordGrid($('#grid'),$('#queryForm'),$('#toolbar'));
+    System.set('app:jquery', window.jQuery);
+    System.set('app:underscore', window._);
+    System.import('PurchaseIntentionRecordGrid').then(function(grid){
+        new grid.PurchaseIntentionRecordGrid($('#grid'),$('#queryForm'),$('#toolbar'));
     });
+    System.import('demo').then(function(ut){
+       debugger
+    });
+
 </script>
 
 

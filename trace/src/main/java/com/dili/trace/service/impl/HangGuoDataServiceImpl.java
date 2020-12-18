@@ -1,6 +1,7 @@
 package com.dili.trace.service.impl;
 
 import com.dili.ss.base.BaseServiceImpl;
+import com.dili.ss.util.DateUtils;
 import com.dili.trace.dao.HangGuoDataMapper;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.hangguo.HangGuoTrade;
@@ -10,6 +11,7 @@ import com.dili.trace.dto.thirdparty.report.ReportInspectionDto;
 import com.dili.trace.dto.thirdparty.report.ReportScanCodeOrderDto;
 import com.dili.trace.dto.thirdparty.report.ReportUnqualifiedDisposalDto;
 import com.dili.trace.service.HangGuoDataService;
+import com.github.pagehelper.PageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,14 @@ import java.util.Map;
 @Transactional(rollbackFor = Exception.class)
 public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> implements HangGuoDataService {
     private static final Logger logger = LoggerFactory.getLogger(BaseServiceImpl.class);
-
+    /**
+     * patch 交易数据缓存标志位时间段 往前24小时
+     */
+    private Integer lastDayHour= -24;
+    /**
+     * 最大处理条数，超出的则在下一次执行job中再处理
+     */
+    private Integer maxPageCountSize= 15000;
     @Autowired
     private HangGuoDataMapper hangGuoDataMapper;
 
@@ -82,6 +91,10 @@ public class HangGuoDataServiceImpl extends BaseServiceImpl<HangGuoUser, Long> i
 
     @Override
     public List<HangGuoTrade> selectTradeReportListByHandleFlag(HangGuoTrade trade) {
+        trade.setCreatedStart(DateUtils.addHours(DateUtils.getCurrentDate(),lastDayHour));
+        trade.setCreatedEnd(DateUtils.getCurrentDate());
+        int firstPage = 1;
+        PageHelper.startPage(firstPage,maxPageCountSize);
         return hangGuoDataMapper.selectTradeReportListByHandleFlag(trade);
     }
 

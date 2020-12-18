@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.trace.dto.BillSumReportDto;
 import com.dili.trace.service.TradeStatisticReportService;
+import com.dili.trace.service.UapRpcService;
 import com.dili.trace.util.MarketUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +33,8 @@ public class BillSumReportController {
 
     @Autowired
     TradeStatisticReportService tradeStatisticReportService;
+    @Autowired
+    UapRpcService uapRpcService;
 
     /**
      * 跳转到页面
@@ -58,7 +61,7 @@ public class BillSumReportController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     List<BillSumReportDto> list(BillSumReportDto query) {
-        query.setMarketId(MarketUtil.returnMarket());
+        query.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         List<BillSumReportDto> list = tradeStatisticReportService.getBillSumReportList(query);
         return list;
     }

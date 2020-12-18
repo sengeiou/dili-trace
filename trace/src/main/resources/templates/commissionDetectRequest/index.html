@@ -113,11 +113,11 @@
     <div>
         <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
             <button id="assign-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> 接单</button>
-            <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 采样检测</button>
-            <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 主动送检</button>
-            <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 复检</button>
-            <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i> 撤销</button>
-            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-ban"></i>查看</button>
+            <button id="sampling-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-get-pocket"></i> 采样检测</button>
+            <button id="auto-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-car"></i> 主动送检</button>
+            <button id="review-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-repeat"></i> 复检</button>
+            <button id="undo-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa  fa-undo"></i> 撤销</button>
+            <button id="detail-btn" style="display: none" type="button" class="btn btn-primary"><i class="fa fa-eye"></i>查看</button>
             <button id="export" style="display: none" type="button" class="btn btn-primary" onclick="bui.util.doExport('detectRequestGrid','queryForm')"><i class="fa fa-download"></i> 导出</button>
         </div>
         <table id="detectRequestGrid" data-toggle="table" data-title="检测请求列表" class="table" data-toolbar="#toolbar" data-pagination="true" data-page-number="1" data-page-size="10"
@@ -133,64 +133,64 @@
                 <th data-field="code" data-sortable="true" data-align="center">
                     委托编号
                 </th>
-                <th data-field="verifyStatusName" data-sortable="true" data-align="center" >
+                <th data-field="verifyStatusName" data-sort-name="verify_status" data-sortable="true" data-align="center" >
                     审核状态
                 </th>
-                <th data-field="detectStatusName" data-sortable="true" data-align="center" >
+                <th data-field="detectStatusName" data-sort-name="detect_status" data-sortable="true" data-align="center" >
                     检测状态
                 </th>
                 <th data-field="name" data-sortable="true" data-align="center">
                     业户姓名
                 </th>
-                <th data-field="corporateName" data-sortable="true" data-align="center">
+                <th data-field="corporateName" data-sort-name="corporate_name" data-sortable="true" data-align="center">
                     企业姓名
                 </th>
                 <th data-field="plate" data-sortable="true" data-align="center">
                     车牌
                 </th>
-                <th data-field="productName" data-sortable="true" data-align="center">
+                <th data-field="productName" data-sort-name="product_name" data-sortable="true" data-align="center">
                     商品名称
                 </th>
-                <th data-field="brandName" data-sortable="true" data-align="center">
+                <th data-field="brandName" data-sort-name="brand_name" data-sortable="true" data-align="center">
                     品牌
                 </th>
                 <th data-field="weight" data-sortable="true" data-align="center">
                     重量
                 </th>
-                <th data-field="weightUnitName" data-sortable="true" data-align="center">
+                <th data-field="weightUnitName"  data-sort-name="weight_unit" data-sortable="true" data-align="center">
                     重量单位
                 </th>
-                <th data-field="originName" data-sortable="true" data-align="center">
+                <th data-field="originName"  data-sort-name="origin_name" data-sortable="true" data-align="center">
                     产地
                 </th>
-                <th data-field="confirmTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                <th data-field="confirmTime" data-sort-name="confirm_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     接单时间
                 </th>
-                <th data-field="sampleTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                <th data-field="sampleTime"  data-sort-name="sample_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     采样时间
                 </th>
-                <th data-field="sampleCode" data-sortable="true" data-align="center">
+                <th data-field="sampleCode"  data-sort-name="sample_code" data-sortable="true" data-align="center">
                     采样编号
                 </th>
-                <th data-field="detectTime" data-sortable="true" data-align="center" data-provider="datetimeProvider">
+                <th data-field="detectTime"  data-sort-name="detect_time" data-sortable="true" data-align="center" data-provider="datetimeProvider">
                     检测时间
                 </th>
-                <th data-field="detectResultName" data-sortable="true" data-align="center">
+                <th data-field="detectResultName"  data-sort-name="detect_result" data-sortable="true" data-align="center">
                     检测结果
                 </th>
-                <th data-field="detectorName" data-sortable="true" data-align="center">
+                <th data-field="detectorName" data-sort-name="detector_name" data-sortable="true" data-align="center">
                     检测员
                 </th>
-                <th data-field="hasOriginCertifiyName" data-sortable="true" data-align="center">
+                <th data-field="hasOriginCertifiyName"  data-sort-name="has_origin_certifiy" data-sortable="true" data-align="center">
                     产地证明
                 </th>
-                <th data-field="hasDetectReportName" data-sortable="true" data-align="center">
+                <th data-field="hasDetectReportName" data-sort-name="has_detect_report" data-sortable="true" data-align="center">
                     检测报告
                 </th>
-                <th data-field="hasHandleResultName" data-sortable="true" data-align="center">
+                <th data-field="hasHandleResultName" data-sort-name="has_handle_result" data-sortable="true" data-align="center">
                     处理结果
                 </th>
-                <th data-field="isDeletedName" data-sortable="true" data-align="center">
+                <th data-field="isDeletedName" data-sort-name="is_deleted" data-sortable="true" data-align="center">
                     是否删除
                 </th>
             </tr>
