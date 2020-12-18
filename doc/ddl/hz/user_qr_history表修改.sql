@@ -1,1 +1,0 @@
-alter table user_qr_history add column trade_request_id bigint(20);
