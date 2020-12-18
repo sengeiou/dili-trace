@@ -295,8 +295,11 @@
       <if test="marketId != null">
           AND b.market_id =#{marketId}
       </if>
-      <if test="billType != null">
-          AND b.bill_type =#{billType}
+      <if test="marketId != null">
+          AND b.market_id =#{marketId}
+      </if>
+      <if test="isDeleted != null">
+          AND b.is_deleted =#{isDeleted}
       </if>
       <if test="billTypes != null">
           AND b.bill_type

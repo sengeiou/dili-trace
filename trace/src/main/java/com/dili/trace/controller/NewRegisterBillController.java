@@ -1,8 +1,6 @@
 package com.dili.trace.controller;
 
 import com.dili.common.annotation.RegisterBillMessageEvent;
-import com.dili.common.entity.LoginSessionContext;
-import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
@@ -39,7 +37,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.function.Function;
@@ -784,6 +781,7 @@ public class NewRegisterBillController {
                     rb.setIsDeleted(YesOrNoEnum.NO.getCode());
                     rb.setMeasureType(MeasureTypeEnum.COUNT_WEIGHT.getCode());
                     rb.setRegistType(RegistTypeEnum.NONE.getCode());
+                    rb.setCreatorRole(CreatorRoleEnum.MANAGER.getCode());
 
                     return rb;
                 }).toList();

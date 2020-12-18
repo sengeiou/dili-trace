@@ -2,6 +2,7 @@ package com.dili.trace.controller;
 
 import com.dili.common.annotation.DetectRequestMessageEvent;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
@@ -18,6 +19,8 @@ import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.*;
 import com.dili.trace.util.MarketUtil;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.session.SessionContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
@@ -96,6 +99,7 @@ public class CustomerDetectRequestController {
         billTypes.add(BillTypeEnum.CHECK_DISPOSE.getCode());
         billTypes.add(BillTypeEnum.E_COMMERCE_BILL.getCode());
         detectRequestDto.setBillTypes(billTypes);
+        detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
         return out.toString();
     }
@@ -203,6 +207,43 @@ public class CustomerDetectRequestController {
                 return msg.getCode();
             }).nonNull().toList();
         }
+    }
+
+    /**
+     * 预约申请
+     *
+     * @param billId
+     * @return
+     */
+    @RequestMapping(value = "/doBookingRequest.action", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput doBookingRequest(@RequestParam(name = "billId", required = true) Long billId) {
+        try {
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            this.detectRequestService.bookingRequest(billId, userTicket);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
+    }
+
+    /**
+     * 人工检测
+     *
+     * @param billId
+     * @param pass
+     * @return
+     */
+    @RequestMapping(value = "/doManualCheck.action", method = RequestMethod.GET)
+    public @ResponseBody
+    BaseOutput doManualCheck(@RequestParam(name = "billId", required = true) Long billId, @RequestParam(name = "pass", required = true) Boolean pass) {
+        try {
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            this.detectRequestService.manualCheck(billId, pass, userTicket);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        }
+        return BaseOutput.success("操作成功");
     }
 
     /**

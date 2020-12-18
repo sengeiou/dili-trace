@@ -22,6 +22,7 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.glossary.UpStreamTypeEnum;
 import com.dili.uap.sdk.domain.User;
+import com.dili.uap.sdk.domain.UserTicket;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
@@ -320,6 +321,7 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
             query.setRows(10);
         }
         PageHelper.startPage(query.getPage(), query.getRows());
+        PageHelper.orderBy(query.getSort() + " " + query.getOrder());
         List<DetectRequestWithBillDto> list = this.detectRequestMapper.queryListByExample(query);
         Page<DetectRequestWithBillDto> page = (Page) list;
 
@@ -356,9 +358,6 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         RegisterBill billParam = new RegisterBill();
         billParam.setId(registerBill.getId());
         billParam.setDetectStatus(DetectStatusEnum.WAIT_SAMPLE.getCode());
-        billParam.setHasDetectReport(registerBill.getHasDetectReport());
-        billParam.setHasOriginCertifiy(registerBill.getHasOriginCertifiy());
-        billParam.setHasHandleResult(registerBill.getHasHandleResult());
         billService.updateSelective(billParam);
         // 更新检测请求
         DetectRequest updateParam = new DetectRequest();
@@ -613,13 +612,22 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
             return Lists.newArrayList();
         }
         List<DetectRequestMessageEvent> msgStream = Lists.newArrayList();
-        // 待接单：可以接单和撤回
+        // 待审核：可以预约申请（弹框二次确认）和撤销
+        if (DetectStatusEnum.NONE.equalsToCode(item.getDetectStatus())) {
+            msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.booking, DetectRequestMessageEvent.undo));
+        }
+        // 待接单：可以接单和撤销
         if (DetectStatusEnum.WAIT_DESIGNATED.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.assign, DetectRequestMessageEvent.undo));
         // 待采样：可以采样检测、主动送检
         }else if (DetectStatusEnum.WAIT_SAMPLE.equalsToCode(item.getDetectStatus())) {
             msgStream.addAll(Lists.newArrayList(DetectRequestMessageEvent.auto, DetectRequestMessageEvent.sampling));
+            // 待采样并且管理员创建：可以人工检测
+            if (CreatorRoleEnum.MANAGER.equalsToCode(item.getCreatorRole())) {
+                msgStream.add(DetectRequestMessageEvent.manual);
+            }
         }
+
         if (item.getDetectRequestId() != null) {
             DetectRequest detectRequest = this.get(item.getDetectRequestId());
             if (detectRequest != null) {
@@ -662,4 +670,90 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         }
     }
 
+    /**
+     * 预约申请
+     * @param billId
+     */
+    public void bookingRequest(Long billId, UserTicket userTicket) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
+            throw new TraceBizException("操作失败，登记单已撤销！");
+        });
+        // 初始【待审核】状态才可以预约申请
+        if (!DetectStatusEnum.NONE.equalsToCode(registerBill.getDetectStatus())) {
+            throw new TraceBizException("操作失败，数据状态已改变");
+        }
+        if (registerBill.getDetectRequestId() == null) {
+            throw new TraceBizException("操作失败，检测请求不存在，请联系管理员！");
+        }
+
+        // 审核状态：待审核 --> 待接单
+        RegisterBill updateBill = new RegisterBill();
+        updateBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
+        updateBill.setOperatorId(userTicket.getId());
+        updateBill.setOperatorName(userTicket.getUserName());
+        updateBill.setModified(new Date());
+        this.billService.updateSelective(updateBill);
+    }
+
+    /**
+     * 人工直接检测通过或者退回
+     * @param billId
+     * @param pass
+     * @param userTicket
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void manualCheck(Long billId, Boolean pass, UserTicket userTicket) {
+        RegisterBill registerBill = this.billService.getAvaiableBill(billId).orElseThrow(() -> {
+            throw new TraceBizException("操作失败，登记单已撤销！");
+        });
+        // 审核状态为【待采样】状态并且管理员创建的报备单才可以人工检测
+        if (!(DetectStatusEnum.WAIT_SAMPLE.equalsToCode(registerBill.getDetectStatus()) && CreatorRoleEnum.MANAGER.equalsToCode(registerBill.getCreatorRole()))) {
+            throw new TraceBizException("操作失败，审核状态已改变或不是管理员报备单！");
+        }
+        if (registerBill.getDetectRequestId() == null) {
+            throw new TraceBizException("操作失败，检测请求不存在，请联系管理员！");
+        }
+
+        // 人工检测-报备单
+        manualCheckBill(registerBill, pass, userTicket);
+
+        // 人工检测-检测请求
+        manualCheckDetectRequest(registerBill.getDetectRequestId(), pass);
+    }
+
+    /**
+     *  人工检测-报备单
+     * @param registerBill
+     * @param pass
+     * @param userTicket
+     */
+    private void manualCheckBill(RegisterBill registerBill, Boolean pass, UserTicket userTicket) {
+        RegisterBill updateBill = new RegisterBill();
+        updateBill.setId(registerBill.getId());
+        // TODO: 退回待定
+        updateBill.setDetectStatus(pass ? DetectStatusEnum.FINISH_DETECT.getCode() : DetectStatusEnum.RETURN_DETECT.getCode());
+        updateBill.setOperatorId(userTicket.getId());
+        updateBill.setOperatorName(userTicket.getUserName());
+        updateBill.setModified(new Date());
+        this.billService.updateSelective(updateBill);
+    }
+
+    /**
+     * 人工检测-检测请求
+     * @param detectRequestId
+     */
+    private void manualCheckDetectRequest(Long detectRequestId, Boolean pass) {
+        DetectRequest updateRequest = new DetectRequest();
+        updateRequest.setId(detectRequestId);
+        // 采样来源
+        updateRequest.setDetectSource(SampleSourceEnum.MANUALLY.getCode());
+        // 采样时间
+        updateRequest.setSampleTime(new Date());
+        // 检测时间
+        updateRequest.setDetectTime(new Date());
+        // 检测结果
+        updateRequest.setDetectResult(pass ? DetectResultEnum.PASSED.getCode() : DetectResultEnum.FAILED.getCode());
+        updateRequest.setModified(new Date());
+        this.updateSelective(updateRequest);
+    }
 }

@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum DetectRequestMessageEvent {
     /**
+     * 预约申请
+     */
+    booking("booking-btn"),
+    /**
      * 接单
      */
     assign("assign-btn"),
@@ -15,6 +19,10 @@ public enum DetectRequestMessageEvent {
      * 主动送检
      */
     auto("auto-btn"),
+    /**
+     * 人工检测
+     */
+    manual("manual-btn"),
     /**
      * 复检
      */
