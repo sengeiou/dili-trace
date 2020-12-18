@@ -46,7 +46,7 @@ public class EnumsApi {
      * 客户类型枚举查询
      */
     @RequestMapping(value = "/listClientTypeEnum.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listClientTypeEnum() {
+    public BaseOutput<List<KeyTextPair>> listClientTypeEnum() {
         try {
             List<KeyTextPair> list = StreamEx.of(ClientTypeEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();
@@ -64,7 +64,7 @@ public class EnumsApi {
      * 检测状态枚举查询
      */
     @RequestMapping(value = "/listDetectStatusEnum.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listDetectStatusEnum() {
+    public BaseOutput<List<KeyTextPair>> listDetectStatusEnum() {
         try {
             List<KeyTextPair> list = StreamEx.of(DetectStatusEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();
@@ -83,7 +83,7 @@ public class EnumsApi {
      * 检测类型枚举查询
      */
     @RequestMapping(value = "/listDetectTypeEnum.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listDetectTypeEnum() {
+    public BaseOutput<List<KeyTextPair>> listDetectTypeEnum() {
         try {
             List<KeyTextPair> list = StreamEx.of(DetectTypeEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();
@@ -101,7 +101,7 @@ public class EnumsApi {
      * 证明类型查询
      */
     @RequestMapping(value = "/listImageCertType.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listImageCertType() {
+    public BaseOutput<List<KeyTextPair>> listImageCertType() {
         try {
             List<KeyTextPair> list = StreamEx.of(ImageCertTypeEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();
@@ -120,7 +120,7 @@ public class EnumsApi {
      * 报备单审核状态查询
      */
     @RequestMapping(value = "/listBillVerifyStatus.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listBillVerifyStatus() {
+    public BaseOutput<List<KeyTextPair>> listBillVerifyStatus() {
         try {
             List<KeyTextPair> list = StreamEx.of(BillVerifyStatusEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();
@@ -138,7 +138,7 @@ public class EnumsApi {
      * 商品保存类型查询
      */
     @RequestMapping(value = "/listPreserveType.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listPreserveType() {
+    public BaseOutput<List<KeyTextPair>> listPreserveType() {
         try {
             List<KeyTextPair> list = StreamEx.of(PreserveTypeEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();
@@ -156,7 +156,7 @@ public class EnumsApi {
      * 登记单类型查询
      */
     @RequestMapping(value = "/listBillType.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listBillType() {
+    public BaseOutput<List<KeyTextPair>> listBillType() {
         try {
             List<KeyTextPair> list = StreamEx.of(BillTypeEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();
@@ -174,7 +174,7 @@ public class EnumsApi {
      * 登记类型查询
      */
     @RequestMapping(value = "/listRegistType.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listRegistType() {
+    public BaseOutput<List<KeyTextPair>> listRegistType() {
         try {
             List<KeyTextPair> list = StreamEx.of(RegistTypeEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();
@@ -192,7 +192,7 @@ public class EnumsApi {
      * 报备单类型查询
      */
     @RequestMapping(value = "/listTruckType.api", method = RequestMethod.POST)
-    public BaseOutput<List<Entry<Integer, String>>> listTruckType() {
+    public BaseOutput<List<KeyTextPair>> listTruckType() {
         try {
             List<KeyTextPair> list = StreamEx.of(TruckTypeEnum.values()).map(e -> {
                 KeyTextPair p = new KeyTextPair();

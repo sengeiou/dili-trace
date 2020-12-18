@@ -1,7 +1,13 @@
 package com.dili.trace.dto;
 
 public class KeyTextPair {
+    /**
+     * key值
+     */
     private Object key;
+    /**
+     * 文本信息
+     */
     private String text;
 
     public Object getKey() {
