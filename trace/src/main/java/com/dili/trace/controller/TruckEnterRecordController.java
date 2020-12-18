@@ -61,7 +61,7 @@ public class TruckEnterRecordController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(@RequestBody TruckEnterRecordQueryDto queryInput) throws Exception {
-        return this.truckEnterRecordService.listEasyuiPage(queryInput, true).toString();
+        return this.truckEnterRecordService.listEasyuiPageByExample(queryInput, true).toString();
 
     }
 }
