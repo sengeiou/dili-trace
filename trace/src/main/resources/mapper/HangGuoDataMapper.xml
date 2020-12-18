@@ -152,7 +152,9 @@
                 pay_no,register_no,handle_flag,report_flag,handle_remark
                 from third_hangguo_trade_data
                 where handle_flag=#{handleFlag}
-
+                <![CDATA[AND #{createdStart}<=create_time]]>
+                <![CDATA[AND create_time <=#{createdEnd}]]>
+                ORDER BY create_time ASC
     </select>
 
     <update id="batchUpdateCacheTrade">
