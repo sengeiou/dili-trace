@@ -835,7 +835,7 @@ public class NewRegisterBillController {
             Customer condition = new Customer();
             condition.setCustomerId(StringUtils.trimToNull(registerBill.getTradeAccount()));
             condition.setPrintingCard(StringUtils.trimToNull(registerBill.getTradePrintingCard()));
-            Customer customer = this.customerService.findCustomer(condition).orElse(null);
+            Customer customer = this.customerService.findCustomer(condition,this.uapRpcService.getCurrentFirm().get().getId()).orElse(null);
             if (customer != null) {
                 userInfoDto.setUserId(customer.getCustomerId());
                 userInfoDto.setName(customer.getName());
