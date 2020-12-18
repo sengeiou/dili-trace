@@ -45,6 +45,17 @@ public class DetectRequestQueryDto extends DetectRequest {
     @Transient
     private String keyword;
 
+    @Transient
+    private Long userId;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public String getKeyword() {
         return keyword;
     }
