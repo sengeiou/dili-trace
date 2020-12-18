@@ -12,7 +12,7 @@
     "watch": true,
     "incremental": true,
     "plugins": [],
-    "module": "System",
+    "module": "UMD",
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,
