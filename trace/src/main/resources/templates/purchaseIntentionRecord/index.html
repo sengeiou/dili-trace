@@ -66,7 +66,6 @@
 </#bs4Body>
 <#webGlobalConfig/>
 <script src="${contextPath!}/resources/assets/dep/systemjs/system.min.js"></script>
-<script src="${contextPath!}/resources/assets/dep/systemjs/extras/amd.min.js"></script>
 <script src="${contextPath!}/resources/assets/dep/underscore/underscore-min.js"></script>
 <script src="${contextPath!}/resources/js/jquery.serializejson.js"></script>
 <script src="${contextPath!}/resources/js/Utils.js"></script>
@@ -74,6 +73,8 @@
 <script src="${contextPath!}/resources/js/CategoryController.js?v=${v}"></script>
 <script src="${contextPath!}/resources/assets/dep/jquery/laydate/laydate.js"></script>
 <script src="${contextPath!}/resources/js/PurchaseIntentionRecordGrid.index.js"></script>
+<script src="${contextPath!}/resources/assets/dep/systemjs/extras/amd.min.js"></script>
+
 <script type="text/javascript">
     lay('.laydatetime').each(function(){
         laydate.render({
@@ -83,6 +84,7 @@
         });
     });
     $(function () {
+        debugger
         new PurchaseIntentionRecordGrid($('#grid'),$('#queryForm'),$('#toolbar'));
     });
 </script>
