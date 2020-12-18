@@ -183,7 +183,7 @@ class NewRegisterBillGrid extends ListPage {
                 batchIdList.push(this.batchSamplingRows[i].id);
                 codeList.push(this.batchSamplingRows[i].code)
         }
-        let sure=await popwrapper.confirm('批量采样检测'+codeList.join("<br\>"),undefined);
+        let sure=await popwrapper.confirm('批量采样检测<br\>'+codeList.join("<br\>"),undefined);
         if(!sure){
             return;
         }
@@ -417,7 +417,6 @@ class NewRegisterBillGrid extends ListPage {
         });
     }
 
-
     private async  doBatchAudit(){
         var waitAudit=this.filterByProp('verifyStatus', [BillVerifyStatusEnum.WAIT_AUDIT]);
         if(waitAudit.length==0){
@@ -449,7 +448,7 @@ class NewRegisterBillGrid extends ListPage {
             if(onlyWithOriginCertifiyUrlIdList.length>0){
                 let reconfirmPromise = new Promise((resolve, reject) => {
                     //@ts-ignore
-                    layer.confirm('只有产地证明登记单:<br/>'+onlyWithOriginCertifiyUrlIdList.join("<br\>"), {btn: ['不检测', '检测'], title: "是否不再进行检测"},function () {
+                    bs4pop.confirm('只有产地证明登记单:<br/>'+onlyWithOriginCertifiyUrlIdList.join("<br\>"), {btn: ['不检测', '检测'], title: "是否不再进行检测"},function () {
                         resolve(true);
                     },function(){
                         resolve(false);
@@ -458,57 +457,30 @@ class NewRegisterBillGrid extends ListPage {
                 passWithOriginCertifiyUrl=await reconfirmPromise;
             }
             //@ts-ignore
-            layer.closeAll();
+            bs4pop.removeAll();
             var cthis=this;
-            $.ajax({
-                type: "POST",
-                url: "${contextPath}/newRegisterBill/doBatchAudit.action",
-                processData:true,
-                contentType:'application/json;charset=utf-8',
-                data:JSON.stringify({registerBillIdList:batchIdList,pass:true,passWithOriginCertifiyUrl:passWithOriginCertifiyUrl}),
-                dataType: "json",
-                async : true,
-                success: function (ret) {
-                    if(ret.success){
-                        var failureList=ret.data.failureList;
-                        if(failureList.length==0){
-                            // _registerBillGrid.datagrid("reload");
-                            cthis.queryGridData();
-                            //@ts-ignore
-                            //TLOG.component.operateLog('登记单管理',"批量审核","【编号】:"+codeList.join(','));
-                            //@ts-ignore
-                            layer.alert('操作成功：</br>'+ret.data.successList.join('</br>'),{title:'操作',time : 3000});
+            try{
+                let url= this.toUrl( "/newRegisterBill/doBatchAudit.action");
+                let reqData = JSON.stringify({registerBillIdList:batchIdList,pass:true,passWithOriginCertifiyUrl:passWithOriginCertifiyUrl});
+                var resp=await jq.ajaxWithProcessing({type: "POST",data:reqData,url: url,processData:true,dataType: "json",contentType:'application/json;charset=utf-8'});
 
-                        }else{
-                            //@ts-ignore
-                            swal(
-                                '操作',
-                                '成功:'+ret.data.successList.join('</br>')+'失败:'+ret.data.failureList.join('</br>'),
-                                'info'
-                            );
-                        }
-                    }else{
-                        //@ts-ignore
-                        swal(
-                            '错误',
-                            ret.result,
-                            'error'
-                        );
-                    }
-                },
-                error: function(){
+                if(!resp.success){
                     //@ts-ignore
-                    swal(
-                        '错误',
-                        '远程访问失败',
-                        'error'
-                    );
+                    bs4pop.alert(resp.message, {type: 'error'});
+                    return;
                 }
-            });
-
+                await cthis.queryGridData();
+                //@ts-ignore
+                //TLOG.component.operateLog('登记单管理',"批量审核","【编号】:"+codeList.join(','));
+                //@ts-ignore
+                bs4pop.removeAll()
+                //@ts-ignore
+                bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+            }catch (e){
+                //@ts-ignore
+                bs4pop.alert('远程访问失败', {type: 'error'});
+            }
         }
-
-
     }
     private async  openAuditPage(){
         var row=this.rows[0]
@@ -639,7 +611,6 @@ class NewRegisterBillGrid extends ListPage {
         });
     }
 
-
     public async resetButtons() {
         var btnArray=this.btns;
         _.chain(btnArray).each((btn)=> {
@@ -668,7 +639,6 @@ class NewRegisterBillGrid extends ListPage {
          return this.filterByProp('detectStatus', [DetectStatusEnum.WAIT_SAMPLE]);
     }
 
-
     private multiRows() {
         if (this.rows.length <= 1) {
             return;
@@ -692,7 +662,6 @@ class NewRegisterBillGrid extends ListPage {
         }
     }
 
-
     public static queryProduct(param, success, error) {
         // @ts-ignore
         var productName = $('#productCombobox').combotree('getText');
@@ -713,10 +682,6 @@ class NewRegisterBillGrid extends ListPage {
         // return data;
     }
 
-
-
-
-
     /**
      *
      * @param applyStates
@@ -725,72 +690,43 @@ class NewRegisterBillGrid extends ListPage {
 
         var cthis = this;
         var waitAudit = this.waitAuditRows;
-
+        if(waitAudit.length==0){
+            //@ts-ignore
+            bs4pop.alert('所选登记单不能进行撤销', {type: 'error'});
+            return;
+        }
         let promise = new Promise((resolve, reject) => {
             // @ts-ignore
-            layer.confirm('请确认是否撤销选中数据？<br/>' + arr.map(e => e.code).join("<br\>"), {
-                btn: ['确定', '取消'], title: "警告！！！",
-                btn1: function () {
-                    resolve(true);
-                    return false;
-                },
-                btn2: function () {
-                    resolve(false);
-                    return false;
-                }
+            bs4pop.confirm('请确认是否撤销选中数据？<br\>' + waitAudit.map(e => e.code).join("<br\>"), undefined, async function (sure) {
+                resolve(sure);
             });
-            $('.layui-layer').width('460px');
         });
         let result = await promise; // wait until the promise resolves (*)
-        if (result) {
-            var _url =  "/registerBill/doBatchUndo.action";
-            var idlist = waitAudit.map(e => e.id);
-            $.ajax({
-                type: "POST",
-                url: _url,
-                data: JSON.stringify(idlist),
-                processData: true,
-                dataType: "json",
-                contentType: 'application/json;charset=utf-8',
-                async: true,
-                success: function (data) {
-                    if (data.code == "200") {
-                        // @ts-ignore
-                        //TLOG.component.operateLog('登记单管理', "批量撤销", '【IDS】:' + JSON.stringify(idlist));
-                        // @ts-ignore
-                        layer.alert('操作成功', {
-                                title: '操作',
-                                time: 600,
-                                end: async function () {
-                                    // @ts-ignore
-                                    layer.closeAll();
-                                    await cthis.queryGridData();
-                                }
-                            },
-                            async function () {
-                                // @ts-ignore
-                                layer.closeAll();
-                                await cthis.queryGridData();
-                            }
-                        );
+        if (result==true) {
+            try{
+                //@ts-ignore
+                bs4pop.removeAll();
+                let url= this.toUrl( "/newRegisterBill/doBatchUndo.action");
+                var idlist = waitAudit.map(e => e.id);
+                var resp=await jq.ajaxWithProcessing({type: "POST",data:JSON.stringify(idlist),url: url,processData:true,dataType: "json",contentType:'application/json;charset=utf-8'});
 
-                    } else {
-                        // @ts-ignore
-                        layer.closeAll();
-                        // @ts-ignore
-                        swal('错误', data.result, 'error');
-                    }
-                },
-                error: function () {
-                    // @ts-ignore
-                    layer.closeAll();
-                    // @ts-ignore
-                    swal('错误', '远程访问失败', 'error');
+                if(!resp.success){
+                    //@ts-ignore
+                    bs4pop.alert(resp.message, {type: 'error'});
+                    return;
                 }
-            });
+                await cthis.queryGridData();
+                // @ts-ignore
+                //TLOG.component.operateLog('登记单管理', "批量撤销", '【IDS】:' + JSON.stringify(idlist));
+                //@ts-ignore
+                bs4pop.removeAll();
+                //@ts-ignore
+                bs4pop.alert('操作成功', {type: 'info',autoClose: 600});
+            }catch (e){
+                //@ts-ignore
+                bs4pop.alert('远程访问失败', {type: 'error'});
+            }
         }
-        // @ts-ignore
-        layer.closeAll();
     }
 
     private filterByProp(prop: string, propValues: any[]) {
