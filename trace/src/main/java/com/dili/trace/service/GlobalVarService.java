@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class GlobalVarService {
-    @Value("${market.id:8}") //SG市场ID
-    private Long marketId;
 
     @Value("${diliDfs.image.view.path.prefix:http://gaeway.diligrp.com:8285/dili-dfs/file/view}")
     private String dfsImageViewPathPrefix;
@@ -22,11 +20,5 @@ public class GlobalVarService {
         return dfsImageViewPathPrefix;
     }
 
-    /**
-     * 返回市场id
-     * @return
-     */
-    public Long getMarketId() {
-        return marketId;
-    }
+
 }

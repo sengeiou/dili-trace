@@ -83,8 +83,13 @@
             ,trigger: 'click'
         });
     });
+    System.set('app:jquery', window.jQuery);
+    System.set('app:underscore', window._);
     System.import('PurchaseIntentionRecordGrid').then(function(grid){
         new grid.PurchaseIntentionRecordGrid($('#grid'),$('#queryForm'),$('#toolbar'));
+    });
+    System.import('demo').then(function(ut){
+       debugger
     });
 
 </script>

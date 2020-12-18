@@ -1,6 +1,7 @@
 package com.dili.trace.util;
 
 import com.dili.trace.service.MarketService;
+import com.dili.trace.service.UapRpcService;
 
 /**
  * Description:
@@ -13,8 +14,7 @@ public class MarketUtil {
     private static final Long MARKET_ID = 1L;
 
     public static Long returnMarket(){
-        MarketService marketService = SpringbootUtil.getBean(MarketService.class);
-        Long marketId = marketService.getCurrentLoginMarketId();
-        return marketId;
+        UapRpcService marketService = SpringbootUtil.getBean(UapRpcService.class);
+        return marketService.getCurrentFirm().get().getId();
     }
 }

@@ -234,8 +234,8 @@ public class CustomerRpcService {
      * @param cust
      * @return
      */
-    public Optional<com.dili.trace.domain.Customer> findCustomer(com.dili.trace.domain.Customer cust) {
-        return this.listCustomers(cust.getCustomerId(), cust.getPrintingCard());
+    public Optional<com.dili.trace.domain.Customer> findCustomer(com.dili.trace.domain.Customer cust,Long marketId) {
+        return this.listCustomers(cust.getCustomerId(), cust.getPrintingCard(),marketId);
     }
 
     /**
@@ -245,11 +245,11 @@ public class CustomerRpcService {
      * @param cardNo
      * @return
      */
-    private Optional<com.dili.trace.domain.Customer> listCustomers(String customerCode, String cardNo) {
+    private Optional<com.dili.trace.domain.Customer> listCustomers(String customerCode, String cardNo,Long marketId) {
         if (StringUtils.isAllBlank(customerCode, cardNo)) {
             return Optional.empty();
         }
-        return this.queryCardInfoByCustomerCode(customerCode, cardNo).map(card -> {
+        return this.queryCardInfoByCustomerCode(customerCode, cardNo,marketId).map(card -> {
 
             com.dili.trace.domain.Customer customer = new Customer();
             customer.setPrintingCard(card.getCardNo());
@@ -258,7 +258,7 @@ public class CustomerRpcService {
             customer.setIdNo(card.getCustomerCertificateNumber());
             customer.setId(card.getCustomerId());
             Long customerId = card.getCustomerId();
-            this.findCustomerById(customerId).ifPresent(cust -> {
+            this.findCustomerById(customerId,marketId).ifPresent(cust -> {
                 customer.setPhone(cust.getContactsPhone());
                 customer.setAddress(cust.getCertificateAddr());
                 customer.setCustomerId(cust.getCode());
@@ -269,33 +269,6 @@ public class CustomerRpcService {
 
     }
 
-    /**
-     * 查询用户信息
-     *
-     * @param customerId
-     * @return
-     */
-    private Optional<CustomerExtendDto> findCustomerById(Long customerId) {
-        if (customerId == null) {
-            return Optional.empty();
-        }
-        CustomerQueryInput input = new CustomerQueryInput();
-        input.setMarketId(this.globalVarService.getMarketId());
-        input.setId(customerId);
-
-        try {
-            BaseOutput<List<CustomerExtendDto>> output = this.customerRpc.list(input);
-            if (!output.isSuccess()) {
-                return Optional.empty();
-            }
-            return StreamEx.ofNullable(output.getData()).nonNull()
-                    .flatCollection(Function.identity()).nonNull()
-                    .findFirst();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return Optional.empty();
-    }
 
 
     /**
@@ -304,9 +277,9 @@ public class CustomerRpcService {
      * @param customerCode
      * @throws IOException
      */
-    private Optional<CardResultDto> queryCardInfoByCustomerCode(String customerCode, String cardNo) {
+    private Optional<CardResultDto> queryCardInfoByCustomerCode(String customerCode, String cardNo,Long marketId) {
         CardQueryInput input = new CardQueryInput();
-        input.setFirmId(this.globalVarService.getMarketId());
+        input.setFirmId(marketId);
         input.setCustomerCode(StringUtils.trimToNull(customerCode));
         if (StringUtils.isNotBlank(cardNo)) {
             input.setCardNos(Lists.newArrayList(cardNo.trim()));

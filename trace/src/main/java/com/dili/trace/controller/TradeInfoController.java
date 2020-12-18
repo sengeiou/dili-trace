@@ -3,6 +3,7 @@ package com.dili.trace.controller;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.trace.domain.Customer;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.service.UapRpcService;
 import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.ss.domain.BaseOutput;
@@ -37,6 +38,8 @@ public class TradeInfoController {
     private UserService userService;
     @Resource
     private UserPlateService userPlateService;
+    @Autowired
+    UapRpcService uapRpcService;
 
     /**
      * 根据客户账号获取
@@ -49,7 +52,7 @@ public class TradeInfoController {
     public BaseOutput<Customer> findCustomerById(@PathVariable String customerCode) {
         Customer cust = new Customer();
         cust.setCustomerId(customerCode);
-        return customerService.findCustomer(cust).map(c -> {
+        return customerService.findCustomer(cust,uapRpcService.getCurrentFirm().get().getId()).map(c -> {
             return BaseOutput.success().setData(c);
         }).orElse(BaseOutput.failure());
     }
@@ -65,7 +68,7 @@ public class TradeInfoController {
     public BaseOutput<Customer> findCustomerByCardNo(@PathVariable String printingCard) {
         Customer cust = new Customer();
         cust.setPrintingCard(printingCard);
-        return customerService.findCustomer(cust).map(c -> {
+        return customerService.findCustomer(cust,uapRpcService.getCurrentFirm().get().getId()).map(c -> {
             return BaseOutput.success().setData(c);
         }).orElse(BaseOutput.failure());
     }
