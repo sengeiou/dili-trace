@@ -26,7 +26,7 @@
 
         <start-class>com.dili.TraceWebApplication</start-class>
         <springfox-swagger.version>2.7.0</springfox-swagger.version>
-        <spring-cloud.version>2.1.4.RELEASE</spring-cloud.version>
+        <spring-cloud.version>2.2.5.RELEASE</spring-cloud.version>
     </properties>
 
     <!-- 父工程定义 -->
@@ -98,6 +98,16 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-commons</artifactId>
             <version>${spring-cloud.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dili</groupId>
+            <artifactId>logger-sdk</artifactId>
+            <version>${logger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dili</groupId>
+            <artifactId>ss-uid</artifactId>
+            <version>${sharp-sword.version}</version>
         </dependency>
         <dependency>
             <groupId>com.dili</groupId>
