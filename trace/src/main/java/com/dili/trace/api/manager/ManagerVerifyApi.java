@@ -61,10 +61,9 @@ public class ManagerVerifyApi {
 
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
-            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             query.setSort("created");
             query.setOrder("desc");
-
+            query.setMarketId(this.sessionContext.getSessionData().getMarketId());
             BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageBeforeCheckinVerifyBill(query),
                     rb -> {
                         RegisterBillOutput dto = RegisterBillOutput.build(rb);
@@ -87,8 +86,9 @@ public class ManagerVerifyApi {
 
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
-            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
+//            OperatorUser operatorUser =new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             query.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
+            query.setMarketId(this.sessionContext.getSessionData().getMarketId());
             List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseBeforeCheckin(query);
             return BaseOutput.success().setData(list);
 

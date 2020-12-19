@@ -1,6 +1,8 @@
 package com.dili.trace.api;
 
 import com.dili.assets.sdk.dto.CusCategoryDTO;
+import com.dili.common.annotation.AppAccess;
+import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.exception.TraceBizException;
 import com.dili.commons.glossary.YesOrNoEnum;
@@ -38,7 +40,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/api/registerBillApi")
 @Api(value = "/api/registerBillApi", description = "登记单相关接口")
-//@InterceptConfiguration
+@AppAccess(role = Role.ANY)
 public class RegisterBillApi {
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillApi.class);
 

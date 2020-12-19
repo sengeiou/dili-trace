@@ -760,14 +760,15 @@ public class NewRegisterBillController {
 
                     rb.setImageCerts(input.getGlobalImageCertList());
                     // 保存产地证明
-                    if (StringUtils.isNotBlank(rbInputDto.getOriginCertifiyUrl())) {
-                        List<ImageCert> imageCerts = rb.getImageCerts();
-                        ImageCert imageCert = new ImageCert();
-                        imageCert.setUid(rbInputDto.getOriginCertifiyUrl());
-                        imageCert.setCertType(ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode());
-                        imageCerts.add(imageCert);
-                        rb.setImageCerts(imageCerts);
-                    }
+                    List<ImageCert> imageList =StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
+//                    if (StringUtils.isNotBlank(rbInputDto.getOriginCertifiyUrl())) {
+//                        List<ImageCert> imageCerts = rb.getImageCerts();
+//                        ImageCert imageCert = new ImageCert();
+//                        imageCert.setUid(rbInputDto.getOriginCertifiyUrl());
+//                        imageCert.setCertType(ImageCertTypeEnum.ORIGIN_CERTIFIY.getCode());
+//                        imageCerts.add(imageCert);
+                        rb.setImageCerts(imageList);
+//                    }
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
                     rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());

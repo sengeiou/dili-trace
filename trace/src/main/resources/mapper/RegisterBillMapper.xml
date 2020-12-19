@@ -47,7 +47,6 @@
     <result column="delete_user" jdbcType="VARCHAR" property="deleteUser" />
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
     <result column="packaging" jdbcType="VARCHAR" property="packaging" />
-    <result column="order_type" jdbcType="TINYINT" property="orderType" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -171,12 +170,13 @@
         </if>
       </foreach>
     </if>
-    <if test="createdStart != null  and createdStart != ''">
+    <if test="createdStart != null">
       <![CDATA[ AND #{createdStart}<=created ]]>
     </if>
-    <if test="createdEnd != null  and createdEnd != ''">
+    <if test="createdEnd != null">
       <![CDATA[AND created <=#{createdEnd}]]>
     </if>
+
     <if test="billType != null">
       AND bill_type =#{billType}
     </if>
@@ -185,9 +185,6 @@
     </if>
     <if test="marketId != null">
       AND market_id =#{marketId}
-    </if>
-    <if test="orderType != null">
-      AND order_type =#{orderType}
     </if>
     group by verify_status
   </select>

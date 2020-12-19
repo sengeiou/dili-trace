@@ -181,44 +181,44 @@ public class CreateRegisterBillInputDto {
      */
     @ApiModelProperty(value = "创建来源")
     private Integer creationSource;
+//
+//    /**
+//     * 检测报告url
+//     */
+//    private String detectReportUrl;
+//    /**
+//     * 产地凭证url
+//     */
+//    private String originCertifiyUrl;
+//
+//    /**
+//     * 处理结果url
+//     */
+//    private String handleResultUrl;
 
-    /**
-     * 检测报告url
-     */
-    private String detectReportUrl;
-    /**
-     * 产地凭证url
-     */
-    private String originCertifiyUrl;
-
-    /**
-     * 处理结果url
-     */
-    private String handleResultUrl;
-
-    public String getDetectReportUrl() {
-        return detectReportUrl;
-    }
-
-    public void setDetectReportUrl(String detectReportUrl) {
-        this.detectReportUrl = detectReportUrl;
-    }
-
-    public String getOriginCertifiyUrl() {
-        return originCertifiyUrl;
-    }
-
-    public void setOriginCertifiyUrl(String originCertifiyUrl) {
-        this.originCertifiyUrl = originCertifiyUrl;
-    }
-
-    public String getHandleResultUrl() {
-        return handleResultUrl;
-    }
-
-    public void setHandleResultUrl(String handleResultUrl) {
-        this.handleResultUrl = handleResultUrl;
-    }
+//    public String getDetectReportUrl() {
+//        return detectReportUrl;
+//    }
+//
+//    public void setDetectReportUrl(String detectReportUrl) {
+//        this.detectReportUrl = detectReportUrl;
+//    }
+//
+//    public String getOriginCertifiyUrl() {
+//        return originCertifiyUrl;
+//    }
+//
+//    public void setOriginCertifiyUrl(String originCertifiyUrl) {
+//        this.originCertifiyUrl = originCertifiyUrl;
+//    }
+//
+//    public String getHandleResultUrl() {
+//        return handleResultUrl;
+//    }
+//
+//    public void setHandleResultUrl(String handleResultUrl) {
+//        this.handleResultUrl = handleResultUrl;
+//    }
 
     public Integer getCreationSource() {
         return creationSource;

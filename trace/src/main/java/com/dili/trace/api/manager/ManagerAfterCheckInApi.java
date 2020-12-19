@@ -61,7 +61,7 @@ public class ManagerAfterCheckInApi {
             SessionData sessionData = this.sessionContext.getSessionData();
 
             OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(), sessionData.getUserName());
-
+            query.setMarketId(this.sessionContext.getSessionData().getMarketId());
             query.setSort("created");
             query.setOrder("desc");
             BasePage<RegisterBillOutput> data = BasePageUtil.convert(this.registerBillService.listPageAfterCheckinVerifyBill(query),
@@ -88,7 +88,7 @@ public class ManagerAfterCheckInApi {
             SessionData sessionData = this.sessionContext.getSessionData();
 
             OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(), sessionData.getUserName());
-
+            query.setMarketId(this.sessionContext.getSessionData().getMarketId());
             List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseAfterCheckin(query);
             return BaseOutput.success().setData(list);
 

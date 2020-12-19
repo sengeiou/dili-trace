@@ -129,44 +129,45 @@ public class SgRegisterBillController {
      * @param input
      * @return
      */
-    @ApiOperation("新增RegisterBill")
-    @RequestMapping(value = "/insert2.action", method = RequestMethod.POST)
-    public @ResponseBody
-    BaseOutput insert2(@RequestBody CreateListBillParam input) {
-        if (input == null) {
-            return BaseOutput.failure("参数错误");
-        }
-
-        List<RegisterBill> billList = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity())
-                .nonNull()
-                .map(rbInputDto -> {
-                    CustomerExtendDto  user = new CustomerExtendDto();
-                    RegisterBill rb = rbInputDto.build(user,this.uapRpcService.getCurrentFirm().orElse(null).getId());
-                    List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
-                            , rbInputDto.getHandleResultUrl(),
-                            rbInputDto.getOriginCertifiyUrl());
-                    rb.setImageCerts(imageList);
-                    rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
-                    rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
-                    rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
-                    rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
-                    rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
-                    rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
-                    rb.setTruckType(TruckTypeEnum.FULL.getCode());
-                    rb.setIsCheckin(YesOrNoEnum.NO.getCode());
-                    rb.setIsDeleted(YesOrNoEnum.NO.getCode());
-                    return rb;
-                }).toList();
-        try {
-            OperatorUser operatorUser = this.uapRpcService.getCurrentOperator().get();
-            this.registerBillService.createRegisterBillList(billList, operatorUser);
-            return BaseOutput.success("新增成功").setData(billList);
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            return BaseOutput.failure("服务器出错,请重试");
-        }
-    }
+//    @ApiOperation("新增RegisterBill")
+//    @RequestMapping(value = "/insert2.action", method = RequestMethod.POST)
+//    public @ResponseBody
+//    BaseOutput insert2(@RequestBody CreateListBillParam input) {
+//        if (input == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
+//
+//        List<RegisterBill> billList = StreamEx.ofNullable(input.getRegisterBills()).flatCollection(Function.identity())
+//                .nonNull()
+//                .map(rbInputDto -> {
+//                    CustomerExtendDto  user = new CustomerExtendDto();
+//                    RegisterBill rb = rbInputDto.build(user,this.uapRpcService.getCurrentFirm().orElse(null).getId());
+////                    List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
+////                            , rbInputDto.getHandleResultUrl(),
+////                            rbInputDto.getOriginCertifiyUrl());
+//                    List<ImageCert> imageList =StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
+//                    rb.setImageCerts(imageList);
+//                    rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
+//                    rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
+//                    rb.setRegisterSource(RegisterSourceEnum.getRegisterSourceEnum(input.getRegisterSource()).orElse(RegisterSourceEnum.OTHERS).getCode());
+//                    rb.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
+//                    rb.setPreserveType(PreserveTypeEnum.NONE.getCode());
+//                    rb.setVerifyType(VerifyTypeEnum.NONE.getCode());
+//                    rb.setTruckType(TruckTypeEnum.FULL.getCode());
+//                    rb.setIsCheckin(YesOrNoEnum.NO.getCode());
+//                    rb.setIsDeleted(YesOrNoEnum.NO.getCode());
+//                    return rb;
+//                }).toList();
+//        try {
+//            OperatorUser operatorUser = this.uapRpcService.getCurrentOperator().get();
+//            this.registerBillService.createRegisterBillList(billList, operatorUser);
+//            return BaseOutput.success("新增成功").setData(billList);
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            return BaseOutput.failure("服务器出错,请重试");
+//        }
+//    }
 
 /*
     *//**

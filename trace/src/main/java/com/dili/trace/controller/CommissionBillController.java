@@ -177,8 +177,9 @@ public class CommissionBillController {
                     rb.setPlate(input.getPlate());
                     rb.setAddr(input.getAddr());
                     rb.setUserId(input.getUserId());
-                    List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
-                            , rbInputDto.getHandleResultUrl(), rbInputDto.getOriginCertifiyUrl());
+//                    List<ImageCert> imageList = this.registerBillService.buildImageCertList(input.getDetectReportUrl()
+//                            , rbInputDto.getHandleResultUrl(), rbInputDto.getOriginCertifiyUrl());
+                    List<ImageCert> imageList =StreamEx.ofNullable(input.getGlobalImageCertList()).flatCollection(Function.identity()).nonNull().toList();
                     rb.setImageCerts(imageList);
                     rb.setWeightUnit(WeightUnitEnum.KILO.getCode());
                     rb.setCreationSource(RegisterBilCreationSourceEnum.PC.getCode());
