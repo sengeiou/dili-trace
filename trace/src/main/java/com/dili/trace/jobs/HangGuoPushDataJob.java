@@ -262,8 +262,8 @@ public class HangGuoPushDataJob implements CommandLineRunner {
                 reportImgList = StreamEx.of(imgList).nonNull().map(m -> {
                     ReportInspectionImgDto reportImg = new ReportInspectionImgDto();
                     reportImg.setCredentialName(ImageCertBillTypeEnum.INSPECTION_TYPE.getName());
-                    if (StringUtils.isNotBlank(m.getUrl())) {
-                        reportImg.setPicUrl(baseWebPath + m.getUrl());
+                    if (StringUtils.isNotBlank(m.getUid())) {
+                        reportImg.setPicUrl(baseWebPath + m.getUid());
                     }
                     return reportImg;
                 }).collect(Collectors.toList());
@@ -369,8 +369,8 @@ public class HangGuoPushDataJob implements CommandLineRunner {
                 reportImgList = StreamEx.of(imgList).nonNull().map(m -> {
                     ReportInspectionImgDto reportImg = new ReportInspectionImgDto();
                     reportImg.setCredentialName(ImageCertBillTypeEnum.INSPECTION_TYPE.getName());
-                    if (StringUtils.isNotBlank(m.getUrl())) {
-                        reportImg.setPicUrl(baseWebPath + m.getUrl());
+                    if (StringUtils.isNotBlank(m.getUid())) {
+                        reportImg.setPicUrl(baseWebPath + m.getUid());
                     }
                     return reportImg;
                 }).collect(Collectors.toList());

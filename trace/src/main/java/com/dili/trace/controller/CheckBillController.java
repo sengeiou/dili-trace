@@ -111,7 +111,7 @@ public class CheckBillController {
             }
             List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.INSPECTION_TYPE.getCode());
             if (CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size() == 1) {
-                checkOrder.setUrl(imageCerts.get(0).getUrl());
+                checkOrder.setUrl(imageCerts.get(0).getUid());
             }
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String checkTimeString = dateFormat.format(checkOrder.getCheckTime());

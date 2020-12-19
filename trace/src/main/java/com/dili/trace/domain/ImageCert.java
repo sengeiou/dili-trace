@@ -99,13 +99,13 @@ public class ImageCert extends BaseDomain {
 		this.id = id;
 	}
 
-	public String getUrl() {
-		return url;
-	}
+//	public String getUrl() {
+//		return url;
+//	}
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+//	public void setUrl(String url) {
+//		this.url = url;
+//	}
 
 	public Date getCreated() {
 		return created;

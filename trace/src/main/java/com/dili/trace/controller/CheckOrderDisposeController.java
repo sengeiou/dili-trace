@@ -85,7 +85,7 @@ public class CheckOrderDisposeController {
             BeanUtils.copyProperties(checkOrderDisposeBase,checkOrderDispose);
             List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(id, ImageCertBillTypeEnum.DISPOSE_TYPE.getCode());
             if(CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size()==1){
-                checkOrderDispose.setUrl(imageCerts.get(0).getUrl());
+                checkOrderDispose.setUrl(imageCerts.get(0).getUid());
             }
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String disposeDateString = dateFormat.format(checkOrderDispose.getDisposeDate());
@@ -131,7 +131,7 @@ public class CheckOrderDisposeController {
             if(checkOrderDispose.getUrl() != null) {
                 ImageCert imageCert = new ImageCert();
                 imageCert.setBillId(checkOrderDispose.getId());
-                imageCert.setUrl(checkOrderDispose.getUrl());
+                imageCert.setUid(checkOrderDispose.getUrl());
                 imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
                 imageCert.setBillType(ImageCertBillTypeEnum.DISPOSE_TYPE.getCode());
                 imageCertService.insertSelective(imageCert);
@@ -161,7 +161,7 @@ public class CheckOrderDisposeController {
             if(checkOrderDispose.getUrl()!=null) {
                 List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(checkOrderDispose.getId(), ImageCertBillTypeEnum.DISPOSE_TYPE.getCode());
                 if (CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size() == 1) {
-                    imageCerts.get(0).setUrl(checkOrderDispose.getUrl());
+                    imageCerts.get(0).setUid(checkOrderDispose.getUrl());
                     imageCertService.updateSelective(imageCerts.get(0));
                 }
             }

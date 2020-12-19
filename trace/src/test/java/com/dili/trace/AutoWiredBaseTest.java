@@ -137,7 +137,7 @@ public class AutoWiredBaseTest extends BaseTestWithouMVC {
 	protected RegisterBill createRegisterBill(RegisterBill bill) {
 		assertNotNull(bill);
 		ImageCert imageCert = new ImageCert();
-		imageCert.setUrl("imageurl");
+		imageCert.setUid("imageurl");
 		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
 		List<ImageCert> imageList = Lists.newArrayList(imageCert);
 

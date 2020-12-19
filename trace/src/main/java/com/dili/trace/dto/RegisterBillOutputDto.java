@@ -50,7 +50,7 @@ public class RegisterBillOutputDto extends RegisterBill {
     private String joinImageUrl(ImageCertTypeEnum certTypeEnum) {
         return
                 this.getGroupedImageCertList().getOrDefault(ImageCertTypeEnum.Handle_Result, Lists.newArrayList())
-                        .stream().map(ImageCert::getUrl).filter(StringUtils::isNotBlank)
+                        .stream().map(ImageCert::getUid).filter(StringUtils::isNotBlank)
                         .collect(Collectors.joining(","));
     }
     @JSONField(serialize = false)

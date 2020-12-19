@@ -68,7 +68,8 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
     @Transactional(rollbackFor = Exception.class)
     public void insertOtherTable(CheckOrderDto checkOrder,Long id) {
         ImageCert imageCert = new ImageCert();
-        imageCert.setUrl(checkOrder.getUrl());
+//        imageCert.setUrl(checkOrder.getUrl());
+        imageCert.setUid(checkOrder.getUrl());
         imageCert.setBillType(ImageCertBillTypeEnum.INSPECTION_TYPE.getCode());
         imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
         imageCert.setBillId(id);
@@ -99,7 +100,7 @@ public class CheckBillServiceImpl extends BaseServiceImpl<CheckOrder, Long> impl
         List<ImageCert> imageCerts = imageCertService.listByExample(imageCert);
         if(CollectionUtils.isNotEmpty(imageCerts) && imageCerts.size() == 1) {
             imageCert = imageCerts.get(0);
-            imageCert.setUrl(checkOrder.getUrl());
+            imageCert.setUid(checkOrder.getUrl());
             imageCertService.updateSelective(imageCert);
         }
     }

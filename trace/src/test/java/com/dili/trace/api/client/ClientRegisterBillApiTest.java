@@ -92,7 +92,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 		rb.setTruckType(TruckTypeEnum.FULL.getCode());
 		rb.setImageCertList(new ArrayList<ImageCert>());
 		ImageCert imageCert = new ImageCert();
-		imageCert.setUrl("imageurl");
+		imageCert.setUid("imageurl");
 		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
 		rb.getImageCertList().add(imageCert);
 		BaseOutput out = this.clientRegisterBillApi.createRegisterBillList(createListBillParam);
@@ -126,7 +126,7 @@ public class ClientRegisterBillApiTest extends AutoWiredBaseTest {
 //		rb.setBillType(BillTypeEnum.SUPPLEMENT.getCode());
 		rb.setImageCertList(new ArrayList<ImageCert>());
 		ImageCert imageCert = new ImageCert();
-		imageCert.setUrl("imageurl");
+		imageCert.setUid("imageurl");
 		imageCert.setCertType(ImageCertTypeEnum.DETECT_REPORT.getCode());
 		rb.getImageCertList().add(imageCert);
 		this.clientRegisterBillApi.doEditRegisterBill(rb);

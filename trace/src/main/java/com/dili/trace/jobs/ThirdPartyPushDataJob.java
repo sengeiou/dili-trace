@@ -702,7 +702,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
                 imageCerts.forEach(cert -> {
                     CredentialInfoDto credentialInfoDto = new CredentialInfoDto();
                     credentialInfoDto.setCredentialName(cert.getCertTypeName());
-                    credentialInfoDto.setPicUrl(baseWebPath + cert.getUrl());
+                    credentialInfoDto.setPicUrl(baseWebPath + cert.getUid());
                     pzAddVoList.add(credentialInfoDto);
                 });
             }
