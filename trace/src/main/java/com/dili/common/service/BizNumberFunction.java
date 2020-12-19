@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class BizNumberFunction {
-    @Autowired
+    @Autowired(required = false)
     private BizNumberService bizNumberService;
 
     /**
