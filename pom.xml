@@ -10,6 +10,12 @@
 	<!--<version>1.0.0.RELEASE</version>-->
 	<description>父项目</description>
 	<packaging>pom</packaging>
+	<!-- 父工程定义 -->
+	<parent>
+		<artifactId>dili-parent</artifactId>
+		<groupId>com.dili</groupId>
+		<version>3.7.0-SNAPSHOT</version>
+	</parent>
 
 	<modules>
 		<module>trace</module>
