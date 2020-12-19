@@ -88,6 +88,7 @@
         </appender>
     </springProfile>
     <logger name="tk.mybatis.mapper.autoconfigure.MapperCacheDisabler" level="warn"></logger>
+    <logger name="springfox.documentation.spring.web.readers.operation.CachingOperationNameGenerator" level="warn"></logger>
     <root level="info">
         <springProfile name="dev">
             <appender-ref ref="appender"/>

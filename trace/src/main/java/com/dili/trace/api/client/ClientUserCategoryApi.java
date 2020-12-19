@@ -49,6 +49,7 @@ public class ClientUserCategoryApi {
 //        }
         rUserCategory.setSort("create_time");
         rUserCategory.setOrder("desc");
+        rUserCategory.setUserId(this.sessionContext.getSessionData().getUserId());
         List<RUserCategory> data = this.rUserCategoryService.listByExample(rUserCategory);
         return BaseOutput.successData(data);
 
