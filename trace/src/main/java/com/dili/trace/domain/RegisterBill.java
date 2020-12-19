@@ -1,5 +1,6 @@
 package com.dili.trace.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.ss.domain.BaseDomain;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.BillVerifyStatusEnum;
@@ -7,6 +8,7 @@ import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.WeightUnitEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.TFEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 
@@ -971,6 +973,7 @@ public class RegisterBill extends BaseDomain {
         this.version = version;
     }
 
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     public Date getCreated() {
         return created;
     }
@@ -978,7 +981,7 @@ public class RegisterBill extends BaseDomain {
     public void setCreated(Date created) {
         this.created = created;
     }
-
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     public Date getModified() {
         return modified;
     }

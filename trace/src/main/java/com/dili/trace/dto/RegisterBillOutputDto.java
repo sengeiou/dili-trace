@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dili.trace.domain.*;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.enums.ImageCertTypeEnum;
@@ -32,15 +33,16 @@ public class RegisterBillOutputDto extends RegisterBill {
     private List<SeparateSalesRecord> separateSalesRecords;
     List<QualityTraceTradeBill> qualityTraceTradeBillList;
 
+    @JSONField(serialize = false)
     public String getHandleResultUrl() {
         return this.joinImageUrl(ImageCertTypeEnum.Handle_Result);
     }
 
-
+    @JSONField(serialize = false)
     public String getOriginCertifiyUrl() {
         return this.joinImageUrl(ImageCertTypeEnum.ORIGIN_CERTIFIY);
     }
-
+    @JSONField(serialize = false)
     public String getDetectReportUrl() {
         return this.joinImageUrl(ImageCertTypeEnum.DETECT_REPORT);
     }
@@ -51,7 +53,7 @@ public class RegisterBillOutputDto extends RegisterBill {
                         .stream().map(ImageCert::getUrl).filter(StringUtils::isNotBlank)
                         .collect(Collectors.joining(","));
     }
-
+    @JSONField(serialize = false)
     public Map<ImageCertTypeEnum, List<ImageCert>> getGroupedImageCertList() {
         return StreamEx.ofNullable(this.getImageCerts()).flatCollection(Function.identity()).filter(item->item.getCertType()!=null)
                 .mapToEntry(item -> ImageCertTypeEnum.fromCode(item.getCertType()).orElse(null), Function.identity())

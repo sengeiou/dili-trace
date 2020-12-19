@@ -1,5 +1,7 @@
 package com.dili.trace.api;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
@@ -73,8 +75,8 @@ public class RegisterBillApi {
             }
             RegisterBillOutputDto outputdto = this.registerBillService.viewTradeDetailBill(inputDto.getBillId(),
                     inputDto.getTradeDetailId());
-
-            return BaseOutput.success().setData(outputdto);
+            String data=JSON.toJSONString(outputdto, SerializerFeature.DisableCircularReferenceDetect);
+            return BaseOutput.success().setData(JSON.parse(data));
 
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

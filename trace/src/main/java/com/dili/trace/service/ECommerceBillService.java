@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
@@ -16,10 +17,7 @@ import com.dili.trace.dao.RegisterBillMapper;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.dto.*;
-import com.dili.trace.enums.BillVerifyStatusEnum;
-import com.dili.trace.enums.DetectResultEnum;
-import com.dili.trace.enums.DetectStatusEnum;
-import com.dili.trace.enums.DetectTypeEnum;
+import com.dili.trace.enums.*;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.domain.RegisterBill;
@@ -38,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dili.ss.dto.IDTO;
-import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 
@@ -403,18 +400,26 @@ public class ECommerceBillService {
             throw new TraceBizException("登记单来源类型错误");
         }
         bill.setCode(this.codeGenerateService.nextECommerceBillCode());
-
+        List<ImageCert>imageCertList=StreamEx.ofNullable(bill.getImageCerts()).flatCollection(Function.identity()).nonNull().filter(img->{
+            return img.getCertType()!=null&&StringUtils.isNotBlank(img.getUid());
+        }).toList();
+        bill.setImageCerts(imageCertList);
 //		bill.setState(RegisterBillStateEnum.WAIT_AUDIT.getCode());
         bill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
         bill.setDetectStatus(DetectStatusEnum.NONE.getCode());
         bill.setCreated(new Date());
         bill.setModified(new Date());
         bill.setBillType(this.supportedBillType().getCode());
+        bill.setRegistType(RegistTypeEnum.NONE.getCode());
 
         bill.setOperatorId(operatorUser.getId());
         bill.setOperatorName(operatorUser.getName());
         bill.setPlate(StringUtils.trimToEmpty(bill.getPlate()));
+        bill.setHasHandleResult(YesOrNoEnum.NO.getCode());
+        bill.setHasDetectReport(YesOrNoEnum.NO.getCode());
+        bill.setHasOriginCertifiy(YesOrNoEnum.NO.getCode());
         this.billService.insertSelective(bill);
+        this.billService.updateHasImage(bill.getBillId(),bill.getImageCerts());
         return bill.getId();
     }
 
