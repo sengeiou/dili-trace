@@ -417,9 +417,9 @@ public class RegisterBill extends BaseDomain {
     /**
      * 订单类型 1.报备单 2.进门登记单
      */
-    @ApiModelProperty(value = "订单类型 1.报备单 2.进门登记单")
-    @Column(name = "`order_type`")
-    private Integer orderType;
+//    @ApiModelProperty(value = "订单类型 1.报备单 2.进门登记单")
+//    @Column(name = "`order_type`")
+//    private Integer orderType;
 
     /**
      * 销售类型1.分销 2.全销
@@ -1305,13 +1305,13 @@ public class RegisterBill extends BaseDomain {
         this.packaging = packaging;
     }
 
-    public Integer getOrderType() {
-        return orderType;
-    }
-
-    public void setOrderType(Integer orderType) {
-        this.orderType = orderType;
-    }
+//    public Integer getOrderType() {
+//        return orderType;
+//    }
+//
+//    public void setOrderType(Integer orderType) {
+//        this.orderType = orderType;
+//    }
 
     public BigDecimal getHeadWeight() {
         return headWeight;

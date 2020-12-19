@@ -3,6 +3,7 @@ package com.dili.trace.api.input;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.Customer;
 import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
@@ -174,8 +175,7 @@ public class CreateRegisterBillInputDto {
      * 单据类型
      */
     @ApiModelProperty(value = "单据类型")
-    private Integer orderType;
-
+    private Integer registType;
     /**
      * 创建来源
      */
@@ -236,11 +236,15 @@ public class CreateRegisterBillInputDto {
     public RegisterBill build(Customer user,Long marketId) {
         RegisterBill registerBill = new RegisterBill();
         registerBill.setId(this.getBillId());
+        registerBill.setRegistType(this.getRegistType());
         // registerBill.setOperatorName(user.getName());
         // registerBill.setOperatorId(user.getId());
         registerBill.setUserId(user.getId());
         registerBill.setName(user.getName());
         registerBill.setMarketId(marketId);
+        registerBill.setHasOriginCertifiy(YesOrNoEnum.NO.getCode());
+        registerBill.setHasDetectReport(YesOrNoEnum.NO.getCode());
+        registerBill.setHasHandleResult(YesOrNoEnum.NO.getCode());
 //        registerBill.setTallyAreaNo(user.getTallyAreaNos());
 //        registerBill.setAddr(user.getAddr());
 //        registerBill.setIdCardNo(user.getCardNo());
@@ -269,7 +273,7 @@ public class CreateRegisterBillInputDto {
         registerBill.setRemark(this.getRemark());
         registerBill.setVerifyStatus(this.getVerifyStatus());
         registerBill.setReason(this.getReason());
-        registerBill.setOrderType(this.getOrderType());
+//        registerBill.setOrderType(this.getOrderType());
         return registerBill;
     }
 
@@ -549,11 +553,11 @@ public class CreateRegisterBillInputDto {
         this.reason = reason;
     }
 
-    public Integer getOrderType() {
-        return orderType;
+    public Integer getRegistType() {
+        return registType;
     }
 
-    public void setOrderType(Integer orderType) {
-        this.orderType = orderType;
+    public void setRegistType(Integer registType) {
+        this.registType = registType;
     }
 }

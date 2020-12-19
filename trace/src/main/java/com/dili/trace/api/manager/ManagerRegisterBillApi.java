@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 管理登记单接口
+ * (管理员)登记单接口
  */
 @RestController
 @RequestMapping(value = "/api/manager/managerRegisterBill")
@@ -117,7 +117,7 @@ public class ManagerRegisterBillApi {
      *
      * @return
      */
-    @RequestMapping("/countBillByVerifyStatus.api")
+    @RequestMapping(value = "/countBillByVerifyStatus.api",method = RequestMethod.POST)
     public BaseOutput countBillByVerifyStatus() {
 
         return BaseOutput.success();

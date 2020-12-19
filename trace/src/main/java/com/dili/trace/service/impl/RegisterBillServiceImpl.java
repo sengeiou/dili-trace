@@ -156,7 +156,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
                 .map(String::toUpperCase).findFirst().orElse(null);
         registerBill.setPlate(plate);
         registerBill.setModified(new Date());
-        registerBill.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
+//        registerBill.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         // TODO:需要确认是否是这个值
         registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
 
@@ -174,6 +174,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (Objects.isNull(registerBill.getMarketId())) {
             logger.error("登记单市场不存在！" + JSON.toJSONString(registerBill));
             throw new TraceBizException("登记单市场不存在");
+        }
+        if(registerBill.getPreserveType()==null){
+            registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
         }
 
         // 保存报备单
@@ -267,6 +270,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (registerBill.getWeightUnit() == null) {
             logger.error("重量单位不能为空");
             throw new TraceBizException("重量单位不能为空");
+        }
+        if(registerBill.getMarketId()==null){
+            throw new TraceBizException("市场不能为空");
         }
         return BaseOutput.success();
     }
@@ -534,7 +540,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     private Map<String, Object> getSmsMap(RegisterBill billItem) {
         Map<String, Object> smsMap = new HashMap<>();
-        smsMap.put("userName", userService.get(billItem.getUserId()).getName());
+        smsMap.put("userName", billItem.getName());
         smsMap.put("created", DateUtils.format(new Date(), "yyyy年MM月dd日 HH:mm:ss"));
         smsMap.put("billNo", billItem.getCode());
         smsMap.put("productName", "商品:" + billItem.getProductName() + "    车号:" + billItem.getPlate());
@@ -648,15 +654,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public BasePage<RegisterBill> listPageBeforeCheckinVerifyBill(RegisterBillDto query) {
+        if (query == null||query.getMarketId()==null) {
+            throw new TraceBizException("参数错误");
+        }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn(query));
         query.setIsDeleted(TFEnum.FALSE.getCode());
-        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
+//        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         return this.listPageByExample(query);
     }
 
     @Override
     public List<VerifyStatusCountOutputDto> countByVerifyStatuseBeforeCheckin(RegisterBillDto query) {
-        if (query == null) {
+        if (query == null||query.getMarketId()==null) {
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLBeforeCheckIn(query));
@@ -666,15 +675,18 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public BasePage<RegisterBill> listPageAfterCheckinVerifyBill(RegisterBillDto query) {
+        if (query == null||query.getMarketId()==null) {
+            throw new TraceBizException("参数错误");
+        }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn(query));
         query.setIsDeleted(TFEnum.FALSE.getCode());
-        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
+//        query.setOrderType(OrderTypeEnum.REGISTER_BILL.getCode());
         return this.listPageByExample(query);
     }
 
     @Override
     public List<VerifyStatusCountOutputDto> countByVerifyStatuseAfterCheckin(RegisterBillDto query) {
-        if (query == null) {
+        if (query == null||query.getMarketId()==null) {
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLAfterCheckIn(query));
@@ -684,6 +696,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public Map<Integer, Map<String, List<RegisterBill>>> listPageCheckInData(RegisterBillDto query) {
+        if (query == null||query.getMarketId()==null) {
+            throw new TraceBizException("参数错误");
+        }
         String dynaWhere = " is_checkin=" + YesOrNoEnum.NO.getCode() + " and regist_type =" + RegistTypeEnum.NONE.getCode();
 
         query.setSort("created");
@@ -830,7 +845,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             logger.info("循环保存进门登记单:" + JSON.toJSONString(dto));
             RegisterBill registerBill = dto.build(customer,marketId);
             registerBill.setMarketId(marketId);
-            registerBill.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
+//            registerBill.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
             return this.createRegisterFormBill(registerBill, dto.getImageCertList(), operatorUser);
         }).toList();
     }
@@ -1119,12 +1134,12 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
     @Override
     public List<VerifyStatusCountOutputDto> countByVerifyStatuseFormBill(RegisterBillDto query) {
-        if (query == null) {
+        if (query == null||query.getMarketId()==null) {
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
         query.setIsDeleted(TFEnum.FALSE.getCode());
-        query.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
+//        query.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
         List<VerifyStatusCountOutputDto> countList = this.countByVerifyStatus(query);
         query.setIsDeleted(TFEnum.TRUE.getCode());
         List<RegisterBill> billList = this.listByExample(query);

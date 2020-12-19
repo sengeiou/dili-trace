@@ -85,7 +85,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
     /**
      * 每五分钟提交一次数据
      */
-    @Scheduled(cron = "0 */5 * * * ?")
+//    @Scheduled(cron = "0 */5 * * * ?")
     public void pushData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
@@ -146,7 +146,7 @@ public class ThirdPartyPushDataJob implements CommandLineRunner {
         }
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+//    @Scheduled(cron = "0 */5 * * * ?")
     public void pushRegisterBillData() {
         Optional<OperatorUser> optUser = Optional.of(new OperatorUser(-1L, "auto"));
         try {
