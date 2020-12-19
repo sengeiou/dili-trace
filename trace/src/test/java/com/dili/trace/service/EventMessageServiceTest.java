@@ -36,7 +36,7 @@ public class EventMessageServiceTest extends AutoWiredBaseTest {
         inputDto.setSourceBusinessId(1L);
         inputDto.setEventMessageTitleParam(new Object[]{"xx"});
         inputDto.setEventMessageContentParam(new Object[]{"xxxccc"});
-        messageService.addMessage(inputDto);
+        messageService.addMessage(inputDto,8L);
     }
 
     @Test

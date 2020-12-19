@@ -206,7 +206,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (RegistTypeEnum.SUPPLEMENT.getCode().equals(registerBill.getRegistType())) {
             businessType = MessageStateEnum.BUSINESS_TYPE_FIELD_BILL.getCode();
         }
-        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+        addMessage(registerBill, MessageTypeEnum.BILLSUBMIT.getCode(), businessType, MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode(),registerBill.getMarketId());
         return registerBill.getId();
     }
 
@@ -471,7 +471,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
 
         this.doVerify(billItem, input.getVerifyStatus(), input.getReason(), operatorUser);
         //新增消息
-        addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode(),billItem.getMarketId());
         return billItem.getId();
     }
 
@@ -495,13 +495,13 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         }
         this.doVerify(billItem, verifyStatus, reason, operatorUser);
         //新增消息
-        addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode());
+        addMessage(billItem, MessageTypeEnum.BILLPASS.getCode(), MessageStateEnum.BUSINESS_TYPE_BILL.getCode(), MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_NORMAL.getCode(),billItem.getMarketId());
         return billItem.getId();
 
     }
 
 
-    private void addMessage(RegisterBill billItem, Integer messageType, Integer businessType, Integer receiverType) {
+    private void addMessage(RegisterBill billItem, Integer messageType, Integer businessType, Integer receiverType,Long marketId) {
 
         Integer receiverNormal = 10;
         MessageInputDto messageInputDto = new MessageInputDto();
@@ -529,7 +529,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         //增加卖家短信
         Map<String, Object> smsMap = getSmsMap(billItem);
         messageInputDto.setSmsContentParam(smsMap);
-        messageService.addMessage(messageInputDto);
+        messageService.addMessage(messageInputDto,marketId);
     }
 
     private Map<String, Object> getSmsMap(RegisterBill billItem) {

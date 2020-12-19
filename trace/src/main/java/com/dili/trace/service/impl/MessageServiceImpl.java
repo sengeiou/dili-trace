@@ -13,7 +13,9 @@ import com.dili.trace.domain.SmsMessage;
 import com.dili.trace.domain.User;
 import com.dili.trace.dto.MessageInputDto;
 import com.dili.trace.enums.MessageReceiverEnum;
+import com.dili.trace.rpc.service.FirmRpcService;
 import com.dili.trace.service.*;
+import com.dili.uap.sdk.domain.Firm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +47,11 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
 
     @Autowired
     ExecutionConstants executionConstants;
+    @Autowired
+    FirmRpcService firmRpcService;
 
     @Override
-    public void addMessage(MessageInputDto messageInputDto) {
+    public void addMessage(MessageInputDto messageInputDto,Long marektId) {
         logger.info("insert message, param:{}", JSON.toJSONString(messageInputDto));
         Integer messageType = messageInputDto.getMessageType();
         MessageConfig messageConfigParam = new MessageConfig();
@@ -94,12 +98,17 @@ public class MessageServiceImpl extends BaseServiceImpl<MessageConfig, Long> imp
 
         }
 
+        String marketCode=this.firmRpcService.getFirmById(marektId).map(Firm::getCode).orElse(null);
+        if(marketCode==null){
+            logger.error("查找不到对应的市场code");
+            return;
+        }
         if (smsFlag.equals("1")) {
             logger.info("send sms");
             for (Long recevierId : receiverIdArray) {
                 User receiverUser = userService.get(recevierId);
                 JSONObject params = new JSONObject();
-                params.put("marketCode", executionConstants.getMarketCode());
+                params.put("marketCode", marketCode);
                 params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
                 params.put("sceneCode", messageConfig.getSmsSceneCode());
                 params.put("cellphone", receiverUser.getPhone());

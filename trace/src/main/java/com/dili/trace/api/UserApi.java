@@ -129,27 +129,27 @@ public class UserApi {
      * @param {code:"客户CODE",phone:''}
      * @return
      */
-    @RequestMapping(value = "/sendVerificationCode.api", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public BaseOutput<Boolean> sendVerificationCode(@RequestBody JSONObject object) {
-        String phone = object.getString("phone");
-        if (StringUtils.isBlank(phone)) {
-            logger.error("参数为空" + JSON.toJSONString(object));
-            return BaseOutput.failure("参数为空").setCode(ResultCode.PARAMS_ERROR);
-        }
-
-        String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
-        // 发送短信验证码
-        JSONObject params = new JSONObject();
-        params.put("marketCode", executionConstants.getMarketCode());
-        params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
-        params.put("sceneCode", "registerAuthCode");
-        params.put("cellphone", phone);
-        Map<String, Object> content = new HashMap<>();
-        content.put("code", verificationCode);
-        params.put("parameters", content);
-        return this.smsService.sendVerificationCodeMsg(params, phone, verificationCode);
-    }
+//    @RequestMapping(value = "/sendVerificationCode.api", method = {RequestMethod.GET, RequestMethod.POST})
+//    @ResponseBody
+//    public BaseOutput<Boolean> sendVerificationCode(@RequestBody JSONObject object) {
+//        String phone = object.getString("phone");
+//        if (StringUtils.isBlank(phone)) {
+//            logger.error("参数为空" + JSON.toJSONString(object));
+//            return BaseOutput.failure("参数为空").setCode(ResultCode.PARAMS_ERROR);
+//        }
+//
+//        String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
+//        // 发送短信验证码
+//        JSONObject params = new JSONObject();
+//        params.put("marketCode", executionConstants.getMarketCode());
+//        params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
+//        params.put("sceneCode", "registerAuthCode");
+//        params.put("cellphone", phone);
+//        Map<String, Object> content = new HashMap<>();
+//        content.put("code", verificationCode);
+//        params.put("parameters", content);
+//        return this.smsService.sendVerificationCodeMsg(params, phone, verificationCode);
+//    }
 
     /**
      * 用户获取个人信息【接口已通】
@@ -241,40 +241,40 @@ public class UserApi {
      * @param user
      * @return
      */
-    @ApiOperation(value = "发送重置密码验证码【接口已通】", notes = "发送重置密码验证码")
-    @RequestMapping(value = "/sendSmsCodeForRenewPassword.api", method = RequestMethod.POST)
-//    @InterceptConfiguration(loginRequired = false)
-    public BaseOutput<String> sendSmsCodeForRenewPassword(@RequestBody User user) {
-        try {
-            if (StringUtils.isBlank(user.getPhone())) {
-                return BaseOutput.failure("手机号码不能为空");
-            }
-            User query = DTOUtils.newDTO(User.class);
-            query.setPhone(user.getPhone());
-            query.setYn(YesOrNoEnum.YES.getCode());
-            User userItem = StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(() -> {
-                return new TraceBizException("手机号码不存在");
-            });
-
-
-            String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
-            // 发送短信验证码
-            JSONObject params = new JSONObject();
-            params.put("marketCode", executionConstants.getMarketCode());
-            params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
-            params.put("sceneCode", "resetAuthcode");
-            params.put("cellphone", userItem.getPhone());
-            Map<String, Object> content = new HashMap<>();
-            content.put("code", verificationCode);
-            params.put("parameters", content);
-            return this.smsService.sendRenewPasswordSMSCodeMsg(params, userItem.getPhone(), verificationCode);
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error("sendSmsCodeForResetPassword", e);
-            return BaseOutput.failure();
-        }
-    }
+//    @ApiOperation(value = "发送重置密码验证码【接口已通】", notes = "发送重置密码验证码")
+//    @RequestMapping(value = "/sendSmsCodeForRenewPassword.api", method = RequestMethod.POST)
+////    @InterceptConfiguration(loginRequired = false)
+//    public BaseOutput<String> sendSmsCodeForRenewPassword(@RequestBody User user) {
+//        try {
+//            if (StringUtils.isBlank(user.getPhone())) {
+//                return BaseOutput.failure("手机号码不能为空");
+//            }
+//            User query = DTOUtils.newDTO(User.class);
+//            query.setPhone(user.getPhone());
+//            query.setYn(YesOrNoEnum.YES.getCode());
+//            User userItem = StreamEx.of(this.userService.listByExample(query)).findFirst().orElseThrow(() -> {
+//                return new TraceBizException("手机号码不存在");
+//            });
+//
+//
+//            String verificationCode = VerificationCodeUtil.getRandNum(defaultConfiguration.getCheckCodeLength());
+//            // 发送短信验证码
+//            JSONObject params = new JSONObject();
+//            params.put("marketCode", executionConstants.getMarketCode());
+//            params.put("systemCode", ExecutionConstants.SYSTEM_CODE);
+//            params.put("sceneCode", "resetAuthcode");
+//            params.put("cellphone", userItem.getPhone());
+//            Map<String, Object> content = new HashMap<>();
+//            content.put("code", verificationCode);
+//            params.put("parameters", content);
+//            return this.smsService.sendRenewPasswordSMSCodeMsg(params, userItem.getPhone(), verificationCode);
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error("sendSmsCodeForResetPassword", e);
+//            return BaseOutput.failure();
+//        }
+//    }
 
 
     /**

@@ -330,29 +330,29 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
      * @param userName
      * @param userId
      */
-    private void sendMessageByManage(String userName, Long userId, Long marketId) {
-        // 审核通过增加消息
-        MessageInputDto messageInputDto = new MessageInputDto();
-        messageInputDto.setCreatorId(userId);
-        messageInputDto.setMessageType(MessageTypeEnum.USERREGISTER.getCode());
-        messageInputDto.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
-        messageInputDto.setSourceBusinessId(userId);
-        messageInputDto.setEventMessageContentParam(new String[]{userName});
-        messageInputDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
-
-        List<com.dili.uap.sdk.domain.User> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list", marketId);
-        Set<Long> managerIdSet = new HashSet<>();
-        StreamEx.of(manageList).nonNull().forEach(s -> {
-            //没有判断用户状态
-            managerIdSet.add(s.getId());
-        });
-        Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
-        messageInputDto.setReceiverIdArray(managerId);
-        Map<String, Object> smsMap = new HashMap<>();
-        smsMap.put("userName", userName);
-        messageInputDto.setSmsContentParam(smsMap);
-        messageService.addMessage(messageInputDto);
-    }
+//    private void sendMessageByManage(String userName, Long userId, Long marketId) {
+//        // 审核通过增加消息
+//        MessageInputDto messageInputDto = new MessageInputDto();
+//        messageInputDto.setCreatorId(userId);
+//        messageInputDto.setMessageType(MessageTypeEnum.USERREGISTER.getCode());
+//        messageInputDto.setSourceBusinessType(MessageStateEnum.BUSINESS_TYPE_USER.getCode());
+//        messageInputDto.setSourceBusinessId(userId);
+//        messageInputDto.setEventMessageContentParam(new String[]{userName});
+//        messageInputDto.setReceiverType(MessageReceiverEnum.MESSAGE_RECEIVER_TYPE_MANAGER.getCode());
+//
+//        List<com.dili.uap.sdk.domain.User> manageList = manageSystemComponent.findUserByUserResource("user/index.html#list", marketId);
+//        Set<Long> managerIdSet = new HashSet<>();
+//        StreamEx.of(manageList).nonNull().forEach(s -> {
+//            //没有判断用户状态
+//            managerIdSet.add(s.getId());
+//        });
+//        Long[] managerId = managerIdSet.toArray(new Long[managerIdSet.size()]);
+//        messageInputDto.setReceiverIdArray(managerId);
+//        Map<String, Object> smsMap = new HashMap<>();
+//        smsMap.put("userName", userName);
+//        messageInputDto.setSmsContentParam(smsMap);
+//        messageService.addMessage(messageInputDto);
+//    }
 
     private List<String> parsePlate(String plates) {
         List<String> plateList = new ArrayList<>();
@@ -650,18 +650,18 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
 //        }
 //    }
 
-    private void sendVerifyCertMessage(User user, Integer messageType, String operateReason, OperatorUser operatorUser) {
-        // 审核通过增加消息
-        MessageInputDto messageInputDto = new MessageInputDto();
-        messageInputDto.setCreatorId(operatorUser.getId());
-        messageInputDto.setMessageType(messageType);
-        messageInputDto.setReceiverIdArray(new Long[]{user.getId()});
-        messageInputDto.setEventMessageContentParam(new String[]{operateReason});
-
-        Map<String, Object> smsMap = new HashMap<>();
-        smsMap.put("userName", user.getName());
-        messageService.addMessage(messageInputDto);
-    }
+//    private void sendVerifyCertMessage(User user, Integer messageType, String operateReason, OperatorUser operatorUser) {
+//        // 审核通过增加消息
+//        MessageInputDto messageInputDto = new MessageInputDto();
+//        messageInputDto.setCreatorId(operatorUser.getId());
+//        messageInputDto.setMessageType(messageType);
+//        messageInputDto.setReceiverIdArray(new Long[]{user.getId()});
+//        messageInputDto.setEventMessageContentParam(new String[]{operateReason});
+//
+//        Map<String, Object> smsMap = new HashMap<>();
+//        smsMap.put("userName", user.getName());
+//        messageService.addMessage(messageInputDto);
+//    }
 
 
     private void updateUserQrItem(Long userId) {

@@ -44,9 +44,9 @@ public class ClientUserCategoryApi {
      */
     @RequestMapping("/listUserCategory.api")
     public BaseOutput listUserCategory(@RequestBody RUserCategory rUserCategory) {
-        if (rUserCategory.getUserId() == null) {
-            return BaseOutput.failure("参数错误");
-        }
+//        if (rUserCategory.getUserId() == null) {
+//            return BaseOutput.failure("参数错误");
+//        }
         rUserCategory.setSort("create_time");
         rUserCategory.setOrder("desc");
         List<RUserCategory> data = this.rUserCategoryService.listByExample(rUserCategory);

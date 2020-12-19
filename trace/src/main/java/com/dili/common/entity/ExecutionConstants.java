@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 public class ExecutionConstants {
 
     //市场Code
-    @Value("${market.code}")
-    private String marketCode;
+//    @Value("${market.code}")
+//    private String marketCode;
 
     @Autowired
     private MarketService marketService;
@@ -37,9 +37,9 @@ public class ExecutionConstants {
      * @Param
      * @return
      */
-    public String getMarketCode() {
+//    public String getMarketCode() {
 //        Firm currentMarket = marketService.getCurrentMarket();
 //        return currentMarket.getCode();
-        return marketCode;
-    }
+//        return marketCode;
+//    }
 }
