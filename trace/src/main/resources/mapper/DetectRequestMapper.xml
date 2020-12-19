@@ -63,7 +63,9 @@
             AND (b.product_name LIKE CONCAT('%',#{keyword},'%')
             OR b.name LIKE CONCAT('%',#{keyword},'%'))
         </if>
-
+        <if test="userId != null">
+            AND b.user_id=#{userId}
+        </if>
         <if test="detectStatusList != null  and detectStatusList.size()>0">
             AND b.detect_status
             <foreach collection="detectStatusList" open=" IN (" close=")" item="detectStatus" separator=",">
@@ -149,6 +151,9 @@
             <![CDATA[ AND (b.product_name like CONCAT('%',#{likeProductNameOrUserName},'%')
             OR b.name like CONCAT('%',#{likeProductNameOrUserName},'%')) ]]>
         </if>
+        <if test="userId != null">
+            AND b.user_id=#{userId}
+        </if>
         <if test="created != null">
             <![CDATA[ AND date(r.created) = #{created} ]]>
         </if>
@@ -176,6 +181,9 @@
       <if test="likeProductNameOrUserName != null">
           <![CDATA[ AND (b.product_name like CONCAT('%',#{likeProductNameOrUserName},'%')
             OR b.name like CONCAT('%',#{likeProductNameOrUserName},'%')) ]]>
+      </if>
+      <if test="userId != null">
+          AND b.user_id=#{userId}
       </if>
       <if test="created != null">
           <![CDATA[ AND date(r.created) = #{created} ]]>

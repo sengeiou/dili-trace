@@ -98,6 +98,13 @@ public class DetectRequestDto extends DetectRequest {
     @Transient
     private String tallyAreaNo;
 
+
+    /**
+     * 用户id
+     */
+    @Transient
+    private Long userId;
+
     /**
      * 重量
      */
@@ -190,11 +197,11 @@ public class DetectRequestDto extends DetectRequest {
     private Integer isDeleted;
 
     @Transient
-    private List<Integer>detectStatusList;
+    private List<Integer> detectStatusList;
     @Transient
-    private List<Integer>detectTypeList;
+    private List<Integer> detectTypeList;
     @Transient
-    private List<Integer>detectResultList;
+    private List<Integer> detectResultList;
 
     public Integer getIsDeleted() {
         return isDeleted;
@@ -474,6 +481,13 @@ public class DetectRequestDto extends DetectRequest {
         this.detectStatus = detectStatus;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     @Transient
     public String getWeightUnitName() {
@@ -484,10 +498,12 @@ public class DetectRequestDto extends DetectRequest {
     public String getBillTypeName() {
         return BillTypeEnum.fromCode(this.billType).map(BillTypeEnum::getName).orElse("");
     }
+
     @Transient
     public String getDetectStatusName() {
         return DetectStatusEnum.name(this.getDetectStatus());
     }
+
     @Transient
     public String getVerifyStatusName() {
         return BillVerifyStatusEnum.name(this.getVerifyStatus());
