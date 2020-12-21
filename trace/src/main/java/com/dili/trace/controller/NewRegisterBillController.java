@@ -17,7 +17,6 @@ import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.UsualAddressTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
-import com.dili.trace.util.MarketUtil;
 import com.dili.trace.util.MaskUserInfo;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
@@ -116,7 +115,7 @@ public class NewRegisterBillController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(@RequestBody RegisterBillDto registerBill) throws Exception {
-        registerBill.setMarketId(MarketUtil.returnMarket());
+        registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         List<Integer> billTypes = new ArrayList<>();
         billTypes.add(BillTypeEnum.REGISTER_BILL.getCode());
         billTypes.add(BillTypeEnum.CHECK_ORDER.getCode());
@@ -818,7 +817,7 @@ public class NewRegisterBillController {
         UserInfoDto userInfoDto = new UserInfoDto();
         if (registerBill.getRegisterSource().intValue() == RegisterSourceEnum.TALLY_AREA.getCode().intValue()) {
             // 理货区
-            User user = userService.findByTallyAreaNo(firstTallyAreaNo,MarketUtil.returnMarket());
+            User user = userService.findByTallyAreaNo(firstTallyAreaNo,this.uapRpcService.getCurrentFirm().get().getId());
 
             if (user != null) {
                 userInfoDto.setUserId(String.valueOf(user.getId()));

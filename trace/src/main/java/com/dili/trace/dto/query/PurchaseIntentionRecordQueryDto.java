@@ -5,6 +5,7 @@ import com.dili.trace.domain.PurchaseIntentionRecord;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 import java.time.LocalDate;
 
 public class PurchaseIntentionRecordQueryDto extends PurchaseIntentionRecord {
@@ -25,6 +26,7 @@ public class PurchaseIntentionRecordQueryDto extends PurchaseIntentionRecord {
     /**
      * 姓名或电话模糊查询
      */
+    @Transient
     private String keyword;
 
     public String getKeyword() {

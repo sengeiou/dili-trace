@@ -5,6 +5,7 @@ import com.dili.trace.domain.TruckEnterRecord;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 import java.time.LocalDate;
 
 
@@ -40,6 +41,7 @@ public class TruckEnterRecordQueryDto extends TruckEnterRecord {
     /**
      * 电话或姓名模糊查询
      */
+    @Transient
     private String keyword;
 
     public String getKeyword() {

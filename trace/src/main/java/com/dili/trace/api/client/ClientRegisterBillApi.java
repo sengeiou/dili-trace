@@ -20,10 +20,12 @@ import com.dili.trace.domain.RegisterHead;
 import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.dto.RegisterBillOutputDto;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.enums.RegistTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -204,7 +206,7 @@ public class ClientRegisterBillApi {
         query.setIsDeleted(YesOrNoEnum.NO.getCode());
         query.setMarketId(this.sessionContext.getSessionData().getMarketId());
         query.setUserId(this.sessionContext.getSessionData().getUserId());
-            RegisterBill registerBill =    StreamEx.of(this.registerBillService.listByExample(query)).findFirst().orElseThrow(()->{
+        RegisterBillOutputDto registerBill =    StreamEx.of(this.registerBillService.listByExample(query)).findFirst().map(b-> RegisterBillOutputDto.build(b, Lists.newArrayList())).orElseThrow(()->{
             return new TraceBizException("数据不存在");
         });
 
