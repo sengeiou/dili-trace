@@ -86,7 +86,9 @@ public interface RegisterBillMapper extends MyMapper<RegisterBill> {
 
     List<RegisterBill> findUnMatchedRegisterBill(MatchDetectParam matchDetectParam);
 
-    int taskByExeMachineNo2(@Param("exeMachineNo") String exeMachineNo, @Param("taskCount") int taskCount);
+    int taskByExeMachineNo(@Param("exeMachineNo") String exeMachineNo
+            , @Param("taskCount") int taskCount
+            ,@Param("marketId") Long marketId);
 
     RegisterBillStaticsDto groupByState(RegisterBillDto dto);
 

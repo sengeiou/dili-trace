@@ -107,7 +107,7 @@ public class DetectRecordApi {
         TaskGetParam taskGetParam = new TaskGetParam();
         taskGetParam.setExeMachineNo(exeMachineNo);
         taskGetParam.setPageSize(taskCount > 95 ? 95 : taskCount);
-
+        taskGetParam.setMarketId(8L);//SG marektId
         LOGGER.info("获取检查任务:[sys.en.tag={},input-tag={},input-data={}]", defaultConfiguration.getEnTag(), tag, JSON.toJSONString(taskGetParam));
         List<DetectTaskApiOutputDto> deteckTaskOutputList = this.detectTaskService.findByExeMachineNo(taskGetParam);
         return BaseOutput.success().setData(deteckTaskOutputList);

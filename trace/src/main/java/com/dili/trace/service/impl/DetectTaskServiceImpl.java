@@ -40,13 +40,13 @@ public class DetectTaskServiceImpl implements DetectTaskService {
     @Autowired
     DetectRequestService detectRequestService;
 
-    private List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount) {
+    private List<RegisterBill> findByExeMachineNo(String exeMachineNo, int taskCount,Long marketId) {
         LOGGER.info(">>>获得检测数据-参数:findByExeMachineNo(exeMachineNo={},taskCount={})", exeMachineNo, taskCount);
-        this.registerBillMapper.taskByExeMachineNo2(exeMachineNo, taskCount);
+        this.registerBillMapper.taskByExeMachineNo(exeMachineNo, taskCount,marketId);
         RegisterBill domain = new RegisterBill();
         domain.setExeMachineNo(exeMachineNo);
-//		domain.setState(RegisterBillStateEnum.CHECKING.getCode());
         domain.setDetectStatus(DetectStatusEnum.DETECTING.getCode());
+        domain.setMarketId(marketId);
         domain.setPage(1);
         domain.setRows(taskCount);
         domain.setSort("bill_type,id");
@@ -59,26 +59,7 @@ public class DetectTaskServiceImpl implements DetectTaskService {
         }
 
         return list;
-//    	
-//        List<RegisterBill> exist = this.registerBillMapper.findByExeMachineNo(exeMachineNo);
-//        if (!exist.isEmpty()) {
-//            LOGGER.info("获取的任务已经有相应的数量了" + taskCount);
-//            if (exist.size() >= taskCount) {
-//                return exist.subList(0, taskCount);
-//            }
-//        }
-//
-//        int fetchSize = taskCount - exist.size();
-//        LOGGER.info("还需要再拿多少个：" + fetchSize);
-//
-//        List<Long> ids = this.registerBillMapper.findIdsByExeMachineNo(fetchSize);
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(0);
-//        for (Long id : ids) {
-//            sb.append(",").append(id);
-//        }
-//        this.registerBillMapper.taskByExeMachineNo(exeMachineNo, sb.toString());
-//        return this.registerBillMapper.findByExeMachineNo(exeMachineNo);
+
     }
 
     @Transactional
@@ -86,7 +67,7 @@ public class DetectTaskServiceImpl implements DetectTaskService {
     public List<DetectTaskApiOutputDto> findByExeMachineNo(TaskGetParam taskGetParam) {
         String exeMachineNo = taskGetParam.getExeMachineNo();
         int taskCount = taskGetParam.getPageSize();
-        List<RegisterBill> billList = this.findByExeMachineNo(exeMachineNo, taskCount);
+        List<RegisterBill> billList = this.findByExeMachineNo(exeMachineNo, taskCount,taskGetParam.getMarketId());
         return DetectTaskApiOutputDto.build(billList);
     }
 
@@ -160,9 +141,12 @@ public class DetectTaskServiceImpl implements DetectTaskService {
 
         DetectResultEnum detectResultEnum=  DetectResultEnum.fromCode(detectRecord.getDetectState()).orElse(null);
         detectRequest.setDetectResult(detectResultEnum.getCode());
+        detectRequest.setDetectorName(detectRecord.getDetectOperator());
+        detectRequest.setDetectTime(detectRecord.getDetectTime());
+
         this.detectRequestService.updateSelective(detectRequest);
 
-        billService.updateSelective(registerBill);
+        this.billService.updateSelective(registerBill);
 
     }
 

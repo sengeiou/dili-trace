@@ -731,16 +731,26 @@
     ORDER BY id DESC limit 1
   </select>
 
-  <update id="taskByExeMachineNo2">
-      UPDATE register_bill  set `exe_machine_no` = #{exeMachineNo},state = 5,modified =NOW()
-      WHERE id IN  (select id from(
-      	select * from register_bill where
-		(state = 5  and exe_machine_no = #{exeMachineNo})
-		or
-		(state = 4 and (exe_machine_no is null or exe_machine_no=''))
-		order by state desc,bill_type desc,id asc
-		limit #{taskCount}
-      )as t where  (t.exe_machine_no is null or t.exe_machine_no='') )
+  <update id="taskByExeMachineNo">
+ update register_bill set `detect_status` =40,modified =NOW()
+ where id in(
+    select register_bill.id from detect_request left join register_bill
+    on detect_request.id=register_bill.detect_request_id
+    where register_bill.market_id=#{marketId}
+    and (
+     (designated_name=#{exeMachineNo} and register_bill.detect_status=40)
+     or register_bill.detect_status=30
+    ) limit #{taskCount}
+ )
+ update detect_request set designated_name=#{exeMachineNo}
+ where id in(
+    select register_bill.id from detect_request left join register_bill
+    on detect_request.id=register_bill.detect_request_id
+    where register_bill.market_id=#{marketId}
+    and  designated_name=#{exeMachineNo}
+    and register_bill.detect_status=40
+    limit #{taskCount}
+ )
   </update>
 
   <select id="groupByState" parameterType="com.dili.trace.dto.RegisterBillDto" resultType="com.dili.trace.dto.RegisterBillStaticsDto">
