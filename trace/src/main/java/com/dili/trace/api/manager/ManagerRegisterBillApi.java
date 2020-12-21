@@ -6,18 +6,30 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.RegisterBillQueryInputDto;
+import com.dili.trace.api.output.VerifyStatusCountOutputDto;
+import com.dili.trace.domain.ImageCert;
+import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.RegisterHead;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.OperatorUser;
 import com.dili.trace.dto.RegisterBillDto;
 import com.dili.trace.dto.RegisterBillInputDto;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.RegistTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 
+import com.dili.trace.util.BasePageUtil;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +62,8 @@ public class ManagerRegisterBillApi {
     UpStreamService upStreamService;
     @Autowired
     ImageCertService imageCertService;
+    @Autowired
+    RegisterHeadService registerHeadService;
 
     // @ApiOperation(value = "获得登记单详情")
     // @RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
@@ -117,11 +131,14 @@ public class ManagerRegisterBillApi {
      *
      * @return
      */
-    @RequestMapping(value = "/countBillByVerifyStatus.api",method = RequestMethod.POST)
-    public BaseOutput countBillByVerifyStatus() {
+    @RequestMapping(value = "/countBillByVerifyStatus.api", method = RequestMethod.POST)
+    public BaseOutput<List<VerifyStatusCountOutputDto>> countBillByVerifyStatus(@RequestBody RegisterBillDto query) {
+        query.setMarketId(this.sessionContext.getSessionData().getMarketId());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
+        this.registerBillService.countBillsByVerifyStatus(query);
 
         return BaseOutput.success();
-//YesOrNoEnum
+
     }
 
     /**
@@ -132,7 +149,86 @@ public class ManagerRegisterBillApi {
      */
     @RequestMapping("/listPagedBill.api")
     public BaseOutput listPagedBill(@RequestBody RegisterBillDto query) {
-        return BaseOutput.success();
+        query.setMarketId(this.sessionContext.getSessionData().getMarketId());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
+        BasePage<RegisterBill> page = this.registerBillService.listPageByExample(query);
+
+        return BaseOutput.successData(page);
     }
 
+    /**
+     * 查看登记单详情信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/viewRegisterBill.api", method = RequestMethod.POST)
+    public BaseOutput<RegisterBill> viewRegisterBill(@RequestBody RegisterBillDto query) {
+        if (query == null || query.getId() == null) {
+            return BaseOutput.failure("参数错误");
+        }
+        query.setMarketId(this.sessionContext.getSessionData().getMarketId());
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
+        return StreamEx.of(this.registerBillService.listByExample(query)).findFirst().map(bill -> {
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(bill.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+            bill.setImageCerts(imageCerts);
+
+            Optional.ofNullable(upStreamService.get(bill.getUpStreamId())).ifPresent(up -> {
+                bill.setUpStreamName(up.getName());
+            });
+            if (RegistTypeEnum.PARTIAL.equalsToCode(bill.getRegistType())) {
+                RegisterHead registerHead = new RegisterHead();
+                registerHead.setCode(bill.getRegisterHeadCode());
+                Optional<RegisterHead> rhOpt = StreamEx.of(registerHeadService.listByExample(registerHead)).findFirst();
+                if (rhOpt.isEmpty()) {
+                    return BaseOutput.<RegisterBill>failure("未找到主台账单");
+                } else {
+                    rhOpt.ifPresent(rh -> {
+                        bill.setHeadWeight(rh.getWeight());
+                        bill.setRemainWeight(rh.getRemainWeight());
+                    });
+                }
+            }
+
+            return BaseOutput.successData(bill);
+        }).orElseGet(() -> {
+            return BaseOutput.failure("没有找到数据");
+        });
+    }
 }
+
+
+//    @ApiOperation("查看进门登记单")
+//    @SuppressWarnings("unchecked")
+//    @RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
+//    public BaseOutput<RegisterBill> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
+//        try {
+//            RegisterBill registerBill = registerBillService.get(baseDomain.getId());
+//
+//            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+//            registerBill.setImageCerts(imageCerts);
+//
+//            UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
+//            registerBill.setUpStreamName(upStream.getName());
+//
+//            //获取主台账单的总重量与剩余总重量
+//            if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
+//                RegisterHead registerHead = new RegisterHead();
+//                registerHead.setCode(registerBill.getRegisterHeadCode());
+//                List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
+//                if(CollectionUtils.isNotEmpty(registerHeadList)){
+//                    registerHead = registerHeadList.get(0);
+//                } else {
+//                    return BaseOutput.failure("未找到主台账单");
+//                }
+//                registerBill.setHeadWeight(registerHead.getWeight());
+//                registerBill.setRemainWeight(registerHead.getRemainWeight());
+//            }
+//            return BaseOutput.success().setData(registerBill);
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error("查询进门主台账单数据出错", e);
+//            return BaseOutput.failure("查询进门主台账单数据出错");
+//        }
+//    }
+//}

@@ -265,7 +265,7 @@ public class ClientRegisterFormBillApi {
 			SessionData sessionData = this.sessionContext.getSessionData();
 
 			OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
-			List<VerifyStatusCountOutputDto> list = this.registerBillService.countByVerifyStatuseFormBill(query);
+			List<VerifyStatusCountOutputDto> list = this.registerBillService.countBillsByVerifyStatus(query);
 			return BaseOutput.success().setData(list);
 		} catch (TraceBizException e) {
 			return BaseOutput.failure(e.getMessage());

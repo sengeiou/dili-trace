@@ -238,7 +238,7 @@ public interface RegisterBillService extends BaseService<RegisterBill, Long> {
      * @param query
      * @return
      */
-    public List<VerifyStatusCountOutputDto> countByVerifyStatuseFormBill(RegisterBillDto query);
+    public List<VerifyStatusCountOutputDto> countBillsByVerifyStatus(RegisterBillDto query);
 
     /**
      * 查询用户最近操作数据

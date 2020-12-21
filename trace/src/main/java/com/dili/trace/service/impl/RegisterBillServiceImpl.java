@@ -1133,23 +1133,14 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
     }
 
     @Override
-    public List<VerifyStatusCountOutputDto> countByVerifyStatuseFormBill(RegisterBillDto query) {
+    public List<VerifyStatusCountOutputDto> countBillsByVerifyStatus(RegisterBillDto query) {
         if (query == null||query.getMarketId()==null) {
             throw new TraceBizException("参数错误");
         }
         query.setMetadata(IDTO.AND_CONDITION_EXPR, this.dynamicSQLFormBill(query));
         query.setIsDeleted(TFEnum.FALSE.getCode());
-//        query.setOrderType(OrderTypeEnum.REGISTER_FORM_BILL.getCode());
         List<VerifyStatusCountOutputDto> countList = this.countByVerifyStatus(query);
-        query.setIsDeleted(TFEnum.TRUE.getCode());
-        List<RegisterBill> billList = this.listByExample(query);
-        if (billList != null) {
-            countList.stream().forEach(dto -> {
-                if (BillVerifyStatusEnum.DELETED.getCode().equals(dto.getVerifyStatus())) {
-                    dto.setNum(billList.size());
-                }
-            });
-        }
+
         return countList;
     }
 
