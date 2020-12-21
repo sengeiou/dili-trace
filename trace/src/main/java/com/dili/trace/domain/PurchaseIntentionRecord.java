@@ -21,13 +21,25 @@ public class PurchaseIntentionRecord extends BaseDomain {
     @Column(name = "`id`")
     private Long id;
 
+    @Column(name = "`market_id`")
+    private Long marketId;
+
+
 
     /**
      * 买家姓名
      */
     @ApiModelProperty(value = "买家姓名")
     @Column(name = "`buyer_name`")
-    private String buyer_name;
+    private String buyerName;
+
+    /**
+     * 买家电话
+     */
+    @ApiModelProperty(value = "买家电话")
+    @Column(name = "`buyer_name`")
+    private String buyerPhone;
+
 
     /**
      * 买家ID
@@ -87,12 +99,28 @@ public class PurchaseIntentionRecord extends BaseDomain {
         this.id = id;
     }
 
-    public String getBuyer_name() {
-        return buyer_name;
+    public Long getMarketId() {
+        return marketId;
     }
 
-    public void setBuyer_name(String buyer_name) {
-        this.buyer_name = buyer_name;
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public String getBuyerName() {
+        return buyerName;
+    }
+
+    public void setBuyerName(String buyerName) {
+        this.buyerName = buyerName;
+    }
+
+    public String getBuyerPhone() {
+        return buyerPhone;
+    }
+
+    public void setBuyerPhone(String buyerPhone) {
+        this.buyerPhone = buyerPhone;
     }
 
     public Long getBuyerId() {

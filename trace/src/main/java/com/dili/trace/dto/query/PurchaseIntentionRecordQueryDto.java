@@ -15,9 +15,25 @@ public class PurchaseIntentionRecordQueryDto extends PurchaseIntentionRecord {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "yyyy-MM-dd")
     private LocalDate createdEnd;
 
+    /**
+     * 买家姓名查询
+     */
     @Column(name = "`buyer_name`")
     @Like(Like.RIGHT)
     private String likeBuyerName;
+
+    /**
+     * 姓名或电话模糊查询
+     */
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 
     public LocalDate getCreatedStart() {
         return createdStart;
