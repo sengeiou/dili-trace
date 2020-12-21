@@ -2,7 +2,9 @@ package com.dili.trace.controller;
 
 import com.dili.trace.domain.PurchaseIntentionRecord;
 import com.dili.trace.dto.query.PurchaseIntentionRecordQueryDto;
+import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.PurchaseIntentionRecordService;
+import com.dili.trace.service.UapRpcService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 public class PurchaseIntentionRecordController {
     @Autowired
     PurchaseIntentionRecordService purchaseIntentionRecordService;
-
+    @Autowired
+    UapRpcService uapRpcService;
     /**
      * 跳转到PurchaseIntentionRecord页面
      *
@@ -51,6 +54,7 @@ public class PurchaseIntentionRecordController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(@RequestBody PurchaseIntentionRecordQueryDto queryInput) throws Exception {
+        queryInput.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         return this.purchaseIntentionRecordService.listEasyuiPageByExample(queryInput, true).toString();
 
     }

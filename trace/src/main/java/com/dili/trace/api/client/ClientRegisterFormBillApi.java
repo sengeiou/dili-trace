@@ -118,7 +118,7 @@ public class ClientRegisterFormBillApi {
 				return BaseOutput.failure("没有进门登记单");
 			}
 			logger.info("保存多个进门登记单操作用户:{}，{}", sessionData.getUserId(), sessionData.getUserName());
-			List<RegisterBill> billList = this.registerBillService.createRegisterFormBillList(registerBills,createListBillParam.getUserId(), Optional.empty(), createListBillParam.getMarketId());
+			List<RegisterBill> billList = this.registerBillService.createRegisterFormBillList(registerBills,createListBillParam.getUserId(), Optional.empty(), sessionData.getMarketId());
 			List<String> codeList = StreamEx.of(billList).nonNull().map(RegisterBill::getCode).toList();
 			return BaseOutput.success().setData(codeList);
 		} catch (TraceBizException e) {

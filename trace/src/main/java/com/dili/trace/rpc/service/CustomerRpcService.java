@@ -86,7 +86,10 @@ public class CustomerRpcService {
 
             try {
                 Long marketId = Long.parseLong(request.getHeader("marketId"));
-                if (marketId != null && !marketId.equals(0L)) {
+                if(marketId==null){
+                    return Optional.empty();
+                }
+                if (!marketId.equals(0L)) {
                     query.setMarketId(marketId);
                     BaseOutput<List<CustomerExtendDto>> out = this.customerRpc.list(query);
                     if (out.isSuccess()) {
@@ -94,6 +97,7 @@ public class CustomerRpcService {
                             SessionData sessionData = new SessionData();
                             sessionData.setUserId(c.getId());
                             sessionData.setUserName(c.getName());
+                            sessionData.setMarketId(marketId);
                             sessionData.setSubRoles(this.convert(c.getCharacterTypeList()));
                             return sessionData;
                         }).findFirst();

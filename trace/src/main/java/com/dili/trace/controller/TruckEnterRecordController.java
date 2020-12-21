@@ -61,6 +61,7 @@ public class TruckEnterRecordController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     String listPage(@RequestBody TruckEnterRecordQueryDto queryInput) throws Exception {
+        queryInput.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
         return this.truckEnterRecordService.listEasyuiPageByExample(queryInput, true).toString();
 
     }
