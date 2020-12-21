@@ -39,7 +39,7 @@ import java.util.*;
 import java.util.function.Function;
 
 /**
- * (客户)检测单接口
+ * 经营户(卖家)检测单接口
  */
 @RestController()
 @RequestMapping("/api/client/clientDetectRequest")
@@ -70,7 +70,7 @@ public class ClientDetectRequestApi {
      * @param input
      * @return
      */
-    @RequestMapping("/createDetectRequest.action")
+    @RequestMapping("/createDetectRequest.api")
     public BaseOutput<Long> createDetectRequest(@RequestBody DetectRequest input) {
         if (input == null || input.getBillId() == null) {
             return BaseOutput.failure("参数错误");
@@ -93,7 +93,7 @@ public class ClientDetectRequestApi {
      * @param input
      * @return
      */
-    @RequestMapping("/createOffSiteDetectRequest.action")
+    @RequestMapping("/createOffSiteDetectRequest.api")
     public BaseOutput<Long> createOffSiteDetectRequest(@RequestBody DetectRequestDto input) {
         if (input == null) {
             return BaseOutput.failure("参数错误");
@@ -126,7 +126,7 @@ public class ClientDetectRequestApi {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/getBillDetailById.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/getBillDetailById.api", method = RequestMethod.GET)
     public BaseOutput<RegisterBill> getBillDetailById(Long id) {
         if (id == null) {
             return BaseOutput.failure("参数错误");
@@ -147,7 +147,7 @@ public class ClientDetectRequestApi {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/getDetectRequestDetail.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/getDetectRequestDetail.api", method = RequestMethod.GET)
     public BaseOutput<DetectRequestDto> getDetectRequestDetail(Long id) {
         try {
             DetectRequestDto detectRequest = new DetectRequestDto();
@@ -173,19 +173,19 @@ public class ClientDetectRequestApi {
      * @param likeUserName
      * @return
      */
-    @RequestMapping(value = "/getDetectUsers.action", method = RequestMethod.GET)
-    public BaseOutput<List<User>> getDetectUsers(String likeUserName) {
-        try {
-            Long marketId = this.sessionContext.getSessionData().getMarketId();
-            List<User> users = userRpcService.findDetectDepartmentUsers(likeUserName, marketId);
-            return BaseOutput.successData(users);
-        } catch (TraceBizException e) {
-            return BaseOutput.failure(e.getMessage());
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return BaseOutput.failure("服务端出错");
-        }
-    }
+//    @RequestMapping(value = "/getDetectUsers.api", method = RequestMethod.GET)
+//    public BaseOutput getDetectUsers(@RequestParam(name = "likeUserName") String likeUserName) {
+//        try {
+//            Long marketId = this.sessionContext.getSessionData().getMarketId();
+//            List<User> users = userRpcService.findDetectDepartmentUsers(likeUserName, marketId);
+//            return BaseOutput.successData(users);
+//        } catch (TraceBizException e) {
+//            return BaseOutput.failure(e.getMessage());
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            return BaseOutput.failure("服务端出错");
+//        }
+//    }
     /**
      * 查询检测请求列表
      * @param detectRequestDto

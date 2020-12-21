@@ -68,6 +68,7 @@ public class ManagerTruckEnterRecordApi {
         input.setMarketId(sessionData.getMarketId());
         input.setCreated(new Date());
         input.setModified(new Date());
+        input.setId(null);
         this.truckEnterRecordService.insertSelective(input);
         return BaseOutput.successData(input.getId());
     }
