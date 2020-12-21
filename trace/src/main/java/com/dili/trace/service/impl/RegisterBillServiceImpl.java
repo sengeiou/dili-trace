@@ -178,6 +178,9 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if(registerBill.getPreserveType()==null){
             registerBill.setPreserveType(PreserveTypeEnum.NONE.getCode());
         }
+        if(registerBill.getTareWeight()==null){
+            registerBill.setTareWeight(BigDecimal.ZERO);
+        }
 
         // 保存报备单
         int result = super.saveOrUpdate(registerBill);
