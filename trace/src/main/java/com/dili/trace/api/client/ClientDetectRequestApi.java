@@ -1,5 +1,6 @@
 package com.dili.trace.api.client;
 
+import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.AppAccess;
 import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
@@ -11,6 +12,7 @@ import com.dili.ss.domain.BasePage;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
+import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
@@ -19,10 +21,13 @@ import com.dili.trace.api.output.VerifyStatusCountOutputDto;
 import com.dili.trace.domain.DetectRecord;
 import com.dili.trace.domain.DetectRequest;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.DetectRequestDto;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.enums.DetectStatusEnum;
 import com.dili.trace.enums.DetectTypeEnum;
+import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
+import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.*;
 import com.dili.uap.sdk.domain.User;
@@ -62,7 +67,60 @@ public class ClientDetectRequestApi {
     private LoginSessionContext sessionContext;
     @Autowired
     SgRegisterBillService registerBillService;
+    @Autowired
+    CommissionBillService commissionBillService;
+    /**
+     * 用户创建场外委托单
+     *
+     * @param createListBillParam 小程序创建委托单信息
+     * @return 创建结果
+     */
+    @RequestMapping(value = "/createCommissionBill.api", method = RequestMethod.POST)
+    public BaseOutput<?> createCommissionBill(@RequestBody CreateListBillParam createListBillParam) {
 
+        try {
+            SessionData sessionData = this.sessionContext.getSessionData();
+
+            Long userId = sessionData.getUserId();
+            List<CreateRegisterBillInputDto> inputList = StreamEx.ofNullable(createListBillParam).filter(Objects::nonNull).map(CreateListBillParam::getRegisterBills).nonNull().flatCollection(Function.identity()).map(bill -> {
+                bill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
+                bill.setUserId(userId);
+                return bill;
+            }).toList();
+            if (inputList.isEmpty()) {
+                return BaseOutput.failure("参数错误");
+            }
+            List<RegisterBill> inputBillList = StreamEx.of(inputList).map(inut -> {
+                logger.info("循环保存登记单:" + JSON.toJSONString(inut));
+                RegisterBill registerBill = new RegisterBill();
+//                registerBill.setOperatorName(user.getName());
+//                registerBill.setOperatorId(user.getId());
+                registerBill.setUserId(this.sessionContext.getSessionData().getUserId());
+                registerBill.setName(this.sessionContext.getSessionData().getUserName());
+//                registerBill.setAddr(user.getAddr());
+//                registerBill.setIdCardNo(user.getCardNo());
+                if (registerBill.getRegisterSource() == null) {
+                    // 小程序默认理货区
+                    registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
+                }
+                if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
+//                    registerBill.setTallyAreaNo(user.getTallyAreaNos());
+//                    registerBill.setSourceName(user.getTallyAreaNos());
+                }
+                registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
+
+                return registerBill;
+            }).toList();
+            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(inputBillList);
+            return BaseOutput.success();
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+
+    }
 
     /**
      * 创建检测单

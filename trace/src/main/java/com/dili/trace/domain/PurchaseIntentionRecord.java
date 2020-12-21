@@ -4,6 +4,7 @@ import com.dili.ss.domain.BaseDomain;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -23,7 +24,6 @@ public class PurchaseIntentionRecord extends BaseDomain {
 
     @Column(name = "`market_id`")
     private Long marketId;
-
 
 
     /**
@@ -62,6 +62,29 @@ public class PurchaseIntentionRecord extends BaseDomain {
     @Column(name = "`product_id`")
     private Long productId;
 
+
+    /**
+     * 商品重量
+     */
+    @ApiModelProperty(value = "商品重量")
+    @Column(name = "`product_weight`")
+    private BigDecimal productWeight;
+
+
+    /**
+     * 重量单位
+     */
+    @ApiModelProperty(value = "重量单位")
+    @Column(name = "`weight_unit`")
+    private Integer weightUnit;
+
+
+    /**
+     * 车牌
+     */
+    @ApiModelProperty(value = "车牌")
+    @Column(name = "`plate`")
+    private String plate;
 
     /**
      * 创建时间
@@ -177,5 +200,29 @@ public class PurchaseIntentionRecord extends BaseDomain {
 
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
+    }
+
+    public BigDecimal getProductWeight() {
+        return productWeight;
+    }
+
+    public void setProductWeight(BigDecimal productWeight) {
+        this.productWeight = productWeight;
+    }
+
+    public Integer getWeightUnit() {
+        return weightUnit;
+    }
+
+    public void setWeightUnit(Integer weightUnit) {
+        this.weightUnit = weightUnit;
+    }
+
+    public String getPlate() {
+        return plate;
+    }
+
+    public void setPlate(String plate) {
+        this.plate = plate;
     }
 }

@@ -1,4 +1,4 @@
-package com.dili.trace.api.commission;
+package com.dili.trace.api.client;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.annotation.AppAccess;
@@ -47,10 +47,10 @@ import java.util.function.Function;
  * 委托单查询接口
  */
 @RestController
-@RequestMapping(value = "/api/commission/commissionBillApi")
+@RequestMapping(value = "/api/client/clientCommissionBillApi")
 @AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
-public class CommissionBillApi {
-    private static final Logger logger = LoggerFactory.getLogger(CommissionBillApi.class);
+public class ClientCommissionBillApi {
+    private static final Logger logger = LoggerFactory.getLogger(ClientCommissionBillApi.class);
     @Autowired
     CommissionBillService commissionBillService;
     @Autowired
@@ -73,13 +73,6 @@ public class CommissionBillApi {
             SessionData sessionData = this.sessionContext.getSessionData();
 
             Long userId = sessionData.getUserId();
-            if (!UserTypeEnum.COMMISSION_USER.equalsToCode(this.userService.get(userId).getUserType())) {
-                return BaseOutput.failure("您不是场外用户");
-            }
-            User user = userService.get(sessionContext.getAccountId());
-            if (user == null) {
-                return BaseOutput.failure("未登陆用户");
-            }
             List<CreateRegisterBillInputDto> inputList = StreamEx.ofNullable(createListBillParam).filter(Objects::nonNull).map(CreateListBillParam::getRegisterBills).nonNull().flatCollection(Function.identity()).map(bill -> {
                 bill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
                 bill.setUserId(userId);
@@ -91,19 +84,19 @@ public class CommissionBillApi {
             List<RegisterBill> inputBillList = StreamEx.of(inputList).map(inut -> {
                 logger.info("循环保存登记单:" + JSON.toJSONString(inut));
                 RegisterBill registerBill = new RegisterBill();
-                registerBill.setOperatorName(user.getName());
-                registerBill.setOperatorId(user.getId());
-                registerBill.setUserId(user.getId());
-                registerBill.setName(user.getName());
-                registerBill.setAddr(user.getAddr());
-                registerBill.setIdCardNo(user.getCardNo());
+//                registerBill.setOperatorName(user.getName());
+//                registerBill.setOperatorId(user.getId());
+                registerBill.setUserId(this.sessionContext.getSessionData().getUserId());
+                registerBill.setName(this.sessionContext.getSessionData().getUserName());
+//                registerBill.setAddr(user.getAddr());
+//                registerBill.setIdCardNo(user.getCardNo());
                 if (registerBill.getRegisterSource() == null) {
                     // 小程序默认理货区
                     registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
                 }
                 if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
 //                    registerBill.setTallyAreaNo(user.getTallyAreaNos());
-                    registerBill.setSourceName(user.getTallyAreaNos());
+//                    registerBill.setSourceName(user.getTallyAreaNos());
                 }
                 registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
 

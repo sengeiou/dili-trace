@@ -181,6 +181,19 @@ public class CreateRegisterBillInputDto {
      */
     @ApiModelProperty(value = "创建来源")
     private Integer creationSource;
+
+    /**
+     * 是否打印检测报告
+     */
+    @ApiModelProperty(value = "是否打印检测报告")
+    private Integer isPrintCheckSheet;
+
+
+    /**
+     * 企业名
+     */
+    private String corporateName;
+
 //
 //    /**
 //     * 检测报告url
@@ -559,5 +572,21 @@ public class CreateRegisterBillInputDto {
 
     public void setRegistType(Integer registType) {
         this.registType = registType;
+    }
+
+    public Integer getIsPrintCheckSheet() {
+        return isPrintCheckSheet;
+    }
+
+    public void setIsPrintCheckSheet(Integer isPrintCheckSheet) {
+        this.isPrintCheckSheet = isPrintCheckSheet;
+    }
+
+    public String getCorporateName() {
+        return corporateName;
+    }
+
+    public void setCorporateName(String corporateName) {
+        this.corporateName = corporateName;
     }
 }

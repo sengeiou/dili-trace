@@ -67,14 +67,14 @@ public class CreateListBillParam {
     private String phone;
 
     /**
-     * 检测报告url
+     * 企业名
      */
-    private String detectReportUrl;
+    private String corporateName;
+
 
     private List<ImageCert>globalImageCertList;
 
 
-    private String corporateName;
 
     public List<ImageCert> getGlobalImageCertList() {
         return globalImageCertList;
@@ -86,13 +86,6 @@ public class CreateListBillParam {
 
 
 
-    public String getDetectReportUrl() {
-        return detectReportUrl;
-    }
-
-    public void setDetectReportUrl(String detectReportUrl) {
-        this.detectReportUrl = detectReportUrl;
-    }
 
     public Long getUserId() {
         return userId;
