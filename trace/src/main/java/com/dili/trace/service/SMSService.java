@@ -16,14 +16,12 @@ public abstract class SMSService {
     /**重置密码验证码缓存前缀 */ 
     public final static String REDIS_SYSTEM_RENEW_PASSWORD_PREIX = "USER:RENEW_PASSWORD_CODE:";
 
-    public abstract BaseOutput sendVerificationCodeMsg(JSONObject params, String phone, String verificationCode);
 
     public Boolean checkVerificationCode(String phone, String verCode) {
         String key = REDIS_SYSTEM_VERCODE_PREIX + phone;
         return this.checkSmsCode(key, verCode);
     }
 
-    public abstract BaseOutput sendRenewPasswordSMSCodeMsg(JSONObject params, String phone, String verificationCode);
 
     public Boolean checkResetPasswordSmsCode(String phone, String verCode) {
         String key = REDIS_SYSTEM_RENEW_PASSWORD_PREIX + phone;

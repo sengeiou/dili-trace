@@ -63,8 +63,6 @@ public class UserApi {
     @Autowired
     UserPlateService userPlateService;
     @Autowired
-    SMSService smsService;
-    @Autowired
     ExecutionConstants executionConstants;
 
     /**
