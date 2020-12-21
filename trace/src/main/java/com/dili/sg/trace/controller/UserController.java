@@ -173,16 +173,16 @@ public class UserController {
 	 * @param id
 	 * @return
 	 */
-	@ApiOperation(value = "找回密码【接口已通】", notes = "找回密码")
-	@RequestMapping(value = "/resetPassword.action", method = RequestMethod.POST)
-	@ResponseBody
-	public BaseOutput<Boolean> resetPassword(Long id) {
-		User user = DTOUtils.newDTO(User.class);
-		user.setId(id);
-		user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
-		userService.updateSelective(user);
-		return BaseOutput.success().setData(true);
-	}
+//	@ApiOperation(value = "找回密码【接口已通】", notes = "找回密码")
+//	@RequestMapping(value = "/resetPassword.action", method = RequestMethod.POST)
+//	@ResponseBody
+//	public BaseOutput<Boolean> resetPassword(Long id) {
+//		User user = DTOUtils.newDTO(User.class);
+//		user.setId(id);
+//		user.setPassword(MD5Util.md5(defaultConfiguration.getPassword()));
+//		userService.updateSelective(user);
+//		return BaseOutput.success().setData(true);
+//	}
 
 	/**
 	 * 查找用户车牌
