@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 /**
  * (管理员)司机进门报备
  */
@@ -64,6 +66,8 @@ public class ManagerTruckEnterRecordApi {
     public BaseOutput createTruckEnterRecord(@RequestBody TruckEnterRecord input) {
         SessionData sessionData = this.sessionContext.getSessionData();
         input.setMarketId(sessionData.getMarketId());
+        input.setCreated(new Date());
+        input.setModified(new Date());
         this.truckEnterRecordService.insertSelective(input);
         return BaseOutput.successData(input.getId());
     }

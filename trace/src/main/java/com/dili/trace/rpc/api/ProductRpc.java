@@ -35,5 +35,5 @@ public interface ProductRpc {
      * @return
      */
     @POST("/api/register/create")
-    public BaseOutput<List<RegCreateResultDto>> create(@VOBody RegCreateDto obj);
+    public BaseOutput<RegCreateResultDto> create(@VOBody RegCreateDto obj);
 }
