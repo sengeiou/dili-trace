@@ -147,6 +147,13 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`weight_unit`")
     private Integer weightUnit;
 
+    /**
+     * 皮重
+     */
+    @ApiModelProperty(value = "皮重")
+    @Column(name = "`tare_weight`")
+    private BigDecimal tareWeight;
+
 
 
      /* @ApiModelProperty(value = "1.合格 2.不合格 3.复检合格 4.复检不合格")
@@ -1492,5 +1499,13 @@ public class RegisterBill extends BaseDomain {
 
     public void setCreatorRole(Integer creatorRole) {
         this.creatorRole = creatorRole;
+    }
+
+    public BigDecimal getTareWeight() {
+        return tareWeight;
+    }
+
+    public void setTareWeight(BigDecimal tareWeight) {
+        this.tareWeight = tareWeight;
     }
 }

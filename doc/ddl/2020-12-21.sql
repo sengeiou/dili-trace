@@ -10,3 +10,4 @@ ALTER TABLE dili_trace.purchase_intention_record ADD product_weight NUMERIC(10,3
 ALTER TABLE dili_trace.purchase_intention_record ADD plate VARCHAR (10)  NULL COMMENT '车牌';
 
 ALTER TABLE dili_trace.register_bill ADD is_print_checksheet INT NULL COMMENT '是否打印';
+ALTER TABLE dili_trace.register_bill ADD tare_weight NUMERIC(10,3) NOT NULL  DEFAULT 0 COMMENT '皮重';
