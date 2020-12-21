@@ -45,8 +45,8 @@ public class ManagerTruckEnterRecordApi {
         queryInput.setMarketId(sessionData.getMarketId());
         if(StringUtils.isNotBlank(queryInput.getKeyword())){
             queryInput.setMetadata(IDTO.AND_CONDITION_EXPR,
-                    ( " driver_phone like '" + queryInput.getKeyword().trim()
-                    + "%'  or driver_phone like '" + queryInput.getKeyword().trim() + "%'" ));
+                    ( " (driver_phone like '" + queryInput.getKeyword().trim()
+                    + "%'  or driver_phone like '" + queryInput.getKeyword().trim() + "%')" ));
         }
         BasePage<TruckEnterRecord> data = this.truckEnterRecordService.listPageByExample(queryInput);
 

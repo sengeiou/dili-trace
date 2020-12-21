@@ -48,7 +48,7 @@ public class ManagerPurchaseIntentionRecordApi {
         if(StringUtils.isNotBlank(queryInput.getKeyword())){
             queryInput.setMetadata(IDTO.AND_CONDITION_EXPR,
                     ( " buyer_phone like '" + queryInput.getKeyword().trim()
-                    + "%'  or buyer_phone like '" + queryInput.getKeyword().trim() + "%'" ));
+                    + "%'  or buyer_phone like '" + queryInput.getKeyword().trim() + "%')" ));
         }
         BasePage<PurchaseIntentionRecord> data = this.purchaseIntentionRecordService.listPageByExample(queryInput);
 
