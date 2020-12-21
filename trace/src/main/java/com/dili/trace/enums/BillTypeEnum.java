@@ -36,11 +36,11 @@ public enum BillTypeEnum {
 	 * 进门主台账单
 	 */
 	MASTER_BILL(4, "进门主台账单"),
-
-	/**
-	 * 进门登记单
-	 */
-	REGISTER_FORM_BILL(5, "进门登记单"),
+//
+//	/**
+//	 * 进门登记单
+//	 */
+//	REGISTER_FORM_BILL(5, "进门登记单"),
 
 	/**
 	 * 委托单

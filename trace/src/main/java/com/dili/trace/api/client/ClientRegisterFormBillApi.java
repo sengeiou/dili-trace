@@ -220,7 +220,7 @@ public class ClientRegisterFormBillApi {
 	 * @param baseDomain
 	 * @return
 	 */
-	@ApiOperation("查看进门登记单")
+	/*@ApiOperation("查看进门登记单")
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
 	public BaseOutput<RegisterBill> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
@@ -254,7 +254,7 @@ public class ClientRegisterFormBillApi {
 			return BaseOutput.failure("查询进门主台账单数据出错");
 		}
 	}
-
+*/
 	/**
 	 * 不同审核状态数据统计
 	 */

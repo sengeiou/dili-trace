@@ -910,7 +910,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if (imageCertList.isEmpty() && !BillVerifyStatusEnum.RETURNED.equalsToCode(registerBill.getVerifyStatus())) {
             throw new TraceBizException("请上传凭证");
         }
-        imageCertService.insertImageCert(imageCertList, registerBill.getBillId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+        imageCertService.insertImageCert(imageCertList, registerBill.getBillId(), BillTypeEnum.REGISTER_BILL.getCode());
 
         // 创建/更新品牌信息并更新brandId字段值
         this.brandService.createOrUpdateBrand(registerBill.getBrandName(), registerBill.getUserId(), registerBill.getMarketId())
@@ -1004,7 +1004,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
             throw new TraceBizException("请上传凭证");
         }
         // 保存图片
-        imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+        imageCertService.insertImageCert(imageCertList, input.getId(), BillTypeEnum.REGISTER_BILL.getCode());
 
         this.brandService.createOrUpdateBrand(input.getBrandName(), billItem.getUserId(), input.getMarketId());
         this.updateUserQrStatusByUserId(billItem.getBillId(), billItem.getUserId());
