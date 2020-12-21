@@ -231,19 +231,19 @@ public class ClientDetectRequestApi {
      * @param likeUserName
      * @return
      */
-//    @RequestMapping(value = "/getDetectUsers.api", method = RequestMethod.GET)
-//    public BaseOutput getDetectUsers(@RequestParam(name = "likeUserName") String likeUserName) {
-//        try {
-//            Long marketId = this.sessionContext.getSessionData().getMarketId();
-//            List<User> users = userRpcService.findDetectDepartmentUsers(likeUserName, marketId);
-//            return BaseOutput.successData(users);
-//        } catch (TraceBizException e) {
-//            return BaseOutput.failure(e.getMessage());
-//        } catch (Exception e) {
-//            logger.error(e.getMessage(), e);
-//            return BaseOutput.failure("服务端出错");
-//        }
-//    }
+    @RequestMapping(value = "/getDetectUsers.api", method = RequestMethod.GET)
+        public BaseOutput getDetectUsers(@RequestParam(name = "likeUserName") String likeUserName) {
+        try {
+            Long marketId = this.sessionContext.getSessionData().getMarketId();
+            List<User> users = userRpcService.findDetectDepartmentUsers(likeUserName, marketId);
+            return BaseOutput.successData(users);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return BaseOutput.failure("服务端出错");
+        }
+    }
     /**
      * 查询检测请求列表
      * @param detectRequestDto
