@@ -165,7 +165,7 @@ public class CustomerDetectRequestController {
     @ResponseBody
     public Map<String, ?> listByName(String name) {
         Long marketId = MarketUtil.returnMarket();
-        List<User> detectorUsers = userRpcService.findDetectDepartmentUsers(name, marketId).orElse(Lists.newArrayList());
+        List<User> detectorUsers = userRpcService.findDetectDepartmentUsers(name, marketId);
         List<Map<String, Object>> list = Lists.newArrayList();
         for (User c : detectorUsers) {
             Map<String, Object> obj = Maps.newHashMap();

@@ -10,6 +10,7 @@ import com.dili.uap.sdk.domain.dto.DepartmentDto;
 import com.dili.uap.sdk.domain.dto.UserQuery;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
+import com.google.common.collect.Lists;
 import one.util.streamex.StreamEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +40,9 @@ public class UserRpcService {
      *
      * @return
      */
-    public Optional<List<User>> findDetectDepartmentUsers(String likeUserName, Long marketId) {
+    public List<User> findDetectDepartmentUsers(String likeUserName, Long marketId) {
         if (marketId == null) {
-            return Optional.empty();
+            return Lists.newArrayList();
         }
         try {
             Department department = departmentRpcService.findDetectDepartment(marketId).orElseThrow(() -> {
@@ -53,12 +54,12 @@ public class UserRpcService {
             user.setUserName(likeUserName);
             BaseOutput<List<User>> result = userRpc.listByExample(user);
             if (result.isSuccess()) {
-                return Optional.of(result.getData());
+                return result.getData();
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-        return Optional.empty();
+        return Lists.newArrayList();
     }
 
 }
