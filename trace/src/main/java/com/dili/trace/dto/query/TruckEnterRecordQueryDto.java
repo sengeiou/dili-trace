@@ -36,6 +36,20 @@ public class TruckEnterRecordQueryDto extends TruckEnterRecord {
     @Like(Like.RIGHT)
     private String likeDriverName;
 
+
+    /**
+     * 电话或姓名模糊查询
+     */
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
     public String getLikeDriverName() {
         return likeDriverName;
     }

@@ -28,6 +28,9 @@ public class TruckEnterRecord extends BaseDomain {
     @Column(name = "`id`")
     private Long id;
 
+    @Column(name = "`market_id`")
+    private Long marketId;
+
 
     /**
      * 车牌
@@ -64,6 +67,13 @@ public class TruckEnterRecord extends BaseDomain {
     private String driverName;
 
     /**
+     * 司机姓名
+     */
+    @ApiModelProperty(value = "司机电话")
+    @Column(name = "`driver_phone`")
+    private String driverPhone;
+
+    /**
      * 创建时间
      */
     @Column(name = "`created`")
@@ -97,6 +107,22 @@ public class TruckEnterRecord extends BaseDomain {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public String getDriverPhone() {
+        return driverPhone;
+    }
+
+    public void setDriverPhone(String driverPhone) {
+        this.driverPhone = driverPhone;
     }
 
     public String getTruckPlate() {
