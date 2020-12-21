@@ -8,3 +8,5 @@ ALTER TABLE dili_trace.purchase_intention_record ADD buyer_phone varchar(20) CHA
 ALTER TABLE dili_trace.purchase_intention_record ADD weight_unit INT NULL COMMENT '重量单位';
 ALTER TABLE dili_trace.purchase_intention_record ADD product_weight NUMERIC(10,3) NOT NULL  DEFAULT 0 COMMENT '商品重量';
 ALTER TABLE dili_trace.purchase_intention_record ADD plate VARCHAR (10)  NULL COMMENT '车牌';
+
+ALTER TABLE dili_trace.register_bill ADD is_print_checksheet INT NULL COMMENT '是否打印';

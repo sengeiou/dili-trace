@@ -482,6 +482,22 @@ public class RegisterBill extends BaseDomain {
     @Column(name = "`creator_role`")
     private Integer creatorRole;
 
+
+    /**
+     * 是否打印
+     */
+    @Column(name = "`is_print_checksheet`")
+    private Integer isPrintCheckSheet;
+
+    public Integer getIsPrintCheckSheet() {
+        return isPrintCheckSheet;
+    }
+
+    public void setIsPrintCheckSheet(Integer isPrintCheckSheet) {
+        this.isPrintCheckSheet = isPrintCheckSheet;
+    }
+
+
     public BigDecimal getUnitPrice() {
         return unitPrice;
     }

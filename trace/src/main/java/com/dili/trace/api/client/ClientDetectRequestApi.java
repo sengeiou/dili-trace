@@ -90,28 +90,25 @@ public class ClientDetectRequestApi {
             if (inputList.isEmpty()) {
                 return BaseOutput.failure("参数错误");
             }
-            List<RegisterBill> inputBillList = StreamEx.of(inputList).map(inut -> {
-                logger.info("循环保存登记单:" + JSON.toJSONString(inut));
+           List<RegisterBill>billList= StreamEx.of(inputList).map(input->{
+                logger.info("循环保存登记单:" + JSON.toJSONString(input));
                 RegisterBill registerBill = new RegisterBill();
-//                registerBill.setOperatorName(user.getName());
-//                registerBill.setOperatorId(user.getId());
+
                 registerBill.setUserId(this.sessionContext.getSessionData().getUserId());
                 registerBill.setName(this.sessionContext.getSessionData().getUserName());
-//                registerBill.setAddr(user.getAddr());
-//                registerBill.setIdCardNo(user.getCardNo());
+
                 if (registerBill.getRegisterSource() == null) {
                     // 小程序默认理货区
                     registerBill.setRegisterSource(RegisterSourceEnum.TALLY_AREA.getCode());
                 }
-                if (registerBill.getRegisterSource().equals(RegisterSourceEnum.TALLY_AREA.getCode())) {
-//                    registerBill.setTallyAreaNo(user.getTallyAreaNos());
-//                    registerBill.setSourceName(user.getTallyAreaNos());
-                }
+
                 registerBill.setCreationSource(RegisterBilCreationSourceEnum.WX.getCode());
 
+               registerBill.setIsPrintCheckSheet(input.getIsPrintCheckSheet());
                 return registerBill;
             }).toList();
-            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(inputBillList);
+
+            List<RegisterBill> outlist = this.commissionBillService.createCommissionBillByUser(billList);
             return BaseOutput.success();
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
