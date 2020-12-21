@@ -73,6 +73,11 @@ public class CreateRegisterBillInputDto {
     private BigDecimal tareWeight;
 
     /**
+     * 单价
+     */
+    private  BigDecimal unitPrice;
+
+    /**
      * 规格
      */
     @ApiModelProperty(value = "规格")
@@ -295,6 +300,7 @@ public class CreateRegisterBillInputDto {
         registerBill.setReason(this.getReason());
         registerBill.setIsPrintCheckSheet(this.getIsPrintCheckSheet());
         registerBill.setTareWeight(this.getTareWeight());
+        registerBill.setUnitPrice(this.getUnitPrice());
 //        registerBill.setOrderType(this.getOrderType());
         return registerBill;
     }
@@ -605,5 +611,13 @@ public class CreateRegisterBillInputDto {
 
     public void setTareWeight(BigDecimal tareWeight) {
         this.tareWeight = tareWeight;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
     }
 }

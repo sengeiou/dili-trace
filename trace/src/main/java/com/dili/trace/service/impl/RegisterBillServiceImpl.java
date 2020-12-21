@@ -181,6 +181,10 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         if(registerBill.getTareWeight()==null){
             registerBill.setTareWeight(BigDecimal.ZERO);
         }
+        if(registerBill.getUnitPrice()==null){
+            registerBill.setUnitPrice(BigDecimal.ZERO);
+        }
+
 
         // 保存报备单
         int result = super.saveOrUpdate(registerBill);
