@@ -6,21 +6,29 @@ import com.dili.common.annotation.Role;
 import com.dili.common.entity.LoginSessionContext;
 import com.dili.common.entity.SessionData;
 import com.dili.common.exception.TraceBizException;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.customer.sdk.enums.CustomerEnum;
+import com.dili.ss.domain.BaseDomain;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
 import com.dili.trace.api.output.TradeDetailBillOutput;
+import com.dili.trace.domain.ImageCert;
 import com.dili.trace.domain.RegisterBill;
+import com.dili.trace.domain.RegisterHead;
+import com.dili.trace.domain.UpStream;
 import com.dili.trace.dto.CreateListBillParam;
 import com.dili.trace.dto.RegisterBillDto;
+import com.dili.trace.enums.BillTypeEnum;
+import com.dili.trace.enums.RegistTypeEnum;
 import com.dili.trace.rpc.service.CustomerRpcService;
 import com.dili.trace.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import one.util.streamex.StreamEx;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +66,8 @@ public class ClientRegisterBillApi {
     TradeRequestService tradeRequestService;
     @Autowired
     CustomerRpcService customerRpcService;
-
+    @Autowired
+    RegisterHeadService registerHeadService;
     /**
      * 保存多个登记单
      *
@@ -181,5 +190,49 @@ public class ClientRegisterBillApi {
         }
 
     }
+    /**
+     * 查看进门登记单
+     * @param baseDomain
+     * @return
+     */
+    @ApiOperation("查看进门登记单")
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "/viewRegisterBill.api", method = {RequestMethod.POST})
+    public BaseOutput<RegisterBill> viewRegisterBill(@RequestBody BaseDomain baseDomain) {
+        try {
+            RegisterBill query=new RegisterBill();
+        query.setIsDeleted(YesOrNoEnum.NO.getCode());
+        query.setMarketId(this.sessionContext.getSessionData().getMarketId());
+        query.setUserId(this.sessionContext.getSessionData().getUserId());
+            RegisterBill registerBill =    StreamEx.of(this.registerBillService.listByExample(query)).findFirst().orElseThrow(()->{
+            return new TraceBizException("数据不存在");
+        });
 
+            List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.REGISTER_FORM_BILL.getCode());
+            registerBill.setImageCerts(imageCerts);
+
+            UpStream upStream = upStreamService.get(registerBill.getUpStreamId());
+            registerBill.setUpStreamName(upStream.getName());
+
+            //获取主台账单的总重量与剩余总重量
+            if (RegistTypeEnum.PARTIAL.getCode().equals(registerBill.getRegistType())) {
+                RegisterHead registerHead = new RegisterHead();
+                registerHead.setCode(registerBill.getRegisterHeadCode());
+                List<RegisterHead> registerHeadList =  registerHeadService.listByExample(registerHead);
+                if(CollectionUtils.isNotEmpty(registerHeadList)){
+                    registerHead = registerHeadList.get(0);
+                } else {
+                    return BaseOutput.failure("未找到主台账单");
+                }
+                registerBill.setHeadWeight(registerHead.getWeight());
+                registerBill.setRemainWeight(registerHead.getRemainWeight());
+            }
+            return BaseOutput.success().setData(registerBill);
+        } catch (TraceBizException e) {
+            return BaseOutput.failure(e.getMessage());
+        } catch (Exception e) {
+            logger.error("查询进门主台账单数据出错", e);
+            return BaseOutput.failure("查询进门主台账单数据出错");
+        }
+    }
 }

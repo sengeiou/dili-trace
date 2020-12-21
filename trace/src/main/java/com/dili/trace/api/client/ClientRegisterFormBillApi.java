@@ -42,11 +42,11 @@ import java.util.Optional;
  * 进门登记单相关接口
  *
  * @author Lily
- */
-@RestController
-@RequestMapping(value = "/api/client/clientRegisterFormBill")
-@Api(value = "/api/client/clientRegisterFormBill", description = "进门登记单相关接口")
-@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
+// */
+//@RestController
+//@RequestMapping(value = "/api/client/clientRegisterFormBill")
+//@Api(value = "/api/client/clientRegisterFormBill", description = "进门登记单相关接口")
+//@AppAccess(role = Role.Client,url = "",subRoles = {CustomerEnum.CharacterType.经营户, CustomerEnum.CharacterType.买家})
 public class ClientRegisterFormBillApi {
 	private static final Logger logger = LoggerFactory.getLogger(ClientRegisterFormBillApi.class);
 	@Autowired
