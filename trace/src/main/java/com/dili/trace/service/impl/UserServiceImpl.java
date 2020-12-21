@@ -86,8 +86,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     @Autowired
     TallyAreaNoService tallyAreaNoService;
     @Autowired
-    SMSService sMSService;
-    @Autowired
     SessionRedisService sessionRedisService;
     @Autowired
     IWxAppService wxAppService;
@@ -327,8 +325,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     /**
      * 发送消息给管理员提示审核
      *
-     * @param userName
-     * @param userId
      */
 //    private void sendMessageByManage(String userName, Long userId, Long marketId) {
 //        // 审核通过增加消息

@@ -22,27 +22,6 @@ public class CommissionUserApi {
 	private static final Logger logger = LoggerFactory.getLogger(CommissionUserApi.class);
 	@Autowired
 	UserServiceImpl userService;
-	@Autowired
-	SMSService sms;
 
-	/**
-	 * 创建委托用户
-	 * @param input 委托用户
-	 * @return 创建结果
-	 */
-	@RequestMapping(value = "/createCommissionUser.api")
-	public BaseOutput<?> createCommissionUser(@RequestBody User input) {
-		try {
-			this.sms.checkVerificationCode(input.getPhone(), input.getCheckCode());
-			User item = this.userService.createCommissionUser(input);
-			return BaseOutput.success().setData(item.getId());
-		} catch (TraceBizException e) {
-			return BaseOutput.failure(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return BaseOutput.failure("服务端出错");
-		}
-
-	}
 
 }
