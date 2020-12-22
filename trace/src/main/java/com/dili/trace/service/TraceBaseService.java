@@ -17,7 +17,8 @@ import java.util.function.Function;
  * @param <T>
  * @param <K>
  */
-public class TraceBaseService<T extends IBaseDomain, K extends Serializable> extends BaseServiceImpl<T, K> {
+
+public abstract class TraceBaseService<T extends IBaseDomain, K extends Serializable> extends BaseServiceImpl<T, K> {
     public <D extends IBaseDomain>ExampleQuery<D> buildQuery(D domain) {
         return new ExampleQuery<>(domain);
     }

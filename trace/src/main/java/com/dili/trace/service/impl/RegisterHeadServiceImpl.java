@@ -2,12 +2,12 @@ package com.dili.trace.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
-import com.dili.common.service.BizNumberFunction;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.IDTO;
+import com.dili.ss.uid.service.BizNumberService;
 import com.dili.trace.api.input.CreateRegisterHeadInputDto;
 import com.dili.trace.dao.RegisterHeadMapper;
 import com.dili.trace.domain.*;
@@ -15,7 +15,9 @@ import com.dili.trace.dto.*;
 import com.dili.trace.enums.*;
 import com.dili.trace.glossary.BizNumberType;
 import com.dili.trace.glossary.TFEnum;
+import com.dili.trace.rpc.api.UidRestfulRpc;
 import com.dili.trace.rpc.service.CustomerRpcService;
+import com.dili.trace.rpc.service.UidRestfulRpcService;
 import com.dili.trace.service.*;
 import one.util.streamex.StreamEx;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,7 +46,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     private static final Logger logger = LoggerFactory.getLogger(RegisterHeadServiceImpl.class);
 
     @Autowired
-    BizNumberFunction bizNumberFunction;
+    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService ;
 
     @Autowired
     UserPlateService userPlateService;
@@ -59,6 +61,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
     UpStreamService upStreamService;
     @Autowired
     CustomerRpcService clientRpcService;
+
 
     public RegisterHeadMapper getActualDao() {
         return (RegisterHeadMapper) getDao();
@@ -91,7 +94,7 @@ public class RegisterHeadServiceImpl extends BaseServiceImpl<RegisterHead, Long>
         this.checkRegisterHead(registerHead);
 
         registerHead.setRemainWeight(registerHead.getWeight());
-        registerHead.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_HEAD));
+        registerHead.setCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_HEAD.getType()));
         operatorUser.ifPresent(op -> {
             registerHead.setCreateUser(op.getName());
             registerHead.setCreated(new Date());

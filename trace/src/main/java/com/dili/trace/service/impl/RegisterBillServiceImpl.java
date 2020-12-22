@@ -3,7 +3,6 @@ package com.dili.trace.service.impl;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.dili.common.exception.TraceBizException;
-import com.dili.common.service.BizNumberFunction;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.customer.sdk.domain.dto.CustomerExtendDto;
 import com.dili.ss.base.BaseServiceImpl;
@@ -11,6 +10,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.BasePage;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.dto.IDTO;
+import com.dili.ss.uid.service.BizNumberService;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.components.ManageSystemComponent;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long> implements RegisterBillService {
     private static final Logger logger = LoggerFactory.getLogger(RegisterBillServiceImpl.class);
     @Autowired
-    BizNumberFunction bizNumberFunction;
+    com.dili.trace.rpc.service.UidRestfulRpcService uidRestfulRpcService ;
     @Autowired
     ImageCertService imageCertService;
     @Autowired
@@ -140,7 +140,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setVerifyType(VerifyTypeEnum.NONE.getCode());
 //        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
         registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
-        registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
+        registerBill.setCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL.getType()));
         registerBill.setVersion(1);
         registerBill.setCreated(new Date());
         registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());
@@ -867,7 +867,7 @@ public class RegisterBillServiceImpl extends BaseServiceImpl<RegisterBill, Long>
         registerBill.setVerifyStatus(BillVerifyStatusEnum.WAIT_AUDIT.getCode());
 //        registerBill.setState(RegisterBillStateEnum.NEW.getCode());
         registerBill.setDetectStatus(DetectStatusEnum.NONE.getCode());
-        registerBill.setCode(bizNumberFunction.getBizNumberByType(BizNumberType.REGISTER_BILL));
+        registerBill.setCode(uidRestfulRpcService.bizNumber(BizNumberType.REGISTER_BILL.getType()));
         registerBill.setVersion(1);
         registerBill.setCreated(new Date());
         registerBill.setIsCheckin(YesOrNoEnum.NO.getCode());

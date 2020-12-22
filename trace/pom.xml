@@ -217,7 +217,7 @@
                 <exclusion>
                     <artifactId>swagger-annotations</artifactId>
                     <groupId>io.swagger</groupId>
-                </exclusion>
+                    </exclusion>
             </exclusions>
         </dependency>
 
