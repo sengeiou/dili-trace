@@ -66,6 +66,15 @@ public class SessionData {
      * 用户微信菜单
      */
     private Set<String> userWeChatMenus;
+
+
+    public Optional<OperatorUser>getOptUser(){
+        if(this.role==null||this.role!=Role.Manager){
+            return Optional.empty();
+        }
+        return Optional.of(new OperatorUser(this.getUserId(),this.getUserName()));
+    }
+
     public boolean hasSubRole(CustomerEnum.CharacterType role){
         return this.subRoles==null?false:this.subRoles.contains(role);
     }

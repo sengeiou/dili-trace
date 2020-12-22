@@ -85,7 +85,6 @@ public class ManagerRegisterHeadApi {
                 return BaseOutput.failure("参数错误");
             }
             SessionData sessionData = this.sessionContext.getSessionData();
-            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
 
             logger.info("获取进门主台账单列表 操作用户:{}", sessionData.getUserId());
             input.setSort("created");
@@ -169,10 +168,9 @@ public class ManagerRegisterHeadApi {
             if (registerHeads.isEmpty()) {
                 return BaseOutput.failure("没有进门主台账单/参数错误");
             }
-            SessionData sessionData = this.sessionContext.getSessionData();
-            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
+
             logger.info("保存多个进门主台账单操作用户:{}，{}", userId, userName);
-            List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads, Optional.of(operatorUser), sessionContext.getSessionData().getMarketId());
+            List<Long> idList = this.registerHeadService.createRegisterHeadList(registerHeads, this.sessionContext.getSessionData().getOptUser(), sessionContext.getSessionData().getMarketId());
             return BaseOutput.success().setData(idList);
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
@@ -198,13 +196,12 @@ public class ManagerRegisterHeadApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
             CustomerExtendDto customer = this.customerRpcService.findCustomerByIdOrEx(sessionData.getUserId(), sessionData.getMarketId());
 
 
             RegisterHead registerHead = dto.build(customer);
             logger.info("修改进门主台账单:{}", JSON.toJSONString(registerHead));
-            this.registerHeadService.doEdit(registerHead, dto.getImageCertList(), Optional.ofNullable(operatorUser));
+            this.registerHeadService.doEdit(registerHead, dto.getImageCertList(), this.sessionContext.getSessionData().getOptUser());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -230,9 +227,8 @@ public class ManagerRegisterHeadApi {
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
 
-            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
-            logger.info("作废进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
-            this.registerHeadService.doDelete(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
+            logger.info("作废进门主台账单:billId:{},userId:{}", dto.getId(), sessionData.getUserId());
+            this.registerHeadService.doDelete(dto, sessionData.getUserId(), this.sessionContext.getSessionData().getOptUser());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
@@ -257,10 +253,8 @@ public class ManagerRegisterHeadApi {
         }
         try {
             SessionData sessionData = this.sessionContext.getSessionData();
-
-            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
-            logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), operatorUser.getId());
-            this.registerHeadService.doUpdateActive(dto, operatorUser.getId(), Optional.ofNullable(operatorUser));
+            logger.info("启用/关闭进门主台账单:billId:{},userId:{}", dto.getId(), sessionData.getUserId());
+            this.registerHeadService.doUpdateActive(dto, sessionData.getUserId(), sessionData.getOptUser());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());
         } catch (Exception e) {
