@@ -69,6 +69,12 @@ public interface ApproverInfo extends IBaseDomain {
 
     void setModified(Date modified);
 
+
+    @Column(name = "`market_id`")
+    @FieldDef(label="market_id")
+    @EditMode(editor = FieldEditor.Number, required = true)
+    public Long getMarketId();
+    public void setMarketId(Long marketId);
     
  
 

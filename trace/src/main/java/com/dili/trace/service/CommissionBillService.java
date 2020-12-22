@@ -18,6 +18,7 @@ import com.dili.trace.enums.*;
 import com.dili.trace.glossary.RegisterBilCreationSourceEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.glossary.SampleSourceEnum;
+import com.dili.trace.util.MarketUtil;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.github.pagehelper.Page;
@@ -61,7 +62,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
     public String listPage(RegisterBillDto query) throws Exception {
         RegisterBillDto dto = this.preBuildDTO(query);
         dto.setBillType(this.supportedBillType().getCode());
-
+        dto.setMarketId(MarketUtil.returnMarket());
+        dto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
         BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
         List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
         EasyuiPageOutput out = new EasyuiPageOutput(page.getTotalItem(),results);
@@ -215,6 +217,8 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         bill.setOperatorName(operatorUser.getName());
         bill.setDetectStatus(DetectStatusEnum.WAIT_DETECT.getCode());
         bill.setPlate("");
+
+        bill.setMarketId(MarketUtil.returnMarket());
         this.billService.insertSelective(bill);
         DetectRequest item = this.detectRequestService.createDefault(bill.getBillId(), Optional.ofNullable(operatorUser));
 
@@ -254,7 +258,7 @@ public class CommissionBillService extends BaseServiceImpl<RegisterBill, Long> {
         bill.setBillType(this.supportedBillType().getCode());
         bill.setCreated(new Date());
         bill.setModified(new Date());
-
+        bill.setMarketId(MarketUtil.returnMarket());
 //		bill.setPlate("");
         this.billService.insertSelective(bill);
         return bill;

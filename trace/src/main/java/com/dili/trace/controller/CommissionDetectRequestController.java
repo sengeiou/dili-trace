@@ -10,6 +10,7 @@ import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
 import com.dili.trace.domain.sg.QualityTraceTradeBill;
 import com.dili.trace.dto.DetectRequestWithBillDto;
+import com.dili.trace.enums.BillDeleteStatusEnum;
 import com.dili.trace.enums.BillTypeEnum;
 import com.dili.trace.glossary.RegisterSourceEnum;
 import com.dili.trace.service.*;
@@ -79,6 +80,7 @@ public class CommissionDetectRequestController {
         detectRequestDto.setMarketId(MarketUtil.returnMarket());
         detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setBillType(BillTypeEnum.COMMISSION_BILL.getCode());
+        detectRequestDto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
         return out.toString();
     }
