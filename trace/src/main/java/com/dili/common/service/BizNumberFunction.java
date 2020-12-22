@@ -27,7 +27,7 @@ public class BizNumberFunction {
      * @return
      */
     public String getBizNumberByType(BizNumberType bizNumberType){
-        return bizNumberService.getBizNumberByRule(toBizNumberRule(bizNumberType));
+        return bizNumberService.getBizNumberByType(toBizNumberRule(bizNumberType));
     }
 
     /**
