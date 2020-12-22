@@ -53,17 +53,14 @@ public class NewRegisterBillController {
 
     @Autowired
     BillService billService;
-
     @Autowired
     SgRegisterBillService registerBillService;
     @Autowired
     TradeTypeService tradeTypeService;
-
     @Autowired
     CustomerRpcService customerService;
     @Autowired
     DetectRecordService detectRecordService;
-
     @Autowired
     SeparateSalesRecordService separateSalesRecordService;
     @Autowired
@@ -794,6 +791,53 @@ public class NewRegisterBillController {
         } catch (Exception e) {
             return BaseOutput.failure("服务器出错,请重试");
         }
+    }
+
+    /**
+     * 跳转到statics页面
+     *
+     * @param modelMap
+     * @return
+     */
+    @ApiOperation("跳转到statics页面")
+    @RequestMapping(value = "/statics.html", method = RequestMethod.GET)
+    public String statics(ModelMap modelMap) {
+        Date now = new Date();
+        modelMap.put("createdStart", DateUtils.format(now, "yyyy-MM-dd 00:00:00"));
+        modelMap.put("createdEnd", DateUtils.format(now, "yyyy-MM-dd 23:59:59"));
+        return "detectReport/statics";
+    }
+
+    /**
+     * 查询统计数据
+     *
+     * @param registerBill
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/listStaticsPage.action", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody
+    String listStaticsPage(RegisterBillDto registerBill) throws Exception {
+        registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
+        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
+        return this.registerBillService.listStaticsPage(registerBill);
+    }
+
+    /**
+     * 查询统计数据
+     *
+     * @param registerBill
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/listStaticsData.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput<?> listStaticsData(RegisterBillDto registerBill) {
+        registerBill.setMarketId(this.uapRpcService.getCurrentFirm().get().getId());
+        registerBill.setIsDeleted(YesOrNoEnum.NO.getCode());
+        registerBill.setAttrValue(StringUtils.trimToEmpty(registerBill.getAttrValue()));
+        RegisterBillStaticsDto staticsDto = this.registerBillService.groupByState(registerBill);
+        return BaseOutput.success().setData(staticsDto);
     }
 
 

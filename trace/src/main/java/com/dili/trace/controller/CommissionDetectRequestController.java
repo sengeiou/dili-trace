@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.sg.trace.glossary.SalesTypeEnum;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.dto.DTOUtils;
@@ -76,6 +77,7 @@ public class CommissionDetectRequestController {
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody String listPage(@RequestBody DetectRequestWithBillDto detectRequestDto) throws Exception {
         detectRequestDto.setMarketId(MarketUtil.returnMarket());
+        detectRequestDto.setIsDeleted(YesOrNoEnum.NO.getCode());
         detectRequestDto.setBillType(BillTypeEnum.COMMISSION_BILL.getCode());
         EasyuiPageOutput out = this.detectRequestService.listBasePageByExample(detectRequestDto);
         return out.toString();

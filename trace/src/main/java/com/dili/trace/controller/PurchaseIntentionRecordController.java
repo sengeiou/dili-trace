@@ -1,8 +1,6 @@
 package com.dili.trace.controller;
 
-import com.dili.trace.domain.PurchaseIntentionRecord;
 import com.dili.trace.dto.query.PurchaseIntentionRecordQueryDto;
-import com.dili.trace.service.AssetsRpcService;
 import com.dili.trace.service.PurchaseIntentionRecordService;
 import com.dili.trace.service.UapRpcService;
 import io.swagger.annotations.ApiImplicitParam;
