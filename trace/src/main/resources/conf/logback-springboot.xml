@@ -29,6 +29,7 @@
             </encoder>
         </appender>
         <jmxConfigurator/>
+        <logger name="org.zalando.logbook.Logbook" level="trace" />
     </springProfile>
     <!-- 测试环境 -->
     <springProfile name="test">

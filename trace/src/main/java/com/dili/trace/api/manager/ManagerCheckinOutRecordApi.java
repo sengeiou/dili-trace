@@ -38,17 +38,16 @@ import io.swagger.annotations.Api;
 import one.util.streamex.StreamEx;
 
 /**
- * 管理员进门接口
+ * (管理员)进出门操作接口
  */
 @SuppressWarnings("deprecation")
 @Api(value = "/api/manager/managerCheckinRecordApi")
 @RestController
 @AppAccess(role = Role.Manager,url = "dili-trace-app-auth",subRoles = {})
-@RequestMapping(value = "/api/manager/managerCheckinRecord")
+@RequestMapping(value = "/api/manager/managerCheckinOutRecordApi")
 public class ManagerCheckinOutRecordApi {
 	private static final Logger logger = LoggerFactory.getLogger(ManagerCheckinOutRecordApi.class);
-	@Autowired
-	private UserService userService;
+
 	@Autowired
 	private LoginSessionContext sessionContext;
 	@Autowired

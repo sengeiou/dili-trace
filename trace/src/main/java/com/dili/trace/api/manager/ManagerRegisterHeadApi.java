@@ -81,9 +81,9 @@ public class ManagerRegisterHeadApi {
     public BaseOutput<BasePage<RegisterHead>> listPage(@RequestBody RegisterHeadDto input) {
         logger.info("获取进门主台账单列表:{}", JSON.toJSONString(input));
         try {
-            if(input==null||input.getUserId()==null){
-                return BaseOutput.failure("参数错误");
-            }
+//            if(input==null||input.getUserId()==null){
+//                return BaseOutput.failure("参数错误");
+//            }
             SessionData sessionData = this.sessionContext.getSessionData();
 
             logger.info("获取进门主台账单列表 操作用户:{}", sessionData.getUserId());
