@@ -78,16 +78,19 @@ public class ManagerRegisterHeadApi {
     @ApiOperation(value = "获取进门主台账单列表")
     @ApiImplicitParam(paramType = "body", name = "RegisterHead", dataType = "RegisterHead", value = "获取进门主台账单列表")
     @RequestMapping(value = "/listPage.api", method = RequestMethod.POST)
-    public BaseOutput<BasePage<CheckinOutRecord>> listPage(@RequestBody RegisterHeadDto input) {
+    public BaseOutput<BasePage<RegisterHead>> listPage(@RequestBody RegisterHeadDto input) {
         logger.info("获取进门主台账单列表:{}", JSON.toJSONString(input));
         try {
             if(input==null||input.getUserId()==null){
                 return BaseOutput.failure("参数错误");
             }
-            Long userId = this.sessionContext.getSessionData().getUserId();
-            logger.info("获取进门主台账单列表 操作用户:{}", userId);
+            SessionData sessionData = this.sessionContext.getSessionData();
+            OperatorUser operatorUser = new OperatorUser(sessionData.getUserId(),sessionData.getUserName());
+
+            logger.info("获取进门主台账单列表 操作用户:{}", sessionData.getUserId());
             input.setSort("created");
             input.setOrder("desc");
+            input.setMarketId(sessionData.getMarketId());
             BasePage<RegisterHead> registerHeadBasePage = registerHeadService.listPageApi(input);
 
             if (null != registerHeadBasePage && CollectionUtils.isNotEmpty(registerHeadBasePage.getDatas())) {
