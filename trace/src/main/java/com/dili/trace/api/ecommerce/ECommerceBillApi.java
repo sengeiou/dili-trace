@@ -188,7 +188,7 @@ public class ECommerceBillApi {
      * @param likeTallyAreaNo 摊位号
      * @return 电商登记单
      */
-    @RequestMapping(value = "/queryByTallyAreaNo.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/queryByTallyAreaNo.api", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public BaseOutput queryByTallyAreaNo(String likeTallyAreaNo) {
         try {
