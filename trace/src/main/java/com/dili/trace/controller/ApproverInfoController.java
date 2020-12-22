@@ -1,5 +1,6 @@
 package com.dili.trace.controller;
 
+import com.dili.trace.util.MarketUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,7 @@ public class ApproverInfoController {
 	public @ResponseBody BaseOutput<Long> insert(ApproverInfo approverInfo) {
 		try {
 			approverInfo.setUserId(0L);
+			approverInfo.setMarketId(MarketUtil.returnMarket());
 			this.approverInfoService.insertApproverInfo(approverInfo);
 			return BaseOutput.success("新增成功").setData(approverInfo.getId());
 		} catch (TraceBizException e) {

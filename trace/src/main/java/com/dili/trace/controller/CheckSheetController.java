@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 import com.dili.common.exception.TraceBizException;
 import com.dili.trace.domain.*;
 import com.dili.trace.dto.OperatorUser;
+import com.dili.trace.enums.BillDeleteStatusEnum;
 import com.dili.trace.enums.DetectResultEnum;
 import com.dili.trace.service.*;
+import com.dili.trace.util.MarketUtil;
 import com.dili.uap.sdk.session.SessionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -165,8 +167,16 @@ public class CheckSheetController {
             sqlList.add("  (approver_info_id in (select id from approver_info where user_name='"
                     + checkSheet.getLikeApproverUserName().trim() + "')) ");
         }
+        Long marketId = MarketUtil.returnMarket();
+        Integer deleteCode = BillDeleteStatusEnum.NORMAL.getCode();
 
-        sqlList.add(" id in(select check_sheet_id from check_sheet_detail where register_bill_id in (select id from register_bill where bill_type=" + checkSheet.getBillType() + ") )");
+        sqlList.add(" id in(select check_sheet_id from check_sheet_detail where register_bill_id in (select id from register_bill where bill_type="
+                + checkSheet.getBillType()
+                + " and market_id = "
+                + marketId
+                + " and is_deleted = "
+                + deleteCode
+                + ") )");
 
         checkSheet.setMetadata(IDTO.AND_CONDITION_EXPR, String.join(" AND ", sqlList));
         EasyuiPageOutput out = this.checkSheetService.listEasyuiPageByExample(checkSheet, true);

@@ -118,6 +118,7 @@ public class NewRegisterBillController {
         billTypes.add(BillTypeEnum.CHECK_ORDER.getCode());
         billTypes.add(BillTypeEnum.CHECK_DISPOSE.getCode());
         registerBill.setBillTypes(billTypes);
+        registerBill.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
         return registerBillService.listBasePageByExample(registerBill);
         // return registerBillService.listPage(registerBill);
     }

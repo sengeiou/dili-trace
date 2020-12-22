@@ -22,6 +22,7 @@ import com.dili.trace.glossary.SampleSourceEnum;
 import com.dili.trace.service.QrCodeService;
 import com.dili.trace.domain.RegisterBill;
 import com.dili.trace.domain.SeparateSalesRecord;
+import com.dili.trace.util.MarketUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.beanutils.BeanUtils;
@@ -78,8 +79,9 @@ public class ECommerceBillService {
      */
     public String listPage(RegisterBillDto query) throws Exception {
         RegisterBillDto dto = this.preBuildDTO(query);
+        dto.setMarketId(MarketUtil.returnMarket());
         dto.setBillType(this.supportedBillType().getCode());
-
+        dto.setIsDeleted(BillDeleteStatusEnum.NORMAL.getCode());
         BasePage<RegisterBillDto> page = this.billService.buildQuery(dto).listPageByFun(q -> this.billMapper.queryListByExample(q));
 
         List results = ValueProviderUtils.buildDataByProvider(query, page.getDatas());
@@ -418,6 +420,8 @@ public class ECommerceBillService {
         bill.setHasHandleResult(YesOrNoEnum.NO.getCode());
         bill.setHasDetectReport(YesOrNoEnum.NO.getCode());
         bill.setHasOriginCertifiy(YesOrNoEnum.NO.getCode());
+
+        bill.setMarketId(MarketUtil.returnMarket());
         this.billService.insertSelective(bill);
         this.billService.updateHasImage(bill.getBillId(),bill.getImageCerts());
         return bill.getId();
