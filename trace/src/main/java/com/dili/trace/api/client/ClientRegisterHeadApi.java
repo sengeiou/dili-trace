@@ -274,6 +274,9 @@ public class ClientRegisterHeadApi {
     public BaseOutput<RegisterHead> viewRegisterHead(@RequestBody BaseDomain baseDomain) {
         try {
             RegisterHead registerHead = registerHeadService.get(baseDomain.getId());
+            if(registerHead==null){
+                return BaseOutput.failure("没有数据");
+            }
 
             List<ImageCert> imageCerts = imageCertService.findImageCertListByBillId(baseDomain.getId(), BillTypeEnum.MASTER_BILL.getCode());
             registerHead.setImageCertList(imageCerts);
