@@ -9,6 +9,7 @@ import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.exception.AppException;
 import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.ss.util.POJOUtils;
+import com.dili.trace.api.input.DetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
@@ -63,11 +64,12 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
     /**
      * 创建检测请求
      *
-     * @param billId       报备单ID
+     * @param inputDto       报备单ID
      * @param operatorUser 操作用户
      * @return
      */
-    public DetectRequest createDetectRequestForBill(Long billId, Optional<OperatorUser> operatorUser) {
+    public DetectRequest createDetectRequestForBill(DetectRequestInputDto inputDto, Optional<OperatorUser> operatorUser) {
+        Long billId=inputDto.getBillId();
         RegisterBill billItem = this.billService.get(billId);
         if (billItem == null) {
             throw new TraceBizException("登记单不存在");
@@ -100,6 +102,8 @@ public class DetectRequestService extends BaseServiceImpl<DetectRequest, Long> {
         registerBill.setId(billId);
         registerBill.setDetectStatus(DetectStatusEnum.WAIT_DESIGNATED.getCode());
         registerBill.setDetectRequestId(detectRequest.getId());
+        registerBill.setProductAliasName(inputDto.getProductAliasName());
+        registerBill.setIsPrintCheckSheet(inputDto.getIsPrintCheckSheet());
         this.billService.updateSelective(registerBill);
         return detectRequest;
 

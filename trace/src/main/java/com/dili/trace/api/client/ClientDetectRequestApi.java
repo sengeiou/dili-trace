@@ -13,6 +13,7 @@ import com.dili.ss.exception.AppException;
 import com.dili.ss.util.DateUtils;
 import com.dili.trace.api.input.CreateDetectRequestInputDto;
 import com.dili.trace.api.input.CreateRegisterBillInputDto;
+import com.dili.trace.api.input.DetectRequestInputDto;
 import com.dili.trace.api.input.DetectRequestQueryDto;
 import com.dili.trace.api.output.CountDetectStatusDto;
 import com.dili.trace.api.output.SampleSourceCountOutputDto;
@@ -126,12 +127,14 @@ public class ClientDetectRequestApi {
      * @return
      */
     @RequestMapping("/createDetectRequest.api")
-    public BaseOutput<Long> createDetectRequest(@RequestBody DetectRequest input) {
+    public BaseOutput<Long> createDetectRequest(@RequestBody DetectRequestInputDto input) {
         if (input == null || input.getBillId() == null) {
             return BaseOutput.failure("参数错误");
         }
         try {
-            DetectRequest item = this.detectRequestService.createDetectRequestForBill(input.getBillId(), Optional.empty());
+            DetectRequest item = this.detectRequestService.createDetectRequestForBill(input, Optional.empty());
+
+
             return BaseOutput.successData(item.getId());
         } catch (TraceBizException e) {
             return BaseOutput.failure(e.getMessage());

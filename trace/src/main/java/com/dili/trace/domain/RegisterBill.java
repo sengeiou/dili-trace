@@ -662,7 +662,7 @@ public class RegisterBill extends BaseDomain {
     private String corporateName;
 
     /**
-     *
+     *商品别名
      */
     @ApiModelProperty(value = "商品别名")
     @Column(name = "`product_alias_name`")
