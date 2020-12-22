@@ -688,7 +688,6 @@ public class SgRegisterBillServiceImpl implements SgRegisterBillService {
         public RegisterBillStaticsDto groupByState (RegisterBillDto dto){
             dto.setBillType(BillTypeEnum.REGISTER_BILL.getCode());
             return this.billMapper.groupByState(dto);
-
         }
 
         @Override
